@@ -269,10 +269,8 @@ export function Sidebar() {
   };
 
   const isActiveRoute = (path: string) => {
-    // Exact match only — prefix matching causes parent index routes like
-    // "/buy" to activate whenever any child route (e.g. "/buy/requisitions")
-    // is current, producing multiple active dots in the same module.
-    return location.pathname === path;
+    if (path === '/') return location.pathname === '/';
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   return (

@@ -5,11 +5,9 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
+import { PlanJobDetail } from './PlanJobDetail';
 
-interface PlanJobsProps {
-  onSelectJob: (jobId: string) => void;
-}
-
+// remove unused PlanJobsProps interface
 type ViewMode = 'kanban' | 'list' | 'card';
 
 interface Job {
@@ -155,13 +153,19 @@ const priorityColors = {
   urgent: 'bg-[#EF4444] text-white'
 };
 
-export function PlanJobs({ onSelectJob }: PlanJobsProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
-  const [searchQuery, setSearchQuery] = useState('');
+export function PlanJobs() {
+  const [viewMode, setViewMode]         = useState<ViewMode>('kanban');
+  const [searchQuery, setSearchQuery]   = useState('');
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  // Show job detail when a job is selected
+  if (selectedJobId) {
+    return <PlanJobDetail onBack={() => setSelectedJobId(null)} />;
+  }
 
   const JobCard = ({ job }: { job: Job }) => (
     <div
-      onClick={() => onSelectJob(job.id)}
+      onClick={() => setSelectedJobId(job.id)}
       className="bg-white border border-[#E5E5E5] rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
@@ -318,7 +322,7 @@ export function PlanJobs({ onSelectJob }: PlanJobsProps) {
                     return (
                       <tr
                         key={job.id}
-                        onClick={() => onSelectJob(job.id)}
+                        onClick={() => setSelectedJobId(job.id)}
                         className="border-b border-[#E5E5E5] hover:bg-[#FAFAFA] cursor-pointer transition-colors"
                       >
                         <td className="px-4 py-3 font-['JetBrains_Mono',monospace] text-[13px] text-[#0A0A0A]">

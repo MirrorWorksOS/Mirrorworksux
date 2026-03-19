@@ -134,7 +134,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#E5E4E0] overflow-hidden">
+    <div className="flex flex-col bg-white rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#E5E4E0] overflow-hidden mx-6 mt-6" style={{ height: 'calc(100vh - 48px)' }}>
       {/* List Header */}
       <div className="flex items-center justify-between p-4 border-b border-[#E5E4E0] bg-white">
         <div className="relative w-full max-w-md">
@@ -275,7 +275,7 @@ export function WorkTab({ onSelectWorkOrder }: { onSelectWorkOrder?: (wo: any) =
   };
 
   return (
-    <div className="h-full">
+    <div className="flex-1 min-h-0 overflow-hidden">
         <WorkOrderList onSelectWO={handleSelectWO} />
     </div>
   );

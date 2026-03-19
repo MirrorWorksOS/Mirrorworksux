@@ -14,8 +14,6 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { designSystem } from '../../lib/design-system';
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
@@ -185,7 +183,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Total Spent */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200 relative group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
                 <Receipt className="w-5 h-5 text-[#FF8B00]" />
@@ -214,6 +212,32 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                     backgroundColor: getProgressColor(utilizationPercent)
                   }}
                 />
+              </div>
+            </div>
+
+            {/* Hover tooltip — total budget */}
+            <div
+              className={cn(
+                "absolute top-full left-1/2 -translate-x-1/2 mt-2 z-20",
+                "pointer-events-none",
+                "opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0",
+                "transition-all duration-150 ease-out"
+              )}
+            >
+              {/* Arrow */}
+              <div className="flex justify-center">
+                <div className="w-2 h-2 bg-[#0A0A0A] rotate-45 -mb-1" />
+              </div>
+              <div className="bg-[#0A0A0A] text-white rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
+                <p className="font-['Geist:Medium',sans-serif] text-[11px] text-[#A3A3A3] mb-0.5">
+                  Total Budget
+                </p>
+                <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold">
+                  ${mockBudgetData.totalBudget.toLocaleString()}
+                </p>
+                <p className="font-['Geist:Regular',sans-serif] text-[11px] text-[#A3A3A3] mt-0.5">
+                  ${(mockBudgetData.totalBudget - mockBudgetData.totalSpent).toLocaleString()} remaining
+                </p>
               </div>
             </div>
           </Card>
@@ -450,20 +474,23 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 formatter={(v: number) => [`$${v.toLocaleString()}`, '']}
                 labelFormatter={(label) => `Week ${label.replace('Wk ', '')}`}
               />
-              {/* Vertical line marking "today" */}
-              <ReferenceLine x={5} stroke="#0A0A0A" strokeDasharray="4 4" label={{ value: 'Today', position: 'top', fill: '#737373', fontSize: 11 }} />
-              {/* Planned burn line (dashed) */}
-              <Line
+              {/* Vertical line marking "today" — x must match the XAxis dataKey value */}
+              <ReferenceLine x="Wk 5" stroke="#0A0A0A" strokeDasharray="4 4" label={{ value: 'Today', position: 'top', fill: '#737373', fontSize: 11 }} />
+              {/* Planned burn — Area with no fill so it renders as a dashed line */}
+              <Area
+                key="planned"
                 type="monotone"
                 dataKey="planned"
                 stroke="#A3A3A3"
                 strokeWidth={2}
                 strokeDasharray="6 4"
+                fill="none"
                 dot={false}
                 name="Planned"
               />
-              {/* Actual spend line (solid with shaded area) */}
+              {/* Actual spend with shaded area */}
               <Area
+                key="actual"
                 type="monotone"
                 dataKey="actual"
                 stroke="#FFCF4B"

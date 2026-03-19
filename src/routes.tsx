@@ -30,6 +30,7 @@ import { BuySettings } from './components/buy/BuySettings';
 
 // Plan Module
 import { PlanDashboard } from './components/plan/PlanDashboard';
+import { PlanJobs } from './components/plan/PlanJobs';
 import { PlanActivities } from './components/plan/PlanActivities';
 import { PlanPurchase } from './components/plan/PlanPurchase';
 import { PlanQCPlanning } from './components/plan/PlanQCPlanning';
@@ -40,6 +41,19 @@ import { PlanSettings } from './components/plan/PlanSettings';
 import { MakeDashboard } from './components/make/MakeDashboard';
 import { MakeSchedule } from './components/make/MakeSchedule';
 import { MakeShopFloor } from './components/make/MakeShopFloor';
+import { MakeWork } from './components/make/MakeWork';
+import { MakeIssues } from './components/make/MakeIssues';
+
+// Ship Module
+import { ShipDashboard } from './components/ship/ShipDashboard';
+import { ShipOrders } from './components/ship/ShipOrders';
+import { ShipPackaging } from './components/ship/ShipPackaging';
+import { ShipShipping } from './components/ship/ShipShipping';
+import { ShipTracking } from './components/ship/ShipTracking';
+import { ShipReturns } from './components/ship/ShipReturns';
+import { ShipWarehouse } from './components/ship/ShipWarehouse';
+import { ShipReports } from './components/ship/ShipReports';
+import { ShipSettings } from './components/ship/ShipSettings';
 
 // Control Module
 import { ControlDashboard } from './components/control/ControlDashboard';
@@ -59,6 +73,14 @@ import { DesignInitialData } from './components/design/DesignInitialData';
 
 // Book Module (existing)
 import { BudgetOverview } from './components/book/BudgetOverview';
+import { BookDashboard } from './components/book/BookDashboard';
+import { BookInvoices } from './components/book/BookInvoices';
+import { ExpenseKanban } from './components/book/ExpenseKanban';
+import { PurchaseOrders } from './components/book/PurchaseOrders';
+import { JobProfitability } from './components/book/JobProfitability';
+import { StockValuation } from './components/book/StockValuation';
+import { ReportsGallery } from './components/book/ReportsGallery';
+import { BookSettings } from './components/book/BookSettings';
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +89,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <WelcomeDashboard />,
+      },
+      
+      // Main Dashboard Route
+      {
+        path: 'dashboard',
         element: <WelcomeDashboard />,
       },
       
@@ -107,6 +135,7 @@ export const router = createBrowserRouter([
         path: 'plan',
         children: [
           { index: true, element: <PlanDashboard /> },
+          { path: 'jobs', element: <PlanJobs /> },
           { path: 'activities', element: <PlanActivities /> },
           { path: 'purchase', element: <PlanPurchase /> },
           { path: 'qc-planning', element: <PlanQCPlanning /> },
@@ -122,6 +151,24 @@ export const router = createBrowserRouter([
           { index: true, element: <MakeDashboard /> },
           { path: 'schedule', element: <MakeSchedule /> },
           { path: 'shop-floor', element: <MakeShopFloor /> },
+          { path: 'work', element: <MakeWork /> },
+          { path: 'issues', element: <MakeIssues /> },
+        ],
+      },
+
+      // Ship Module Routes
+      {
+        path: 'ship',
+        children: [
+          { index: true, element: <ShipDashboard /> },
+          { path: 'orders', element: <ShipOrders /> },
+          { path: 'packaging', element: <ShipPackaging /> },
+          { path: 'shipping', element: <ShipShipping /> },
+          { path: 'tracking', element: <ShipTracking /> },
+          { path: 'returns', element: <ShipReturns /> },
+          { path: 'warehouse', element: <ShipWarehouse /> },
+          { path: 'reports', element: <ShipReports /> },
+          { path: 'settings', element: <ShipSettings /> },
         ],
       },
 
@@ -156,8 +203,15 @@ export const router = createBrowserRouter([
       {
         path: 'book',
         children: [
-          { index: true, element: <BudgetOverview /> },
+          { index: true, element: <BookDashboard /> },
           { path: 'budget', element: <BudgetOverview /> },
+          { path: 'invoices', element: <BookInvoices /> },
+          { path: 'expenses', element: <ExpenseKanban /> },
+          { path: 'purchases', element: <PurchaseOrders /> },
+          { path: 'job-costs', element: <JobProfitability /> },
+          { path: 'stock-valuation', element: <StockValuation /> },
+          { path: 'reports', element: <ReportsGallery /> },
+          { path: 'settings', element: <BookSettings /> },
         ],
       },
 
