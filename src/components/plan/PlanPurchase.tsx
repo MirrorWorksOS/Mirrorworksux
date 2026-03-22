@@ -1,70 +1,147 @@
 /**
- * Plan Purchase - Material requirements planning (MRP)
- * Shows what needs to be ordered for production
+ * Plan Purchase — Material Requirements Planning (MRP)
+ * Shows shortfalls per job, lets user create PRs for shortfalls in bulk
  */
-
-import React from 'react';
-import { ShoppingCart } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, AlertTriangle, CheckCircle, RefreshCw, Download } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
+import { motion } from 'motion/react';
+import { designSystem } from '../../lib/design-system';
 
-const mockRequirements = [
-  { id: '1', product: 'Mild Steel Sheet 1200x2400x3mm', required: 50, available: 15, shortfall: 35, job: 'JOB-2026-0012', dueDate: '2026-03-25' },
-  { id: '2', product: 'Aluminium Angle 50x50x5mm', required: 20, available: 8, shortfall: 12, job: 'JOB-2026-0012', dueDate: '2026-03-25' },
-  { id: '3', product: 'Welding Rod ER70S-6 4mm', required: 100, available: 150, shortfall: 0, job: 'JOB-2026-0011', dueDate: '2026-03-28' },
+const { animationVariants } = designSystem;
+
+const MRP_ROWS = [
+  { id: '1',  product: 'Mild Steel Sheet 3mm',       sku: 'MAT-MS-001', required: 50, available: 15, onOrder: 20, net: 15,  job: 'MW-089', due: 'Mar 25', status: 'shortage'  as const },
+  { id: '2',  product: 'Aluminium Angle 50x50x5',    sku: 'MAT-AL-042', required: 20, available: 8,  onOrder: 0,  net: 12,  job: 'MW-089', due: 'Mar 25', status: 'shortage'  as const },
+  { id: '3',  product: 'Welding Rod ER70S-6 4mm',    sku: 'CONS-WR-001',required: 100,available: 150,onOrder: 0,  net: -50, job: 'MW-088', due: 'Mar 28', status: 'ok'        as const },
+  { id: '4',  product: 'RHS 50x25x2.5 Steel',        sku: 'MAT-RHS-001',required: 80, available: 0,  onOrder: 40, net: 40,  job: 'MW-088', due: 'Mar 28', status: 'shortage'  as const },
+  { id: '5',  product: 'Hardware Kit M10 SS',         sku: 'CONS-HW-001',required: 12, available: 15, onOrder: 0,  net: -3,  job: 'MW-091', due: 'Apr 02', status: 'ok'        as const },
+  { id: '6',  product: 'Powder Coat Paint RAL 7035',  sku: 'CONS-PC-001',required: 6,  available: 8,  onOrder: 0,  net: -2,  job: 'MW-091', due: 'Apr 02', status: 'ok'        as const },
+  { id: '7',  product: '10mm Mild Steel Plate',       sku: 'MS-10-3678', required: 20, available: 45, onOrder: 0,  net: -25, job: 'MW-090', due: 'Apr 05', status: 'ok'        as const },
+  { id: '8',  product: 'Aluminium Base Plate 5052',   sku: 'AL-5052-BP', required: 40, available: 120,onOrder: 0,  net: -80, job: 'MW-090', due: 'Apr 05', status: 'ok'        as const },
+  { id: '9',  product: 'SS Fasteners M10 Grade A4',   sku: 'FST-M10A4',  required: 30, available: 0,  onOrder: 0,  net: 30,  job: 'MW-089', due: 'Mar 25', status: 'critical'  as const },
 ];
 
 export function PlanPurchase() {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const shortages  = MRP_ROWS.filter(r => r.status !== 'ok');
+  const toggleRow  = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggleAll  = () => setSelected(prev => prev.size === shortages.length ? new Set() : new Set(shortages.map(r => r.id)));
+
   return (
-    <div className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Material Requirements</h1>
-        <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Create PRs for Shortfalls
-        </Button>
+        <div>
+          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Material requirements</h1>
+          <p className="text-sm text-[#737373] mt-1">
+            {shortages.filter(s => s.status === 'critical').length > 0 && (
+              <span className="text-[#EF4444]">{shortages.filter(s => s.status === 'critical').length} critical shortage · </span>
+            )}
+            {shortages.filter(s => s.status === 'shortage').length} shortages · {MRP_ROWS.filter(r => r.status === 'ok').length} items available
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+            <RefreshCw className="w-4 h-4" /> Recalculate MRP
+          </Button>
+          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+            <Download className="w-4 h-4" /> Export
+          </Button>
+          <Button
+            className={cn('gap-2 h-10', selected.size > 0
+              ? 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]'
+              : 'bg-[#F5F5F5] text-[#A3A3A3] cursor-not-allowed'
+            )}
+            disabled={selected.size === 0}
+          >
+            <ShoppingCart className="w-4 h-4" /> Create {selected.size > 0 ? `${selected.size} PRs` : 'PRs'}
+          </Button>
+        </div>
       </div>
 
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', icon: AlertTriangle },
+          { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', icon: AlertTriangle },
+          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', icon: CheckCircle },
+        ].map(s => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+              <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', s.bg)}>
+                <Icon className={cn('w-4 h-4', s.text)} />
+              </div>
+              <p className="text-xs text-[#737373] font-medium mb-1">{s.label}</p>
+              <p className={cn('text-[28px] font-[\'Roboto_Mono\',monospace] font-semibold', s.text)}>{s.count}</p>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Table */}
       <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PRODUCT</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">JOB</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DUE DATE</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">REQUIRED</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">AVAILABLE</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">SHORTFALL</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
+              <th className="px-4 py-3 w-10">
+                <input type="checkbox"
+                  checked={selected.size === shortages.length && shortages.length > 0}
+                  onChange={toggleAll}
+                  className="accent-[#FFCF4B] w-4 h-4"
+                />
+              </th>
+              {['Material', 'SKU', 'Job', 'Due', 'Required', 'Available', 'On Order', 'Net Shortfall', 'Status'].map(h => (
+                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Required', 'Available', 'On Order', 'Net Shortfall'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {mockRequirements.map((req, idx) => (
-              <tr key={req.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer", idx % 2 === 1 && "bg-[#FAFAFA]")}>
-                <td className="px-4 text-sm text-[#0A0A0A]">{req.product}</td>
-                <td className="px-4 font-['Roboto_Mono',monospace] text-sm text-[#0052CC]">{req.job}</td>
-                <td className="px-4 text-sm text-[#525252]">{new Date(req.dueDate).toLocaleDateString('en-AU')}</td>
-                <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium">{req.required}</td>
-                <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm">{req.available}</td>
-                <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium text-[#EF4444]">
-                  {req.shortfall > 0 ? req.shortfall : '—'}
-                </td>
-                <td className="px-4">
-                  <div className="flex items-center justify-center">
-                    {req.shortfall > 0 ? (
-                      <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0">Shortage</Badge>
-                    ) : (
-                      <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0">OK</Badge>
+            {MRP_ROWS.map(row => {
+              const isShortage = row.status !== 'ok';
+              const isCritical = row.status === 'critical';
+              return (
+                <tr key={row.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors', isCritical && 'bg-[#FFF5F5]')}>
+                  <td className="px-4">
+                    {isShortage && (
+                      <input type="checkbox"
+                        checked={selected.has(row.id)}
+                        onChange={() => toggleRow(row.id)}
+                        className="accent-[#FFCF4B] w-4 h-4"
+                        onClick={e => e.stopPropagation()}
+                      />
                     )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-4 text-sm text-[#0A0A0A] font-medium">{row.product}</td>
+                  <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{row.sku}</td>
+                  <td className="px-4 text-sm font-['JetBrains_Mono',monospace] text-[#0052CC]">{row.job}</td>
+                  <td className="px-4 text-sm text-[#737373]">{row.due}</td>
+                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">{row.required}</td>
+                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{row.available}</td>
+                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] text-[#737373]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
+                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-semibold"
+                    style={{ color: row.net > 0 ? '#EF4444' : '#36B37E' }}>
+                    {row.net > 0 ? `+${row.net}` : row.net}
+                  </td>
+                  <td className="px-4">
+                    {row.status === 'ok'
+                      ? <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2">OK</Badge>
+                      : row.status === 'critical'
+                      ? <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0 text-xs rounded-full px-2">Critical</Badge>
+                      : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Shortage</Badge>
+                    }
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </Card>
-    </div>
+    </motion.div>
   );
 }

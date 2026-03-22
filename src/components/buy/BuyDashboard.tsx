@@ -154,12 +154,12 @@ export function BuyDashboard() {
         <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
           <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">Supplier Performance (On-Time %)</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={supplierPerformance} layout="horizontal">
+            <BarChart data={supplierPerformance} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" vertical={false} />
               <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
               <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} width={120} />
               <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16}>
+              <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %">
                 {supplierPerformance.map((entry, i) => (<Cell key={`perf-${i}`} fill={entry.color} />))}
               </Bar>
             </BarChart>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, ArrowDown, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { AIInsightCard } from '../shared/AIInsightCard';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import {
@@ -136,17 +137,14 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       </Card>
 
       {/* AI Insight */}
-      <Card className="rounded-xl p-4 bg-[#FAFAFA] border-2" style={{ borderImage: 'linear-gradient(135deg, #7C3AED, #3B82F6, #EC4899, #F97316) 1' }}>
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-[#7C3AED]" />
-          <span className="text-xs tracking-wider text-[#7C3AED]" style={{ fontWeight: 500 }}>AI INSIGHT</span>
-        </div>
-        <p className="text-sm text-[#525252] mb-3">Labour costs are 20% under budget. Consider re-quoting similar jobs — your welding team has improved productivity by ~15% this quarter.</p>
-        <div className="flex gap-3">
-          <Button variant="ghost" size="sm" className="text-[#737373]">Dismiss</Button>
-          <Button size="sm" className="bg-[#F3E8FF] text-[#7C3AED] hover:bg-[#E9D5FF]">Apply to Quoting</Button>
-        </div>
-      </Card>
+      <AIInsightCard
+        title="AI insight"
+        updatedAt="just now"
+        actionLabel="Apply to quoting"
+        onAction={() => {}}
+      >
+        Labour costs are 20% under budget. Consider re-quoting similar jobs — your welding team has improved productivity by ~15% this quarter.
+      </AIInsightCard>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

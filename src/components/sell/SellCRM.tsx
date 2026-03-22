@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -104,6 +105,7 @@ const getStatusBadge = (status: Customer['status']) => {
 };
 
 export function SellCRM() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -190,7 +192,9 @@ export function SellCRM() {
                 variants={animationVariants.listItem}
                 custom={idx}
               >
-                <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                  onClick={() => navigate(`/sell/crm/${customer.id}`)}
+                >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-12 h-12">

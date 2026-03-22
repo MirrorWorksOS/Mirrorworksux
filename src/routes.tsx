@@ -14,6 +14,9 @@ import { SellOrders } from './components/sell/SellOrders';
 import { SellInvoices } from './components/sell/SellInvoices';
 import { SellProducts } from './components/sell/SellProducts';
 import { SellSettings } from './components/sell/SellSettings';
+import { SellNewQuote } from './components/sell/SellNewQuote';
+import { SellProductDetail } from './components/sell/SellProductDetail';
+import { SellCustomerDetail } from './components/sell/SellCustomerDetail';
 
 // Buy Module
 import { BuyDashboard } from './components/buy/BuyDashboard';
@@ -43,6 +46,7 @@ import { MakeSchedule } from './components/make/MakeSchedule';
 import { MakeShopFloor } from './components/make/MakeShopFloor';
 import { MakeWork } from './components/make/MakeWork';
 import { MakeIssues } from './components/make/MakeIssues';
+import { MakeSettings } from './components/make/MakeSettings';
 
 // Ship Module
 import { ShipDashboard } from './components/ship/ShipDashboard';
@@ -64,6 +68,7 @@ import { ControlPurchase } from './components/control/ControlPurchase';
 import { ControlPeople } from './components/control/ControlPeople';
 import { ControlProducts } from './components/control/ControlProducts';
 import { ControlBOMs } from './components/control/ControlBOMs';
+import { ControlWorkflowDesigner } from './components/control/ControlWorkflowDesigner';
 
 // Design Module
 import { DesignFactoryLayout } from './components/design/DesignFactoryLayout';
@@ -104,10 +109,13 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <SellDashboard /> },
           { path: 'crm', element: <SellCRM /> },
+          { path: 'crm/:id', element: <SellCustomerDetail /> },
           { path: 'opportunities', element: <SellOpportunities /> },
           { path: 'orders', element: <SellOrders /> },
           { path: 'invoices', element: <SellInvoices /> },
           { path: 'products', element: <SellProducts /> },
+          { path: 'products/:id', element: <SellProductDetail /> },
+          { path: 'quotes/new', element: <SellNewQuote /> },
           { path: 'settings', element: <SellSettings /> },
         ],
       },
@@ -153,6 +161,7 @@ export const router = createBrowserRouter([
           { path: 'shop-floor', element: <MakeShopFloor /> },
           { path: 'work', element: <MakeWork /> },
           { path: 'issues', element: <MakeIssues /> },
+          { path: 'settings', element: <MakeSettings /> },
         ],
       },
 
@@ -176,14 +185,16 @@ export const router = createBrowserRouter([
       {
         path: 'control',
         children: [
-          { index: true, element: <ControlDashboard /> },
-          { path: 'locations', element: <ControlLocations /> },
-          { path: 'machines', element: <ControlMachines /> },
-          { path: 'inventory', element: <ControlInventory /> },
-          { path: 'purchase', element: <ControlPurchase /> },
-          { path: 'people', element: <ControlPeople /> },
-          { path: 'products', element: <ControlProducts /> },
-          { path: 'boms', element: <ControlBOMs /> },
+          { index: true,              element: <ControlDashboard /> },
+          { path: 'locations',        element: <ControlLocations /> },
+          { path: 'machines',         element: <ControlMachines /> },
+          { path: 'inventory',        element: <ControlInventory /> },
+          { path: 'purchase',         element: <ControlPurchase /> },
+          { path: 'people',           element: <ControlPeople /> },
+          { path: 'products',         element: <ControlProducts /> },
+          { path: 'boms',             element: <ControlBOMs /> },
+          { path: 'role-designer',    element: <DesignRoleDesigner /> },
+          { path: 'workflow-designer',element: <ControlWorkflowDesigner /> },
         ],
       },
 
@@ -191,11 +202,10 @@ export const router = createBrowserRouter([
       {
         path: 'design',
         children: [
-          { index: true, element: <DesignFactoryLayout /> },
-          { path: 'factory-layout', element: <DesignFactoryLayout /> },
-          { path: 'process-builder', element: <DesignProcessBuilder /> },
-          { path: 'role-designer', element: <DesignRoleDesigner /> },
-          { path: 'initial-data', element: <DesignInitialData /> },
+          { index: true,               element: <DesignFactoryLayout /> },
+          { path: 'factory-layout',    element: <DesignFactoryLayout /> },
+          { path: 'process-builder',   element: <DesignProcessBuilder /> },
+          { path: 'initial-data',      element: <DesignInitialData /> },
         ],
       },
 

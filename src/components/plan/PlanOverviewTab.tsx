@@ -7,6 +7,7 @@ import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
+import { AIInsightMessage } from '../shared/AIInsightCard';
 
 export function PlanOverviewTab() {
   return (
@@ -503,22 +504,9 @@ export function PlanOverviewTab() {
           </h3>
           
           <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto">
-            <div className="bg-[#FFCF4B] rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-5 h-5 bg-[#2C2C2C] rounded-full flex items-center justify-center text-white text-[10px]">
-                  IH
-                </div>
-                <span className="font-['Geist:Medium',sans-serif] text-[11px] font-medium text-[#2C2C2C]">
-                  Intelligence Hub
-                </span>
-                <span className="font-['Geist:Regular',sans-serif] text-[10px] text-[#737373] ml-auto">
-                  1 hour ago
-                </span>
-              </div>
-              <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#2C2C2C]">
-                Material requirements calculated. Ready to proceed with scheduling.
-              </p>
-            </div>
+            <AIInsightMessage timestamp="1 hour ago">
+              Material requirements calculated. Ready to proceed with scheduling.
+            </AIInsightMessage>
 
             <div className="flex gap-2">
               <Avatar className="w-6 h-6 border border-[#E5E5E5] flex-shrink-0">

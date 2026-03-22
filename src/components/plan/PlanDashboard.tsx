@@ -102,8 +102,8 @@ export function PlanDashboard() {
               <XAxis dataKey="week" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
               <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar key="planned" dataKey="planned" fill="#E5E5E5" radius={[4, 4, 0, 0]} />
-              <Bar key="actual" dataKey="actual" fill="#FFCF4B" radius={[4, 4, 0, 0]} />
+              <Bar key="planned" dataKey="planned" fill="#E5E5E5" radius={[4, 4, 0, 0]} name="Planned" />
+              <Bar key="actual" dataKey="actual" fill="#FFCF4B" radius={[4, 4, 0, 0]} name="Actual" />
             </BarChart>
           </ResponsiveContainer>
         </Card>

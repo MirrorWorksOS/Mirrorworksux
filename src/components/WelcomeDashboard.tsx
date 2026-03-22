@@ -108,23 +108,23 @@ export function WelcomeDashboard() {
       </div>
 
       {/* Stats Banner */}
-      <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-lg p-8 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div>
-            <p className="text-sm text-[#2C2C2C] opacity-75 mb-1">Total Modules</p>
-            <p className="text-[32px] font-bold text-[#2C2C2C]">8</p>
+      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-[#E5E5E5]">
+          <div className="pr-6">
+            <p className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">Total modules</p>
+            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">8</p>
           </div>
-          <div>
-            <p className="text-sm text-[#2C2C2C] opacity-75 mb-1">Total Components</p>
-            <p className="text-[32px] font-bold text-[#2C2C2C]">50</p>
+          <div className="px-6">
+            <p className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">Total components</p>
+            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">50</p>
           </div>
-          <div>
-            <p className="text-sm text-[#2C2C2C] opacity-75 mb-1">Build Progress</p>
-            <p className="text-[32px] font-bold text-[#2C2C2C]">100%</p>
+          <div className="px-6">
+            <p className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">Build progress</p>
+            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">100%</p>
           </div>
-          <div>
-            <p className="text-sm text-[#2C2C2C] opacity-75 mb-1">Status</p>
-            <Badge className="bg-[#36B37E] text-white border-0 text-base px-3 py-1">Complete</Badge>
+          <div className="pl-6">
+            <p className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">Status</p>
+            <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-[13px] font-medium px-3 py-1 rounded">Complete</Badge>
           </div>
         </div>
       </Card>

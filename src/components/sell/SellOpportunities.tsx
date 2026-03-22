@@ -13,22 +13,12 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { designSystem } from '../../lib/design-system';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import { SellOpportunityDetail, type Opportunity } from './SellOpportunityDetail';
 
 const { animationVariants } = designSystem;
 
 type OpportunityStage = 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
 type Priority = 'low' | 'medium' | 'high' | 'urgent';
-
-interface Opportunity {
-  id: string;
-  title: string;
-  customer: string;
-  value: number;
-  expectedClose: string;
-  assignedTo: string;
-  priority: Priority;
-  stage: OpportunityStage;
-}
 
 const mockOpportunities: Opportunity[] = [
   { id: '1', title: 'Server Rack Fabrication', customer: 'TechCorp Industries', value: 45000, expectedClose: '2026-04-15', assignedTo: 'SC', priority: 'high', stage: 'proposal' },
@@ -58,10 +48,16 @@ const getPriorityBadge = (priority: Priority) => {
 };
 
 export function SellOpportunities() {
-  const [opportunities] = useState<Opportunity[]>(mockOpportunities);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
+  const [selectedOpp, setSelectedOpp]     = useState<Opportunity | null>(null);
 
   const getOpportunitiesByStage = (stage: OpportunityStage) => {
     return opportunities.filter(opp => opp.stage === stage);
+  };
+
+  const handleStageChange = (id: string, stage: OpportunityStage) => {
+    setOpportunities(prev => prev.map(o => o.id === id ? { ...o, stage } : o));
+    setSelectedOpp(prev => prev?.id === id ? { ...prev, stage } : prev);
   };
 
   return (
@@ -89,7 +85,7 @@ export function SellOpportunities() {
       {/* Kanban Board */}
       <div className="flex gap-4 overflow-x-auto pb-4">
         {stages.map((stage, idx) => {
-          const stageOpps = getOpportunitiesByStage(stage.key);
+          const stageOpps  = getOpportunitiesByStage(stage.key);
           const stageValue = stageOpps.reduce((sum, o) => sum + o.value, 0);
 
           return (
@@ -116,7 +112,11 @@ export function SellOpportunities() {
                   {stageOpps.map((opp) => {
                     const priorityBadge = getPriorityBadge(opp.priority);
                     return (
-                      <Card key={opp.id} className="bg-white border border-[#E5E5E5] rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing group">
+                      <Card
+                        key={opp.id}
+                        className="bg-white border border-[#E5E5E5] rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                        onClick={() => setSelectedOpp(opp)}
+                      >
                         <div className="flex items-start justify-between mb-3">
                           <h4 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors line-clamp-2">
                             {opp.title}
@@ -161,6 +161,14 @@ export function SellOpportunities() {
           );
         })}
       </div>
+
+      {/* Opportunity Detail Sheet */}
+      <SellOpportunityDetail
+        opportunity={selectedOpp}
+        open={!!selectedOpp}
+        onClose={() => setSelectedOpp(null)}
+        onStageChange={handleStageChange}
+      />
     </motion.div>
   );
 }

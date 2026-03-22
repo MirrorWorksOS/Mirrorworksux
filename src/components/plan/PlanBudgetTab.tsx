@@ -24,6 +24,7 @@ import {
   ReferenceLine
 } from 'recharts';
 import { AnimatedRefresh, AnimatedTrendingUp, AnimatedTrendingDown, AnimatedSparkles } from '../ui/animated-icons';
+import { AIInsightCard } from '../shared/AIInsightCard';
 
 const { animationVariants } = designSystem;
 
@@ -476,9 +477,8 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
               />
               {/* Vertical line marking "today" — x must match the XAxis dataKey value */}
               <ReferenceLine x="Wk 5" stroke="#0A0A0A" strokeDasharray="4 4" label={{ value: 'Today', position: 'top', fill: '#737373', fontSize: 11 }} />
-              {/* Planned burn — Area with no fill so it renders as a dashed line */}
+              {/* Planned burn — dashed line */}
               <Area
-                key="planned"
                 type="monotone"
                 dataKey="planned"
                 stroke="#A3A3A3"
@@ -490,7 +490,6 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
               />
               {/* Actual spend with shaded area */}
               <Area
-                key="actual"
                 type="monotone"
                 dataKey="actual"
                 stroke="#FFCF4B"
@@ -508,47 +507,17 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
       {/* AI Budget Insight Card */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-lg p-6">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <AnimatedSparkles className="w-5 h-5 text-[#2C2C2C]" />
-              <h3 className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#2C2C2C]">
-                AI Budget Insight
-              </h3>
-            </div>
-            <button
-              onClick={handleRefreshInsight}
-              disabled={refreshing}
-              className="p-1 hover:bg-[#EBC028] rounded transition-colors disabled:opacity-50"
-            >
-              {refreshing ? (
-                <AnimatedRefresh className="w-4 h-4 text-[#2C2C2C]" />
-              ) : (
-                <RefreshCw className="w-4 h-4 text-[#2C2C2C]" />
-              )}
-            </button>
-          </div>
-          <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#2C2C2C] leading-relaxed mb-4">
-            Labour tracking 8% under budget. Based on 3 similar historical jobs, expect final spend between $23,200-$24,100. 
-            Material delivery for PO-0089 may increase costs by $400 if delayed past Friday.
-          </p>
-          <div className="flex items-center justify-between">
-            <p className="font-['Geist:Regular',sans-serif] text-[11px] text-[#525252]">
-              Last updated: 2 minutes ago
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-[#2C2C2C] hover:bg-[#EBC028] h-8 px-3"
-              onClick={() => {
-                // Navigate to Intelligence Hub
-                window.location.hash = '#intelligence';
-              }}
-            >
-              View in Intelligence Hub →
-            </Button>
-          </div>
-        </Card>
+        <AIInsightCard
+          title="AI budget insight"
+          updatedAt="2 minutes ago"
+          onRefresh={handleRefreshInsight}
+          refreshing={refreshing}
+          actionLabel="View in Intelligence Hub"
+          onAction={() => { window.location.hash = '#intelligence'; }}
+        >
+          Labour tracking 8% under budget. Based on 3 similar historical jobs, expect final spend between $23,200–$24,100.
+          Material delivery for PO-0089 may increase costs by $400 if delayed past Friday.
+        </AIInsightCard>
       </motion.div>
     </motion.div>
   );

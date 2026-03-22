@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
+import { AIInsightCard, AIInsightMessage } from '../shared/AIInsightCard';
 
 export function PlanIntelligenceHubTab() {
   return (
@@ -58,9 +59,9 @@ export function PlanIntelligenceHubTab() {
           {/* Event 3 - Highlighted */}
           <div className="relative">
             <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[#FFCF4B] border-2 border-white" />
-            <div className="bg-[#FFFBF0] border border-[#FFCF4B] rounded-lg p-4">
+            <div className="bg-white border border-[#E5E5E5] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-[#2C2C2C]" />
+                <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
                 <span className="font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#0A0A0A]">
                   Quote #QT-2026-145 Confirmed
                 </span>
@@ -68,7 +69,7 @@ export function PlanIntelligenceHubTab() {
                   Success
                 </Badge>
               </div>
-              <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#0A0A0A]">
+              <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
                 Mar 15, 2026 at 9:20 AM • Job MW-001 created automatically
               </p>
             </div>
@@ -146,26 +147,14 @@ export function PlanIntelligenceHubTab() {
         </div>
 
         {/* AI Insight Banner */}
-        <div className="bg-[#FFCF4B] rounded-lg p-4 mb-4">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-[#2C2C2C] rounded-full flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#2C2C2C]">
-                  Intelligence Hub
-                </span>
-                <span className="font-['Geist:Regular',sans-serif] text-[11px] text-[#737373]">
-                  2 hours ago
-                </span>
-              </div>
-              <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#2C2C2C]">
-                Labor costs are tracking 50% of budget allocation. Consider optimizing machine utilization for operations 3-5 to reduce cycle time by an estimated 15%. Current trajectory suggests completion within budget constraints.
-              </p>
-            </div>
-          </div>
-        </div>
+        <AIInsightCard
+          title="AI budget insight"
+          updatedAt="2 hours ago"
+          actionLabel="View full budget"
+          className="mb-4"
+        >
+          Labor costs are tracking 50% of budget allocation. Consider optimising machine utilisation for operations 3–5 to reduce cycle time by an estimated 15%. Current trajectory suggests completion within budget constraints.
+        </AIInsightCard>
 
         <div className="flex items-center gap-2">
           <Button variant="outline" className="border-[#E5E5E5]">
@@ -257,31 +246,13 @@ export function PlanIntelligenceHubTab() {
           </div>
 
           {/* Intelligence Hub Message */}
-          <div className="bg-[#FFCF4B] rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-[#2C2C2C] rounded-full flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#2C2C2C]">
-                    Intelligence Hub
-                  </span>
-                  <span className="font-['Geist:Regular',sans-serif] text-[11px] text-[#737373]">
-                    10:24 AM
-                  </span>
-                </div>
-                <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#2C2C2C] mb-3">
-                  Job production complete in Make module. All quality checkpoints passed. Ready for final inspection.
-                </p>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="h-7 text-xs border-[#2C2C2C] text-[#2C2C2C]">
-                    View Details
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AIInsightMessage timestamp="10:24 AM" actions={
+            <Button size="sm" variant="outline" className="h-7 text-xs border-[#E5E5E5] text-[#0A0A0A]">
+              View Details
+            </Button>
+          }>
+            Job production complete in Make module. All quality checkpoints passed. Ready for final inspection.
+          </AIInsightMessage>
 
           {/* User Message */}
           <div className="flex gap-3">

@@ -1,39 +1,304 @@
 /**
- * Control Purchase - Supplier master data setup
+ * Control Purchase — procurement configuration and supplier defaults
  */
-
-import React from 'react';
-import { Card } from '../ui/card';
+import React, { useState } from 'react';
+import { ShoppingBag, Settings, Users, FileText, Bell } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Separator } from '../ui/separator';
+import { cn } from '../ui/utils';
+import { motion } from 'motion/react';
+import { designSystem } from '../../lib/design-system';
 
-export function ControlPurchase() {
+const { animationVariants } = designSystem;
+
+type Panel = 'general' | 'approval' | 'suppliers' | 'notifications';
+
+const NAV: { key: Panel; label: string; icon: any }[] = [
+  { key: 'general',       label: 'General',       icon: Settings },
+  { key: 'approval',      label: 'Approvals',     icon: FileText },
+  { key: 'suppliers',     label: 'Supplier defaults', icon: Users },
+  { key: 'notifications', label: 'Notifications', icon: Bell },
+];
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Purchase Settings</h1>
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-[#0A0A0A] mb-4">Global Purchase Parameters</h2>
+    <div>
+      <div className="text-xs tracking-wider text-[#737373] font-medium mb-2 uppercase">{children}</div>
+      <Separator className="mb-4" />
+    </div>
+  );
+}
+
+function SaveRow() {
+  return (
+    <div className="flex justify-end gap-3">
+      <Button variant="ghost" className="text-[#737373] text-sm h-10">Discard</Button>
+      <Button className="h-10 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] rounded">Save changes</Button>
+    </div>
+  );
+}
+
+function GeneralPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Purchase order defaults</SectionLabel>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Default Payment Terms</label>
-            <select className="w-full h-10 px-3 border border-[#E5E5E5] rounded text-sm">
-              <option>Net 30</option>
-              <option>Net 60</option>
-              <option>Net 90</option>
-              <option>COD</option>
-            </select>
+            <Label className="text-sm mb-2 block font-medium">PO prefix</Label>
+            <div className="flex gap-3 items-center">
+              <Input defaultValue="PO-" className="h-12 border-[#E5E5E5] rounded bg-[#F5F5F5] w-28" />
+              <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">Preview: PO-0089</span>
+            </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Default Lead Time (days)</label>
-            <Input type="number" className="border-[#E5E5E5]" defaultValue="14" />
+            <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
+            <Select defaultValue="net30">
+              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cod">COD</SelectItem>
+                <SelectItem value="net14">Net 14</SelectItem>
+                <SelectItem value="net30">Net 30</SelectItem>
+                <SelectItem value="net60">Net 60</SelectItem>
+                <SelectItem value="net90">Net 90</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Auto-approve POs under</label>
-            <Input type="number" className="border-[#E5E5E5]" defaultValue="1000" placeholder="Amount" />
+            <Label className="text-sm mb-2 block font-medium">Default lead time</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="14" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+              <span className="text-sm text-[#737373]">days</span>
+            </div>
           </div>
-          <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">Save Settings</Button>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default delivery location</Label>
+            <Select defaultValue="main">
+              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="main">Main Factory — Silverwater</SelectItem>
+                <SelectItem value="warehouse">Warehouse — Moorebank</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </Card>
+      </div>
+
+      <div>
+        <SectionLabel>Stock management</SectionLabel>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
+            <div>
+              <span className="text-sm text-[#0A0A0A]">Auto-generate POs at reorder point</span>
+              <p className="text-xs text-[#737373] mt-0.5">Create draft POs when stock reaches minimum level</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
+            <div>
+              <span className="text-sm text-[#0A0A0A]">Enable three-way matching</span>
+              <p className="text-xs text-[#737373] mt-0.5">Match PO, goods receipt, and invoice before payment</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <span className="text-sm text-[#0A0A0A]">Require goods receipt before invoice</span>
+              <p className="text-xs text-[#737373] mt-0.5">Block invoice processing until GRN is confirmed</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+        </div>
+      </div>
     </div>
+  );
+}
+
+function ApprovalPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Approval thresholds</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'Auto-approve POs under',           value: '1000', suffix: '$',     sub: 'No approval required below this amount' },
+            { label: 'Supervisor approval above',         value: '5000', suffix: '$',     sub: 'Requires Supervisor or Manager sign-off' },
+            { label: 'Manager approval above',            value: '25000', suffix: '$',    sub: 'Requires Manager or Admin sign-off' },
+            { label: 'Director approval above',           value: '100000', suffix: '$',   sub: 'Requires Director approval' },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-3 border-b border-[#F5F5F5] last:border-0">
+              <div>
+                <span className="text-sm text-[#0A0A0A] font-medium">{r.label}</span>
+                <p className="text-xs text-[#737373] mt-0.5">{r.sub}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#737373]">{r.suffix}</span>
+                <Input defaultValue={r.value} type="number" className="h-10 border-[#E5E5E5] rounded w-28 text-right font-['Roboto_Mono',monospace]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Approval flow</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'Email approver on new PO submission', checked: true },
+            { label: 'Escalate if no response within 24 hours', checked: true },
+            { label: 'Allow approver to edit PO before approving', checked: false },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SuppliersPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Supplier evaluation</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Preferred supplier scoring weights</Label>
+            <div className="space-y-3 mt-2">
+              {[
+                { label: 'Price',          value: 30 },
+                { label: 'Quality',        value: 35 },
+                { label: 'Lead time',      value: 20 },
+                { label: 'Reliability',    value: 15 },
+              ].map(s => (
+                <div key={s.label} className="flex items-center gap-4">
+                  <span className="text-sm text-[#0A0A0A] w-28">{s.label}</span>
+                  <div className="flex-1 h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
+                    <div className="h-full bg-[#FFCF4B] rounded-full" style={{ width: `${s.value}%` }} />
+                  </div>
+                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[#E5E5E5] rounded text-right font-['Roboto_Mono',monospace] text-sm" />
+                  <span className="text-sm text-[#737373]">%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>RFQ defaults</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Minimum suppliers to quote</Label>
+            <Input defaultValue="3" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">RFQ expiry period</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="7" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+              <span className="text-sm text-[#737373]">days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NotificationsPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Purchase notifications</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'PO submitted for approval',               sub: 'Notify approver when a PO is submitted',    checked: true },
+            { label: 'PO approved or rejected',                 sub: 'Notify requestor of the approval decision', checked: true },
+            { label: 'Goods received against PO',               sub: 'Notify buyer when GRN is confirmed',        checked: true },
+            { label: 'Invoice matched to PO',                   sub: 'Notify accounts when invoice is matched',   checked: true },
+            { label: 'PO overdue — supplier hasn\'t delivered', sub: 'Alert when expected delivery date is passed', checked: true },
+            { label: 'Reorder point reached',                   sub: 'Alert when stock falls to minimum level',   checked: false },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-3 border-b border-[#F5F5F5] last:border-0">
+              <div>
+                <span className="text-sm text-[#0A0A0A] font-medium">{r.label}</span>
+                <p className="text-xs text-[#737373] mt-0.5">{r.sub}</p>
+              </div>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const PANEL_MAP: Record<Panel, () => JSX.Element> = {
+  general:       GeneralPanel,
+  approval:      ApprovalPanel,
+  suppliers:     SuppliersPanel,
+  notifications: NotificationsPanel,
+};
+
+export function ControlPurchase() {
+  const [active, setActive] = useState<Panel>('general');
+  const PanelComponent = PANEL_MAP[active];
+
+  return (
+    <motion.div
+      initial="initial"
+      animate="animate"
+      variants={animationVariants.stagger}
+      className="p-6"
+    >
+      <h1 className="text-[32px] tracking-tight text-[#0A0A0A] mb-6">Purchase settings</h1>
+
+      <div className="flex gap-6">
+        {/* Left nav */}
+        <div className="w-56 flex-shrink-0">
+          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-3 h-fit">
+            <nav className="space-y-0.5">
+              {NAV.map(n => {
+                const Icon = n.icon;
+                return (
+                  <button
+                    key={n.key}
+                    onClick={() => setActive(n.key)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-left',
+                      active === n.key
+                        ? 'bg-[#FFFBF0] text-[#0A0A0A] font-medium'
+                        : 'text-[#737373] hover:bg-[#F5F5F5] hover:text-[#0A0A0A]'
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {n.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </Card>
+        </div>
+
+        {/* Right panel */}
+        <div className="flex-1 min-w-0">
+          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+            <PanelComponent />
+          </Card>
+        </div>
+      </div>
+    </motion.div>
   );
 }
