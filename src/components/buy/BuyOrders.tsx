@@ -10,10 +10,9 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 type POStatus = 'draft' | 'sent' | 'acknowledged' | 'partial' | 'received' | 'cancelled';
 type TabFilter = 'all' | POStatus;
@@ -39,12 +38,12 @@ const mockPOs: PurchaseOrder[] = [
 
 const getStatusBadge = (status: POStatus) => {
   switch (status) {
-    case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'sent': return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Sent', dot: '#0A7AFF' };
-    case 'acknowledged': return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Acknowledged', dot: '#1A2732' };
-    case 'partial': return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Partial', dot: '#FACC15' };
-    case 'received': return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Received', dot: '#1A2732' };
-    case 'cancelled': return { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Cancelled', dot: '#EF4444' };
+    case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
+    case 'sent': return { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', label: 'Sent', dot: 'var(--mw-blue)' };
+    case 'acknowledged': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Acknowledged', dot: 'var(--mw-mirage)' };
+    case 'partial': return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', label: 'Partial', dot: 'var(--mw-warning)' };
+    case 'received': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Received', dot: 'var(--mw-mirage)' };
+    case 'cancelled': return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Cancelled', dot: 'var(--mw-error)' };
   }
 };
 
@@ -65,12 +64,12 @@ export function BuyOrders() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Purchase Orders</h1>
-          <p className="text-sm text-[#737373] mt-1">{filteredPOs.length} orders • ${totalValue.toLocaleString()} total value</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Orders</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredPOs.length} orders • ${totalValue.toLocaleString()} total value</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
@@ -81,7 +80,7 @@ export function BuyOrders() {
             <AnimatedDownload className="w-4 h-4" />
             Export
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded-xl group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New PO
           </Button>
@@ -92,29 +91,29 @@ export function BuyOrders() {
       <div className="flex items-center gap-2 border-b border-[var(--border)] overflow-x-auto">
         {(['all', 'draft', 'sent', 'acknowledged', 'partial', 'received', 'cancelled'] as TabFilter[]).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={cn("px-4 py-2 text-[14px] border-b-2 transition-colors whitespace-nowrap",
-              activeTab === tab ? 'border-[#FFCF4B] text-[#1A2732] font-medium' : 'border-transparent text-[#737373] hover:text-[#1A2732]')}>
+            className={cn("px-4 py-2 text-sm border-b-2 transition-colors whitespace-nowrap",
+              activeTab === tab ? 'border-[var(--mw-yellow-400)] text-[var(--mw-mirage)] font-medium' : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]')}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <Badge className="ml-2 bg-[#F5F5F5] text-[#525252] border-0 text-xs">{tabCounts[tab]}</Badge>
+            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{tabCounts[tab]}</Badge>
           </button>
         ))}
       </div>
 
       {/* Table */}
-      <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <motion.div variants={staggerItem}>
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12"><input type="checkbox" className="rounded border-[var(--border)]" /></th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PO #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">SUPPLIER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DATE</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DELIVERY DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">RECEIVED</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">PO #</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">SUPPLIER</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DATE</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DELIVERY DATE</th>
+                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">RECEIVED</th>
                   <th className="px-4 py-3 w-12"></th>
                 </tr>
               </thead>
@@ -123,17 +122,17 @@ export function BuyOrders() {
                   const statusBadge = getStatusBadge(po.status);
                   const receivedPct = (po.received / po.total) * 100;
                   return (
-                    <tr key={po.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                    <tr key={po.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4"><input type="checkbox" className="rounded border-[var(--border)]" /></td>
                       <td className="px-4">
-                        <a href={`/buy/orders/${po.id}`} className="text-[#1A2732]  text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/buy/orders/${po.id}`} className="text-[var(--mw-mirage)]  text-sm font-medium hover:underline flex items-center gap-1">
                           {po.poNumber}
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-4 h-4" />
                         </a>
                       </td>
-                      <td className="px-4 text-sm text-[#1A2732]">{po.supplier}</td>
-                      <td className="px-4 text-sm text-[#525252]">{new Date(po.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                      <td className="px-4 text-sm text-[#525252]">{new Date(po.deliveryDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                      <td className="px-4 text-sm text-[var(--mw-mirage)]">{po.supplier}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">{new Date(po.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">{new Date(po.deliveryDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                       <td className="px-4">
                         <div className="flex items-center justify-center">
                           <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5", statusBadge.bg, statusBadge.text)}>
@@ -148,14 +147,14 @@ export function BuyOrders() {
                           <span className="text-sm  font-medium">${po.received.toLocaleString()}</span>
                           {po.received > 0 && (
                             <div className="w-16 h-1 bg-[var(--border)] rounded-full overflow-hidden">
-                              <div className="h-full bg-[#FFCF4B]" style={{ width: `${receivedPct}%` }} />
+                              <div className="h-full bg-[var(--mw-yellow-400)]" style={{ width: `${receivedPct}%` }} />
                             </div>
                           )}
                         </div>
                       </td>
                       <td className="px-4">
-                        <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                          <MoreVertical className="w-4 h-4 text-[#737373]" />
+                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                         </button>
                       </td>
                     </tr>
@@ -165,10 +164,10 @@ export function BuyOrders() {
             </table>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[#737373]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
+            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Next</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
             </div>
           </div>
         </Card>

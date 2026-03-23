@@ -9,9 +9,8 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 const MRP_ROWS = [
   { id: '1',  product: 'Mild Steel Sheet 3mm',       sku: 'MAT-MS-001', required: 50, available: 15, onOrder: 20, net: 15,  job: 'MW-089', due: 'Mar 25', status: 'shortage'  as const },
@@ -33,14 +32,14 @@ export function PlanPurchase() {
   const toggleAll  = () => setSelected(prev => prev.size === shortages.length ? new Set() : new Set(shortages.map(r => r.id)));
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Material requirements</h1>
-          <p className="text-sm text-[#737373] mt-1">
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Material requirements</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
             {shortages.filter(s => s.status === 'critical').length > 0 && (
-              <span className="text-[#EF4444]">{shortages.filter(s => s.status === 'critical').length} critical shortage · </span>
+              <span className="text-[var(--mw-error)]">{shortages.filter(s => s.status === 'critical').length} critical shortage · </span>
             )}
             {shortages.filter(s => s.status === 'shortage').length} shortages · {MRP_ROWS.filter(r => r.status === 'ok').length} items available
           </p>
@@ -54,8 +53,8 @@ export function PlanPurchase() {
           </Button>
           <Button
             className={cn('gap-2 h-10', selected.size > 0
-              ? 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]'
-              : 'bg-[#F5F5F5] text-[#A3A3A3] cursor-not-allowed'
+              ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
+              : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] cursor-not-allowed'
             )}
             disabled={selected.size === 0}
           >
@@ -67,37 +66,37 @@ export function PlanPurchase() {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', icon: AlertTriangle },
-          { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', icon: AlertTriangle },
-          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', icon: CheckCircle },
+          { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', icon: AlertTriangle },
+          { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', icon: AlertTriangle },
+          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', icon: CheckCircle },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
-              <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', s.bg)}>
+            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+              <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-3', s.bg)}>
                 <Icon className={cn('w-4 h-4', s.text)} />
               </div>
-              <p className="text-xs text-[#737373] font-medium mb-1">{s.label}</p>
-              <p className={cn('text-[28px] font-[\'Roboto_Mono\',monospace] font-semibold', s.text)}>{s.count}</p>
+              <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+              <p className={cn('text-2xl tabular-nums font-semibold', s.text)}>{s.count}</p>
             </Card>
           );
         })}
       </div>
 
       {/* Table */}
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               <th className="px-4 py-3 w-10">
                 <input type="checkbox"
                   checked={selected.size === shortages.length && shortages.length > 0}
                   onChange={toggleAll}
-                  className="accent-[#FFCF4B] w-4 h-4"
+                  className="accent-[var(--mw-yellow-400)] w-4 h-4"
                 />
               </th>
               {['Material', 'SKU', 'Job', 'Due', 'Required', 'Available', 'On Order', 'Net Shortfall', 'Status'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Required', 'Available', 'On Order', 'Net Shortfall'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Required', 'Available', 'On Order', 'Net Shortfall'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -106,34 +105,34 @@ export function PlanPurchase() {
               const isShortage = row.status !== 'ok';
               const isCritical = row.status === 'critical';
               return (
-                <tr key={row.id} className={cn('border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', isCritical && 'bg-[#FFF5F5]')}>
+                <tr key={row.id} className={cn('border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', isCritical && 'bg-[var(--mw-error-50)]')}>
                   <td className="px-4">
                     {isShortage && (
                       <input type="checkbox"
                         checked={selected.has(row.id)}
                         onChange={() => toggleRow(row.id)}
-                        className="accent-[#FFCF4B] w-4 h-4"
+                        className="accent-[var(--mw-yellow-400)] w-4 h-4"
                         onClick={e => e.stopPropagation()}
                       />
                     )}
                   </td>
-                  <td className="px-4 text-sm text-[#1A2732] font-medium">{row.product}</td>
-                  <td className="px-4 text-xs  text-[#737373]">{row.sku}</td>
-                  <td className="px-4 text-sm font-['Roboto_Mono',monospace] text-[#1A2732]">{row.job}</td>
-                  <td className="px-4 text-sm text-[#737373]">{row.due}</td>
+                  <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{row.product}</td>
+                  <td className="px-4 text-xs  text-[var(--neutral-500)]">{row.sku}</td>
+                  <td className="px-4 text-sm tabular-nums text-[var(--mw-mirage)]">{row.job}</td>
+                  <td className="px-4 text-sm text-[var(--neutral-500)]">{row.due}</td>
                   <td className="px-4 text-right text-sm  font-medium">{row.required}</td>
                   <td className="px-4 text-right text-sm ">{row.available}</td>
-                  <td className="px-4 text-right text-sm  text-[#737373]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
+                  <td className="px-4 text-right text-sm  text-[var(--neutral-500)]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
                   <td className="px-4 text-right text-sm  font-semibold"
-                    style={{ color: row.net > 0 ? '#EF4444' : '#36B37E' }}>
+                    style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
                     {row.net > 0 ? `+${row.net}` : row.net}
                   </td>
                   <td className="px-4">
                     {row.status === 'ok'
-                      ? <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2">OK</Badge>
+                      ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2">OK</Badge>
                       : row.status === 'critical'
-                      ? <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0 text-xs rounded-full px-2">Critical</Badge>
-                      : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Shortage</Badge>
+                      ? <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-0 text-xs rounded-full px-2">Critical</Badge>
+                      : <Badge className="bg-[var(--mw-amber-100)] text-[var(--mw-amber)] border-0 text-xs rounded-full px-2">Shortage</Badge>
                     }
                   </td>
                 </tr>

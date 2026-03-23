@@ -25,29 +25,29 @@ export function PlanJobDetail({ onBack, userRole = 'Manager' }: PlanJobDetailPro
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
+    <div className="min-h-screen bg-[var(--neutral-100)] flex flex-col">
       {/* Job Header */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center gap-3 mb-4">
           <button 
             onClick={onBack}
-            className="p-1 hover:bg-[#F5F5F5] rounded transition-colors"
+            className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-[#1A2732]" />
+            <ArrowLeft className="w-5 h-5 text-[var(--mw-mirage)]" />
           </button>
           <div className="flex items-center gap-3">
-            <h1 className=" text-[20px] font-semibold text-[#1A2732]">
+            <h1 className=" text-[20px] font-semibold text-[var(--mw-mirage)]">
               Server Rack Chassis
             </h1>
-            <Badge className="bg-[#4CAF50] text-white px-2 py-0.5 text-xs font-medium rounded">
+            <Badge className="bg-[var(--mw-green)] text-white px-2 py-0.5 text-xs font-medium rounded">
               New
             </Badge>
-            <span className=" text-[14px] text-[#737373]">
+            <span className=" text-sm text-[var(--neutral-500)]">
               $20,000
             </span>
           </div>
-          <button className="ml-auto p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-            <MoreVertical className="w-5 h-5 text-[#737373]" />
+          <button className="ml-auto p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+            <MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" />
           </button>
         </div>
 
@@ -56,10 +56,10 @@ export function PlanJobDetail({ onBack, userRole = 'Manager' }: PlanJobDetailPro
           <button
             onClick={() => setActiveTab('overview')}
             className={cn(
-              "px-4 py-2  text-[14px] rounded-lg transition-colors",
+              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors",
               activeTab === 'overview' 
-                ? 'bg-[#F5F5F5] text-[#1A2732] font-medium' 
-                : 'text-[#737373] hover:bg-[#F5F5F5]'
+                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
+                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
             Overview
@@ -67,38 +67,38 @@ export function PlanJobDetail({ onBack, userRole = 'Manager' }: PlanJobDetailPro
           <button
             onClick={() => setActiveTab('production')}
             className={cn(
-              "px-4 py-2  text-[14px] rounded-lg transition-colors flex items-center gap-2",
+              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
               activeTab === 'production' 
-                ? 'bg-[#F5F5F5] text-[#1A2732] font-medium' 
-                : 'text-[#737373] hover:bg-[#F5F5F5]'
+                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
+                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
             Production
-            <span className="flex items-center justify-center w-5 h-5 bg-[#1A2732] text-white text-[11px] rounded-full font-medium">
+            <span className="flex items-center justify-center w-5 h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium">
               4
             </span>
           </button>
           <button
             onClick={() => setActiveTab('schedule')}
             className={cn(
-              "px-4 py-2  text-[14px] rounded-lg transition-colors flex items-center gap-2",
+              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
               activeTab === 'schedule' 
-                ? 'bg-[#F5F5F5] text-[#1A2732] font-medium' 
-                : 'text-[#737373] hover:bg-[#F5F5F5]'
+                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
+                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
             Schedule
-            <span className="flex items-center justify-center w-5 h-5 bg-[#1A2732] text-white text-[11px] rounded-full font-medium">
+            <span className="flex items-center justify-center w-5 h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium">
               9
             </span>
           </button>
           <button
             onClick={() => setActiveTab('intelligence')}
             className={cn(
-              "px-4 py-2  text-[14px] rounded-lg transition-colors flex items-center gap-2",
+              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
               activeTab === 'intelligence' 
-                ? 'bg-[#F5F5F5] text-[#1A2732] font-medium' 
-                : 'text-[#737373] hover:bg-[#F5F5F5]'
+                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
+                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
             Intelligence Hub
@@ -108,10 +108,10 @@ export function PlanJobDetail({ onBack, userRole = 'Manager' }: PlanJobDetailPro
             <button
               onClick={() => setActiveTab('budget')}
               className={cn(
-                "px-4 py-2  text-[14px] rounded-lg transition-colors flex items-center gap-2",
+                "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
                 activeTab === 'budget' 
-                  ? 'bg-[#F5F5F5] text-[#1A2732] font-medium' 
-                  : 'text-[#737373] hover:bg-[#F5F5F5]'
+                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
+                  : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >
               Budget

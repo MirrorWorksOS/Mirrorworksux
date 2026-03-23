@@ -13,17 +13,17 @@ export function Book() {
       {activeTab === 'invoices' && <BookInvoices />}
       {activeTab === 'expenses' && (
         <div className="flex items-center justify-center h-full">
-          <p className="text-[#737373]">Expenses view coming soon...</p>
+          <p className="text-[var(--neutral-500)]">Expenses view coming soon...</p>
         </div>
       )}
       {activeTab === 'purchases' && (
         <div className="flex items-center justify-center h-full">
-          <p className="text-[#737373]">Purchases view coming soon...</p>
+          <p className="text-[var(--neutral-500)]">Purchases view coming soon...</p>
         </div>
       )}
       {activeTab === 'job-costs' && (
         <div className="flex items-center justify-center h-full">
-          <p className="text-[#737373]">Job Costs view coming soon...</p>
+          <p className="text-[var(--neutral-500)]">Job Costs view coming soon...</p>
         </div>
       )}
     </div>

@@ -52,32 +52,32 @@ export function PlanProductionTab() {
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
       {/* Products Section */}
-      <div className="bg-white border border-[var(--border)]">
+      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className=" text-[18px] font-semibold text-[#1A2732] mb-1">
+            <h2 className=" text-lg font-semibold text-[var(--mw-mirage)] mb-1">
               Products
             </h2>
-            <p className=" text-[14px] text-[#737373]">
+            <p className=" text-sm text-[var(--neutral-500)]">
               3 Products • 14,350 units total
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-[var(--accent)] transition-colors">
-              <Eye className="w-3.5 h-3.5 inline mr-1.5" />
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded-[var(--shape-sm)] hover:bg-[var(--accent)] transition-colors">
+              <Eye className="w-4 h-4 inline mr-1.5" />
               Filter
             </button>
-            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-[var(--accent)] transition-colors">
-              <Download className="w-3.5 h-3.5 inline mr-1.5" />
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded-[var(--shape-sm)] hover:bg-[var(--accent)] transition-colors">
+              <Download className="w-4 h-4 inline mr-1.5" />
               Export
             </button>
           </div>
         </div>
 
         {/* Table Header */}
-        <div className="px-6 py-3 bg-[#F5F5F5] border-b border-[var(--border)]">
-          <div className="grid grid-cols-12 gap-4 items-center  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+        <div className="px-6 py-3 bg-[var(--neutral-100)] border-b border-[var(--border)]">
+          <div className="grid grid-cols-12 gap-4 items-center  text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">
             <div className="col-span-1"></div>
             <div className="col-span-2">Name</div>
             <div className="col-span-1">Produced</div>
@@ -98,20 +98,20 @@ export function PlanProductionTab() {
               <div className="grid grid-cols-12 gap-4 items-center">
                 {/* Image/Icon */}
                 <div className="col-span-1">
-                  <div className="w-10 h-10 bg-[#F5F5F5] rounded flex items-center justify-center text-lg">
+                  <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center text-lg">
                     {product.image}
                   </div>
                 </div>
 
                 {/* Name */}
                 <div className="col-span-2">
-                  <p className=" text-[14px] font-medium text-[#1A2732]">
+                  <p className=" text-sm font-medium text-[var(--mw-mirage)]">
                     {product.name}
                   </p>
                   {product.tags.length > 0 && (
                     <div className="flex gap-1 mt-1">
                       {product.tags.map((tag, i) => (
-                        <span key={i} className="px-1.5 py-0.5 bg-[#FFCF4B] text-[10px] text-[#1A2732]">
+                        <span key={i} className="px-1.5 py-0.5 bg-[var(--mw-yellow-400)] text-[10px] text-[var(--mw-mirage)] rounded-full">
                           {tag}
                         </span>
                       ))}
@@ -121,28 +121,28 @@ export function PlanProductionTab() {
 
                 {/* Produced */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
+                  <p className="tabular-nums text-xs text-[var(--mw-mirage)]">
                     {product.produced}
                   </p>
                 </div>
 
                 {/* Quantity */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
+                  <p className="tabular-nums text-xs text-[var(--mw-mirage)]">
                     {product.quantity.toLocaleString()}
                   </p>
                 </div>
 
                 {/* Remaining */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
+                  <p className="tabular-nums text-xs text-[var(--mw-mirage)]">
                     {product.remaining}
                   </p>
                 </div>
 
                 {/* Date */}
                 <div className="col-span-1">
-                  <p className=" text-[13px] text-[#737373]">
+                  <p className=" text-xs text-[var(--neutral-500)]">
                     {product.date}
                   </p>
                 </div>
@@ -154,14 +154,14 @@ export function PlanProductionTab() {
                       <div 
                         className={cn(
                           "h-full",
-                          product.status === 'Done' ? 'bg-[#4CAF50]' :
-                          product.status === 'WIP' ? 'bg-[#FFCF4B]' :
+                          product.status === 'Done' ? 'bg-[var(--mw-green)]' :
+                          product.status === 'WIP' ? 'bg-[var(--mw-yellow-400)]' :
                           'bg-[var(--border)]'
                         )}
                         style={{ width: product.status === 'Done' ? '100%' : product.status === 'WIP' ? '50%' : '0%' }}
                       />
                     </div>
-                    <span className="font-['Roboto_Mono:Regular',monospace] text-[11px] text-[#737373]">
+                    <span className="tabular-nums text-xs text-[var(--neutral-500)]">
                       {product.status === 'Done' ? '100%' : product.status === 'WIP' ? '50%' : '0%'}
                     </span>
                   </div>
@@ -173,7 +173,7 @@ export function PlanProductionTab() {
                     {product.assigned.map((user, i) => (
                       <div 
                         key={i}
-                        className="w-6 h-6 rounded-full bg-[#1A2732] text-white flex items-center justify-center text-[10px] font-medium border-2 border-white"
+                        className="w-6 h-6 rounded-full bg-[var(--mw-mirage)] text-white flex items-center justify-center text-[10px] font-medium border-2 border-white"
                       >
                         {user}
                       </div>
@@ -184,10 +184,10 @@ export function PlanProductionTab() {
                 {/* Status */}
                 <div className="col-span-1">
                   <span className={cn(
-                    "px-2 py-1 text-xs font-medium rounded",
-                    product.status === 'Done' ? 'bg-[#4CAF50]/10 text-[#4CAF50]' :
-                    product.status === 'WIP' ? 'bg-[#FFCF4B]/20 text-[#1A2732]' :
-                    'bg-[var(--border)] text-[#737373]'
+                    "px-2 py-1 text-xs font-medium rounded-[var(--shape-sm)]",
+                    product.status === 'Done' ? 'bg-[var(--mw-green)]/10 text-[var(--mw-green)]' :
+                    product.status === 'WIP' ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]' :
+                    'bg-[var(--border)] text-[var(--neutral-500)]'
                   )}>
                     {product.status}
                   </span>
@@ -195,8 +195,8 @@ export function PlanProductionTab() {
 
                 {/* Action */}
                 <div className="col-span-1 text-right">
-                  <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                    <MoreVertical className="w-4 h-4 text-[#737373]" />
+                  <button className="p-1 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors">
+                    <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </div>
               </div>
@@ -205,15 +205,15 @@ export function PlanProductionTab() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-[#F5F5F5] border-t border-[var(--border)] flex items-center justify-between">
-          <p className=" text-[13px] text-[#737373]">
+        <div className="px-6 py-3 bg-[var(--neutral-100)] border-t border-[var(--border)] flex items-center justify-between">
+          <p className=" text-xs text-[var(--neutral-500)]">
             Page 1 of 1
           </p>
           <div className="flex items-center gap-2">
-            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-white transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded-[var(--shape-sm)] hover:bg-white transition-colors">
               Previous
             </button>
-            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-white transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded-[var(--shape-sm)] hover:bg-white transition-colors">
               Next
             </button>
           </div>
@@ -221,20 +221,20 @@ export function PlanProductionTab() {
       </div>
 
       {/* MirrorView Section */}
-      <div className="bg-white border border-[var(--border)]">
+      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)]">
-          <h2 className=" text-[18px] font-semibold text-[#1A2732]">
+          <h2 className=" text-lg font-semibold text-[var(--mw-mirage)]">
             MirrorView
           </h2>
-          <p className=" text-[14px] text-[#737373] mt-1">
+          <p className=" text-sm text-[var(--neutral-500)] mt-1">
             3D view of production progress
           </p>
         </div>
         <div className="p-6">
-          <div className="aspect-video bg-[#F5F5F5] rounded flex items-center justify-center">
+          <div className="aspect-video bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
             <div className="text-center">
               <Package className="w-16 h-16 text-[var(--border)] mx-auto mb-3" />
-              <p className=" text-[14px] text-[#737373]">
+              <p className=" text-sm text-[var(--neutral-500)]">
                 3D Model View Placeholder
               </p>
             </div>
@@ -243,19 +243,19 @@ export function PlanProductionTab() {
       </div>
 
       {/* Instructions & Activities Section */}
-      <div className="bg-white border border-[var(--border)]">
+      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)]">
-          <h2 className=" text-[18px] font-semibold text-[#1A2732]">
+          <h2 className=" text-lg font-semibold text-[var(--mw-mirage)]">
             Instructions & Activities
           </h2>
-          <p className=" text-[14px] text-[#737373] mt-1">
+          <p className=" text-sm text-[var(--neutral-500)] mt-1">
             Recent activities and production notes
           </p>
         </div>
 
         {/* Table Header */}
-        <div className="px-6 py-3 bg-[#F5F5F5] border-b border-[var(--border)]">
-          <div className="grid grid-cols-7 gap-4 items-center  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+        <div className="px-6 py-3 bg-[var(--neutral-100)] border-b border-[var(--border)]">
+          <div className="grid grid-cols-7 gap-4 items-center  text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">
             <div>Partner</div>
             <div>Work Center</div>
             <div>Operation</div>
@@ -276,31 +276,31 @@ export function PlanProductionTab() {
           ].map((row, i) => (
             <div key={i} className="px-6 py-4 hover:bg-[var(--accent)] transition-colors">
               <div className="grid grid-cols-7 gap-4 items-center">
-                <div className=" text-[13px] text-[#1A2732]">
+                <div className=" text-xs text-[var(--mw-mirage)]">
                   {row.partner}
                 </div>
-                <div className=" text-[13px] text-[#737373]">
+                <div className=" text-xs text-[var(--neutral-500)]">
                   {row.center}
                 </div>
-                <div className=" text-[13px] text-[#737373]">
+                <div className=" text-xs text-[var(--neutral-500)]">
                   {row.operation}
                 </div>
-                <div className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
+                <div className="tabular-nums text-xs text-[var(--mw-mirage)]">
                   {row.minutes}
                 </div>
                 <div>
                   <span className={cn(
-                    "px-2 py-1 text-xs font-medium rounded",
-                    row.qc === 'Pass' ? 'bg-[#4CAF50]/10 text-[#4CAF50]' : 'bg-[#FFCF4B]/20 text-[#1A2732]'
+                    "px-2 py-1 text-xs font-medium rounded-[var(--shape-sm)]",
+                    row.qc === 'Pass' ? 'bg-[var(--mw-green)]/10 text-[var(--mw-green)]' : 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]'
                   )}>
                     {row.qc}
                   </span>
                 </div>
-                <div className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#737373]">
+                <div className="tabular-nums text-xs text-[var(--neutral-500)]">
                   {row.operator}
                 </div>
                 <div className="text-right">
-                  <span className="px-2 py-1 text-xs font-medium text-[#737373] bg-[#F5F5F5] rounded">
+                  <span className="px-2 py-1 text-xs font-medium text-[var(--neutral-500)] bg-[var(--neutral-100)] rounded-[var(--shape-sm)]">
                     {row.status}
                   </span>
                 </div>
@@ -310,8 +310,8 @@ export function PlanProductionTab() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-[#F5F5F5] border-t border-[var(--border)] flex items-center justify-between">
-          <p className=" text-[13px] text-[#737373]">
+        <div className="px-6 py-3 bg-[var(--neutral-100)] border-t border-[var(--border)] flex items-center justify-between">
+          <p className=" text-xs text-[var(--neutral-500)]">
             Page 1 of 1
           </p>
         </div>

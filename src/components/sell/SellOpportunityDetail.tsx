@@ -4,14 +4,15 @@
  * Stage tracker, activity feed, quick actions
  */
 import React, { useState } from 'react';
-import { X, DollarSign, Calendar, User, Phone, Mail, MapPin, FileText, MessageSquare, Clock, Plus, Sparkles } from 'lucide-react';
+import { X, DollarSign, Calendar, User, Phone, Mail, MapPin, FileText, MessageSquare, Clock, Plus } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '../ui/sheet';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
-import { AIInsightCard } from '../shared/AIInsightCard';
+import { AIInsightCard } from '../shared/ai/AIInsightCard';
+import { TimelineView, type TimelineEvent } from '@/components/shared/schedule/TimelineView';
 
 type Priority   = 'low' | 'medium' | 'high' | 'urgent';
 type Stage      = 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
@@ -28,19 +29,19 @@ export interface Opportunity {
 }
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
-  { key: 'new',         label: 'New',         color: '#737373' },
-  { key: 'qualified',   label: 'Qualified',   color: '#1A2732' },
-  { key: 'proposal',    label: 'Proposal',    color: '#1A2732' },
-  { key: 'negotiation', label: 'Negotiation', color: '#FFCF4B' },
-  { key: 'won',         label: 'Won',         color: '#1A2732' },
-  { key: 'lost',        label: 'Lost',        color: '#DE350B' },
+  { key: 'new',         label: 'New',         color: 'var(--neutral-500)' },
+  { key: 'qualified',   label: 'Qualified',   color: 'var(--mw-mirage)' },
+  { key: 'proposal',    label: 'Proposal',    color: 'var(--mw-mirage)' },
+  { key: 'negotiation', label: 'Negotiation', color: 'var(--mw-yellow-400)' },
+  { key: 'won',         label: 'Won',         color: 'var(--mw-mirage)' },
+  { key: 'lost',        label: 'Lost',        color: 'var(--mw-error)' },
 ];
 
 const PRIORITY_CONFIG: Record<Priority, { bg: string; text: string; label: string }> = {
-  urgent: { bg: 'bg-[#DE350B]', text: 'text-white',     label: 'Urgent' },
-  high:   { bg: 'bg-[#FACC15]', text: 'text-[#2C2C2C]', label: 'High' },
-  medium: { bg: 'bg-[#FFCF4B]', text: 'text-[#2C2C2C]', label: 'Medium' },
-  low:    { bg: 'bg-[#1A2732]', text: 'text-white',     label: 'Low' },
+  urgent: { bg: 'bg-[var(--mw-error)]', text: 'text-white',     label: 'Urgent' },
+  high:   { bg: 'bg-[var(--mw-warning)]', text: 'text-[var(--neutral-800)]', label: 'High' },
+  medium: { bg: 'bg-[var(--mw-yellow-400)]', text: 'text-[var(--neutral-800)]', label: 'Medium' },
+  low:    { bg: 'bg-[var(--mw-mirage)]', text: 'text-white',     label: 'Low' },
 };
 
 // Mock customer data (would come from CRM API in production)
@@ -97,16 +98,16 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-[#737373] ">OPP-{opportunity.id.padStart(4, '0')}</span>
+                <span className="text-xs text-[var(--neutral-500)] ">OPP-{opportunity.id.padStart(4, '0')}</span>
                 <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', priorityCfg.bg, priorityCfg.text)}>
                   {priorityCfg.label}
                 </Badge>
               </div>
-              <h2 className="text-[18px] font-semibold text-[#0A0A0A] leading-tight">{opportunity.title}</h2>
-              <p className="text-sm text-[#737373] mt-0.5">{opportunity.customer}</p>
+              <h2 className="text-lg font-semibold text-[var(--neutral-900)] leading-tight">{opportunity.title}</h2>
+              <p className="text-sm text-[var(--neutral-500)] mt-0.5">{opportunity.customer}</p>
             </div>
-            <button onClick={onClose} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg transition-colors shrink-0">
-              <X className="w-4 h-4 text-[#737373]" />
+            <button onClick={onClose} className="p-1.5 hover:bg-[var(--neutral-100)] rounded-lg transition-colors shrink-0">
+              <X className="w-4 h-4 text-[var(--neutral-500)]" />
             </button>
           </div>
 
@@ -129,7 +130,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     'bg-[var(--border)]'
                   )} style={{ backgroundColor: (active || past) ? s.color : undefined }} />
                   {active && (
-                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-[#0A0A0A] font-medium whitespace-nowrap">
+                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-[var(--neutral-900)] font-medium whitespace-nowrap">
                       {s.label}
                     </span>
                   )}
@@ -149,8 +150,8 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
               className={cn(
                 'py-3 mr-6 text-sm capitalize border-b-2 transition-colors',
                 activeTab === tab
-                  ? 'border-[#1A2732] text-[#0A0A0A] font-medium'
-                  : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
+                  ? 'border-[var(--mw-mirage)] text-[var(--neutral-900)] font-medium'
+                  : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-900)]'
               )}
             >
               {tab}
@@ -164,21 +165,21 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
             <div className="p-6 space-y-6">
               {/* Key metrics */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F5F5F5] rounded-lg p-4">
+                <div className="bg-[var(--neutral-100)] rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="w-4 h-4 text-[#0A0A0A]" />
-                    <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Deal value</span>
+                    <DollarSign className="w-4 h-4 text-[var(--neutral-900)]" />
+                    <span className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium">Deal value</span>
                   </div>
-                  <p className="text-[22px]  font-semibold text-[#0A0A0A]">
+                  <p className="text-xl  font-semibold text-[var(--neutral-900)]">
                     ${opportunity.value.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[#F5F5F5] rounded-lg p-4">
+                <div className="bg-[var(--neutral-100)] rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <Calendar className="w-4 h-4 text-[#0A7AFF]" />
-                    <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Expected close</span>
+                    <Calendar className="w-4 h-4 text-[var(--mw-blue)]" />
+                    <span className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium">Expected close</span>
                   </div>
-                  <p className="text-[22px] font-semibold text-[#0A0A0A]">
+                  <p className="text-xl font-semibold text-[var(--neutral-900)]">
                     {new Date(opportunity.expectedClose).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
                   </p>
                 </div>
@@ -186,7 +187,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
 
               {/* Customer contact */}
               <div>
-                <h4 className="text-xs text-[#737373] uppercase tracking-wider font-medium mb-3">Customer contact</h4>
+                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-3">Customer contact</h4>
                 <div className="space-y-3">
                   {[
                     { icon: User,    value: customer.contact },
@@ -195,8 +196,8 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     { icon: MapPin,  value: customer.address },
                   ].map(({ icon: Icon, value }, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <Icon className="w-4 h-4 text-[#737373] mt-0.5 shrink-0" />
-                      <span className="text-sm text-[#0A0A0A]">{value}</span>
+                      <Icon className="w-4 h-4 text-[var(--neutral-500)] mt-0.5 shrink-0" />
+                      <span className="text-sm text-[var(--neutral-900)]">{value}</span>
                     </div>
                   ))}
                 </div>
@@ -204,12 +205,12 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
 
               {/* Assignment */}
               <div>
-                <h4 className="text-xs text-[#737373] uppercase tracking-wider font-medium mb-3">Assignment</h4>
+                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-3">Assignment</h4>
                 <div className="flex items-center gap-3">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-[#1A2732] text-white text-xs">{opportunity.assignedTo}</AvatarFallback>
+                    <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-xs">{opportunity.assignedTo}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-[#0A0A0A] font-medium">Assigned to {opportunity.assignedTo}</span>
+                  <span className="text-sm text-[var(--neutral-900)] font-medium">Assigned to {opportunity.assignedTo}</span>
                 </div>
               </div>
 
@@ -217,7 +218,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
               <AIInsightCard title="AI insight">
                 Similar jobs for this customer closed within 18 days of proposal. Suggest following up by{' '}
                 {new Date(Date.now() + 3 * 86400000).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}.
-                Win probability: <strong className="text-[#0A0A0A]">68%</strong>
+                Win probability: <strong className="text-[var(--neutral-900)]">68%</strong>
               </AIInsightCard>
             </div>
           )}
@@ -225,40 +226,32 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           {activeTab === 'activities' && (
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-[#0A0A0A]">Activity log</h4>
-                <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-1 text-xs">
-                  <Plus className="w-3 h-3" /> Log activity
+                <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Activity log</h4>
+                <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-1 text-xs">
+                  <Plus className="w-4 h-4" /> Log activity
                 </Button>
               </div>
-              <div className="space-y-3">
-                {MOCK_ACTIVITIES.map((a, i) => (
-                  <div key={i} className={cn('flex gap-4 p-4 rounded-lg border', a.done ? 'bg-white border-[var(--border)]' : 'bg-[#FFFBF0] border-[#FFCF4B]')}>
-                    <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 shrink-0', a.done ? 'bg-[#1A2732]' : 'bg-[#FF8B00]')} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-[#0A0A0A]">{a.type}</span>
-                        <span className="text-xs text-[#737373]">{a.time}</span>
-                      </div>
-                      <p className="text-sm text-[#0A0A0A]">{a.text}</p>
-                    </div>
-                    <Avatar className="w-6 h-6 shrink-0">
-                      <AvatarFallback className="bg-[var(--border)] text-[#737373] text-[9px]">{a.user}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                ))}
-              </div>
+              <TimelineView
+                events={MOCK_ACTIVITIES.map((a, i): TimelineEvent => ({
+                  id: `activity-${i}`,
+                  title: a.type,
+                  description: `${a.text} (${a.user})`,
+                  timestamp: a.time,
+                  status: a.done ? 'completed' : 'upcoming',
+                }))}
+              />
             </div>
           )}
 
           {activeTab === 'notes' && (
             <div className="p-6">
               <textarea
-                className="w-full h-48 p-4 bg-[#F5F5F5] border-transparent rounded-lg text-sm text-[#0A0A0A] resize-none focus:outline-none focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] transition-all"
+                className="w-full h-48 p-4 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus:outline-none focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
                 placeholder="Add notes about this opportunity..."
                 defaultValue="Customer requested 6-week lead time max. Discussed powder coat options — they prefer RAL 7035 light grey. Material cost increase of ~8% flagged during last call."
               />
               <div className="mt-3 flex justify-end">
-                <Button size="sm" className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] h-9">Save notes</Button>
+                <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-9">Save notes</Button>
               </div>
             </div>
           )}
@@ -268,7 +261,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
         <div className="px-6 py-4 border-t border-[var(--border)] shrink-0 bg-white">
           <div className="flex gap-3">
             <Button
-              className="flex-1 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-2 h-10"
+              className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-2 h-10"
               onClick={() => { onClose(); navigate('/sell/quotes/new'); }}
             >
               <FileText className="w-4 h-4" /> Create quote

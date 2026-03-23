@@ -10,12 +10,12 @@ import { cn } from '../ui/utils';
 type POStatus = 'Draft' | 'Sent' | 'Acknowledged' | 'Partial' | 'Received' | 'Cancelled';
 
 const statusStyles: Record<POStatus, string> = {
-  Draft: 'bg-[#F5F5F5] text-[#737373]',
-  Sent: 'bg-[#F5F5F5] text-[#1A2732]',
-  Acknowledged: 'bg-[#F5F5F5] text-[#1A2732]',
-  Partial: 'bg-[#FFF4CC] text-[#805900]',
-  Received: 'bg-[#F5F5F5] text-[#1A2732]',
-  Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
+  Draft: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
+  Sent: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Acknowledged: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Partial: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
+  Received: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Cancelled: 'bg-[var(--neutral-100)] text-[var(--neutral-400)]',
 };
 
 interface PO {
@@ -39,9 +39,9 @@ const TABS = [
 ];
 
 const MatchIcon = ({ match }: { match: string }) => {
-  if (match === 'green') return <CheckCircle className="w-4 h-4 text-[#1A2732]" />;
-  if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[#FFCF4B]" />;
-  return <Circle className="w-4 h-4 text-[#D4D4D4]" />;
+  if (match === 'green') return <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)]" />;
+  if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[var(--mw-yellow-400)]" />;
+  return <Circle className="w-4 h-4 text-[var(--neutral-300)]" />;
 };
 
 export function PurchaseOrders() {
@@ -50,15 +50,15 @@ export function PurchaseOrders() {
   return (
     <div className="p-6 space-y-5 overflow-y-auto max-w-[1200px] mx-auto">
       <div className="flex items-start justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Purchase Orders</h1>
-        <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded gap-2">
+        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Orders</h1>
+        <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded gap-2">
           <PlusCircle className="w-5 h-5" /> New PO
         </Button>
       </div>
 
       <div className="flex items-center gap-3">
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
           <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
         <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
@@ -68,49 +68,49 @@ export function PurchaseOrders() {
       <div className="flex gap-0 border-b border-[var(--border)]">
         {TABS.map(tab => (
           <button key={tab.label} onClick={() => setActiveTab(tab.label)}
-            className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-[#1A2732] font-medium" : "text-[#737373]")}>
+            className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-[var(--mw-mirage)] font-medium" : "text-[var(--neutral-500)]")}>
             {tab.label} <span className="text-xs">({tab.count})</span>
-            {activeTab === tab.label && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FFCF4B] rounded-t" />}
+            {activeTab === tab.label && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}
           </button>
         ))}
       </div>
 
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 <th className="w-10 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
                 {['PO #', 'VENDOR', 'ORDER DATE', 'EXPECTED DELIVERY', 'STATUS', 'TOTAL', 'JOB REF', 'MATCH', ''].map(h => (
-                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", h === 'TOTAL' ? 'text-right' : h === 'MATCH' ? 'text-center' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
+                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium", h === 'TOTAL' ? 'text-right' : h === 'MATCH' ? 'text-center' : 'text-left')}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {POS.map((po, i) => (
-                <tr key={po.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] transition-colors", i % 2 === 1 && "bg-[#F5F5F5]")}>
+                <tr key={po.id} className={cn("border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors", i % 2 === 1 && "bg-[var(--neutral-100)]")}>
                   <td className="px-4"><Checkbox className="w-[18px] h-[18px]" /></td>
-                  <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{po.id}</td>
-                  <td className="px-4 text-sm text-[#1A2732]">{po.vendor}</td>
-                  <td className="px-4 text-sm text-[#525252]">{po.orderDate}</td>
-                  <td className="px-4 text-sm text-[#525252]">{po.expectedDelivery}</td>
-                  <td className="px-4"><Badge className={cn("rounded-full text-[11px] px-2 py-0.5 border-0", statusStyles[po.status])}>{po.status}</Badge></td>
-                  <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>${po.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-4 text-[12px]" style={{ fontFamily: 'Roboto Mono, monospace', color: po.jobRef === '—' ? '#A3A3A3' : '#0052CC' }}>{po.jobRef}</td>
+                  <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{po.id}</td>
+                  <td className="px-4 text-sm text-[var(--mw-mirage)]">{po.vendor}</td>
+                  <td className="px-4 text-sm text-[var(--neutral-600)]">{po.orderDate}</td>
+                  <td className="px-4 text-sm text-[var(--neutral-600)]">{po.expectedDelivery}</td>
+                  <td className="px-4"><Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusStyles[po.status])}>{po.status}</Badge></td>
+                  <td className="px-4 text-right text-sm tabular-nums font-medium">${po.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 text-xs tabular-nums" style={{ color: po.jobRef === '—' ? 'var(--neutral-400)' : 'var(--mw-info)' }}>{po.jobRef}</td>
                   <td className="px-4 text-center"><MatchIcon match={po.match} /></td>
-                  <td className="px-4"><Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[#737373]" /></Button></td>
+                  <td className="px-4"><Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" /></Button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-          <span className="text-xs text-[#737373]">Showing 1-8 of 89 purchase orders</span>
+          <span className="text-xs text-[var(--neutral-500)]">Showing 1-8 of 89 purchase orders</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
             {[1, 2, 3].map(p => (
               <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-                className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[#FFCF4B] text-[#1A2732] hover:bg-[#E6A600]" : "text-[#737373]")}>{p}</Button>
+                className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}>{p}</Button>
             ))}
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>
           </div>

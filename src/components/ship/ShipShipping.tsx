@@ -1,6 +1,6 @@
 /**
  * Ship Shipping — carriers, rates, manifests
- * Token-aligned: #141414 → #0A0A0A, #F0F0F0 → #E5E5E5, #8A8A8A → #737373
+ * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  */
 import React, { useState } from 'react';
 import { Truck, Download, Printer, Sparkles } from 'lucide-react';
@@ -43,16 +43,16 @@ export function ShipShipping() {
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Shipping</h1>
+      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Shipping</h1>
 
-      <div className="flex gap-1 bg-[#F5F5F5] rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit">
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={cn(
               'px-4 py-2 rounded-md text-sm transition-colors font-medium',
-              tab === t.id ? 'bg-[#1A2732] text-white' : 'text-[#737373] hover:text-[#1A2732]'
+              tab === t.id ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
             )}
           >
             {t.label}
@@ -64,13 +64,13 @@ export function ShipShipping() {
       {tab === 'carriers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {CARRIERS.map(c => (
-            <div key={c.name} className="bg-white rounded-lg p-5 border border-[var(--border)] hover:shadow-md transition-shadow duration-150">
+            <div key={c.name} className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)] hover:shadow-md transition-shadow duration-150">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-[#1A2732]" strokeWidth={1.5} />
-                  <span className="text-sm text-[#1A2732] font-medium">{c.name}</span>
+                  <Truck className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} />
+                  <span className="text-sm text-[var(--mw-mirage)] font-medium">{c.name}</span>
                 </div>
-                <div className={cn('w-2 h-2 rounded-full', c.ok ? 'bg-[#1A2732]' : 'bg-[#E5E5E5]')} />
+                <div className={cn('w-2 h-2 rounded-full', c.ok ? 'bg-[var(--mw-mirage)]' : 'bg-[var(--neutral-200)]')} />
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 {[
@@ -79,8 +79,8 @@ export function ShipShipping() {
                   { l: 'On-time', v: `${c.onTime}%` },
                 ].map(s => (
                   <div key={s.l}>
-                    <div className="text-lg text-[#1A2732]  font-medium">{s.v}</div>
-                    <span className="text-[10px] text-[#737373] tracking-wider">{s.l}</span>
+                    <div className="text-lg text-[var(--mw-mirage)]  font-medium">{s.v}</div>
+                    <span className="text-[10px] text-[var(--neutral-500)] tracking-wider">{s.l}</span>
                   </div>
                 ))}
               </div>
@@ -92,15 +92,15 @@ export function ShipShipping() {
       {/* Rates */}
       {tab === 'rates' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-lg p-6 border border-[var(--border)]">
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { l: 'FROM', v: '2787' }, { l: 'TO', v: '2128' },
                 { l: 'WEIGHT', v: '12.4 kg' }, { l: 'DIMS', v: '45×35×25' },
               ].map(f => (
                 <div key={f.l}>
-                  <span className="text-[10px] text-[#737373] tracking-widest uppercase font-medium">{f.l}</span>
-                  <Input defaultValue={f.v} className="h-12 mt-1 bg-[#F5F5F5] border-transparent rounded-lg " />
+                  <span className="text-[10px] text-[var(--neutral-500)] tracking-widest uppercase font-medium">{f.l}</span>
+                  <Input defaultValue={f.v} className="h-12 mt-1 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] " />
                 </div>
               ))}
             </div>
@@ -111,29 +111,29 @@ export function ShipShipping() {
               <div
                 key={`${r.carrier}-${r.service}`}
                 className={cn(
-                  'flex items-center gap-4 bg-white rounded-lg p-5 transition-colors duration-150 cursor-pointer',
-                  r.ai ? 'border-2 border-[#FFCF4B]' : 'border border-[var(--border)] hover:border-[#A3A3A3]'
+                  'flex items-center gap-4 bg-white rounded-[var(--shape-lg)] p-5 transition-colors duration-150 cursor-pointer',
+                  r.ai ? 'border-2 border-[var(--mw-yellow-400)]' : 'border border-[var(--border)] hover:border-[var(--neutral-400)]'
                 )}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[#1A2732] font-medium">{r.carrier}</span>
-                    <span className="text-xs text-[#737373]">{r.service}</span>
+                    <span className="text-sm text-[var(--mw-mirage)] font-medium">{r.carrier}</span>
+                    <span className="text-xs text-[var(--neutral-500)]">{r.service}</span>
                     {r.ai && (
-                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[#FFCF4B] text-[#1A2732] font-medium flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> AI pick
+                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] font-medium flex items-center gap-1">
+                        <Sparkles className="w-4 h-4" /> AI pick
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-[#737373]">{r.days}d transit</span>
+                  <span className="text-xs text-[var(--neutral-500)]">{r.days}d transit</span>
                 </div>
-                <span className="text-xl text-[#1A2732]  font-medium">${r.cost.toFixed(2)}</span>
+                <span className="text-xl text-[var(--mw-mirage)]  font-medium">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
-                    'h-10 px-5 rounded-lg text-sm transition-colors font-medium',
+                    'h-10 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
                     i === 0 || r.ai
-                      ? 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]'
-                      : 'border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5]'
+                      ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
+                      : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
                   )}
                 >
                   Select
@@ -148,38 +148,38 @@ export function ShipShipping() {
       {tab === 'manifests' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="h-10 px-5 rounded-lg text-sm bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] transition-colors font-medium">
+            <button className="h-10 px-5 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
               Generate manifest
             </button>
           </div>
-          <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
+          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   {['DATE', 'CARRIER', 'SHIPMENTS', 'WEIGHT', 'STATUS', ''].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {MANIFESTS.map((m, i) => (
-                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] transition-colors">
-                    <td className="px-4 py-3 text-sm text-[#1A2732]">{m.date}</td>
-                    <td className="px-4 py-3 text-sm text-[#737373]">{m.carrier}</td>
+                  <tr key={i} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
+                    <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{m.date}</td>
+                    <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{m.carrier}</td>
                     <td className="px-4 py-3 text-sm  font-medium">{m.count}</td>
                     <td className="px-4 py-3 text-sm ">{m.weight}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[#FFCF4B]' : 'bg-[#1A2732]')} />
-                        <span className="text-xs text-[#737373]">{m.open ? 'Open' : 'Closed'}</span>
+                        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[var(--mw-yellow-400)]' : 'bg-[var(--mw-mirage)]')} />
+                        <span className="text-xs text-[var(--neutral-500)]">{m.open ? 'Open' : 'Closed'}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 flex gap-1">
-                      <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-[#F5F5F5] transition-colors">
-                        <Download className="w-4 h-4 text-[#737373]" strokeWidth={1.5} />
+                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors">
+                        <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
                       </button>
-                      <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-[#F5F5F5] transition-colors">
-                        <Printer className="w-4 h-4 text-[#737373]" strokeWidth={1.5} />
+                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors">
+                        <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
                       </button>
                     </td>
                   </tr>

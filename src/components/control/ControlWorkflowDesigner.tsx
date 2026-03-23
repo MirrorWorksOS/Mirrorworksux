@@ -10,11 +10,12 @@ import {
   RefreshCw, Zap, Bell, GitBranch, ShoppingCart, Mail,
   Settings2, Calendar, Pause, ChevronRight,
 } from 'lucide-react';
+import { ConfirmDialog } from '../shared/feedback/ConfirmDialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { WorkflowCanvas, type WFNode } from './WorkflowCanvas';
-import { AIInsightCard } from '../shared/AIInsightCard';
+import { AIInsightCard } from '../shared/ai/AIInsightCard';
 
 // ─── Workflow list data ───────────────────────────────────────────────────────
 
@@ -29,24 +30,24 @@ const WORKFLOWS = [
 type WFStatus = 'active' | 'paused' | 'draft';
 
 const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
-  active: { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
-  paused: { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
-  draft:  { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
+  active: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  paused: { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+  draft:  { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]' },
 };
 
 // ─── Node palette ─────────────────────────────────────────────────────────────
 
 const NODE_PALETTE = [
-  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[#FF8B00]', icon: Zap         },
-  { kind: 'ai',           label: 'AI action',      bg: 'bg-[#7C3AED]', icon: Sparkles    },
-  { kind: 'action',       label: 'Update record',  bg: 'bg-[#1A2732]', icon: RefreshCw   },
-  { kind: 'notification', label: 'Notification',   bg: 'bg-[#0A7AFF]', icon: Bell        },
-  { kind: 'condition',    label: 'Condition',      bg: 'bg-[#1A2732]', icon: GitBranch   },
-  { kind: 'email',        label: 'Send email',     bg: 'bg-[#0A7AFF]', icon: Mail        },
-  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[#1A2732]', icon: ShoppingCart},
-  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[#1A2732]', icon: Calendar    },
-  { kind: 'machine',      label: 'Assign machine', bg: 'bg-[#525252]', icon: Settings2   },
-  { kind: 'hold',         label: 'Hold job',       bg: 'bg-[#EF4444]', icon: Pause       },
+  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[var(--mw-amber)]', icon: Zap         },
+  { kind: 'ai',           label: 'AI action',      bg: 'bg-[var(--mw-purple)]', icon: Sparkles    },
+  { kind: 'action',       label: 'Update record',  bg: 'bg-[var(--mw-mirage)]', icon: RefreshCw   },
+  { kind: 'notification', label: 'Notification',   bg: 'bg-[var(--mw-blue)]', icon: Bell        },
+  { kind: 'condition',    label: 'Condition',      bg: 'bg-[var(--mw-mirage)]', icon: GitBranch   },
+  { kind: 'email',        label: 'Send email',     bg: 'bg-[var(--mw-blue)]', icon: Mail        },
+  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[var(--mw-mirage)]', icon: ShoppingCart},
+  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[var(--mw-mirage)]', icon: Calendar    },
+  { kind: 'machine',      label: 'Assign machine', bg: 'bg-[var(--neutral-600)]', icon: Settings2   },
+  { kind: 'hold',         label: 'Hold job',       bg: 'bg-[var(--mw-error)]', icon: Pause       },
 ];
 
 // ─── Node detail panel ────────────────────────────────────────────────────────
@@ -62,14 +63,14 @@ function NodeDetailPanel({
     <div className="w-[272px] flex-shrink-0 border-l border-[var(--border)] bg-white flex flex-col overflow-hidden">
       {/* Header */}
       <div className="h-14 border-b border-[var(--border)] px-4 flex items-center justify-between flex-shrink-0">
-        <span className="text-[14px] font-semibold text-[#1A2732]">
+        <span className="text-sm font-semibold text-[var(--mw-mirage)]">
           Node properties
         </span>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-[#F5F5F5] rounded transition-colors"
+          className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors"
         >
-          <X className="w-4 h-4 text-[#737373]" />
+          <X className="w-4 h-4 text-[var(--neutral-500)]" />
         </button>
       </div>
 
@@ -77,19 +78,19 @@ function NodeDetailPanel({
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Kind badge */}
         <div>
-          <p className="text-[11px] font-medium text-[#737373] uppercase tracking-wider mb-1.5">Node type</p>
-          <span className="inline-flex items-center gap-1.5 bg-[#F5F5F5] border border-[var(--border)] px-2 py-1 rounded text-[12px] text-[#1A2732] capitalize font-medium">
+          <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-1.5">Node type</p>
+          <span className="inline-flex items-center gap-1.5 bg-[var(--neutral-100)] border border-[var(--border)] px-2 py-1 rounded text-xs text-[var(--mw-mirage)] capitalize font-medium">
             {node.kind}
           </span>
         </div>
 
         {/* Title */}
         <div>
-          <label className="text-[11px] font-medium text-[#737373] uppercase tracking-wider block mb-1.5">
+          <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider block mb-1.5">
             Title
           </label>
           <input
-            className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#1A2732] focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] outline-none transition-colors"
+            className="w-full bg-[var(--neutral-100)] border border-transparent rounded-md px-3 py-2 text-xs text-[var(--mw-mirage)] focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] outline-none transition-colors"
             defaultValue={node.title}
           />
         </div>
@@ -97,11 +98,11 @@ function NodeDetailPanel({
         {/* Props */}
         {node.props.map(([label, value]) => (
           <div key={label}>
-            <label className="text-[11px] font-medium text-[#737373] uppercase tracking-wider block mb-1.5">
+            <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider block mb-1.5">
               {label}
             </label>
             <input
-              className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#1A2732] focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] outline-none transition-colors"
+              className="w-full bg-[var(--neutral-100)] border border-transparent rounded-md px-3 py-2 text-xs text-[var(--mw-mirage)] focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] outline-none transition-colors"
               defaultValue={value}
             />
           </div>
@@ -109,18 +110,26 @@ function NodeDetailPanel({
 
         {/* Actions */}
         <div className="pt-2 space-y-2">
-          <Button size="sm" className="w-full h-9 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] text-[12px] font-medium">
+          <Button size="sm" className="w-full h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium">
             Apply changes
           </Button>
-          <Button size="sm" variant="outline" className="w-full h-9 border-[#EF4444] text-[#EF4444] hover:bg-[#FEE2E2] text-[12px]">
-            <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Remove node
-          </Button>
+          <ConfirmDialog
+            trigger={
+              <Button size="sm" variant="outline" className="w-full h-9 border-destructive text-destructive hover:bg-[var(--mw-error-light)] text-xs">
+                <Trash2 className="w-4 h-4 mr-1.5" /> Remove node
+              </Button>
+            }
+            title="Remove this node?"
+            description="This will remove the node and all its connections from the workflow."
+            confirmLabel="Remove"
+            onConfirm={() => {}}
+          />
         </div>
       </div>
 
       {/* AI tip */}
       <div className="p-4 border-t border-[var(--border)] flex-shrink-0">
-        <AIInsightCard title="AI suggestion" className="text-[11px]">
+        <AIInsightCard title="AI suggestion" className="text-xs">
           {node.kind === 'condition'
             ? 'Condition nodes work best with a 2–3 branch limit. Add an "Else" branch to catch unmatched cases.'
             : node.kind === 'ai'
@@ -162,22 +171,22 @@ export function ControlWorkflowDesigner() {
         {/* Panel header */}
         <div className="p-4 border-b border-[var(--border)] space-y-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="text-[14px] font-semibold text-[#1A2732]">
+            <h2 className="text-sm font-semibold text-[var(--mw-mirage)]">
               Workflows
             </h2>
-            <Button size="sm" className="h-7 w-7 p-0 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C]">
-              <Plus className="w-3.5 h-3.5" />
+            <Button size="sm" className="h-7 w-7 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
+              <Plus className="w-4 h-4" />
             </Button>
           </div>
 
           {/* AI generator */}
-          <div className="bg-[#F5F3FF] border border-[#7C3AED]/25 rounded-lg p-3">
+          <div className="bg-[var(--mw-purple-50)] border border-[var(--mw-purple)]/25 rounded-[var(--shape-lg)] p-3">
             <div className="flex items-center gap-1.5 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#7C3AED]" />
-              <span className="text-[12px] font-semibold text-[#7C3AED]">Generate with AI</span>
+              <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
+              <span className="text-xs font-semibold text-[var(--mw-purple)]">Generate with AI</span>
             </div>
             <textarea
-              className="w-full bg-white border border-[var(--border)] rounded-md text-[12px] px-2.5 py-2 text-[#1A2732] resize-none focus:outline-none focus:border-[#7C3AED] transition-colors leading-relaxed"
+              className="w-full bg-white border border-[var(--border)] rounded-md text-xs px-2.5 py-2 text-[var(--mw-mirage)] resize-none focus:outline-none focus:border-[var(--mw-purple)] transition-colors leading-relaxed"
               rows={2}
               placeholder="e.g. When a job is overdue, notify the manager and reschedule the machine…"
               value={aiPrompt}
@@ -187,17 +196,17 @@ export function ControlWorkflowDesigner() {
             <Button
               size="sm"
               className={cn(
-                'w-full h-7 mt-2 text-[11px] font-medium gap-1.5',
+                'w-full h-7 mt-2 text-xs font-medium gap-1.5',
                 isGenerating || !aiPrompt.trim()
-                  ? 'bg-[#7C3AED]/50 text-white cursor-not-allowed'
-                  : 'bg-[#7C3AED] hover:bg-[#6D28D9] text-white',
+                  ? 'bg-[var(--mw-purple)]/50 text-white cursor-not-allowed'
+                  : 'bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white',
               )}
               disabled={!aiPrompt.trim() || isGenerating}
               onClick={handleGenerate}
             >
               {isGenerating
-                ? <><RefreshCw className="w-3 h-3 animate-spin" /> Generating…</>
-                : <><Sparkles className="w-3 h-3" /> Generate workflow</>}
+                ? <><RefreshCw className="w-4 h-4 animate-spin" /> Generating…</>
+                : <><Sparkles className="w-4 h-4" /> Generate workflow</>}
             </Button>
           </div>
         </div>
@@ -212,18 +221,18 @@ export function ControlWorkflowDesigner() {
                 key={wf.id}
                 onClick={() => { setSelectedWF(wf); setSelectedNode(null); }}
                 className={cn(
-                  'w-full text-left px-3 py-2.5 rounded-lg transition-colors',
-                  isSelected ? 'bg-[#F5F5F5] border border-[var(--border)]' : 'hover:bg-[#F5F5F5]',
+                  'w-full text-left px-3 py-2.5 rounded-[var(--shape-lg)] transition-colors',
+                  isSelected ? 'bg-[var(--neutral-100)] border border-[var(--border)]' : 'hover:bg-[var(--neutral-100)]',
                 )}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[13px] font-medium text-[#1A2732] truncate pr-2 leading-tight">{wf.name}</span>
+                  <span className="text-xs font-medium text-[var(--mw-mirage)] truncate pr-2 leading-tight">{wf.name}</span>
                   <Badge className={cn('text-[10px] px-1.5 py-0 h-4 border-0 flex-shrink-0 rounded', sc.bg, sc.text)}>
                     {wf.status}
                   </Badge>
                 </div>
-                <p className="text-[11px] text-[#737373]">{wf.trigger}</p>
-                <p className="text-[11px] text-[#A3A3A3]">{wf.runs} runs · {wf.lastRun}</p>
+                <p className="text-xs text-[var(--neutral-500)]">{wf.trigger}</p>
+                <p className="text-xs text-[var(--neutral-400)]">{wf.runs} runs · {wf.lastRun}</p>
               </button>
             );
           })}
@@ -231,7 +240,7 @@ export function ControlWorkflowDesigner() {
 
         {/* Node palette */}
         <div className="border-t border-[var(--border)] p-3 flex-shrink-0">
-          <p className="text-[11px] font-medium text-[#737373] uppercase tracking-wider mb-2">
+          <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2">
             Node palette
           </p>
           <div className="grid grid-cols-2 gap-1.5">
@@ -240,13 +249,13 @@ export function ControlWorkflowDesigner() {
               return (
                 <div
                   key={nt.kind}
-                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[#F5F5F5] border border-[var(--border)] cursor-grab active:cursor-grabbing hover:bg-[#F5F5F5] transition-colors"
+                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[var(--neutral-100)] border border-[var(--border)] cursor-grab active:cursor-grabbing hover:bg-[var(--neutral-100)] transition-colors"
                   draggable
                 >
                   <div className={cn('w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0', nt.bg)}>
-                    <Icon className="w-3 h-3 text-white" />
+                    <Icon className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-[11px] text-[#1A2732] truncate leading-tight">{nt.label}</span>
+                  <span className="text-xs text-[var(--mw-mirage)] truncate leading-tight">{nt.label}</span>
                 </div>
               );
             })}
@@ -260,34 +269,34 @@ export function ControlWorkflowDesigner() {
         {/* Toolbar */}
         <div className="h-14 border-b border-[var(--border)] bg-white flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
-          <div className="w-8 h-8 bg-[#7C3AED] rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-[var(--mw-purple)] rounded-[var(--shape-md)] flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[#1A2732] truncate leading-tight">
+            <p className="text-sm font-semibold text-[var(--mw-mirage)] truncate leading-tight">
               {selectedWF.name}
             </p>
-            <p className="text-[11px] text-[#737373]">Trigger: {selectedWF.trigger}</p>
+            <p className="text-xs text-[var(--neutral-500)]">Trigger: {selectedWF.trigger}</p>
           </div>
 
           {/* Stats */}
-          <span className="text-[12px] text-[#737373] hidden lg:block whitespace-nowrap">
+          <span className="text-xs text-[var(--neutral-500)] hidden lg:block whitespace-nowrap">
             {selectedWF.runs} runs · {selectedWF.lastRun}
           </span>
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[#1A2732] text-[12px] hidden sm:flex">
-              <Edit2 className="w-3.5 h-3.5" /> Edit
+            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden sm:flex">
+              <Edit2 className="w-4 h-4" /> Edit
             </Button>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[#1A2732] text-[12px] hidden md:flex">
-              <Copy className="w-3.5 h-3.5" /> Duplicate
+            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden md:flex">
+              <Copy className="w-4 h-4" /> Duplicate
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[#1A2732] hover:bg-[#2D9E6D] text-white text-[12px]">
-              <Play className="w-3.5 h-3.5" /> Run
+            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[#2D9E6D] text-white text-xs">
+              <Play className="w-4 h-4" /> Run
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] text-[12px] font-medium">
-              <Save className="w-3.5 h-3.5" /> Save
+            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium">
+              <Save className="w-4 h-4" /> Save
             </Button>
           </div>
         </div>

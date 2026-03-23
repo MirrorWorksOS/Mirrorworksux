@@ -4,12 +4,16 @@
  * Clicking a card opens WorkOrderFullScreen overlay.
  */
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Clock, Zap, Calendar } from 'lucide-react';
-import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
+import { InlineEmpty } from '../shared/feedback/EmptyState';
+import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
+import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
+import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { cn } from '../ui/utils';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
+
+const KANBAN_ITEM_TYPE = 'shop-floor-mo';
 
 type MOStatus = 'overdue' | 'in_progress' | 'not_started';
 
@@ -34,26 +38,33 @@ const mockMOs: ManufacturingOrder[] = [
   { id: '5', moNumber: 'MO-2026-0047', jobNumber: 'JOB-2026-0010', partName: 'Custom Bracket', quantity: 15, dueDate: '2026-03-25', workCenter: 'Machining', status: 'not_started', priority: 'low' },
 ];
 
-const columns: { key: MOStatus; label: string; color: string; headerBg: string; icon: any }[] = [
-  { key: 'overdue',     label: 'Overdue',     color: '#EF4444', headerBg: 'bg-[#FEE2E2]', icon: Clock },
-  { key: 'in_progress', label: 'In Progress', color: '#FFCF4B', headerBg: 'bg-[#FFFBF0]', icon: Zap },
-  { key: 'not_started', label: 'Not Started', color: '#737373', headerBg: 'bg-[#F5F5F5]', icon: Calendar },
+const columns: { key: MOStatus; label: string; color: string; icon: typeof Clock }[] = [
+  { key: 'overdue', label: 'Overdue', color: 'var(--mw-error)', icon: Clock },
+  { key: 'in_progress', label: 'In Progress', color: 'var(--mw-yellow-400)', icon: Zap },
+  { key: 'not_started', label: 'Not Started', color: 'var(--neutral-500)', icon: Calendar },
 ];
 
 const getPriorityStyle = (priority: string) => {
   switch (priority) {
-    case 'urgent': return 'bg-[#FEE2E2] text-[#EF4444]';
-    case 'high':   return 'bg-[#FFEDD5] text-[#FF8B00]';
-    case 'medium': return 'bg-[#DBEAFE] text-[#0A7AFF]';
-    case 'low':    return 'bg-[#F5F5F5] text-[#1A2732]';
-    default:       return 'bg-[#F5F5F5] text-[#737373]';
+    case 'urgent': return 'bg-[var(--mw-error-100)] text-[var(--mw-error)]';
+    case 'high':   return 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]';
+    case 'medium': return 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]';
+    case 'low':    return 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
+    default:       return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };
 
 export function MakeShopFloorKanban() {
+  const [manufacturingOrders, setManufacturingOrders] = useState<ManufacturingOrder[]>(mockMOs);
   const [selectedMO, setSelectedMO] = useState<any>(null);
 
-  const getMOsByStatus = (status: MOStatus) => mockMOs.filter(mo => mo.status === status);
+  const getMOsByStatus = (status: MOStatus) => manufacturingOrders.filter(mo => mo.status === status);
+
+  const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
+    setManufacturingOrders(prev =>
+      prev.map(mo => (mo.id === item.id ? { ...mo, status: columnId as MOStatus } : mo)),
+    );
+  }, []);
 
   const handleCardClick = (mo: ManufacturingOrder) => {
     setSelectedMO({
@@ -71,98 +82,100 @@ export function MakeShopFloorKanban() {
   };
 
   return (
-    <div className="p-6 h-full overflow-auto bg-[#F5F5F5]">
-      <div className="flex gap-6 pb-4" style={{ minHeight: 'calc(100% - 24px)' }}>
-        {columns.map((column) => {
-          const ColumnIcon = column.icon;
-          const columnMOs = getMOsByStatus(column.key);
+    <div className="p-6 h-full overflow-auto bg-[var(--neutral-100)]">
+      <div style={{ minHeight: 'calc(100% - 24px)' }}>
+        <KanbanBoard className="gap-6">
+          {columns.map((column) => {
+            const ColumnIcon = column.icon;
+            const columnMOs = getMOsByStatus(column.key);
 
-          return (
-            <div key={column.key} className="flex-shrink-0 w-[380px] flex flex-col">
-              {/* Column Header */}
-              <div className={cn('rounded-t-2xl px-4 py-3 flex items-center justify-between', column.headerBg)}>
-                <div className="flex items-center gap-2">
-                  <ColumnIcon className="w-4 h-4" style={{ color: column.color }} />
-                  <span className="text-[14px] font-semibold text-[#1A2732]">
-                    {column.label}
-                  </span>
+            return (
+              <KanbanColumn
+                key={column.key}
+                id={column.key}
+                title={column.label}
+                count={columnMOs.length}
+                accept={KANBAN_ITEM_TYPE}
+                onDrop={handleKanbanDrop}
+                headerColor={column.color}
+                className="min-w-[380px] w-[380px] flex-shrink-0"
+              >
+                <div className="flex items-center gap-2 px-0.5 pb-2">
+                  <ColumnIcon className="w-4 h-4 shrink-0" style={{ color: column.color }} aria-hidden />
                 </div>
-                <Badge
-                  className="border-0 text-xs"
-                  style={{ backgroundColor: column.color + '22', color: column.color }}
-                >
-                  {columnMOs.length}
-                </Badge>
-              </div>
-
-              {/* Cards */}
-              <div className="flex-1 bg-[#F5F5F5] rounded-b-2xl p-3 space-y-3">
                 {columnMOs.map((mo) => (
-                  <Card
-                    key={mo.id}
-                    className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98]"
-                    onClick={() => handleCardClick(mo)}
-                  >
-                    {/* Card Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <p className=" text-[13px] font-semibold text-[#1A2732]">
-                          {mo.moNumber}
-                        </p>
-                        <p className=" text-[11px] text-[#737373] mt-0.5">
-                          {mo.jobNumber}
-                        </p>
-                      </div>
-                      <span className={cn('text-[11px] font-medium px-2 py-0.5 rounded capitalize', getPriorityStyle(mo.priority))}>
-                        {mo.priority}
-                      </span>
-                    </div>
-
-                    {/* Part Name */}
-                    <h4 className="text-[14px] font-medium text-[#1A2732] mb-3">
-                      {mo.partName}
-                    </h4>
-
-                    {/* Metadata */}
-                    <div className="space-y-1.5 mb-3 text-[13px]">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[#737373]">Qty</span>
-                        <span className=" font-medium text-[#1A2732]">{mo.quantity}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[#737373]">Work centre</span>
-                        <span className="text-[#1A2732]">{mo.workCenter}</span>
-                      </div>
-                      {mo.operator && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#737373]">Operator</span>
-                          <span className="text-[#1A2732]">{mo.operator}</span>
+                  <KanbanCard key={mo.id} id={mo.id} type={KANBAN_ITEM_TYPE} className="p-0">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="p-5 cursor-pointer active:scale-[0.98] transition-transform"
+                      onClick={() => handleCardClick(mo)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleCardClick(mo);
+                        }
+                      }}
+                    >
+                      {/* Card Header */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className=" text-xs font-semibold text-[var(--mw-mirage)]">
+                            {mo.moNumber}
+                          </p>
+                          <p className=" text-xs text-[var(--neutral-500)] mt-0.5">
+                            {mo.jobNumber}
+                          </p>
                         </div>
-                      )}
-                    </div>
+                        <span className={cn('text-xs font-medium px-2 py-0.5 rounded capitalize', getPriorityStyle(mo.priority))}>
+                          {mo.priority}
+                        </span>
+                      </div>
 
-                    {/* Due Date */}
-                    <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-[13px]">
-                      <span className="text-[#737373]">Due</span>
-                      <span className={cn(
-                        'font-medium',
-                        mo.status === 'overdue' ? 'text-[#EF4444]' : 'text-[#1A2732]'
-                      )}>
-                        {new Date(mo.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}
-                      </span>
+                      {/* Part Name */}
+                      <h4 className="text-sm font-medium text-[var(--mw-mirage)] mb-3">
+                        {mo.partName}
+                      </h4>
+
+                      {/* Metadata */}
+                      <div className="space-y-1.5 mb-3 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[var(--neutral-500)]">Qty</span>
+                          <span className=" font-medium text-[var(--mw-mirage)]">{mo.quantity}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[var(--neutral-500)]">Work centre</span>
+                          <span className="text-[var(--mw-mirage)]">{mo.workCenter}</span>
+                        </div>
+                        {mo.operator && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[var(--neutral-500)]">Operator</span>
+                            <span className="text-[var(--mw-mirage)]">{mo.operator}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Due Date */}
+                      <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs">
+                        <span className="text-[var(--neutral-500)]">Due</span>
+                        <span className={cn(
+                          'font-medium',
+                          mo.status === 'overdue' ? 'text-[var(--mw-error)]' : 'text-[var(--mw-mirage)]'
+                        )}>
+                          {new Date(mo.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
                     </div>
-                  </Card>
+                  </KanbanCard>
                 ))}
 
                 {columnMOs.length === 0 && (
-                  <div className="bg-white border border-dashed border-[var(--border)] rounded-2xl p-6 text-center">
-                    <p className="text-xs text-[#737373]">No orders</p>
-                  </div>
+                  <InlineEmpty message="No orders" />
                 )}
-              </div>
-            </div>
-          );
-        })}
+              </KanbanColumn>
+            );
+          })}
+        </KanbanBoard>
       </div>
 
       {/* WorkOrderFullScreen overlay */}

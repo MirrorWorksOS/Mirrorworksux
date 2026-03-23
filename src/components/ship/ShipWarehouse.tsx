@@ -29,10 +29,10 @@ const INVENTORY = [
 ];
 
 const statusBadge: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  ok:       { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'OK' },
-  low:      { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', dot: '#FF8B00', label: 'Low' },
-  empty:    { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', dot: '#EF4444', label: 'Empty' },
-  reserved: { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', dot: '#0A7AFF', label: 'Reserved' },
+  ok:       { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-mirage)', label: 'OK' },
+  low:      { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', dot: 'var(--mw-amber)', label: 'Low' },
+  empty:    { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)', label: 'Empty' },
+  reserved: { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', dot: 'var(--mw-blue)', label: 'Reserved' },
 };
 
 const CYCLE = [
@@ -52,16 +52,16 @@ export function ShipWarehouse() {
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Warehouse</h1>
+      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Warehouse</h1>
 
-      <div className="flex gap-1 bg-[#F5F5F5] rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit">
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={cn(
               'px-4 py-2 rounded-md text-sm transition-colors font-medium',
-              tab === t.id ? 'bg-[#1A2732] text-white' : 'text-[#737373] hover:text-[#1A2732]'
+              tab === t.id ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
             )}
           >
             {t.label}
@@ -71,30 +71,30 @@ export function ShipWarehouse() {
 
       {/* Map */}
       {tab === 'map' && (
-        <div className="bg-white rounded-lg p-6 border border-[var(--border)]">
-          <div className="relative bg-[#F5F5F5] rounded-lg" style={{ paddingBottom: '55%' }}>
+        <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          <div className="relative bg-[var(--neutral-100)] rounded-[var(--shape-lg)]" style={{ paddingBottom: '55%' }}>
             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
               {ZONES.map((z) => (
                 <g key={z.name}>
                   <rect
                     x={z.x} y={z.y} width={z.w} height={z.h} rx={1.5}
-                    fill={z.util > 60 ? 'var(--accent)' : '#F5F5F5'}
-                    stroke={z.util > 60 ? '#FFCF4B' : 'var(--border)'}
+                    fill={z.util > 60 ? 'var(--accent)' : 'var(--neutral-100)'}
+                    stroke={z.util > 60 ? 'var(--mw-yellow-400)' : 'var(--border)'}
                     strokeWidth={0.4}
                     className="cursor-pointer hover:opacity-80 transition-opacity"
                   />
-                  <text x={z.x + z.w / 2} y={z.y + z.h / 2 - 2} textAnchor="middle" fontSize={2.2} fill="#1A2732" fontWeight={500}>{z.name}</text>
-                  <text x={z.x + z.w / 2} y={z.y + z.h / 2 + 3} textAnchor="middle" fontSize={1.8} fill="#737373" fontFamily="Roboto Mono, monospace">{z.util}%</text>
+                  <text x={z.x + z.w / 2} y={z.y + z.h / 2 - 2} textAnchor="middle" fontSize={2.2} fill="var(--mw-mirage)" fontWeight={500}>{z.name}</text>
+                  <text x={z.x + z.w / 2} y={z.y + z.h / 2 + 3} textAnchor="middle" fontSize={1.8} fill="var(--neutral-500)">{z.util}%</text>
                 </g>
               ))}
             </svg>
           </div>
           <div className="flex gap-6 mt-4">
-            <div className="flex items-center gap-2 text-xs text-[#737373]">
-              <div className="w-3 h-3 rounded bg-[#FFFBF0] border border-[#FFCF4B]" /> High usage
+            <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+              <div className="w-3 h-3 rounded bg-[var(--mw-yellow-50)] border border-[var(--mw-yellow-400)]" /> High usage
             </div>
-            <div className="flex items-center gap-2 text-xs text-[#737373]">
-              <div className="w-3 h-3 rounded bg-[#F5F5F5] border border-[var(--border)]" /> Normal
+            <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+              <div className="w-3 h-3 rounded bg-[var(--neutral-100)] border border-[var(--border)]" /> Normal
             </div>
           </div>
         </div>
@@ -105,19 +105,19 @@ export function ShipWarehouse() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="relative w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" strokeWidth={1.5} />
-              <Input placeholder="Search inventory..." className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
+              <Input placeholder="Search inventory..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
             </div>
-            <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+            <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
               <Download className="w-4 h-4" /> Export
             </button>
           </div>
-          <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
+          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   {['BIN', 'SKU', 'PRODUCT', 'ON HAND', 'AVAILABLE', 'STATUS'].map(h => (
-                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['ON HAND', 'AVAILABLE'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['ON HAND', 'AVAILABLE'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -125,10 +125,10 @@ export function ShipWarehouse() {
                 {INVENTORY.map(inv => {
                   const cfg = statusBadge[inv.status];
                   return (
-                    <tr key={inv.bin} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] transition-colors">
-                      <td className="px-4 py-3 text-sm  font-medium text-[#1A2732]">{inv.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[#737373] ">{inv.sku}</td>
-                      <td className="px-4 py-3 text-sm text-[#1A2732]">{inv.name}</td>
+                    <tr key={inv.bin} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
+                      <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{inv.bin}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] ">{inv.sku}</td>
+                      <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{inv.name}</td>
                       <td className="px-4 py-3 text-sm text-right  font-medium">{inv.onHand}</td>
                       <td className="px-4 py-3 text-sm text-right  font-medium">{inv.avail}</td>
                       <td className="px-4 py-3">
@@ -148,27 +148,27 @@ export function ShipWarehouse() {
       {/* Cycle Count */}
       {tab === 'count' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg p-6 border border-[var(--border)]">
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <span className="text-sm text-[#1A2732] font-medium ">CC-2026-012</span>
-                <span className="text-xs text-[#737373] ml-2">Zone A · 2 of 4 counted</span>
+                <span className="text-sm text-[var(--mw-mirage)] font-medium ">CC-2026-012</span>
+                <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
-              <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Play className="w-4 h-4" /> New count
               </button>
             </div>
             <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-              <div className="h-full bg-[#FFCF4B] rounded-full" style={{ width: '50%' }} />
+              <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: '50%' }} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
+          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   {['BIN', 'SKU', 'EXPECTED', 'ACTUAL', ''].map(h => (
-                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['EXPECTED', 'ACTUAL'].includes(h) ? 'text-right' : 'text-left', h === '' && 'text-center')}>{h}</th>
+                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['EXPECTED', 'ACTUAL'].includes(h) ? 'text-right' : 'text-left', h === '' && 'text-center')}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -176,24 +176,24 @@ export function ShipWarehouse() {
                 {CYCLE.map(c => {
                   const v = c.actual !== null ? c.actual - c.expected : null;
                   return (
-                    <tr key={c.bin} className="border-b border-[#F5F5F5] h-14">
+                    <tr key={c.bin} className="border-b border-[var(--neutral-100)] h-14">
                       <td className="px-4 py-3 text-sm  font-medium">{c.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[#737373] ">{c.sku}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] ">{c.sku}</td>
                       <td className="px-4 py-3 text-sm text-right  font-medium">{c.expected}</td>
                       <td className="px-4 py-3 text-right">
                         {c.actual !== null
                           ? <span className="text-sm  font-medium">{c.actual}</span>
-                          : <Input className="h-10 w-20 text-right bg-[#F5F5F5] border-transparent rounded-lg ml-auto " placeholder="—" />
+                          : <Input className="h-10 w-20 text-right bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto " placeholder="—" />
                         }
                       </td>
                       <td className="px-4 py-3 text-center">
                         {v !== null && (
                           v === 0
-                            ? <CheckCircle className="w-4 h-4 text-[#1A2732] mx-auto" />
+                            ? <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)] mx-auto" />
                             : (
                               <div className="flex items-center justify-center gap-1">
-                                <AlertCircle className="w-4 h-4 text-[#FF8B00]" />
-                                <span className="text-xs  font-medium text-[#FF8B00]">{v > 0 ? '+' : ''}{v}</span>
+                                <AlertCircle className="w-4 h-4 text-[var(--mw-amber)]" />
+                                <span className="text-xs  font-medium text-[var(--mw-amber)]">{v > 0 ? '+' : ''}{v}</span>
                               </div>
                             )
                         )}
@@ -206,7 +206,7 @@ export function ShipWarehouse() {
           </div>
 
           <div className="flex justify-end">
-            <button className="h-12 px-8 rounded-lg text-sm bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] transition-colors font-medium">
+            <button className="h-12 px-8 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
               Submit count
             </button>
           </div>

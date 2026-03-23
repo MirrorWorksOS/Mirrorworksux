@@ -27,14 +27,14 @@ export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectRe
         </DialogDescription>
         <div className="p-6">
           <DialogHeader className="mb-4">
-            <DialogTitle className="text-[20px] font-bold text-[#1A2732]">
+            <DialogTitle className="text-[20px] font-bold text-[var(--mw-mirage)]">
               Report Defect - Part {partNumber}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="space-y-3">
-              <Label className="text-base font-medium text-gray-900">Select defect type:</Label>
+              <Label className="text-base font-medium text-[var(--neutral-900)]">Select defect type:</Label>
               <RadioGroup defaultValue="dimensional" className="flex flex-col gap-3">
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem value="dimensional" id="r1" className="w-5 h-5 border-2" />
@@ -60,11 +60,11 @@ export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectRe
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes" className="text-base font-medium text-gray-900">Additional notes (optional)</Label>
+              <Label htmlFor="notes" className="text-base font-medium text-[var(--neutral-900)]">Additional notes (optional)</Label>
               <Textarea 
                 id="notes" 
                 placeholder="Describe the issue..." 
-                className="h-[120px] resize-none text-base border-gray-300"
+                className="h-[120px] resize-none text-base border-[var(--neutral-300)]"
               />
             </div>
 
@@ -72,13 +72,13 @@ export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectRe
               <Button 
                 variant="outline" 
                 onClick={onClose}
-                className="flex-1 h-[44px] text-base font-bold text-gray-600 border-gray-300 hover:bg-gray-50"
+                className="flex-1 h-[44px] text-base font-bold text-[var(--neutral-600)] border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={onClose}
-                className="flex-1 h-[44px] text-base font-bold bg-[#DC2626] hover:bg-[#B91C1C] text-white border-0"
+                className="flex-1 h-[44px] text-base font-bold bg-[var(--mw-error-600)] hover:bg-[#B91C1C] text-white border-0"
               >
                 Submit Defect Report
               </Button>

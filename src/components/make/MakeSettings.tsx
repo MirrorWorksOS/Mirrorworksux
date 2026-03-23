@@ -4,7 +4,6 @@
  */
 import React, { useState } from 'react';
 import { Settings, CheckCircle2, BarChart3 } from 'lucide-react';
-import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -19,7 +18,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Make module (from ARCH 00 §4.5) ──
 const makePermissionKeys: PermissionKey[] = [
@@ -111,7 +110,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Work centre timeout</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="15" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">minutes idle before auto-pause</span>
+              <span className="text-sm text-[var(--neutral-500)]">minutes idle before auto-pause</span>
             </div>
           </div>
           {[
@@ -119,8 +118,8 @@ function GeneralPanel() {
             { label: 'Require operator clock-on before starting work orders', checked: true },
             { label: 'Auto-print job travellers on release', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -153,8 +152,8 @@ function GeneralPanel() {
             { label: 'Enable shift handover notes', checked: true },
             { label: 'Notify supervisor on shift changeover', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -200,8 +199,8 @@ function QualityPanel() {
             { label: 'Enable statistical process control (SPC)', checked: false },
             { label: 'Block shipment on open NCRs', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -227,11 +226,11 @@ function ReportsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Dashboard widgets</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Make dashboard.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Make dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}

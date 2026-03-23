@@ -20,7 +20,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Sell module (from ARCH 00 §4.3) ──
 const sellPermissionKeys: PermissionKey[] = [
@@ -89,10 +89,10 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Company name</Label>
             <div className="relative">
-              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] bg-[#F5F5F5] pr-10" readOnly />
-              <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] bg-[var(--neutral-100)] pr-10" readOnly />
+              <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
             </div>
-            <p className="text-xs text-[#737373] mt-1">Change in Control &rarr; Organisation settings</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-1">Change in Control &rarr; Organisation settings</p>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default currency</Label>
@@ -110,7 +110,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Default tax rate</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
-              <span className="text-sm text-[#737373]">% (GST)</span>
+              <span className="text-sm text-[var(--neutral-500)]">% (GST)</span>
             </div>
           </div>
         </div>
@@ -125,8 +125,8 @@ function GeneralPanel() {
             { label: 'Require approval for quotes over $50,000', checked: true },
             { label: 'Enable AI deal scoring', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -139,12 +139,12 @@ function GeneralPanel() {
 // ── Leads & Pipeline Panel ──
 function PipelinePanel() {
   const stages = [
-    { name: 'New', probability: 10, color: '#737373' },
-    { name: 'Qualified', probability: 25, color: '#0052CC' },
-    { name: 'Proposal', probability: 50, color: '#0052CC' },
-    { name: 'Negotiation', probability: 75, color: '#FACC15' },
-    { name: 'Won', probability: 100, color: '#36B37E' },
-    { name: 'Lost', probability: 0, color: '#DE350B' },
+    { name: 'New', probability: 10, color: 'var(--neutral-500)' },
+    { name: 'Qualified', probability: 25, color: 'var(--mw-info)' },
+    { name: 'Proposal', probability: 50, color: 'var(--mw-info)' },
+    { name: 'Negotiation', probability: 75, color: 'var(--mw-warning)' },
+    { name: 'Won', probability: 100, color: 'var(--mw-success)' },
+    { name: 'Lost', probability: 0, color: 'var(--mw-error)' },
   ];
 
   const sources = ['Website enquiry', 'Trade show', 'Referral', 'Cold outreach', 'Repeat customer', 'LinkedIn'];
@@ -156,13 +156,13 @@ function PipelinePanel() {
         <SectionLabel>Pipeline stages</SectionLabel>
         <div className="space-y-2">
           {stages.map(s => (
-            <div key={s.name} className="flex items-center gap-4 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[#F5F5F5] transition-colors">
+            <div key={s.name} className="flex items-center gap-4 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-              <span className="flex-1 text-sm text-[#0A0A0A] font-medium">{s.name}</span>
+              <span className="flex-1 text-sm text-[var(--neutral-900)] font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#737373]">Probability</span>
+                <span className="text-xs text-[var(--neutral-500)]">Probability</span>
                 <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[var(--border)] text-right  rounded-lg" />
-                <span className="text-sm text-[#737373]">%</span>
+                <span className="text-sm text-[var(--neutral-500)]">%</span>
               </div>
             </div>
           ))}
@@ -174,14 +174,14 @@ function PipelinePanel() {
         <div className="flex flex-wrap gap-2">
           {sources.map(s => (
             <div key={s} className="flex items-center gap-1.5 bg-white border border-[var(--border)] rounded-full px-3 py-1.5">
-              <span className="text-sm text-[#0A0A0A]">{s}</span>
-              <button className="text-[#A3A3A3] hover:text-[#DE350B] transition-colors">
-                <Trash2 className="w-3 h-3" />
+              <span className="text-sm text-[var(--neutral-900)]">{s}</span>
+              <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
-          <button className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
-            <Plus className="w-3 h-3" /> Add source
+          <button className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
+            <Plus className="w-4 h-4" /> Add source
           </button>
         </div>
       </div>
@@ -195,9 +195,9 @@ function PipelinePanel() {
             { rule: 'Source is Referral', points: '+10' },
             { rule: 'No activity for 14+ days', points: '-10' },
           ].map(r => (
-            <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.rule}</span>
-              <span className={cn('text-sm  font-semibold', r.points.startsWith('+') ? 'text-[#0A0A0A]' : 'text-[#DE350B]')}>
+            <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--neutral-900)]">{r.rule}</span>
+              <span className={cn('text-sm  font-semibold', r.points.startsWith('+') ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
                 {r.points}
               </span>
             </div>
@@ -220,7 +220,7 @@ function QuotingPanel() {
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="MW-Q-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
-              <span className="text-xs text-[#737373] ">Preview: MW-Q-0047</span>
+              <span className="text-xs text-[var(--neutral-500)] ">Preview: MW-Q-0047</span>
             </div>
           </div>
           <div>
@@ -236,14 +236,14 @@ function QuotingPanel() {
             <Label className="text-sm mb-2 block font-medium">Expiry period</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="30" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
-              <span className="text-sm text-[#737373]">days</span>
+              <span className="text-sm text-[var(--neutral-500)]">days</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default margin target</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="20" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
-              <span className="text-sm text-[#737373]">%</span>
+              <span className="text-sm text-[var(--neutral-500)]">%</span>
             </div>
           </div>
           <div>
@@ -268,17 +268,17 @@ function QuotingPanel() {
             { label: 'Require approval for discounts over', value: '10', suffix: '%' },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
               <div className="flex items-center gap-2">
                 <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-lg w-24 text-right " />
-                <span className="text-sm text-[#737373]">{r.suffix}</span>
+                <span className="text-sm text-[var(--neutral-500)]">{r.suffix}</span>
               </div>
             </div>
           ))}
-          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
+          <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[#0A0A0A]">Notify manager on quote submission</span>
-              <p className="text-xs text-[#737373] mt-0.5">Send email when estimator submits a quote for review</p>
+              <span className="text-sm text-[var(--neutral-900)]">Notify manager on quote submission</span>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">Send email when estimator submits a quote for review</p>
             </div>
             <Switch defaultChecked />
           </div>
@@ -309,14 +309,14 @@ function PaymentsPanel() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-[#0A0A0A]">{integ.name}</h3>
+                    <h3 className="text-sm font-semibold text-[var(--neutral-900)]">{integ.name}</h3>
                     {integ.connected && (
-                      <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-[#737373] mt-0.5">{integ.description}</p>
+                  <p className="text-xs text-[var(--neutral-500)] mt-0.5">{integ.description}</p>
                   {integ.connected && integ.accountId && (
-                    <p className="text-xs text-[#737373]  mt-1">{integ.accountId}</p>
+                    <p className="text-xs text-[var(--neutral-500)]  mt-1">{integ.accountId}</p>
                   )}
                 </div>
               </div>
@@ -326,8 +326,8 @@ function PaymentsPanel() {
                 className={cn(
                   'h-9 text-xs rounded-[var(--shape-md)]',
                   integ.connected
-                    ? 'border-[var(--border)] text-[#737373]'
-                    : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] border-0'
+                    ? 'border-[var(--border)] text-[var(--neutral-500)]'
+                    : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
                 )}
               >
                 {integ.connected ? 'Configure' : 'Connect'}
@@ -336,8 +336,8 @@ function PaymentsPanel() {
           </Card>
         ))}
       </div>
-      <Card className="bg-[#F5F5F5] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-        <h4 className="text-[14px] font-semibold text-[#0A0A0A] mb-3">Bank account (EFT)</h4>
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+        <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
@@ -349,7 +349,7 @@ function PaymentsPanel() {
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] rounded-[var(--shape-md)]">Save bank details</Button>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] rounded-[var(--shape-md)]">Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -378,14 +378,14 @@ function ActivitiesPanel() {
             return (
               <div key={a.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
                 <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 text-[#0A0A0A]" />
-                  <span className="text-sm text-[#0A0A0A] font-medium">{a.name}</span>
+                  <Icon className="w-4 h-4 text-[var(--neutral-900)]" />
+                  <span className="text-sm text-[var(--neutral-900)] font-medium">{a.name}</span>
                 </div>
                 <Switch defaultChecked={a.enabled} />
               </div>
             );
           })}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
             <Plus className="w-4 h-4" /> Add activity type
           </button>
         </div>
@@ -399,8 +399,8 @@ function ActivitiesPanel() {
             { label: 'Notify team when opportunity stage changes', checked: false },
             { label: 'Reminder 1 day before activity due date', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -427,11 +427,11 @@ function AnalyticsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Dashboard widgets</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Sell dashboard.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Sell dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
             <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[#0A0A0A]">{w.label}</span>
+              <span className="text-sm text-[var(--neutral-900)]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}
@@ -483,12 +483,12 @@ function IntegrationsPanel() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-[#0A0A0A]">{integ.name}</h3>
+                  <h3 className="text-sm font-semibold text-[var(--neutral-900)]">{integ.name}</h3>
                   {integ.connected && (
-                    <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                    <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                   )}
                 </div>
-                <p className="text-xs text-[#737373] mt-0.5">{integ.description}</p>
+                <p className="text-xs text-[var(--neutral-500)] mt-0.5">{integ.description}</p>
               </div>
             </div>
             <Button
@@ -497,8 +497,8 @@ function IntegrationsPanel() {
               className={cn(
                 'h-9 text-xs rounded-[var(--shape-md)]',
                 integ.connected
-                  ? 'border-[var(--border)] text-[#737373]'
-                  : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] border-0'
+                  ? 'border-[var(--border)] text-[var(--neutral-500)]'
+                  : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
               )}
             >
               {integ.connected ? 'Configure' : 'Connect'}

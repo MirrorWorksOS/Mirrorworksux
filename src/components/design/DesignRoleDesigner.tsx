@@ -11,24 +11,24 @@ import { Badge } from '../ui/badge';
 const roles = [
   { name: 'Admin', color: '#7C3AED', description: 'Full system access' },
   { name: 'Manager', color: '#0052CC', description: 'All modules + approval authority' },
-  { name: 'Scheduler', color: '#36B37E', description: 'Plan + Budget access' },
-  { name: 'Supervisor', color: '#FACC15', description: 'Shop floor oversight' },
-  { name: 'Operator', color: '#E5E5E5', description: 'Shop floor operations only' },
+  { name: 'Scheduler', color: 'var(--mw-success)', description: 'Plan + Budget access' },
+  { name: 'Supervisor', color: 'var(--mw-warning)', description: 'Shop floor oversight' },
+  { name: 'Operator', color: 'var(--neutral-200)', description: 'Shop floor operations only' },
 ];
 
 export function DesignRoleDesigner() {
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Role Designer</h1>
+      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Role Designer</h1>
 
-      <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-2xl p-6">
+      <Card className="bg-[var(--mw-yellow-400)] border-2 border-[var(--neutral-800)] rounded-2xl p-6">
         <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[#2C2C2C] flex-shrink-0 mt-0.5" />
+          <Info className="w-5 h-5 text-[var(--neutral-800)] flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-[16px] font-semibold text-[#2C2C2C] mb-2">
+            <h3 className="text-base font-semibold text-[var(--neutral-800)] mb-2">
               Role & Permission Configuration
             </h3>
-            <p className="text-sm text-[#2C2C2C] leading-relaxed">
+            <p className="text-sm text-[var(--neutral-800)] leading-relaxed">
               Define custom roles and configure granular permissions for each module. 
               Control access to features like budget visibility, approval workflows, and master data management.
             </p>
@@ -44,8 +44,8 @@ export function DesignRoleDesigner() {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="text-[14px] font-semibold text-[#1A2732]">{role.name}</h3>
-                <p className="text-xs text-[#737373]">{role.description}</p>
+                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{role.name}</h3>
+                <p className="text-xs text-[var(--neutral-500)]">{role.description}</p>
               </div>
             </div>
             <Button variant="outline" size="sm" className="w-full border-[var(--border)]">Configure</Button>

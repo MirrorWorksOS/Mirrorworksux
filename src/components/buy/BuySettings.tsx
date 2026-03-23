@@ -6,7 +6,6 @@
  */
 import React, { useState } from 'react';
 import { Settings, Users, BarChart3, Plus, Trash2 } from 'lucide-react';
-import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -22,7 +21,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Buy module (from ARCH 00 §4.8) ──
 const buyPermissionKeys: PermissionKey[] = [
@@ -91,7 +90,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">PO prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="PO-" className="h-12 border-[var(--border)] rounded-xl w-32" />
-              <span className="text-xs text-[#737373] ">Preview: PO-2026-0089</span>
+              <span className="text-xs text-[var(--neutral-500)] ">Preview: PO-2026-0089</span>
             </div>
           </div>
           <div>
@@ -102,7 +101,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Requisition prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="REQ-" className="h-12 border-[var(--border)] rounded-xl w-32" />
-              <span className="text-xs text-[#737373] ">Preview: REQ-2026-0201</span>
+              <span className="text-xs text-[var(--neutral-500)] ">Preview: REQ-2026-0201</span>
             </div>
           </div>
         </div>
@@ -110,7 +109,7 @@ function GeneralPanel() {
 
       <div>
         <SectionLabel>Approval thresholds</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">
+        <p className="text-sm text-[var(--neutral-500)] mb-4">
           PO approval is separated from PO creation by default to enforce segregation of duties.
         </p>
         <div className="space-y-3">
@@ -119,12 +118,12 @@ function GeneralPanel() {
             { label: '$1,000 – $10,000', approver: 'Manager' },
             { label: 'Over $10,000', approver: 'Director' },
           ].map(t => (
-            <div key={t.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{t.label}</span>
-              <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
+            <div key={t.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{t.label}</span>
+              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
             </div>
           ))}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
             <Plus className="w-4 h-4" /> Add threshold
           </button>
         </div>
@@ -139,8 +138,8 @@ function GeneralPanel() {
             { label: 'Notify buyer when goods are received', checked: true },
             { label: 'Allow partial deliveries', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -176,7 +175,7 @@ function SuppliersPanel() {
             <Label className="text-sm mb-2 block font-medium">Default lead time</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="14" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">days</span>
+              <span className="text-sm text-[var(--neutral-500)]">days</span>
             </div>
           </div>
           <div>
@@ -198,17 +197,17 @@ function SuppliersPanel() {
         <SectionLabel>Product categories</SectionLabel>
         <div className="space-y-2">
           {categories.map(c => (
-            <div key={c} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3 hover:bg-[#F5F5F5] transition-colors">
-              <span className="text-sm text-[#1A2732] font-medium">{c}</span>
+            <div key={c} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
+              <span className="text-sm text-[var(--mw-mirage)] font-medium">{c}</span>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-xs text-[#737373] rounded-lg">Edit</Button>
-                <button className="text-[#A3A3A3] hover:text-[#DE350B] transition-colors">
-                  <Trash2 className="w-3 h-3" />
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-lg">Edit</Button>
+                <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
           ))}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
             <Plus className="w-4 h-4" /> Add category
           </button>
         </div>
@@ -223,8 +222,8 @@ function SuppliersPanel() {
             { label: 'Track quality rejection rate', checked: true },
             { label: 'Auto-flag suppliers below 70% score', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -250,11 +249,11 @@ function ReportsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Available reports</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which reports appear in the Buy reports gallery.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which reports appear in the Buy reports gallery.</p>
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
             </div>
           ))}

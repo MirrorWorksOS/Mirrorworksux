@@ -64,10 +64,10 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-2xl border-[var(--border)] bg-white p-6">
+      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[#1A2732]">Invite team member</DialogTitle>
-          <DialogDescription className="text-[13px] text-[#737373]">
+          <DialogTitle className="text-xl font-semibold text-[var(--mw-mirage)]">Invite team member</DialogTitle>
+          <DialogDescription className="text-xs text-[var(--neutral-500)]">
             They&apos;ll receive an email to join your organisation.
           </DialogDescription>
         </DialogHeader>
@@ -87,7 +87,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
           />
 
           <div className="space-y-3">
-            <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">Modules</p>
+            <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Modules</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {modules.map(moduleKey => {
                 const checked = selectedModules.includes(moduleKey);
@@ -95,7 +95,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                   <label
                     key={moduleKey}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${
-                      checked ? 'border-[#FFCF4B] bg-[var(--accent)]' : 'border-[var(--border)] bg-white'
+                      checked ? 'border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-white'
                     }`}
                   >
                     <Checkbox
@@ -103,7 +103,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                       onCheckedChange={value => toggleModule(moduleKey, value === true)}
                       className="h-5 w-5"
                     />
-                    <span className="text-sm text-[#2C2C2C]">{moduleLabels[moduleKey]}</span>
+                    <span className="text-sm text-[var(--neutral-800)]">{moduleLabels[moduleKey]}</span>
                   </label>
                 );
               })}
@@ -116,9 +116,9 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                 key={moduleKey}
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-[var(--border)] bg-[#F5F5F5] p-3"
+                className="rounded-xl border border-[var(--border)] bg-[var(--neutral-100)] p-3"
               >
-                <p className="mb-2 text-sm font-medium text-[#2C2C2C]">{moduleLabels[moduleKey]} groups</p>
+                <p className="mb-2 text-sm font-medium text-[var(--neutral-800)]">{moduleLabels[moduleKey]} groups</p>
                 <div className="flex flex-wrap gap-2">
                   {groupsByModule[moduleKey].map(groupName => {
                     const selected = selectedGroups[moduleKey].includes(groupName);
@@ -129,8 +129,8 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                         onClick={() => toggleGroup(moduleKey, groupName)}
                         className={`rounded-full border px-3 py-1 text-xs ${
                           selected
-                            ? 'border-[#FFCF4B] bg-[#FFCF4B] text-[#2C2C2C]'
-                            : 'border-[var(--border)] bg-white text-[#525252]'
+                            ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]'
+                            : 'border-[var(--border)] bg-white text-[var(--neutral-600)]'
                         }`}
                       >
                         {groupName}
@@ -143,10 +143,10 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
           </div>
 
           <div className="space-y-2 pt-1">
-            <Button className="h-12 w-full rounded-xl bg-[#FFCF4B] text-[#2C2C2C] hover:bg-[#EBC028]">
+            <Button className="h-12 w-full rounded-xl bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
               Send invite
             </Button>
-            <Button variant="ghost" className="h-10 w-full rounded-lg text-[#737373]" onClick={() => onOpenChange(false)}>
+            <Button variant="ghost" className="h-10 w-full rounded-[var(--shape-lg)] text-[var(--neutral-500)]" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
           </div>

@@ -36,7 +36,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-2xl border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="sr-only">User details</SheetTitle>
@@ -45,18 +45,18 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
         <div className="space-y-6">
           <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16 ring-2 ring-white shadow-md">
-              <AvatarFallback className="bg-[#F5F5F5] text-base font-semibold text-[#2C2C2C]">
+              <AvatarFallback className="bg-[var(--neutral-100)] text-base font-semibold text-[var(--neutral-800)]">
                 {initials(user.name)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2">
-                <h3 className="text-2xl font-bold text-[#1A2732]">{user.name}</h3>
+                <h3 className="text-2xl font-bold text-[var(--mw-mirage)]">{user.name}</h3>
                 <Badge
                   className={
                     user.role === 'lead'
-                      ? 'rounded-full border-0 bg-[#FFCF4B] px-3 py-1 text-[#2C2C2C]'
-                      : 'rounded-full border-0 bg-[#F5F5F5] px-3 py-1 text-[#525252]'
+                      ? 'rounded-full border-0 bg-[var(--mw-yellow-400)] px-3 py-1 text-[var(--neutral-800)]'
+                      : 'rounded-full border-0 bg-[var(--neutral-100)] px-3 py-1 text-[var(--neutral-600)]'
                   }
                 >
                   {user.role === 'lead' && user.leadModule
@@ -64,15 +64,15 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
                     : 'Team'}
                 </Badge>
               </div>
-              <p className="text-sm text-[#525252]">{user.email}</p>
-              <div className="mt-2 flex items-center gap-2 text-xs text-[#737373]">
+              <p className="text-sm text-[var(--neutral-600)]">{user.email}</p>
+              <div className="mt-2 flex items-center gap-2 text-xs text-[var(--neutral-500)]">
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
                     user.status === 'active'
-                      ? 'bg-[#1A2732]'
+                      ? 'bg-[var(--mw-mirage)]'
                       : user.status === 'invited'
-                        ? 'bg-[#0A7AFF]'
-                        : 'bg-[#737373]'
+                        ? 'bg-[var(--mw-blue)]'
+                        : 'bg-[var(--neutral-500)]'
                   }`}
                 />
                 <span className="capitalize">{user.status}</span>
@@ -82,7 +82,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </div>
           </div>
 
-          <div className="border-b border-[#F5F5F5]" />
+          <div className="border-b border-[var(--neutral-100)]" />
 
           <div className="space-y-4">
             {user.modules.map(assignment => (
@@ -91,7 +91,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
           </div>
 
           <div className="space-y-3">
-            <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">Other modules</p>
+            <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Other modules</p>
             <div className="space-y-2">
               {unassigned.map(moduleKey => (
                 <UnassignedModuleCard key={moduleKey} moduleKey={moduleKey} />
@@ -99,14 +99,14 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </div>
           </div>
 
-          <Collapsible className="rounded-2xl border border-[var(--border)] bg-white p-4">
+          <Collapsible className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-4">
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-10 w-full justify-between rounded-xl px-0 text-left text-sm font-medium text-[#2C2C2C]"
+                className="h-10 w-full justify-between rounded-xl px-0 text-left text-sm font-medium text-[var(--neutral-800)]"
               >
                 Activity log
-                <ChevronDown className="h-4 w-4 text-[#737373]" />
+                <ChevronDown className="h-4 w-4 text-[var(--neutral-500)]" />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-3">
@@ -115,15 +115,15 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
                   <div key={item.id} className="relative flex gap-3 pl-1">
                     <div className="relative flex flex-col items-center">
                       <Avatar className="h-6 w-6 ring-1 ring-white">
-                        <AvatarFallback className="bg-[#F5F5F5] text-[10px] text-[#525252]">
+                        <AvatarFallback className="bg-[var(--neutral-100)] text-[10px] text-[var(--neutral-600)]">
                           {initials(item.actorName)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="mt-1 h-8 w-0.5 bg-[#E5E5E5]" />
+                      <div className="mt-1 h-8 w-0.5 bg-[var(--neutral-200)]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-[#2C2C2C]">{item.message}</p>
-                      <p className="text-xs text-[#737373]">{item.timestamp}</p>
+                      <p className="text-xs text-[var(--neutral-800)]">{item.message}</p>
+                      <p className="text-xs text-[var(--neutral-500)]">{item.timestamp}</p>
                     </div>
                   </div>
                 ))}

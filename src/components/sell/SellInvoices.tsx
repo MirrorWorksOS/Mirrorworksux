@@ -10,10 +10,9 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
 type TabFilter = 'all' | 'draft' | 'sent' | 'paid' | 'overdue';
@@ -41,10 +40,10 @@ const mockInvoices: Invoice[] = [
 
 const getStatusBadge = (status: InvoiceStatus) => {
   switch (status) {
-    case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'sent': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Sent', dot: '#1A2732' };
-    case 'paid': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Paid', dot: '#1A2732' };
-    case 'overdue': return { bg: 'bg-[#DE350B]/10', text: 'text-[#DE350B]', label: 'Overdue', dot: '#DE350B' };
+    case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
+    case 'sent': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Sent', dot: 'var(--mw-mirage)' };
+    case 'paid': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Paid', dot: 'var(--mw-mirage)' };
+    case 'overdue': return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Overdue', dot: 'var(--mw-error)' };
   }
 };
 
@@ -67,12 +66,12 @@ export function SellInvoices() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Invoices</h1>
-          <p className="text-sm text-[#737373] mt-1">
+          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Invoices</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
             {filteredInvoices.length} invoices • ${totalValue.toLocaleString()} total • ${totalOutstanding.toLocaleString()} outstanding
           </p>
         </div>
@@ -85,7 +84,7 @@ export function SellInvoices() {
             <AnimatedDownload className="w-4 h-4" />
             Export
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Invoice
           </Button>
@@ -99,35 +98,35 @@ export function SellInvoices() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "px-4 py-2 text-[14px] border-b-2 transition-colors relative",
+              "px-4 py-2 text-sm border-b-2 transition-colors relative",
               activeTab === tab
-                ? 'border-[#FFCF4B] text-[#0A0A0A] font-medium'
-                : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
+                ? 'border-[var(--mw-yellow-400)] text-[var(--neutral-900)] font-medium'
+                : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-900)]'
             )}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <Badge className="ml-2 bg-[#F5F5F5] text-[#525252] border-0 text-xs">{tabCounts[tab]}</Badge>
+            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{tabCounts[tab]}</Badge>
           </button>
         ))}
       </div>
 
       {/* Table */}
-      <motion.div variants={animationVariants.listItem}>
+      <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12">
                     <input type="checkbox" className="rounded border-[var(--border)]" />
                   </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">INVOICE #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CUSTOMER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">ISSUE DATE</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DUE DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">BALANCE DUE</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">INVOICE #</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">ISSUE DATE</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DUE DATE</th>
+                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">BALANCE DUE</th>
                   <th className="px-4 py-3 w-12"></th>
                 </tr>
               </thead>
@@ -139,24 +138,24 @@ export function SellInvoices() {
                     : 0;
 
                   return (
-                    <tr key={invoice.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                    <tr key={invoice.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/invoices/${invoice.id}`} className="text-[#0A0A0A]  text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/invoices/${invoice.id}`} className="text-[var(--neutral-900)]  text-sm font-medium hover:underline flex items-center gap-1">
                           {invoice.invoiceNumber}
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-4 h-4" />
                         </a>
                       </td>
-                      <td className="px-4 text-sm text-[#0A0A0A]">{invoice.customer}</td>
-                      <td className="px-4 text-sm text-[#525252]">
+                      <td className="px-4 text-sm text-[var(--neutral-900)]">{invoice.customer}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">
                         {new Date(invoice.issueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </td>
-                      <td className="px-4 text-sm text-[#525252]">
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">
                         {new Date(invoice.dueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
                         {invoice.status === 'overdue' && (
-                          <span className="ml-2 text-xs text-[#DE350B]">({daysOverdue}d overdue)</span>
+                          <span className="ml-2 text-xs text-[var(--mw-error)]">({daysOverdue}d overdue)</span>
                         )}
                       </td>
                       <td className="px-4">
@@ -168,12 +167,12 @@ export function SellInvoices() {
                         </div>
                       </td>
                       <td className="px-4 text-right text-sm  font-medium">${invoice.total.toLocaleString()}</td>
-                      <td className="px-4 text-right text-sm  font-medium" style={{ color: invoice.balanceDue > 0 ? '#DE350B' : '#36B37E' }}>
+                      <td className="px-4 text-right text-sm  font-medium" style={{ color: invoice.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
                         ${invoice.balanceDue.toLocaleString()}
                       </td>
                       <td className="px-4">
-                        <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                          <MoreVertical className="w-4 h-4 text-[#737373]" />
+                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                         </button>
                       </td>
                     </tr>
@@ -185,10 +184,10 @@ export function SellInvoices() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[#737373]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
+            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Next</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
             </div>
           </div>
         </Card>

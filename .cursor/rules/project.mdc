@@ -21,10 +21,13 @@ The codebase has 8 modules following the manufacturing lifecycle: Sell, Plan, Ma
 - **UI primitives**: ShadCN/Radix UI components in `src/components/ui/`
 - **Charts**: Recharts
 - **Icons**: Lucide React
-- **Animation**: Motion (Framer Motion), tw-animate-css, Animate UI components in `src/components/animate-ui/`
+- **Animation**: Motion (Framer Motion), Animate UI icons in `src/components/animate-ui/`, custom M3 keyframes in `globals.css`
+- **Drag & Drop**: react-dnd, react-dnd-html5-backend
+- **Dates**: date-fns
+- **List animation**: @formkit/auto-animate
 - **Toasts**: Sonner
 - **Forms**: React Hook Form
-- **Fonts**: Roboto (UI text, weights 300/400/500/700/900), Roboto Mono (financial figures, IDs, codes). No Geist, no JetBrains Mono, no Inter.
+- **Fonts**: Roboto only (weights 300/400/500/700/900). Use `tabular-nums` for financial figures, IDs, codes. No Roboto Mono, no Geist, no JetBrains Mono, no Inter.
 
 ## Path Aliases & Imports
 
@@ -37,37 +40,70 @@ The codebase has 8 modules following the manufacturing lifecycle: Sell, Plan, Ma
 ```
 src/
 ├── components/
-│   ├── ui/              # ShadCN base components (shared, do not edit directly)
-│   ├── animate-ui/      # Animate UI components
-│   ├── shared/          # Cross-module shared components
-│   ├── sell/            # Sell module screens
-│   ├── plan/            # Plan module screens
-│   ├── make/            # Make module screens
-│   ├── ship/            # Ship module screens
-│   ├── book/            # Book module screens
-│   ├── buy/             # Buy module screens
-│   ├── control/         # Control module screens
-│   ├── design/          # Design/onboarding module
-│   ├── shop-floor/      # Legacy Make module screens
-│   └── figma/           # Figma-exported raw components
-├── imports/             # Raw Figma exports, reference paste-ins, design docs
-├── guidelines/          # Guidelines.md — the design bible
-├── lib/                 # design-system.ts (tokens, motion, colours)
-├── styles/              # globals.css (CSS variables, M3 type scale)
-└── utils/               # Supabase client (future)
+│   ├── ui/                    # ShadCN primitives — DO NOT edit directly
+│   ├── animate-ui/            # Animate UI icons/primitives — DO NOT edit
+│   ├── shared/                # Cross-module shared components
+│   │   ├── ai/                # AIInsightCard, IntelligenceHub
+│   │   ├── cards/             # StatCard, DarkAccentCard, EntityCard, FlatCard
+│   │   ├── charts/            # chart-theme, ChartTooltip, ChartCard
+│   │   ├── checklist/         # Checklist, ChecklistItem
+│   │   ├── dashboard/         # ModuleDashboard, DashboardKPIRow, DashboardGrid, DashboardWidget
+│   │   ├── data/              # MwDataTable, StatusBadge, ProgressBar, MetricBadge, FinancialTable
+│   │   ├── datetime/          # DatePicker, DateRangePicker, TimePicker, DateTimePicker, ScheduleCalendar
+│   │   ├── feedback/          # EmptyState, ConfirmDialog, CardSkeleton, TableSkeleton
+│   │   ├── forms/             # MwFormField
+│   │   ├── kanban/            # KanbanBoard, KanbanColumn, KanbanCard, DraggableList, drag-styles
+│   │   ├── layout/            # PageShell, PageHeader, KPIRow, FilterBar, DetailSheet
+│   │   ├── motion/            # motion-variants, use-reduced-motion
+│   │   ├── navigation/        # ViewToggle
+│   │   ├── schedule/          # GanttChart, TimelineView
+│   │   └── settings/          # ModuleSettingsLayout
+│   ├── sell/                  # Sell module screens
+│   ├── plan/                  # Plan module screens
+│   ├── make/                  # Make module screens
+│   ├── ship/                  # Ship module screens
+│   ├── book/                  # Book module screens
+│   ├── buy/                   # Buy module screens
+│   ├── control/               # Control module screens
+│   ├── design/                # Design/onboarding module
+│   ├── shop-floor/            # Legacy Make module (immersive dark UI)
+│   │   └── issues/            # Issue-specific sub-screens
+│   └── figma/                 # Raw Figma exports — reference only
+├── guidelines/                # Design system docs, visual language, build progress
+├── lib/                       # design-system.ts (tokens, colours — no animation variants)
+├── styles/                    # globals.css (CSS variables, M3 type scale, M3 keyframes)
+└── utils/                     # Supabase client (future)
 ```
 
 ## Naming Conventions
 
-- Component files: PascalCase matching the export (`SellDashboard.tsx`)
-- Module prefix to disambiguate shared names: `SellProducts.tsx`, `BuyProducts.tsx`
-- Tab sub-components: `{Module}{Section}Tab.tsx` (e.g., `PlanBudgetTab.tsx`)
-- Modal components: `{Entity}Modal.tsx` (e.g., `MaterialsModal.tsx`)
+### File naming by layer
+
+| Layer | Convention | Example |
+|---|---|---|
+| ShadCN primitives (`ui/`) | kebab-case (ShadCN default) | `dropdown-menu.tsx` |
+| Animate UI (`animate-ui/`) | kebab-case (library default) | `circuit-board.tsx` |
+| Shared components (`shared/`) | PascalCase for `.tsx` | `StatCard.tsx`, `KanbanBoard.tsx` |
+| Shared utilities (`shared/`) | kebab-case for `.ts` | `chart-theme.ts`, `drag-styles.ts`, `use-reduced-motion.ts` |
+| Module screens (`sell/`, `plan/`, etc.) | `{Module}{Feature}.tsx` | `SellDashboard.tsx`, `BuyOrders.tsx` |
+| Tab sub-components | `{Module}{Section}Tab.tsx` | `PlanBudgetTab.tsx` |
+| Modal components | `{Entity}Modal.tsx` | `MaterialsModal.tsx` |
+| Settings pages | `{Module}Settings.tsx` | `SellSettings.tsx` |
+| Detail views | `{Module}{Entity}Detail.tsx` | `SellOpportunityDetail.tsx` |
+
+### Import path conventions
+
+- Shared components: `@/components/shared/{domain}/{Component}`
+- UI primitives: `@/components/ui/{component}`
+- Cross-module: never import from one module into another — extract to `shared/` first
+
+### General rules
+
 - One component per file. Keep files under 500 lines — split into tab/section components.
 
 ## Design System — Key Tokens
 
-Full design system: see `DESIGN_SYSTEM.md` (human reference) and `.cursor/rules/design-system.mdc` (AI rules).
+Full design system: see `src/guidelines/DesignSystem.md` (human reference) and `.cursor/rules/design-system.mdc` (AI rules).
 
 ### Brand colours (v2.0)
 - MW Yellow 400: `#FFCF4B` (primary CTA) → hover `#F2BF30` → active `#E6A600`
@@ -81,9 +117,9 @@ Full design system: see `DESIGN_SYSTEM.md` (human reference) and `.cursor/rules/
 - Success: `#36B37E` / Error: `#DE350B` / Warning: `#FACC15` / Info: `#0052CC`
 
 ### Typography (v2.0)
-- UI text: Roboto (300/400/500/700/900)
-- Financial values, IDs, codes: Roboto Mono (400/500)
-- No other fonts. Geist, JetBrains Mono, Inter are deprecated.
+- Single font: Roboto (300/400/500/700/900) for all UI text
+- Financial values, IDs, codes: Roboto with `tabular-nums` for fixed-width numerals
+- No other fonts. Roboto Mono, Geist, JetBrains Mono, Inter are all deprecated.
 
 ## Coding Standards
 
@@ -96,7 +132,7 @@ Full design system: see `DESIGN_SYSTEM.md` (human reference) and `.cursor/rules/
 - M3 8px grid: all spacing in multiples of 8. Use `p-6` for page/card padding, `gap-4` between cards, `space-y-6` between sections.
 - Australian/UK English in all UI copy ("Organisation", "Colour"). Database columns use US English.
 - Date format in UI: "Mar 25" (short). Never ISO or DD/MM/YYYY.
-- Currency: `$24,500.00` with comma separators, always in Roboto Mono.
+- Currency: `$24,500.00` with comma separators, always with `tabular-nums`.
 - Sentence case for all UI text. Only uppercase inside status badges.
 - Never use lorem ipsum. Use realistic manufacturing data (steel grades, part names, Australian supplier names).
 
@@ -136,22 +172,26 @@ Every module page follows: KPI row → Chart row → Table/content area, wrapped
 
 This project was exported from Figma using Figma's code generation. Be aware of:
 
-1. **No tsconfig.json yet** — you may need to create one if TypeScript features require it.
-2. **No ESLint or Prettier** — code formatting is not enforced. Add if needed.
-3. **Figma asset hashes** — images in `src/assets/` have hash filenames. The `figma:asset/` aliases in vite.config.ts map these. Don't rename the files.
-4. **Versioned import aliases** — vite.config.ts has aliases like `lucide-react@0.487.0` → `lucide-react`. Imports in Figma-exported code may use the versioned name. Both work.
-5. **`src/imports/` is a junk drawer** — raw Figma exports, pasted text, SVG constants, design docs. Treat as reference material, not production code.
-6. **`src/components/figma/`** — raw Figma component exports. May have non-standard patterns.
-7. **All data is mock/static** — no backend, no API calls yet. Supabase client exists in `src/utils/supabase/` but is not wired up.
-8. **Tailwind v4** — uses the new `@tailwindcss/vite` plugin, NOT the PostCSS approach. No `tailwind.config.js` file. Config is in CSS via `@import` and `@layer` directives in `src/index.css` and `src/styles/globals.css`.
+1. **No ESLint or Prettier** — code formatting is not enforced. Add if needed.
+2. **Figma asset hashes** — images in `src/assets/` have hash filenames. The `figma:asset/` aliases in vite.config.ts map these. Don't rename the files.
+3. **Versioned import aliases** — vite.config.ts has aliases like `lucide-react@0.487.0` → `lucide-react`. Imports in Figma-exported code may use the versioned name. Both work.
+4. **`src/components/figma/`** — raw Figma component exports. May have non-standard patterns.
+5. **All data is mock/static** — no backend, no API calls yet. Supabase client exists in `src/utils/supabase/` but is not wired up.
+6. **Tailwind v4** — uses the new `@tailwindcss/vite` plugin, NOT the PostCSS approach. No `tailwind.config.js` file. Config is in CSS via `@import` and `@layer` directives in `src/index.css` and `src/styles/globals.css`. `globals.css` also contains custom M3 animation keyframes (`mw-enter`, `mw-exit`, `mw-fade-in`, etc.) that replace the removed `tw-animate-css` package.
+7. **No `tw-animate-css` or `next-themes`** — both have been removed. Animation uses Motion (Framer Motion) + custom CSS keyframes. Theming is hardcoded `light`.
 
 ## Key Reference Files
 
 When making decisions about design, tokens, or patterns, check these first:
-- `DESIGN_SYSTEM.md` — the v2.0 design system (typography, colour, spacing, components, patterns)
+- `src/guidelines/DesignSystem.md` — the v2.0 design system (typography, colour, spacing, components, patterns)
+- `src/guidelines/VisualLanguage.md` — visual language reference (Crextio benchmark, patterns, rationale)
 - `.cursor/rules/design-system.mdc` — AI-consumable design system rules
-- `src/lib/design-system.ts` — all design tokens as TypeScript constants
-- `src/styles/globals.css` — CSS variables, M3 type scale, scrollbar styles
+- `.cursor/rules/shared-components.mdc` — shared component selection guide and anti-patterns
+- `src/lib/design-system.ts` — design tokens as TypeScript constants (colours, shapes — no animation variants)
+- `src/components/shared/motion/motion-variants.ts` — all Framer Motion variants and transitions
+- `src/components/shared/charts/chart-theme.ts` — Recharts theme constants
+- `src/styles/globals.css` — CSS variables, M3 type scale, M3 keyframes, scrollbar styles
 - `src/routes.tsx` — complete routing map for all modules
 - `src/components/Layout.tsx` — shell layout with sidebar
 - `src/components/Sidebar.tsx` — navigation sidebar
+- `src/lib/icon-config.ts` — icon mapping, sizing, and Animate UI config

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, History, Calendar, CheckCircle2, AlertCircle, Coffee } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
@@ -117,11 +116,11 @@ export function TimeClockTab() {
   const getStatusColor = () => {
     if (isOnBreak) return 'text-orange-600';
     if (isClockedIn) return 'text-green-700';
-    return 'text-[#2C2C2C]';
+    return 'text-[var(--neutral-800)]';
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-6 bg-[#F5F5F5]">
+    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-6 bg-[var(--neutral-100)]">
       <div 
         className={cn(
           "flex flex-col h-full flex-1 transition-all duration-300 ease-in-out",
@@ -129,20 +128,20 @@ export function TimeClockTab() {
       >
         {/* Header */}
         <div className="mb-8 text-center pt-8 flex-shrink-0">
-          <h2 className="text-[32px] font-semibold tracking-tight text-[#2C2C2C] mb-1">Time Clock</h2>
-          <p className="text-[#6B6B6B] text-sm font-medium">Track your work hours</p>
+          <h2 className="text-3xl font-semibold tracking-tight text-[var(--neutral-800)] mb-1">Time Clock</h2>
+          <p className="text-[var(--neutral-500)] text-sm font-medium">Track your work hours</p>
         </div>
 
         <div className="flex-1 flex flex-col items-center max-w-[480px] mx-auto w-full gap-8 pb-12">
           
           {/* Main Card */}
-          <div className="w-full bg-white rounded-[24px] shadow-sm p-8 text-center border border-[#E5E4E0] flex flex-col items-center relative overflow-hidden">
+          <div className="w-full bg-white rounded-[24px] shadow-sm p-8 text-center border border-[var(--neutral-200)] flex flex-col items-center relative overflow-hidden">
             
             {/* PIN Entry Overlay */}
             {showPinDialog && (
               <div className="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 animate-in fade-in slide-in-from-bottom-4 duration-200">
-                <h3 className="text-xl font-semibold text-[#2C2C2C] mb-2">Enter PIN</h3>
-                <p className="text-[#6B6B6B] text-sm mb-8">Enter your 4-digit PIN to clock in</p>
+                <h3 className="text-xl font-semibold text-[var(--neutral-800)] mb-2">Enter PIN</h3>
+                <p className="text-[var(--neutral-500)] text-sm mb-8">Enter your 4-digit PIN to clock in</p>
                 
                 <div className="mb-8">
                   <InputOTP
@@ -151,10 +150,10 @@ export function TimeClockTab() {
                     onChange={(value) => setPin(value)}
                   >
                     <InputOTPGroup>
-                      <InputOTPSlot index={0} className="w-14 h-14 text-2xl border-[#E5E4E0]" />
-                      <InputOTPSlot index={1} className="w-14 h-14 text-2xl border-[#E5E4E0]" />
-                      <InputOTPSlot index={2} className="w-14 h-14 text-2xl border-[#E5E4E0]" />
-                      <InputOTPSlot index={3} className="w-14 h-14 text-2xl border-[#E5E4E0]" />
+                      <InputOTPSlot index={0} className="w-14 h-14 text-2xl border-[var(--neutral-200)]" />
+                      <InputOTPSlot index={1} className="w-14 h-14 text-2xl border-[var(--neutral-200)]" />
+                      <InputOTPSlot index={2} className="w-14 h-14 text-2xl border-[var(--neutral-200)]" />
+                      <InputOTPSlot index={3} className="w-14 h-14 text-2xl border-[var(--neutral-200)]" />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -162,13 +161,13 @@ export function TimeClockTab() {
                 <div className="flex gap-3 w-full max-w-[300px]">
                    <Button 
                      variant="outline" 
-                     className="flex-1 h-12 text-[#6B6B6B] border-[#E5E4E0]"
+                     className="flex-1 h-12 text-[var(--neutral-500)] border-[var(--neutral-200)]"
                      onClick={() => setShowPinDialog(false)}
                    >
                      Cancel
                    </Button>
                    <Button 
-                     className="flex-1 h-12 bg-[#FFCF4B] hover:bg-[#FFC020] text-[#2C2C2C] font-medium"
+                     className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[#FFC020] text-[var(--neutral-800)] font-medium"
                      onClick={handlePinSubmit}
                      disabled={pin.length !== 4}
                    >
@@ -226,7 +225,7 @@ export function TimeClockTab() {
                 className={cn(
                   "w-full h-16 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
-                    ? "bg-[#FFCF4B] text-[#2C2C2C] hover:bg-[#FFC020] hover:shadow-md" 
+                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[#FFC020] hover:shadow-md" 
                     : "bg-white border-2 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200"
                 )}
               >
@@ -241,7 +240,7 @@ export function TimeClockTab() {
                   "w-full h-14 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2",
                   isOnBreak
                     ? "bg-blue-50 text-blue-700 border-2 border-blue-200 hover:bg-blue-100"
-                    : "bg-white border border-[#E5E4E0] text-[#43474E] hover:bg-[#F5F5F5]",
+                    : "bg-white border border-[var(--neutral-200)] text-[#43474E] hover:bg-[var(--neutral-100)]",
                   !isClockedIn && "opacity-50 cursor-not-allowed hover:bg-white"
                 )}
               >
@@ -251,7 +250,7 @@ export function TimeClockTab() {
             </div>
 
             {/* Today's Summary */}
-            <div className="w-full bg-[#F8F9FA] rounded-[16px] p-4 border border-[#E5E4E0]">
+            <div className="w-full bg-[#F8F9FA] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
                <div className="flex flex-col gap-1">
                   <div className="text-sm font-semibold text-[#1A1C1E]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
                   {isClockedIn && startTime && (
@@ -266,16 +265,16 @@ export function TimeClockTab() {
 
           {/* Recent Entries */}
           <div className="w-full">
-             <h3 className="text-xl font-semibold text-[#2C2C2C] mb-4 pl-1">This Week</h3>
-             <div className="bg-white rounded-xl shadow-sm border border-[#E5E4E0] overflow-hidden">
+             <h3 className="text-xl font-semibold text-[var(--neutral-800)] mb-4 pl-1">This Week</h3>
+             <div className="bg-white rounded-xl shadow-sm border border-[var(--neutral-200)] overflow-hidden">
                 {history.map((entry, i) => (
                    <div key={i} className={cn(
-                      "flex items-center justify-between h-12 px-4 hover:bg-[#F5F5F5] transition-colors",
-                      i !== history.length - 1 && "border-b border-[#E5E4E0]"
+                      "flex items-center justify-between h-12 px-4 hover:bg-[var(--neutral-100)] transition-colors",
+                      i !== history.length - 1 && "border-b border-[var(--neutral-200)]"
                    )}>
-                      <div className="text-sm font-medium text-[#2C2C2C] w-32">{entry.date}</div>
-                      <div className="text-sm text-[#6B6B6B] flex-1 text-center">{entry.range}</div>
-                      <div className="text-sm font-bold text-[#2C2C2C] w-24 text-right">{entry.total}</div>
+                      <div className="text-sm font-medium text-[var(--neutral-800)] w-32">{entry.date}</div>
+                      <div className="text-sm text-[var(--neutral-500)] flex-1 text-center">{entry.range}</div>
+                      <div className="text-sm font-bold text-[var(--neutral-800)] w-24 text-right">{entry.total}</div>
                    </div>
                 ))}
              </div>

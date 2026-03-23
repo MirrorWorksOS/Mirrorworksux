@@ -44,23 +44,23 @@ export function PermissionGrid({ resolved, grantedBy }: PermissionGridProps) {
           return (
             <div
               key={row.key}
-              className={`grid min-h-10 grid-cols-[1fr_auto] items-center gap-3 rounded-md px-3 ${striped ? 'bg-[#F5F5F5]' : 'bg-transparent'}`}
+              className={`grid min-h-10 grid-cols-[1fr_auto] items-center gap-3 rounded-md px-3 ${striped ? 'bg-[var(--neutral-100)]' : 'bg-transparent'}`}
             >
-              <p className="text-sm text-[#2C2C2C]">{row.label}</p>
+              <p className="text-sm text-[var(--neutral-800)]">{row.label}</p>
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 text-xs text-[#737373]">
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--neutral-500)]">
                       {isScope ? (
                         <span>{value === 'all' ? 'All records' : 'Own records'}</span>
                       ) : value ? (
                         <>
-                          <CheckCircle2 className="h-3.5 w-3.5 text-[#1A2732]" />
-                          <span className="text-[#1A2732]">Enabled</span>
+                          <CheckCircle2 className="h-4 w-4 text-[var(--mw-mirage)]" />
+                          <span className="text-[var(--mw-mirage)]">Enabled</span>
                         </>
                       ) : (
                         <>
-                          <Minus className="h-3.5 w-3.5 text-[#E5E5E5]" />
+                          <Minus className="h-4 w-4 text-[var(--neutral-200)]" />
                           <span>Off</span>
                         </>
                       )}

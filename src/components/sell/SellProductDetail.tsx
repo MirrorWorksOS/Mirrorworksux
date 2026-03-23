@@ -90,11 +90,11 @@ function OverviewTab() {
           { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
         ].map(kpi => (
           <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
+            <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
             <p className={cn(
-              'text-[22px] font-semibold',
+              'text-xl font-semibold',
               kpi.mono && '',
-              kpi.highlight === 'green' ? 'text-[#0A0A0A]' : kpi.highlight === 'yellow' ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]'
+              kpi.highlight === 'green' ? 'text-[var(--neutral-900)]' : kpi.highlight === 'yellow' ? 'text-[var(--neutral-900)]' : 'text-[var(--neutral-900)]'
             )}>
               {kpi.value}
             </p>
@@ -104,8 +104,8 @@ function OverviewTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Description</h4>
-          <p className="text-sm text-[#737373] leading-relaxed">{PRODUCT.description}</p>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Description</h4>
+          <p className="text-sm text-[var(--neutral-500)] leading-relaxed">{PRODUCT.description}</p>
           <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[var(--border)]">
             {[
               { l: 'SKU',         v: PRODUCT.sku },
@@ -116,8 +116,8 @@ function OverviewTab() {
               { l: 'MOQ',         v: `${PRODUCT.moq} unit` },
             ].map(f => (
               <div key={f.l}>
-                <p className="text-xs text-[#737373] mb-0.5">{f.l}</p>
-                <p className="text-sm text-[#0A0A0A] font-medium">{f.v}</p>
+                <p className="text-xs text-[var(--neutral-500)] mb-0.5">{f.l}</p>
+                <p className="text-sm text-[var(--neutral-900)] font-medium">{f.v}</p>
               </div>
             ))}
           </div>
@@ -125,14 +125,14 @@ function OverviewTab() {
 
         <div className="space-y-4">
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Stock on hand</h4>
-            <p className="text-[32px]  font-semibold text-[#0A0A0A]">8</p>
-            <p className="text-xs text-[#737373]">units · Min reorder: 0</p>
+            <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Stock on hand</h4>
+            <p className="text-3xl  font-semibold text-[var(--neutral-900)]">8</p>
+            <p className="text-xs text-[var(--neutral-500)]">units · Min reorder: 0</p>
           </Card>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">This month</h4>
-            <p className="text-[24px]  font-semibold text-[#0A0A0A]">18 units</p>
-            <p className="text-xs text-[#0A0A0A] mt-0.5">▲ 29% vs last month</p>
+            <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">This month</h4>
+            <p className="text-2xl  font-semibold text-[var(--neutral-900)]">18 units</p>
+            <p className="text-xs text-[var(--neutral-900)] mt-0.5">▲ 29% vs last month</p>
           </Card>
         </div>
       </div>
@@ -147,25 +147,25 @@ function ManufacturingTab() {
       {/* Routing */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-[#0A0A0A]">Routing — {totalTime}h total cycle time</h4>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Routing — {totalTime}h total cycle time</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit routing</Button>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               {['Step', 'Operation', 'Work Centre', 'Cycle (hrs)', 'Setup (min)'].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
+                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {ROUTING.map(r => (
-              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-sm  font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
-                <td className="px-4 text-sm text-[#0A0A0A] font-medium">{r.name}</td>
-                <td className="px-4"><Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{r.workCenter}</Badge></td>
+              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
+                <td className="px-4 text-sm  font-medium text-[var(--neutral-500)]">{String(r.step).padStart(2, '0')}</td>
+                <td className="px-4 text-sm text-[var(--neutral-900)] font-medium">{r.name}</td>
+                <td className="px-4"><Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{r.workCenter}</Badge></td>
                 <td className="px-4 text-sm ">{r.duration}</td>
-                <td className="px-4 text-sm  text-[#737373]">{r.setup > 0 ? r.setup : '—'}</td>
+                <td className="px-4 text-sm  text-[var(--neutral-500)]">{r.setup > 0 ? r.setup : '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -175,31 +175,31 @@ function ManufacturingTab() {
       {/* BOM */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-[#0A0A0A]">Bill of Materials · v1.2</h4>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Bill of Materials · v1.2</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit BOM</Button>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               {['SKU', 'Description', 'Qty', 'Unit', 'Unit cost', 'Line total'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Qty', 'Unit cost', 'Line total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Qty', 'Unit cost', 'Line total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {BOM_LINES.map(line => (
-              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-xs  text-[#737373]">{line.sku}</td>
-                <td className="px-4 text-sm text-[#0A0A0A]">{line.description}</td>
+              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
+                <td className="px-4 text-xs  text-[var(--neutral-500)]">{line.sku}</td>
+                <td className="px-4 text-sm text-[var(--neutral-900)]">{line.description}</td>
                 <td className="px-4 text-right text-sm ">{line.qty}</td>
-                <td className="px-4 text-sm text-[#737373]">{line.unit}</td>
+                <td className="px-4 text-sm text-[var(--neutral-500)]">{line.unit}</td>
                 <td className="px-4 text-right text-sm ">${line.cost.toFixed(2)}</td>
                 <td className="px-4 text-right text-sm  font-medium">${(line.qty * line.cost).toFixed(2)}</td>
               </tr>
             ))}
-            <tr className="bg-[#F5F5F5] border-t border-[var(--border)]">
-              <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[#0A0A0A]">Total BOM cost</td>
-              <td className="px-4 py-3 text-right text-sm  font-semibold text-[#0A0A0A]">
+            <tr className="bg-[var(--neutral-100)] border-t border-[var(--border)]">
+              <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[var(--neutral-900)]">Total BOM cost</td>
+              <td className="px-4 py-3 text-right text-sm  font-semibold text-[var(--neutral-900)]">
                 ${BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0).toFixed(2)}
               </td>
             </tr>
@@ -221,40 +221,40 @@ function InventoryTab() {
           { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
         ].map(kpi => (
           <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
-            <p className="text-[22px]  font-semibold text-[#0A0A0A]">{kpi.value}</p>
-            <p className="text-xs text-[#737373] mt-0.5">{kpi.sub}</p>
+            <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
+            <p className="text-xl  font-semibold text-[var(--neutral-900)]">{kpi.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{kpi.sub}</p>
           </Card>
         ))}
       </div>
 
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)]">
-          <h4 className="text-sm font-semibold text-[#0A0A0A]">Stock movements</h4>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Stock movements</h4>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               {['Date', 'Type', 'Reference', 'Qty', 'Balance'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Qty', 'Balance'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Qty', 'Balance'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {INVENTORY_MOVEMENTS.map((m, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-sm text-[#737373]">{m.date}</td>
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
+                <td className="px-4 text-sm text-[var(--neutral-500)]">{m.date}</td>
                 <td className="px-4">
                   <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                    m.type === 'Production' ? 'bg-[#F5F5F5] text-[#0A0A0A]' :
-                    m.type === 'Shipment'   ? 'bg-[#F5F5F5] text-[#0A0A0A]' :
-                    'bg-[#F5F5F5] text-[#737373]'
+                    m.type === 'Production' ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
+                    m.type === 'Shipment'   ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
+                    'bg-[var(--neutral-100)] text-[var(--neutral-500)]'
                   )}>
                     {m.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm  text-[#737373]">{m.ref}</td>
-                <td className={cn('px-4 text-right text-sm  font-semibold', m.qty > 0 ? 'text-[#0A0A0A]' : 'text-[#DE350B]')}>
+                <td className="px-4 text-sm  text-[var(--neutral-500)]">{m.ref}</td>
+                <td className={cn('px-4 text-right text-sm  font-semibold', m.qty > 0 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
                   {m.qty > 0 ? `+${m.qty}` : m.qty}
                 </td>
                 <td className="px-4 text-right text-sm  font-medium">{m.balance}</td>
@@ -272,21 +272,21 @@ function AccountingTab() {
   return (
     <div className="space-y-6">
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Revenue — last 6 months</h4>
+        <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Revenue — last 6 months</h4>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
             <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-            <Area key="revenue" type="monotone" dataKey="revenue" stroke="#FFCF4B" fill="var(--accent)" strokeWidth={2} />
+            <Area key="revenue" type="monotone" dataKey="revenue" stroke="var(--mw-yellow-400)" fill="var(--accent)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Pricing</h4>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Pricing</h4>
           <div className="space-y-3">
             {[
               { l: 'Sell price (ex GST)',  v: `$${PRODUCT.sellPrice.toFixed(2)}`, mono: true },
@@ -295,8 +295,8 @@ function AccountingTab() {
               { l: 'Gross margin',         v: `${margin.toFixed(1)}%`, mono: true, green: true },
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
-                <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', r.mono && '', r.green && 'text-[#0A0A0A]')}>
+                <span className="text-sm text-[var(--neutral-500)]">{r.l}</span>
+                <span className={cn('text-sm font-medium', r.mono && '', r.green && 'text-[var(--neutral-900)]')}>
                   {r.v}
                 </span>
               </div>
@@ -305,7 +305,7 @@ function AccountingTab() {
         </Card>
 
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">YTD performance</h4>
+          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">YTD performance</h4>
           <div className="space-y-3">
             {[
               { l: 'Units sold',    v: '89' },
@@ -314,8 +314,8 @@ function AccountingTab() {
               { l: 'Gross profit',  v: '$40,940.00',  mono: true, green: true },
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
-                <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', (r as any).mono && '', (r as any).green && 'text-[#0A0A0A]')}>
+                <span className="text-sm text-[var(--neutral-500)]">{r.l}</span>
+                <span className={cn('text-sm font-medium', (r as any).mono && '', (r as any).green && 'text-[var(--neutral-900)]')}>
                   {r.v}
                 </span>
               </div>
@@ -329,52 +329,52 @@ function AccountingTab() {
 
 function DocumentsTab() {
   const typeColor: Record<string, string> = {
-    PDF: 'bg-[#F5F5F5] text-[#DE350B]',
-    DWG: 'bg-[#F5F5F5] text-[#0A0A0A]',
-    STP: 'bg-[#F5F5F5] text-[#0A0A0A]',
-    XLS: 'bg-[#F5F5F5] text-[#0A0A0A]',
+    PDF: 'bg-[var(--neutral-100)] text-[var(--mw-error)]',
+    DWG: 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
+    STP: 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
+    XLS: 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
   };
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-2">
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               {['Document', 'Type', 'Size', 'Updated', 'Status', ''].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
+                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {DOCUMENTS.map((doc, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
                 <td className="px-4">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-[#A3A3A3] shrink-0" />
-                    <span className="text-sm text-[#0A0A0A]">{doc.name}</span>
+                    <FileText className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
+                    <span className="text-sm text-[var(--neutral-900)]">{doc.name}</span>
                   </div>
                 </td>
                 <td className="px-4">
-                  <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 ', typeColor[doc.type] ?? 'bg-[#F5F5F5] text-[#737373]')}>
+                  <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 ', typeColor[doc.type] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
                     {doc.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm text-[#737373] ">{doc.size}</td>
-                <td className="px-4 text-sm text-[#737373]">{doc.date}</td>
+                <td className="px-4 text-sm text-[var(--neutral-500)] ">{doc.size}</td>
+                <td className="px-4 text-sm text-[var(--neutral-500)]">{doc.date}</td>
                 <td className="px-4">
                   {doc.status === 'current'
-                    ? <span className="flex items-center gap-1 text-xs text-[#0A0A0A]"><CheckCircle className="w-3.5 h-3.5" /> Current</span>
-                    : <span className="flex items-center gap-1 text-xs text-[#0A0A0A]"><AlertTriangle className="w-3.5 h-3.5" /> Outdated</span>
+                    ? <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><CheckCircle className="w-4 h-4" /> Current</span>
+                    : <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><AlertTriangle className="w-4 h-4" /> Outdated</span>
                   }
                 </td>
                 <td className="px-4">
-                  <button className="p-1.5 hover:bg-[#F5F5F5] rounded transition-colors">
-                    <Download className="w-4 h-4 text-[#737373]" />
+                  <button className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                    <Download className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </td>
               </tr>
@@ -405,16 +405,16 @@ export function SellProductDetail() {
       {/* Back + header */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
-          <button onClick={() => navigate(-1)} className="mt-1 p-2 hover:bg-[#F5F5F5] rounded-lg transition-colors">
-            <ArrowLeft className="w-4 h-4 text-[#737373]" />
+          <button onClick={() => navigate(-1)} className="mt-1 p-2 hover:bg-[var(--neutral-100)] rounded-lg transition-colors">
+            <ArrowLeft className="w-4 h-4 text-[var(--neutral-500)]" />
           </button>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-[28px] tracking-tight text-[#0A0A0A] font-semibold">{PRODUCT.name}</h1>
-              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2">Active</Badge>
-              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
+              <h1 className="text-2xl tracking-tight text-[var(--neutral-900)] font-semibold">{PRODUCT.name}</h1>
+              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">Active</Badge>
+              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
             </div>
-            <p className="text-sm text-[#737373] ">{PRODUCT.sku} · {PRODUCT.category}</p>
+            <p className="text-sm text-[var(--neutral-500)] ">{PRODUCT.sku} · {PRODUCT.category}</p>
           </div>
         </div>
         <div className="flex gap-3">
@@ -422,7 +422,7 @@ export function SellProductDetail() {
             <Edit className="w-4 h-4" /> Edit
           </Button>
           <Button variant="ghost" className="h-10 px-2">
-            <MoreVertical className="w-4 h-4 text-[#737373]" />
+            <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
           </Button>
         </div>
       </div>
@@ -436,8 +436,8 @@ export function SellProductDetail() {
             className={cn(
               'py-3 mr-8 text-sm border-b-2 transition-colors',
               tab === t
-                ? 'border-[#1A2732] text-[#0A0A0A] font-medium'
-                : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
+                ? 'border-[var(--mw-mirage)] text-[var(--neutral-900)] font-medium'
+                : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-900)]'
             )}
           >
             {t}

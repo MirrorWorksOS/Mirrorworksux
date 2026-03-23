@@ -7,7 +7,7 @@ import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
-import { AIInsightMessage } from '../shared/AIInsightCard';
+import { AIInsightMessage } from '../shared/ai/AIInsightCard';
 
 export function PlanOverviewTab() {
   return (
@@ -15,9 +15,9 @@ export function PlanOverviewTab() {
       {/* Left Column - 2/3 width */}
       <div className="lg:col-span-2 space-y-6">
         {/* Job Metadata Section */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className=" text-[18px] font-semibold text-[#1A2732]">
+            <h2 className=" text-lg font-semibold text-[var(--mw-mirage)]">
               Job Details
             </h2>
             <Button variant="outline" className="border-[var(--border)]">
@@ -30,17 +30,17 @@ export function PlanOverviewTab() {
             {/* Job ID and Stage */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Job ID #
                 </label>
                 <Input
                   value="MW-001"
                   readOnly
-                  className="bg-[#F5F5F5] border-transparent font-['Roboto_Mono',monospace]"
+                  className="bg-[var(--neutral-100)] border-transparent tabular-nums"
                 />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Stage
                 </label>
                 <Select defaultValue="planning">
@@ -62,13 +62,13 @@ export function PlanOverviewTab() {
             {/* Customer Info */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Customer
                 </label>
                 <Input placeholder="Select customer..." />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Customer Contact
                 </label>
                 <Input placeholder="Primary contact name" />
@@ -78,18 +78,18 @@ export function PlanOverviewTab() {
             {/* PO and Tags */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Customer PO
                 </label>
                 <Input placeholder="Purchase order reference" />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Tags
                 </label>
                 <div className="flex gap-2">
-                  <Badge className="bg-[#EF4444] text-white">Urgent</Badge>
-                  <Badge className="bg-[#FFCF4B] text-white">Priority</Badge>
+                  <Badge className="bg-[var(--mw-error)] text-white">Urgent</Badge>
+                  <Badge className="bg-[var(--mw-yellow-400)] text-white">Priority</Badge>
                 </div>
               </div>
             </div>
@@ -97,13 +97,13 @@ export function PlanOverviewTab() {
             {/* Sales Order and Opportunity */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Sales Order
                 </label>
                 <Input placeholder="e.g., GGPC-001" />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Opportunity
                 </label>
                 <Input placeholder="Linked opportunity" />
@@ -113,19 +113,19 @@ export function PlanOverviewTab() {
             {/* Dates */}
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Order Date
                 </label>
                 <Input type="date" defaultValue="2026-03-15" />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Planned Production Date
                 </label>
                 <Input type="date" defaultValue="2026-04-01" />
               </div>
               <div>
-                <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Expected Delivery Date
                 </label>
                 <Input type="date" defaultValue="2026-04-15" />
@@ -134,7 +134,7 @@ export function PlanOverviewTab() {
 
             {/* Sales Rep */}
             <div>
-              <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                 Sales Representative
               </label>
               <Select>
@@ -151,7 +151,7 @@ export function PlanOverviewTab() {
 
             {/* Shipping and Description */}
             <div>
-              <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                 Shipping Instructions
               </label>
               <Textarea
@@ -161,7 +161,7 @@ export function PlanOverviewTab() {
             </div>
 
             <div>
-              <label className="block  text-[13px] font-medium text-[#1A2732] mb-2">
+              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                 Description
               </label>
               <Textarea
@@ -173,12 +173,12 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Products Table */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="mb-4">
-            <h3 className=" text-[16px] font-semibold text-[#1A2732]">
+            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
               Products
             </h3>
-            <p className=" text-[13px] text-[#737373]">
+            <p className=" text-xs text-[var(--neutral-500)]">
               Materials sold
             </p>
           </div>
@@ -187,23 +187,23 @@ export function PlanOverviewTab() {
             <table className="w-full">
               <thead className="border-b border-[var(--border)]">
                 <tr>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">Part</th>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">To Produce</th>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">Inventory</th>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">UoM</th>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">Status</th>
-                  <th className="text-left pb-3  text-[13px] font-medium text-[#1A2732]">Responsible</th>
-                  <th className="text-center pb-3  text-[13px] font-medium text-[#1A2732]">CAD</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Part</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">To Produce</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Inventory</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">UoM</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Status</th>
+                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Responsible</th>
+                  <th className="text-center pb-3  text-xs font-medium text-[var(--mw-mirage)]">CAD</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-[var(--border)]">
-                  <td className="py-3  text-[13px] text-[#1A2732]">Manifold Bracket</td>
-                  <td className="py-3  text-[13px] text-[#1A2732]">800</td>
-                  <td className="py-3  text-[13px] text-[#737373]">0</td>
-                  <td className="py-3  text-[13px] text-[#737373]">Units</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Manifold Bracket</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">800</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">0</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
                   <td className="py-3">
-                    <Badge className="bg-[#FFCF4B] text-white text-xs">Produced</Badge>
+                    <Badge className="bg-[var(--mw-yellow-400)] text-white text-xs">Produced</Badge>
                   </td>
                   <td className="py-3">
                     <Avatar className="w-6 h-6 border border-[var(--border)]">
@@ -218,12 +218,12 @@ export function PlanOverviewTab() {
                   </td>
                 </tr>
                 <tr className="border-b border-[var(--border)]">
-                  <td className="py-3  text-[13px] text-[#1A2732]">Angle B</td>
-                  <td className="py-3  text-[13px] text-[#1A2732]">5,000</td>
-                  <td className="py-3  text-[13px] text-[#737373]">2,550</td>
-                  <td className="py-3  text-[13px] text-[#737373]">Units</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Angle B</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">5,000</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">2,550</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
                   <td className="py-3">
-                    <Badge className="bg-[#FFCF4B] text-[#2C2C2C] text-xs">In Progress</Badge>
+                    <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] text-xs">In Progress</Badge>
                   </td>
                   <td className="py-3">
                     <Avatar className="w-6 h-6 border border-[var(--border)]">
@@ -238,12 +238,12 @@ export function PlanOverviewTab() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-3  text-[13px] text-[#1A2732]">Sliding Brace</td>
-                  <td className="py-3  text-[13px] text-[#1A2732]">10,000</td>
-                  <td className="py-3  text-[13px] text-[#737373]">500</td>
-                  <td className="py-3  text-[13px] text-[#737373]">Units</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Sliding Brace</td>
+                  <td className="py-3  text-xs text-[var(--mw-mirage)]">10,000</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">500</td>
+                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
                   <td className="py-3">
-                    <Badge className="bg-[#0A7AFF] text-white text-xs">Scheduled</Badge>
+                    <Badge className="bg-[var(--mw-blue)] text-white text-xs">Scheduled</Badge>
                   </td>
                   <td className="py-3">
                     <Avatar className="w-6 h-6 border border-[var(--border)]">
@@ -278,68 +278,68 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Budget Section */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="mb-4">
-            <h3 className=" text-[16px] font-semibold text-[#1A2732]">
+            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
               Budget
             </h3>
-            <p className=" text-[13px] text-[#737373]">
+            <p className=" text-xs text-[var(--neutral-500)]">
               Project running costs
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-[13px] font-medium text-[#1A2732]">
+              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Materials
               </div>
-              <div className=" text-[13px] text-[#737373]">
+              <div className=" text-xs text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-[13px] text-[#1A2732]">
+              <div className=" text-xs text-[var(--mw-mirage)]">
                 $500
               </div>
-              <div className=" text-[13px] text-[#1A2732]">
+              <div className=" text-xs text-[var(--mw-mirage)]">
                 $19,500
               </div>
-              <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[#FFCF4B]" style={{ width: '2.5%' }} />
+              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-[var(--mw-yellow-400)]" style={{ width: '2.5%' }} />
               </div>
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-[13px] font-medium text-[#1A2732]">
+              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Labour
               </div>
-              <div className=" text-[13px] text-[#737373]">
+              <div className=" text-xs text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-[13px] text-[#1A2732]">
+              <div className=" text-xs text-[var(--mw-mirage)]">
                 $10,000
               </div>
-              <div className=" text-[13px] text-[#FF8B00]">
+              <div className=" text-xs text-[var(--mw-amber)]">
                 $10,000
               </div>
-              <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[#FF8B00]" style={{ width: '50%' }} />
+              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-[var(--mw-amber)]" style={{ width: '50%' }} />
               </div>
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-[13px] font-medium text-[#1A2732]">
+              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Purchase
               </div>
-              <div className=" text-[13px] text-[#737373]">
+              <div className=" text-xs text-[var(--neutral-500)]">
                 $10,000
               </div>
-              <div className=" text-[13px] text-[#1A2732]">
+              <div className=" text-xs text-[var(--mw-mirage)]">
                 $3,000
               </div>
-              <div className=" text-[13px] text-[#1A2732]">
+              <div className=" text-xs text-[var(--mw-mirage)]">
                 $7,000
               </div>
-              <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[#FFCF4B]" style={{ width: '30%' }} />
+              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-[var(--mw-yellow-400)]" style={{ width: '30%' }} />
               </div>
             </div>
           </div>
@@ -364,23 +364,23 @@ export function PlanOverviewTab() {
       {/* Right Column - 1/3 width */}
       <div className="space-y-6">
         {/* Schedule Mini-Calendar */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-4">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className=" text-[14px] font-semibold text-[#1A2732]">
+            <h3 className=" text-sm font-semibold text-[var(--mw-mirage)]">
               Schedule
             </h3>
-            <Calendar className="w-4 h-4 text-[#737373]" />
+            <Calendar className="w-4 h-4 text-[var(--neutral-500)]" />
           </div>
           
-          <div className="bg-[#F5F5F5] rounded-lg p-3 mb-4">
+          <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 mb-4">
             <div className="text-center mb-2">
-              <span className=" text-[13px] font-medium text-[#1A2732]">
+              <span className=" text-xs font-medium text-[var(--mw-mirage)]">
                 April 2026
               </span>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center mb-2">
               {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(day => (
-                <div key={day} className=" text-[11px] text-[#737373]">
+                <div key={day} className=" text-xs text-[var(--neutral-500)]">
                   {day}
                 </div>
               ))}
@@ -390,10 +390,10 @@ export function PlanOverviewTab() {
                 <div
                   key={day}
                   className={cn(
-                    'font-[\'Geist:Regular\',sans-serif] text-[12px] p-1 rounded',
-                    day === 15 ? 'bg-[#FFCF4B] text-[#2C2C2C] font-medium' :
-                    day === 8 || day === 22 ? 'bg-[#F5F5F5] text-[#1A2732]' :
-                    'text-[#737373]'
+                    'text-xs p-1 rounded',
+                    day === 15 ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium' :
+                    day === 8 || day === 22 ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' :
+                    'text-[var(--neutral-500)]'
                   )}
                 >
                   {day}
@@ -403,11 +403,11 @@ export function PlanOverviewTab() {
           </div>
 
           <div className="space-y-2">
-            <div className="p-2 bg-[#F5F5F5] rounded">
-              <p className=" text-[12px] font-medium text-[#1A2732] mb-1">
+            <div className="p-2 bg-[var(--neutral-100)] rounded">
+              <p className=" text-xs font-medium text-[var(--mw-mirage)] mb-1">
                 Order 3rd party powder coating
               </p>
-              <p className=" text-[11px] text-[#737373]">
+              <p className=" text-xs text-[var(--neutral-500)]">
                 Apr 12, 9:00-10:00
               </p>
             </div>
@@ -415,33 +415,33 @@ export function PlanOverviewTab() {
 
           <div className="flex gap-2 mt-4">
             <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
-              <Expand className="w-3 h-3 mr-1" />
+              <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
-            <Button size="sm" className="flex-1 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] text-xs">
-              <Calendar className="w-3 h-3 mr-1" />
+            <Button size="sm" className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs">
+              <Calendar className="w-4 h-4 mr-1" />
               Create
             </Button>
           </div>
         </div>
 
         {/* Intelligence Hub Preview */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-4">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className=" text-[14px] font-semibold text-[#1A2732]">
+            <h3 className=" text-sm font-semibold text-[var(--mw-mirage)]">
               Intelligence Hub
             </h3>
             <Button variant="ghost" size="sm" className="text-xs h-7">
-              <Expand className="w-3 h-3 mr-1" />
+              <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
           </div>
 
-          <div className="bg-[#F5F5F5] rounded-lg aspect-video mb-3 flex items-center justify-center">
+          <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] aspect-video mb-3 flex items-center justify-center">
             <span className="text-4xl">🔧</span>
           </div>
 
-          <p className=" text-[13px] font-medium text-[#1A2732] mb-2">
+          <p className=" text-xs font-medium text-[var(--mw-mirage)] mb-2">
             Customer engagement and notes
           </p>
           
@@ -452,10 +452,10 @@ export function PlanOverviewTab() {
                 <AvatarFallback className="text-xs">JW</AvatarFallback>
               </Avatar>
               <div>
-                <p className=" text-[12px] text-[#1A2732]">
+                <p className=" text-xs text-[var(--mw-mirage)]">
                   Jill Wright uploaded BOM and NC files
                 </p>
-                <p className=" text-[10px] text-[#737373]">
+                <p className=" text-[10px] text-[var(--neutral-500)]">
                   2 hours ago
                 </p>
               </div>
@@ -464,21 +464,21 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Files Section */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-4">
-          <h3 className=" text-[14px] font-semibold text-[#1A2732] mb-3">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+          <h3 className=" text-sm font-semibold text-[var(--mw-mirage)] mb-3">
             Files
           </h3>
           
           <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 p-2 bg-[#F5F5F5] rounded">
-              <div className="w-8 h-8 bg-[#0A7AFF] rounded flex items-center justify-center text-white text-xs">
+            <div className="flex items-center gap-2 p-2 bg-[var(--neutral-100)] rounded">
+              <div className="w-8 h-8 bg-[var(--mw-blue)] rounded flex items-center justify-center text-white text-xs">
                 CAD
               </div>
               <div className="flex-1 min-w-0">
-                <p className=" text-[12px] font-medium text-[#1A2732] truncate">
+                <p className=" text-xs font-medium text-[var(--mw-mirage)] truncate">
                   CAD Drawings
                 </p>
-                <p className=" text-[10px] text-[#737373]">
+                <p className=" text-[10px] text-[var(--neutral-500)]">
                   3 items • 2 days ago
                 </p>
               </div>
@@ -487,19 +487,19 @@ export function PlanOverviewTab() {
 
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
-              <Upload className="w-3 h-3 mr-1" />
+              <Upload className="w-4 h-4 mr-1" />
               Upload
             </Button>
             <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
-              <Download className="w-3 h-3 mr-1" />
+              <Download className="w-4 h-4 mr-1" />
               Download
             </Button>
           </div>
         </div>
 
         {/* Chatter Section */}
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-4">
-          <h3 className=" text-[14px] font-semibold text-[#1A2732] mb-3">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+          <h3 className=" text-sm font-semibold text-[var(--mw-mirage)] mb-3">
             Chatter
           </h3>
           
@@ -515,14 +515,14 @@ export function PlanOverviewTab() {
               </Avatar>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className=" text-[11px] font-medium text-[#1A2732]">
+                  <span className=" text-xs font-medium text-[var(--mw-mirage)]">
                     David Miller
                   </span>
-                  <span className=" text-[10px] text-[#737373]">
+                  <span className=" text-[10px] text-[var(--neutral-500)]">
                     2 hours ago
                   </span>
                 </div>
-                <p className=" text-[12px] text-[#1A2732]">
+                <p className=" text-xs text-[var(--mw-mirage)]">
                   BOM reviewed and approved. Moving to production planning.
                 </p>
               </div>
@@ -531,13 +531,13 @@ export function PlanOverviewTab() {
 
           <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Paperclip className="w-4 h-4 text-[#737373]" />
+              <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
             <Input placeholder="Type a message..." className="flex-1 h-8 text-xs" />
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Camera className="w-4 h-4 text-[#737373]" />
+              <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] px-3">
+            <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3">
               Send
             </Button>
           </div>

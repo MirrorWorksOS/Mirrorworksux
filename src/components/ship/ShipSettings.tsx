@@ -20,7 +20,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Ship module (from ARCH 00 §4.6) ──
 const shipPermissionKeys: PermissionKey[] = [
@@ -103,8 +103,8 @@ function GeneralPanel() {
             { label: 'Auto-generate packing slip on pick complete', checked: true },
             { label: 'Enable bin location tracking', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -140,8 +140,8 @@ function GeneralPanel() {
             { label: 'Print shipping labels automatically', checked: true },
             { label: 'Include weight on packing slip', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -158,7 +158,7 @@ function CarriersPanel() {
     { name: 'StarTrack', description: 'Domestic parcel and express courier', connected: true, colour: '#E4002B' },
     { name: 'TNT', description: 'Road express and international freight', connected: false, colour: '#FF6600' },
     { name: 'DHL', description: 'International shipping and express', connected: false, colour: '#FFCC00' },
-    { name: 'Customer collect', description: 'Customer arranges own pickup', connected: true, colour: '#737373' },
+    { name: 'Customer collect', description: 'Customer arranges own pickup', connected: true, colour: 'var(--neutral-500)' },
   ];
 
   return (
@@ -168,7 +168,7 @@ function CarriersPanel() {
         <SectionLabel>Carrier management</SectionLabel>
         <div className="space-y-4">
           {carriers.map(c => (
-            <Card key={c.name} className="bg-white border border-[var(--border)] rounded-2xl p-5">
+            <Card key={c.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: c.colour }}>
@@ -176,12 +176,12 @@ function CarriersPanel() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-[#1A2732]">{c.name}</h3>
+                      <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{c.name}</h3>
                       {c.connected && (
-                        <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
+                        <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
                       )}
                     </div>
-                    <p className="text-xs text-[#737373] mt-0.5">{c.description}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{c.description}</p>
                   </div>
                 </div>
                 <Button
@@ -190,8 +190,8 @@ function CarriersPanel() {
                   className={cn(
                     'h-9 text-xs rounded-xl',
                     c.connected
-                      ? 'border-[var(--border)] text-[#737373]'
-                      : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] border-0'
+                      ? 'border-[var(--border)] text-[var(--neutral-500)]'
+                      : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] border-0'
                   )}
                 >
                   {c.connected ? 'Configure' : 'Connect'}
@@ -209,8 +209,8 @@ function CarriersPanel() {
             { label: 'Require carrier selection before dispatch', checked: true },
             { label: 'Send tracking notification to customer', checked: true },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -236,11 +236,11 @@ function ReportsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Dashboard widgets</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Ship dashboard.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Ship dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}

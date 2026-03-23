@@ -48,8 +48,8 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
         <div className="flex flex-col items-center">
           <span className="text-sm font-medium tracking-wide text-white/90">INTELLIGENCE HUB</span>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse"></span>
-            <span className="text-[10px] text-[#A78BFA] font-medium uppercase tracking-wider">Online</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--mw-purple)] animate-pulse"></span>
+            <span className="text-[10px] text-[var(--mw-purple-light)] font-medium uppercase tracking-wider">Online</span>
           </div>
         </div>
         <Button 
@@ -78,7 +78,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
-                  className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] flex items-center justify-center shadow-[0_8px_32px_rgba(124,58,237,0.4)] mb-4"
+                  className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-[var(--mw-purple)] to-[#5B21B6] flex items-center justify-center shadow-[0_8px_32px_rgba(124,58,237,0.4)] mb-4"
                 >
                   <Sparkles className="w-10 h-10 text-white" />
                 </motion.div>
@@ -107,10 +107,10 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 + (i * 0.1) }}
-                      className="w-full p-4 rounded-[16px] bg-white/5 border border-white/10 text-left text-sm text-white/90 active:bg-white/10 transition-colors flex items-center justify-between group"
+                      className="w-full p-4 rounded-[var(--shape-lg)] bg-white/5 border border-white/10 text-left text-sm text-white/90 active:bg-white/10 transition-colors flex items-center justify-between group"
                     >
                       "{suggestion}"
-                      <Sparkles className="w-4 h-4 text-white/20 group-active:text-[#7C3AED] transition-colors" />
+                      <Sparkles className="w-4 h-4 text-white/20 group-active:text-[var(--mw-mirage)] transition-colors" />
                     </motion.button>
                   ))}
                 </div>
@@ -126,14 +126,14 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
               className="flex-1 flex flex-col items-center justify-center -mt-20"
             >
               <div className="text-2xl font-medium text-white mb-2">Listening...</div>
-              <div className="text-[#A78BFA]  text-xl mb-12 tracking-wider">{formatTime(recordingTime)}</div>
+              <div className="text-[var(--mw-purple-light)]  text-xl mb-12 tracking-wider">{formatTime(recordingTime)}</div>
 
               {/* Dynamic Waveform Visualization */}
               <div className="h-24 flex items-center justify-center gap-1.5 w-full max-w-[300px]">
                 {[...Array(20)].map((_, i) => (
                    <motion.div 
                       key={i} 
-                      className="w-1.5 bg-gradient-to-t from-[#7C3AED] to-[#A78BFA] rounded-full"
+                      className="w-1.5 bg-gradient-to-t from-[var(--mw-purple)] to-[var(--mw-purple-light)] rounded-full"
                       animate={{ 
                         height: [
                           10 + Math.random() * 10, 
@@ -171,8 +171,8 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                      exit={{ scale: 0, opacity: 0 }}
                      className="absolute inset-0 flex items-center justify-center"
                   >
-                     <div className="w-24 h-24 rounded-full bg-[#7C3AED]/20 animate-ping absolute" />
-                     <div className="w-20 h-20 rounded-full bg-[#7C3AED]/30 animate-pulse absolute delay-75" />
+                     <div className="w-24 h-24 rounded-full bg-[var(--mw-purple)]/20 animate-ping absolute" />
+                     <div className="w-20 h-20 rounded-full bg-[var(--mw-purple)]/30 animate-pulse absolute delay-75" />
                   </motion.div>
                )}
             </AnimatePresence>
@@ -181,8 +181,8 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                className={cn(
                   "relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all duration-300",
                   isRecording 
-                     ? "bg-[#EF4444] text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
-                     : "bg-white text-[#1A1A1A] hover:bg-[#F5F5F5] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                     ? "bg-[var(--mw-error)] text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
+                     : "bg-white text-[#1A1A1A] hover:bg-[var(--neutral-100)] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                )}
                whileTap={{ scale: 0.95 }}
                onClick={() => setIsRecording(!isRecording)}

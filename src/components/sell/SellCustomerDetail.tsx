@@ -14,6 +14,16 @@ import { Textarea } from '../ui/textarea';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../ui/alert-dialog';
 
 // ============================================================
 // Mock Data
@@ -93,33 +103,33 @@ const mockCustomers: Record<string, any> = {
 
 const statusStyle = (s: string) => {
   switch (s) {
-    case 'active': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'prospect': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'inactive': return 'bg-[#F5F5F5] text-[#737373]';
-    case 'on-hold': return 'bg-[#FFCF4B]/20 text-[#0A0A0A]';
-    default: return 'bg-[#F5F5F5] text-[#737373]';
+    case 'active': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'prospect': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'inactive': return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
+    case 'on-hold': return 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]';
+    default: return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };
 
 const typeStyle = (t: string) => {
   switch (t) {
-    case 'Customer': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Vendor': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Subcontractor': return 'bg-[#FFCF4B]/20 text-[#0A0A0A]';
-    default: return 'bg-[#F5F5F5] text-[#737373]';
+    case 'Customer': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Vendor': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Subcontractor': return 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]';
+    default: return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };
 
 const badgeStatus = (s: string) => {
   switch (s) {
-    case 'Sent': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Accepted': case 'Paid': case 'Completed': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Declined': case 'Overdue': return 'bg-[#DE350B]/10 text-[#DE350B]';
-    case 'Draft': return 'bg-[#F5F5F5] text-[#737373]';
-    case 'In Progress': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Proposal': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Negotiation': return 'bg-[#FFFBF0] text-[#0A0A0A]';
-    default: return 'bg-[#F5F5F5] text-[#737373]';
+    case 'Sent': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Accepted': case 'Paid': case 'Completed': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Declined': case 'Overdue': return 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]';
+    case 'Draft': return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
+    case 'In Progress': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Proposal': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'Negotiation': return 'bg-[var(--mw-yellow-50)] text-[var(--neutral-900)]';
+    default: return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };
 
@@ -147,6 +157,8 @@ export function SellCustomerDetail() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [additionalContactsOpen, setAdditionalContactsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   const customer = mockCustomers[id || '1'] || mockCustomers['1'];
 
@@ -160,20 +172,20 @@ export function SellCustomerDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
+    <div className="min-h-screen bg-[var(--neutral-100)] flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => navigate('/sell/crm')} className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[#0A0A0A]" />
+          <button onClick={() => navigate('/sell/crm')} className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+            <ArrowLeft className="w-5 h-5 text-[var(--neutral-900)]" />
           </button>
           <Avatar className="w-10 h-10">
-            <AvatarFallback className="bg-[#1A2732] text-white text-sm font-medium">
+            <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
               {customer.company.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-[20px] font-semibold text-[#0A0A0A]">
+            <h1 className="text-[20px] font-semibold text-[var(--neutral-900)]">
               {customer.company}
             </h1>
             {customer.types.map((t: string) => (
@@ -184,21 +196,55 @@ export function SellCustomerDetail() {
             </Badge>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
               New quote
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 hover:bg-[#F5F5F5] rounded transition-colors">
-                  <MoreVertical className="w-5 h-5 text-[#737373]" />
+                <button className="p-2 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                  <MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem><Pencil className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
-                <DropdownMenuItem><Archive className="w-4 h-4 mr-2" /> Archive</DropdownMenuItem>
-                <DropdownMenuItem className="text-[#DE350B]"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setArchiveOpen(true)}><Archive className="w-4 h-4 mr-2" /> Archive</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteOpen(true)}><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
+              <AlertDialogContent className="rounded-[var(--shape-lg)]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Archive {customer.company}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This customer will be hidden from active lists. You can restore them later from the archive.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
+                    Archive
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+              <AlertDialogContent className="rounded-[var(--shape-lg)]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete {customer.company}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. All quotes, orders, and activity history associated with this customer will be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
@@ -209,13 +255,13 @@ export function SellCustomerDetail() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                "px-4 py-2 text-[14px] rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
-                activeTab === tab.key ? 'bg-[#F5F5F5] text-[#0A0A0A] font-medium' : 'text-[#737373] hover:bg-[#F5F5F5]'
+                "px-4 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
+                activeTab === tab.key ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)] font-medium' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >
               {tab.label}
               {tab.count !== undefined && (
-                <span className="flex items-center justify-center min-w-[20px] h-5 bg-[#1A2732] text-white text-[11px] rounded-full font-medium px-1.5">
+                <span className="flex items-center justify-center min-w-[20px] h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium px-1.5">
                   {tab.count}
                 </span>
               )}
@@ -233,7 +279,7 @@ export function SellCustomerDetail() {
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Company information</h2>
+                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
                   <Field label="ABN" value={customer.abn} mono />
@@ -248,26 +294,26 @@ export function SellCustomerDetail() {
 
               {/* Primary Contact */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Primary contact</h2>
+                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
                   <Field label="Job title" value={customer.primaryContact.title} />
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Email</span>
-                    <a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5" /> {customer.primaryContact.email}
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
+                    <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                      <Mail className="w-4 h-4" /> {customer.primaryContact.email}
                     </a>
                   </div>
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Phone</span>
-                    <a href={`tel:${customer.primaryContact.phone}`} className="text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5" /> {customer.primaryContact.phone}
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
+                    <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                      <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
                     </a>
                   </div>
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Mobile</span>
-                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5" /> {customer.primaryContact.mobile}
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
+                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                      <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
                     </a>
                   </div>
                   <Field label="Preferred contact" value={customer.primaryContact.preferred} />
@@ -277,17 +323,17 @@ export function SellCustomerDetail() {
               {/* Address */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Address</h2>
+                  <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Address</h2>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-[#0A0A0A] hover:underline flex items-center gap-1"
+                    className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1"
                   >
                     <MapPin className="w-4 h-4" /> Open in maps
                   </a>
                 </div>
-                <div className="text-[14px] text-[#0A0A0A] leading-relaxed">
+                <div className="text-sm text-[var(--neutral-900)] leading-relaxed">
                   <p>{customer.address.street}</p>
                   <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
                   <p>{customer.address.country}</p>
@@ -300,30 +346,30 @@ export function SellCustomerDetail() {
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
                 >
-                  <h2 className="text-[18px] font-semibold text-[#0A0A0A]">
+                  <h2 className="text-lg font-semibold text-[var(--neutral-900)]">
                     Additional contacts ({customer.additionalContacts.length})
                   </h2>
-                  {additionalContactsOpen ? <ChevronUp className="w-5 h-5 text-[#737373]" /> : <ChevronDown className="w-5 h-5 text-[#737373]" />}
+                  {additionalContactsOpen ? <ChevronUp className="w-5 h-5 text-[var(--neutral-500)]" /> : <ChevronDown className="w-5 h-5 text-[var(--neutral-500)]" />}
                 </button>
                 {additionalContactsOpen && (
                   <div className="mt-4 space-y-3">
                     {customer.additionalContacts.map((c: any, i: number) => (
-                      <div key={i} className="flex items-center gap-4 p-3 bg-[#F5F5F5] rounded-lg">
+                      <div key={i} className="flex items-center gap-4 p-3 bg-[var(--neutral-100)] rounded-lg">
                         <Avatar className="w-9 h-9">
-                          <AvatarFallback className="bg-[var(--border)] text-[#737373] text-xs font-medium">
+                          <AvatarFallback className="bg-[var(--border)] text-[var(--neutral-500)] text-xs font-medium">
                             {c.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[14px] font-medium text-[#0A0A0A]">{c.name}</p>
-                          <p className="text-[12px] text-[#737373]">{c.role}</p>
+                          <p className="text-sm font-medium text-[var(--neutral-900)]">{c.name}</p>
+                          <p className="text-xs text-[var(--neutral-500)]">{c.role}</p>
                         </div>
-                        <a href={`mailto:${c.email}`} className="text-[12px] text-[#0A0A0A] hover:underline">{c.email}</a>
-                        <span className="text-[12px] text-[#737373]">{c.phone}</span>
+                        <a href={`mailto:${c.email}`} className="text-xs text-[var(--neutral-900)] hover:underline">{c.email}</a>
+                        <span className="text-xs text-[var(--neutral-500)]">{c.phone}</span>
                       </div>
                     ))}
-                    <button className="text-[13px] text-[#0A0A0A] hover:underline flex items-center gap-1 mt-2">
-                      <Plus className="w-3.5 h-3.5" /> Add contact
+                    <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1 mt-2">
+                      <Plus className="w-4 h-4" /> Add contact
                     </button>
                   </div>
                 )}
@@ -331,41 +377,41 @@ export function SellCustomerDetail() {
 
               {/* Financial Summary */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Financial summary</h2>
+                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Lifetime revenue</span>
-                    <p className=" text-[20px] font-semibold text-[#0A0A0A]">{fmt(customer.financial.lifetimeRevenue)}</p>
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Lifetime revenue</span>
+                    <p className=" text-[20px] font-semibold text-[var(--neutral-900)]">{fmt(customer.financial.lifetimeRevenue)}</p>
                   </div>
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Outstanding</span>
-                    <p className=" text-[20px] font-semibold text-[#0A0A0A]">{fmt(customer.financial.outstanding)}</p>
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Outstanding</span>
+                    <p className=" text-[20px] font-semibold text-[var(--neutral-900)]">{fmt(customer.financial.outstanding)}</p>
                   </div>
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Payment terms</span>
-                    <p className="text-[16px] font-medium text-[#0A0A0A]">{customer.financial.avgPaymentTerms}</p>
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Payment terms</span>
+                    <p className="text-base font-medium text-[var(--neutral-900)]">{customer.financial.avgPaymentTerms}</p>
                   </div>
                   <div>
-                    <span className="block text-[13px] font-medium text-[#737373] mb-1">Credit limit</span>
-                    <p className=" text-[16px] font-medium text-[#0A0A0A]">{fmt(customer.financial.creditLimit)}</p>
+                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Credit limit</span>
+                    <p className=" text-base font-medium text-[var(--neutral-900)]">{fmt(customer.financial.creditLimit)}</p>
                   </div>
                 </div>
               </Card>
 
               {/* Tags & Notes */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-4">Tags & notes</h2>
+                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
-                    <Badge key={tag} className="bg-[#FFFBF0] text-[#2C2C2C] border border-[#FFCF4B] rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-[var(--neutral-800)] border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
-                  <button className="text-[12px] text-[#0A0A0A] hover:underline flex items-center gap-1">
-                    <Plus className="w-3 h-3" /> Add tag
+                  <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                    <Plus className="w-4 h-4" /> Add tag
                   </button>
                 </div>
-                <div className="bg-[#F5F5F5] rounded-lg p-4">
-                  <p className="text-[14px] text-[#0A0A0A] leading-relaxed">{customer.notes}</p>
-                  <p className="text-[12px] text-[#737373] mt-2">Last updated 2 days ago by Jill Wright</p>
+                <div className="bg-[var(--neutral-100)] rounded-lg p-4">
+                  <p className="text-sm text-[var(--neutral-900)] leading-relaxed">{customer.notes}</p>
+                  <p className="text-xs text-[var(--neutral-500)] mt-2">Last updated 2 days ago by Jill Wright</p>
                 </div>
               </Card>
             </div>
@@ -375,46 +421,46 @@ export function SellCustomerDetail() {
               {/* Activity Timeline */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Recent activity</h3>
-                  <button className="text-[12px] text-[#0A0A0A] hover:underline">View all</button>
+                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Recent activity</h3>
+                  <button className="text-xs text-[var(--neutral-900)] hover:underline">View all</button>
                 </div>
                 <div className="space-y-4">
                   {customer.activity.slice(0, 5).map((a: any, i: number) => (
                     <div key={i} className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 text-[#737373]">
+                      <div className="w-8 h-8 rounded-full bg-[var(--neutral-100)] flex items-center justify-center flex-shrink-0 text-[var(--neutral-500)]">
                         {activityIcon(a.type)}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[13px] text-[#0A0A0A] leading-snug">{a.desc}</p>
-                        <p className="text-[11px] text-[#737373] mt-0.5">{a.time} · {a.user}</p>
+                        <p className="text-xs text-[var(--neutral-900)] leading-snug">{a.desc}</p>
+                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">{a.time} · {a.user}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[13px]">
-                  <Plus className="w-3.5 h-3.5 mr-1.5" /> Log activity
+                <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-xs">
+                  <Plus className="w-4 h-4 mr-1.5" /> Log activity
                 </Button>
               </Card>
 
               {/* Active Opportunities */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Active opportunities</h3>
-                  <button className="text-[12px] text-[#0A0A0A] hover:underline flex items-center gap-1">
-                    <Plus className="w-3 h-3" /> New
+                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Active opportunities</h3>
+                  <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                    <Plus className="w-4 h-4" /> New
                   </button>
                 </div>
                 <div className="space-y-3">
                   {customer.opportunities.map((opp: any) => (
-                    <div key={opp.id} className="p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
+                    <div key={opp.id} className="p-3 bg-[var(--neutral-100)] rounded-lg hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-1">
-                        <span className=" text-[12px] font-bold text-[#0A0A0A]">{opp.id}</span>
+                        <span className=" text-xs font-bold text-[var(--neutral-900)]">{opp.id}</span>
                         <Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge>
                       </div>
-                      <p className="text-[13px] font-medium text-[#0A0A0A] mb-1">{opp.name}</p>
+                      <p className="text-xs font-medium text-[var(--neutral-900)] mb-1">{opp.name}</p>
                       <div className="flex items-center justify-between">
-                        <span className=" text-[13px] text-[#0A0A0A]">{fmt(opp.value)}</span>
-                        <span className="text-[11px] text-[#737373]">{opp.closeDate}</span>
+                        <span className=" text-xs text-[var(--neutral-900)]">{fmt(opp.value)}</span>
+                        <span className="text-xs text-[var(--neutral-500)]">{opp.closeDate}</span>
                       </div>
                     </div>
                   ))}
@@ -423,34 +469,34 @@ export function SellCustomerDetail() {
 
               {/* Recent Quotes & Orders */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">Recent quotes & orders</h3>
+                <h3 className="text-base font-semibold text-[var(--neutral-900)] mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0">
                       <div>
-                        <span className=" text-[12px] font-bold text-[#0A0A0A]">{item.ref}</span>
-                        <p className="text-[11px] text-[#737373]">{item.date}</p>
+                        <span className=" text-xs font-bold text-[var(--neutral-900)]">{item.ref}</span>
+                        <p className="text-xs text-[var(--neutral-500)]">{item.date}</p>
                       </div>
                       <div className="text-right flex items-center gap-2">
-                        <span className=" text-[12px] text-[#0A0A0A]">{fmt(item.value)}</span>
+                        <span className=" text-xs text-[var(--neutral-900)]">{fmt(item.value)}</span>
                         <Badge className={cn('rounded text-[10px] px-1.5 py-0 border-0', badgeStatus(item.status))}>{item.status}</Badge>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button className="text-[12px] text-[#0A0A0A] hover:underline mt-3">View all →</button>
+                <button className="text-xs text-[var(--neutral-900)] hover:underline mt-3">View all →</button>
               </Card>
 
               {/* Intelligence Hub */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
-                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Intelligence Hub</h3>
+                  <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
+                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Intelligence Hub</h3>
                 </div>
-                <p className="text-[13px] text-[#737373] leading-relaxed">
+                <p className="text-xs text-[var(--neutral-500)] leading-relaxed">
                   TechCorp's order frequency has increased 40% this quarter. Consider offering volume pricing on 5052 aluminium enclosures to lock in Q2 demand.
                 </p>
-                <p className="text-[11px] text-[#737373] mt-2">Updated 3 hours ago</p>
+                <p className="text-xs text-[var(--neutral-500)] mt-2">Updated 3 hours ago</p>
               </Card>
             </div>
           </div>
@@ -460,8 +506,8 @@ export function SellCustomerDetail() {
         {activeTab === 'sales' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Quotes & orders</h2>
-              <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Quotes & orders</h2>
+              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
             </div>
@@ -469,26 +515,26 @@ export function SellCustomerDetail() {
             {/* Active Opportunities */}
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
-                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Active opportunities</h3>
+                <h3 className="text-base font-medium text-[var(--neutral-900)]">Active opportunities</h3>
               </div>
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">ID</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Name</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Stage</th>
-                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[#737373] font-medium uppercase">Value</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Expected close</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">ID</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Name</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Stage</th>
+                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Value</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Expected close</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.opportunities.map((opp: any) => (
-                    <tr key={opp.id} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{opp.id}</td>
-                      <td className="px-6 text-[14px] text-[#0A0A0A]">{opp.name}</td>
+                    <tr key={opp.id} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
+                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{opp.id}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-900)]">{opp.name}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge></td>
-                      <td className="px-6 text-right  text-[14px]">{fmt(opp.value)}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{opp.closeDate}</td>
+                      <td className="px-6 text-right  text-sm">{fmt(opp.value)}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{opp.closeDate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -498,23 +544,23 @@ export function SellCustomerDetail() {
             {/* Quotes */}
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
-                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Quotes</h3>
+                <h3 className="text-base font-medium text-[var(--neutral-900)]">Quotes</h3>
               </div>
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Reference</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Date</th>
-                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[#737373] font-medium uppercase">Value</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Status</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Reference</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Date</th>
+                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Value</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.recentQuotes.map((q: any) => (
-                    <tr key={q.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{q.ref}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{q.date}</td>
-                      <td className="px-6 text-right  text-[14px]">{fmt(q.value)}</td>
+                    <tr key={q.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
+                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{q.ref}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{q.date}</td>
+                      <td className="px-6 text-right  text-sm">{fmt(q.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(q.status))}>{q.status}</Badge></td>
                     </tr>
                   ))}
@@ -525,23 +571,23 @@ export function SellCustomerDetail() {
             {/* Sales Orders */}
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
-                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Sales orders</h3>
+                <h3 className="text-base font-medium text-[var(--neutral-900)]">Sales orders</h3>
               </div>
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Reference</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Date</th>
-                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[#737373] font-medium uppercase">Value</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Status</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Reference</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Date</th>
+                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Value</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.recentOrders.map((o: any) => (
-                    <tr key={o.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{o.ref}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{o.date}</td>
-                      <td className="px-6 text-right  text-[14px]">{fmt(o.value)}</td>
+                    <tr key={o.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
+                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{o.ref}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{o.date}</td>
+                      <td className="px-6 text-right  text-sm">{fmt(o.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(o.status))}>{o.status}</Badge></td>
                     </tr>
                   ))}
@@ -557,14 +603,14 @@ export function SellCustomerDetail() {
             {/* AR Summary */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
-                { label: 'Lifetime revenue', value: fmt(customer.financial.lifetimeRevenue), color: 'text-[#0A0A0A]' },
-                { label: 'Outstanding', value: fmt(customer.financial.outstanding), color: 'text-[#0A0A0A]' },
-                { label: 'Credit limit', value: fmt(customer.financial.creditLimit), color: 'text-[#0A0A0A]' },
-                { label: 'Payment terms', value: customer.financial.avgPaymentTerms, color: 'text-[#0A0A0A]', noMono: true },
+                { label: 'Lifetime revenue', value: fmt(customer.financial.lifetimeRevenue), color: 'text-[var(--neutral-900)]' },
+                { label: 'Outstanding', value: fmt(customer.financial.outstanding), color: 'text-[var(--neutral-900)]' },
+                { label: 'Credit limit', value: fmt(customer.financial.creditLimit), color: 'text-[var(--neutral-900)]' },
+                { label: 'Payment terms', value: customer.financial.avgPaymentTerms, color: 'text-[var(--neutral-900)]', noMono: true },
               ].map((kpi) => (
                 <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                  <span className="block text-[13px] font-medium text-[#737373] mb-2">{kpi.label}</span>
-                  <p className={cn('text-[24px] font-semibold', kpi.color, !kpi.noMono && "")}>{kpi.value}</p>
+                  <span className="block text-xs font-medium text-[var(--neutral-500)] mb-2">{kpi.label}</span>
+                  <p className={cn('text-2xl font-semibold', kpi.color, !kpi.noMono && "")}>{kpi.value}</p>
                 </Card>
               ))}
             </div>
@@ -572,26 +618,26 @@ export function SellCustomerDetail() {
             {/* Invoices */}
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
-                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Invoices</h3>
+                <h3 className="text-base font-medium text-[var(--neutral-900)]">Invoices</h3>
               </div>
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Invoice #</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Date</th>
-                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[#737373] font-medium uppercase">Amount</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Status</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Due date</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Invoice #</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Date</th>
+                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Amount</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Due date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.invoices.map((inv: any) => (
-                    <tr key={inv.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{inv.ref}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{inv.date}</td>
-                      <td className="px-6 text-right  text-[14px]">{fmt(inv.amount)}</td>
+                    <tr key={inv.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
+                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{inv.ref}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{inv.date}</td>
+                      <td className="px-6 text-right  text-sm">{fmt(inv.amount)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(inv.status))}>{inv.status}</Badge></td>
-                      <td className="px-6 text-[14px] text-[#737373]">{inv.due}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{inv.due}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -604,34 +650,34 @@ export function SellCustomerDetail() {
         {activeTab === 'contacts' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">All contacts at {customer.company}</h2>
+              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">All contacts at {customer.company}</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
             </div>
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Name</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Role</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Email</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Phone</th>
-                    <th className="px-6 py-3 text-center text-xs tracking-wider text-[#737373] font-medium uppercase">Primary</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Name</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Role</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Email</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Phone</th>
+                    <th className="px-6 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Primary</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors">
-                    <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{customer.primaryContact.name}</td>
-                    <td className="px-6 text-[14px] text-[#737373]">{customer.primaryContact.title}</td>
-                    <td className="px-6"><a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0A0A0A] hover:underline">{customer.primaryContact.email}</a></td>
-                    <td className="px-6 text-[14px] text-[#737373]">{customer.primaryContact.phone}</td>
-                    <td className="px-6 text-center"><span className="w-2 h-2 bg-[#1A2732] rounded-full inline-block" /></td>
+                  <tr className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] transition-colors">
+                    <td className="px-6 text-sm font-medium text-[var(--neutral-900)]">{customer.primaryContact.name}</td>
+                    <td className="px-6 text-sm text-[var(--neutral-500)]">{customer.primaryContact.title}</td>
+                    <td className="px-6"><a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-[var(--neutral-900)] hover:underline">{customer.primaryContact.email}</a></td>
+                    <td className="px-6 text-sm text-[var(--neutral-500)]">{customer.primaryContact.phone}</td>
+                    <td className="px-6 text-center"><span className="w-2 h-2 bg-[var(--mw-mirage)] rounded-full inline-block" /></td>
                   </tr>
                   {customer.additionalContacts.map((c: any, i: number) => (
-                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors">
-                      <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{c.name}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{c.role}</td>
-                      <td className="px-6"><a href={`mailto:${c.email}`} className="text-[14px] text-[#0A0A0A] hover:underline">{c.email}</a></td>
-                      <td className="px-6 text-[14px] text-[#737373]">{c.phone}</td>
+                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] transition-colors">
+                      <td className="px-6 text-sm font-medium text-[var(--neutral-900)]">{c.name}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{c.role}</td>
+                      <td className="px-6"><a href={`mailto:${c.email}`} className="text-sm text-[var(--neutral-900)] hover:underline">{c.email}</a></td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{c.phone}</td>
                       <td className="px-6 text-center">—</td>
                     </tr>
                   ))}
@@ -645,36 +691,36 @@ export function SellCustomerDetail() {
         {activeTab === 'documents' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Documents</h2>
+              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Documents</h2>
               <Button variant="outline" className="border-[var(--border)]"><Upload className="w-4 h-4 mr-2" /> Upload</Button>
             </div>
             {/* Drop zone */}
-            <div className="border-2 border-dashed border-[var(--border)] rounded-lg p-8 text-center bg-[#F5F5F5]">
-              <Upload className="w-8 h-8 text-[#737373] mx-auto mb-2" />
-              <p className="text-[14px] text-[#737373]">Drag and drop files here, or click to browse</p>
-              <p className="text-[12px] text-[#737373] mt-1">PDF, DXF, DWG, STEP, images up to 25 MB</p>
+            <div className="border-2 border-dashed border-[var(--border)] rounded-lg p-8 text-center bg-[var(--neutral-100)]">
+              <Upload className="w-8 h-8 text-[var(--neutral-500)] mx-auto mb-2" />
+              <p className="text-sm text-[var(--neutral-500)]">Drag and drop files here, or click to browse</p>
+              <p className="text-xs text-[var(--neutral-500)] mt-1">PDF, DXF, DWG, STEP, images up to 25 MB</p>
             </div>
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Filename</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Category</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Uploaded by</th>
-                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">Date</th>
-                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[#737373] font-medium uppercase">Size</th>
+                  <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Filename</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Category</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Uploaded by</th>
+                    <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Date</th>
+                    <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Size</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.documents.map((doc: any, i: number) => (
-                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors cursor-pointer">
-                      <td className="px-6 text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-2 h-14">
-                        <FileText className="w-4 h-4 text-[#737373]" /> {doc.name}
+                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] transition-colors cursor-pointer">
+                      <td className="px-6 text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-2 h-14">
+                        <FileText className="w-4 h-4 text-[var(--neutral-500)]" /> {doc.name}
                       </td>
-                      <td className="px-6 text-[14px] text-[#737373]">{doc.category}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{doc.uploadedBy}</td>
-                      <td className="px-6 text-[14px] text-[#737373]">{doc.date}</td>
-                      <td className="px-6 text-[14px] text-[#737373] text-right">{doc.size}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{doc.category}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{doc.uploadedBy}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)]">{doc.date}</td>
+                      <td className="px-6 text-sm text-[var(--neutral-500)] text-right">{doc.size}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -687,15 +733,15 @@ export function SellCustomerDetail() {
         {activeTab === 'activity' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Activity log</h2>
+              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Activity log</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Log activity</Button>
             </div>
             {/* Filter chips */}
             <div className="flex gap-2">
               {['All', 'Emails', 'Calls', 'Meetings', 'Notes', 'System'].map((f) => (
                 <button key={f} className={cn(
-                  "px-3 py-1.5 rounded-full text-[13px] transition-colors",
-                  f === 'All' ? 'bg-[#1A2732] text-white' : 'bg-[#F5F5F5] text-[#737373] hover:bg-[var(--border)]'
+                  "px-3 py-1.5 rounded-full text-xs transition-colors",
+                  f === 'All' ? 'bg-[var(--mw-mirage)] text-white' : 'bg-[var(--neutral-100)] text-[var(--neutral-500)] hover:bg-[var(--border)]'
                 )}>{f}</button>
               ))}
             </div>
@@ -703,14 +749,14 @@ export function SellCustomerDetail() {
               <div className="space-y-6">
                 {customer.activity.map((a: any, i: number) => (
                   <div key={i} className="flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 text-[#737373]">
+                    <div className="w-10 h-10 rounded-full bg-[var(--neutral-100)] flex items-center justify-center flex-shrink-0 text-[var(--neutral-500)]">
                       {activityIcon(a.type)}
                     </div>
                     <div className="flex-1 min-w-0 pb-6 border-b border-[var(--border)] last:border-0">
-                      <p className="text-[14px] text-[#0A0A0A] leading-relaxed">{a.desc}</p>
+                      <p className="text-sm text-[var(--neutral-900)] leading-relaxed">{a.desc}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[12px] text-[#737373]">{a.time}</span>
-                        <span className="text-[12px] text-[#737373]">· {a.user}</span>
+                        <span className="text-xs text-[var(--neutral-500)]">{a.time}</span>
+                        <span className="text-xs text-[var(--neutral-500)]">· {a.user}</span>
                       </div>
                     </div>
                   </div>
@@ -731,13 +777,13 @@ export function SellCustomerDetail() {
 function Field({ label, value, mono, link }: { label: string; value: string; mono?: boolean; link?: boolean }) {
   return (
     <div>
-      <span className="block text-[13px] font-medium text-[#737373] mb-1">{label}</span>
+      <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">{label}</span>
       {link ? (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-1">
-          <Globe className="w-3.5 h-3.5" /> {value.replace('https://', '')}
+        <a href={value} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+          <Globe className="w-4 h-4" /> {value.replace('https://', '')}
         </a>
       ) : (
-        <p className={cn('text-[14px] text-[#0A0A0A]', mono && "")}>{value}</p>
+        <p className={cn('text-sm text-[var(--neutral-900)]', mono && "")}>{value}</p>
       )}
     </div>
   );

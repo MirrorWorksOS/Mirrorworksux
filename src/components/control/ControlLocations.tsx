@@ -9,9 +9,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 const LOCATIONS = [
   {
@@ -65,10 +64,10 @@ const LOCATIONS = [
 ];
 
 const TYPE_CONFIG: Record<string, { icon: any; badge: string; text: string }> = {
-  Factory:   { icon: Building2, badge: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
-  Warehouse: { icon: Warehouse, badge: 'bg-[#F5F5F5]',  text: 'text-[#1A2732]' },
-  Office:    { icon: MapPin,    badge: 'bg-[#F5F5F5]',  text: 'text-[#737373]' },
-  Storage:   { icon: Warehouse, badge: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
+  Factory:   { icon: Building2, badge: 'bg-[var(--mw-blue-100)]',  text: 'text-[var(--mw-blue)]' },
+  Warehouse: { icon: Warehouse, badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--mw-mirage)]' },
+  Office:    { icon: MapPin,    badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--neutral-500)]' },
+  Storage:   { icon: Warehouse, badge: 'bg-[var(--mw-amber-100)]',  text: 'text-[var(--mw-amber)]' },
 };
 
 export function ControlLocations() {
@@ -83,27 +82,27 @@ export function ControlLocations() {
     <motion.div
       initial="initial"
       animate="animate"
-      variants={animationVariants.stagger}
+      variants={staggerContainer}
       className="p-6 space-y-6"
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Locations</h1>
-          <p className="text-sm text-[#737373] mt-1">{LOCATIONS.filter(l => l.status === 'active').length} active sites</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Locations</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{LOCATIONS.filter(l => l.status === 'active').length} active sites</p>
         </div>
-        <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
           <Plus className="w-4 h-4" /> New location
         </Button>
       </div>
 
       {/* Search */}
       <div className="relative w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
         <Input
           placeholder="Search locations..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
+          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm"
         />
       </div>
 
@@ -113,15 +112,15 @@ export function ControlLocations() {
           const cfg  = TYPE_CONFIG[loc.type] ?? TYPE_CONFIG['Office'];
           const Icon = cfg.icon;
           return (
-            <motion.div key={loc.id} variants={animationVariants.listItem}>
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+            <motion.div key={loc.id} variants={staggerItem}>
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-[#737373]" />
+                    <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center shrink-0">
+                      <Icon className="w-5 h-5 text-[var(--neutral-500)]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[15px] text-[#1A2732] group-hover:text-[#FFCF4B] transition-colors">
+                      <h3 className="font-semibold text-sm text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
                         {loc.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -129,40 +128,40 @@ export function ControlLocations() {
                           {loc.type}
                         </Badge>
                         {loc.status === 'inactive' && (
-                          <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs rounded-full px-2 py-0.5">Inactive</Badge>
+                          <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2 py-0.5">Inactive</Badge>
                         )}
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#FFCF4B] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-[var(--neutral-400)] group-hover:text-[var(--mw-yellow-400)] transition-colors" />
                 </div>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-start gap-2 text-sm">
-                    <MapPin className="w-4 h-4 text-[#A3A3A3] mt-0.5 shrink-0" />
-                    <span className="text-[#737373]">{loc.address}</span>
+                    <MapPin className="w-4 h-4 text-[var(--neutral-400)] mt-0.5 shrink-0" />
+                    <span className="text-[var(--neutral-500)]">{loc.address}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[#F5F5F5]">
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--neutral-100)]">
                   <div>
-                    <p className="text-xs text-[#737373] mb-0.5">Floor area</p>
-                    <p className="text-sm  font-medium text-[#1A2732]">{loc.floorArea}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mb-0.5">Floor area</p>
+                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.floorArea}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#737373] mb-0.5">Machines</p>
-                    <p className="text-sm  font-medium text-[#1A2732]">{loc.machines}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mb-0.5">Machines</p>
+                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.machines}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#737373] mb-0.5">Staff</p>
-                    <p className="text-sm  font-medium text-[#1A2732]">{loc.staff}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mb-0.5">Staff</p>
+                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.staff}</p>
                   </div>
                 </div>
 
                 {/* Zones */}
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {loc.zones.map(z => (
-                    <span key={z} className="text-[11px] bg-[#F5F5F5] text-[#737373] px-2 py-0.5 rounded-full">
+                    <span key={z} className="text-xs bg-[var(--neutral-100)] text-[var(--neutral-500)] px-2 py-0.5 rounded-full">
                       {z}
                     </span>
                   ))}

@@ -112,10 +112,10 @@ const MANUFACTURING_ORDERS = [
 
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    progress: "bg-[#FFCF4B] text-[#2C2C2C] border-transparent",
-    pending: "bg-[#F5F5F5] text-[#2C2C2C] border-[#E5E4E0]",
-    completed: "bg-[#4CAF50] text-white border-transparent",
-    hold: "bg-[#EF4444] text-white border-transparent"
+    progress: "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent",
+    pending: "bg-[var(--neutral-100)] text-[var(--neutral-800)] border-[var(--neutral-200)]",
+    completed: "bg-[var(--mw-green)] text-white border-transparent",
+    hold: "bg-[var(--mw-error)] text-white border-transparent"
   };
   
   const labels: Record<string, string> = {
@@ -135,13 +135,13 @@ const StatusBadge = ({ status }: { status: string }) => {
 const PriorityBadge = ({ priority }: { priority: string }) => {
   if (priority === 'High') {
     return (
-      <span className="text-xs px-3 py-1 rounded-[20px] font-medium bg-[#EF4444] text-white">
+      <span className="text-xs px-3 py-1 rounded-[20px] font-medium bg-[var(--mw-error)] text-white">
         High
       </span>
     );
   }
   return (
-    <span className="text-xs px-2 py-0.5 font-medium text-[#6B6B6B]">
+    <span className="text-xs px-2 py-0.5 font-medium text-[var(--neutral-500)]">
       {priority}
     </span>
   );
@@ -159,22 +159,22 @@ export function OverviewTab() {
   };
 
   return (
-    <div className="flex gap-6 h-full overflow-hidden bg-[#F5F5F5]">
+    <div className="flex gap-6 h-full overflow-hidden bg-[var(--neutral-100)]">
       {/* Main Content Area */}
       <ScrollArea className="flex-1 h-full">
       <div className="flex-1 flex flex-col space-y-6 min-w-0 pr-4 pb-8 pt-1">
         
         {/* Intelligence Hub Banner */}
-        <div className="bg-[#F5F5F5] rounded-[16px] overflow-hidden border border-[#E5E4E0] mx-1 mt-1">
+        <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] overflow-hidden border border-[var(--neutral-200)] mx-1 mt-1">
            <div 
              className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#E5E4E0]/50 transition-colors"
              onClick={() => setIsInsightsOpen(!isInsightsOpen)}
            >
-              <div className="flex items-center gap-2 font-medium text-[#2C2C2C]">
-                 <Bot className="w-5 h-5 text-[#FFCF4B]" />
-                 <span>AI Insights: <span className="text-[#6B6B6B] font-normal">3 new</span></span>
+              <div className="flex items-center gap-2 font-medium text-[var(--neutral-800)]">
+                 <Bot className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+                 <span>AI Insights: <span className="text-[var(--neutral-500)] font-normal">3 new</span></span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-[#6B6B6B]">
+              <div className="flex items-center gap-2 text-sm text-[var(--neutral-500)]">
                  {isInsightsOpen ? 'Hide' : 'View All'}
                  <ChevronDown className={`w-4 h-4 transition-transform ${isInsightsOpen ? 'rotate-180' : ''}`} />
               </div>
@@ -189,22 +189,22 @@ export function OverviewTab() {
                  transition={{ duration: 0.5, ease: [0.2, 0.0, 0, 1.0] }}
                  className="overflow-hidden"
                >
-                 <div className="bg-[#F5F5F5] border-t border-[#E5E4E0] p-2 space-y-2">
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[#E5E4E0]">
-                       <AlertCircle className="w-5 h-5 text-[#FFCF4B] shrink-0" />
-                       <div className="text-sm text-[#2C2C2C] text-[15px]">
+                 <div className="bg-[var(--neutral-100)] border-t border-[var(--neutral-200)] p-2 space-y-2">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                       <AlertCircle className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[#E5E4E0]">
-                       <Zap className="w-5 h-5 text-[#FFCF4B] shrink-0" />
-                       <div className="text-sm text-[#2C2C2C] text-[15px]">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                       <Zap className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[#E5E4E0]">
-                       <Info className="w-5 h-5 text-[#FFCF4B] shrink-0" />
-                       <div className="text-sm text-[#2C2C2C] text-[15px]">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                       <Info className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Efficiency:</span> Shop running 8% above target efficiency today
                        </div>
                     </div>
@@ -217,21 +217,21 @@ export function OverviewTab() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B6B6B]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
             <Input 
               placeholder="Search work orders" 
-              className="pl-10 h-12 w-full bg-white text-base shadow-sm border-[#E5E4E0] rounded-[8px] focus-visible:ring-[#FFCF4B]"
+              className="pl-10 h-12 w-full bg-white text-base shadow-sm border-[var(--neutral-200)] rounded-[8px] focus-visible:ring-[var(--mw-yellow-400)]"
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" className="h-12 px-4 border-[#E5E4E0] bg-white hover:bg-[#F5F5F5] text-[#2C2C2C] font-medium rounded-[8px]">
-              Status <ChevronDown className="w-4 h-4 ml-2 text-[#6B6B6B]" />
+            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+              Status <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-12 px-4 border-[#E5E4E0] bg-white hover:bg-[#F5F5F5] text-[#2C2C2C] font-medium rounded-[8px]">
-              Priority <ChevronDown className="w-4 h-4 ml-2 text-[#6B6B6B]" />
+            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+              Priority <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-12 px-4 border-[#E5E4E0] bg-white hover:bg-[#F5F5F5] text-[#2C2C2C] font-medium rounded-[8px]">
-              Machine <ChevronDown className="w-4 h-4 ml-2 text-[#6B6B6B]" />
+            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+              Machine <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
           </div>
         </div>
@@ -242,31 +242,31 @@ export function OverviewTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Card A: Active Jobs */}
-              <Card className="border-[#E5E4E0] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[16px] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-[#6B6B6B] uppercase tracking-wide">Active Job Focus</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Active Job Focus</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <a href="#" className="text-[18px] font-medium text-[#2C2C2C] hover:underline hover:text-[#FFCF4B] transition-colors">
+                      <a href="#" className="text-lg font-medium text-[var(--neutral-800)] hover:underline hover:text-[var(--mw-yellow-400)] transition-colors">
                         {ACTIVE_JOBS_SUMMARY.customer}
                       </a>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="font-normal text-sm text-[#6B6B6B]">
+                        <span className="font-normal text-sm text-[var(--neutral-500)]">
                           {ACTIVE_JOBS_SUMMARY.moNumber}
                         </span>
                         <StatusBadge status={ACTIVE_JOBS_SUMMARY.status} />
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white rounded-[16px] border border-[#E5E4E0]">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
                       <div className="space-y-1">
-                        <div className="text-xs text-[#6B6B6B] font-medium">DUE IN</div>
-                        <div className="text-[24px] font-semibold text-[#2C2C2C] tabular-nums">4d 12h</div>
+                        <div className="text-xs text-[var(--neutral-500)] font-medium">DUE IN</div>
+                        <div className="text-2xl font-semibold text-[var(--neutral-800)] tabular-nums">4d 12h</div>
                       </div>
                       <div className="space-y-1 text-right">
-                        <div className="text-xs text-[#6B6B6B] font-medium">PRIORITY</div>
+                        <div className="text-xs text-[var(--neutral-500)] font-medium">PRIORITY</div>
                         <PriorityBadge priority={ACTIVE_JOBS_SUMMARY.priority} />
                       </div>
                     </div>
@@ -275,26 +275,26 @@ export function OverviewTab() {
               </Card>
 
               {/* Card B: Time Tracking */}
-              <Card className="border-[#E5E4E0] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[16px] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-[#6B6B6B] uppercase tracking-wide">Shift Performance</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Shift Performance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <div className="text-4xl font-semibold text-[#2C2C2C] tabular-nums tracking-tight leading-none">
+                      <div className="text-4xl font-semibold text-[var(--neutral-800)] tabular-nums tracking-tight leading-none">
                         {TIME_TRACKING_SUMMARY.totalShiftTime}
                       </div>
-                      <div className="text-sm text-[#6B6B6B] mt-2">Total Shift Time</div>
+                      <div className="text-sm text-[var(--neutral-500)] mt-2">Total Shift Time</div>
                     </div>
                     
                     <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
                        {/* Simple SVG Circular Progress */}
                        <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                          <path className="text-[#E5E4E0]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" />
-                          <path className="text-[#FFCF4B]" strokeDasharray={`${TIME_TRACKING_SUMMARY.efficiency}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" />
+                          <path className="text-[var(--neutral-300)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" />
+                          <path className="text-[var(--mw-yellow-400)]" strokeDasharray={`${TIME_TRACKING_SUMMARY.efficiency}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" />
                        </svg>
-                       <span className="absolute text-[9px] font-bold text-[#2C2C2C]">{TIME_TRACKING_SUMMARY.efficiency}%</span>
+                       <span className="absolute text-[9px] font-bold text-[var(--neutral-800)]">{TIME_TRACKING_SUMMARY.efficiency}%</span>
                     </div>
                   </div>
 
@@ -302,14 +302,14 @@ export function OverviewTab() {
                     <div className="flex -space-x-2">
                       {[1,2,3,4].map(i => (
                         <Avatar key={i} className="w-8 h-8 border-2 border-white">
-                          <AvatarFallback className="bg-[#E5E4E0] text-[#6B6B6B] text-[10px]">OP</AvatarFallback>
+                          <AvatarFallback className="bg-[#E5E4E0] text-[var(--neutral-500)] text-[10px]">OP</AvatarFallback>
                         </Avatar>
                       ))}
-                      <div className="w-8 h-8 rounded-full bg-[#F5F5F5] border-2 border-white flex items-center justify-center text-[10px] font-medium text-[#6B6B6B]">
+                      <div className="w-8 h-8 rounded-full bg-[var(--neutral-100)] border-2 border-white flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)]">
                         +8
                       </div>
                     </div>
-                    <div className="flex items-center text-[#4CAF50] text-sm font-medium">
+                    <div className="flex items-center text-[var(--mw-green)] text-sm font-medium">
                       <ArrowUpRight className="w-4 h-4 mr-1" />
                       {TIME_TRACKING_SUMMARY.targetComparison}% vs Target
                     </div>
@@ -318,30 +318,30 @@ export function OverviewTab() {
               </Card>
 
               {/* Card C: Andon Alerts */}
-              <Card className="border-[#E5E4E0] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[16px] bg-white relative overflow-hidden">
+              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
-                  <Badge variant="destructive" className="animate-pulse bg-[#EF4444] text-white border-0 rounded-[20px] px-3">
+                  <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-[20px] px-3">
                     {ANDON_ALERTS.length} Active
                   </Badge>
                 </div>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-[#6B6B6B] uppercase tracking-wide">Andon Alerts</CardTitle>
+                  <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Andon Alerts</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {ANDON_ALERTS.slice(0, 2).map(alert => (
-                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-[8px] bg-[#F5F5F5] border border-transparent hover:border-[#E5E4E0] transition-colors">
-                        <div className="w-5 h-5 rounded-full bg-[#EF4444] flex items-center justify-center shrink-0 mt-0.5">
+                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-[8px] bg-[var(--neutral-100)] border border-transparent hover:border-[var(--neutral-200)] transition-colors">
+                        <div className="w-5 h-5 rounded-full bg-[var(--mw-error)] flex items-center justify-center shrink-0 mt-0.5">
                            <span className="text-white text-xs font-bold">!</span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#2C2C2C]">{alert.message}</div>
-                          <div className="text-xs text-[#6B6B6B] mt-0.5">{alert.time}</div>
+                          <div className="text-sm font-medium text-[var(--neutral-800)]">{alert.message}</div>
+                          <div className="text-xs text-[var(--neutral-500)] mt-0.5">{alert.time}</div>
                         </div>
                       </div>
                     ))}
-                    <Button variant="ghost" size="sm" className="w-full text-xs font-medium text-[#6B6B6B] hover:text-[#2C2C2C] h-8">
-                      View All Issues <ChevronRight className="w-3 h-3 ml-1" />
+                    <Button variant="ghost" size="sm" className="w-full text-xs font-medium text-[var(--neutral-500)] hover:text-[var(--neutral-800)] h-8">
+                      View All Issues <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
                 </CardContent>
@@ -350,8 +350,8 @@ export function OverviewTab() {
             </div>
 
             {/* Manufacturing Orders List */}
-            <div className="bg-white border border-[#E5E4E0] rounded-[16px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[#E5E4E0] bg-[#F5F5F5]/50 text-xs font-semibold text-[#6B6B6B] uppercase tracking-wide">
+            <div className="bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)]/50 text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wide">
                 <div className="col-span-2">MO #</div>
                 <div className="col-span-3">Customer & Part</div>
                 <div className="col-span-2">Due Date</div>
@@ -362,21 +362,21 @@ export function OverviewTab() {
 
               <div className="divide-y divide-[#E5E4E0]">
                 {MANUFACTURING_ORDERS.map((mo) => (
-                  <div key={mo.id} className="group transition-colors bg-white hover:bg-[#F5F5F5]">
+                  <div key={mo.id} className="group transition-colors bg-white hover:bg-[var(--neutral-100)]">
                     {/* Parent Row */}
                     <div 
                       className="grid grid-cols-12 gap-4 p-4 items-center min-h-[56px] cursor-pointer"
                       onClick={() => toggleRow(mo.id)}
                     >
                       <div className="col-span-2 flex items-center gap-2">
-                        <ChevronRight className={`w-4 h-4 text-[#6B6B6B] transition-transform duration-200 ${expandedRows[mo.id] ? 'rotate-90' : ''}`} />
-                        <span className="font-medium text-[#2C2C2C]">{mo.id}</span>
+                        <ChevronRight className={`w-4 h-4 text-[var(--neutral-500)] transition-transform duration-200 ${expandedRows[mo.id] ? 'rotate-90' : ''}`} />
+                        <span className="font-medium text-[var(--neutral-800)]">{mo.id}</span>
                       </div>
                       <div className="col-span-3">
-                        <div className="font-medium text-[#2C2C2C] text-sm">{mo.customer}</div>
-                        <div className="text-xs text-[#6B6B6B] truncate">{mo.partName}</div>
+                        <div className="font-medium text-[var(--neutral-800)] text-sm">{mo.customer}</div>
+                        <div className="text-xs text-[var(--neutral-500)] truncate">{mo.partName}</div>
                       </div>
-                      <div className="col-span-2 text-sm text-[#6B6B6B]">
+                      <div className="col-span-2 text-sm text-[var(--neutral-500)]">
                         {mo.dueDate}
                       </div>
                       <div className="col-span-2">
@@ -385,35 +385,35 @@ export function OverviewTab() {
                       <div className="col-span-2 pr-4">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-2 bg-[#E5E4E0] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#FFCF4B] rounded-full" style={{ width: `${mo.progress}%` }} />
+                            <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${mo.progress}%` }} />
                           </div>
-                          <span className="text-xs font-medium text-[#6B6B6B]">{mo.progress}%</span>
+                          <span className="text-xs font-medium text-[var(--neutral-500)]">{mo.progress}%</span>
                         </div>
                       </div>
                       <div className="col-span-1 text-right">
                         <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="w-4 h-4 text-[#6B6B6B]" />
+                          <MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" />
                         </Button>
                       </div>
                     </div>
 
                     {/* Expanded Child Rows (Work Orders) */}
                     {expandedRows[mo.id] && (
-                      <div className="bg-[#F5F5F5]/30 border-t border-[#E5E4E0] shadow-inner">
-                        <div className="px-4 py-2 text-xs font-semibold text-[#6B6B6B] uppercase tracking-wider pl-12">
+                      <div className="bg-[var(--neutral-100)]/30 border-t border-[var(--neutral-200)] shadow-inner">
+                        <div className="px-4 py-2 text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wider pl-12">
                           Work Orders
                         </div>
                         {mo.workOrders.length > 0 ? (
                           mo.workOrders.map((wo) => (
-                            <div key={wo.id} className="grid grid-cols-12 gap-4 px-4 py-3 items-center hover:bg-[#E5E4E0]/50 transition-colors pl-12 border-b border-[#E5E4E0]/50 last:border-0">
+                            <div key={wo.id} className="grid grid-cols-12 gap-4 px-4 py-3 items-center hover:bg-[#E5E4E0]/50 transition-colors pl-12 border-b border-[var(--neutral-200)]/50 last:border-0">
                               <div className="col-span-2 flex items-center gap-2">
-                                <span className="font-medium text-[#2C2C2C] text-sm">{wo.id}</span>
+                                <span className="font-medium text-[var(--neutral-800)] text-sm">{wo.id}</span>
                               </div>
-                              <div className="col-span-3 text-sm text-[#6B6B6B]">
+                              <div className="col-span-3 text-sm text-[var(--neutral-500)]">
                                 {wo.name}
                               </div>
                               <div className="col-span-2">
-                                <Badge variant="secondary" className="bg-white border-[#E5E4E0] text-[#6B6B6B] font-normal">
+                                <Badge variant="secondary" className="bg-white border-[var(--neutral-200)] text-[var(--neutral-500)] font-normal">
                                   {wo.station}
                                 </Badge>
                               </div>
@@ -422,16 +422,16 @@ export function OverviewTab() {
                               </div>
                               <div className="col-span-2 pr-4">
                                 <div className="h-1.5 bg-[#E5E4E0] rounded-full overflow-hidden w-24">
-                                   <div className={`h-full rounded-full ${wo.status === 'completed' ? 'bg-[#4CAF50]' : 'bg-[#FFCF4B]'}`} style={{ width: `${wo.progress}%` }} />
+                                   <div className={`h-full rounded-full ${wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--mw-yellow-400)]'}`} style={{ width: `${wo.progress}%` }} />
                                 </div>
                               </div>
                               <div className="col-span-1 text-right">
-                                <Button variant="ghost" size="sm" className="h-7 text-xs text-[#6B6B6B]">View</Button>
+                                <Button variant="ghost" size="sm" className="h-7 text-xs text-[var(--neutral-500)]">View</Button>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <div className="px-12 py-4 text-sm text-[#6B6B6B] italic">No active work orders</div>
+                          <div className="px-12 py-4 text-sm text-muted-foreground italic">No active work orders</div>
                         )}
                       </div>
                     )}
@@ -446,11 +446,11 @@ export function OverviewTab() {
 
       {/* Right Sidebar */}
       {isSidebarOpen && (
-        <div className="w-[320px] shrink-0 bg-white flex flex-col h-full rounded-[16px] border border-[#E5E4E0] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden py-4">
+        <div className="w-[320px] shrink-0 bg-white flex flex-col h-full rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden py-4">
           <div className="flex items-center justify-between px-4 mb-4">
-            <h3 className="font-semibold text-[#2C2C2C]">Communication</h3>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[#F5F5F5]" onClick={() => setIsSidebarOpen(false)}>
-               <ChevronRight className="w-4 h-4 text-[#6B6B6B]" />
+            <h3 className="font-semibold text-[var(--neutral-800)]">Communication</h3>
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
+               <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
           </div>
 
@@ -461,15 +461,15 @@ export function OverviewTab() {
                  <div className="space-y-4 py-2">
                    {/* Message 1 */}
                    <div className="flex gap-3">
-                     <Avatar className="w-8 h-8 mt-1 border border-[#E5E4E0]">
-                       <AvatarFallback className="bg-[#F5F5F5] text-[#2C2C2C] text-xs">JD</AvatarFallback>
+                     <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
+                       <AvatarFallback className="bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">JD</AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
-                         <span className="text-sm font-medium text-[#2C2C2C]">John Doe</span>
-                         <span className="text-xs text-[#6B6B6B]">2m</span>
+                         <span className="text-sm font-medium text-[var(--neutral-800)]">John Doe</span>
+                         <span className="text-xs text-[var(--neutral-500)]">2m</span>
                        </div>
-                       <p className="text-sm text-[#2C2C2C] mt-0.5 bg-[#F5F5F5] p-3 rounded-[16px] rounded-tl-none">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
                          Material for <span className="text-[#F4C542] font-semibold">@MO-26-401</span> is arrived.
                        </p>
                      </div>
@@ -477,15 +477,15 @@ export function OverviewTab() {
 
                    {/* Message 2 */}
                    <div className="flex gap-3">
-                     <Avatar className="w-8 h-8 mt-1 border border-[#E5E4E0]">
-                       <AvatarFallback className="bg-[#F5F5F5] text-[#2C2C2C] text-xs">SJ</AvatarFallback>
+                     <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
+                       <AvatarFallback className="bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">SJ</AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
-                         <span className="text-sm font-medium text-[#2C2C2C]">Sarah Jenkins</span>
-                         <span className="text-xs text-[#6B6B6B]">15m</span>
+                         <span className="text-sm font-medium text-[var(--neutral-800)]">Sarah Jenkins</span>
+                         <span className="text-xs text-[var(--neutral-500)]">15m</span>
                        </div>
-                       <p className="text-sm text-[#2C2C2C] mt-0.5 bg-[#F5F5F5] p-3 rounded-[16px] rounded-tl-none">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
                          QA check passed for the first batch. Proceeding.
                        </p>
                      </div>
@@ -493,15 +493,15 @@ export function OverviewTab() {
 
                    {/* Context Message (System/Yellow) */}
                     <div className="flex gap-3">
-                     <Avatar className="w-8 h-8 mt-1 border border-[#E5E4E0]">
-                       <AvatarFallback className="bg-[#FFCF4B]/20 text-[#1A2732] text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
+                     <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
+                       <AvatarFallback className="bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)] text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
-                         <span className="text-sm font-medium text-[#2C2C2C]">System</span>
-                         <span className="text-xs text-[#6B6B6B]">1m</span>
+                         <span className="text-sm font-medium text-[var(--neutral-800)]">System</span>
+                         <span className="text-xs text-[var(--neutral-500)]">1m</span>
                        </div>
-                       <p className="text-sm text-[#2C2C2C] mt-0.5 bg-[#F4C542]/20 p-3 rounded-[16px] rounded-tl-none border border-[#F4C542]/30">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[#F4C542]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[#F4C542]/30">
                          Production speed increased by 15% after material arrival.
                        </p>
                      </div>
@@ -510,16 +510,16 @@ export function OverviewTab() {
                </div>
                
                {/* Input Area */}
-               <div className="p-4 border-t border-[#E5E4E0] bg-white">
+               <div className="p-4 border-t border-[var(--neutral-200)] bg-white">
                  <div className="relative">
-                   <Input placeholder="Type a message..." className="pr-10 bg-[#F5F5F5] border-transparent focus:bg-white focus:border-[#FFCF4B] transition-all rounded-[8px]" />
-                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[#FFCF4B] hover:text-[#F4C542] hover:bg-transparent">
+                   <Input placeholder="Type a message..." className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-[8px]" />
+                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent">
                      <Send className="w-4 h-4" />
                    </Button>
                  </div>
                  <div className="flex items-center gap-2 mt-2">
-                   <Button variant="ghost" size="sm" className="h-8 px-2 text-[#6B6B6B] hover:text-[#2C2C2C] hover:bg-[#F5F5F5]">
-                     <Paperclip className="w-3 h-3 mr-1" /> Attach
+                   <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]">
+                     <Paperclip className="w-4 h-4 mr-1" /> Attach
                    </Button>
                  </div>
                </div>
@@ -529,20 +529,20 @@ export function OverviewTab() {
 
              {/* Work Standards / Instructions */}
              <div className="px-4 py-2">
-               <h3 className="font-semibold text-[#2C2C2C] mb-3 text-sm">Quick Access</h3>
+               <h3 className="font-semibold text-[var(--neutral-800)] mb-3 text-sm">Quick Access</h3>
                <div className="space-y-2">
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[#E5E4E0] bg-white hover:bg-[#F5F5F5] rounded-[8px]">
-                   <FileText className="w-4 h-4 mr-3 text-[#FFCF4B]" />
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-[8px]">
+                   <FileText className="w-4 h-4 mr-3 text-[var(--mw-yellow-400)]" />
                    <div>
-                     <div className="text-sm font-medium text-[#2C2C2C]">SOP-001 Assembly</div>
-                     <div className="text-xs text-[#6B6B6B]">Updated 2 days ago</div>
+                     <div className="text-sm font-medium text-[var(--neutral-800)]">SOP-001 Assembly</div>
+                     <div className="text-xs text-[var(--neutral-500)]">Updated 2 days ago</div>
                    </div>
                  </Button>
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[#E5E4E0] bg-white hover:bg-[#F5F5F5] rounded-[8px]">
-                   <ShieldAlert className="w-4 h-4 mr-3 text-[#EF4444]" />
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-[8px]">
+                   <ShieldAlert className="w-4 h-4 mr-3 text-[var(--mw-error)]" />
                    <div>
-                     <div className="text-sm font-medium text-[#2C2C2C]">Safety Protocol</div>
-                     <div className="text-xs text-[#6B6B6B]">Required reading</div>
+                     <div className="text-sm font-medium text-[var(--neutral-800)]">Safety Protocol</div>
+                     <div className="text-xs text-[var(--neutral-500)]">Required reading</div>
                    </div>
                  </Button>
                </div>
@@ -552,8 +552,8 @@ export function OverviewTab() {
       )}
       {!isSidebarOpen && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-           <Button variant="secondary" size="icon" className="h-12 w-8 rounded-l-lg rounded-r-none shadow-md border-y border-l border-[#E5E4E0] bg-white hover:bg-[#F5F5F5]" onClick={() => setIsSidebarOpen(true)}>
-             <ChevronDown className="w-4 h-4 rotate-90 text-[#6B6B6B]" />
+           <Button variant="secondary" size="icon" className="h-12 w-8 rounded-l-lg rounded-r-none shadow-md border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
+             <ChevronDown className="w-4 h-4 rotate-90 text-[var(--neutral-500)]" />
            </Button>
         </div>
       )}

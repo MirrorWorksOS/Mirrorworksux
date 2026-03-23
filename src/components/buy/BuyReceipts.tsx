@@ -11,9 +11,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 interface POForReceipt {
   id: string;
@@ -50,18 +49,16 @@ export function BuyReceipts() {
   const [quantities, setQuantities] = useState<Record<number, number>>({});
 
   const handleReceive = () => {
-    console.log('Receiving goods:', quantities);
-    // Would submit to API
     setSelectedPO(null);
     setQuantities({});
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Goods Receipt</h1>
-          <p className="text-sm text-[#737373] mt-1">{mockPOs.length} POs awaiting receipt</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Goods Receipt</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{mockPOs.length} POs awaiting receipt</p>
         </div>
       </div>
 
@@ -69,22 +66,22 @@ export function BuyReceipts() {
         /* PO Selection */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {mockPOs.map((po) => (
-            <motion.div key={po.id} variants={animationVariants.listItem}>
+            <motion.div key={po.id} variants={staggerItem}>
               <Card
-                className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
+                className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
                 onClick={() => setSelectedPO(po)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-[18px] font-semibold text-[#1A2732]">{po.poNumber}</h3>
-                    <p className="text-sm text-[#737373]">{po.supplier}</p>
+                    <h3 className="text-lg font-semibold text-[var(--mw-mirage)]">{po.poNumber}</h3>
+                    <p className="text-sm text-[var(--neutral-500)]">{po.supplier}</p>
                   </div>
-                  <Badge className="bg-[#FFF4CC] text-[#805900] border-0">Pending</Badge>
+                  <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-0">Pending</Badge>
                 </div>
-                <p className="text-xs text-[#525252] mb-3">Expected: {new Date(po.expectedDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</p>
+                <p className="text-xs text-[var(--neutral-600)] mb-3">Expected: {new Date(po.expectedDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
-                  <span className="text-sm text-[#737373]">{po.items.length} items</span>
-                  <Button size="sm" className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] h-10 px-5">
+                  <span className="text-sm text-[var(--neutral-500)]">{po.items.length} items</span>
+                  <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] h-10 px-5">
                     Start Receipt →
                   </Button>
                 </div>
@@ -94,11 +91,11 @@ export function BuyReceipts() {
         </div>
       ) : (
         /* Receipt Entry Form - TOUCH OPTIMIZED */
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-8 max-w-4xl mx-auto">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-[24px] font-semibold text-[#1A2732]">{selectedPO.poNumber}</h2>
-              <p className="text-sm text-[#737373]">{selectedPO.supplier}</p>
+              <h2 className="text-2xl font-semibold text-[var(--mw-mirage)]">{selectedPO.poNumber}</h2>
+              <p className="text-sm text-[var(--neutral-500)]">{selectedPO.supplier}</p>
             </div>
             <Button variant="outline" onClick={() => setSelectedPO(null)} className="h-12 px-6 text-base">
               Cancel
@@ -107,11 +104,11 @@ export function BuyReceipts() {
 
           {/* Barcode Scanner (placeholder) */}
           <div className="flex gap-3 mb-6">
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[#F5F5F5]">
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]">
               <Scan className="w-6 h-6 mr-3" />
               Scan Barcode
             </Button>
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[#F5F5F5]">
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]">
               <Camera className="w-6 h-6 mr-3" />
               Take Photo
             </Button>
@@ -120,24 +117,24 @@ export function BuyReceipts() {
           {/* Items to Receive */}
           <div className="space-y-4">
             {selectedPO.items.map((item, idx) => (
-              <div key={idx} className="p-6 bg-[#F5F5F5] rounded-lg border border-[var(--border)]">
-                <h3 className="text-[16px] font-medium text-[#1A2732] mb-2">{item.name}</h3>
+              <div key={idx} className="p-6 bg-[var(--neutral-100)] rounded-lg border border-[var(--border)]">
+                <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{item.name}</h3>
                 <div className="flex items-center gap-4 mb-4">
                   <div>
-                    <p className="text-xs text-[#737373] mb-1">Ordered</p>
-                    <p className=" text-[18px] font-semibold text-[#1A2732]">
+                    <p className="text-xs text-[var(--neutral-500)] mb-1">Ordered</p>
+                    <p className=" text-lg font-semibold text-[var(--mw-mirage)]">
                       {item.ordered} {item.unit}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#737373] mb-1">Already Received</p>
-                    <p className=" text-[18px] font-semibold text-[#737373]">
+                    <p className="text-xs text-[var(--neutral-500)] mb-1">Already Received</p>
+                    <p className=" text-lg font-semibold text-[var(--neutral-500)]">
                       {item.received} {item.unit}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#737373] mb-1">Outstanding</p>
-                    <p className=" text-[18px] font-semibold text-[#FFCF4B]">
+                    <p className="text-xs text-[var(--neutral-500)] mb-1">Outstanding</p>
+                    <p className=" text-lg font-semibold text-[var(--mw-yellow-400)]">
                       {item.ordered - item.received} {item.unit}
                     </p>
                   </div>
@@ -145,20 +142,20 @@ export function BuyReceipts() {
 
                 {/* Touch-optimized quantity input */}
                 <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-[#1A2732] min-w-[120px]">Receiving now:</label>
+                  <label className="text-sm font-medium text-[var(--mw-mirage)] min-w-[120px]">Receiving now:</label>
                   <Input
                     type="number"
                     min="0"
                     max={item.ordered - item.received}
                     value={quantities[idx] || ''}
                     onChange={(e) => setQuantities({ ...quantities, [idx]: parseInt(e.target.value) || 0 })}
-                    className="h-16 text-[24px]  font-semibold text-center border-[var(--border)] w-32"
+                    className="h-16 text-2xl  font-semibold text-center border-[var(--border)] w-32"
                     placeholder="0"
                   />
-                  <span className="text-sm text-[#737373]">{item.unit}</span>
+                  <span className="text-sm text-[var(--neutral-500)]">{item.unit}</span>
                   <Button
                     onClick={() => setQuantities({ ...quantities, [idx]: item.ordered - item.received })}
-                    className="ml-auto h-12 bg-[var(--border)] hover:bg-[#D4D4D4] text-[#1A2732]"
+                    className="ml-auto h-12 bg-[var(--border)] hover:bg-[var(--neutral-300)] text-[var(--mw-mirage)]"
                   >
                     Receive All
                   </Button>
@@ -172,7 +169,7 @@ export function BuyReceipts() {
             <Button
               onClick={handleReceive}
               disabled={Object.values(quantities).every(q => q === 0)}
-              className="flex-1 h-16 text-[18px] bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]"
+              className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]"
             >
               <CheckCircle2 className="w-6 h-6 mr-3" />
               Confirm Receipt

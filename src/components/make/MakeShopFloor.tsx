@@ -56,15 +56,15 @@ export function MakeShopFloor() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'relative h-14 px-5 text-[14px] font-medium whitespace-nowrap transition-colors duration-150',
+              'relative h-14 px-5 text-sm font-medium whitespace-nowrap transition-colors duration-150',
               activeTab === tab.id
-                ? 'text-[#1A2732]'
-                : 'text-[#737373] hover:text-[#1A2732]'
+                ? 'text-[var(--mw-mirage)]'
+                : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
             )}
           >
             {tab.label}
             {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#FFCF4B] rounded-t-sm" />
+              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--mw-yellow-400)] rounded-t-sm" />
             )}
           </button>
         ))}

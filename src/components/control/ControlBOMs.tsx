@@ -10,9 +10,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 interface BOMLine {
   sku: string; description: string; qty: number; unit: string; type: 'material' | 'purchased' | 'labour';
@@ -72,15 +71,15 @@ const BOMS: BOM[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  active:   { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
-  draft:    { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
-  obsolete: { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]' },
+  active:   { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  draft:    { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]' },
+  obsolete: { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
 };
 
 const LINE_TYPE_CONFIG: Record<string, { bg: string; text: string }> = {
-  material:  { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]' },
-  purchased: { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
-  labour:    { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
+  material:  { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]' },
+  purchased: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  labour:    { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
 };
 
 export function ControlBOMs() {
@@ -104,41 +103,41 @@ export function ControlBOMs() {
     <motion.div
       initial="initial"
       animate="animate"
-      variants={animationVariants.stagger}
+      variants={staggerContainer}
       className="p-6 space-y-6"
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Bills of Materials</h1>
-          <p className="text-sm text-[#737373] mt-1">{BOMS.filter(b => b.status === 'active').length} active BOMs</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Bills of Materials</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{BOMS.filter(b => b.status === 'active').length} active BOMs</p>
         </div>
-        <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
           <Plus className="w-4 h-4" /> New BOM
         </Button>
       </div>
 
       <div className="relative w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
         <Input
           placeholder="Search BOMs..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
+          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm"
         />
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium w-8" />
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Product</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">SKU</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Version</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] uppercase font-medium">Components</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Updated</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] uppercase font-medium">Status</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] uppercase font-medium">Actions</th>
+            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-8" />
+              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Product</th>
+              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
+              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Version</th>
+              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Components</th>
+              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Updated</th>
+              <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Status</th>
+              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -148,20 +147,20 @@ export function ControlBOMs() {
               return (
                 <React.Fragment key={bom.id}>
                   <tr
-                    className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
+                    className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
                     onClick={() => toggle(bom.id)}
                   >
                     <td className="px-4">
                       {isOpen
-                        ? <ChevronDown className="w-4 h-4 text-[#737373]" />
-                        : <ChevronRight className="w-4 h-4 text-[#737373]" />
+                        ? <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />
+                        : <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />
                       }
                     </td>
-                    <td className="px-4 text-sm text-[#1A2732] font-medium">{bom.product}</td>
-                    <td className="px-4 text-xs  text-[#737373]">{bom.sku}</td>
-                    <td className="px-4 text-sm  text-[#737373]">{bom.version}</td>
+                    <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</td>
+                    <td className="px-4 text-xs  text-[var(--neutral-500)]">{bom.sku}</td>
+                    <td className="px-4 text-sm  text-[var(--neutral-500)]">{bom.version}</td>
                     <td className="px-4 text-right text-sm  font-medium">{bom.componentCount}</td>
-                    <td className="px-4 text-sm text-[#737373]">{bom.updatedAt}</td>
+                    <td className="px-4 text-sm text-[var(--neutral-500)]">{bom.updatedAt}</td>
                     <td className="px-4">
                       <div className="flex justify-center">
                         <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5 capitalize', cfg.bg, cfg.text)}>
@@ -170,7 +169,7 @@ export function ControlBOMs() {
                       </div>
                     </td>
                     <td className="px-4 text-right" onClick={e => e.stopPropagation()}>
-                      <Button variant="ghost" size="sm" className="h-8 text-xs text-[#737373] hover:text-[#1A2732]">
+                      <Button variant="ghost" size="sm" className="h-8 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]">
                         Edit
                       </Button>
                     </td>
@@ -179,16 +178,16 @@ export function ControlBOMs() {
                   {/* Expanded BOM lines */}
                   {isOpen && (
                     <tr>
-                      <td colSpan={8} className="bg-[#F5F5F5] border-b border-[var(--border)] p-0">
+                      <td colSpan={8} className="bg-[var(--neutral-100)] border-b border-[var(--border)] p-0">
                         <div className="px-8 py-4">
                           <table className="w-full">
                             <thead>
                               <tr>
-                                <th className="pb-2 text-left text-[11px] tracking-wider text-[#737373] uppercase font-medium">SKU</th>
-                                <th className="pb-2 text-left text-[11px] tracking-wider text-[#737373] uppercase font-medium">Description</th>
-                                <th className="pb-2 text-right text-[11px] tracking-wider text-[#737373] uppercase font-medium">Qty</th>
-                                <th className="pb-2 text-left text-[11px] tracking-wider text-[#737373] uppercase font-medium">Unit</th>
-                                <th className="pb-2 text-left text-[11px] tracking-wider text-[#737373] uppercase font-medium">Type</th>
+                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
+                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Description</th>
+                                <th className="pb-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Qty</th>
+                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Unit</th>
+                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Type</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -196,10 +195,10 @@ export function ControlBOMs() {
                                 const ltcfg = LINE_TYPE_CONFIG[line.type];
                                 return (
                                   <tr key={i} className="border-t border-[var(--border)] h-10">
-                                    <td className="py-2 text-xs  text-[#737373] pr-6">{line.sku}</td>
-                                    <td className="py-2 text-sm text-[#1A2732] pr-6">{line.description}</td>
+                                    <td className="py-2 text-xs  text-[var(--neutral-500)] pr-6">{line.sku}</td>
+                                    <td className="py-2 text-sm text-[var(--mw-mirage)] pr-6">{line.description}</td>
                                     <td className="py-2 text-right text-sm  font-medium pr-4">{line.qty}</td>
-                                    <td className="py-2 text-sm text-[#737373] pr-6">{line.unit}</td>
+                                    <td className="py-2 text-sm text-[var(--neutral-500)] pr-6">{line.unit}</td>
                                     <td className="py-2">
                                       <Badge className={cn('border-0 text-[10px] rounded-full px-1.5 py-0.5 capitalize', ltcfg.bg, ltcfg.text)}>
                                         {line.type}

@@ -9,9 +9,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 const CHECKPOINTS = [
   { id: '1', name: 'Incoming Material Inspection',     stage: 'Receiving',     frequency: 'Every delivery', duration: 15, mandatory: true,  lastUpdated: 'Mar 01', products: 'All' },
@@ -39,25 +38,25 @@ export function PlanQCPlanning() {
   });
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">QC checkpoints</h1>
-          <p className="text-sm text-[#737373] mt-1">
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">QC checkpoints</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
             {CHECKPOINTS.filter(c => c.mandatory).length} mandatory · {CHECKPOINTS.filter(c => !c.mandatory).length} optional
           </p>
         </div>
-        <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
           <Plus className="w-4 h-4" /> New checkpoint
         </Button>
       </div>
 
       {/* Stage filter tabs */}
-      <div className="flex gap-1 bg-[#F5F5F5] rounded-lg p-1 w-fit flex-wrap">
+      <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit flex-wrap">
         {STAGES.map(s => (
           <button key={s} onClick={() => setStageTab(s)}
             className={cn('px-3 py-1.5 rounded-md text-sm transition-colors font-medium',
-              stageTab === s ? 'bg-white text-[#1A2732] shadow-sm' : 'text-[#737373] hover:text-[#FFCF4B]'
+              stageTab === s ? 'bg-white text-[var(--mw-mirage)] shadow-sm' : 'text-[var(--neutral-500)] hover:text-[var(--mw-yellow-400)]'
             )}>
             {s}
           </button>
@@ -66,47 +65,47 @@ export function PlanQCPlanning() {
 
       {/* Search */}
       <div className="relative w-72">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
         <Input placeholder="Search checkpoints…" value={search} onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm" />
+          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map(cp => (
-          <motion.div key={cp.id} variants={animationVariants.listItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+          <motion.div key={cp.id} variants={staggerItem}>
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[#1A2732]' : 'text-[#A3A3A3]')} />
-                  <h3 className="text-[14px] font-semibold text-[#1A2732] leading-tight group-hover:text-[#FFCF4B] transition-colors">
+                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[var(--mw-mirage)]' : 'text-[var(--neutral-400)]')} />
+                  <h3 className="text-sm font-semibold text-[var(--mw-mirage)] leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
                     {cp.name}
                   </h3>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#A3A3A3] shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
               </div>
               <div className="flex flex-wrap gap-2 mb-3">
-                <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{cp.stage}</Badge>
+                <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{cp.stage}</Badge>
                 {cp.mandatory
-                  ? <Badge className="bg-[#DBEAFE] text-[#0A7AFF] border-0 text-xs">Required</Badge>
-                  : <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">Optional</Badge>
+                  ? <Badge className="bg-[var(--mw-blue-100)] text-[var(--mw-blue)] border-0 text-xs">Required</Badge>
+                  : <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">Optional</Badge>
                 }
               </div>
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#737373]">Frequency</span>
-                  <span className="text-[#1A2732] font-medium">{cp.frequency}</span>
+                  <span className="text-[var(--neutral-500)]">Frequency</span>
+                  <span className="text-[var(--mw-mirage)] font-medium">{cp.frequency}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#737373]">Duration</span>
-                  <span className=" text-[#1A2732]">{cp.duration} min</span>
+                  <span className="text-[var(--neutral-500)]">Duration</span>
+                  <span className=" text-[var(--mw-mirage)]">{cp.duration} min</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#737373]">Applies to</span>
-                  <span className="text-[#1A2732] text-xs">{cp.products}</span>
+                  <span className="text-[var(--neutral-500)]">Applies to</span>
+                  <span className="text-[var(--mw-mirage)] text-xs">{cp.products}</span>
                 </div>
               </div>
-              <p className="text-xs text-[#A3A3A3] mt-3">Updated {cp.lastUpdated}</p>
+              <p className="text-xs text-[var(--neutral-400)] mt-3">Updated {cp.lastUpdated}</p>
             </Card>
           </motion.div>
         ))}

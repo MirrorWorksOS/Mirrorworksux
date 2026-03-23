@@ -55,9 +55,9 @@ const JOBS: JobRow[] = [
   { id: 'JOB-2026-0005', customer: 'Oberon Eng', product: 'Mounting Plate', quoted: 4100, actual: 3969, margin: 3.2, marginDollar: 131, status: 'On Hold' },
 ];
 
-const getBarColor = (m: number) => m > 15 ? '#36B37E' : m > 5 ? '#FACC15' : '#DE350B';
-const getMarginBadge = (m: number) => m > 15 ? 'bg-[#F5F5F5] text-[#1B7D4F]' : m > 5 ? 'bg-[#FFCF4B]/20 text-[#1A2732]' : 'bg-[#DE350B]/10 text-[#DE350B]';
-const statusBadge = (s: string) => s === 'Complete' ? 'text-[#1A2732]' : s === 'In Production' ? 'text-[#1A2732]' : 'text-[#1A2732]';
+const getBarColor = (m: number) => m > 15 ? 'var(--mw-success)' : m > 5 ? 'var(--mw-warning)' : 'var(--mw-error)';
+const getMarginBadge = (m: number) => m > 15 ? 'bg-[var(--neutral-100)] text-[#1B7D4F]' : m > 5 ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]' : 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]';
+const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -66,8 +66,8 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
     <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Job Profitability</h1>
-          <p className="text-sm text-[#737373]">Actual costs vs quoted amounts across all jobs</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Job Profitability</h1>
+          <p className="text-sm text-[var(--neutral-500)]">Actual costs vs quoted amounts across all jobs</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date Range</Button>
@@ -81,27 +81,27 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         {[
           { label: 'Total Revenue', value: '$456,780', sub: '34 completed jobs' },
           { label: 'Total Costs', value: '$312,450', sub: 'materials, labour, overhead' },
-          { label: 'Average Margin', value: '31.6%', color: '#36B37E', badge: '+2.3% vs last month', badgeStyle: 'bg-[#F5F5F5] text-[#1A2732]' },
-          { label: 'Loss-Making Jobs', value: '3', color: '#DE350B', sub: '$4,200 total loss', subColor: '#DE350B' },
+          { label: 'Average Margin', value: '31.6%', color: 'var(--mw-success)', badge: '+2.3% vs last month', badgeStyle: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' },
+          { label: 'Loss-Making Jobs', value: '3', color: 'var(--mw-error)', sub: '$4,200 total loss', subColor: 'var(--mw-error)' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[#737373] mb-2" style={{ fontWeight: 500 }}>{kpi.label}</div>
-            <div className="text-[28px] tracking-tight" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500, color: kpi.color || '#1A2732' }}>{kpi.value}</div>
-            {kpi.badge && <Badge className={cn("rounded-full text-[11px] mt-2 border-0", kpi.badgeStyle)}>{kpi.badge}</Badge>}
-            {kpi.sub && <p className="text-xs mt-1" style={{ color: kpi.subColor || '#737373' }}>{kpi.sub}</p>}
+          <Card key={kpi.label} className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">{kpi.label}</div>
+            <div className="text-2xl tracking-tight tabular-nums font-medium" style={{ color: kpi.color || 'var(--mw-mirage)' }}>{kpi.value}</div>
+            {kpi.badge && <Badge className={cn("rounded-full text-xs mt-2 border-0", kpi.badgeStyle)}>{kpi.badge}</Badge>}
+            {kpi.sub && <p className="text-xs mt-1" style={{ color: kpi.subColor || 'var(--neutral-500)' }}>{kpi.sub}</p>}
           </Card>
         ))}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-          <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Top 10 Jobs by Profit Margin</h3>
+        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Top 10 Jobs by Profit Margin</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={marginData} layout="vertical" margin={{ left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" horizontal={false} />
-              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
-              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} width={80} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" horizontal={false} />
+              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={80} />
               <Tooltip formatter={(v: number) => `${v}%`} />
               <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
                 {marginData.map((e, i) => <Cell key={`margin-${e.job}-${i}`} fill={getBarColor(e.margin)} />)}
@@ -109,66 +109,66 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
             </BarChart>
           </ResponsiveContainer>
         </Card>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-          <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Customer Profitability</h3>
+        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Customer Profitability</h3>
           <ResponsiveContainer width="100%" height={280}>
             <ScatterChart margin={{ left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-              <XAxis dataKey="x" name="Revenue" tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
-              <YAxis dataKey="y" name="Margin" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
+              <XAxis dataKey="x" name="Revenue" tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <YAxis dataKey="y" name="Margin" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
               <ZAxis dataKey="z" range={[100, 600]} />
               <Tooltip formatter={(v: number, name: string) => name === 'Revenue' ? `$${v.toLocaleString()}` : `${v}%`} />
-              <Scatter data={scatterData} fill="#FFCF4B" stroke="#1A2732" strokeWidth={1} />
+              <Scatter data={scatterData} fill="#FFCF4B" stroke="var(--mw-mirage)" strokeWidth={1} />
             </ScatterChart>
           </ResponsiveContainer>
         </Card>
       </div>
 
       {/* Data Table */}
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 <th className="w-10 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
                 {['JOB #', 'CUSTOMER', 'PRODUCT', 'QUOTED', 'ACTUAL COST', 'MARGIN %', 'MARGIN $', 'STATUS', ''].map(h => (
-                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", ['QUOTED', 'ACTUAL COST', 'MARGIN %', 'MARGIN $'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
+                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium", ['QUOTED', 'ACTUAL COST', 'MARGIN %', 'MARGIN $'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {JOBS.map((job, i) => (
                 <React.Fragment key={job.id}>
-                  <tr className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", expandedRow === job.id && "border-l-4 border-l-[#FFCF4B]", i % 2 === 1 && "bg-[#F5F5F5]")}
+                  <tr className={cn("border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", expandedRow === job.id && "border-l-4 border-l-[var(--mw-yellow-400)]", i % 2 === 1 && "bg-[var(--neutral-100)]")}
                     onClick={() => onSelectJob ? onSelectJob(job.id) : setExpandedRow(expandedRow === job.id ? null : job.id)}>
                     <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
-                    <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{job.id}</td>
-                    <td className="px-4 text-sm text-[#1A2732]">{job.customer}</td>
-                    <td className="px-4 text-sm text-[#525252]">{job.product}</td>
-                    <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>${job.quoted.toLocaleString()}</td>
-                    <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>${job.actual.toLocaleString()}</td>
+                    <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{job.id}</td>
+                    <td className="px-4 text-sm text-[var(--mw-mirage)]">{job.customer}</td>
+                    <td className="px-4 text-sm text-[var(--neutral-600)]">{job.product}</td>
+                    <td className="px-4 text-right text-sm tabular-nums font-medium">${job.quoted.toLocaleString()}</td>
+                    <td className="px-4 text-right text-sm tabular-nums font-medium">${job.actual.toLocaleString()}</td>
                     <td className="px-4 text-right">
-                      <Badge className={cn("rounded-full text-[11px] px-2 py-0.5 border-0", getMarginBadge(job.margin))}>{job.margin}%</Badge>
+                      <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", getMarginBadge(job.margin))}>{job.margin}%</Badge>
                     </td>
-                    <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500, color: job.marginDollar < 0 ? '#DE350B' : '#1A2732' }}>
+                    <td className="px-4 text-right text-sm tabular-nums font-medium" style={{ color: job.marginDollar < 0 ? 'var(--mw-error)' : 'var(--mw-mirage)' }}>
                       {job.marginDollar < 0 ? '-' : ''}${Math.abs(job.marginDollar).toLocaleString()}
                     </td>
-                    <td className={cn("px-4 text-sm", statusBadge(job.status))} style={{ fontWeight: 500 }}>{job.status}</td>
-                    <td className="px-4">{expandedRow === job.id ? <ChevronUp className="w-4 h-4 text-[#737373]" /> : <ChevronDown className="w-4 h-4 text-[#737373]" />}</td>
+                    <td className={cn("px-4 text-sm font-medium", statusBadge(job.status))}>{job.status}</td>
+                    <td className="px-4">{expandedRow === job.id ? <ChevronUp className="w-4 h-4 text-[var(--neutral-500)]" /> : <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />}</td>
                   </tr>
                   {expandedRow === job.id && job.breakdown && (
-                    <tr><td colSpan={10} className="bg-[#F5F5F5] px-8 py-4">
+                    <tr><td colSpan={10} className="bg-[var(--neutral-100)] px-8 py-4">
                       <table className="w-full">
-                        <thead><tr className="text-xs text-[#737373]" style={{ fontWeight: 500 }}>
+                        <thead><tr className="text-xs text-[var(--neutral-500)] font-medium">
                           <th className="text-left py-1">Type</th><th className="text-right py-1">Quoted</th><th className="text-right py-1">Actual</th><th className="text-right py-1">Variance</th>
                         </tr></thead>
                         <tbody>{job.breakdown.map(b => (
                           <tr key={b.type} className="border-t border-[var(--border)]">
                             <td className="py-2 text-sm">{b.type}</td>
-                            <td className="py-2 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>${b.quoted.toLocaleString()}</td>
-                            <td className="py-2 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>${b.actual.toLocaleString()}</td>
-                            <td className="py-2 text-sm text-right flex items-center justify-end gap-1" style={{ fontFamily: 'Roboto Mono, monospace', color: b.variance < 0 ? '#36B37E' : '#DE350B' }}>
-                              {b.variance < 0 ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />}
+<td className="py-2 text-sm text-right tabular-nums">${b.quoted.toLocaleString()}</td>
+                          <td className="py-2 text-sm text-right tabular-nums">${b.actual.toLocaleString()}</td>
+                          <td className="py-2 text-sm text-right flex items-center justify-end gap-1 tabular-nums" style={{ color: b.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}>
+                              {b.variance < 0 ? <ArrowDown className="w-4 h-4" /> : <ArrowUp className="w-4 h-4" />}
                               {b.variance < 0 ? '-' : '+'}${Math.abs(b.variance).toLocaleString()}
                             </td>
                           </tr>

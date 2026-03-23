@@ -26,31 +26,31 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-2xl border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
-          <SheetTitle className="text-2xl font-bold text-[#1A2732]">{group.name}</SheetTitle>
+          <SheetTitle className="text-2xl font-bold text-[var(--mw-mirage)]">{group.name}</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-5">
-          <div className="rounded-2xl border border-[var(--border)] bg-[#F5F5F5] p-5">
-            <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">Module</p>
+          <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-[var(--neutral-100)] p-5">
+            <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Module</p>
             <div className="mt-2 inline-flex rounded-full px-3 py-1 text-sm" style={{ backgroundColor: moduleMeta.bg, color: moduleMeta.text }}>
               {moduleLabels[group.module]}
             </div>
-            <p className="mt-3 text-sm text-[#525252]">{group.description}</p>
+            <p className="mt-3 text-sm text-[var(--neutral-600)]">{group.description}</p>
           </div>
 
-          <div className="rounded-2xl border border-[var(--border)] bg-white p-5">
-            <p className="mb-3 text-xs font-medium tracking-wider text-[#737373] uppercase">Members</p>
+          <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-5">
+            <p className="mb-3 text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Members</p>
             <div className="space-y-2">
               {members.map(member => (
-                <div key={member.id} className="flex items-center gap-3 rounded-xl bg-[#F5F5F5] p-2">
+                <div key={member.id} className="flex items-center gap-3 rounded-xl bg-[var(--neutral-100)] p-2">
                   <Avatar className="h-8 w-8 ring-1 ring-white">
-                    <AvatarFallback className="bg-[#F5F5F5] text-xs text-[#2C2C2C]">{initials(member.name)}</AvatarFallback>
+                    <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">{initials(member.name)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm text-[#1A2732]">{member.name}</p>
-                    <p className="text-xs text-[#737373]">{member.email}</p>
+                    <p className="text-sm text-[var(--mw-mirage)]">{member.name}</p>
+                    <p className="text-xs text-[var(--neutral-500)]">{member.email}</p>
                   </div>
                 </div>
               ))}

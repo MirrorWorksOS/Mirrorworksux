@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
+import { EmptyState } from '../shared/feedback/EmptyState';
 import { useNavigate } from 'react-router';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -13,10 +14,9 @@ import { Card } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedSearch, AnimatedFilter, AnimatedPlus } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 interface Customer {
   id: string;
@@ -96,11 +96,11 @@ const mockCustomers: Customer[] = [
 const getStatusBadge = (status: Customer['status']) => {
   switch (status) {
     case 'active':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Active' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Active' };
     case 'prospect':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Prospect' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Prospect' };
     case 'inactive':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Inactive' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Inactive' };
   }
 };
 
@@ -118,17 +118,17 @@ export function SellCRM() {
     <motion.div
       initial="initial"
       animate="animate"
-      variants={animationVariants.stagger}
+      variants={staggerContainer}
       className="p-8 space-y-8"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Customers</h1>
-          <p className="text-sm text-[#737373] mt-1">{filteredCustomers.length} total customers</p>
+          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Customers</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredCustomers.length} total customers</p>
         </div>
         <div className="flex gap-3">
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Customer
           </Button>
@@ -139,7 +139,7 @@ export function SellCRM() {
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
           <Input
             placeholder="Search customers..."
             className="pl-10 h-10 border-[var(--border)]"
@@ -161,8 +161,8 @@ export function SellCRM() {
             className={cn(
               "p-2 rounded transition-all duration-200",
               viewMode === 'card'
-                ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                : "text-[#737373] hover:bg-[#F5F5F5]"
+                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
             )}
           >
             <Grid3x3 className="w-4 h-4" />
@@ -172,8 +172,8 @@ export function SellCRM() {
             className={cn(
               "p-2 rounded transition-all duration-200",
               viewMode === 'list'
-                ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                : "text-[#737373] hover:bg-[#F5F5F5]"
+                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
             )}
           >
             <List className="w-4 h-4" />
@@ -189,7 +189,7 @@ export function SellCRM() {
             return (
               <motion.div
                 key={customer.id}
-                variants={animationVariants.listItem}
+                variants={staggerItem}
                 custom={idx}
               >
                 <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
@@ -198,15 +198,15 @@ export function SellCRM() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-[#1A2732] text-white text-sm font-medium">
+                        <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
                           {customer.company.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#FFCF4B] transition-colors">
+                        <h3 className="text-sm font-semibold text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
                           {customer.company}
                         </h3>
-                        <p className="text-[12px] text-[#737373]">
+                        <p className="text-xs text-[var(--neutral-500)]">
                           {customer.contact}
                         </p>
                       </div>
@@ -217,12 +217,12 @@ export function SellCRM() {
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-xs text-[#737373]">
-                      <Mail className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+                      <Mail className="w-4 h-4" />
                       <span className="truncate">{customer.email}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-[#737373]">
-                      <Phone className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+                      <Phone className="w-4 h-4" />
                       <span>{customer.phone}</span>
                     </div>
                   </div>
@@ -230,19 +230,19 @@ export function SellCRM() {
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
                     <div>
                       <div className="flex items-center gap-1 mb-1">
-                        <DollarSign className="w-3.5 h-3.5 text-[#737373]" />
-                        <span className="text-xs text-[#737373]">Total Revenue</span>
+                        <DollarSign className="w-4 h-4 text-[var(--neutral-500)]" />
+                        <span className="text-xs text-[var(--neutral-500)]">Total Revenue</span>
                       </div>
-                      <p className=" text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className=" text-sm font-semibold text-[var(--neutral-900)]">
                         ${customer.totalRevenue.toLocaleString()}
                       </p>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 mb-1">
-                        <Briefcase className="w-3.5 h-3.5 text-[#737373]" />
-                        <span className="text-xs text-[#737373]">Opportunities</span>
+                        <Briefcase className="w-4 h-4 text-[var(--neutral-500)]" />
+                        <span className="text-xs text-[var(--neutral-500)]">Opportunities</span>
                       </div>
-                      <p className=" text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className=" text-sm font-semibold text-[var(--neutral-900)]">
                         {customer.activeOpportunities}
                       </p>
                     </div>
@@ -257,30 +257,20 @@ export function SellCRM() {
       {/* List View (placeholder for now - would implement SellCRMList) */}
       {viewMode === 'list' && (
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <p className="text-sm text-[#737373] text-center">
+          <p className="text-sm text-[var(--neutral-500)] text-center">
             List view - Would render SellCRMList component here
           </p>
         </Card>
       )}
 
-      {/* Empty State */}
       {filteredCustomers.length === 0 && (
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-12">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="w-8 h-8 text-[#737373]" />
-            </div>
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">
-              No customers found
-            </h3>
-            <p className="text-sm text-[#737373] mb-4">
-              Try adjusting your search or create a new customer to get started
-            </p>
-            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A]">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Customer
-            </Button>
-          </div>
+        <Card variant="flat" className="p-0">
+          <EmptyState
+            icon={Briefcase}
+            title="No customers found"
+            description="Try adjusting your search or create a new customer to get started"
+            action={{ label: "Create Customer", onClick: () => {}, icon: Plus }}
+          />
         </Card>
       )}
     </motion.div>

@@ -6,14 +6,13 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../ui/card';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 const spendBySupplier = [
-  { name: 'Hunter Steel Co', spend: 156000, color: '#0052CC' },
-  { name: 'Pacific Metals', spend: 89000, color: '#36B37E' },
-  { name: 'Sydney Welding', spend: 45000, color: '#FACC15' },
+  { name: 'Hunter Steel Co', spend: 156000, color: 'var(--mw-info)' },
+  { name: 'Pacific Metals', spend: 89000, color: 'var(--mw-success)' },
+  { name: 'Sydney Welding', spend: 45000, color: 'var(--mw-warning)' },
   { name: 'BHP Suppliers', spend: 128000, color: '#7C3AED' },
 ];
 
@@ -28,12 +27,12 @@ const monthlySpend = [
 
 export function BuyReports() {
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Procurement Reports</h1>
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
+      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Procurement Reports</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
-          <h3 className="text-[16px] font-semibold text-[#1A2732] mb-4">Spend by Supplier</h3>
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Spend by Supplier</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={spendBySupplier} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="spend">
@@ -44,13 +43,13 @@ export function BuyReports() {
           </ResponsiveContainer>
         </Card>
 
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
-          <h3 className="text-[16px] font-semibold text-[#1A2732] mb-4">Monthly Spend Trend</h3>
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Monthly Spend Trend</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={monthlySpend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
-              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Bar dataKey="spend" fill="#FFCF4B" radius={[4, 4, 0, 0]} />
             </BarChart>

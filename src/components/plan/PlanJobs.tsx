@@ -147,10 +147,10 @@ const STAGES = [
 ];
 
 const priorityColors = {
-  low: 'bg-[#FFCF4B] text-white',
-  medium: 'bg-[#FFCF4B] text-[#2C2C2C]',
-  high: 'bg-[#FF8B00] text-white',
-  urgent: 'bg-[#EF4444] text-white'
+  low: 'bg-[var(--mw-yellow-400)] text-white',
+  medium: 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]',
+  high: 'bg-[var(--mw-amber)] text-white',
+  urgent: 'bg-[var(--mw-error)] text-white'
 };
 
 export function PlanJobs() {
@@ -166,10 +166,10 @@ export function PlanJobs() {
   const JobCard = ({ job }: { job: Job }) => (
     <div
       onClick={() => setSelectedJobId(job.id)}
-      className="bg-white border border-[var(--border)] rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow"
+      className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
-        <span className="font-['Roboto_Mono',monospace] text-[14px] font-bold text-[#1A2732]">
+        <span className="tabular-nums text-sm font-bold text-[var(--mw-mirage)]">
           {job.id}
         </span>
         <Avatar className="w-8 h-8 border border-[var(--border)]">
@@ -178,11 +178,11 @@ export function PlanJobs() {
         </Avatar>
       </div>
       
-      <h3 className=" text-[15px] font-medium text-[#1A2732] mb-1">
+      <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-1">
         {job.name}
       </h3>
       
-      <p className=" text-[13px] text-[#737373] mb-3 line-clamp-2">
+      <p className=" text-xs text-[var(--neutral-500)] mb-3 line-clamp-2">
         {job.description}
       </p>
       
@@ -192,11 +192,11 @@ export function PlanJobs() {
         </Badge>
       )}
       
-      <div className="flex items-center justify-between text-[13px]">
-        <span className=" text-[#737373]">
+      <div className="flex items-center justify-between text-xs">
+        <span className=" text-[var(--neutral-500)]">
           {job.quoteCount} {job.quoteCount === 1 ? 'Quote' : 'Quotes'}
         </span>
-        <span className=" font-medium text-[#1A2732]">
+        <span className=" font-medium text-[var(--mw-mirage)]">
           ${job.value.toLocaleString()}
         </span>
       </div>
@@ -204,58 +204,58 @@ export function PlanJobs() {
   );
 
   return (
-    <div className="flex flex-col h-full bg-[#F5F5F5]">
+    <div className="flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search jobs by ID, name, customer..."
-                className="pl-9 bg-[#F5F5F5] border-transparent focus:bg-white"
+                className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-[#1A2732]">
+            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]">
               <Filter className="w-4 h-4 mr-2" />
               Filter
             </Button>
           </div>
           
           <div className="flex items-center gap-2">
-            <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
+            <div className="flex items-center border border-[var(--border)] rounded-[var(--shape-lg)] p-1">
               <button
                 onClick={() => setViewMode('kanban')}
                 className={cn(
                   'p-2 rounded transition-colors',
-                  viewMode === 'kanban' ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
+                  viewMode === 'kanban' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
                 )}
               >
-                <KanbanSquare className="w-4 h-4 text-[#1A2732]" />
+                <KanbanSquare className="w-4 h-4 text-[var(--mw-mirage)]" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
                 className={cn(
                   'p-2 rounded transition-colors',
-                  viewMode === 'list' ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
+                  viewMode === 'list' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
                 )}
               >
-                <List className="w-4 h-4 text-[#1A2732]" />
+                <List className="w-4 h-4 text-[var(--mw-mirage)]" />
               </button>
               <button
                 onClick={() => setViewMode('card')}
                 className={cn(
                   'p-2 rounded transition-colors',
-                  viewMode === 'card' ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
+                  viewMode === 'card' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
                 )}
               >
-                <LayoutGrid className="w-4 h-4 text-[#1A2732]" />
+                <LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" />
               </button>
             </div>
             
-            <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] font-medium">
+            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
               <Plus className="w-4 h-4 mr-2" />
               Create Job
             </Button>
@@ -273,14 +273,14 @@ export function PlanJobs() {
                 <div key={stage.id} className="flex flex-col w-[320px] flex-shrink-0">
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className=" text-[14px] font-medium text-[#1A2732]">
+                      <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
                         {stage.label}
                       </h3>
-                      <Badge variant="outline" className="bg-[#F5F5F5] border-transparent text-[#737373] text-xs">
+                      <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
                         {jobs.length} {jobs.length === 1 ? 'Job' : 'Jobs'}
                       </Badge>
                     </div>
-                    <p className=" text-[12px] text-[#737373]">
+                    <p className=" text-xs text-[var(--neutral-500)]">
                       {stage.description}
                     </p>
                   </div>
@@ -300,19 +300,19 @@ export function PlanJobs() {
       {/* List View */}
       {viewMode === 'list' && (
         <div className="flex-1 overflow-auto p-6">
-          <div className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+          <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
             <table className="w-full">
-              <thead className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <thead className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 <tr>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Job ID</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Job Name</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Customer</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Stage</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Priority</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Value</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Due Date</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Assigned</th>
-                  <th className="text-left px-4 py-3  text-[13px] font-medium text-[#1A2732]">Progress</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Job ID</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Job Name</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Customer</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Stage</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Priority</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Value</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Due Date</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Assigned</th>
+                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Progress</th>
                 </tr>
               </thead>
               <tbody>
@@ -325,17 +325,17 @@ export function PlanJobs() {
                         onClick={() => setSelectedJobId(job.id)}
                         className="border-b border-[var(--border)] hover:bg-[var(--accent)] cursor-pointer transition-colors"
                       >
-                        <td className="px-4 py-3 font-['Roboto_Mono',monospace] text-[13px] text-[#1A2732]">
+                        <td className="px-4 py-3 tabular-nums text-xs text-[var(--mw-mirage)]">
                           {job.id}
                         </td>
-                        <td className="px-4 py-3  text-[13px] text-[#1A2732]">
+                        <td className="px-4 py-3  text-xs text-[var(--mw-mirage)]">
                           {job.name}
                         </td>
-                        <td className="px-4 py-3  text-[13px] text-[#737373]">
+                        <td className="px-4 py-3  text-xs text-[var(--neutral-500)]">
                           {job.customer}
                         </td>
                         <td className="px-4 py-3">
-                          <Badge variant="outline" className="bg-[#F5F5F5] border-transparent text-[#1A2732] text-xs">
+                          <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--mw-mirage)] text-xs">
                             {stage?.label}
                           </Badge>
                         </td>
@@ -346,10 +346,10 @@ export function PlanJobs() {
                             </Badge>
                           )}
                         </td>
-                        <td className="px-4 py-3  text-[13px] text-[#1A2732]">
+                        <td className="px-4 py-3  text-xs text-[var(--mw-mirage)]">
                           ${job.value.toLocaleString()}
                         </td>
-                        <td className="px-4 py-3  text-[13px] text-[#737373]">
+                        <td className="px-4 py-3  text-xs text-[var(--neutral-500)]">
                           {job.dueDate}
                         </td>
                         <td className="px-4 py-3">
@@ -362,13 +362,13 @@ export function PlanJobs() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="flex-1 h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
+                            <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
                               <div
-                                className="h-full bg-[#FFCF4B] transition-all"
+                                className="h-full bg-[var(--mw-yellow-400)] transition-all"
                                 style={{ width: `${job.progress}%` }}
                               />
                             </div>
-                            <span className=" text-[12px] text-[#737373] w-10 text-right">
+                            <span className=" text-xs text-[var(--neutral-500)] w-10 text-right">
                               {job.progress}%
                             </span>
                           </div>

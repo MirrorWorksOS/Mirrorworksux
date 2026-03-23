@@ -4,7 +4,6 @@
  */
 import React, { useState } from 'react';
 import { Settings, Package, BarChart3, Lock } from 'lucide-react';
-import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -19,7 +18,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Plan module (from ARCH 00 §4.4) ──
 const planPermissionKeys: PermissionKey[] = [
@@ -98,14 +97,14 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Planning horizon</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="12" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">weeks</span>
+              <span className="text-sm text-[var(--neutral-500)]">weeks</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default lead time buffer</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="2" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">days</span>
+              <span className="text-sm text-[var(--neutral-500)]">days</span>
             </div>
           </div>
         </div>
@@ -118,7 +117,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Working hours per day</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="8" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">hours</span>
+              <span className="text-sm text-[var(--neutral-500)]">hours</span>
             </div>
           </div>
           <div>
@@ -138,8 +137,8 @@ function GeneralPanel() {
             { label: 'Show capacity warnings on schedule', checked: true },
             { label: 'Allow overtime scheduling', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -182,8 +181,8 @@ function ProductsPanel() {
             { label: 'Require approval for BOM revisions', checked: true },
             { label: 'Enable phantom BOMs', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -209,11 +208,11 @@ function ReportsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Analytics widgets</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Plan dashboard.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Plan dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}

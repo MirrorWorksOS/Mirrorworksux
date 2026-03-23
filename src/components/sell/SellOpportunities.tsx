@@ -4,18 +4,21 @@
  */
 
 import React, { useState } from 'react';
-import { Plus, Filter, DollarSign, Calendar, User, Flag } from 'lucide-react';
+import { Plus, Filter, DollarSign, Calendar, Flag } from 'lucide-react';
+import { InlineEmpty } from '../shared/feedback/EmptyState';
+import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
+import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
+import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
 import { SellOpportunityDetail, type Opportunity } from './SellOpportunityDetail';
 
-const { animationVariants } = designSystem;
+const KANBAN_ITEM_TYPE = 'sell-opportunity';
 
 type OpportunityStage = 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
 type Priority = 'low' | 'medium' | 'high' | 'urgent';
@@ -30,26 +33,26 @@ const mockOpportunities: Opportunity[] = [
 ];
 
 const stages: { key: OpportunityStage; label: string; color: string }[] = [
-  { key: 'new', label: 'New', color: '#737373' },
-  { key: 'qualified', label: 'Qualified', color: '#0052CC' },
-  { key: 'proposal', label: 'Proposal', color: '#0052CC' },
-  { key: 'negotiation', label: 'Negotiation', color: '#FACC15' },
-  { key: 'won', label: 'Won', color: '#36B37E' },
-  { key: 'lost', label: 'Lost', color: '#DE350B' },
+  { key: 'new', label: 'New', color: 'var(--neutral-500)' },
+  { key: 'qualified', label: 'Qualified', color: 'var(--mw-info)' },
+  { key: 'proposal', label: 'Proposal', color: 'var(--mw-info)' },
+  { key: 'negotiation', label: 'Negotiation', color: 'var(--mw-warning)' },
+  { key: 'won', label: 'Won', color: 'var(--mw-success)' },
+  { key: 'lost', label: 'Lost', color: 'var(--mw-error)' },
 ];
 
 const getPriorityBadge = (priority: Priority) => {
   switch (priority) {
-    case 'urgent': return { bg: 'bg-[#DE350B]/10', text: 'text-[#DE350B]', label: 'Urgent' };
-    case 'high': return { bg: 'bg-[#FFCF4B]/20', text: 'text-[#0A0A0A]', label: 'High' };
-    case 'medium': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Medium' };
-    case 'low': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Low' };
+    case 'urgent': return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Urgent' };
+    case 'high': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'High' };
+    case 'medium': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Medium' };
+    case 'low': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Low' };
   }
 };
 
 export function SellOpportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
-  const [selectedOpp, setSelectedOpp]     = useState<Opportunity | null>(null);
+  const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
 
   const getOpportunitiesByStage = (stage: OpportunityStage) => {
     return opportunities.filter(opp => opp.stage === stage);
@@ -60,13 +63,17 @@ export function SellOpportunities() {
     setSelectedOpp(prev => prev?.id === id ? { ...prev, stage } : prev);
   };
 
+  const handleKanbanDrop = (item: KanbanDragItem, columnId: string) => {
+    handleStageChange(item.id, columnId as OpportunityStage);
+  };
+
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Opportunities</h1>
-          <p className="text-sm text-[#737373] mt-1">
+          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Opportunities</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
             {opportunities.length} total • ${opportunities.reduce((sum, o) => sum + o.value, 0).toLocaleString()} pipeline value
           </p>
         </div>
@@ -75,7 +82,7 @@ export function SellOpportunities() {
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Opportunity
           </Button>
@@ -83,42 +90,48 @@ export function SellOpportunities() {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {stages.map((stage, idx) => {
-          const stageOpps  = getOpportunitiesByStage(stage.key);
-          const stageValue = stageOpps.reduce((sum, o) => sum + o.value, 0);
+      <motion.div variants={staggerItem}>
+        <KanbanBoard className="gap-4">
+          {stages.map((stage) => {
+            const stageOpps = getOpportunitiesByStage(stage.key);
+            const stageValue = stageOpps.reduce((sum, o) => sum + o.value, 0);
 
-          return (
-            <motion.div key={stage.key} variants={animationVariants.listItem} custom={idx} className="flex-shrink-0 w-[320px]">
-              <div className="bg-[#F5F5F5] rounded-[var(--shape-lg)] p-4">
-                {/* Column Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <h3 className="text-[14px] font-semibold text-[#0A0A0A]">{stage.label}</h3>
-                    <Badge className="bg-[var(--border)] text-[#525252] border-0 text-xs">{stageOpps.length}</Badge>
-                  </div>
-                  <button className="p-1 hover:bg-[var(--border)] rounded transition-colors">
-                    <Plus className="w-4 h-4 text-[#737373]" />
+            return (
+              <KanbanColumn
+                key={stage.key}
+                id={stage.key}
+                title={stage.label}
+                count={stageOpps.length}
+                accept={KANBAN_ITEM_TYPE}
+                onDrop={handleKanbanDrop}
+                headerColor={stage.color}
+                className="min-w-[320px] w-[320px] flex-shrink-0"
+              >
+                <div className="flex items-center justify-between px-0.5 pb-1 text-xs text-[var(--neutral-500)]">
+                  <span className="tabular-nums">${stageValue.toLocaleString()}</span>
+                  <button type="button" className="p-1 hover:bg-[var(--border)] rounded transition-colors" aria-label="Add opportunity">
+                    <Plus className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </div>
 
-                <div className="text-xs text-[#737373] mb-3 ">
-                  ${stageValue.toLocaleString()}
-                </div>
-
-                {/* Cards */}
-                <div className="space-y-3">
-                  {stageOpps.map((opp) => {
-                    const priorityBadge = getPriorityBadge(opp.priority);
-                    return (
-                      <Card
-                        key={opp.id}
-                        className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                {stageOpps.map((opp) => {
+                  const priorityBadge = getPriorityBadge(opp.priority);
+                  return (
+                    <KanbanCard key={opp.id} id={opp.id} type={KANBAN_ITEM_TYPE} className="p-0">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        className="p-4 cursor-pointer group"
                         onClick={() => setSelectedOpp(opp)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedOpp(opp);
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="text-[13px] font-medium text-[#0A0A0A] group-hover:text-[#FFCF4B] transition-colors line-clamp-2">
+                          <h4 className="text-xs font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
                             {opp.title}
                           </h4>
                           <Badge className={cn("rounded text-xs px-1.5 py-0.5 border-0 flex-shrink-0 ml-2", priorityBadge.bg, priorityBadge.text)}>
@@ -126,41 +139,38 @@ export function SellOpportunities() {
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-[#737373] mb-3">{opp.customer}</p>
+                        <p className="text-xs text-[var(--neutral-500)] mb-3">{opp.customer}</p>
 
                         <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-1 text-xs text-[#0A0A0A]">
-                            <DollarSign className="w-3.5 h-3.5 text-[#0A0A0A]" />
+                          <div className="flex items-center gap-1 text-xs text-[var(--neutral-900)]">
+                            <DollarSign className="w-4 h-4 text-[var(--neutral-900)]" />
                             <span className=" font-semibold">${opp.value.toLocaleString()}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs text-[#737373]">
-                            <Calendar className="w-3.5 h-3.5" />
+                          <div className="flex items-center gap-1 text-xs text-[var(--neutral-500)]">
+                            <Calendar className="w-4 h-4" />
                             <span>{new Date(opp.expectedClose).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</span>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                           <Avatar className="w-6 h-6">
-                            <AvatarFallback className="bg-[#1A2732] text-white text-[10px]">{opp.assignedTo}</AvatarFallback>
+                            <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-[10px]">{opp.assignedTo}</AvatarFallback>
                           </Avatar>
-                          <Flag className="w-3.5 h-3.5 text-[#737373]" />
+                          <Flag className="w-4 h-4 text-[var(--neutral-500)]" />
                         </div>
-                      </Card>
-                    );
-                  })}
+                      </div>
+                    </KanbanCard>
+                  );
+                })}
 
-                  {/* Empty state */}
-                  {stageOpps.length === 0 && (
-                    <div className="bg-white border border-dashed border-[var(--border)] rounded-lg p-6 text-center">
-                      <p className="text-xs text-[#737373]">No opportunities</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+                {stageOpps.length === 0 && (
+                  <InlineEmpty message="No opportunities" />
+                )}
+              </KanbanColumn>
+            );
+          })}
+        </KanbanBoard>
+      </motion.div>
 
       {/* Opportunity Detail Sheet */}
       <SellOpportunityDetail

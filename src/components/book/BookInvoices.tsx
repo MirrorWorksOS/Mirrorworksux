@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical, FileText } from 'lucide-react';
+import { EmptyState } from '../shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { 
   AnimatedSearch, 
   AnimatedFilter, 
@@ -16,7 +17,6 @@ import {
   AnimatedEye
 } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'partiallyPaid' | 'paid' | 'overdue' | 'cancelled';
 type ViewMode = 'list' | 'detail';
@@ -92,13 +92,13 @@ const MOCK_INVOICES: Invoice[] = [
 ];
 
 const statusConfig: Record<InvoiceStatus, { label: string; className: string }> = {
-  draft: { label: 'Draft', className: 'bg-[#F5F5F5] text-[#737373]' },
-  sent: { label: 'Sent', className: 'bg-[#DBEAFE] text-[#0A7AFF]' },
-  viewed: { label: 'Viewed', className: 'bg-[#DBEAFE] text-[#0A7AFF]' },
-  partiallyPaid: { label: 'Partially Paid', className: 'bg-[#FFEDD5] text-[#FF8B00]' },
-  paid: { label: 'Paid', className: 'bg-[#F5F5F5] text-[#1A2732]' },
-  overdue: { label: 'Overdue', className: 'bg-[#FEE2E2] text-[#EF4444]' },
-  cancelled: { label: 'Cancelled', className: 'bg-[#F5F5F5] text-[#737373]' },
+  draft: { label: 'Draft', className: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]' },
+  sent: { label: 'Sent', className: 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]' },
+  viewed: { label: 'Viewed', className: 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]' },
+  partiallyPaid: { label: 'Partially Paid', className: 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]' },
+  paid: { label: 'Paid', className: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' },
+  overdue: { label: 'Overdue', className: 'bg-[var(--mw-error-100)] text-[var(--mw-error)]' },
+  cancelled: { label: 'Cancelled', className: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]' },
 };
 
 interface BookInvoicesProps {
@@ -127,21 +127,21 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
   }, {} as Record<InvoiceStatus, number>);
 
   return (
-    <div className="flex flex-col h-full bg-[#F5F5F5]">
+    <div className="flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
-              <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+              <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by invoice # or customer..."
-                className="pl-9 bg-[#F5F5F5] border-transparent focus:bg-white"
+                className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-[#1A2732]">
+            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]">
               <AnimatedFilter className="w-4 h-4 mr-2" />
               Filter
             </Button>
@@ -152,7 +152,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               <AnimatedDownload className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] font-medium">
+            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Invoice
             </Button>
@@ -164,10 +164,10 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
           <button
             onClick={() => setActiveTab('all')}
             className={cn(
-              'px-4 py-2 font-[\'Geist:Regular\',sans-serif] text-[13px] rounded-lg transition-colors whitespace-nowrap',
+              'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors whitespace-nowrap',
               activeTab === 'all'
-                ? 'bg-[#F5F5F5] text-[#1A2732] font-medium'
-                : 'text-[#737373] hover:bg-[#F5F5F5]'
+                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium'
+                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
             All <span className="ml-1">({MOCK_INVOICES.length})</span>
@@ -177,10 +177,10 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               key={status}
               onClick={() => setActiveTab(status)}
               className={cn(
-                'px-4 py-2 font-[\'Geist:Regular\',sans-serif] text-[13px] rounded-lg transition-colors whitespace-nowrap',
+                'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors whitespace-nowrap',
                 activeTab === status
-                  ? 'bg-[#F5F5F5] text-[#1A2732] font-medium'
-                  : 'text-[#737373] hover:bg-[#F5F5F5]'
+                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium'
+                  : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >
               {statusConfig[status].label}
@@ -194,35 +194,35 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
       <motion.div
         initial="initial"
         animate="animate"
-        variants={animationVariants.stagger}
+        variants={staggerContainer}
         className="flex-1 overflow-auto p-6"
       >
-        <div className="bg-white border border-[var(--border)] rounded-lg overflow-hidden">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <table className="w-full">
-            <thead className="bg-[#F5F5F5] border-b border-[var(--border)]">
+            <thead className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Invoice #
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Customer
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Issue Date
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Due Date
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Status
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Total
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Balance Due
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-[13px] font-medium text-[#1A2732]">
+                <th className="text-center px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
                   Actions
                 </th>
               </tr>
@@ -231,18 +231,18 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               {filteredInvoices.map((invoice, index) => (
                 <motion.tr
                   key={invoice.id}
-                  variants={animationVariants.listItem}
+                  variants={staggerItem}
                   custom={index}
                   onClick={() => onSelectInvoice?.(invoice.id)}
-                  className="border-b border-[var(--border)] hover:bg-[#F5F5F5] cursor-pointer transition-colors"
+                  className="border-b border-[var(--border)] hover:bg-[var(--neutral-100)] cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3">
                     <div className="flex flex-col">
-                      <span className=" text-[13px] text-[#1A2732] font-medium">
+                      <span className=" text-xs text-[var(--mw-mirage)] font-medium">
                         {invoice.id}
                       </span>
                       {invoice.jobReference && (
-                        <span className="font-normal text-[11px] text-[#737373]">
+                        <span className="font-normal text-xs text-[var(--neutral-500)]">
                           Job: {invoice.jobReference}
                         </span>
                       )}
@@ -256,12 +256,12 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                           {invoice.customer.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-normal text-[13px] text-[#1A2732]">
+                      <span className="font-normal text-xs text-[var(--mw-mirage)]">
                         {invoice.customer}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-normal text-[13px] text-[#737373]">
+                  <td className="px-4 py-3 font-normal text-xs text-[var(--neutral-500)]">
                     {new Date(invoice.issueDate).toLocaleDateString('en-AU', {
                       day: 'numeric',
                       month: 'short',
@@ -271,8 +271,8 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                   <td className="px-4 py-3">
                     <span
                       className={cn(
-                        'font-[\'Geist:Regular\',sans-serif] text-[13px]',
-                        invoice.status === 'overdue' ? 'text-[#EF4444] font-medium' : 'text-[#737373]'
+                        'text-xs',
+                        invoice.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)]'
                       )}
                     >
                       {new Date(invoice.dueDate).toLocaleDateString('en-AU', {
@@ -287,14 +287,14 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                       {statusConfig[invoice.status].label}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3  text-[13px] text-[#1A2732] font-medium">
+                  <td className="px-4 py-3  text-xs text-[var(--mw-mirage)] font-medium">
                     ${invoice.total.toLocaleString()}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={cn(
-                        'font-[\'Roboto_Mono\',monospace] text-[13px] font-medium',
-                        invoice.balanceDue === 0 ? 'text-[#1A2732]' : 'text-[#1A2732]'
+                        'tabular-nums text-xs font-medium',
+                        invoice.balanceDue === 0 ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]'
                       )}
                     >
                       {invoice.balanceDue === 0 ? 'Paid' : `$${invoice.balanceDue.toLocaleString()}`}
@@ -311,7 +311,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                           // Send action
                         }}
                       >
-                        <AnimatedSend className="w-4 h-4 text-[#737373]" />
+                        <AnimatedSend className="w-4 h-4 text-[var(--neutral-500)]" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -322,7 +322,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                           // Download action
                         }}
                       >
-                        <AnimatedDownload className="w-4 h-4 text-[#737373]" />
+                        <AnimatedDownload className="w-4 h-4 text-[var(--neutral-500)]" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -333,7 +333,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                           // More actions
                         }}
                       >
-                        <MoreVertical className="w-4 h-4 text-[#737373]" />
+                        <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                       </Button>
                     </div>
                   </td>
@@ -343,22 +343,19 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
           </table>
 
           {filteredInvoices.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <FileText className="w-12 h-12 text-[#E5E5E5] mb-3" />
-              <p className="font-medium text-[14px] font-medium text-[#737373]">
-                No invoices found
-              </p>
-              <p className="font-normal text-[13px] text-[#737373] mt-1">
-                Try adjusting your search or filter criteria
-              </p>
-            </div>
+            <EmptyState
+              variant="compact"
+              icon={FileText}
+              title="No invoices found"
+              description="Try adjusting your search or filter criteria"
+            />
           )}
         </div>
 
         {/* Pagination */}
         {filteredInvoices.length > 0 && (
           <div className="flex items-center justify-between mt-4">
-            <p className="font-normal text-[13px] text-[#737373]">
+            <p className="font-normal text-xs text-[var(--neutral-500)]">
               Showing {filteredInvoices.length} of {MOCK_INVOICES.length} invoices
             </p>
             <div className="flex items-center gap-2">

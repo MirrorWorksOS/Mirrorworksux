@@ -11,7 +11,6 @@ import { Label } from '../../ui/label';
 import { RadioGroup, RadioGroupItem } from '../../ui/radio-group';
 import { Checkbox } from '../../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { Card } from '../../ui/card';
 import { Separator } from '../../ui/separator';
 import { cn } from '../../ui/utils';
 
@@ -25,7 +24,7 @@ const VoiceNoteButton = () => {
       size="icon"
       className={cn(
         "shrink-0 transition-all duration-300", 
-        isRecording ? "bg-red-100 text-red-600 border-red-200 animate-pulse" : "text-gray-500"
+        isRecording ? "bg-red-100 text-destructive border-red-200 animate-pulse" : "text-muted-foreground"
       )}
       onClick={() => setIsRecording(!isRecording)}
     >
@@ -35,7 +34,7 @@ const VoiceNoteButton = () => {
 };
 
 const SectionHeader = ({ title }: { title: string }) => (
-  <h3 className="font-semibold text-gray-900 mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
+  <h3 className="font-semibold text-[var(--neutral-900)] mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
 );
 
 // --- Forms ---
@@ -43,8 +42,8 @@ const SectionHeader = ({ title }: { title: string }) => (
 export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900">Report Material Issue</h2>
+      <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
+        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Material Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -52,7 +51,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
           <SectionHeader title="Issue Type" />
           <RadioGroup defaultValue="shortage" className="grid grid-cols-2 gap-3">
              {['Shortage', 'Wrong Material', 'Damaged', 'Missing'].map((opt) => (
-                <div key={opt} className="flex items-center space-x-2 border border-gray-200 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                <div key={opt} className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)] cursor-pointer">
                   <RadioGroupItem value={opt.toLowerCase().replace(' ', '-')} id={opt} />
                   <Label htmlFor={opt} className="cursor-pointer font-medium">{opt}</Label>
                 </div>
@@ -82,7 +81,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
            <SectionHeader title="Impact" />
            <RadioGroup defaultValue="blocking" className="space-y-2">
               <div className="flex items-center space-x-2">
-                 <RadioGroupItem value="blocking" id="blocking" className="text-red-600 border-red-600" />
+                 <RadioGroupItem value="blocking" id="blocking" className="text-destructive border-red-600" />
                  <Label htmlFor="blocking" className="text-red-700 font-bold">Blocking production now - URGENT</Label>
               </div>
               <div className="flex items-center space-x-2">
@@ -118,9 +117,9 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
 
-      <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+      <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-black text-white hover:bg-gray-800">Submit Issue</Button>
+         <Button className="flex-1 bg-black text-white hover:bg-[var(--neutral-800)]">Submit Issue</Button>
       </div>
     </div>
   );
@@ -129,8 +128,8 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
 export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900">Report Machine Issue</h2>
+      <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
+        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Machine Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -151,15 +150,15 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
         <div>
           <SectionHeader title="Issue Type" />
           <RadioGroup defaultValue="stopped" className="grid grid-cols-1 gap-2">
-             <div className="flex items-center space-x-2 border border-gray-200 p-3 rounded-lg hover:bg-gray-50">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="stopped" id="stopped" />
                <Label htmlFor="stopped" className="font-medium">Machine stopped - Will not start</Label>
              </div>
-             <div className="flex items-center space-x-2 border border-gray-200 p-3 rounded-lg hover:bg-gray-50">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="error" id="error" />
                <Label htmlFor="error" className="font-medium">Error Code / Alarm</Label>
              </div>
-             <div className="flex items-center space-x-2 border border-gray-200 p-3 rounded-lg hover:bg-gray-50">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="noise" id="noise" />
                <Label htmlFor="noise" className="font-medium">Unusual Noise / Vibration</Label>
              </div>
@@ -168,15 +167,15 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
         <div>
            <SectionHeader title="Severity" />
-           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-lg border border-[#E5E4E0] overflow-hidden bg-white">
+           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden bg-white">
              {['Critical', 'High', 'Medium'].map((option, index) => (
-               <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[#F5F5F5] transition-colors cursor-pointer", index !== 2 && "border-b border-[#E5E4E0]")}>
+               <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer", index !== 2 && "border-b border-[var(--neutral-200)]")}>
                   <RadioGroupItem 
                     value={option.toLowerCase()} 
                     id={`severity-${option.toLowerCase()}`}
-                    className="h-6 w-6 border-2 border-[#E5E4E0] bg-white text-white shadow-none data-[state=checked]:border-[#FFCF4B] data-[state=checked]:bg-[#FFCF4B] transition-all"
+                    className="h-6 w-6 border-2 border-[var(--neutral-200)] bg-white text-white shadow-none data-[state=checked]:border-[var(--mw-yellow-400)] data-[state=checked]:bg-[var(--mw-yellow-400)] transition-all"
                   />
-                  <Label htmlFor={`severity-${option.toLowerCase()}`} className="ml-4 flex-1 text-base font-medium text-[#2C2C2C] cursor-pointer">
+                  <Label htmlFor={`severity-${option.toLowerCase()}`} className="ml-4 flex-1 text-base font-medium text-[var(--neutral-800)] cursor-pointer">
                     {option}
                   </Label>
                </div>
@@ -205,7 +204,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
 
-      <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+      <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
          <Button className="flex-1 bg-red-600 text-white hover:bg-red-700">Stop & Submit</Button>
       </div>
@@ -216,8 +215,8 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900">Report Quality Issue</h2>
+      <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
+        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Quality Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -237,17 +236,17 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
               <SectionHeader title="Specs" />
               <div className="space-y-3">
                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-gray-500">Required:</span>
+                    <span className="text-muted-foreground">Required:</span>
                     <span className=" font-medium">10.50 mm</span>
-                    <span className="text-gray-500">Tolerance:</span>
+                    <span className="text-muted-foreground">Tolerance:</span>
                     <span className=" font-medium">± 0.05 mm</span>
                  </div>
                  <Separator />
                  <div className="space-y-1.5">
                     <Label className="text-xs uppercase">Actual Measurement</Label>
                     <div className="relative">
-                       <Input placeholder="0.00" className="pr-8  text-red-600 font-bold" defaultValue="10.58" />
-                       <span className="absolute right-3 top-2.5 text-gray-400 text-sm">mm</span>
+                       <Input placeholder="0.00" className="pr-8  text-destructive font-bold" defaultValue="10.58" />
+                       <span className="absolute right-3 top-2.5 text-[var(--neutral-400)] text-sm">mm</span>
                     </div>
                  </div>
               </div>
@@ -279,7 +278,7 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
 
-      <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+      <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
          <Button className="flex-1 bg-purple-600 text-white hover:bg-purple-700">Submit & Quarantine</Button>
       </div>
@@ -290,8 +289,8 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
 export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900">Report Scrap / Waste</h2>
+      <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
+        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Scrap / Waste</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -313,7 +312,7 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
            </div>
            <div>
               <SectionHeader title="Cost Estimate" />
-              <Input disabled value="$ 45.00" className="bg-gray-50" />
+              <Input disabled value="$ 45.00" className="bg-[var(--neutral-50)]" />
            </div>
         </div>
 
@@ -326,20 +325,20 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
            </div>
         </div>
 
-        <div className="bg-gray-100 border border-gray-200 rounded-xl p-4">
-           <div className="flex items-center gap-2 mb-2 text-gray-700 font-bold text-sm">
+        <div className="bg-[var(--neutral-100)] border border-[var(--neutral-200)] rounded-xl p-4">
+           <div className="flex items-center gap-2 mb-2 text-[var(--neutral-700)] font-bold text-sm">
               <Recycle className="w-4 h-4" /> Waste Analysis
            </div>
-           <ul className="space-y-1 text-sm text-gray-600">
+           <ul className="space-y-1 text-sm text-[var(--neutral-600)]">
               <li>• Scrap rate this job: <strong>8%</strong> (Target: 5%)</li>
               <li>• Est. annual impact: <strong>$2,400</strong> if pattern continues</li>
            </ul>
         </div>
       </div>
 
-      <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+      <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-gray-900 text-white hover:bg-gray-800">Log Scrap</Button>
+         <Button className="flex-1 bg-[var(--neutral-900)] text-white hover:bg-[var(--neutral-800)]">Log Scrap</Button>
       </div>
     </div>
   );

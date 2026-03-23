@@ -10,14 +10,13 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie
 } from 'recharts';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 type BudgetStatus = 'active' | 'draft' | 'closed';
 type BudgetType = 'job' | 'department' | 'annual';
@@ -52,29 +51,29 @@ const monthlyData = [
 
 const getActualColor = (actual: number, budget: number) => {
   const pct = actual / budget;
-  if (pct > 0.95) return '#DE350B';
-  if (pct > 0.80) return '#FACC15';
-  return '#36B37E';
+  if (pct > 0.95) return 'var(--mw-error)';
+  if (pct > 0.80) return 'var(--mw-warning)';
+  return 'var(--mw-success)';
 };
 
 // Donut chart data
 const typeData = [
-  { name: 'Job', value: 65, color: '#0052CC' },
-  { name: 'Department', value: 25, color: '#36B37E' },
-  { name: 'Annual', value: 10, color: '#FACC15' },
+  { name: 'Job', value: 65, color: 'var(--mw-info)' },
+  { name: 'Department', value: 25, color: 'var(--mw-success)' },
+  { name: 'Annual', value: 10, color: 'var(--mw-warning)' },
 ];
 
 const categoryData = [
-  { name: 'Materials', value: 45, color: '#0052CC' },
-  { name: 'Labour', value: 30, color: '#36B37E' },
-  { name: 'Overhead', value: 15, color: '#FACC15' },
+  { name: 'Materials', value: 45, color: 'var(--mw-info)' },
+  { name: 'Labour', value: 30, color: 'var(--mw-success)' },
+  { name: 'Overhead', value: 15, color: 'var(--mw-warning)' },
   { name: 'Subcontract', value: 10, color: '#7C3AED' },
 ];
 
 const utilisationData = [
-  { name: 'On track', value: 60, color: '#36B37E' },
-  { name: 'Monitor', value: 25, color: '#FACC15' },
-  { name: 'Over budget', value: 15, color: '#DE350B' },
+  { name: 'On track', value: 60, color: 'var(--mw-success)' },
+  { name: 'Monitor', value: 25, color: 'var(--mw-warning)' },
+  { name: 'Over budget', value: 15, color: 'var(--mw-error)' },
 ];
 
 // Mock budget data
@@ -150,24 +149,24 @@ const mockBudgets: Budget[] = [
 const getStatusBadgeColors = (status: TrafficLightStatus) => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'On track' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-mirage)', label: 'On track' };
     case 'monitor':
-      return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', dot: '#FACC15', label: 'Monitor' };
+      return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', dot: 'var(--mw-warning)', label: 'Monitor' };
     case 'over_budget':
-      return { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', dot: '#EF4444', label: 'Over budget' };
+      return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)', label: 'Over budget' };
     case 'draft':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', dot: '#737373', label: 'Draft' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', dot: 'var(--neutral-500)', label: 'Draft' };
   }
 };
 
 const getTypeBadgeColors = (type: BudgetType) => {
   switch (type) {
     case 'job':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Job' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Job' };
     case 'department':
-      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Department' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Department' };
     case 'annual':
-      return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Annual' };
+      return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', label: 'Annual' };
   }
 };
 
@@ -211,13 +210,13 @@ export function BudgetOverview() {
     <motion.div
       initial="initial"
       animate="animate"
-      variants={animationVariants.stagger}
+      variants={staggerContainer}
       className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto"
     >
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Budgets</h1>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Budgets</h1>
           {/* Status Filter Chips */}
           <div className="flex items-center gap-2 mt-3">
             {(['active', 'draft', 'closed'] as BudgetStatus[]).map(status => (
@@ -225,10 +224,10 @@ export function BudgetOverview() {
                 key={status}
                 onClick={() => setStatusFilter(status)}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]",
+                  "px-4 py-2 rounded-[var(--shape-lg)] text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]",
                   statusFilter === status
-                    ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                    : "bg-white border border-[var(--border)] text-[#737373] hover:border-[#FFCF4B]"
+                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                    : "bg-white border border-[var(--border)] text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]"
                 )}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -242,7 +241,7 @@ export function BudgetOverview() {
             Type: All
             <ChevronDown className="w-4 h-4" />
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Budget
           </Button>
@@ -252,56 +251,56 @@ export function BudgetOverview() {
       {/* KPI Cards - 4 cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Budgets */}
-        <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">ACTIVE BUDGETS</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
+        <motion.div variants={staggerItem}>
+          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">ACTIVE BUDGETS</div>
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
               {activeBudgets.length}
             </div>
-            <p className="text-xs text-[#EF4444] mt-1 font-medium">
+            <p className="text-xs text-[var(--mw-error)] mt-1 font-medium">
               {atRiskBudgets.length} at risk (&gt;80% utilised)
             </p>
           </Card>
         </motion.div>
 
         {/* Total Budgeted */}
-        <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">TOTAL BUDGETED</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
+        <motion.div variants={staggerItem}>
+          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL BUDGETED</div>
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
               ${totalBudgeted.toLocaleString()}
             </div>
-            <p className="text-xs text-[#737373] mt-1">Current quarter</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-1">Current quarter</p>
           </Card>
         </motion.div>
 
         {/* Total Spent */}
-        <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">TOTAL SPENT</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
+        <motion.div variants={staggerItem}>
+          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL SPENT</div>
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
               ${totalSpent.toLocaleString()}
             </div>
-            <div className="mt-3 h-2 bg-[#E5E5E5] rounded-full overflow-hidden">
+            <div className="mt-3 h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#FFCF4B] rounded-full transition-all duration-300"
+                className="h-full bg-[var(--mw-yellow-400)] rounded-full transition-all duration-300"
                 style={{ width: `${((totalSpent / totalBudgeted) * 100).toFixed(0)}%` }}
               />
             </div>
-            <p className="text-xs text-[#737373] mt-1">
+            <p className="text-xs text-[var(--neutral-500)] mt-1">
               {((totalSpent / totalBudgeted) * 100).toFixed(0)}% utilised
             </p>
           </Card>
         </motion.div>
 
         {/* Projected Overrun */}
-        <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">PROJECTED OVERRUN</div>
-            <div className="text-[28px] tracking-tight text-[#EF4444]  font-medium">
+        <motion.div variants={staggerItem}>
+          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">PROJECTED OVERRUN</div>
+            <div className="text-2xl tracking-tight text-[var(--mw-error)]  font-medium">
               ${projectedOverrun.toLocaleString()}
             </div>
-            <p className="text-xs text-[#737373] mt-1">
+            <p className="text-xs text-[var(--neutral-500)] mt-1">
               {overBudgetBudgets.length} flagged jobs
             </p>
           </Card>
@@ -309,15 +308,15 @@ export function BudgetOverview() {
       </div>
 
       {/* 3 Donut Charts Row */}
-      <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg border border-[var(--border)] p-6">
-          <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732] mb-4">
+      <motion.div variants={staggerItem}>
+        <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] p-6">
+          <h3 className="font-semibold text-base font-semibold text-[var(--mw-mirage)] mb-4">
             Budget Breakdown
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* By Type */}
             <div>
-              <h4 className="text-xs text-[#737373] mb-3 font-medium tracking-wider">BY TYPE</h4>
+              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">BY TYPE</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -341,7 +340,7 @@ export function BudgetOverview() {
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                        <span className="text-[#525252]">{d.name}</span>
+                        <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
                       <span className="">{d.value}%</span>
                     </div>
@@ -352,7 +351,7 @@ export function BudgetOverview() {
 
             {/* By Category */}
             <div>
-              <h4 className="text-xs text-[#737373] mb-3 font-medium tracking-wider">BY CATEGORY</h4>
+              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">BY CATEGORY</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -376,7 +375,7 @@ export function BudgetOverview() {
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                        <span className="text-[#525252]">{d.name}</span>
+                        <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
                       <span className="">{d.value}%</span>
                     </div>
@@ -387,7 +386,7 @@ export function BudgetOverview() {
 
             {/* Utilisation */}
             <div>
-              <h4 className="text-xs text-[#737373] mb-3 font-medium tracking-wider">UTILISATION</h4>
+              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">UTILISATION</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -411,7 +410,7 @@ export function BudgetOverview() {
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                        <span className="text-[#525252]">{d.name}</span>
+                        <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
                       <span className="">{d.value}%</span>
                     </div>
@@ -424,19 +423,19 @@ export function BudgetOverview() {
       </motion.div>
 
       {/* Monthly Budget vs Actual Chart */}
-      <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-          <h3 className="text-[#1A2732] mb-4 font-medium">Monthly Budget vs Actual</h3>
+      <motion.div variants={staggerItem}>
+        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Monthly Budget vs Actual</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono' }}
+                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
               />
               <YAxis
                 tickFormatter={v => `$${v / 1000}k`}
-                tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono' }}
+                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
               />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Bar
@@ -458,52 +457,52 @@ export function BudgetOverview() {
       </motion.div>
 
       {/* Budget List Table */}
-      <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+      <motion.div variants={staggerItem}>
+        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('name')}
                   >
                     BUDGET NAME
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('type')}
                   >
                     TYPE
                   </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">
                     PERIOD
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('budgeted')}
                   >
                     BUDGETED
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('actual')}
                   >
                     ACTUAL
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('variance')}
                   >
                     VARIANCE
                   </th>
                   <th
-                    className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
+                    className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
                     onClick={() => handleSort('utilisation')}
                   >
                     UTILISATION
                   </th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">
+                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">
                     STATUS
                   </th>
                 </tr>
@@ -517,8 +516,8 @@ export function BudgetOverview() {
                     <tr
                       key={budget.id}
                       className={cn(
-                        "border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
-                        idx % 2 === 1 && "bg-[#F5F5F5]"
+                        "border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
+                        idx % 2 === 1 && "bg-[var(--neutral-100)]"
                       )}
                       onClick={() => {
                         // Navigate to detail view
@@ -530,7 +529,7 @@ export function BudgetOverview() {
                       <td className="px-4">
                         <a
                           href={`/book/job-costs/${budget.id}`}
-                          className="text-[#1A2732]  text-sm hover:underline"
+                          className="text-[var(--mw-mirage)]  text-sm hover:underline"
                         >
                           {budget.name}
                         </a>
@@ -540,7 +539,7 @@ export function BudgetOverview() {
                           {typeColors.label}
                         </Badge>
                       </td>
-                      <td className="px-4 text-sm text-[#525252]">{budget.period}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">{budget.period}</td>
                       <td className="px-4 text-right text-sm  font-medium">
                         ${budget.budgeted.toLocaleString()}
                       </td>
@@ -549,24 +548,24 @@ export function BudgetOverview() {
                       </td>
                       <td
                         className="px-4 text-right text-sm  font-medium"
-                        style={{ color: budget.variance < 0 ? '#36B37E' : '#EF4444' }}
+                        style={{ color: budget.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}
                       >
                         {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
                       </td>
                       <td className="px-4">
                         <div className="flex flex-col items-center gap-1">
-                          <div className="w-full h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 bg-[var(--neutral-200)] rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-300"
                               style={{
                                 width: `${Math.min(budget.utilisation, 100)}%`,
                                 backgroundColor:
-                                  budget.utilisation > 95 ? '#DE350B' :
-                                  budget.utilisation > 80 ? '#FACC15' : '#36B37E'
+                                  budget.utilisation > 95 ? 'var(--mw-error)' :
+                                  budget.utilisation > 80 ? 'var(--mw-warning)' : 'var(--mw-success)'
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[#737373] ">
+                          <span className="text-xs text-[var(--neutral-500)] ">
                             {budget.utilisation}%
                           </span>
                         </div>

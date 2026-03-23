@@ -105,11 +105,18 @@ export const shadows = {
 export const motion = {
   duration: {
     instant: 0,
-    fast: 150,
-    medium: 300,
-    standard: 400,
-    slow: 500,
-    luxurious: 700,
+    short1: 50,    // --duration-short1: micro-interactions
+    short2: 100,   // --duration-short2: simple state changes
+    medium1: 250,  // --duration-medium1: standard transitions (default)
+    medium2: 350,  // --duration-medium2: complex transitions (dialog open)
+    long1: 450,    // --duration-long1: page transitions
+    long2: 550,    // --duration-long2: emphasis transitions
+    // Aliases for backward compatibility
+    fast: 100,
+    medium: 250,
+    standard: 250,
+    slow: 450,
+    luxurious: 550,
   },
   easing: {
     standard: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
@@ -153,8 +160,8 @@ export const touchTargets = {
 // ============================================================================
 
 export const componentClasses = {
-  card: `bg-white border border-[#E5E5E5] rounded-2xl shadow-sm`,
-  cardHover: `hover:shadow-md transition-shadow duration-[var(--duration-medium1)]`,
+  card: `bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] shadow-xs`,
+  cardHover: `hover:shadow-md transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]`,
 
   badge: {
     base: `inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-medium text-xs`,
@@ -213,39 +220,6 @@ export const statusColors = {
 } as const;
 
 // ============================================================================
-// ANIMATION VARIANTS
-// ============================================================================
-
-export const animationVariants = {
-  fade: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-    transition: { duration: motion.duration.medium / 1000 },
-  },
-  slideUp: {
-    initial: { y: '100%', opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: '100%', opacity: 0 },
-    transition: { duration: motion.duration.slow / 1000, ease: [0.05, 0.7, 0.1, 1.0] },
-  },
-  scale: {
-    initial: { scale: 0.95, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.95, opacity: 0 },
-    transition: { duration: motion.duration.fast / 1000 },
-  },
-  stagger: {
-    animate: { transition: { staggerChildren: 0.05 } },
-  },
-  listItem: {
-    initial: { x: -20, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    transition: { duration: motion.duration.medium / 1000 },
-  },
-} as const;
-
-// ============================================================================
 // EXPORT
 // ============================================================================
 
@@ -260,7 +234,6 @@ export const designSystem = {
   componentClasses,
   priorityColors,
   statusColors,
-  animationVariants,
 } as const;
 
 export default designSystem;

@@ -1,16 +1,16 @@
 /**
  * Ship Dashboard — token-aligned to Book/Sell/Plan standard
- * #F0F0F0 → #E5E5E5, #141414 → #0A0A0A, #8A8A8A → #737373
+ * #F0F0F0 → var(--neutral-200), #141414 → var(--neutral-900), #8A8A8A → var(--neutral-500)
  * Added motion/react animation
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Package, Clock, Truck, AlertTriangle, RotateCcw, ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card } from '../ui/card';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 
-const { animationVariants } = designSystem;
 
 const KPI = [
   { label: 'Active Shipments', value: '47', icon: Package },
@@ -44,33 +44,31 @@ const EXCEPTIONS = [
   { id: 'SP250226008', customer: 'Hunter Steel',   type: 'Refused', time: '1d ago' },
 ];
 
-export function ShipDashboard() {
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={animationVariants.stagger}
-      className="p-6 space-y-6 overflow-y-auto"
-    >
-      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Shipments</h1>
+const shipTabs = [{ key: 'overview', label: 'Overview' }];
 
+export function ShipDashboard() {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  return (
+    <ModuleDashboard title="Shipments" tabs={shipTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {KPI.map(k => (
-          <motion.div key={k.label} variants={animationVariants.listItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-md transition-shadow duration-150">
-              <k.icon className="w-4 h-4 text-[#737373] mb-3" strokeWidth={1.5} />
-              <div className=" text-[24px] font-semibold text-[#1A2732] tracking-tight">{k.value}</div>
-              <div className="text-[12px] text-[#737373] mt-1 font-medium">{k.label}</div>
+          <motion.div key={k.label} variants={staggerItem}>
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow duration-150">
+              <k.icon className="w-4 h-4 text-[var(--neutral-500)] mb-3" strokeWidth={1.5} />
+              <div className=" text-2xl font-semibold text-[var(--mw-mirage)] tracking-tight">{k.value}</div>
+              <div className="text-xs text-[var(--neutral-500)] mt-1 font-medium">{k.label}</div>
             </Card>
           </motion.div>
         ))}
       </div>
 
       {/* Pipeline */}
-      <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
-          <p className="text-xs text-[#737373] tracking-widest uppercase mb-5 font-medium">Fulfilment pipeline</p>
+      <motion.div variants={staggerItem}>
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-5 font-medium">Fulfilment pipeline</p>
           <div className="flex items-center justify-between">
             {PIPELINE.map((s, i) => (
               <React.Fragment key={s.label}>
@@ -78,16 +76,16 @@ export function ShipDashboard() {
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center text-sm  font-medium"
                     style={{
-                      backgroundColor: i === PIPELINE.length - 1 ? '#FFCF4B' : '#1A2732',
-                      color:           i === PIPELINE.length - 1 ? '#1A2732' : '#fff',
+                      backgroundColor: i === PIPELINE.length - 1 ? 'var(--mw-yellow-400)' : 'var(--mw-mirage)',
+                      color:           i === PIPELINE.length - 1 ? 'var(--mw-mirage)' : '#fff',
                     }}
                   >
                     {s.count}
                   </div>
-                  <span className="text-xs text-[#737373]">{s.label}</span>
+                  <span className="text-xs text-[var(--neutral-500)]">{s.label}</span>
                 </div>
                 {i < PIPELINE.length - 1 && (
-                  <ArrowRight className="w-4 h-4 text-[#E5E5E5] shrink-0 -mt-4" />
+                  <ArrowRight className="w-4 h-4 text-[var(--neutral-200)] shrink-0 -mt-4" />
                 )}
               </React.Fragment>
             ))}
@@ -97,23 +95,23 @@ export function ShipDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Carrier Performance */}
-        <motion.div variants={animationVariants.listItem} className="lg:col-span-3">
-          <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
-            <p className="text-xs text-[#737373] tracking-widest uppercase mb-4 font-medium">Carrier performance</p>
+        <motion.div variants={staggerItem} className="lg:col-span-3">
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Carrier performance</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={CARRIER_DATA} layout="vertical" margin={{ left: 20 }}>
                 <XAxis
                   type="number"
                   domain={[0, 100]}
                   tickFormatter={v => `${v}%`}
-                  tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono, monospace' }}
+                  tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   dataKey="carrier"
                   type="category"
-                  tick={{ fontSize: 12, fill: '#1A2732' }}
+                  tick={{ fontSize: 12, fill: 'var(--mw-mirage)' }}
                   width={80}
                   axisLine={false}
                   tickLine={false}
@@ -121,7 +119,7 @@ export function ShipDashboard() {
                 <Tooltip formatter={(v: number) => `${v}%`} />
                 <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16}>
                   {CARRIER_DATA.map((e, i) => (
-                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={e.onTime >= 95 ? '#FFCF4B' : '#1A2732'} />
+                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={e.onTime >= 95 ? 'var(--mw-yellow-400)' : 'var(--mw-mirage)'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -130,27 +128,28 @@ export function ShipDashboard() {
         </motion.div>
 
         {/* Exceptions */}
-        <motion.div variants={animationVariants.listItem} className="lg:col-span-2">
-          <Card className="bg-white border border-[var(--border)] rounded-lg p-6 flex flex-col h-full">
-            <p className="text-xs text-[#737373] tracking-widest uppercase mb-4 font-medium">Exceptions</p>
+        <motion.div variants={staggerItem} className="lg:col-span-2">
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 flex flex-col h-full">
+            <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Exceptions</p>
             <div className="flex-1 space-y-3">
               {EXCEPTIONS.map(exc => (
                 <div
                   key={exc.id}
-                  className="flex items-center gap-4 p-4 rounded-lg bg-[#F5F5F5] cursor-pointer hover:bg-[#F5F5F5] transition-colors duration-150"
+                  className="flex items-center gap-4 p-4 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] cursor-pointer hover:bg-[var(--neutral-100)] transition-colors duration-150"
                 >
-                  <div className="w-2 h-2 rounded-full bg-[#EF4444] shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[var(--mw-error)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs text-[#1A2732]  font-medium">{exc.id}</span>
-                    <p className="text-xs text-[#737373] mt-0.5">{exc.customer}</p>
+                    <span className="text-xs text-[var(--mw-mirage)]  font-medium">{exc.id}</span>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{exc.customer}</p>
                   </div>
-                  <span className="text-[10px] text-[#737373] tracking-wide uppercase shrink-0">{exc.type}</span>
+                  <span className="text-[10px] text-[var(--neutral-500)] tracking-wide uppercase shrink-0">{exc.type}</span>
                 </div>
               ))}
             </div>
           </Card>
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+    </ModuleDashboard>
   );
 }

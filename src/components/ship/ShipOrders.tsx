@@ -33,25 +33,25 @@ const OrderCard = ({ order, onClick }: { order: Order; onClick: () => void }) =>
   <div
     onClick={onClick}
     className={cn(
-      'bg-white rounded-2xl p-4 cursor-pointer transition-all duration-150 border hover:shadow-md',
-      order.urgent ? 'border-[#FFCF4B]' : 'border-[var(--border)] hover:border-[#D4D4D4]'
+      'bg-white rounded-[var(--shape-lg)] p-4 cursor-pointer transition-all duration-150 border hover:shadow-md',
+      order.urgent ? 'border-[var(--mw-yellow-400)]' : 'border-[var(--border)] hover:border-[var(--neutral-300)]'
     )}
   >
     <div className="flex items-center justify-between mb-2">
-      <span className="text-xs text-[#1A2732]  font-medium">{order.id}</span>
-      {order.urgent && <div className="w-2 h-2 rounded-full bg-[#EF4444]" />}
+      <span className="text-xs text-[var(--mw-mirage)]  font-medium">{order.id}</span>
+      {order.urgent && <div className="w-2 h-2 rounded-full bg-[var(--mw-error)]" />}
     </div>
-    <p className="text-sm text-[#1A2732] mb-0.5 font-medium">{order.customer}</p>
-    <p className="text-xs text-[#737373] mb-3">{order.items} items · {order.weight}</p>
-    <div className="h-1 bg-[#E5E5E5] rounded-full overflow-hidden mb-3">
+    <p className="text-sm text-[var(--mw-mirage)] mb-0.5 font-medium">{order.customer}</p>
+    <p className="text-xs text-[var(--neutral-500)] mb-3">{order.items} items · {order.weight}</p>
+    <div className="h-1 bg-[var(--neutral-200)] rounded-full overflow-hidden mb-3">
       <div
         className="h-full rounded-full transition-all"
-        style={{ width: `${order.progress}%`, backgroundColor: order.progress === 100 ? '#36B37E' : '#FFCF4B' }}
+        style={{ width: `${order.progress}%`, backgroundColor: order.progress === 100 ? 'var(--mw-success)' : 'var(--mw-yellow-400)' }}
       />
     </div>
     <div className="flex items-center justify-between text-xs">
-      <span className="text-[#737373]">{order.carrier}</span>
-      <span className={cn('text-[#737373]', (order.due === 'Today' || order.due === '1d') && 'text-[#1A2732] font-medium')}>
+      <span className="text-[var(--neutral-500)]">{order.carrier}</span>
+      <span className={cn('text-[var(--neutral-500)]', (order.due === 'Today' || order.due === '1d') && 'text-[var(--mw-mirage)] font-medium')}>
         {order.due}
       </span>
     </div>
@@ -62,13 +62,13 @@ const DetailTimeline = ({ current }: { current: Stage }) => {
   const idx = STAGES.indexOf(current);
   return (
     <div className="space-y-0 relative py-2">
-      <div className="absolute left-[7px] top-5 bottom-5 w-px bg-[#E5E5E5]" />
+      <div className="absolute left-[7px] top-5 bottom-5 w-px bg-[var(--neutral-200)]" />
       {STAGES.map((stage, i) => {
         const done = i <= idx;
         return (
           <div key={stage} className="flex items-center gap-4 relative py-3">
-            <div className={cn('w-4 h-4 rounded-full shrink-0 z-10 border-2', done ? 'bg-[#1A2732] border-[#1A2732]' : 'bg-white border-[var(--border)]')} />
-            <span className={cn('text-sm', done ? 'text-[#1A2732] font-medium' : 'text-[#A3A3A3]')}>{stage}</span>
+            <div className={cn('w-4 h-4 rounded-full shrink-0 z-10 border-2', done ? 'bg-[var(--mw-mirage)] border-[var(--mw-mirage)]' : 'bg-white border-[var(--border)]')} />
+            <span className={cn('text-sm', done ? 'text-[var(--mw-mirage)] font-medium' : 'text-[var(--neutral-400)]')}>{stage}</span>
           </div>
         );
       })}
@@ -84,22 +84,22 @@ export function ShipOrders() {
     <div className="p-6 flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 shrink-0">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Orders</h1>
+        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Orders</h1>
         <div className="flex items-center gap-3">
           <div className="relative w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" strokeWidth={1.5} />
-            <Input placeholder="Search orders..." className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
+            <Input placeholder="Search orders..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
           </div>
-          <div className="flex bg-[#F5F5F5] rounded-xl p-1">
+          <div className="flex bg-[var(--neutral-100)] rounded-xl p-1">
             <button
               onClick={() => setView('kanban')}
-              className={cn('p-2 rounded-md transition-colors', view === 'kanban' ? 'bg-[#1A2732] text-white' : 'text-[#737373]')}
+              className={cn('p-2 rounded-md transition-colors', view === 'kanban' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setView('list')}
-              className={cn('p-2 rounded-md transition-colors', view === 'list' ? 'bg-[#1A2732] text-white' : 'text-[#737373]')}
+              className={cn('p-2 rounded-md transition-colors', view === 'list' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
             >
               <List className="w-4 h-4" />
             </button>
@@ -115,8 +115,8 @@ export function ShipOrders() {
             return (
               <div key={stage} className="min-w-[260px] max-w-[320px] flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3 px-1">
-                  <span className="text-xs text-[#737373] tracking-widest uppercase font-medium">{stage}</span>
-                  <span className="text-xs text-[#A3A3A3] ">{stageOrders.length}</span>
+                  <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">{stage}</span>
+                  <span className="text-xs text-[var(--neutral-400)] ">{stageOrders.length}</span>
                 </div>
                 <div className="flex-1 overflow-y-auto space-y-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
                   {stageOrders.map(order => (
@@ -131,25 +131,25 @@ export function ShipOrders() {
 
       {/* List */}
       {view === 'list' && (
-        <div className="flex-1 overflow-auto bg-white rounded-2xl border border-[var(--border)]">
+        <div className="flex-1 overflow-auto bg-white rounded-[var(--shape-lg)] border border-[var(--border)]">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 {['ORDER', 'CUSTOMER', 'ITEMS', 'CARRIER', 'DUE', 'STAGE'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium uppercase">{h}</th>
+                  <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {ORDERS.map((o) => (
-                <tr key={o.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors" onClick={() => setSelected(o)}>
-                  <td className="px-4 py-3 text-sm  font-medium text-[#1A2732]">{o.id}</td>
-                  <td className="px-4 py-3 text-sm text-[#1A2732]">{o.customer}</td>
-                  <td className="px-4 py-3 text-sm text-[#737373] ">{o.items}</td>
-                  <td className="px-4 py-3 text-sm text-[#737373]">{o.carrier}</td>
-                  <td className="px-4 py-3 text-sm text-[#737373]" style={{ fontWeight: o.due === 'Today' ? 600 : 400 }}>{o.due}</td>
+                <tr key={o.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors" onClick={() => setSelected(o)}>
+                  <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{o.id}</td>
+                  <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{o.customer}</td>
+                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)] ">{o.items}</td>
+                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{o.carrier}</td>
+                  <td className={cn('px-4 py-3 text-sm text-[var(--neutral-500)]', o.due === 'Today' ? 'font-semibold' : 'font-normal')}>{o.due}</td>
                   <td className="px-4 py-3">
-                    <span className="text-xs tracking-widest uppercase text-[#737373] font-medium">{o.stage}</span>
+                    <span className="text-xs tracking-widest uppercase text-[var(--neutral-500)] font-medium">{o.stage}</span>
                   </td>
                 </tr>
               ))}
@@ -165,8 +165,8 @@ export function ShipOrders() {
           {selected && (
             <>
               <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
-                <p className="text-xl  font-medium text-[#1A2732]">{selected.id}</p>
-                <SheetDescription className="text-[#737373]">{selected.customer}</SheetDescription>
+                <p className="text-xl  font-medium text-[var(--mw-mirage)]">{selected.id}</p>
+                <SheetDescription className="text-[var(--neutral-500)]">{selected.customer}</SheetDescription>
               </SheetHeader>
               <div className="px-6 py-6 space-y-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -177,21 +177,21 @@ export function ShipOrders() {
                     { l: 'Due',     v: selected.due },
                   ].map(f => (
                     <div key={f.l}>
-                      <span className="text-xs text-[#737373] tracking-widest uppercase font-medium">{f.l}</span>
-                      <p className={cn('text-sm text-[#1A2732] mt-1 font-medium', f.l === 'Weight' && '')}>{f.v}</p>
+                      <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">{f.l}</span>
+                      <p className={cn('text-sm text-[var(--mw-mirage)] mt-1 font-medium', f.l === 'Weight' && '')}>{f.v}</p>
                     </div>
                   ))}
                 </div>
-                <div className="h-px bg-[#E5E5E5]" />
+                <div className="h-px bg-[var(--neutral-200)]" />
                 <div>
-                  <span className="text-xs text-[#737373] tracking-widest uppercase font-medium">Progress</span>
+                  <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Progress</span>
                   <DetailTimeline current={selected.stage} />
                 </div>
                 <div className="flex gap-3">
-                  <button className="flex-1 h-11 rounded-lg text-sm font-medium bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] transition-colors">
+                  <button className="flex-1 h-11 rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors">
                     Advance stage
                   </button>
-                  <button className="flex-1 h-11 rounded-lg text-sm font-medium border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors">
+                  <button className="flex-1 h-11 rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors">
                     Flag issue
                   </button>
                 </div>

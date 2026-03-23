@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BellDot, Layers3, Users } from 'lucide-react';
+import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GroupsTab } from './people/GroupsTab';
@@ -29,16 +30,16 @@ export function ControlPeople() {
   }, []);
 
   return (
-    <div className="space-y-8 bg-[#F5F5F5] p-8">
+    <div className="space-y-8 bg-[var(--neutral-100)] p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-bold tracking-tight text-[#1A2732]">People</h1>
-          <p className="mt-1 text-sm text-[#737373]">
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--mw-mirage)]">People</h1>
+          <p className="mt-1 text-sm text-[var(--neutral-500)]">
             Manage team members, module access, and group permissions
           </p>
         </div>
         <Button
-          className="h-11 rounded-xl bg-[#FFCF4B] px-5 text-[#2C2C2C] hover:bg-[#EBC028]"
+          className="h-11 rounded-xl bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
           onClick={() => {
             if (activeTab === 'users') {
               setInviteOpen(true);
@@ -53,26 +54,25 @@ export function ControlPeople() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard icon={Users} label="Total users" value={String(stats.activeUsers)} sublabel="Active" />
-        <StatCard icon={Layers3} label="Leads assigned" value={`${stats.leads} / ${stats.totalModules}`} sublabel="Module leads" />
-        <StatCard
+        <DarkAccentCard icon={Users} label="Total users" value={String(stats.activeUsers)} subtext="Active" />
+        <DarkAccentCard icon={Layers3} label="Leads assigned" value={`${stats.leads} / ${stats.totalModules}`} subtext="Module leads" />
+        <DarkAccentCard
           icon={BellDot}
           label="Pending invites"
           value={String(stats.pendingInvites)}
-          sublabel={stats.pendingInvites > 0 ? 'Action required' : 'No pending invites'}
-          showDot={stats.pendingInvites > 0}
+          subtext={stats.pendingInvites > 0 ? 'Action required' : 'No pending invites'}
         />
       </div>
 
       <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
-        <TabsList className="h-auto w-full justify-start rounded-2xl bg-white p-1">
-          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[#737373]">
+        <TabsList className="h-auto w-full justify-start rounded-[var(--shape-lg)] bg-white p-1">
+          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[var(--neutral-500)]">
             Users
-            {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
+            {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" /> : null}
           </TabsTrigger>
-          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[#737373]">
+          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[var(--neutral-500)]">
             Groups
-            {activeTab === 'groups' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
+            {activeTab === 'groups' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" /> : null}
           </TabsTrigger>
         </TabsList>
 
@@ -97,34 +97,6 @@ export function ControlPeople() {
       <UserDetailSheet user={selectedUser} open={userSheetOpen} onOpenChange={setUserSheetOpen} />
       <GroupDetailSheet group={selectedGroup} open={groupSheetOpen} onOpenChange={setGroupSheetOpen} />
       <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} />
-    </div>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  sublabel,
-  showDot = false,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  sublabel: string;
-  showDot?: boolean;
-}) {
-  return (
-    <div className="rounded-2xl bg-[#1A2732] p-4 text-white">
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-medium tracking-wider text-white/70 uppercase">{label}</p>
-        <Icon className="h-5 w-5 text-white/70" />
-      </div>
-      <p className="font-['Roboto_Mono',monospace] text-3xl font-bold text-[#FFCF4B]">{value}</p>
-      <div className="mt-1 flex items-center gap-1.5 text-xs text-white/80">
-        {showDot ? <span className="h-1.5 w-1.5 rounded-full bg-[#FFCF4B]" /> : null}
-        <span>{sublabel}</span>
-      </div>
     </div>
   );
 }

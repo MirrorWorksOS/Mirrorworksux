@@ -41,12 +41,12 @@ interface WFEdge {
 // ─── Visual styles per kind ───────────────────────────────────────────────────
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string }> = {
-  trigger:      { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#FF8B00]' },
-  ai:           { card: 'bg-[#F5F3FF] border-[#7C3AED]/30',   iconBg: 'bg-[#7C3AED]' },
-  action:       { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#1A2732]' },
-  notification: { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#0A7AFF]' },
-  condition:    { card: 'bg-[#1A2732] border-[#0052CC]',      iconBg: 'bg-white/25'  },
-  hold:         { card: 'bg-white border-[#EF4444]/30',       iconBg: 'bg-[#EF4444]' },
+  trigger:      { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-amber)]' },
+  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',   iconBg: 'bg-[var(--mw-purple)]' },
+  action:       { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-mirage)]' },
+  notification: { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-blue)]' },
+  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',      iconBg: 'bg-white/25'  },
+  hold:         { card: 'bg-white border-[var(--mw-error)]/30',       iconBg: 'bg-[var(--mw-error)]' },
 };
 
 // ─── Workflow data ────────────────────────────────────────────────────────────
@@ -127,11 +127,11 @@ const EDGES: WFEdge[] = [
   { from: 'check-material',to: 'match-supplier' },
   {
     from: 'match-supplier', to: 'schedule-job',
-    label: 'Stock available', labelColor: '#36B37E', labelBg: '#E3FCEF',
+    label: 'Stock available', labelColor: 'var(--mw-success)', labelBg: 'var(--mw-success-light)',
   },
   {
     from: 'match-supplier', to: 'create-po',
-    label: 'Stock insufficient', labelColor: '#EF4444', labelBg: '#FEE2E2',
+    label: 'Stock insufficient', labelColor: 'var(--mw-error)', labelBg: 'var(--mw-error-100)',
   },
   { from: 'schedule-job',  to: 'assign-machine'   },
   { from: 'assign-machine',to: 'notify-operator'  },
@@ -178,7 +178,7 @@ function Connections() {
           <path
             key={`${edge.from}-${edge.to}`}
             d={d}
-            stroke="#D4D4D4"
+            stroke="var(--neutral-300)"
             strokeWidth="1.5"
             fill="none"
             markerEnd="url(#wf-arrow)"
@@ -192,8 +192,8 @@ function Connections() {
 // ─── Branch labels ────────────────────────────────────────────────────────────
 
 const BRANCH_LABELS = [
-  { text: 'Stock available',    x: 170, y: 762, color: '#36B37E', bg: '#E3FCEF' },
-  { text: 'Stock insufficient', x: 770, y: 762, color: '#EF4444', bg: '#FEE2E2' },
+  { text: 'Stock available',    x: 170, y: 762, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
+  { text: 'Stock insufficient', x: 770, y: 762, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
 ];
 
 // ─── Node card ────────────────────────────────────────────────────────────────
@@ -214,10 +214,10 @@ function NodeCard({
   return (
     <div
       className={cn(
-        'absolute border rounded-lg p-3 cursor-pointer shadow-sm select-none',
+        'absolute border rounded-[var(--shape-lg)] p-3 cursor-pointer shadow-sm select-none',
         'transition-all duration-150',
         s.card,
-        selected ? 'ring-2 ring-[#FFCF4B] shadow-md' : 'hover:shadow-md',
+        selected ? 'ring-2 ring-[var(--mw-yellow-400)] shadow-md' : 'hover:shadow-md',
       )}
       style={{ left: node.x, top: node.y, width: NODE_W, minHeight: node.h }}
       onClick={onClick}
@@ -225,9 +225,9 @@ function NodeCard({
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0', s.iconBg)}>
-          <Icon className="w-3.5 h-3.5 text-white" />
+          <Icon className="w-4 h-4 text-white" />
         </div>
-        <span className={cn('text-[13px] font-semibold leading-tight truncate', isDark ? 'text-white' : 'text-[#1A2732]')}>
+        <span className={cn('text-xs font-semibold leading-tight truncate', isDark ? 'text-white' : 'text-[var(--mw-mirage)]')}>
           {node.title}
         </span>
       </div>
@@ -236,10 +236,10 @@ function NodeCard({
       <div className="space-y-1 pl-0.5">
         {node.props.map(([label, value]) => (
           <div key={label} className="flex items-baseline gap-1.5">
-            <span className={cn('text-[11px] flex-shrink-0', isDark ? 'text-white/55' : 'text-[#737373]')}>
+            <span className={cn('text-xs flex-shrink-0', isDark ? 'text-white/55' : 'text-[var(--neutral-500)]')}>
               {label}:
             </span>
-            <span className={cn('text-[11px] font-medium truncate', isDark ? 'text-white' : 'text-[#0A7AFF]')}>
+            <span className={cn('text-xs font-medium truncate', isDark ? 'text-white' : 'text-[var(--mw-blue)]')}>
               {value}
             </span>
           </div>
@@ -268,8 +268,8 @@ export function WorkflowCanvas({
     <div
       className="flex-1 overflow-auto"
       style={{
-        backgroundColor: '#F5F5F5',
-        backgroundImage: 'radial-gradient(circle, #e5e5e5 1px, transparent 1px)',
+        backgroundColor: 'var(--neutral-100)',
+        backgroundImage: 'radial-gradient(circle, var(--neutral-200) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }}
     >
@@ -284,7 +284,7 @@ export function WorkflowCanvas({
           {BRANCH_LABELS.map(bl => (
             <div
               key={bl.text}
-              className="absolute text-[11px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"
+              className="absolute text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"
               style={{
                 left: bl.x,
                 top: bl.y,

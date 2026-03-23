@@ -5,15 +5,15 @@
 
 import React, { useState } from 'react';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { EmptyState } from '../shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 type OrderStatus = 'draft' | 'confirmed' | 'in_production' | 'shipped' | 'invoiced' | 'complete';
 
@@ -38,12 +38,12 @@ const mockOrders: Order[] = [
 
 const getStatusBadge = (status: OrderStatus) => {
   switch (status) {
-    case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'confirmed': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Confirmed', dot: '#1A2732' };
-    case 'in_production': return { bg: 'bg-[#FFCF4B]/20', text: 'text-[#0A0A0A]', label: 'In Production', dot: '#FFCF4B' };
-    case 'shipped': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Shipped', dot: '#1A2732' };
-    case 'invoiced': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Invoiced', dot: '#1A2732' };
-    case 'complete': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Complete', dot: '#1A2732' };
+    case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
+    case 'confirmed': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Confirmed', dot: 'var(--mw-mirage)' };
+    case 'in_production': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'In Production', dot: 'var(--mw-yellow-400)' };
+    case 'shipped': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Shipped', dot: 'var(--mw-mirage)' };
+    case 'invoiced': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Invoiced', dot: 'var(--mw-mirage)' };
+    case 'complete': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Complete', dot: 'var(--mw-mirage)' };
   }
 };
 
@@ -53,12 +53,12 @@ export function SellOrders() {
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Sales Orders</h1>
-          <p className="text-sm text-[#737373] mt-1">
+          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Sales Orders</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
             {mockOrders.length} orders • ${totalValue.toLocaleString()} total value
           </p>
         </div>
@@ -71,7 +71,7 @@ export function SellOrders() {
             <AnimatedDownload className="w-4 h-4" />
             Export
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Order
           </Button>
@@ -79,21 +79,21 @@ export function SellOrders() {
       </div>
 
       {/* Table */}
-      <motion.div variants={animationVariants.listItem}>
+      <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12">
                     <input type="checkbox" className="rounded border-[var(--border)]" />
                   </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">ORDER #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CUSTOMER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">JOB REF</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">ORDER #</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DATE</th>
+                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">JOB REF</th>
                   <th className="px-4 py-3 w-12"></th>
                 </tr>
               </thead>
@@ -101,18 +101,18 @@ export function SellOrders() {
                 {mockOrders.map((order, idx) => {
                   const statusBadge = getStatusBadge(order.status);
                   return (
-                    <tr key={order.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                    <tr key={order.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/orders/${order.id}`} className="text-[#0A0A0A]  text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)]  text-sm font-medium hover:underline flex items-center gap-1">
                           {order.orderNumber}
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-4 h-4" />
                         </a>
                       </td>
-                      <td className="px-4 text-sm text-[#0A0A0A]">{order.customer}</td>
-                      <td className="px-4 text-sm text-[#525252]">
+                      <td className="px-4 text-sm text-[var(--neutral-900)]">{order.customer}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">
                         {new Date(order.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </td>
                       <td className="px-4">
@@ -126,16 +126,16 @@ export function SellOrders() {
                       <td className="px-4 text-right text-sm  font-medium">${order.total.toLocaleString()}</td>
                       <td className="px-4">
                         {order.jobReference ? (
-                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[#0A0A0A]  text-xs hover:underline">
+                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)]  text-xs hover:underline">
                             {order.jobReference}
                           </a>
                         ) : (
-                          <span className="text-xs text-[#A3A3A3]">—</span>
+                          <span className="text-xs text-[var(--neutral-400)]">—</span>
                         )}
                       </td>
                       <td className="px-4">
-                        <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                          <MoreVertical className="w-4 h-4 text-[#737373]" />
+                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                         </button>
                       </td>
                     </tr>
@@ -147,29 +147,23 @@ export function SellOrders() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[#737373]">Showing 1-{mockOrders.length} of {mockOrders.length}</p>
+            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{mockOrders.length} of {mockOrders.length}</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Next</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      {/* Empty State (hidden when data exists) */}
       {mockOrders.length === 0 && (
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-12">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 text-[#737373]" />
-            </div>
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">No orders yet</h3>
-            <p className="text-sm text-[#737373] mb-4">Create your first sales order to get started</p>
-            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A]">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Order
-            </Button>
-          </div>
+        <Card variant="flat" className="p-0">
+          <EmptyState
+            icon={Plus}
+            title="No orders yet"
+            description="Create your first sales order to get started"
+            action={{ label: "Create Order", onClick: () => {}, icon: Plus }}
+          />
         </Card>
       )}
     </motion.div>

@@ -32,7 +32,6 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { Separator } from '../ui/separator';
 
@@ -89,10 +88,10 @@ const MOCK_DATA: ManufacturingOrder[] = [
 
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    progress: "bg-[#FFCF4B] text-[#2C2C2C] border-transparent", // Yellow
-    pending: "bg-[#F5F5F5] text-[#2C2C2C] border-[#E5E4E0]",   // Grey
-    completed: "bg-[#4CAF50] text-white border-transparent",      // Green
-    hold: "bg-[#EF4444] text-white border-transparent"            // Red
+    progress: "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent", // Yellow
+    pending: "bg-[var(--neutral-100)] text-[var(--neutral-800)] border-[var(--neutral-200)]",   // Grey
+    completed: "bg-[var(--mw-green)] text-white border-transparent",      // Green
+    hold: "bg-[var(--mw-error)] text-white border-transparent"            // Red
   };
 
   const labels: Record<string, string> = {
@@ -112,13 +111,13 @@ const StatusBadge = ({ status }: { status: string }) => {
 const PriorityBadge = ({ priority }: { priority: string }) => {
   if (priority === 'High') {
     return (
-      <span className="text-xs px-2 py-0.5 rounded-[4px] font-bold text-[#EF4444] bg-[#EF4444]/10">
+      <span className="text-xs px-2 py-0.5 rounded-[4px] font-bold text-[var(--mw-error)] bg-[var(--mw-error)]/10">
         HIGH
       </span>
     );
   }
   return (
-    <span className="text-xs px-2 py-0.5 rounded-[4px] font-medium text-[#6B6B6B] bg-[#F5F5F5]">
+    <span className="text-xs px-2 py-0.5 rounded-[4px] font-medium text-[var(--neutral-500)] bg-[var(--neutral-100)]">
       {priority}
     </span>
   );
@@ -134,56 +133,56 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
   };
 
   return (
-    <div className="flex flex-col bg-white rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[#E5E4E0] overflow-hidden mx-6 mt-6" style={{ height: 'calc(100vh - 48px)' }}>
+    <div className="flex flex-col bg-white rounded-[var(--shape-lg)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] overflow-hidden mx-6 mt-6" style={{ height: 'calc(100vh - 48px)' }}>
       {/* List Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[#E5E4E0] bg-white">
+      <div className="flex items-center justify-between p-4 border-b border-[var(--neutral-200)] bg-white">
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B6B6B]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
           <Input 
             placeholder="Search work orders..." 
-            className="pl-10 bg-[#F5F5F5] border-transparent focus:bg-white focus:border-[#FFCF4B] h-10 rounded-[8px] text-[#2C2C2C]"
+            className="pl-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] h-10 rounded-[8px] text-[var(--neutral-800)]"
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[#E5E4E0] text-[#2C2C2C] hover:bg-[#F5F5F5] rounded-[8px]">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-[8px]">
             <Filter className="w-4 h-4 mr-2" /> Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[#E5E4E0] text-[#2C2C2C] hover:bg-[#F5F5F5] rounded-[8px]">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-[8px]">
             View
           </Button>
         </div>
       </div>
 
       {/* List Content */}
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-[#F5F5F5] p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-[var(--neutral-100)] p-4 space-y-4">
           {MOCK_DATA.filter(mo => mo.id === "MO-26-401").map(mo => (
-            <div key={mo.id} className="bg-white rounded-[16px] border border-[#E5E4E0] overflow-hidden shadow-sm">
+            <div key={mo.id} className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden shadow-sm">
               {/* MO Header Row */}
               <div 
-                className="flex items-center gap-4 p-5 cursor-pointer transition-colors hover:bg-[#F5F5F5]"
+                className="flex items-center gap-4 p-5 cursor-pointer transition-colors hover:bg-[var(--neutral-100)]"
                 onClick={() => toggleMO(mo.id)}
               >
                 <div className={`p-1 rounded-full hover:bg-[#E5E4E0] transition-colors`}>
-                  <ChevronRight className={`w-5 h-5 text-[#6B6B6B] transition-transform duration-200 ${expandedMOs[mo.id] ? 'rotate-90' : ''}`} />
+                  <ChevronRight className={`w-5 h-5 text-[var(--neutral-500)] transition-transform duration-200 ${expandedMOs[mo.id] ? 'rotate-90' : ''}`} />
                 </div>
                 
                 <div className="flex-1 grid grid-cols-12 gap-4 items-center">
                   <div className="col-span-4">
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="font-semibold text-lg text-[#2C2C2C]">{mo.id}</span>
+                      <span className="font-semibold text-lg text-[var(--neutral-800)]">{mo.id}</span>
                       <PriorityBadge priority={mo.priority} />
                     </div>
-                    <div className="text-sm font-medium text-[#6B6B6B]">{mo.customer}</div>
+                    <div className="text-sm font-medium text-[var(--neutral-500)]">{mo.customer}</div>
                   </div>
                   
                   <div className="col-span-4">
-                    <div className="text-[#2C2C2C] font-medium">{mo.partName}</div>
-                    <div className="text-xs text-[#6B6B6B] mt-0.5">Total Units: {mo.totalUnits}</div>
+                    <div className="text-[var(--neutral-800)] font-medium">{mo.partName}</div>
+                    <div className="text-xs text-[var(--neutral-500)] mt-0.5">Total Units: {mo.totalUnits}</div>
                   </div>
 
                   <div className="col-span-4 text-right">
-                    <div className="text-sm text-[#6B6B6B]">Due: <span className="font-medium text-[#2C2C2C]">{mo.dueDate}</span></div>
-                    <div className="text-xs text-[#6B6B6B] mt-0.5">{mo.workOrders.length} Work Orders</div>
+                    <div className="text-sm text-[var(--neutral-500)]">Due: <span className="font-medium text-[var(--neutral-800)]">{mo.dueDate}</span></div>
+                    <div className="text-xs text-[var(--neutral-500)] mt-0.5">{mo.workOrders.length} Work Orders</div>
                   </div>
                 </div>
               </div>
@@ -198,39 +197,39 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                     transition={{ duration: 0.5, ease: [0.2, 0, 0, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="bg-[#F5F5F5]/50 border-t border-[#E5E4E0]">
+                    <div className="bg-[var(--neutral-100)]/50 border-t border-[var(--neutral-200)]">
                       {mo.workOrders.map(wo => (
                         <div 
                           key={wo.id}
-                          className="group relative pl-16 pr-6 py-4 flex items-center gap-6 hover:bg-white cursor-pointer transition-all border-b border-[#E5E4E0]/50 last:border-0"
+                          className="group relative pl-16 pr-6 py-4 flex items-center gap-6 hover:bg-white cursor-pointer transition-all border-b border-[var(--neutral-200)]/50 last:border-0"
                           onClick={() => onSelectWO(wo, mo)}
                         >
                           {/* Active Indicator Line */}
                           {wo.status === 'progress' && (
-                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#FFCF4B]" />
+                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[var(--mw-yellow-400)]" />
                           )}
 
                           <div className="flex-1 grid grid-cols-12 gap-4 items-center">
                             {/* ID and Name */}
                             <div className="col-span-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className=" text-sm font-semibold text-[#6B6B6B]">{wo.id}</span>
-                                <Badge variant="outline" className="bg-white text-[#2C2C2C] border-[#E5E4E0]  text-[10px] px-1.5 py-0 h-5 rounded-[4px]">
+                                <span className=" text-sm font-semibold text-[var(--neutral-500)]">{wo.id}</span>
+                                <Badge variant="outline" className="bg-white text-[var(--neutral-800)] border-[var(--neutral-200)]  text-[10px] px-1.5 py-0 h-5 rounded-[4px]">
                                   {wo.station}
                                 </Badge>
                               </div>
-                              <div className="font-medium text-[#2C2C2C] text-base">{wo.name}</div>
+                              <div className="font-medium text-[var(--neutral-800)] text-base">{wo.name}</div>
                             </div>
                             
                             {/* Progress Bar (Single Black Fill) */}
                             <div className="col-span-4 px-4">
-                              <div className="flex justify-between text-xs font-medium text-[#6B6B6B] mb-1.5">
+                              <div className="flex justify-between text-xs font-medium text-[var(--neutral-500)] mb-1.5">
                                 <span>Progress</span>
-                                <span className="text-[#2C2C2C]">{wo.progress}%</span>
+                                <span className="text-[var(--neutral-800)]">{wo.progress}%</span>
                               </div>
                               <div className="w-full h-2 bg-[#E5E4E0] rounded-full overflow-hidden">
                                 <div 
-                                  className={`h-full rounded-full ${wo.status === 'progress' ? 'bg-[#2C2C2C]' : wo.status === 'completed' ? 'bg-[#4CAF50]' : 'bg-[#6B6B6B]'}`}
+                                  className={`h-full rounded-full ${wo.status === 'progress' ? 'bg-[var(--neutral-800)]' : wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--neutral-500)]'}`}
                                   style={{ width: `${wo.progress}%` }}
                                 />
                               </div>
@@ -239,11 +238,11 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             {/* Status and Units */}
                             <div className="col-span-4 flex items-center justify-end gap-6">
                               <div className="text-right">
-                                  <div className="text-xs text-[#6B6B6B] uppercase tracking-wide font-semibold">Units</div>
-                                  <div className=" text-sm text-[#2C2C2C]">{wo.unitsCompleted}/{wo.totalUnits}</div>
+                                  <div className="text-xs text-[var(--neutral-500)] uppercase tracking-wide font-semibold">Units</div>
+                                  <div className=" text-sm text-[var(--neutral-800)]">{wo.unitsCompleted}/{wo.totalUnits}</div>
                               </div>
                               <StatusBadge status={wo.status} />
-                              <ChevronRight className="w-5 h-5 text-[#E5E4E0] group-hover:text-[#2C2C2C] transition-colors" />
+                              <ChevronRight className="w-5 h-5 text-[#E5E4E0] group-hover:text-[var(--neutral-800)] transition-colors" />
                             </div>
                           </div>
                         </div>

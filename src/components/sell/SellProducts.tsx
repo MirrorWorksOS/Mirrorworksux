@@ -5,16 +5,16 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, Filter, Grid3x3, List, Package, DollarSign } from 'lucide-react';
+import { EmptyState } from '../shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedSearch } from '../ui/animated-icons';
 
-const { animationVariants } = designSystem;
 
 interface Product {
   id: string;
@@ -37,9 +37,9 @@ const mockProducts: Product[] = [
 ];
 
 const getStockBadge = (stockLevel: number, reorderPoint: number) => {
-  if (stockLevel === 0) return { bg: 'bg-[#DE350B]/10', text: 'text-[#DE350B]', label: 'Out of stock' };
-  if (stockLevel < reorderPoint) return { bg: 'bg-[#FFCF4B]/20', text: 'text-[#0A0A0A]', label: 'Low stock' };
-  return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'In stock' };
+  if (stockLevel === 0) return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Out of stock' };
+  if (stockLevel < reorderPoint) return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'Low stock' };
+  return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'In stock' };
 };
 
 export function SellProducts() {
@@ -52,15 +52,15 @@ export function SellProducts() {
   );
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Products</h1>
-          <p className="text-sm text-[#737373] mt-1">{filteredProducts.length} total products</p>
+          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Products</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredProducts.length} total products</p>
         </div>
         <div className="flex gap-3">
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Product
           </Button>
@@ -71,7 +71,7 @@ export function SellProducts() {
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
           <Input
             placeholder="Search products..."
             className="pl-10 h-10 border-[var(--border)]"
@@ -93,8 +93,8 @@ export function SellProducts() {
             className={cn(
               "p-2 rounded transition-all duration-200",
               viewMode === 'card'
-                ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                : "text-[#737373] hover:bg-[#F5F5F5]"
+                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
             )}
           >
             <Grid3x3 className="w-4 h-4" />
@@ -104,8 +104,8 @@ export function SellProducts() {
             className={cn(
               "p-2 rounded transition-all duration-200",
               viewMode === 'list'
-                ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                : "text-[#737373] hover:bg-[#F5F5F5]"
+                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
             )}
           >
             <List className="w-4 h-4" />
@@ -119,25 +119,25 @@ export function SellProducts() {
           {filteredProducts.map((product, idx) => {
             const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
             return (
-              <motion.div key={product.id} variants={animationVariants.listItem} custom={idx}>
+              <motion.div key={product.id} variants={staggerItem} custom={idx}>
                 <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
                   {/* Product Image Placeholder */}
-                  <div className="h-40 bg-gradient-to-br from-[#F5F5F5] to-[var(--border)] flex items-center justify-center">
-                    <Package className="w-16 h-16 text-[#A3A3A3]" />
+                  <div className="h-40 bg-gradient-to-br from-[var(--neutral-100)] to-[var(--border)] flex items-center justify-center">
+                    <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
 
                   <div className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#FFCF4B] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-sm font-semibold text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
-                        <p className=" text-[12px] text-[#737373]">{product.sku}</p>
+                        <p className=" text-xs text-[var(--neutral-500)]">{product.sku}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className="bg-[#F5F5F5] text-[#525252] border-0 text-xs">{product.category}</Badge>
+                      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{product.category}</Badge>
                       <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", stockBadge.bg, stockBadge.text)}>
                         {stockBadge.label}
                       </Badge>
@@ -145,14 +145,14 @@ export function SellProducts() {
 
                     <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                       <div>
-                        <p className="text-xs text-[#737373] mb-1">Stock Level</p>
-                        <p className=" text-[14px] font-semibold text-[#0A0A0A]">
+                        <p className="text-xs text-[var(--neutral-500)] mb-1">Stock Level</p>
+                        <p className=" text-sm font-semibold text-[var(--neutral-900)]">
                           {product.stockLevel} units
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-[#737373] mb-1">Unit Price</p>
-                        <p className=" text-[14px] font-semibold text-[#0A0A0A]">
+                        <p className="text-xs text-[var(--neutral-500)] mb-1">Unit Price</p>
+                        <p className=" text-sm font-semibold text-[var(--neutral-900)]">
                           ${product.unitPrice.toFixed(2)}
                         </p>
                       </div>
@@ -171,29 +171,29 @@ export function SellProducts() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PRODUCT</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">SKU</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CATEGORY</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">STOCK</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">UNIT PRICE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
+                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">PRODUCT</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">SKU</th>
+                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CATEGORY</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">STOCK</th>
+                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">UNIT PRICE</th>
+                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((product, idx) => {
                   const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
                   return (
-                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
-                        <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[#0A0A0A] hover:underline">
+                        <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[var(--neutral-900)] hover:underline">
                           {product.name}
                         </a>
                       </td>
-                      <td className="px-4  text-sm text-[#525252]">{product.sku}</td>
-                      <td className="px-4 text-sm text-[#525252]">{product.category}</td>
+                      <td className="px-4  text-sm text-[var(--neutral-600)]">{product.sku}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)]">{product.category}</td>
                       <td className="px-4 text-right  text-sm font-medium">{product.stockLevel}</td>
-                      <td className="px-4 text-right  text-sm font-medium text-[#0A0A0A]">
+                      <td className="px-4 text-right  text-sm font-medium text-[var(--neutral-900)]">
                         ${product.unitPrice.toFixed(2)}
                       </td>
                       <td className="px-4">
@@ -212,20 +212,14 @@ export function SellProducts() {
         </Card>
       )}
 
-      {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-12">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Package className="w-8 h-8 text-[#737373]" />
-            </div>
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">No products found</h3>
-            <p className="text-sm text-[#737373] mb-4">Try adjusting your search or create a new product</p>
-            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A]">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Product
-            </Button>
-          </div>
+        <Card variant="flat" className="p-0">
+          <EmptyState
+            icon={Package}
+            title="No products found"
+            description="Try adjusting your search or create a new product"
+            action={{ label: "Create Product", onClick: () => {}, icon: Plus }}
+          />
         </Card>
       )}
     </motion.div>

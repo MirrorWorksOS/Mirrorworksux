@@ -3,19 +3,19 @@
  * Matches BookDashboard pattern with MW design system
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
-import { cn } from '../ui/utils';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   AreaChart, Area
 } from 'recharts';
 
-const { animationVariants } = designSystem;
 
 // Mock data
 const kpiData = {
@@ -43,16 +43,16 @@ const revenueData = [
 ];
 
 const jobProfitabilityData = [
-  { job: 'JOB-0012', margin: 23.1, color: '#FFCF4B' },
-  { job: 'JOB-0010', margin: 15.1, color: '#FFCF4B' },
-  { job: 'JOB-0008', margin: 18.4, color: '#FFCF4B' },
-  { job: 'JOB-0007', margin: 21.2, color: '#FFCF4B' },
-  { job: 'JOB-0006', margin: 12.8, color: '#1A2732' },
-  { job: 'JOB-0003', margin: 16.5, color: '#FFCF4B' },
-  { job: 'JOB-0011', margin: 6.5, color: '#1A2732' },
-  { job: 'JOB-0005', margin: 3.2, color: '#1A2732' },
-  { job: 'JOB-0004', margin: 8.9, color: '#1A2732' },
-  { job: 'JOB-0009', margin: -7.8, color: '#1A2732' },
+  { job: 'JOB-0012', margin: 23.1, color: 'var(--mw-yellow-400)' },
+  { job: 'JOB-0010', margin: 15.1, color: 'var(--mw-yellow-400)' },
+  { job: 'JOB-0008', margin: 18.4, color: 'var(--mw-yellow-400)' },
+  { job: 'JOB-0007', margin: 21.2, color: 'var(--mw-yellow-400)' },
+  { job: 'JOB-0006', margin: 12.8, color: 'var(--mw-mirage)' },
+  { job: 'JOB-0003', margin: 16.5, color: 'var(--mw-yellow-400)' },
+  { job: 'JOB-0011', margin: 6.5, color: 'var(--mw-mirage)' },
+  { job: 'JOB-0005', margin: 3.2, color: 'var(--mw-mirage)' },
+  { job: 'JOB-0004', margin: 8.9, color: 'var(--mw-mirage)' },
+  { job: 'JOB-0009', margin: -7.8, color: 'var(--mw-mirage)' },
 ];
 
 const approvalQueue = [
@@ -67,361 +67,351 @@ const overdueActions = [
   { type: 'Follow-up', id: 'OPP-0156', customer: 'BHP Contractors', value: 28000, daysOverdue: 3 },
 ];
 
+const sellTabs = [{ key: 'overview', label: 'Overview' }];
+
 export function SellDashboard() {
+  const [activeTab, setActiveTab] = useState('overview');
+
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={animationVariants.stagger}
-      className="p-8 space-y-8"
-    >
+    <ModuleDashboard title="Sell" tabs={sellTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards - Top Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Monthly Revenue */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-[#FFCF4B]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+              </div>
+              <Badge className="bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)] border-transparent">
+                +{kpiData.monthlyRevenue.change}%
+              </Badge>
             </div>
-            <Badge className="bg-[#FFCF4B]/20 text-[#0A0A0A] border-transparent">
-              +{kpiData.monthlyRevenue.change}%
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Monthly Revenue
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
-            ${kpiData.monthlyRevenue.value.toLocaleString()}
-          </p>
-          <p className="text-[12px] text-[#737373] mt-2">
-            vs. previous month
-          </p>
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Monthly Revenue
+            </h3>
+            <p className="text-2xl font-semibold text-foreground tabular-nums">
+              ${kpiData.monthlyRevenue.value.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              vs. previous month
+            </p>
+          </Card>
         </motion.div>
 
         {/* Outstanding Invoices */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
-              <Receipt className="w-5 h-5 text-[#FF8B00]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--mw-yellow-100)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <Receipt className="w-5 h-5 text-[var(--mw-yellow-700)]" />
+              </div>
+              <Badge className="bg-[var(--neutral-100)] text-muted-foreground border-transparent">
+                {kpiData.outstandingInvoices.count} invoices
+              </Badge>
             </div>
-            <Badge className="bg-[#F5F5F5] text-[#737373] border-transparent">
-              {kpiData.outstandingInvoices.count} invoices
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Outstanding Invoices
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
-            ${kpiData.outstandingInvoices.value.toLocaleString()}
-          </p>
-          <p className="text-[12px] text-[#737373] mt-2">
-            Awaiting payment
-          </p>
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Outstanding Invoices
+            </h3>
+            <p className="text-2xl font-semibold text-foreground tabular-nums">
+              ${kpiData.outstandingInvoices.value.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Awaiting payment
+            </p>
+          </Card>
         </motion.div>
 
         {/* Profit Margin */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[#FFCF4B]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+              </div>
+              <Badge className="bg-[var(--mw-yellow-400)]/20 text-foreground border-transparent">
+                +{kpiData.profitMargin.change}%
+              </Badge>
             </div>
-            <Badge className="bg-[#FFCF4B]/20 text-[#0A0A0A] border-transparent">
-              +{kpiData.profitMargin.change}%
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Profit Margin
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
-            {kpiData.profitMargin.value}%
-          </p>
-          <p className="text-[12px] text-[#737373] mt-2">
-            Average job margin
-          </p>
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Profit Margin
+            </h3>
+            <p className="text-2xl font-semibold text-foreground">
+              {kpiData.profitMargin.value}%
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Average job margin
+            </p>
+          </Card>
         </motion.div>
 
         {/* Cash Flow */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-[#FFCF4B]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+              </div>
+              <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent">
+                {kpiData.cashFlow.change}%
+              </Badge>
             </div>
-            <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent">
-              {kpiData.cashFlow.change}%
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Cash Flow
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
-            ${kpiData.cashFlow.value.toLocaleString()}
-          </p>
-          <p className="text-[12px] text-[#737373] mt-2">
-            Net invoiced - expenses
-          </p>
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Cash Flow
+            </h3>
+            <p className="text-2xl font-semibold text-foreground tabular-nums">
+              ${kpiData.cashFlow.value.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Net invoiced - expenses
+            </p>
+          </Card>
         </motion.div>
 
         {/* Overdue Invoices */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-[#FFCF4B]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+              </div>
+              <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent">
+                {kpiData.overdueInvoices.count} overdue
+              </Badge>
             </div>
-            <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent">
-              {kpiData.overdueInvoices.count} overdue
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Overdue Invoices
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#DE350B]">
-            ${kpiData.overdueInvoices.value.toLocaleString()}
-          </p>
-          <p className="text-[12px] text-[#737373] mt-2">
-            Requires attention
-          </p>
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Overdue Invoices
+            </h3>
+            <p className="text-2xl font-semibold text-[var(--mw-error)] tabular-nums">
+              ${kpiData.overdueInvoices.value.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Requires attention
+            </p>
+          </Card>
         </motion.div>
 
         {/* Expenses This Month */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-[#737373]" />
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <Badge className="bg-[var(--neutral-100)] text-muted-foreground border-transparent">
+                {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
+              </Badge>
             </div>
-            <Badge className="bg-[#F5F5F5] text-[#737373] border-transparent">
-              {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
-            </Badge>
-          </div>
-          <h3 className="text-[13px] font-medium text-[#737373] mb-1">
-            Expenses This Month
-          </h3>
-          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
-            ${kpiData.expensesThisMonth.value.toLocaleString()}
-          </p>
-          <div className="mt-3">
-            <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-[#FFCF4B] transition-all duration-300"
-                style={{ width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%` }}
-              />
+            <h3 className="text-xs font-medium text-muted-foreground mb-1">
+              Expenses This Month
+            </h3>
+            <p className="text-2xl font-semibold text-foreground tabular-nums">
+              ${kpiData.expensesThisMonth.value.toLocaleString()}
+            </p>
+            <div className="mt-3">
+              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
+                  style={{ width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%` }}
+                />
+              </div>
             </div>
-          </div>
+          </Card>
         </motion.div>
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Revenue vs Expenses Area Chart */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
-        >
-          <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">
-            Revenue vs Expenses (12 months)
-          </h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={revenueData}>
-              <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FFCF4B" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#FFCF4B" stopOpacity={0.05} />
-                </linearGradient>
-                <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1A2732" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#1A2732" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} />
-              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} />
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="revenue" stroke="#FFCF4B" strokeWidth={2} fill="url(#revenueGradient)" />
-              <Area type="monotone" dataKey="expenses" stroke="#1A2732" strokeWidth={2} fill="url(#expensesGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
+        <motion.div variants={staggerItem}>
+          <Card className="p-6">
+            <h3 className="text-base font-semibold text-foreground mb-4">
+              Revenue vs Expenses (12 months)
+            </h3>
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={revenueData}>
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--mw-yellow-400)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--mw-yellow-400)" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--mw-mirage)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--mw-mirage)" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--muted-foreground)', fontVariantNumeric: 'tabular-nums' }} />
+                <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--muted-foreground)', fontVariantNumeric: 'tabular-nums' }} />
+                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Area type="monotone" dataKey="revenue" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="url(#revenueGradient)" />
+                <Area type="monotone" dataKey="expenses" stroke="var(--mw-mirage)" strokeWidth={2} fill="url(#expensesGradient)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Card>
         </motion.div>
 
         {/* Job Profitability Bar Chart */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
-        >
-          <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">
-            Top 10 Jobs by Profit Margin
-          </h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={jobProfitabilityData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" horizontal={false} />
-              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: '#737373' }} />
-              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: '#737373' }} width={80} />
-              <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
-                {jobProfitabilityData.map((entry, i) => (
-                  <Cell key={`cell-${entry.job}-${i}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <motion.div variants={staggerItem}>
+          <Card className="p-6">
+            <h3 className="text-base font-semibold text-foreground mb-4">
+              Top 10 Jobs by Profit Margin
+            </h3>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={jobProfitabilityData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" horizontal={false} />
+                <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: 'var(--muted-foreground)' }} />
+                <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: 'var(--muted-foreground)' }} width={80} />
+                <Tooltip formatter={(v: number) => `${v}%`} />
+                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
+                  {jobProfitabilityData.map((entry, i) => (
+                    <Cell key={`cell-${entry.job}-${i}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
         </motion.div>
       </div>
 
       {/* Action Cards Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Approval Queue */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
-              Approval Queue
-            </h3>
-            <Badge className="bg-[#FFCF4B] text-[#2C2C2C] border-transparent">
-              {approvalQueue.length}
-            </Badge>
-          </div>
-          <div className="space-y-3">
-            {approvalQueue.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[13px] font-medium text-[#0A0A0A]">
-                      {item.type}
-                    </span>
-                    <span className=" text-[12px] text-[#737373]">
-                      {item.id}
-                    </span>
+        <motion.div variants={staggerItem}>
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-foreground">
+                Approval Queue
+              </h3>
+              <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent">
+                {approvalQueue.length}
+              </Badge>
+            </div>
+            <div className="space-y-3">
+              {approvalQueue.map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-md)] hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-medium text-foreground">
+                        {item.type}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.id}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--neutral-600)] mb-1">
+                      {item.customer}
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      ${item.amount.toLocaleString()}
+                    </p>
                   </div>
-                  <p className="text-[12px] text-[#525252] mb-1">
-                    {item.customer}
-                  </p>
-                  <p className=" text-[14px] font-medium text-[#0A0A0A]">
-                    ${item.amount.toLocaleString()}
-                  </p>
+                  <CheckCircle2 className="w-5 h-5 text-foreground" />
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-[#0A0A0A]" />
-              </div>
-            ))}
-          </div>
-          <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
-            <FileText className="w-4 h-4 mr-2" />
-            View All Approvals
-          </Button>
+              ))}
+            </div>
+            <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
+              <FileText className="w-4 h-4 mr-2" />
+              View All Approvals
+            </Button>
+          </Card>
         </motion.div>
 
         {/* Xero Sync Status */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
-              Xero Sync Status
-            </h3>
-            <div className="w-3 h-3 bg-[#1A2732] rounded-full" />
-          </div>
-          <div className="space-y-4 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#737373]">
-                Last synced
-              </span>
-              <span className="text-[13px] font-medium text-[#0A0A0A]">
-                2 minutes ago
-              </span>
+        <motion.div variants={staggerItem}>
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-foreground">
+                Xero Sync Status
+              </h3>
+              <div className="w-3 h-3 bg-[var(--mw-mirage)] rounded-full" />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#737373]">
-                Invoices synced
-              </span>
-              <span className="text-[13px] font-medium text-[#0A0A0A]">
-                147 / 147
-              </span>
+            <div className="space-y-4 mb-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Last synced
+                </span>
+                <span className="text-xs font-medium text-foreground">
+                  2 minutes ago
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Invoices synced
+                </span>
+                <span className="text-xs font-medium text-foreground">
+                  147 / 147
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Status
+                </span>
+                <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent text-xs">
+                  Healthy
+                </Badge>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#737373]">
-                Status
-              </span>
-              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent text-xs">
-                Healthy
-              </Badge>
-            </div>
-          </div>
-          <Button className="w-full bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C] group">
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "linear",
-                repeatDelay: 3
-              }}
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-            </motion.div>
-            Sync Now
-          </Button>
+            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] group">
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "linear",
+                  repeatDelay: 3
+                }}
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+              </motion.div>
+              Sync Now
+            </Button>
+          </Card>
         </motion.div>
 
         {/* Overdue Actions */}
-        <motion.div
-          variants={animationVariants.listItem}
-          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
-              Overdue Actions
-            </h3>
-            <Badge className="bg-[#FFEBE6] text-[#DE350B] border-transparent">
-              {overdueActions.length}
-            </Badge>
-          </div>
-          <div className="space-y-3">
-            {overdueActions.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#E5E5E5] transition-colors cursor-pointer">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className=" text-[12px] text-[#DE350B] font-medium">
-                      {item.id}
-                    </span>
-                    <Badge className="bg-[#DE350B] text-white text-xs">
-                      {item.daysOverdue}d
-                    </Badge>
+        <motion.div variants={staggerItem}>
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-foreground">
+                Overdue Actions
+              </h3>
+              <Badge className="bg-[var(--mw-error-light)] text-[var(--mw-error)] border-transparent">
+                {overdueActions.length}
+              </Badge>
+            </div>
+            <div className="space-y-3">
+              {overdueActions.map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-md)] hover:bg-[var(--neutral-200)] transition-colors cursor-pointer">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-[var(--mw-error)] font-medium">
+                        {item.id}
+                      </span>
+                      <Badge className="bg-[var(--mw-error)] text-white text-xs">
+                        {item.daysOverdue}d
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-foreground mb-1">
+                      {item.customer}
+                    </p>
+                    <p className="text-xs font-medium text-[var(--mw-error)]">
+                      ${item.amount?.toLocaleString() || `$${item.value?.toLocaleString()}`}
+                    </p>
                   </div>
-                  <p className="text-[12px] text-[#0A0A0A] mb-1">
-                    {item.customer}
-                  </p>
-                  <p className=" text-[13px] font-medium text-[#DE350B]">
-                    ${item.amount?.toLocaleString() || `$${item.value?.toLocaleString()}`}
-                  </p>
+                  <Clock className="w-5 h-5 text-[var(--mw-error)]" />
                 </div>
-                <Clock className="w-5 h-5 text-[#DE350B]" />
-              </div>
-            ))}
-          </div>
-          <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[#DE350B]">
-            <AlertTriangle className="w-4 h-4 mr-2" />
-            Follow Up All
-          </Button>
+              ))}
+            </div>
+            <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]">
+              <AlertTriangle className="w-4 h-4 mr-2" />
+              Follow Up All
+            </Button>
+          </Card>
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+    </ModuleDashboard>
   );
 }

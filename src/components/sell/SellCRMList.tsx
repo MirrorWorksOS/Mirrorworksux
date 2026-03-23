@@ -9,9 +9,8 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
 interface Customer {
   id: string;
@@ -34,9 +33,9 @@ const mockCustomers: Customer[] = [
 
 const getStatusBadge = (status: Customer['status']) => {
   switch (status) {
-    case 'active': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Active' };
-    case 'prospect': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Prospect' };
-    case 'inactive': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Inactive' };
+    case 'active': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Active' };
+    case 'prospect': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Prospect' };
+    case 'inactive': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Inactive' };
   }
 };
 
@@ -54,48 +53,48 @@ export function SellCRMList() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger}>
+    <motion.div initial="initial" animate="animate" variants={staggerContainer}>
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 <th className="px-4 py-3 w-12">
                   <input type="checkbox" className="rounded border-[var(--border)]" />
                 </th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">COMPANY NAME</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CONTACT</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">EMAIL</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PHONE</th>
-                <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">REVENUE</th>
-                <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">OPPORTUNITIES</th>
-                <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">COMPANY NAME</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CONTACT</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">EMAIL</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">PHONE</th>
+                <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">REVENUE</th>
+                <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">OPPORTUNITIES</th>
+                <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
               </tr>
             </thead>
             <tbody>
               {mockCustomers.map((customer, idx) => {
                 const statusBadge = getStatusBadge(customer.status);
                 return (
-                  <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                  <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                     <td className="px-4">
                       <input type="checkbox" checked={selectedRows.has(customer.id)} onChange={() => toggleRow(customer.id)} className="rounded border-[var(--border)]" />
                     </td>
                     <td className="px-4">
-                      <a href={`/sell/customers/${customer.id}`} className="text-[#0A0A0A] text-sm font-medium hover:underline flex items-center gap-2">
+                      <a href={`/sell/customers/${customer.id}`} className="text-[var(--neutral-900)] text-sm font-medium hover:underline flex items-center gap-2">
                         {customer.company}
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="w-4 h-4" />
                       </a>
                     </td>
-                    <td className="px-4 text-sm text-[#0A0A0A]">{customer.contact}</td>
+                    <td className="px-4 text-sm text-[var(--neutral-900)]">{customer.contact}</td>
                     <td className="px-4">
-                      <a href={`mailto:${customer.email}`} className="text-sm text-[#0A0A0A] hover:underline flex items-center gap-1">
-                        <Mail className="w-3.5 h-3.5" />
+                      <a href={`mailto:${customer.email}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                        <Mail className="w-4 h-4" />
                         {customer.email}
                       </a>
                     </td>
                     <td className="px-4">
-                      <a href={`tel:${customer.phone}`} className="text-sm text-[#0A0A0A] hover:underline flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5" />
+                      <a href={`tel:${customer.phone}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                        <Phone className="w-4 h-4" />
                         {customer.phone}
                       </a>
                     </td>
@@ -114,10 +113,10 @@ export function SellCRMList() {
         </div>
         {/* Pagination */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-          <p className="text-xs text-[#737373]">Showing 1-5 of 5</p>
+          <p className="text-xs text-[var(--neutral-500)]">Showing 1-5 of 5</p>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Previous</button>
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Next</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
           </div>
         </div>
       </Card>

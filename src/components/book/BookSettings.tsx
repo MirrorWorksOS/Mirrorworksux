@@ -7,6 +7,7 @@ import {
   Settings, FileText, Link, BarChart3, Lock, Calendar, RefreshCw,
   AlertTriangle, Plus, Trash2,
 } from 'lucide-react';
+import { ConfirmDialog } from '../shared/feedback/ConfirmDialog';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -23,7 +24,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/ModuleSettingsLayout';
+} from '../shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Book module (from ARCH 00 §4.7) ──
 const bookPermissionKeys: PermissionKey[] = [
@@ -110,9 +111,9 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Lock date</Label>
             <div className="relative">
               <Input defaultValue="31 Jan 2026" className="h-12 border-[var(--border)] rounded-xl pr-10" />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
             </div>
-            <p className="text-xs text-[#737373] mt-1">Transactions before this date cannot be created or edited.</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-1">Transactions before this date cannot be created or edited.</p>
           </div>
         </div>
       </div>
@@ -136,7 +137,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">Default tax rate</Label>
             <div className="flex items-center gap-3">
               <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
-              <span className="text-sm text-[#737373]">% (GST)</span>
+              <span className="text-sm text-[var(--neutral-500)]">% (GST)</span>
             </div>
           </div>
         </div>
@@ -153,8 +154,8 @@ function GeneralPanel() {
             { label: 'Show WIP valuation card', checked: false },
             { label: 'Show budget utilisation card', checked: false },
           ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -182,7 +183,7 @@ function InvoicingPanel() {
               <Label className="text-sm mb-2 block font-medium">{f.label}</Label>
               <div className="flex gap-3 items-center">
                 <Input defaultValue={f.value} className="h-12 border-[var(--border)] rounded-xl w-32" />
-                <span className="text-xs text-[#737373] ">Preview: {f.preview}</span>
+                <span className="text-xs text-[var(--neutral-500)] ">Preview: {f.preview}</span>
               </div>
             </div>
           ))}
@@ -198,14 +199,14 @@ function InvoicingPanel() {
             { name: 'Credit Note', active: true },
             { name: 'Proforma', active: false },
           ].map(t => (
-            <div key={t.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+            <div key={t.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
               <div className="flex items-center gap-3">
-                <FileText className="w-4 h-4 text-[#737373]" />
-                <span className="text-sm text-[#1A2732] font-medium">{t.name}</span>
+                <FileText className="w-4 h-4 text-[var(--neutral-500)]" />
+                <span className="text-sm text-[var(--mw-mirage)] font-medium">{t.name}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Switch defaultChecked={t.active} />
-                <Button variant="ghost" size="sm" className="text-xs text-[#737373] rounded-lg">Edit</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-[var(--shape-lg)]">Edit</Button>
               </div>
             </div>
           ))}
@@ -227,17 +228,17 @@ function InvoicingPanel() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
+          <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[#1A2732]">Auto-send invoice on creation</span>
-              <p className="text-xs text-[#737373] mt-0.5">Email invoice PDF to customer immediately</p>
+              <span className="text-sm text-[var(--mw-mirage)]">Auto-send invoice on creation</span>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">Email invoice PDF to customer immediately</p>
             </div>
             <Switch defaultChecked={false} />
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
+          <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[#1A2732]">Send overdue reminders</span>
-              <p className="text-xs text-[#737373] mt-0.5">Automatically remind customers of overdue invoices</p>
+              <span className="text-sm text-[var(--mw-mirage)]">Send overdue reminders</span>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">Automatically remind customers of overdue invoices</p>
             </div>
             <Switch defaultChecked />
           </div>
@@ -261,60 +262,68 @@ function XeroPanel() {
   return (
     <div className="space-y-6 max-w-[720px]">
       {/* Error Banner */}
-      <Card className="bg-[#DE350B]/10 border border-[#DE350B]/30 rounded-2xl p-4 flex items-center gap-3">
-        <AlertTriangle className="w-5 h-5 text-[#DE350B] shrink-0" />
-        <span className="text-sm text-[#DE350B]">3 items failed to sync</span>
-        <Button variant="ghost" className="ml-auto text-[#DE350B] text-sm underline h-auto p-0">View errors</Button>
+      <Card className="bg-[var(--mw-error)]/10 border border-[var(--mw-error)]/30 rounded-[var(--shape-lg)] p-4 flex items-center gap-3">
+        <AlertTriangle className="w-5 h-5 text-[var(--mw-error)] shrink-0" />
+        <span className="text-sm text-[var(--mw-error)]">3 items failed to sync</span>
+        <Button variant="ghost" className="ml-auto text-[var(--mw-error)] text-sm underline h-auto p-0">View errors</Button>
       </Card>
 
       {/* Connection Card */}
-      <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-[#13B5EA] flex items-center justify-center text-white font-bold text-sm">X</div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-[#1A2732]">Xero</h3>
-                <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">Xero</h3>
+                <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
               </div>
-              <p className="text-xs text-[#737373] mt-0.5">Connected to Alliance Metal Pty Ltd since 15 Jan 2026</p>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">Connected to Alliance Metal Pty Ltd since 15 Jan 2026</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="h-9 text-xs rounded-xl border-[var(--border)] text-[#DE350B]">Disconnect</Button>
+          <ConfirmDialog
+            trigger={
+              <Button variant="outline" size="sm" className="h-9 text-xs rounded-xl border-[var(--border)] text-destructive">Disconnect</Button>
+            }
+            title="Disconnect Xero?"
+            description="Syncing will stop immediately. Historical data will be preserved but no new transactions will flow between systems."
+            confirmLabel="Disconnect"
+            onConfirm={() => {}}
+          />
         </div>
       </Card>
 
       {/* Sync Entities */}
-      <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
-        <h3 className="text-[14px] font-semibold text-[#1A2732] mb-4">Sync entities</h3>
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+        <h3 className="text-sm font-semibold text-[var(--mw-mirage)] mb-4">Sync entities</h3>
         <div className="space-y-2">
           {syncEntities.map(e => (
-            <div key={e.name} className="flex items-center gap-4 py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="flex-1 text-sm text-[#1A2732]">{e.name}</span>
-              <div className="flex items-center gap-4 text-xs text-[#737373]">
-                {e.push && <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Push</Badge>}
-                {e.pull && <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Pull</Badge>}
+            <div key={e.name} className="flex items-center gap-4 py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <span className="flex-1 text-sm text-[var(--mw-mirage)]">{e.name}</span>
+              <div className="flex items-center gap-4 text-xs text-[var(--neutral-500)]">
+                {e.push && <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-2">Push</Badge>}
+                {e.pull && <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-2">Pull</Badge>}
                 <span className="w-24 text-right">{e.lastSync}</span>
-                <div className={cn('w-2 h-2 rounded-full', e.ok ? 'bg-[#1A2732]' : 'bg-[#FACC15]')} />
+                <div className={cn('w-2 h-2 rounded-full', e.ok ? 'bg-[var(--mw-mirage)]' : 'bg-[var(--mw-warning)]')} />
               </div>
             </div>
           ))}
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2 rounded-xl">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 rounded-xl">
             <RefreshCw className="w-4 h-4" /> Sync now
           </Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Full re-sync</Button>
-          <span className="text-xs text-[#737373] ml-auto">Last full sync: 20 Feb 2026, 09:00 AM</span>
+          <span className="text-xs text-[var(--neutral-500)] ml-auto">Last full sync: 20 Feb 2026, 09:00 AM</span>
         </div>
       </Card>
 
       {/* Account Mapping Preview */}
-      <Card className="bg-[#F5F5F5] border border-[var(--border)] rounded-2xl p-5">
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-[14px] font-semibold text-[#1A2732]">Account mapping</h4>
-            <p className="text-xs text-[#737373] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
+            <h4 className="text-sm font-semibold text-[var(--mw-mirage)]">Account mapping</h4>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
           <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm">Configure mapping</Button>
         </div>
@@ -341,11 +350,11 @@ function ReportsPanel() {
       <SaveRow />
       <div>
         <SectionLabel>Available reports</SectionLabel>
-        <p className="text-sm text-[#737373] mb-4">Choose which reports appear in the Book reports gallery.</p>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which reports appear in the Book reports gallery.</p>
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
-              <span className="text-sm text-[#1A2732]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
             </div>
           ))}

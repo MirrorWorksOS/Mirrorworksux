@@ -31,13 +31,13 @@ const INVOICES: Invoice[] = [
 ];
 
 const statusStyles: Record<InvoiceStatus, string> = {
-  Draft: 'bg-[#F5F5F5] text-[#737373]',
-  Sent: 'bg-[#F5F5F5] text-[#1A2732]',
-  Viewed: 'bg-[#F5F5F5] text-[#1A2732]',
-  'Partially Paid': 'bg-[#FFF4CC] text-[#805900]',
-  Paid: 'bg-[#F5F5F5] text-[#1A2732]',
-  Overdue: 'bg-[#DE350B]/10 text-[#DE350B]',
-  Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
+  Draft: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
+  Sent: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Viewed: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  'Partially Paid': 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
+  Paid: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Overdue: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
+  Cancelled: 'bg-[var(--neutral-100)] text-[var(--neutral-400)]',
 };
 
 const TABS = [
@@ -59,10 +59,10 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Invoices</h1>
-          <p className="text-sm text-[#737373]">Manage customer invoices and track payments</p>
+          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Invoices</h1>
+          <p className="text-sm text-[var(--neutral-500)]">Manage customer invoices and track payments</p>
         </div>
-        <Button className="h-12 px-6 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded shadow-sm gap-2">
+        <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded shadow-sm gap-2">
           <PlusCircle className="w-5 h-5" /> New Invoice
         </Button>
       </div>
@@ -70,16 +70,16 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
           <Input placeholder="Search invoices..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[#1A2732]">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[var(--mw-mirage)]">
           <SlidersHorizontal className="w-4 h-4" /> Filter
         </Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[#1A2732]">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[var(--mw-mirage)]">
           Export <ChevronDown className="w-4 h-4" />
         </Button>
-        <span className="ml-auto text-xs text-[#737373]">1-25 of 147</span>
+        <span className="ml-auto text-xs text-[var(--neutral-500)]">1-25 of 147</span>
       </div>
 
       {/* Tabs */}
@@ -91,32 +91,32 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
             className={cn(
               "px-4 py-3 text-sm transition-colors relative",
               activeTab === tab.label
-                ? "text-[#1A2732] font-medium"
-                : "text-[#737373] hover:text-[#1A2732]"
+                ? "text-[var(--mw-mirage)] font-medium"
+                : "text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]"
             )}
           >
             {tab.label} <span className="text-xs">({tab.count})</span>
             {activeTab === tab.label && (
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FFCF4B] rounded-t" />
+              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />
             )}
           </button>
         ))}
       </div>
 
       {/* Table */}
-      <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-white shadow-xs border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                 <th className="w-12 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>INVOICE #</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>CUSTOMER</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>ISSUE DATE</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>DUE DATE</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>STATUS</th>
-                <th className="text-right px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>TOTAL</th>
-                <th className="text-right px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>BALANCE DUE</th>
+                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">INVOICE #</th>
+                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
+                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">ISSUE DATE</th>
+                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">DUE DATE</th>
+                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
+                <th className="text-right px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
+                <th className="text-right px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">BALANCE DUE</th>
                 <th className="w-12 px-4 py-3"></th>
               </tr>
             </thead>
@@ -125,29 +125,29 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
                 <tr
                   key={inv.id}
                   className={cn(
-                    "border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
-                    i % 2 === 1 ? "bg-[#F5F5F5]" : "bg-white"
+                    "border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
+                    i % 2 === 1 ? "bg-[var(--neutral-100)]" : "bg-white"
                   )}
                   onClick={() => onSelectInvoice?.(inv.id)}
                 >
                   <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
-                  <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{inv.id}</td>
-                  <td className="px-4 text-sm text-[#1A2732]">{inv.customer}</td>
-                  <td className="px-4 text-sm text-[#525252]">{inv.issueDate}</td>
-                  <td className="px-4 text-sm text-[#525252]">{inv.dueDate}</td>
+                  <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{inv.id}</td>
+                  <td className="px-4 text-sm text-[var(--mw-mirage)]">{inv.customer}</td>
+                  <td className="px-4 text-sm text-[var(--neutral-600)]">{inv.issueDate}</td>
+                  <td className="px-4 text-sm text-[var(--neutral-600)]">{inv.dueDate}</td>
                   <td className="px-4">
-                    <Badge className={cn("rounded-full text-[11px] px-2 py-0.5 border-0", statusStyles[inv.status])}>
+                    <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusStyles[inv.status])}>
                       {inv.status}
                     </Badge>
                   </td>
-                  <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>
+                  <td className="px-4 text-right text-sm tabular-nums font-medium">
                     ${inv.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </td>
-                  <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>
+                  <td className="px-4 text-right text-sm tabular-nums font-medium">
                     ${inv.balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-4" onClick={e => e.stopPropagation()}>
-                    <Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[#737373]" /></Button>
+                    <Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" /></Button>
                   </td>
                 </tr>
               ))}
@@ -157,12 +157,12 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-          <span className="text-xs text-[#737373]">Showing 1-8 of 147 invoices</span>
+          <span className="text-xs text-[var(--neutral-500)]">Showing 1-8 of 147 invoices</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
             {[1, 2, 3, 4, 5].map(p => (
               <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-                className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[#FFCF4B] text-[#1A2732] hover:bg-[#E6A600]" : "text-[#737373]")}
+                className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}
               >{p}</Button>
             ))}
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>

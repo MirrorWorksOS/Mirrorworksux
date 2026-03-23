@@ -44,7 +44,7 @@
   --mw-yellow-800: #A67300;
   --mw-yellow-900: #805900;
 
-  /* Neutral Scale — as per DESIGN_SYSTEM.md */
+  /* Neutral Scale — as per DesignSystem.md */
   --neutral-50: #FAFAFA;
   --neutral-100: #F5F5F5;
   --neutral-200: #E5E5E5;
@@ -65,6 +65,40 @@
   --mw-info: #0052CC;
   --mw-warning: #FACC15;
   --mw-error: #DE350B;
+
+  /* Status Light Backgrounds */
+  --mw-success-light: #E3FCEF;
+  --mw-error-light: #FFEBE6;
+  --mw-warning-light: #FFF9C4;
+  --mw-info-light: #DEEBFF;
+
+  /* Extended Blue Scale (active/in-progress) */
+  --mw-blue: #0A7AFF;
+  --mw-blue-50: #EFF6FF;
+  --mw-blue-100: #DBEAFE;
+
+  /* Extended Amber Scale (caution/pending) */
+  --mw-amber: #FF8B00;
+  --mw-amber-50: #FFF4CC;
+  --mw-amber-100: #FFEDD5;
+
+  /* Extended Error Scale */
+  --mw-error-50: #FEF2F2;
+  --mw-error-100: #FEE2E2;
+  --mw-error-200: #FECACA;
+  --mw-error-600: #DC2626;
+
+  /* Operational Green (shop floor running/pass) */
+  --mw-green: #4CAF50;
+  --mw-green-50: #F0FDF4;
+  --mw-green-100: #DCFCE7;
+
+  /* AI Purple */
+  --mw-purple: #7C3AED;
+  --mw-purple-50: #F5F3FF;
+  --mw-purple-100: #F3E8FF;
+  --mw-purple-light: #A78BFA;
+  --mw-purple-600: #6D28D9;
 
   /* M3 Shape Scale */
   --shape-none: 0px;
@@ -237,6 +271,8 @@
 
 @theme inline {
   --font-sans: var(--font-family-sans);
+
+  /* Semantic Colours */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -264,12 +300,39 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* M3 Shape Scale */
+  /* M3 Shape Scale — rounded-{sm|md|lg|xl} utilities */
+  --radius-none: var(--shape-none);
+  --radius-xs: var(--shape-xs);
   --radius-sm: var(--shape-sm);
   --radius-md: var(--shape-md);
   --radius-lg: var(--shape-lg);
   --radius-xl: var(--shape-xl);
+  --radius-full: var(--shape-full);
 
+  /* M3 Elevation — shadow-{xs|sm|md|lg|xl} utilities */
+  --shadow-xs: var(--elevation-1);
+  --shadow-sm: var(--elevation-2);
+  --shadow-md: var(--elevation-3);
+  --shadow-lg: var(--elevation-4);
+  --shadow-xl: var(--elevation-5);
+
+  /* M3 Transition Duration — duration-{short1|short2|medium1|medium2|long1|long2} utilities */
+  --duration-short1: 50ms;
+  --duration-short2: 100ms;
+  --duration-medium1: 250ms;
+  --duration-medium2: 350ms;
+  --duration-long1: 450ms;
+  --duration-long2: 550ms;
+
+  /* M3 Easing — ease-{standard|standard-decelerate|standard-accelerate|emphasized|emphasized-decelerate|emphasized-accelerate} utilities */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1.0);
+  --ease-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ease-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.0);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -326,6 +389,81 @@
 
   --animate-collapsible-down: collapsible-down 0.2s ease-out;
   --animate-collapsible-up: collapsible-up 0.2s ease-out;
+}
+
+/* ─── tw-animate-css replacement ─── */
+/* Replaces the removed tw-animate-css package with M3-timed equivalents.
+   ShadCN UI files use these classes (animate-in, fade-in-0, slide-in-from-*, etc.)
+   on Radix data-[state] attributes. */
+
+@keyframes mw-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+               scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1))
+               rotate(var(--tw-enter-rotate, 0));
+  }
+}
+
+@keyframes mw-exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)
+               scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1))
+               rotate(var(--tw-exit-rotate, 0));
+  }
+}
+
+.animate-in {
+  animation-name: mw-enter;
+  animation-duration: var(--duration-medium1);
+  animation-timing-function: var(--ease-standard-decelerate);
+  animation-fill-mode: both;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+}
+
+.animate-out {
+  animation-name: mw-exit;
+  animation-duration: var(--duration-medium1);
+  animation-timing-function: var(--ease-standard-accelerate);
+  animation-fill-mode: both;
+  --tw-exit-opacity: initial;
+  --tw-exit-scale: initial;
+  --tw-exit-rotate: initial;
+  --tw-exit-translate-x: initial;
+  --tw-exit-translate-y: initial;
+}
+
+.fade-in-0 { --tw-enter-opacity: 0; }
+.fade-out-0 { --tw-exit-opacity: 0; }
+.zoom-in-95 { --tw-enter-scale: 0.95; }
+.zoom-out-95 { --tw-exit-scale: 0.95; }
+.spin-in-180 { --tw-enter-rotate: -180deg; }
+.spin-out-180 { --tw-exit-rotate: 180deg; }
+
+.slide-in-from-top { --tw-enter-translate-y: -100%; }
+.slide-in-from-top-2 { --tw-enter-translate-y: -0.5rem; }
+.slide-in-from-bottom { --tw-enter-translate-y: 100%; }
+.slide-in-from-bottom-2 { --tw-enter-translate-y: 0.5rem; }
+.slide-in-from-left { --tw-enter-translate-x: -100%; }
+.slide-in-from-left-2 { --tw-enter-translate-x: -0.5rem; }
+.slide-in-from-right { --tw-enter-translate-x: 100%; }
+.slide-in-from-right-2 { --tw-enter-translate-x: 0.5rem; }
+
+.slide-out-to-top { --tw-exit-translate-y: -100%; }
+.slide-out-to-bottom { --tw-exit-translate-y: 100%; }
+.slide-out-to-left { --tw-exit-translate-x: -100%; }
+.slide-out-to-right { --tw-exit-translate-x: 100%; }
+
+/* ─── MW transition utility ─── */
+@utility transition-mw {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: var(--duration-medium1);
+  transition-timing-function: var(--ease-standard);
 }
 
 @layer base {

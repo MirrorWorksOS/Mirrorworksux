@@ -1,6 +1,6 @@
 /**
  * Ship Reports — charts dashboard
- * Token-aligned: #141414 → #0A0A0A, #F0F0F0 → #E5E5E5, #8A8A8A → #737373
+ * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  */
 import React from 'react';
 import { Calendar, Download } from 'lucide-react';
@@ -10,13 +10,12 @@ import {
 } from 'recharts';
 import { Card } from '../ui/card';
 import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 
-const { animationVariants } = designSystem;
 
-const MW_YELLOW = '#FFCF4B';
-const NEAR_BLACK = '#1A2732';
-const SECONDARY = '#737373';
+const MW_YELLOW = 'var(--mw-yellow-400)';
+const NEAR_BLACK = 'var(--mw-mirage)';
+const SECONDARY = 'var(--neutral-500)';
 
 const shipVolume = [
   { d: '24', v: 12 }, { d: '25', v: 15 }, { d: '26', v: 8 },
@@ -46,43 +45,43 @@ const returnRate = [
   { d: '27', r: 2.2 }, { d: '28', r: 2.9 }, { d: '01', r: 3.0 }, { d: '02', r: 2.6 },
 ];
 
-const pieColors = [MW_YELLOW, '#0A7AFF', '#36B37E', '#EF4444'];
+const pieColors = [MW_YELLOW, 'var(--mw-blue)', 'var(--mw-success)', 'var(--mw-error)'];
 
 const ChartCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <Card className="bg-white border border-[var(--border)] rounded-lg p-6">
-    <p className="text-xs text-[#737373] tracking-widest uppercase mb-4 font-medium">{title}</p>
+  <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+    <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">{title}</p>
     {children}
   </Card>
 );
 
-const axisStyle = { fontSize: 10, fill: SECONDARY, fontFamily: 'Roboto Mono, monospace' };
+const axisStyle = { fontSize: 10, fill: SECONDARY };
 
 export function ShipReports() {
   return (
     <motion.div
       initial="initial"
       animate="animate"
-      variants={animationVariants.stagger}
+      variants={staggerContainer}
       className="p-6 space-y-6 overflow-y-auto"
     >
       <div className="flex items-center justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Reports</h1>
+        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Reports</h1>
         <div className="flex gap-2">
-          <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+          <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
             <Calendar className="w-4 h-4" /> This Week
           </button>
-          <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+          <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
             <Download className="w-4 h-4" /> Export
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="Shipments">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={shipVolume}>
-                <CartesianGrid stroke="#F5F5F5" strokeDasharray="3 3" />
+                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
                 <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
                 <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
                 <Tooltip />
@@ -92,11 +91,11 @@ export function ShipReports() {
           </ChartCard>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="On-Time %">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={onTime}>
-                <CartesianGrid stroke="#F5F5F5" strokeDasharray="3 3" />
+                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
                 <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
                 <YAxis domain={[85, 100]} tickFormatter={v => `${v}%`} tick={axisStyle} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
@@ -107,11 +106,11 @@ export function ShipReports() {
           </ChartCard>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="Carrier cost (avg)">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={carrierCost}>
-                <CartesianGrid stroke="#F5F5F5" strokeDasharray="3 3" />
+                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
                 <XAxis dataKey="c" tick={{ fontSize: 9, fill: SECONDARY }} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={axisStyle} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
@@ -127,7 +126,7 @@ export function ShipReports() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="Status distribution">
             <div className="flex items-center gap-4">
               <ResponsiveContainer width="55%" height={180}>
@@ -144,8 +143,8 @@ export function ShipReports() {
                 {statusDist.map((s, i) => (
                   <div key={s.name} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: pieColors[i % pieColors.length] }} />
-                    <span className="text-[#737373] w-16">{s.name}</span>
-                    <span className="text-[#1A2732]  font-medium">{s.value}</span>
+                    <span className="text-[var(--neutral-500)] w-16">{s.name}</span>
+                    <span className="text-[var(--mw-mirage)]  font-medium">{s.value}</span>
                   </div>
                 ))}
               </div>
@@ -153,7 +152,7 @@ export function ShipReports() {
           </ChartCard>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="Destinations">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={destData} layout="vertical" margin={{ left: 5 }}>
@@ -166,11 +165,11 @@ export function ShipReports() {
           </ChartCard>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem}>
+        <motion.div variants={staggerItem}>
           <ChartCard title="Return rate">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={returnRate}>
-                <CartesianGrid stroke="#F5F5F5" strokeDasharray="3 3" />
+                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
                 <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `${v}%`} tick={axisStyle} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
