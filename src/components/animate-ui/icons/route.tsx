@@ -2,53 +2,62 @@
 
 import * as React from 'react';
 import { motion, type Variants } from 'motion/react';
+
 import {
   getVariants,
   useAnimateIconContext,
   IconWrapper,
   type IconProps,
-} from './icon';
+} from '@/components/animate-ui/icons/icon';
 
 type RouteProps = IconProps<keyof typeof animations>;
 
 const animations = {
   default: {
+    circle1: {},
+    circle2: {},
     path: {
       initial: {
-        pathLength: 1,
         opacity: 1,
-        transition: { duration: 0.4, ease: 'easeInOut' },
+        pathLength: 1,
       },
       animate: {
-        pathLength: [0, 1],
         opacity: [0, 1],
-        transition: { duration: 0.6, ease: 'easeOut' },
+        pathLength: [0.05, 1],
+        transition: {
+          duration: 0.8,
+          ease: 'easeInOut',
+          opacity: {
+            duration: 0.01,
+          },
+        },
       },
     },
-    dot1: {
+  } satisfies Record<string, Variants>,
+  'default-loop': {
+    circle1: {},
+    circle2: {},
+    path: {
       initial: {
-        scale: 1,
-        transition: { duration: 0.3, ease: 'easeInOut' },
+        opacity: 1,
+        pathLength: 1,
       },
       animate: {
-        scale: [1, 1.3, 1],
-        transition: { duration: 0.3, ease: 'easeInOut' },
-      },
-    },
-    dot2: {
-      initial: {
-        scale: 1,
-        transition: { duration: 0.3, ease: 'easeInOut' },
-      },
-      animate: {
-        scale: [1, 1.3, 1],
-        transition: { duration: 0.3, ease: 'easeInOut', delay: 0.15 },
+        opacity: [1, 0, 1],
+        pathLength: [1, 0.05, 1],
+        transition: {
+          duration: 1.6,
+          ease: 'easeInOut',
+          opacity: {
+            duration: 0.01,
+          },
+        },
       },
     },
   } satisfies Record<string, Variants>,
 } as const;
 
-function IconComponent({ size = 24, ...props }: RouteProps) {
+function IconComponent({ size, ...props }: RouteProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
@@ -65,9 +74,28 @@ function IconComponent({ size = 24, ...props }: RouteProps) {
       strokeLinejoin="round"
       {...props}
     >
-      <motion.circle cx="6" cy="19" r="3" variants={variants.dot1} initial="initial" animate={controls} style={{ originX: '6px', originY: '19px' }} />
-      <motion.circle cx="18" cy="5" r="3" variants={variants.dot2} initial="initial" animate={controls} style={{ originX: '18px', originY: '5px' }} />
-      <motion.path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-8a3.5 3.5 0 0 1 0-7H12" variants={variants.path} initial="initial" animate={controls} />
+      <motion.circle
+        cx="6"
+        cy="19"
+        r="3"
+        variants={variants.circle1}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.path
+        d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"
+        variants={variants.path}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.circle
+        cx="18"
+        cy="5"
+        r="3"
+        variants={variants.circle2}
+        initial="initial"
+        animate={controls}
+      />
     </motion.svg>
   );
 }
@@ -76,4 +104,10 @@ function Route(props: RouteProps) {
   return <IconWrapper icon={IconComponent} {...props} />;
 }
 
-export { Route, Route as RouteIcon, type RouteProps };
+export {
+  animations,
+  Route,
+  Route as RouteIcon,
+  type RouteProps,
+  type RouteProps as RouteIconProps,
+};

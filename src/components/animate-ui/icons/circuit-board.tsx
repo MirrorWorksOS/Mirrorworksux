@@ -2,67 +2,48 @@
 
 import * as React from 'react';
 import { motion, type Variants } from 'motion/react';
+
 import {
   getVariants,
   useAnimateIconContext,
   IconWrapper,
   type IconProps,
-} from './icon';
+} from '@/components/animate-ui/icons/icon';
 
 type CircuitBoardProps = IconProps<keyof typeof animations>;
 
 const animations = {
   default: {
-    dot1: {
-      initial: {
-        scale: 1,
-        opacity: 1,
-        transition: { duration: 0.3, ease: 'easeInOut' },
-      },
+    rect: {},
+    path1: {
+      initial: { pathLength: 1, opacity: 1, pathOffset: 0 },
       animate: {
-        scale: [1, 1.8, 1],
-        opacity: [1, 0.6, 1],
-        transition: { duration: 0.4, ease: 'easeInOut' },
+        pathLength: [0.05, 1],
+        pathOffset: [1, 0],
+        opacity: [0, 1],
+        transition: {
+          duration: 0.6,
+          ease: 'easeInOut',
+        },
       },
     },
-    dot2: {
-      initial: {
-        scale: 1,
-        opacity: 1,
-        transition: { duration: 0.3, ease: 'easeInOut' },
-      },
+    circle1: {},
+    path2: {
+      initial: { pathLength: 1, opacity: 1 },
       animate: {
-        scale: [1, 1.8, 1],
-        opacity: [1, 0.6, 1],
-        transition: { duration: 0.4, ease: 'easeInOut', delay: 0.1 },
+        pathLength: [0.05, 1],
+        opacity: [0, 1],
+        transition: {
+          duration: 0.6,
+          ease: 'easeInOut',
+        },
       },
     },
-    dot3: {
-      initial: {
-        scale: 1,
-        opacity: 1,
-        transition: { duration: 0.3, ease: 'easeInOut' },
-      },
-      animate: {
-        scale: [1, 1.8, 1],
-        opacity: [1, 0.6, 1],
-        transition: { duration: 0.4, ease: 'easeInOut', delay: 0.2 },
-      },
-    },
-    trace: {
-      initial: {
-        pathLength: 1,
-        transition: { duration: 0.4, ease: 'easeInOut' },
-      },
-      animate: {
-        pathLength: [0, 1],
-        transition: { duration: 0.5, ease: 'easeOut' },
-      },
-    },
+    circle2: {},
   } satisfies Record<string, Variants>,
 } as const;
 
-function IconComponent({ size = 24, ...props }: CircuitBoardProps) {
+function IconComponent({ size, ...props }: CircuitBoardProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
@@ -79,13 +60,44 @@ function IconComponent({ size = 24, ...props }: CircuitBoardProps) {
       strokeLinejoin="round"
       {...props}
     >
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <motion.path d="M11.1 7.65a3.5 3.5 0 1 0-2.45 2.45" variants={variants.trace} initial="initial" animate={controls} />
-      <motion.path d="M17.5 12H16" variants={variants.trace} initial="initial" animate={controls} />
-      <motion.path d="M12.85 16.35a3.5 3.5 0 1 0 2.45-2.45" variants={variants.trace} initial="initial" animate={controls} />
-      <motion.circle cx="12" cy="12" r=".5" fill="currentColor" variants={variants.dot1} initial="initial" animate={controls} />
-      <motion.circle cx="7.5" cy="7.5" r=".5" fill="currentColor" variants={variants.dot2} initial="initial" animate={controls} />
-      <motion.circle cx="16.5" cy="16.5" r=".5" fill="currentColor" variants={variants.dot3} initial="initial" animate={controls} />
+      <motion.rect
+        width="18"
+        height="18"
+        x="3"
+        y="3"
+        rx="2"
+        variants={variants.rect}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.path
+        d="M11 9h4a2 2 0 0 0 2-2V3"
+        variants={variants.path1}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.circle
+        cx="9"
+        cy="9"
+        r="2"
+        variants={variants.circle1}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.path
+        d="M7 21v-4a2 2 0 0 1 2-2h4"
+        variants={variants.path2}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.circle
+        cx="15"
+        cy="15"
+        r="2"
+        variants={variants.circle2}
+        initial="initial"
+        animate={controls}
+      />
     </motion.svg>
   );
 }
@@ -94,4 +106,10 @@ function CircuitBoard(props: CircuitBoardProps) {
   return <IconWrapper icon={IconComponent} {...props} />;
 }
 
-export { CircuitBoard, CircuitBoard as CircuitBoardIcon, type CircuitBoardProps };
+export {
+  animations,
+  CircuitBoard,
+  CircuitBoard as CircuitBoardIcon,
+  type CircuitBoardProps,
+  type CircuitBoardProps as CircuitBoardIconProps,
+};

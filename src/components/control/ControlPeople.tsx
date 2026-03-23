@@ -1,84 +1,130 @@
-/**
- * Control People - User management + roles matrix
- */
+import React, { useMemo, useState } from 'react';
+import { BellDot, Layers3, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GroupsTab } from './people/GroupsTab';
+import { GroupDetailSheet } from './people/GroupDetailSheet';
+import { InviteUserDialog } from './people/InviteUserDialog';
+import { UsersTab } from './people/UsersTab';
+import { UserDetailSheet } from './people/UserDetailSheet';
+import { mockGroups, mockUsers } from './people/mock-data';
+import type { Group, User } from './people/types';
 
-import React from 'react';
-import { Users, Shield } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
-
-const mockUsers = [
-  { id: '1', name: 'Sarah Chen', email: 'sarah@alliancemetal.com', role: 'Operator', status: 'active' },
-  { id: '2', name: 'Mike Thompson', email: 'mike@alliancemetal.com', role: 'Supervisor', status: 'active' },
-  { id: '3', name: 'Emma Wilson', email: 'emma@alliancemetal.com', role: 'Scheduler', status: 'active' },
-  { id: '4', name: 'David Lee', email: 'david@alliancemetal.com', role: 'Manager', status: 'active' },
-  { id: '5', name: 'Admin User', email: 'admin@alliancemetal.com', role: 'Admin', status: 'active' },
-];
-
-const getRoleBadge = (role: string) => {
-  switch (role) {
-    case 'Admin': return 'bg-[#7C3AED] text-white';
-    case 'Manager': return 'bg-[#0052CC] text-white';
-    case 'Scheduler': return 'bg-[#36B37E] text-white';
-    case 'Supervisor': return 'bg-[#FACC15] text-[#2C2C2C]';
-    case 'Operator': return 'bg-[#E5E5E5] text-[#525252]';
-    default: return 'bg-[#F5F5F5] text-[#737373]';
-  }
-};
+type PeopleTab = 'users' | 'groups';
 
 export function ControlPeople() {
+  const [activeTab, setActiveTab] = useState<PeopleTab>('users');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [userSheetOpen, setUserSheetOpen] = useState(false);
+  const [groupSheetOpen, setGroupSheetOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+
+  const stats = useMemo(() => {
+    const activeUsers = mockUsers.filter(user => user.status === 'active').length;
+    const pendingInvites = mockUsers.filter(user => user.status === 'invited').length;
+    const leads = mockUsers.filter(user => user.role === 'lead').length;
+    const totalModules = 7;
+    return { activeUsers, pendingInvites, leads, totalModules };
+  }, []);
+
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Users & Permissions</h1>
-        <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">+ New User</Button>
+    <div className="space-y-8 bg-[#F5F5F5] p-8">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[32px] font-bold tracking-tight text-[#0A0A0A]">People</h1>
+          <p className="mt-1 text-sm text-[#737373]">
+            Manage team members, module access, and group permissions
+          </p>
+        </div>
+        <Button
+          className="h-11 rounded-xl bg-[#FFCF4B] px-5 text-[#2C2C2C] hover:bg-[#EBC028]"
+          onClick={() => {
+            if (activeTab === 'users') {
+              setInviteOpen(true);
+              return;
+            }
+            setSelectedGroup(mockGroups[0] ?? null);
+            setGroupSheetOpen(true);
+          }}
+        >
+          {activeTab === 'users' ? '+ Invite user' : '+ New group'}
+        </Button>
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">NAME</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">EMAIL</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">ROLE</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium">STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockUsers.map((user, idx) => (
-              <tr key={user.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer", idx % 2 === 1 && "bg-[#FAFAFA]")}>
-                <td className="px-4 text-sm text-[#0A0A0A] font-medium">{user.name}</td>
-                <td className="px-4 text-sm text-[#525252]">{user.email}</td>
-                <td className="px-4">
-                  <div className="flex items-center justify-center">
-                    <Badge className={cn("rounded text-xs px-2 py-1 border-0 flex items-center gap-1", getRoleBadge(user.role))}>
-                      <Shield className="w-3 h-3" />
-                      {user.role}
-                    </Badge>
-                  </div>
-                </td>
-                <td className="px-4">
-                  <div className="flex items-center justify-center">
-                    <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs">Active</Badge>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatCard icon={Users} label="Total users" value={String(stats.activeUsers)} sublabel="Active" />
+        <StatCard icon={Layers3} label="Leads assigned" value={`${stats.leads} / ${stats.totalModules}`} sublabel="Module leads" />
+        <StatCard
+          icon={BellDot}
+          label="Pending invites"
+          value={String(stats.pendingInvites)}
+          sublabel={stats.pendingInvites > 0 ? 'Action required' : 'No pending invites'}
+          showDot={stats.pendingInvites > 0}
+        />
+      </div>
 
-      <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-lg p-6">
-        <h3 className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#2C2C2C] mb-2 flex items-center gap-2">
-          <Shield className="w-4 h-4" />
-          Role Hierarchy
-        </h3>
-        <p className="text-sm text-[#2C2C2C]">
-          Admin &gt; Manager &gt; Scheduler &gt; Supervisor &gt; Operator
-        </p>
-      </Card>
+      <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
+        <TabsList className="h-auto w-full justify-start rounded-2xl bg-white p-1">
+          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[#FFFBF0] data-[state=inactive]:text-[#737373]">
+            Users
+            {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
+          </TabsTrigger>
+          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[#FFFBF0] data-[state=inactive]:text-[#737373]">
+            Groups
+            {activeTab === 'groups' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users">
+          <UsersTab
+            onOpenUserDetail={user => {
+              setSelectedUser(user);
+              setUserSheetOpen(true);
+            }}
+          />
+        </TabsContent>
+        <TabsContent value="groups">
+          <GroupsTab
+            onOpenGroupDetail={group => {
+              setSelectedGroup(group);
+              setGroupSheetOpen(true);
+            }}
+          />
+        </TabsContent>
+      </Tabs>
+
+      <UserDetailSheet user={selectedUser} open={userSheetOpen} onOpenChange={setUserSheetOpen} />
+      <GroupDetailSheet group={selectedGroup} open={groupSheetOpen} onOpenChange={setGroupSheetOpen} />
+      <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+    </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  sublabel,
+  showDot = false,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  sublabel: string;
+  showDot?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl bg-[#1A2732] p-4 text-white">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-medium tracking-wider text-white/70 uppercase">{label}</p>
+        <Icon className="h-5 w-5 text-white/70" />
+      </div>
+      <p className="font-['JetBrains_Mono',monospace] text-3xl font-bold text-[#FFCF4B]">{value}</p>
+      <div className="mt-1 flex items-center gap-1.5 text-xs text-white/80">
+        {showDot ? <span className="h-1.5 w-1.5 rounded-full bg-[#FFCF4B]" /> : null}
+        <span>{sublabel}</span>
+      </div>
     </div>
   );
 }

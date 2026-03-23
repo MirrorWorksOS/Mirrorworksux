@@ -1,0 +1,155 @@
+---
+description: Core project rules for MirrorWorks UX — always active
+globs:
+alwaysApply: true
+---
+
+# MirrorWorks UX — Cursor Project Rules
+
+## What This Project Is
+
+MirrorWorks Smart FactoryOS is an AI-native manufacturing ERP for metal fabrication SMEs (10–100 employees). This repo (`Mirrorworksux`) is the **UX prototype** — a React + Vite + Tailwind CSS v4 frontend originally exported from Figma. It is a design reference and interactive prototype, not yet a production app with a live backend.
+
+The codebase has 8 modules following the manufacturing lifecycle: Sell, Plan, Make, Ship, Book, Buy, Control, Design. Each module has its own directory under `src/components/`.
+
+## Tech Stack
+
+- **Framework**: React 18 with TypeScript
+- **Build**: Vite 6 with `@vitejs/plugin-react`
+- **Styling**: Tailwind CSS v4 (via `@tailwindcss/vite` plugin, NOT PostCSS — no `tailwind.config.js`)
+- **Routing**: React Router (from `react-router`, using `createBrowserRouter`)
+- **UI primitives**: ShadCN/Radix UI components in `src/components/ui/`
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Animation**: Motion (Framer Motion), tw-animate-css, Animate UI components in `src/components/animate-ui/`
+- **Toasts**: Sonner
+- **Forms**: React Hook Form
+- **Fonts**: Geist (UI), JetBrains Mono (IDs/codes), Roboto Mono (financial figures)
+
+## Path Aliases & Imports
+
+- `@/` maps to `src/` (configured in vite.config.ts)
+- Figma asset imports use `figma:asset/` aliases mapped to `src/assets/`
+- Versioned package aliases exist in vite.config.ts (e.g., `lucide-react@0.487.0` → `lucide-react`). Don't duplicate these.
+
+## File Organisation
+
+```
+src/
+├── components/
+│   ├── ui/              # ShadCN base components (shared, do not edit directly)
+│   ├── animate-ui/      # Animate UI components
+│   ├── shared/          # Cross-module shared components
+│   ├── sell/            # Sell module screens
+│   ├── plan/            # Plan module screens
+│   ├── make/            # Make module screens
+│   ├── ship/            # Ship module screens
+│   ├── book/            # Book module screens
+│   ├── buy/             # Buy module screens
+│   ├── control/         # Control module screens
+│   ├── design/          # Design/onboarding module
+│   ├── shop-floor/      # Legacy Make module screens
+│   └── figma/           # Figma-exported raw components
+├── imports/             # Raw Figma exports, reference paste-ins, design docs
+├── guidelines/          # Guidelines.md — the design bible
+├── lib/                 # design-system.ts (tokens, motion, colours)
+├── styles/              # globals.css (CSS variables, M3 type scale)
+└── utils/               # Supabase client (future)
+```
+
+## Naming Conventions
+
+- Component files: PascalCase matching the export (`SellDashboard.tsx`)
+- Module prefix to disambiguate shared names: `SellProducts.tsx`, `BuyProducts.tsx`
+- Tab sub-components: `{Module}{Section}Tab.tsx` (e.g., `PlanBudgetTab.tsx`)
+- Modal components: `{Entity}Modal.tsx` (e.g., `MaterialsModal.tsx`)
+- One component per file. Keep files under 500 lines — split into tab/section components.
+
+## Design System — Key Tokens
+
+All tokens live in `src/lib/design-system.ts`. Import and use them rather than hard-coding hex values.
+
+### Brand colours
+- MW Yellow: `#FFCF4B` (primary CTA, AI highlights)
+- MW Yellow Hover: `#EBC028`
+- Near Black: `#0A0A0A` (primary text)
+- Dark Grey: `#2C2C2C` (secondary text)
+- Medium Grey: `#737373` (tertiary text, icons)
+- Light Grey: `#E5E5E5` (borders)
+- BG Grey: `#F5F5F5` (subtle backgrounds)
+
+### Status colours
+- Success: `#36B37E` / Error: `#EF4444` / Warning: `#FF8B00` / Info: `#0A7AFF`
+
+### Typography
+- UI text: Geist family
+- Financial values ($, %): Roboto Mono
+- IDs and codes (MW-001, PO-0089): JetBrains Mono
+
+## Coding Standards
+
+- TypeScript strict. No `any` types unless wrapping a Figma import.
+- Functional components only. Use hooks, not class components.
+- Prefer named exports (`export function SellDashboard()` or `export const SellDashboard`).
+- Use ShadCN components from `@/components/ui/` for all primitives (Button, Card, Table, Dialog, Sheet, Tabs, etc.).
+- Import icons from `lucide-react`. Default size: `w-5 h-5` inline, `w-6 h-6` standalone.
+- Use Tailwind utility classes. Avoid inline `style={}` unless for dynamic values or design-system motion tokens.
+- M3 8px grid: all spacing in multiples of 8. Use `p-6` for page/card padding, `gap-4` between cards, `space-y-6` between sections.
+- Australian/UK English in all UI copy ("Organisation", "Colour"). Database columns use US English.
+- Date format in UI: "Mar 25" (short). Never ISO or DD/MM/YYYY.
+- Currency: `$24,500.00` with comma separators, always in Roboto Mono.
+- Sentence case for all UI text. Only uppercase inside status badges.
+- Never use lorem ipsum. Use realistic manufacturing data (steel grades, part names, Australian supplier names).
+
+## UI Patterns
+
+### Page structure
+Every module page follows: KPI row → Chart row → Table/content area, wrapped in `p-6 space-y-6`.
+
+### Card base
+`bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150`
+
+### Button hierarchy
+1. Primary (one per section): `bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C]`
+2. Outline: `border border-[#E5E5E5] bg-white hover:bg-[#F5F5F5]`
+3. Ghost: `hover:bg-[#F5F5F5] text-[#737373]`
+4. Destructive: `bg-[#EF4444] text-white` — always requires confirmation dialog.
+
+### Tables
+- ShadCN Table component. Headers: 12px Geist Medium `#737373` uppercase.
+- Body: 14px, min row height 48px. Horizontal dividers only, no vertical lines.
+- Text columns left-aligned, numeric right-aligned, status left-aligned (badge), actions right-aligned.
+
+### Motion
+- Hover/active: 150ms
+- Standard transitions: 300–400ms with M3 standard easing `cubic-bezier(0.2, 0.0, 0, 1.0)`
+- Sidebar: 400ms with parallax curves (see design-system.ts)
+- Modals: 500ms with Emphasized Decelerate
+- Never animate on first paint. Only on user interaction or data updates.
+
+### Touch targets
+- Desktop: min 40px height
+- Shop floor / tablet: min 56px, preferred 80px for gloved hands
+
+## Codebase Origin & Gotchas
+
+This project was exported from Figma using Figma's code generation. Be aware of:
+
+1. **No tsconfig.json yet** — you may need to create one if TypeScript features require it.
+2. **No ESLint or Prettier** — code formatting is not enforced. Add if needed.
+3. **Figma asset hashes** — images in `src/assets/` have hash filenames. The `figma:asset/` aliases in vite.config.ts map these. Don't rename the files.
+4. **Versioned import aliases** — vite.config.ts has aliases like `lucide-react@0.487.0` → `lucide-react`. Imports in Figma-exported code may use the versioned name. Both work.
+5. **`src/imports/` is a junk drawer** — raw Figma exports, pasted text, SVG constants, design docs. Treat as reference material, not production code.
+6. **`src/components/figma/`** — raw Figma component exports. May have non-standard patterns.
+7. **All data is mock/static** — no backend, no API calls yet. Supabase client exists in `src/utils/supabase/` but is not wired up.
+8. **Tailwind v4** — uses the new `@tailwindcss/vite` plugin, NOT the PostCSS approach. No `tailwind.config.js` file. Config is in CSS via `@import` and `@layer` directives in `src/index.css` and `src/styles/globals.css`.
+
+## Key Reference Files
+
+When making decisions about design, tokens, or patterns, check these first:
+- `src/guidelines/Guidelines.md` — the full design bible (typography, colour, spacing, components, patterns)
+- `src/lib/design-system.ts` — all design tokens as TypeScript constants
+- `src/styles/globals.css` — CSS variables, M3 type scale, scrollbar styles
+- `src/routes.tsx` — complete routing map for all modules
+- `src/components/Layout.tsx` — shell layout with sidebar
+- `src/components/Sidebar.tsx` — navigation sidebar

@@ -5,77 +5,78 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { Kanban } from './animate-ui/icons/kanban';
-import { ChartSpline } from './animate-ui/icons/chart-spline';
-import { List } from './animate-ui/icons/list';
-import { Cog } from './animate-ui/icons/cog';
-import { Forklift } from './animate-ui/icons/forklift';
-import { CircuitBoard } from './animate-ui/icons/circuit-board';
-import { Blocks } from './animate-ui/icons/blocks';
-import { Route } from './animate-ui/icons/route';
+import { Kanban } from '@/components/animate-ui/icons/kanban';
+import { ChartSpline } from '@/components/animate-ui/icons/chart-spline';
+import { List } from '@/components/animate-ui/icons/list';
+import { Cog } from '@/components/animate-ui/icons/cog';
+import { Forklift } from '@/components/animate-ui/icons/forklift';
+import { CircuitBoard } from '@/components/animate-ui/icons/circuit-board';
+import { Blocks } from '@/components/animate-ui/icons/blocks';
+import { Route } from '@/components/animate-ui/icons/route';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { motion } from 'motion/react';
 import { designSystem } from '../lib/design-system';
 
-const { animationVariants } = designSystem;
+const { animationVariants, colors } = designSystem;
 
+/** Manufacturing lifecycle order. Icons: shadcn registry @animate-ui (https://animate-ui.com/docs). */
 const modules = [
-  { 
-    name: 'Sell', 
-    Icon: Kanban, 
-    path: '/sell', 
+  {
+    name: 'Sell',
+    Icon: Kanban,
+    path: '/sell',
     description: 'CRM, Opportunities, Orders, Invoices',
-    count: 8 
+    count: 8,
   },
-  { 
-    name: 'Buy', 
-    Icon: Blocks, 
-    path: '/buy', 
-    description: 'Purchasing, Suppliers, Requisitions',
-    count: 11 
-  },
-  { 
-    name: 'Plan', 
-    Icon: List, 
-    path: '/plan', 
+  {
+    name: 'Plan',
+    Icon: List,
+    path: '/plan',
     description: 'Production Planning, Scheduling, MRP',
-    count: 6 
+    count: 6,
   },
-  { 
-    name: 'Make', 
-    Icon: CircuitBoard, 
-    path: '/make', 
+  {
+    name: 'Make',
+    Icon: CircuitBoard,
+    path: '/make',
     description: 'Manufacturing, Shop Floor, Andon Board',
-    count: 3 
+    count: 3,
   },
-  { 
-    name: 'Ship', 
-    Icon: Forklift, 
-    path: '/ship', 
+  {
+    name: 'Ship',
+    Icon: Forklift,
+    path: '/ship',
     description: 'Logistics, Tracking, Fulfilment',
-    count: 9 
+    count: 9,
   },
-  { 
-    name: 'Book', 
-    Icon: ChartSpline, 
-    path: '/book', 
+  {
+    name: 'Book',
+    Icon: ChartSpline,
+    path: '/book',
     description: 'Finance, Budgets, Job Costs',
-    count: 12 
+    count: 12,
   },
-  { 
-    name: 'Control', 
-    Icon: Cog, 
-    path: '/control', 
+  {
+    name: 'Buy',
+    Icon: Blocks,
+    path: '/buy',
+    description: 'Purchasing, Suppliers, Requisitions',
+    count: 11,
+  },
+  {
+    name: 'Control',
+    Icon: Cog,
+    path: '/control',
     description: 'Admin, Master Data, Settings',
-    count: 8 
+    count: 8,
   },
-  { 
-    name: 'Design', 
-    Icon: Route, 
-    path: '/design', 
+  {
+    name: 'Design',
+    Icon: Route,
+    path: '/design',
     description: 'Factory Layout, Process Builder',
-    count: 4 
+    count: 4,
   },
 ];
 
@@ -128,7 +129,10 @@ export function WelcomeDashboard() {
               <Link to={module.path}>
                 <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-lg transition-all duration-200 group cursor-pointer h-full">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-[#FFCF4B] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div
+                      className="w-12 h-12 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform"
+                      style={{ backgroundColor: colors.yellow }}
+                    >
                       <Icon className="w-6 h-6 text-[#2C2C2C]" animateOnHover />
                     </div>
                     <Badge className="bg-[#F5F5F5] text-[#525252] border-0 text-xs">

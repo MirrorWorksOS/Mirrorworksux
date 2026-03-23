@@ -2,51 +2,49 @@
 
 import * as React from 'react';
 import { motion, type Variants } from 'motion/react';
+
 import {
   getVariants,
   useAnimateIconContext,
   IconWrapper,
   type IconProps,
-} from './icon';
+} from '@/components/animate-ui/icons/icon';
 
 type KanbanProps = IconProps<keyof typeof animations>;
 
 const animations = {
   default: {
-    path: {
+    line1: {
       initial: {
-        d: 'M6 5v11',
-        transition: { duration: 0.3, ease: 'easeInOut' },
+        y2: 19,
       },
       animate: {
-        d: 'M6 5v14',
-        transition: { duration: 0.3, ease: 'easeInOut' },
+        y2: [19, 11, 16, 19],
+        transition: { duration: 0.6, ease: 'linear' },
       },
     },
-    path2: {
+    line2: {
       initial: {
-        d: 'M12 5v6',
-        transition: { duration: 0.3, ease: 'easeInOut', delay: 0.05 },
+        y2: 11,
       },
       animate: {
-        d: 'M12 5v9',
-        transition: { duration: 0.3, ease: 'easeInOut', delay: 0.05 },
+        y2: [11, 16, 19, 11],
+        transition: { duration: 0.6, ease: 'linear' },
       },
     },
-    path3: {
+    line3: {
       initial: {
-        d: 'M18 5v8',
-        transition: { duration: 0.3, ease: 'easeInOut', delay: 0.1 },
+        y2: 16,
       },
       animate: {
-        d: 'M18 5v5',
-        transition: { duration: 0.3, ease: 'easeInOut', delay: 0.1 },
+        y2: [16, 19, 11, 16],
+        transition: { duration: 0.6, ease: 'linear' },
       },
     },
   } satisfies Record<string, Variants>,
 } as const;
 
-function IconComponent({ size = 24, ...props }: KanbanProps) {
+function IconComponent({ size, ...props }: KanbanProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
@@ -63,12 +61,33 @@ function IconComponent({ size = 24, ...props }: KanbanProps) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M6 5v11" />
-      <path d="M12 5v6" />
-      <path d="M18 5v8" />
-      <motion.path d="M6 5v11" variants={variants.path} initial="initial" animate={controls} />
-      <motion.path d="M12 5v6" variants={variants.path2} initial="initial" animate={controls} />
-      <motion.path d="M18 5v8" variants={variants.path3} initial="initial" animate={controls} />
+      <motion.line
+        x1={18}
+        y1={5}
+        x2={18}
+        y2={19}
+        variants={variants.line1}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.line
+        x1={12}
+        y1={5}
+        x2={12}
+        y2={11}
+        variants={variants.line2}
+        initial="initial"
+        animate={controls}
+      />
+      <motion.line
+        x1={6}
+        y1={5}
+        x2={6}
+        y2={16}
+        variants={variants.line3}
+        initial="initial"
+        animate={controls}
+      />
     </motion.svg>
   );
 }
@@ -77,4 +96,10 @@ function Kanban(props: KanbanProps) {
   return <IconWrapper icon={IconComponent} {...props} />;
 }
 
-export { Kanban, Kanban as KanbanIcon, type KanbanProps };
+export {
+  animations,
+  Kanban,
+  Kanban as KanbanIcon,
+  type KanbanProps,
+  type KanbanProps as KanbanIconProps,
+};
