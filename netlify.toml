@@ -1,0 +1,10 @@
+# Vite outputs to `build` (see vite.config.ts `build.outDir`), not the default `dist`.
+[build]
+  command = "npm run build"
+  publish = "build"
+
+# Client-side routing (React Router): serve index.html for deep links and refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
