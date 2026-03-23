@@ -11,10 +11,10 @@ type POStatus = 'Draft' | 'Sent' | 'Acknowledged' | 'Partial' | 'Received' | 'Ca
 
 const statusStyles: Record<POStatus, string> = {
   Draft: 'bg-[#F5F5F5] text-[#737373]',
-  Sent: 'bg-[var(--warm-200)] text-[#1A2732]',
-  Acknowledged: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Sent: 'bg-[#F5F5F5] text-[#1A2732]',
+  Acknowledged: 'bg-[#F5F5F5] text-[#1A2732]',
   Partial: 'bg-[#FFF4CC] text-[#805900]',
-  Received: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Received: 'bg-[#F5F5F5] text-[#1A2732]',
   Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
 };
 
@@ -40,7 +40,7 @@ const TABS = [
 
 const MatchIcon = ({ match }: { match: string }) => {
   if (match === 'green') return <CheckCircle className="w-4 h-4 text-[#1A2732]" />;
-  if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[#FACC15]" />;
+  if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[#FFCF4B]" />;
   return <Circle className="w-4 h-4 text-[#D4D4D4]" />;
 };
 

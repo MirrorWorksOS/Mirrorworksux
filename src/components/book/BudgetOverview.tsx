@@ -150,7 +150,7 @@ const mockBudgets: Budget[] = [
 const getStatusBadgeColors = (status: TrafficLightStatus) => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'On track' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'On track' };
     case 'monitor':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', dot: '#FACC15', label: 'Monitor' };
     case 'over_budget':
@@ -163,9 +163,9 @@ const getStatusBadgeColors = (status: TrafficLightStatus) => {
 const getTypeBadgeColors = (type: BudgetType) => {
   switch (type) {
     case 'job':
-      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Job' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Job' };
     case 'department':
-      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Department' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Department' };
     case 'annual':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Annual' };
   }

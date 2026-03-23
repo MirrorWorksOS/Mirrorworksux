@@ -120,7 +120,7 @@ export function SellProducts() {
             const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={animationVariants.listItem} custom={idx}>
-                <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
                   {/* Product Image Placeholder */}
                   <div className="h-40 bg-gradient-to-br from-[#F5F5F5] to-[var(--border)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[#A3A3A3]" />
@@ -167,7 +167,7 @@ export function SellProducts() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -184,7 +184,7 @@ export function SellProducts() {
                 {filteredProducts.map((product, idx) => {
                   const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
                   return (
-                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
                       <td className="px-4">
                         <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[#0A0A0A] hover:underline">
                           {product.name}
@@ -214,7 +214,7 @@ export function SellProducts() {
 
       {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-12">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-[#737373]" />

@@ -35,7 +35,7 @@ const statusStyles: Record<InvoiceStatus, string> = {
   Sent: 'bg-[#F5F5F5] text-[#1A2732]',
   Viewed: 'bg-[#F5F5F5] text-[#1A2732]',
   'Partially Paid': 'bg-[#FFF4CC] text-[#805900]',
-  Paid: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Paid: 'bg-[#F5F5F5] text-[#1A2732]',
   Overdue: 'bg-[#DE350B]/10 text-[#DE350B]',
   Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
 };

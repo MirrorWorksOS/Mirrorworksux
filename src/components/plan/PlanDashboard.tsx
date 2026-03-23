@@ -48,7 +48,7 @@ export function PlanDashboard() {
 
         <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
               <Wrench className="w-5 h-5 text-[#1A2732]" />
             </div>
           </div>
@@ -76,7 +76,7 @@ export function PlanDashboard() {
         </motion.div>
 
         <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
-          <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center mb-4">
+          <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center mb-4">
             <TrendingUp className="w-5 h-5 text-[#1A2732]" />
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Utilization Rate</h3>

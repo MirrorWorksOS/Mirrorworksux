@@ -69,7 +69,7 @@ export function PlanPurchase() {
         {[
           { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', icon: AlertTriangle },
           { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', icon: AlertTriangle },
-          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', icon: CheckCircle },
+          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', icon: CheckCircle },
         ].map(s => {
           const Icon = s.icon;
           return (
@@ -119,7 +119,7 @@ export function PlanPurchase() {
                   </td>
                   <td className="px-4 text-sm text-[#1A2732] font-medium">{row.product}</td>
                   <td className="px-4 text-xs  text-[#737373]">{row.sku}</td>
-                  <td className="px-4 text-sm font-['JetBrains_Mono',monospace] text-[#1A2732]">{row.job}</td>
+                  <td className="px-4 text-sm font-['Roboto_Mono',monospace] text-[#1A2732]">{row.job}</td>
                   <td className="px-4 text-sm text-[#737373]">{row.due}</td>
                   <td className="px-4 text-right text-sm  font-medium">{row.required}</td>
                   <td className="px-4 text-right text-sm ">{row.available}</td>
@@ -130,7 +130,7 @@ export function PlanPurchase() {
                   </td>
                   <td className="px-4">
                     {row.status === 'ok'
-                      ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2">OK</Badge>
+                      ? <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2">OK</Badge>
                       : row.status === 'critical'
                       ? <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0 text-xs rounded-full px-2">Critical</Badge>
                       : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Shortage</Badge>

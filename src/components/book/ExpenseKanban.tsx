@@ -9,11 +9,11 @@ import { cn } from '../ui/utils';
 type ExpenseCategory = 'Materials' | 'Utilities' | 'Maintenance' | 'Consumables' | 'Subcontractor';
 
 const categoryStyles: Record<ExpenseCategory, string> = {
-  Materials: 'bg-[var(--warm-200)] text-[#1A2732]',
-  Utilities: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Materials: 'bg-[#F5F5F5] text-[#1A2732]',
+  Utilities: 'bg-[#F5F5F5] text-[#1A2732]',
   Maintenance: 'bg-[#FFF4CC] text-[#805900]',
   Consumables: 'bg-[#F3E8FF] text-[#7C3AED]',
-  Subcontractor: 'bg-[var(--warm-200)] text-[#DE350B]',
+  Subcontractor: 'bg-[#F5F5F5] text-[#DE350B]',
 };
 
 interface Expense {
@@ -38,7 +38,7 @@ const columns = [
     ],
   },
   {
-    title: 'Submitted', headerBg: 'bg-[var(--warm-200)] text-[#1A2732]', total: '$5,890',
+    title: 'Submitted', headerBg: 'bg-[#F5F5F5] text-[#1A2732]', total: '$5,890',
     cards: [
       { id: 'E4', vendor: 'Blackwoods Steel', amount: 2450, category: 'Materials' as ExpenseCategory, date: '23 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0012', receipt: true },
       { id: 'E5', vendor: 'AGL Energy', amount: 890, category: 'Utilities' as ExpenseCategory, date: '22 Feb', employee: 'Office', initials: 'OF' },
@@ -47,7 +47,7 @@ const columns = [
     ],
   },
   {
-    title: 'Approved', headerBg: 'bg-[var(--warm-200)] text-[#1A2732]', total: '$12,450',
+    title: 'Approved', headerBg: 'bg-[#F5F5F5] text-[#1A2732]', total: '$12,450',
     cards: [
       { id: 'E8', vendor: 'OneSteel', amount: 4200, category: 'Materials' as ExpenseCategory, date: '19 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0010' },
       { id: 'E9', vendor: 'Dulux Powder Coats', amount: 1890, category: 'Subcontractor' as ExpenseCategory, date: '18 Feb', employee: 'David M.', initials: 'DM' },

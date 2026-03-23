@@ -89,7 +89,7 @@ function OverviewTab() {
           { label: 'Margin',      value: `${margin.toFixed(1)}%`, mono: true, highlight: margin >= 25 ? 'green' : 'yellow' },
           { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
             <p className={cn(
               'text-[22px] font-semibold',
@@ -103,7 +103,7 @@ function OverviewTab() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-white border border-[var(--border)] rounded-2xl p-6">
+        <Card className="lg:col-span-2 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Description</h4>
           <p className="text-sm text-[#737373] leading-relaxed">{PRODUCT.description}</p>
           <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[var(--border)]">
@@ -124,12 +124,12 @@ function OverviewTab() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Stock on hand</h4>
             <p className="text-[32px]  font-semibold text-[#0A0A0A]">8</p>
             <p className="text-xs text-[#737373]">units · Min reorder: 0</p>
           </Card>
-          <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">This month</h4>
             <p className="text-[24px]  font-semibold text-[#0A0A0A]">18 units</p>
             <p className="text-xs text-[#0A0A0A] mt-0.5">▲ 29% vs last month</p>
@@ -145,7 +145,7 @@ function ManufacturingTab() {
   return (
     <div className="space-y-6">
       {/* Routing */}
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Routing — {totalTime}h total cycle time</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit routing</Button>
@@ -160,7 +160,7 @@ function ManufacturingTab() {
           </thead>
           <tbody>
             {ROUTING.map(r => (
-              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
                 <td className="px-4 text-sm  font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
                 <td className="px-4 text-sm text-[#0A0A0A] font-medium">{r.name}</td>
                 <td className="px-4"><Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{r.workCenter}</Badge></td>
@@ -173,7 +173,7 @@ function ManufacturingTab() {
       </Card>
 
       {/* BOM */}
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Bill of Materials · v1.2</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit BOM</Button>
@@ -188,7 +188,7 @@ function ManufacturingTab() {
           </thead>
           <tbody>
             {BOM_LINES.map(line => (
-              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
                 <td className="px-4 text-xs  text-[#737373]">{line.sku}</td>
                 <td className="px-4 text-sm text-[#0A0A0A]">{line.description}</td>
                 <td className="px-4 text-right text-sm ">{line.qty}</td>
@@ -220,7 +220,7 @@ function InventoryTab() {
           { label: 'On order',  value: '0',  sub: 'units in production' },
           { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
             <p className="text-[22px]  font-semibold text-[#0A0A0A]">{kpi.value}</p>
             <p className="text-xs text-[#737373] mt-0.5">{kpi.sub}</p>
@@ -228,7 +228,7 @@ function InventoryTab() {
         ))}
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)]">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Stock movements</h4>
         </div>
@@ -242,7 +242,7 @@ function InventoryTab() {
           </thead>
           <tbody>
             {INVENTORY_MOVEMENTS.map((m, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
                 <td className="px-4 text-sm text-[#737373]">{m.date}</td>
                 <td className="px-4">
                   <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
@@ -271,13 +271,13 @@ function AccountingTab() {
   const margin = ((PRODUCT.sellPrice - PRODUCT.costPrice) / PRODUCT.sellPrice) * 100;
   return (
     <div className="space-y-6">
-      <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Revenue — last 6 months</h4>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
             <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono, monospace' }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono, monospace' }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
             <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
             <Area key="revenue" type="monotone" dataKey="revenue" stroke="#FFCF4B" fill="var(--accent)" strokeWidth={2} />
           </AreaChart>
@@ -285,7 +285,7 @@ function AccountingTab() {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Pricing</h4>
           <div className="space-y-3">
             {[
@@ -304,7 +304,7 @@ function AccountingTab() {
           </div>
         </Card>
 
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">YTD performance</h4>
           <div className="space-y-3">
             {[
@@ -341,7 +341,7 @@ function DocumentsTab() {
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
@@ -352,7 +352,7 @@ function DocumentsTab() {
           </thead>
           <tbody>
             {DOCUMENTS.map((doc, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0]">
                 <td className="px-4">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-[#A3A3A3] shrink-0" />

@@ -55,7 +55,7 @@ export function SellCRMList() {
 
   return (
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger}>
-      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -76,7 +76,7 @@ export function SellCRMList() {
               {mockCustomers.map((customer, idx) => {
                 const statusBadge = getStatusBadge(customer.status);
                 return (
-                  <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                  <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
                     <td className="px-4">
                       <input type="checkbox" checked={selectedRows.has(customer.id)} onChange={() => toggleRow(customer.id)} className="rounded border-[var(--border)]" />
                     </td>
@@ -116,8 +116,8 @@ export function SellCRMList() {
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
           <p className="text-xs text-[#737373]">Showing 1-5 of 5</p>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Previous</button>
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Next</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]" disabled>Next</button>
           </div>
         </div>
       </Card>

@@ -32,7 +32,7 @@ const donutData = [
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 const ageStyles: Record<AgeCategory, string> = {
-  Fresh: 'bg-[var(--warm-200)] text-[#FFCF4B]',
+  Fresh: 'bg-[#F5F5F5] text-[#FFCF4B]',
   Active: 'bg-[#FFF4CC] text-[#805900]',
   Slow: 'bg-[#FFE5CC] text-[#CC4400]',
   Stale: 'bg-[#DE350B]/10 text-[#DE350B]',
@@ -80,7 +80,7 @@ export function StockValuation() {
           <p className="text-xs text-[#737373] mt-1">342 items</p>
         </Card>
         <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
-          <div className="flex items-center gap-2 mb-2"><Wrench className="w-6 h-6 text-[#FACC15]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>WORK IN PROGRESS</span></div>
+          <div className="flex items-center gap-2 mb-2"><Wrench className="w-6 h-6 text-[#FFCF4B]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>WORK IN PROGRESS</span></div>
           <div className="text-[24px] tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>$89,200</div>
           <p className="text-xs text-[#737373] mt-1">12 jobs</p>
         </Card>

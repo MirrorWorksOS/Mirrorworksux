@@ -99,7 +99,7 @@ const mockSpendData = [
 const getStatusColor = (status: 'on_track' | 'monitor' | 'over_budget') => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#36B37E' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#36B37E' };
     case 'monitor':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', dot: '#FACC15' };
     case 'over_budget':
@@ -193,7 +193,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 "rounded-full text-[11px] px-2 py-0.5 border-0",
                 utilizationPercent > 95 ? "bg-[#FEE2E2] text-[#EF4444]" :
                 utilizationPercent > 80 ? "bg-[#FFF4CC] text-[#805900]" :
-                "bg-[var(--warm-200)] text-[#1A2732]"
+                "bg-[#F5F5F5] text-[#1A2732]"
               )}>
                 {utilizationPercent.toFixed(0)}% used
               </Badge>
@@ -248,7 +248,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={animationVariants.listItem}>
           <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
                 <Clock className="w-5 h-5 text-[#1A2732]" />
               </div>
             </div>
@@ -268,7 +268,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={animationVariants.listItem}>
           <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-[#1A2732]" />
               </div>
               <div className="flex items-center gap-1">

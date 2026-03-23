@@ -120,7 +120,7 @@ function StatCard({
         <p className="text-xs font-medium tracking-wider text-white/70 uppercase">{label}</p>
         <Icon className="h-5 w-5 text-white/70" />
       </div>
-      <p className="font-['JetBrains_Mono',monospace] text-3xl font-bold text-[#FFCF4B]">{value}</p>
+      <p className="font-['Roboto_Mono',monospace] text-3xl font-bold text-[#FFCF4B]">{value}</p>
       <div className="mt-1 flex items-center gap-1.5 text-xs text-white/80">
         {showDot ? <span className="h-1.5 w-1.5 rounded-full bg-[#FFCF4B]" /> : null}
         <span>{sublabel}</span>

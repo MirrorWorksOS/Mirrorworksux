@@ -89,7 +89,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Company name</Label>
             <div className="relative">
-              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-xl bg-[#F5F5F5] pr-10" readOnly />
+              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] bg-[#F5F5F5] pr-10" readOnly />
               <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
             </div>
             <p className="text-xs text-[#737373] mt-1">Change in Control &rarr; Organisation settings</p>
@@ -97,7 +97,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Default currency</Label>
             <Select defaultValue="aud">
-              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="aud">AUD — Australian Dollar</SelectItem>
                 <SelectItem value="usd">USD — US Dollar</SelectItem>
@@ -109,7 +109,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Default tax rate</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
               <span className="text-sm text-[#737373]">% (GST)</span>
             </div>
           </div>
@@ -156,7 +156,7 @@ function PipelinePanel() {
         <SectionLabel>Pipeline stages</SectionLabel>
         <div className="space-y-2">
           {stages.map(s => (
-            <div key={s.name} className="flex items-center gap-4 bg-white border border-[var(--border)] rounded-2xl p-3 hover:bg-[#F5F5F5] transition-colors">
+            <div key={s.name} className="flex items-center gap-4 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[#F5F5F5] transition-colors">
               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
               <span className="flex-1 text-sm text-[#0A0A0A] font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
@@ -219,13 +219,13 @@ function QuotingPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
-              <Input defaultValue="MW-Q-" className="h-12 border-[var(--border)] rounded-xl w-32" />
+              <Input defaultValue="MW-Q-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
               <span className="text-xs text-[#737373] ">Preview: MW-Q-0047</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Next number</Label>
-            <Input defaultValue="48" type="number" className="h-12 border-[var(--border)] rounded-xl w-32" />
+            <Input defaultValue="48" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
           </div>
         </div>
       </div>
@@ -235,21 +235,21 @@ function QuotingPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Expiry period</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="30" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <Input defaultValue="30" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
               <span className="text-sm text-[#737373]">days</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default margin target</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="20" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <Input defaultValue="20" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
               <span className="text-sm text-[#737373]">%</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
             <Select defaultValue="net30">
-              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="cod">COD</SelectItem>
                 <SelectItem value="net14">Net 14</SelectItem>
@@ -301,10 +301,10 @@ function PaymentsPanel() {
     <div className="space-y-6 max-w-[640px]">
       <div className="space-y-4">
         {integrations.map(integ => (
-          <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-2xl p-5">
+          <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
+                <div className="w-11 h-11 rounded-[var(--shape-md)] flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
                   {integ.name.charAt(0)}
                 </div>
                 <div>
@@ -324,7 +324,7 @@ function PaymentsPanel() {
                 variant={integ.connected ? 'outline' : 'default'}
                 size="sm"
                 className={cn(
-                  'h-9 text-xs rounded-xl',
+                  'h-9 text-xs rounded-[var(--shape-md)]',
                   integ.connected
                     ? 'border-[var(--border)] text-[#737373]'
                     : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] border-0'
@@ -336,20 +336,20 @@ function PaymentsPanel() {
           </Card>
         ))}
       </div>
-      <Card className="bg-[#F5F5F5] border border-[var(--border)] rounded-2xl p-5">
+      <Card className="bg-[#F5F5F5] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
         <h4 className="text-[14px] font-semibold text-[#0A0A0A] mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
-            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-xl " />
+            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] " />
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Account number</Label>
-            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-xl " />
+            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] " />
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] rounded-xl">Save bank details</Button>
+          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] rounded-[var(--shape-md)]">Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -376,7 +376,7 @@ function ActivitiesPanel() {
           {activityTypes.map(a => {
             const Icon = a.icon;
             return (
-              <div key={a.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+              <div key={a.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
                 <div className="flex items-center gap-3">
                   <Icon className="w-4 h-4 text-[#0A0A0A]" />
                   <span className="text-sm text-[#0A0A0A] font-medium">{a.name}</span>
@@ -385,7 +385,7 @@ function ActivitiesPanel() {
               </div>
             );
           })}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
             <Plus className="w-4 h-4" /> Add activity type
           </button>
         </div>
@@ -430,7 +430,7 @@ function AnalyticsPanel() {
         <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Sell dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
               <span className="text-sm text-[#0A0A0A]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
@@ -442,7 +442,7 @@ function AnalyticsPanel() {
         <div>
           <Label className="text-sm mb-2 block font-medium">Default date range</Label>
           <Select defaultValue="month">
-            <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="week">This week</SelectItem>
               <SelectItem value="month">This month</SelectItem>
@@ -455,8 +455,8 @@ function AnalyticsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export pipeline CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export activities CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]">Export pipeline CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]">Export activities CSV</Button>
         </div>
       </div>
     </div>
@@ -475,10 +475,10 @@ function IntegrationsPanel() {
         { name: 'Google Cal', description: 'Sync activities to Google Calendar', connected: false, colour: '#4285F4' },
         { name: 'Slack', description: 'Post won/lost deal notifications to Slack', connected: false, colour: '#4A154B' },
       ].map(integ => (
-        <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-2xl p-5">
+        <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
+              <div className="w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
                 {integ.name.charAt(0)}
               </div>
               <div>
@@ -495,7 +495,7 @@ function IntegrationsPanel() {
               variant={integ.connected ? 'outline' : 'default'}
               size="sm"
               className={cn(
-                'h-9 text-xs rounded-xl',
+                'h-9 text-xs rounded-[var(--shape-md)]',
                 integ.connected
                   ? 'border-[var(--border)] text-[#737373]'
                   : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] border-0'

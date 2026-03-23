@@ -180,7 +180,7 @@ export function BuyDashboard() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[13px] font-medium text-[#1A2732]">{item.type}</span>
-                    <span className="font-['JetBrains_Mono',monospace] text-[12px] text-[#737373]">{item.id}</span>
+                    <span className="font-['Roboto_Mono',monospace] text-[12px] text-[#737373]">{item.id}</span>
                   </div>
                   <p className="text-[12px] text-[#525252]">{item.requestor || item.supplier}</p>
                   <p className=" text-[14px] font-medium text-[#1A2732] mt-1">${item.value.toLocaleString()}</p>

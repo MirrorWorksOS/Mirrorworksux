@@ -28,7 +28,7 @@ const MACHINES = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  active:      { label: 'Active',      bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
+  active:      { label: 'Active',      bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
   maintenance: { label: 'Maintenance', bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
   idle:        { label: 'Idle',        bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
 };

@@ -29,7 +29,7 @@ const WORKFLOWS = [
 type WFStatus = 'active' | 'paused' | 'draft';
 
 const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
-  active: { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
+  active: { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
   paused: { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
   draft:  { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
 };

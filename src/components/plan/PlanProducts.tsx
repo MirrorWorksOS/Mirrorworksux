@@ -84,7 +84,7 @@ export function PlanProducts() {
                 </td>
                 <td className="px-4">
                   {p.hasBOM
-                    ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2">Yes</Badge>
+                    ? <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2">Yes</Badge>
                     : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Missing</Badge>
                   }
                 </td>

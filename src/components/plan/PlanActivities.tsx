@@ -26,7 +26,7 @@ const getEventColor = (type: 'job' | 'maintenance' | 'qc') => {
   switch (type) {
     case 'job': return 'bg-[#DBEAFE] text-[#0A7AFF] border-[#0A7AFF]';
     case 'maintenance': return 'bg-[#FFEDD5] text-[#FF8B00] border-[#FF8B00]';
-    case 'qc': return 'bg-[var(--warm-200)] text-[#1A2732] border-[#36B37E]';
+    case 'qc': return 'bg-[#F5F5F5] text-[#1A2732] border-[#36B37E]';
   }
 };
 
@@ -67,7 +67,7 @@ export function PlanActivities() {
           <span className="text-sm text-[#737373]">Maintenance</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-[var(--warm-200)] border border-[#36B37E] rounded" />
+          <div className="w-3 h-3 bg-[#F5F5F5] border border-[#36B37E] rounded" />
           <span className="text-sm text-[#737373]">QC</span>
         </div>
       </div>

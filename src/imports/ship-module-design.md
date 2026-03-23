@@ -37,7 +37,7 @@ The audience is warehouse staff, shipping coordinators, and logistics managers w
 - closed: Grey #6B7280
 - rejected: Red #EF4444
 
-**Typography:** Roboto for all UI. JetBrains Mono for tracking numbers, shipment IDs, barcodes, and data table values.
+**Typography:** Roboto for all UI. Roboto Mono for tracking numbers, shipment IDs, barcodes, and data table values.
 - Display: Extrabold 60px, tight tracking
 - Headline: Bold 36px, tight tracking
 - Title: Semibold 24px
@@ -337,7 +337,7 @@ Each panel uses a form layout with: Section headers, form fields (inputs, select
 - This is a B2B SaaS product for small manufacturing businesses, not a consumer app. Keep the design professional, data-dense, and functional.
 - Australian market: use "postcode" not "zip code", metric units (kg, cm), AUD currency ($), AU state abbreviations (NSW, VIC, QLD, etc.).
 - Warehouse interfaces (Packaging, Warehouse screens) need extra-large touch targets (56px) because operators wear work gloves.
-- Monospace font (JetBrains Mono) for all IDs, tracking numbers, barcodes, and bin locations.
+- Monospace font (Roboto Mono) for all IDs, tracking numbers, barcodes, and bin locations.
 - Status badges are a core UI pattern — they appear on almost every screen. Use the shipment status colour palette consistently.
 - The sidebar should show the "Ship" module as active (MW Yellow highlight on the module icon). Other modules (Sell, Plan, Make, Book) are visible but inactive in the sidebar.
 - Dark mode is not required for v1.

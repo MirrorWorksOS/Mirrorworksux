@@ -36,7 +36,7 @@ export function PlanOverviewTab() {
                 <Input
                   value="MW-001"
                   readOnly
-                  className="bg-[#F5F5F5] border-transparent font-['JetBrains_Mono',monospace]"
+                  className="bg-[#F5F5F5] border-transparent font-['Roboto_Mono',monospace]"
                 />
               </div>
               <div>

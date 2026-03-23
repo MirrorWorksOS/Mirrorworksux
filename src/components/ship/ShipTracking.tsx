@@ -15,7 +15,7 @@ const statusConfig: Record<Status, { label: string; dot: string; badge: string; 
   shipped:    { label: 'Shipped',     dot: '#A3A3A3', badge: 'bg-[#F5F5F5]',  text: 'text-[#737373]' },
   transit:    { label: 'In Transit',  dot: '#0A7AFF', badge: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
   delivering: { label: 'Delivering',  dot: '#FF8B00', badge: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
-  delivered:  { label: 'Delivered',   dot: '#1A2732', badge: 'bg-[var(--warm-200)]',  text: 'text-[#1A2732]' },
+  delivered:  { label: 'Delivered',   dot: '#1A2732', badge: 'bg-[#F5F5F5]',  text: 'text-[#1A2732]' },
   exception:  { label: 'Exception',   dot: '#EF4444', badge: 'bg-[#FEE2E2]',  text: 'text-[#EF4444]' },
 };
 

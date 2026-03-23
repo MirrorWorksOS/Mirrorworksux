@@ -178,7 +178,7 @@ function CarriersPanel() {
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-semibold text-[#1A2732]">{c.name}</h3>
                       {c.connected && (
-                        <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
+                        <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
                       )}
                     </div>
                     <p className="text-xs text-[#737373] mt-0.5">{c.description}</p>

@@ -118,7 +118,7 @@ const badgeStatus = (s: string) => {
     case 'Draft': return 'bg-[#F5F5F5] text-[#737373]';
     case 'In Progress': return 'bg-[#F5F5F5] text-[#0A0A0A]';
     case 'Proposal': return 'bg-[#F5F5F5] text-[#0A0A0A]';
-    case 'Negotiation': return 'bg-[var(--accent)] text-[#0A0A0A]';
+    case 'Negotiation': return 'bg-[#FFFBF0] text-[#0A0A0A]';
     default: return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
@@ -232,7 +232,7 @@ export function SellCustomerDetail() {
             {/* Left Column - 2/3 */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
@@ -247,7 +247,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Primary Contact */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
@@ -275,7 +275,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Address */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Address</h2>
                   <a
@@ -295,7 +295,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Additional Contacts */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <button
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
@@ -330,7 +330,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Financial Summary */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
@@ -353,11 +353,11 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Tags & Notes */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
-                    <Badge key={tag} className="bg-[var(--accent)] text-[#2C2C2C] border border-[#FFCF4B] rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    <Badge key={tag} className="bg-[#FFFBF0] text-[#2C2C2C] border border-[#FFCF4B] rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
                   <button className="text-[12px] text-[#0A0A0A] hover:underline flex items-center gap-1">
                     <Plus className="w-3 h-3" /> Add tag
@@ -373,7 +373,7 @@ export function SellCustomerDetail() {
             {/* Right Column - 1/3 */}
             <div className="space-y-6">
               {/* Activity Timeline */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Recent activity</h3>
                   <button className="text-[12px] text-[#0A0A0A] hover:underline">View all</button>
@@ -397,7 +397,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Active Opportunities */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Active opportunities</h3>
                   <button className="text-[12px] text-[#0A0A0A] hover:underline flex items-center gap-1">
@@ -422,7 +422,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Recent Quotes & Orders */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
@@ -442,7 +442,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Intelligence Hub */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
                   <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Intelligence Hub</h3>
@@ -467,7 +467,7 @@ export function SellCustomerDetail() {
             </div>
 
             {/* Active Opportunities */}
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
                 <h3 className="text-[16px] font-medium text-[#0A0A0A]">Active opportunities</h3>
               </div>
@@ -483,7 +483,7 @@ export function SellCustomerDetail() {
                 </thead>
                 <tbody>
                   {customer.opportunities.map((opp: any) => (
-                    <tr key={opp.id} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                    <tr key={opp.id} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
                       <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{opp.id}</td>
                       <td className="px-6 text-[14px] text-[#0A0A0A]">{opp.name}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge></td>
@@ -496,7 +496,7 @@ export function SellCustomerDetail() {
             </Card>
 
             {/* Quotes */}
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
                 <h3 className="text-[16px] font-medium text-[#0A0A0A]">Quotes</h3>
               </div>
@@ -511,7 +511,7 @@ export function SellCustomerDetail() {
                 </thead>
                 <tbody>
                   {customer.recentQuotes.map((q: any) => (
-                    <tr key={q.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                    <tr key={q.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
                       <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{q.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{q.date}</td>
                       <td className="px-6 text-right  text-[14px]">{fmt(q.value)}</td>
@@ -523,7 +523,7 @@ export function SellCustomerDetail() {
             </Card>
 
             {/* Sales Orders */}
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
                 <h3 className="text-[16px] font-medium text-[#0A0A0A]">Sales orders</h3>
               </div>
@@ -538,7 +538,7 @@ export function SellCustomerDetail() {
                 </thead>
                 <tbody>
                   {customer.recentOrders.map((o: any) => (
-                    <tr key={o.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                    <tr key={o.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
                       <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{o.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{o.date}</td>
                       <td className="px-6 text-right  text-[14px]">{fmt(o.value)}</td>
@@ -562,7 +562,7 @@ export function SellCustomerDetail() {
                 { label: 'Credit limit', value: fmt(customer.financial.creditLimit), color: 'text-[#0A0A0A]' },
                 { label: 'Payment terms', value: customer.financial.avgPaymentTerms, color: 'text-[#0A0A0A]', noMono: true },
               ].map((kpi) => (
-                <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-2xl p-6">
+                <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                   <span className="block text-[13px] font-medium text-[#737373] mb-2">{kpi.label}</span>
                   <p className={cn('text-[24px] font-semibold', kpi.color, !kpi.noMono && "")}>{kpi.value}</p>
                 </Card>
@@ -570,7 +570,7 @@ export function SellCustomerDetail() {
             </div>
 
             {/* Invoices */}
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="px-6 py-4 border-b border-[var(--border)]">
                 <h3 className="text-[16px] font-medium text-[#0A0A0A]">Invoices</h3>
               </div>
@@ -586,7 +586,7 @@ export function SellCustomerDetail() {
                 </thead>
                 <tbody>
                   {customer.invoices.map((inv: any) => (
-                    <tr key={inv.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                    <tr key={inv.ref} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
                       <td className="px-6  text-[13px] font-bold text-[#0A0A0A]">{inv.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{inv.date}</td>
                       <td className="px-6 text-right  text-[14px]">{fmt(inv.amount)}</td>
@@ -607,7 +607,7 @@ export function SellCustomerDetail() {
               <h2 className="text-[18px] font-semibold text-[#0A0A0A]">All contacts at {customer.company}</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
             </div>
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
@@ -619,7 +619,7 @@ export function SellCustomerDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] transition-colors">
+                  <tr className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors">
                     <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{customer.primaryContact.name}</td>
                     <td className="px-6 text-[14px] text-[#737373]">{customer.primaryContact.title}</td>
                     <td className="px-6"><a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0A0A0A] hover:underline">{customer.primaryContact.email}</a></td>
@@ -627,7 +627,7 @@ export function SellCustomerDetail() {
                     <td className="px-6 text-center"><span className="w-2 h-2 bg-[#1A2732] rounded-full inline-block" /></td>
                   </tr>
                   {customer.additionalContacts.map((c: any, i: number) => (
-                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] transition-colors">
+                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors">
                       <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{c.name}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{c.role}</td>
                       <td className="px-6"><a href={`mailto:${c.email}`} className="text-[14px] text-[#0A0A0A] hover:underline">{c.email}</a></td>
@@ -654,7 +654,7 @@ export function SellCustomerDetail() {
               <p className="text-[14px] text-[#737373]">Drag and drop files here, or click to browse</p>
               <p className="text-[12px] text-[#737373] mt-1">PDF, DXF, DWG, STEP, images up to 25 MB</p>
             </div>
-            <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
@@ -667,7 +667,7 @@ export function SellCustomerDetail() {
                 </thead>
                 <tbody>
                   {customer.documents.map((doc: any, i: number) => (
-                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] transition-colors cursor-pointer">
+                    <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[#FFFBF0] transition-colors cursor-pointer">
                       <td className="px-6 text-[14px] text-[#0A0A0A] hover:underline flex items-center gap-2 h-14">
                         <FileText className="w-4 h-4 text-[#737373]" /> {doc.name}
                       </td>
@@ -699,7 +699,7 @@ export function SellCustomerDetail() {
                 )}>{f}</button>
               ))}
             </div>
-            <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <div className="space-y-6">
                 {customer.activity.map((a: any, i: number) => (
                   <div key={i} className="flex gap-4">

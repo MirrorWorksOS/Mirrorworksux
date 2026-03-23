@@ -17,8 +17,8 @@ const rStatusConfig: Record<RStatus, { label: string; badge: string; text: strin
   pending:    { label: 'Pending',    badge: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', dot: '#FF8B00' },
   approved:   { label: 'Approved',   badge: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', dot: '#0A7AFF' },
   in_transit: { label: 'In Transit', badge: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', dot: '#0A7AFF' },
-  received:   { label: 'Received',   badge: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732' },
-  refunded:   { label: 'Refunded',   badge: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732' },
+  received:   { label: 'Received',   badge: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732' },
+  refunded:   { label: 'Refunded',   badge: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732' },
   closed:     { label: 'Closed',     badge: 'bg-[#F5F5F5]', text: 'text-[#737373]', dot: '#737373' },
 };
 

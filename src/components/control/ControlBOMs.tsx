@@ -72,14 +72,14 @@ const BOMS: BOM[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  active:   { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
+  active:   { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
   draft:    { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
   obsolete: { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]' },
 };
 
 const LINE_TYPE_CONFIG: Record<string, { bg: string; text: string }> = {
   material:  { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]' },
-  purchased: { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
+  purchased: { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]' },
   labour:    { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
 };
 

@@ -53,7 +53,7 @@ export function DesignInitialData() {
                   </div>
                 </div>
                 {type.status === 'complete' && <CheckCircle2 className="w-5 h-5 text-[#1A2732]" />}
-                {type.status === 'pending' && <AlertCircle className="w-5 h-5 text-[#FACC15]" />}
+                {type.status === 'pending' && <AlertCircle className="w-5 h-5 text-[#FFCF4B]" />}
               </div>
 
               <div className="mb-3">

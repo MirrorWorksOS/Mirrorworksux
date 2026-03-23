@@ -84,7 +84,7 @@ Every screen follows this ratio:
 | Font | Weights | Use |
 |---|---|---|
 | Roboto | 300 (Light), 400 (Regular), 500 (Medium), 700 (Bold), 900 (Black) | All UI text |
-| Roboto Mono | 400, 500 | Financial values, job IDs, codes |
+| roboto  | 400, 500 | Financial values, job IDs, codes |
 
 **No other fonts.** Geist, JetBrains Mono, Inter are all deprecated and must not be used.
 
@@ -96,7 +96,6 @@ Google Fonts import:
 CSS variables:
 ```css
 --font-family-sans: 'Roboto', sans-serif;
---font-family-mono: 'Roboto Mono', monospace;
 ```
 
 ### M3 Type Scale
@@ -121,12 +120,12 @@ M3 defaults to Regular (400) and Medium (500). Bold (700) for page titles and he
 | label-medium | 12px | 500 | 16px | 0.5px | Column headers, badges, chips |
 | label-small | 11px | 500 | 16px | 0.5px | Micro text, version numbers |
 
-**Custom token:** `stat-display` — 48px, weight 400, 56px line-height, -0.25px tracking. Roboto Mono. For KPI numbers on dark accent cards.
+**Custom token:** `stat-display` — 48px, weight 400, 56px line-height, -0.25px tracking. roboto . For KPI numbers on dark accent cards.
 
 ### Typography Rules
 
-1. Financial values, currency, totals → Roboto Mono at applicable size
-2. Job numbers, IDs, codes → Roboto Mono at applicable size
+1. Financial values, currency, totals → roboto  at applicable size
+2. Job numbers, IDs, codes → roboto  at applicable size
 3. Everything else → Roboto
 4. Maximum 3 type sizes per card
 5. Sentence case everywhere. Only `label-medium` and `label-small` may be uppercase.
@@ -260,7 +259,7 @@ Three tiers:
 - Alternating: `even:bg-[var(--neutral-50)]`
 - Selected: `bg-[var(--mw-yellow-50)] border-l-[3px] border-l-[var(--mw-yellow-400)]`
 - Row borders: `border-b border-[var(--neutral-100)]`
-- Job numbers/IDs in `font-mono`
+- Job numbers/IDs in `Roboto`
 
 ### Progress Bars
 
@@ -323,7 +322,7 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 - Tooltip: frosted glass style (`bg-white/90 backdrop-blur-md`)
 - No 3D effects, no colour gradients on chart elements
 - Right-align all numeric axes
-- Use Roboto Mono for axis labels and values
+- Use roboto  for axis labels and values
 
 ---
 
@@ -372,7 +371,7 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 ### Sell (CRM + Quoting)
 - Dark accent cards for pipeline stage columns
 - MW Yellow for won deal indicators
-- Currency values in Roboto Mono, right-aligned
+- Currency values in roboto , right-aligned
 - Quote line items in table format with card container
 
 ### Plan (Scheduling)
@@ -385,17 +384,17 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 - 56px minimum touch targets (glove-friendly)
 - Large checkboxes for quality checklists
 - Progress bars for job stages
-- Timer displays in Roboto Mono stat-display size
+- Timer displays in roboto  stat-display size
 - High contrast under industrial lighting
 
 ### Ship (Dispatch + Logistics)
 - Timeline component for delivery tracking
 - Large checkboxes for dispatch checklists (56px)
 - Status badges for shipment states
-- Delivery timestamps in Roboto Mono
+- Delivery timestamps in roboto 
 
 ### Book (Finance)
-- All financial values in Roboto Mono
+- All financial values in roboto 
 - Right-aligned numbers in tables
 - Three-decimal currency where required
 - P&L tables with alternating rows and section subtotals
@@ -496,7 +495,6 @@ export default {
       },
       fontFamily: {
         sans: ["Roboto", "sans-serif"],
-        mono: ["Roboto Mono", "monospace"],
       },
       borderRadius: {
         none: "var(--shape-none)",
@@ -543,7 +541,7 @@ export default {
 
 | Area | v1.0 | v2.0 |
 |---|---|---|
-| Fonts | Geist Sans + JetBrains Mono | Roboto + Roboto Mono |
+| Fonts | Roboto |
 | Type scale | Custom 8-token | Full M3 15-token scale |
 | Colour palette | Multi-colour anchors (earth, saddle, sea-foam) | Monochromatic + MW Yellow only |
 | AI indicator | Purple accent (#7C3AED) | Deprecated — use MW Yellow or badge |

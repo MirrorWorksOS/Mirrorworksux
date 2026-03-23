@@ -275,7 +275,7 @@ function XeroPanel() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold text-[#1A2732]">Xero</h3>
-                <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
               </div>
               <p className="text-xs text-[#737373] mt-0.5">Connected to Alliance Metal Pty Ltd since 15 Jan 2026</p>
             </div>
@@ -292,8 +292,8 @@ function XeroPanel() {
             <div key={e.name} className="flex items-center gap-4 py-2 border-b border-[#F5F5F5] last:border-0">
               <span className="flex-1 text-sm text-[#1A2732]">{e.name}</span>
               <div className="flex items-center gap-4 text-xs text-[#737373]">
-                {e.push && <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Push</Badge>}
-                {e.pull && <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Pull</Badge>}
+                {e.push && <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Push</Badge>}
+                {e.pull && <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-[10px] rounded-full px-2">Pull</Badge>}
                 <span className="w-24 text-right">{e.lastSync}</span>
                 <div className={cn('w-2 h-2 rounded-full', e.ok ? 'bg-[#1A2732]' : 'bg-[#FACC15]')} />
               </div>

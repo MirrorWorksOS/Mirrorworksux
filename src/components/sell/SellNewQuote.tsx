@@ -165,7 +165,7 @@ export function SellNewQuote() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Header details */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
@@ -205,7 +205,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Line items */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                   <h3 className="text-[14px] font-semibold text-[#0A0A0A]">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
@@ -326,7 +326,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
                 <textarea
                   value={notes}
@@ -340,7 +340,7 @@ export function SellNewQuote() {
 
             {/* Right — Summary */}
             <div className="space-y-4">
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
@@ -392,7 +392,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-white border border-[var(--border)] rounded-2xl p-5 space-y-3">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 space-y-3">
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Quote number</p>
                   <p className="text-sm  font-medium">{quoteNumber}</p>

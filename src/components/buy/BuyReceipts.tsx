@@ -137,7 +137,7 @@ export function BuyReceipts() {
                   </div>
                   <div>
                     <p className="text-xs text-[#737373] mb-1">Outstanding</p>
-                    <p className=" text-[18px] font-semibold text-[#FACC15]">
+                    <p className=" text-[18px] font-semibold text-[#FFCF4B]">
                       {item.ordered - item.received} {item.unit}
                     </p>
                   </div>
@@ -172,7 +172,7 @@ export function BuyReceipts() {
             <Button
               onClick={handleReceive}
               disabled={Object.values(quantities).every(q => q === 0)}
-              className="flex-1 h-16 text-[18px] bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] disabled:opacity-50"
+              className="flex-1 h-16 text-[18px] bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]"
             >
               <CheckCircle2 className="w-6 h-6 mr-3" />
               Confirm Receipt

@@ -169,7 +169,7 @@ export function PlanJobs() {
       className="bg-white border border-[var(--border)] rounded-2xl p-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
-        <span className="font-['JetBrains_Mono',monospace] text-[14px] font-bold text-[#1A2732]">
+        <span className="font-['Roboto_Mono',monospace] text-[14px] font-bold text-[#1A2732]">
           {job.id}
         </span>
         <Avatar className="w-8 h-8 border border-[var(--border)]">
@@ -325,7 +325,7 @@ export function PlanJobs() {
                         onClick={() => setSelectedJobId(job.id)}
                         className="border-b border-[var(--border)] hover:bg-[var(--accent)] cursor-pointer transition-colors"
                       >
-                        <td className="px-4 py-3 font-['JetBrains_Mono',monospace] text-[13px] text-[#1A2732]">
+                        <td className="px-4 py-3 font-['Roboto_Mono',monospace] text-[13px] text-[#1A2732]">
                           {job.id}
                         </td>
                         <td className="px-4 py-3  text-[13px] text-[#1A2732]">

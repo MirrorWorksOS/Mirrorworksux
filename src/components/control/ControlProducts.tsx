@@ -116,7 +116,7 @@ export function ControlProducts() {
                 <td className="px-4">
                   <div className="flex justify-center">
                     <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                      p.type === 'Manufactured' ? 'bg-[var(--warm-200)] text-[#1A2732]' : 'bg-[var(--warm-200)] text-[#1A2732]'
+                      p.type === 'Manufactured' ? 'bg-[#F5F5F5] text-[#1A2732]' : 'bg-[#F5F5F5] text-[#1A2732]'
                     )}>
                       {p.type}
                     </Badge>
@@ -131,7 +131,7 @@ export function ControlProducts() {
                 <td className="px-4">
                   <div className="flex justify-center">
                     {p.hasBOM
-                      ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
+                      ? <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
                       : <span className="text-xs text-[#A3A3A3]">—</span>
                     }
                   </div>

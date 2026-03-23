@@ -44,7 +44,7 @@ const MOs: MO[] = [
 const WORK_CENTERS = ['Cutting', 'Forming', 'Welding', 'Machining', 'Finishing'];
 
 const STATUS_CONFIG: Record<MOStatus, { bar: string; badge: string; text: string; label: string }> = {
-  completed:   { bar: '#FFCF4B', badge: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Completed' },
+  completed:   { bar: '#FFCF4B', badge: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Completed' },
   in_progress: { bar: '#0A7AFF', badge: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'In Progress' },
   scheduled:   { bar: '#A3A3A3', badge: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Scheduled' },
   overdue:     { bar: '#EF4444', badge: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Overdue' },

@@ -66,7 +66,7 @@ const LOCATIONS = [
 
 const TYPE_CONFIG: Record<string, { icon: any; badge: string; text: string }> = {
   Factory:   { icon: Building2, badge: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
-  Warehouse: { icon: Warehouse, badge: 'bg-[var(--warm-200)]',  text: 'text-[#1A2732]' },
+  Warehouse: { icon: Warehouse, badge: 'bg-[#F5F5F5]',  text: 'text-[#1A2732]' },
   Office:    { icon: MapPin,    badge: 'bg-[#F5F5F5]',  text: 'text-[#737373]' },
   Storage:   { icon: Warehouse, badge: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
 };

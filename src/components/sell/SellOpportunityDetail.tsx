@@ -232,7 +232,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
               </div>
               <div className="space-y-3">
                 {MOCK_ACTIVITIES.map((a, i) => (
-                  <div key={i} className={cn('flex gap-4 p-4 rounded-lg border', a.done ? 'bg-white border-[var(--border)]' : 'bg-[var(--accent)] border-[#FFCF4B]')}>
+                  <div key={i} className={cn('flex gap-4 p-4 rounded-lg border', a.done ? 'bg-white border-[var(--border)]' : 'bg-[#FFFBF0] border-[#FFCF4B]')}>
                     <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 shrink-0', a.done ? 'bg-[#1A2732]' : 'bg-[#FF8B00]')} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">

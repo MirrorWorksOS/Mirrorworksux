@@ -57,7 +57,7 @@ export function AIInsightCard({
           <button
             onClick={onRefresh}
             disabled={refreshing}
-            className="p-1 hover:bg-[#F5F5F5] rounded transition-colors disabled:opacity-50 text-[#737373] hover:text-[#1A2732]"
+            className="p-1 hover:bg-[#F5F5F5] rounded transition-colors disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38] text-[#737373] hover:text-[#1A2732]"
             aria-label="Refresh insight"
           >
             <RefreshCw

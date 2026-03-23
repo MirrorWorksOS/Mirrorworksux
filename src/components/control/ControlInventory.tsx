@@ -28,7 +28,7 @@ const INVENTORY = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  ok:  { label: 'OK',       bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732' },
+  ok:  { label: 'OK',       bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732' },
   low: { label: 'Low',      bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', dot: '#FF8B00' },
   out: { label: 'Out',      bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', dot: '#EF4444' },
 };

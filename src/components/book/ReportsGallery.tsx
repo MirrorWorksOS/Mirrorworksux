@@ -25,9 +25,9 @@ const mwReports = [
 ];
 
 const scheduled = [
-  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[var(--warm-200)] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
+  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[#F5F5F5] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
   { name: 'Expense Report', schedule: 'Monthly', scheduleBg: 'bg-[#FFF4CC] text-[#805900]', recipients: ['cormac@mirrorworks.io', 'matt@mirrorworks.io'], lastRun: '01 Feb', nextRun: '01 Mar', active: true },
-  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[var(--warm-200)] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
+  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[#F5F5F5] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
 ];
 
 const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) => (

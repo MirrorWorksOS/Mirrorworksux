@@ -192,7 +192,7 @@ export function SellCRM() {
                 variants={animationVariants.listItem}
                 custom={idx}
               >
-                <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/sell/crm/${customer.id}`)}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -256,7 +256,7 @@ export function SellCRM() {
 
       {/* List View (placeholder for now - would implement SellCRMList) */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <p className="text-sm text-[#737373] text-center">
             List view - Would render SellCRMList component here
           </p>
@@ -265,7 +265,7 @@ export function SellCRM() {
 
       {/* Empty State */}
       {filteredCustomers.length === 0 && (
-        <Card className="bg-white border border-[var(--border)] rounded-2xl p-12">
+        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Briefcase className="w-8 h-8 text-[#737373]" />

@@ -29,7 +29,7 @@ const INVENTORY = [
 ];
 
 const statusBadge: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  ok:       { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'OK' },
+  ok:       { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'OK' },
   low:      { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', dot: '#FF8B00', label: 'Low' },
   empty:    { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', dot: '#EF4444', label: 'Empty' },
   reserved: { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', dot: '#0A7AFF', label: 'Reserved' },

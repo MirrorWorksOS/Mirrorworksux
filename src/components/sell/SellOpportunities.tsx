@@ -90,7 +90,7 @@ export function SellOpportunities() {
 
           return (
             <motion.div key={stage.key} variants={animationVariants.listItem} custom={idx} className="flex-shrink-0 w-[320px]">
-              <div className="bg-[#F5F5F5] rounded-2xl p-4">
+              <div className="bg-[#F5F5F5] rounded-[var(--shape-lg)] p-4">
                 {/* Column Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export function SellOpportunities() {
                     return (
                       <Card
                         key={opp.id}
-                        className="bg-white border border-[var(--border)] rounded-2xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                        className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 hover:shadow-md transition-all duration-200 cursor-pointer group"
                         onClick={() => setSelectedOpp(opp)}
                       >
                         <div className="flex items-start justify-between mb-3">

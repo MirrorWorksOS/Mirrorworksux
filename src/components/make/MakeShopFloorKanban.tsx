@@ -45,7 +45,7 @@ const getPriorityStyle = (priority: string) => {
     case 'urgent': return 'bg-[#FEE2E2] text-[#EF4444]';
     case 'high':   return 'bg-[#FFEDD5] text-[#FF8B00]';
     case 'medium': return 'bg-[#DBEAFE] text-[#0A7AFF]';
-    case 'low':    return 'bg-[var(--warm-200)] text-[#1A2732]';
+    case 'low':    return 'bg-[#F5F5F5] text-[#1A2732]';
     default:       return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
