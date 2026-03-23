@@ -24,7 +24,7 @@ The codebase has 8 modules following the manufacturing lifecycle: Sell, Plan, Ma
 - **Animation**: Motion (Framer Motion), tw-animate-css, Animate UI components in `src/components/animate-ui/`
 - **Toasts**: Sonner
 - **Forms**: React Hook Form
-- **Fonts**: Geist (UI), JetBrains Mono (IDs/codes), Roboto Mono (financial figures)
+- **Fonts**: Roboto (UI text, weights 300/400/500/700/900), Roboto Mono (financial figures, IDs, codes). No Geist, no JetBrains Mono, no Inter.
 
 ## Path Aliases & Imports
 
@@ -67,24 +67,23 @@ src/
 
 ## Design System — Key Tokens
 
-All tokens live in `src/lib/design-system.ts`. Import and use them rather than hard-coding hex values.
+Full design system: see `DESIGN_SYSTEM.md` (human reference) and `.cursor/rules/design-system.mdc` (AI rules).
 
-### Brand colours
-- MW Yellow: `#FFCF4B` (primary CTA, AI highlights)
-- MW Yellow Hover: `#EBC028`
+### Brand colours (v2.0)
+- MW Yellow 400: `#FFCF4B` (primary CTA) → hover `#F2BF30` → active `#E6A600`
+- Mirage: `#1A2732` (dark accent buttons, badges, sidebar)
 - Near Black: `#0A0A0A` (primary text)
-- Dark Grey: `#2C2C2C` (secondary text)
-- Medium Grey: `#737373` (tertiary text, icons)
-- Light Grey: `#E5E5E5` (borders)
-- BG Grey: `#F5F5F5` (subtle backgrounds)
+- Dark Grey: `#2C2C2C` (secondary text, text on yellow buttons)
+- Medium Grey: `#737373` (minimum text colour)
+- Neutral scale: `neutral-50` through `neutral-900`
 
 ### Status colours
-- Success: `#36B37E` / Error: `#EF4444` / Warning: `#FF8B00` / Info: `#0A7AFF`
+- Success: `#36B37E` / Error: `#DE350B` / Warning: `#FACC15` / Info: `#0052CC`
 
-### Typography
-- UI text: Geist family
-- Financial values ($, %): Roboto Mono
-- IDs and codes (MW-001, PO-0089): JetBrains Mono
+### Typography (v2.0)
+- UI text: Roboto (300/400/500/700/900)
+- Financial values, IDs, codes: Roboto Mono (400/500)
+- No other fonts. Geist, JetBrains Mono, Inter are deprecated.
 
 ## Coding Standards
 
@@ -106,30 +105,32 @@ All tokens live in `src/lib/design-system.ts`. Import and use them rather than h
 ### Page structure
 Every module page follows: KPI row → Chart row → Table/content area, wrapped in `p-6 space-y-6`.
 
-### Card base
-`bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150`
+### Card base (v2.0)
+`bg-white border border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] p-6`
 
-### Button hierarchy
-1. Primary (one per section): `bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C]`
-2. Outline: `border border-[#E5E5E5] bg-white hover:bg-[#F5F5F5]`
-3. Ghost: `hover:bg-[#F5F5F5] text-[#737373]`
-4. Destructive: `bg-[#EF4444] text-white` — always requires confirmation dialog.
+### Button hierarchy (v2.0)
+1. Primary (one per card): `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C]`
+2. Outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)]`
+3. Ghost: `hover:bg-[var(--neutral-50)]`
+4. Dark: `bg-[var(--mw-mirage)] text-white`
+5. Destructive: `bg-destructive text-white` — always requires confirmation dialog.
 
-### Tables
-- ShadCN Table component. Headers: 12px Geist Medium `#737373` uppercase.
-- Body: 14px, min row height 48px. Horizontal dividers only, no vertical lines.
-- Text columns left-aligned, numeric right-aligned, status left-aligned (badge), actions right-aligned.
+### Tables (v2.0)
+- ShadCN Table in Card container. Headers: 12px font-medium uppercase tracking-wider `text-muted-foreground`.
+- Body: 14px, min row height 56px. Horizontal dividers only.
+- Hover: `hover:bg-[#0A0A0A]/[0.04]`. Alternating: `even:bg-[var(--neutral-50)]`.
+- Selected: `bg-[var(--mw-yellow-50)] border-l-[3px] border-l-[var(--mw-yellow-400)]`.
 
-### Motion
-- Hover/active: 150ms
-- Standard transitions: 300–400ms with M3 standard easing `cubic-bezier(0.2, 0.0, 0, 1.0)`
-- Sidebar: 400ms with parallax curves (see design-system.ts)
-- Modals: 500ms with Emphasized Decelerate
-- Never animate on first paint. Only on user interaction or data updates.
+### Motion (v2.0 — M3 tokens)
+- Default: `duration-[var(--duration-medium1)] ease-[var(--ease-standard)]` (250ms)
+- Enter: `ease-[var(--ease-standard-decelerate)]`
+- Exit: `ease-[var(--ease-standard-accelerate)]`
+- Dialogs: open medium2 (350ms), close medium1 (250ms)
+- Never animate on first paint.
 
-### Touch targets
-- Desktop: min 40px height
-- Shop floor / tablet: min 56px, preferred 80px for gloved hands
+### Touch targets (v2.0)
+- Desktop: min 48px height (`h-12 min-h-[48px]`)
+- Shop floor / tablet: min 56px (`h-14 min-h-[56px]`), preferred 80px for primary CTAs
 
 ## Codebase Origin & Gotchas
 
@@ -147,7 +148,8 @@ This project was exported from Figma using Figma's code generation. Be aware of:
 ## Key Reference Files
 
 When making decisions about design, tokens, or patterns, check these first:
-- `src/guidelines/Guidelines.md` — the full design bible (typography, colour, spacing, components, patterns)
+- `DESIGN_SYSTEM.md` — the v2.0 design system (typography, colour, spacing, components, patterns)
+- `.cursor/rules/design-system.mdc` — AI-consumable design system rules
 - `src/lib/design-system.ts` — all design tokens as TypeScript constants
 - `src/styles/globals.css` — CSS variables, M3 type scale, scrollbar styles
 - `src/routes.tsx` — complete routing map for all modules

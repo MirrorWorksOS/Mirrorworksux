@@ -1,0 +1,313 @@
+---
+description: MirrorWorks Smart FactoryOS design system. Apply to ALL React component creation, styling, and UI modification.
+globs: ["src/**/*.tsx", "src/**/*.css", "src/components/**/*"]
+---
+
+## 1. Colours
+
+MW Yellow (brand accent — 10% of UI):
+- `mw-yellow-50`: #FFFBF0 — selected row bg, subtle highlight
+- `mw-yellow-100`: #FFF3D6 — text selection highlight
+- `mw-yellow-200`: #FFE8AD — warning alert border
+- `mw-yellow-300`: #FFDB7A
+- `mw-yellow-400`: #FFCF4B — **primary CTA**, active states, checked controls
+- `mw-yellow-500`: #F2BF30 — hover on primary
+- `mw-yellow-600`: #E6A600 — active/pressed on primary
+- `mw-yellow-700`: #CC8E00
+- `mw-yellow-800`: #A67300
+- `mw-yellow-900`: #805900
+
+Grey scale (30% structure):
+- Near Black `#0A0A0A` — headlines, primary text, active icons
+- Dark `#2C2C2C` — body text, text on yellow buttons
+- Mid `#525252` — table body, descriptions
+- Medium `#737373` — labels, captions, inactive icons (minimum text colour)
+- Border `#E5E5E5` — card borders, dividers
+- Subtle `#F5F5F5` — page background, input bg
+- Warm `#F8F7F4` — grouped card bg inside sheets
+- White `#FFFFFF` — card backgrounds (60%)
+
+Neutral scale aliases: `neutral-50` (#FAFAFA) through `neutral-900` (#0A0A0A).
+
+Dark accent: `mw-mirage` #1A2732 — dark variant buttons, dark badges, sidebar bg.
+Off-white: `mw-off-white` #F8F7F4.
+
+Status (dots/badges only, never card backgrounds):
+- Success: #36B37E
+- Info: #0052CC
+- Warning: #FACC15
+- Error: #DE350B
+
+**Deprecated — do not use**: `mw-earth`, `mw-saddle`, `mw-sea-foam`, `mw-azure`, `mw-ai-purple`.
+
+## 2. Typography
+
+Font stack:
+```css
+--font-family-sans: 'Roboto', sans-serif;
+--font-family-mono: 'Roboto Mono', monospace;
+```
+
+Roboto weights: 300 (Light), 400 (Regular), 500 (Medium), 700 (Bold), 900 (Black — marketing only).
+Roboto Mono weights: 400, 500.
+
+No other fonts. Geist, JetBrains Mono, Inter are all deprecated.
+
+M3 type scale:
+
+| Token | Size | Weight | Line-height | Letter-spacing | MW usage |
+|---|---|---|---|---|---|
+| display-large | 57px | 400 | 64px | -0.25px | Marketing hero stats |
+| display-medium | 45px | 400 | 52px | 0px | — |
+| display-small | 36px | 400 | 44px | 0px | — |
+| headline-large | 32px | 400 | 40px | 0px | Page titles |
+| headline-medium | 28px | 400 | 36px | 0px | — |
+| headline-small | 24px | 400 | 32px | 0px | Section headers, dialog titles |
+| title-large | 22px | 400 | 28px | 0px | Card titles (primary) |
+| title-medium | 16px | 500 | 24px | 0.15px | Card titles (secondary), nav |
+| title-small | 14px | 500 | 20px | 0.1px | Compact titles, sidebar |
+| body-large | 16px | 400 | 24px | 0.5px | Primary body text |
+| body-medium | 14px | 400 | 20px | 0.25px | Table body, form content |
+| body-small | 12px | 400 | 16px | 0.4px | Captions, timestamps |
+| label-large | 14px | 500 | 20px | 0.1px | Button text, active labels |
+| label-medium | 12px | 500 | 16px | 0.5px | Column headers, badges |
+| label-small | 11px | 500 | 16px | 0.5px | Micro text, version numbers |
+
+Custom: `stat-display` — 48px, weight 400, 56px line-height, -0.25px tracking. Roboto Mono. For KPI cards.
+
+Rules:
+- Financial values, currency, totals → Roboto Mono
+- Job numbers, IDs, codes → Roboto Mono
+- Everything else → Roboto
+- Max 3 type sizes per card
+- Sentence case everywhere. Only label-medium/label-small uppercase.
+
+## 3. Shape (Border Radius)
+
+| M3 token | Value | CSS var | Tailwind | Default use |
+|---|---|---|---|---|
+| none | 0px | `--shape-none` | `rounded-none` | Table inner rows |
+| extraSmall | 4px | `--shape-xs` | `rounded-[var(--shape-xs)]` | Checkboxes, small chips |
+| small | 8px | `--shape-sm` | `rounded-[var(--shape-sm)]` | Toggle tracks, compact elements |
+| medium | 12px | `--shape-md` | `rounded-[var(--shape-md)]` | Buttons, inputs, dropdowns |
+| large | 16px | `--shape-lg` | `rounded-[var(--shape-lg)]` | Cards, modals, dialogs |
+| extraLarge | 24px | `--shape-xl` | `rounded-[var(--shape-xl)]` | Bottom sheets, expanded containers |
+| full | 9999px | `--shape-full` | `rounded-full` | Badges, pills, avatars |
+
+## 4. Elevation
+
+| Level | M3 dp | CSS var | Tailwind | Use |
+|---|---|---|---|---|
+| 0 | 0dp | `--elevation-0` | `shadow-none` | Page background |
+| 1 | 1dp | `--elevation-1` | `shadow-xs` | Content cards |
+| 2 | 3dp | `--elevation-2` | `shadow-sm` | Interactive cards |
+| 3 | 6dp | `--elevation-3` | `shadow-md` | Popovers, dropdowns |
+| 4 | 8dp | `--elevation-4` | `shadow-lg` | Sticky headers, nav |
+| 5 | 12dp | `--elevation-5` | `shadow-xl` | Modals, sheets |
+
+Max 3 elevation levels visible on any page. Dark accent cards don't use shadow.
+
+## 5. Touch Targets
+
+| Context | Min height | Class |
+|---|---|---|
+| Desktop interactive | 48px | `h-12 min-h-[48px]` |
+| Shop floor interactive | 56px | `h-14 min-h-[56px]` |
+| Primary CTA | 80px | `h-20 min-h-[80px]` |
+| Table rows | 56px | `min-h-[56px]` |
+
+## 6. Component Patterns
+
+### Buttons
+
+```tsx
+// Primary (yellow)
+<Button>Save job</Button>
+// → bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]
+
+// Ghost
+<Button variant="ghost">Cancel</Button>
+// → hover:bg-[var(--neutral-50)]
+
+// Dark
+<Button variant="dark">Export</Button>
+// → bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90
+
+// Large (shop floor)
+<Button size="lg">Start production</Button>
+// → h-14 min-h-[56px]
+
+// Disabled (M3 split)
+<Button disabled>Locked</Button>
+// → bg-[#0A0A0A]/[0.12] text-[#0A0A0A]/[0.38]
+```
+
+### Cards
+
+```tsx
+// Flat card (elevation-1)
+<Card className="border border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
+
+// Elevated card (elevation-2)
+<Card className="border border-[var(--neutral-200)] shadow-sm rounded-[var(--shape-lg)]">
+
+// Dark accent card (no shadow)
+<Card className="bg-[var(--mw-mirage)] text-white border-none rounded-[var(--shape-lg)]">
+```
+
+### Tables
+
+```tsx
+// Table container
+<Card className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
+  {/* Filter bar */}
+  <div className="p-4 border-b border-[var(--neutral-100)] flex gap-3">
+    <Input placeholder="Search..." />
+  </div>
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Job #</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableRow> {/* min-h-[56px] hover:bg-[#0A0A0A]/[0.04] even:bg-[var(--neutral-50)] */}
+        <TableCell className="font-mono">MW-2024-0891</TableCell>
+      </TableRow>
+    </TableBody>
+  </Table>
+</Card>
+```
+
+### Progress
+
+```tsx
+// Linear
+<Progress value={65} />
+// Track: bg-[var(--neutral-200)], Fill: bg-[var(--mw-yellow-400)], rounded-full
+
+// Segmented (custom)
+<div className="flex gap-1">
+  {steps.map((s, i) => (
+    <div key={i} className={cn("h-2 flex-1 rounded-full", i <= current ? "bg-[var(--mw-yellow-400)]" : "bg-[var(--neutral-200)]")} />
+  ))}
+</div>
+```
+
+### Frosted Glass (sheets, dialogs, tooltips)
+
+```tsx
+// Overlay
+className="bg-black/20 backdrop-blur-sm"
+
+// Dialog/Sheet content
+className="bg-white/95 backdrop-blur-xl shadow-xl rounded-[var(--shape-lg)]"
+
+// Tooltip
+className="bg-white/90 backdrop-blur-md text-foreground border border-white/30 shadow-lg rounded-[var(--shape-md)]"
+```
+
+### Badges
+
+```tsx
+<Badge>Default</Badge>                    // neutral grey
+<Badge variant="accent">Active</Badge>   // MW Yellow
+<Badge variant="dark">Admin</Badge>      // Mirage
+<Badge variant="success">Complete</Badge>
+<Badge variant="destructive">Error</Badge>
+<Badge variant="warning">Pending</Badge>
+<Badge variant="outline">Draft</Badge>
+```
+
+### Avatars
+
+```tsx
+<Avatar className="ring-2 ring-white shadow-sm">
+  <AvatarImage src={url} />
+  <AvatarFallback className="bg-[var(--neutral-100)] text-[var(--neutral-500)] font-medium text-sm">
+    MQ
+  </AvatarFallback>
+</Avatar>
+```
+
+## 7. Spacing
+
+- Page padding: `p-8`
+- Card padding: `p-6`
+- Row gap: `gap-6`
+- Section spacing: `space-y-8`
+- Grid: 8px base (`gap-2` = 8px)
+
+## 8. State Layers
+
+M3 opacities applied as overlay of the content's own colour:
+
+| State | Opacity | Pattern |
+|---|---|---|
+| Hover | 8% | `hover:bg-[#0A0A0A]/[0.08]` |
+| Focus | 10% | `focus:bg-[#0A0A0A]/[0.10]` |
+| Pressed | 10% | `active:bg-[#0A0A0A]/[0.10]` |
+| Dragged | 16% | `bg-[#0A0A0A]/[0.16]` |
+
+Disabled (split — never blanket opacity):
+```tsx
+// Light surface
+className="disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]"
+
+// Dark surface
+className="disabled:bg-white/[0.12] disabled:text-white/[0.38]"
+```
+
+## 9. Motion
+
+### Easing (CSS variables)
+
+| Token | Curve | Use |
+|---|---|---|
+| `--ease-standard` | `cubic-bezier(0.2, 0, 0, 1.0)` | General transitions |
+| `--ease-standard-decelerate` | `cubic-bezier(0, 0, 0, 1)` | Elements entering |
+| `--ease-standard-accelerate` | `cubic-bezier(0.3, 0, 1, 1)` | Elements leaving |
+| `--ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1.0)` | Important transitions |
+| `--ease-emphasized-decelerate` | `cubic-bezier(0.05, 0.7, 0.1, 1.0)` | Entering with emphasis |
+| `--ease-emphasized-accelerate` | `cubic-bezier(0.3, 0, 0.8, 0.15)` | Leaving with emphasis |
+
+### Duration
+
+| Token | Value | Use |
+|---|---|---|
+| `--duration-short1` | 50ms | Micro-interactions |
+| `--duration-short2` | 100ms | Simple state changes |
+| `--duration-medium1` | 250ms | Standard transitions (default) |
+| `--duration-medium2` | 350ms | Complex transitions |
+| `--duration-long1` | 450ms | Page transitions |
+| `--duration-long2` | 550ms | Emphasis transitions |
+
+Default: `duration-[var(--duration-medium1)] ease-[var(--ease-standard)]`.
+Enter: `ease-[var(--ease-standard-decelerate)]`.
+Exit: `ease-[var(--ease-standard-accelerate)]`.
+
+## 10. Critical Rules
+
+1. Sentence case everywhere (not Title Case)
+2. Australian English (colour, organisation, metre, labour)
+3. No gradients — flat colours only
+4. No decorative borders — borders only for structure
+5. Monochromatic icons (Lucide) — no multi-colour icons
+6. One primary action per card (one yellow button max)
+7. No hover-only interactions on touch surfaces
+8. Helpful empty states with illustration + CTA
+9. Specific error messages ("Job MW-2024-0891 not found" not "Error occurred")
+10. Cmd+K search always available
+11. Short forms — avoid full-page wizards
+12. ShadCN/Radix components only — no custom UI primitives
+13. No Babylon.js in React state — use refs and useEffect
+14. Components under 400 lines — split if larger
+
+## 11. Module Notes
+
+- **Make**: 56px+ touch targets, large checkboxes, progress bars for job stages
+- **Book**: Roboto Mono for all financial values, right-aligned numbers
+- **Sell**: Dark accent cards for pipeline stages, MW Yellow for won deals
+- **Plan**: Segmented progress bars for schedule, timeline views
+- **Ship**: Timeline component + large checkboxes for dispatch checklists
+- **Buy**: Card nesting for PO → line items, three-way match indicators

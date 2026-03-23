@@ -43,15 +43,15 @@ export const colors = {
 // ============================================================================
 
 export const fonts = {
-  // Primary fonts
-  sans: "'Geist:Regular',sans-serif",
-  sansMedium: "'Geist:Medium',sans-serif",
-  sansSemiBold: "'Geist:SemiBold',sans-serif",
-  sansBold: "'Geist:Bold',sans-serif",
-  
-  // Monospace for IDs, codes, financial figures
-  mono: "'JetBrains_Mono',monospace",
-  monoFinancial: "'Roboto_Mono',monospace",
+  // Primary fonts — Roboto (v2.0)
+  sans: "'Roboto',sans-serif",
+  sansLight: "'Roboto',sans-serif",     // weight 300
+  sansMedium: "'Roboto',sans-serif",    // weight 500
+  sansBold: "'Roboto',sans-serif",      // weight 700
+
+  // Monospace for IDs, codes, financial figures — Roboto Mono (v2.0)
+  mono: "'Roboto Mono',monospace",
+  monoFinancial: "'Roboto Mono',monospace",
 } as const;
 
 // ============================================================================
