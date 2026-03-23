@@ -42,9 +42,9 @@ const mockInvoices: Invoice[] = [
 const getStatusBadge = (status: InvoiceStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'sent': return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Sent', dot: '#0A7AFF' };
+    case 'sent': return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Sent', dot: '#0052CC' };
     case 'paid': return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Paid', dot: '#36B37E' };
-    case 'overdue': return { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Overdue', dot: '#EF4444' };
+    case 'overdue': return { bg: 'bg-[#FFEBE6]', text: 'text-[#DE350B]', label: 'Overdue', dot: '#DE350B' };
   }
 };
 
@@ -67,7 +67,7 @@ export function SellInvoices() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -99,7 +99,7 @@ export function SellInvoices() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "px-4 py-2 font-['Geist:Regular',sans-serif] text-[14px] border-b-2 transition-colors relative",
+              "px-4 py-2 text-[14px] border-b-2 transition-colors relative",
               activeTab === tab
                 ? 'border-[#FFCF4B] text-[#0A0A0A] font-medium'
                 : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
@@ -113,7 +113,7 @@ export function SellInvoices() {
 
       {/* Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -144,7 +144,7 @@ export function SellInvoices() {
                         <input type="checkbox" className="rounded border-[#E5E5E5]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/invoices/${invoice.id}`} className="text-[#0052CC] font-['Roboto_Mono',monospace] text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/invoices/${invoice.id}`} className="text-[#0052CC] font-mono text-sm font-medium hover:underline flex items-center gap-1">
                           {invoice.invoiceNumber}
                           <ExternalLink className="w-3 h-3" />
                         </a>
@@ -156,7 +156,7 @@ export function SellInvoices() {
                       <td className="px-4 text-sm text-[#525252]">
                         {new Date(invoice.dueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
                         {invoice.status === 'overdue' && (
-                          <span className="ml-2 text-xs text-[#EF4444]">({daysOverdue}d overdue)</span>
+                          <span className="ml-2 text-xs text-[#DE350B]">({daysOverdue}d overdue)</span>
                         )}
                       </td>
                       <td className="px-4">
@@ -167,8 +167,8 @@ export function SellInvoices() {
                           </Badge>
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">${invoice.total.toLocaleString()}</td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium" style={{ color: invoice.balanceDue > 0 ? '#EF4444' : '#36B37E' }}>
+                      <td className="px-4 text-right text-sm font-mono font-medium">${invoice.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm font-mono font-medium" style={{ color: invoice.balanceDue > 0 ? '#DE350B' : '#36B37E' }}>
                         ${invoice.balanceDue.toLocaleString()}
                       </td>
                       <td className="px-4">

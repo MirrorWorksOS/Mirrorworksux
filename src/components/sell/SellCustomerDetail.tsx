@@ -94,31 +94,31 @@ const mockCustomers: Record<string, any> = {
 const statusStyle = (s: string) => {
   switch (s) {
     case 'active': return 'bg-[#E3FCEF] text-[#36B37E]';
-    case 'prospect': return 'bg-[#DBEAFE] text-[#0A7AFF]';
+    case 'prospect': return 'bg-[#DEEBFF] text-[#0052CC]';
     case 'inactive': return 'bg-[#F5F5F5] text-[#737373]';
-    case 'on-hold': return 'bg-[#FFEDD5] text-[#FF8B00]';
+    case 'on-hold': return 'bg-[#FFF9C4] text-[#FACC15]';
     default: return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
 
 const typeStyle = (t: string) => {
   switch (t) {
-    case 'Customer': return 'bg-[#DBEAFE] text-[#0A7AFF]';
+    case 'Customer': return 'bg-[#DEEBFF] text-[#0052CC]';
     case 'Vendor': return 'bg-[#E3FCEF] text-[#36B37E]';
-    case 'Subcontractor': return 'bg-[#FFEDD5] text-[#FF8B00]';
+    case 'Subcontractor': return 'bg-[#FFF9C4] text-[#FACC15]';
     default: return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
 
 const badgeStatus = (s: string) => {
   switch (s) {
-    case 'Sent': return 'bg-[#DBEAFE] text-[#0A7AFF]';
+    case 'Sent': return 'bg-[#DEEBFF] text-[#0052CC]';
     case 'Accepted': case 'Paid': case 'Completed': return 'bg-[#E3FCEF] text-[#36B37E]';
-    case 'Declined': case 'Overdue': return 'bg-[#FEE2E2] text-[#EF4444]';
+    case 'Declined': case 'Overdue': return 'bg-[#FFEBE6] text-[#DE350B]';
     case 'Draft': return 'bg-[#F5F5F5] text-[#737373]';
-    case 'In Progress': return 'bg-[#DBEAFE] text-[#0A7AFF]';
-    case 'Proposal': return 'bg-[#DBEAFE] text-[#0A7AFF]';
-    case 'Negotiation': return 'bg-[#FFFBF0] text-[#FF8B00]';
+    case 'In Progress': return 'bg-[#DEEBFF] text-[#0052CC]';
+    case 'Proposal': return 'bg-[#DEEBFF] text-[#0052CC]';
+    case 'Negotiation': return 'bg-[#FFFBF0] text-[#FACC15]';
     default: return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
@@ -173,7 +173,7 @@ export function SellCustomerDetail() {
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-['Geist:SemiBold',sans-serif] text-[20px] font-semibold text-[#0A0A0A]">
+            <h1 className="text-[20px] font-semibold text-[#0A0A0A]">
               {customer.company}
             </h1>
             {customer.types.map((t: string) => (
@@ -184,7 +184,7 @@ export function SellCustomerDetail() {
             </Badge>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+            <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
               New quote
             </Button>
             <DropdownMenu>
@@ -196,7 +196,7 @@ export function SellCustomerDetail() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem><Pencil className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
                 <DropdownMenuItem><Archive className="w-4 h-4 mr-2" /> Archive</DropdownMenuItem>
-                <DropdownMenuItem className="text-[#EF4444]"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+                <DropdownMenuItem className="text-[#DE350B]"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -209,7 +209,7 @@ export function SellCustomerDetail() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                "px-4 py-2 font-['Geist:Regular',sans-serif] text-[14px] rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
+                "px-4 py-2 text-[14px] rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
                 activeTab === tab.key ? 'bg-[#F5F5F5] text-[#0A0A0A] font-medium' : 'text-[#737373] hover:bg-[#FAFAFA]'
               )}
             >
@@ -232,8 +232,8 @@ export function SellCustomerDetail() {
             {/* Left Column - 2/3 */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A] mb-6">Company information</h2>
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
                   <Field label="ABN" value={customer.abn} mono />
@@ -247,26 +247,26 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Primary Contact */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A] mb-6">Primary contact</h2>
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
                   <Field label="Job title" value={customer.primaryContact.title} />
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Email</span>
-                    <a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0A7AFF] hover:underline flex items-center gap-1.5">
+                    <a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0052CC] hover:underline flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5" /> {customer.primaryContact.email}
                     </a>
                   </div>
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Phone</span>
-                    <a href={`tel:${customer.primaryContact.phone}`} className="text-[14px] text-[#0A7AFF] hover:underline flex items-center gap-1.5">
+                    <a href={`tel:${customer.primaryContact.phone}`} className="text-[14px] text-[#0052CC] hover:underline flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5" /> {customer.primaryContact.phone}
                     </a>
                   </div>
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Mobile</span>
-                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-[14px] text-[#0A7AFF] hover:underline flex items-center gap-1.5">
+                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-[14px] text-[#0052CC] hover:underline flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5" /> {customer.primaryContact.mobile}
                     </a>
                   </div>
@@ -275,14 +275,14 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Address */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">Address</h2>
+                  <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Address</h2>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-[#0A7AFF] hover:underline flex items-center gap-1"
+                    className="text-sm text-[#0052CC] hover:underline flex items-center gap-1"
                   >
                     <MapPin className="w-4 h-4" /> Open in maps
                   </a>
@@ -295,12 +295,12 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Additional Contacts */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <button
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
                 >
-                  <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">
+                  <h2 className="text-[18px] font-semibold text-[#0A0A0A]">
                     Additional contacts ({customer.additionalContacts.length})
                   </h2>
                   {additionalContactsOpen ? <ChevronUp className="w-5 h-5 text-[#737373]" /> : <ChevronDown className="w-5 h-5 text-[#737373]" />}
@@ -318,11 +318,11 @@ export function SellCustomerDetail() {
                           <p className="text-[14px] font-medium text-[#0A0A0A]">{c.name}</p>
                           <p className="text-[12px] text-[#737373]">{c.role}</p>
                         </div>
-                        <a href={`mailto:${c.email}`} className="text-[12px] text-[#0A7AFF] hover:underline">{c.email}</a>
+                        <a href={`mailto:${c.email}`} className="text-[12px] text-[#0052CC] hover:underline">{c.email}</a>
                         <span className="text-[12px] text-[#737373]">{c.phone}</span>
                       </div>
                     ))}
-                    <button className="text-[13px] text-[#0A7AFF] hover:underline flex items-center gap-1 mt-2">
+                    <button className="text-[13px] text-[#0052CC] hover:underline flex items-center gap-1 mt-2">
                       <Plus className="w-3.5 h-3.5" /> Add contact
                     </button>
                   </div>
@@ -330,16 +330,16 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Financial Summary */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A] mb-6">Financial summary</h2>
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Lifetime revenue</span>
-                    <p className="font-['Roboto_Mono',monospace] text-[20px] font-semibold text-[#0A0A0A]">{fmt(customer.financial.lifetimeRevenue)}</p>
+                    <p className="font-mono text-[20px] font-semibold text-[#0A0A0A]">{fmt(customer.financial.lifetimeRevenue)}</p>
                   </div>
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Outstanding</span>
-                    <p className="font-['Roboto_Mono',monospace] text-[20px] font-semibold text-[#FF8B00]">{fmt(customer.financial.outstanding)}</p>
+                    <p className="font-mono text-[20px] font-semibold text-[#FACC15]">{fmt(customer.financial.outstanding)}</p>
                   </div>
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Payment terms</span>
@@ -347,19 +347,19 @@ export function SellCustomerDetail() {
                   </div>
                   <div>
                     <span className="block text-[13px] font-medium text-[#737373] mb-1">Credit limit</span>
-                    <p className="font-['Roboto_Mono',monospace] text-[16px] font-medium text-[#0A0A0A]">{fmt(customer.financial.creditLimit)}</p>
+                    <p className="font-mono text-[16px] font-medium text-[#0A0A0A]">{fmt(customer.financial.creditLimit)}</p>
                   </div>
                 </div>
               </Card>
 
               {/* Tags & Notes */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A] mb-4">Tags & notes</h2>
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+                <h2 className="text-[18px] font-semibold text-[#0A0A0A] mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
                     <Badge key={tag} className="bg-[#FFFBF0] text-[#2C2C2C] border border-[#FFCF4B] rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
-                  <button className="text-[12px] text-[#0A7AFF] hover:underline flex items-center gap-1">
+                  <button className="text-[12px] text-[#0052CC] hover:underline flex items-center gap-1">
                     <Plus className="w-3 h-3" /> Add tag
                   </button>
                 </div>
@@ -373,10 +373,10 @@ export function SellCustomerDetail() {
             {/* Right Column - 1/3 */}
             <div className="space-y-6">
               {/* Activity Timeline */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">Recent activity</h3>
-                  <button className="text-[12px] text-[#0A7AFF] hover:underline">View all</button>
+                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Recent activity</h3>
+                  <button className="text-[12px] text-[#0052CC] hover:underline">View all</button>
                 </div>
                 <div className="space-y-4">
                   {customer.activity.slice(0, 5).map((a: any, i: number) => (
@@ -397,10 +397,10 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Active Opportunities */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">Active opportunities</h3>
-                  <button className="text-[12px] text-[#0A7AFF] hover:underline flex items-center gap-1">
+                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Active opportunities</h3>
+                  <button className="text-[12px] text-[#0052CC] hover:underline flex items-center gap-1">
                     <Plus className="w-3 h-3" /> New
                   </button>
                 </div>
@@ -408,12 +408,12 @@ export function SellCustomerDetail() {
                   {customer.opportunities.map((opp: any) => (
                     <div key={opp.id} className="p-3 bg-[#FAFAFA] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-['JetBrains_Mono',monospace] text-[12px] font-bold text-[#0A0A0A]">{opp.id}</span>
+                        <span className="font-mono text-[12px] font-bold text-[#0A0A0A]">{opp.id}</span>
                         <Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge>
                       </div>
                       <p className="text-[13px] font-medium text-[#0A0A0A] mb-1">{opp.name}</p>
                       <div className="flex items-center justify-between">
-                        <span className="font-['Roboto_Mono',monospace] text-[13px] text-[#0A0A0A]">{fmt(opp.value)}</span>
+                        <span className="font-mono text-[13px] text-[#0A0A0A]">{fmt(opp.value)}</span>
                         <span className="text-[11px] text-[#737373]">{opp.closeDate}</span>
                       </div>
                     </div>
@@ -422,30 +422,30 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Recent Quotes & Orders */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">Recent quotes & orders</h3>
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+                <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
                       <div>
-                        <span className="font-['JetBrains_Mono',monospace] text-[12px] font-bold text-[#0A0A0A]">{item.ref}</span>
+                        <span className="font-mono text-[12px] font-bold text-[#0A0A0A]">{item.ref}</span>
                         <p className="text-[11px] text-[#737373]">{item.date}</p>
                       </div>
                       <div className="text-right flex items-center gap-2">
-                        <span className="font-['Roboto_Mono',monospace] text-[12px] text-[#0A0A0A]">{fmt(item.value)}</span>
+                        <span className="font-mono text-[12px] text-[#0A0A0A]">{fmt(item.value)}</span>
                         <Badge className={cn('rounded text-[10px] px-1.5 py-0 border-0', badgeStatus(item.status))}>{item.status}</Badge>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button className="text-[12px] text-[#0A7AFF] hover:underline mt-3">View all →</button>
+                <button className="text-[12px] text-[#0052CC] hover:underline mt-3">View all →</button>
               </Card>
 
               {/* Intelligence Hub */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-[#FFCF4B]" />
-                  <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">Intelligence Hub</h3>
+                  <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Intelligence Hub</h3>
                 </div>
                 <p className="text-[13px] text-[#737373] leading-relaxed">
                   TechCorp's order frequency has increased 40% this quarter. Consider offering volume pricing on 5052 aluminium enclosures to lock in Q2 demand.
@@ -460,16 +460,16 @@ export function SellCustomerDetail() {
         {activeTab === 'sales' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">Quotes & orders</h2>
-              <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Quotes & orders</h2>
+              <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
             </div>
 
             {/* Active Opportunities */}
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E5E5]">
-                <h3 className="font-['Geist:Medium',sans-serif] text-[16px] font-medium text-[#0A0A0A]">Active opportunities</h3>
+                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Active opportunities</h3>
               </div>
               <table className="w-full">
                 <thead>
@@ -484,10 +484,10 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.opportunities.map((opp: any) => (
                     <tr key={opp.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6 font-['JetBrains_Mono',monospace] text-[13px] font-bold text-[#0A0A0A]">{opp.id}</td>
+                      <td className="px-6 font-mono text-[13px] font-bold text-[#0A0A0A]">{opp.id}</td>
                       <td className="px-6 text-[14px] text-[#0A0A0A]">{opp.name}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge></td>
-                      <td className="px-6 text-right font-['Roboto_Mono',monospace] text-[14px]">{fmt(opp.value)}</td>
+                      <td className="px-6 text-right font-mono text-[14px]">{fmt(opp.value)}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{opp.closeDate}</td>
                     </tr>
                   ))}
@@ -496,9 +496,9 @@ export function SellCustomerDetail() {
             </Card>
 
             {/* Quotes */}
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E5E5]">
-                <h3 className="font-['Geist:Medium',sans-serif] text-[16px] font-medium text-[#0A0A0A]">Quotes</h3>
+                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Quotes</h3>
               </div>
               <table className="w-full">
                 <thead>
@@ -512,9 +512,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.recentQuotes.map((q: any) => (
                     <tr key={q.ref} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6 font-['JetBrains_Mono',monospace] text-[13px] font-bold text-[#0A0A0A]">{q.ref}</td>
+                      <td className="px-6 font-mono text-[13px] font-bold text-[#0A0A0A]">{q.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{q.date}</td>
-                      <td className="px-6 text-right font-['Roboto_Mono',monospace] text-[14px]">{fmt(q.value)}</td>
+                      <td className="px-6 text-right font-mono text-[14px]">{fmt(q.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(q.status))}>{q.status}</Badge></td>
                     </tr>
                   ))}
@@ -523,9 +523,9 @@ export function SellCustomerDetail() {
             </Card>
 
             {/* Sales Orders */}
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E5E5]">
-                <h3 className="font-['Geist:Medium',sans-serif] text-[16px] font-medium text-[#0A0A0A]">Sales orders</h3>
+                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Sales orders</h3>
               </div>
               <table className="w-full">
                 <thead>
@@ -539,9 +539,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.recentOrders.map((o: any) => (
                     <tr key={o.ref} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6 font-['JetBrains_Mono',monospace] text-[13px] font-bold text-[#0A0A0A]">{o.ref}</td>
+                      <td className="px-6 font-mono text-[13px] font-bold text-[#0A0A0A]">{o.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{o.date}</td>
-                      <td className="px-6 text-right font-['Roboto_Mono',monospace] text-[14px]">{fmt(o.value)}</td>
+                      <td className="px-6 text-right font-mono text-[14px]">{fmt(o.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(o.status))}>{o.status}</Badge></td>
                     </tr>
                   ))}
@@ -558,21 +558,21 @@ export function SellCustomerDetail() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
                 { label: 'Lifetime revenue', value: fmt(customer.financial.lifetimeRevenue), color: 'text-[#0A0A0A]' },
-                { label: 'Outstanding', value: fmt(customer.financial.outstanding), color: 'text-[#FF8B00]' },
+                { label: 'Outstanding', value: fmt(customer.financial.outstanding), color: 'text-[#FACC15]' },
                 { label: 'Credit limit', value: fmt(customer.financial.creditLimit), color: 'text-[#0A0A0A]' },
                 { label: 'Payment terms', value: customer.financial.avgPaymentTerms, color: 'text-[#0A0A0A]', noMono: true },
               ].map((kpi) => (
-                <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+                <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                   <span className="block text-[13px] font-medium text-[#737373] mb-2">{kpi.label}</span>
-                  <p className={cn('text-[24px] font-semibold', kpi.color, !kpi.noMono && "font-['Roboto_Mono',monospace]")}>{kpi.value}</p>
+                  <p className={cn('text-[24px] font-semibold', kpi.color, !kpi.noMono && "font-mono")}>{kpi.value}</p>
                 </Card>
               ))}
             </div>
 
             {/* Invoices */}
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E5E5E5]">
-                <h3 className="font-['Geist:Medium',sans-serif] text-[16px] font-medium text-[#0A0A0A]">Invoices</h3>
+                <h3 className="text-[16px] font-medium text-[#0A0A0A]">Invoices</h3>
               </div>
               <table className="w-full">
                 <thead>
@@ -587,9 +587,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.invoices.map((inv: any) => (
                     <tr key={inv.ref} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                      <td className="px-6 font-['JetBrains_Mono',monospace] text-[13px] font-bold text-[#0A0A0A]">{inv.ref}</td>
+                      <td className="px-6 font-mono text-[13px] font-bold text-[#0A0A0A]">{inv.ref}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{inv.date}</td>
-                      <td className="px-6 text-right font-['Roboto_Mono',monospace] text-[14px]">{fmt(inv.amount)}</td>
+                      <td className="px-6 text-right font-mono text-[14px]">{fmt(inv.amount)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(inv.status))}>{inv.status}</Badge></td>
                       <td className="px-6 text-[14px] text-[#737373]">{inv.due}</td>
                     </tr>
@@ -604,10 +604,10 @@ export function SellCustomerDetail() {
         {activeTab === 'contacts' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">All contacts at {customer.company}</h2>
+              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">All contacts at {customer.company}</h2>
               <Button variant="outline" className="border-[#E5E5E5]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
             </div>
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#FAFAFA] border-b border-[#E5E5E5]">
@@ -622,7 +622,7 @@ export function SellCustomerDetail() {
                   <tr className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors">
                     <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{customer.primaryContact.name}</td>
                     <td className="px-6 text-[14px] text-[#737373]">{customer.primaryContact.title}</td>
-                    <td className="px-6"><a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0A7AFF] hover:underline">{customer.primaryContact.email}</a></td>
+                    <td className="px-6"><a href={`mailto:${customer.primaryContact.email}`} className="text-[14px] text-[#0052CC] hover:underline">{customer.primaryContact.email}</a></td>
                     <td className="px-6 text-[14px] text-[#737373]">{customer.primaryContact.phone}</td>
                     <td className="px-6 text-center"><span className="w-2 h-2 bg-[#36B37E] rounded-full inline-block" /></td>
                   </tr>
@@ -630,7 +630,7 @@ export function SellCustomerDetail() {
                     <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors">
                       <td className="px-6 text-[14px] font-medium text-[#0A0A0A]">{c.name}</td>
                       <td className="px-6 text-[14px] text-[#737373]">{c.role}</td>
-                      <td className="px-6"><a href={`mailto:${c.email}`} className="text-[14px] text-[#0A7AFF] hover:underline">{c.email}</a></td>
+                      <td className="px-6"><a href={`mailto:${c.email}`} className="text-[14px] text-[#0052CC] hover:underline">{c.email}</a></td>
                       <td className="px-6 text-[14px] text-[#737373]">{c.phone}</td>
                       <td className="px-6 text-center">—</td>
                     </tr>
@@ -645,7 +645,7 @@ export function SellCustomerDetail() {
         {activeTab === 'documents' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">Documents</h2>
+              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Documents</h2>
               <Button variant="outline" className="border-[#E5E5E5]"><Upload className="w-4 h-4 mr-2" /> Upload</Button>
             </div>
             {/* Drop zone */}
@@ -654,7 +654,7 @@ export function SellCustomerDetail() {
               <p className="text-[14px] text-[#737373]">Drag and drop files here, or click to browse</p>
               <p className="text-[12px] text-[#737373] mt-1">PDF, DXF, DWG, STEP, images up to 25 MB</p>
             </div>
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#FAFAFA] border-b border-[#E5E5E5]">
@@ -668,7 +668,7 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.documents.map((doc: any, i: number) => (
                     <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors cursor-pointer">
-                      <td className="px-6 text-[14px] text-[#0A7AFF] hover:underline flex items-center gap-2 h-14">
+                      <td className="px-6 text-[14px] text-[#0052CC] hover:underline flex items-center gap-2 h-14">
                         <FileText className="w-4 h-4 text-[#737373]" /> {doc.name}
                       </td>
                       <td className="px-6 text-[14px] text-[#737373]">{doc.category}</td>
@@ -687,7 +687,7 @@ export function SellCustomerDetail() {
         {activeTab === 'activity' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">Activity log</h2>
+              <h2 className="text-[18px] font-semibold text-[#0A0A0A]">Activity log</h2>
               <Button variant="outline" className="border-[#E5E5E5]"><Plus className="w-4 h-4 mr-2" /> Log activity</Button>
             </div>
             {/* Filter chips */}
@@ -699,7 +699,7 @@ export function SellCustomerDetail() {
                 )}>{f}</button>
               ))}
             </div>
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
               <div className="space-y-6">
                 {customer.activity.map((a: any, i: number) => (
                   <div key={i} className="flex gap-4">
@@ -733,11 +733,11 @@ function Field({ label, value, mono, link }: { label: string; value: string; mon
     <div>
       <span className="block text-[13px] font-medium text-[#737373] mb-1">{label}</span>
       {link ? (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#0A7AFF] hover:underline flex items-center gap-1">
+        <a href={value} target="_blank" rel="noopener noreferrer" className="text-[14px] text-[#0052CC] hover:underline flex items-center gap-1">
           <Globe className="w-3.5 h-3.5" /> {value.replace('https://', '')}
         </a>
       ) : (
-        <p className={cn('text-[14px] text-[#0A0A0A]', mono && "font-['Roboto_Mono',monospace]")}>{value}</p>
+        <p className={cn('text-[14px] text-[#0A0A0A]', mono && "font-mono")}>{value}</p>
       )}
     </div>
   );

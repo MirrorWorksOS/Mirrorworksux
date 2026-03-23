@@ -37,7 +37,7 @@ const mockProducts: Product[] = [
 ];
 
 const getStockBadge = (stockLevel: number, reorderPoint: number) => {
-  if (stockLevel === 0) return { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Out of stock' };
+  if (stockLevel === 0) return { bg: 'bg-[#FFEBE6]', text: 'text-[#DE350B]', label: 'Out of stock' };
   if (stockLevel < reorderPoint) return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Low stock' };
   return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'In stock' };
 };
@@ -52,7 +52,7 @@ export function SellProducts() {
   );
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -120,7 +120,7 @@ export function SellProducts() {
             const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={animationVariants.listItem} custom={idx}>
-                <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
                   {/* Product Image Placeholder */}
                   <div className="h-40 bg-gradient-to-br from-[#F5F5F5] to-[#E5E5E5] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[#A3A3A3]" />
@@ -129,10 +129,10 @@ export function SellProducts() {
                   <div className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
-                        <p className="font-['Roboto_Mono',monospace] text-[12px] text-[#737373]">{product.sku}</p>
+                        <p className="font-mono text-[12px] text-[#737373]">{product.sku}</p>
                       </div>
                     </div>
 
@@ -146,13 +146,13 @@ export function SellProducts() {
                     <div className="flex items-center justify-between pt-3 border-t border-[#E5E5E5]">
                       <div>
                         <p className="text-xs text-[#737373] mb-1">Stock Level</p>
-                        <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold text-[#0A0A0A]">
+                        <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
                           {product.stockLevel} units
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[#737373] mb-1">Unit Price</p>
-                        <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold text-[#36B37E]">
+                        <p className="font-mono text-[14px] font-semibold text-[#36B37E]">
                           ${product.unitPrice.toFixed(2)}
                         </p>
                       </div>
@@ -167,7 +167,7 @@ export function SellProducts() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -190,10 +190,10 @@ export function SellProducts() {
                           {product.name}
                         </a>
                       </td>
-                      <td className="px-4 font-['Roboto_Mono',monospace] text-sm text-[#525252]">{product.sku}</td>
+                      <td className="px-4 font-mono text-sm text-[#525252]">{product.sku}</td>
                       <td className="px-4 text-sm text-[#525252]">{product.category}</td>
-                      <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium">{product.stockLevel}</td>
-                      <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium text-[#36B37E]">
+                      <td className="px-4 text-right font-mono text-sm font-medium">{product.stockLevel}</td>
+                      <td className="px-4 text-right font-mono text-sm font-medium text-[#36B37E]">
                         ${product.unitPrice.toFixed(2)}
                       </td>
                       <td className="px-4">
@@ -214,12 +214,12 @@ export function SellProducts() {
 
       {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-12">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-[#737373]" />
             </div>
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-2">No products found</h3>
+            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">No products found</h3>
             <p className="text-sm text-[#737373] mb-4">Try adjusting your search or create a new product</p>
             <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">
               <Plus className="w-4 h-4 mr-2" />

@@ -45,7 +45,7 @@ function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
       <Button variant="ghost" className="text-[#737373] text-sm h-10">Discard</Button>
-      <Button className="h-10 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] rounded">Save changes</Button>
+      <Button className="h-10 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] rounded">Save changes</Button>
     </div>
   );
 }
@@ -119,9 +119,9 @@ function TeamsPanel() {
   ];
 
   const roleColours: Record<string, { bg: string; text: string }> = {
-    Admin:     { bg: 'bg-[#FEE2E2]',  text: 'text-[#EF4444]' },
-    Manager:   { bg: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
-    Estimator: { bg: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
+    Admin:     { bg: 'bg-[#FFEBE6]',  text: 'text-[#DE350B]' },
+    Manager:   { bg: 'bg-[#DEEBFF]',  text: 'text-[#0052CC]' },
+    Estimator: { bg: 'bg-[#FFF9C4]',  text: 'text-[#FACC15]' },
     'Sales Rep':{ bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]' },
   };
 
@@ -132,12 +132,12 @@ function TeamsPanel() {
           <h3 className="text-[16px] font-semibold text-[#0A0A0A]">Team members</h3>
           <p className="text-sm text-[#737373] mt-0.5">{members.filter(m => m.active).length} active members</p>
         </div>
-        <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
+        <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2">
           <Plus className="w-4 h-4" /> Invite member
         </Button>
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
@@ -179,7 +179,7 @@ function TeamsPanel() {
         </table>
       </Card>
 
-      <Card className="bg-[#FAFAFA] border border-[#E5E5E5] rounded-lg p-6">
+      <Card className="bg-[#FAFAFA] border border-[#E5E5E5] rounded-2xl p-6">
         <h4 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Invite new member</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-1">
@@ -213,11 +213,11 @@ function TeamsPanel() {
 function PipelinePanel() {
   const stages = [
     { name: 'New',          probability: 10, color: '#737373' },
-    { name: 'Qualified',    probability: 25, color: '#0A7AFF' },
-    { name: 'Proposal',     probability: 50, color: '#7C3AED' },
-    { name: 'Negotiation',  probability: 75, color: '#FF8B00' },
+    { name: 'Qualified',    probability: 25, color: '#0052CC' },
+    { name: 'Proposal',     probability: 50, color: '#0052CC' },
+    { name: 'Negotiation',  probability: 75, color: '#FACC15' },
     { name: 'Won',          probability: 100, color: '#36B37E' },
-    { name: 'Lost',         probability: 0,   color: '#EF4444' },
+    { name: 'Lost',         probability: 0,   color: '#DE350B' },
   ];
 
   const sources = ['Website enquiry', 'Trade show', 'Referral', 'Cold outreach', 'Repeat customer', 'LinkedIn'];
@@ -229,12 +229,12 @@ function PipelinePanel() {
         <SectionLabel>Pipeline stages</SectionLabel>
         <div className="space-y-2">
           {stages.map(s => (
-            <div key={s.name} className="flex items-center gap-4 bg-white border border-[#E5E5E5] rounded-lg p-3 hover:bg-[#FAFAFA] transition-colors">
+            <div key={s.name} className="flex items-center gap-4 bg-white border border-[#E5E5E5] rounded-2xl p-3 hover:bg-[#FAFAFA] transition-colors">
               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
               <span className="flex-1 text-sm text-[#0A0A0A] font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#737373]">Probability</span>
-                <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[#E5E5E5] text-right font-['Roboto_Mono',monospace]" />
+                <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[#E5E5E5] text-right font-mono" />
                 <span className="text-sm text-[#737373]">%</span>
               </div>
             </div>
@@ -248,7 +248,7 @@ function PipelinePanel() {
           {sources.map(s => (
             <div key={s} className="flex items-center gap-1.5 bg-white border border-[#E5E5E5] rounded-full px-3 py-1.5">
               <span className="text-sm text-[#0A0A0A]">{s}</span>
-              <button className="text-[#A3A3A3] hover:text-[#EF4444] transition-colors">
+              <button className="text-[#A3A3A3] hover:text-[#DE350B] transition-colors">
                 <Trash2 className="w-3 h-3" />
               </button>
             </div>
@@ -270,7 +270,7 @@ function PipelinePanel() {
           ].map(r => (
             <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
               <span className="text-sm text-[#0A0A0A]">{r.rule}</span>
-              <span className={cn("text-sm font-['Roboto_Mono',monospace] font-semibold", r.points.startsWith('+') ? 'text-[#36B37E]' : 'text-[#EF4444]')}>
+              <span className={cn("text-sm font-mono font-semibold", r.points.startsWith('+') ? 'text-[#36B37E]' : 'text-[#DE350B]')}>
                 {r.points}
               </span>
             </div>
@@ -293,7 +293,7 @@ function QuotingPanel() {
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="MW-Q-" className="h-12 border-[#E5E5E5] rounded w-32" />
-              <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">Preview: MW-Q-0047</span>
+              <span className="text-xs text-[#737373] font-mono">Preview: MW-Q-0047</span>
             </div>
           </div>
           <div>
@@ -345,7 +345,7 @@ function QuotingPanel() {
             <div key={r.label} className="flex items-center justify-between py-2">
               <span className="text-sm text-[#0A0A0A]">{r.label}</span>
               <div className="flex items-center gap-2">
-                <Input defaultValue={r.value} type="number" className="h-10 border-[#E5E5E5] rounded w-24 text-right font-['Roboto_Mono',monospace]" />
+                <Input defaultValue={r.value} type="number" className="h-10 border-[#E5E5E5] rounded w-24 text-right font-mono" />
                 <span className="text-sm text-[#737373]">{r.suffix}</span>
               </div>
             </div>
@@ -404,7 +404,7 @@ function PaymentsPanel() {
     <div className="space-y-6 max-w-[640px]">
       <div className="space-y-4">
         {integrations.map(integ => (
-          <Card key={integ.name} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+          <Card key={integ.name} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div
@@ -422,7 +422,7 @@ function PaymentsPanel() {
                   </div>
                   <p className="text-xs text-[#737373] mt-0.5">{integ.description}</p>
                   {integ.connected && integ.accountId && (
-                    <p className="text-xs text-[#737373] font-['Roboto_Mono',monospace] mt-1">{integ.accountId}</p>
+                    <p className="text-xs text-[#737373] font-mono mt-1">{integ.accountId}</p>
                   )}
                 </div>
               </div>
@@ -433,7 +433,7 @@ function PaymentsPanel() {
                   'h-9 text-xs',
                   integ.connected
                     ? 'border-[#E5E5E5] text-[#737373]'
-                    : 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] border-0'
+                    : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] border-0'
                 )}
               >
                 {integ.connected ? 'Configure' : 'Connect'}
@@ -443,20 +443,20 @@ function PaymentsPanel() {
         ))}
       </div>
 
-      <Card className="bg-[#FAFAFA] border border-[#E5E5E5] rounded-lg p-5">
+      <Card className="bg-[#FAFAFA] border border-[#E5E5E5] rounded-2xl p-5">
         <h4 className="text-[14px] font-semibold text-[#0A0A0A] mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
-            <Input defaultValue="062-000" className="h-12 border-[#E5E5E5] rounded font-['Roboto_Mono',monospace]" />
+            <Input defaultValue="062-000" className="h-12 border-[#E5E5E5] rounded font-mono" />
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Account number</Label>
-            <Input defaultValue="12345678" type="password" className="h-12 border-[#E5E5E5] rounded font-['Roboto_Mono',monospace]" />
+            <Input defaultValue="12345678" type="password" className="h-12 border-[#E5E5E5] rounded font-mono" />
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]">Save bank details</Button>
+          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732]">Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -466,12 +466,12 @@ function PaymentsPanel() {
 // ── Activities Panel ───────────────────────────────────────
 function ActivitiesPanel() {
   const activityTypes = [
-    { name: 'Phone call',    icon: '📞', colour: '#0A7AFF', enabled: true },
+    { name: 'Phone call',    icon: '📞', colour: '#0052CC', enabled: true },
     { name: 'Email',         icon: '✉️',  colour: '#36B37E', enabled: true },
-    { name: 'Meeting',       icon: '🤝',  colour: '#7C3AED', enabled: true },
-    { name: 'Site visit',    icon: '🏭',  colour: '#FF8B00', enabled: true },
+    { name: 'Meeting',       icon: '🤝',  colour: '#0052CC', enabled: true },
+    { name: 'Site visit',    icon: '🏭',  colour: '#FACC15', enabled: true },
     { name: 'Quote sent',    icon: '📄',  colour: '#FFCF4B', enabled: true },
-    { name: 'Demo',          icon: '💻',  colour: '#EF4444', enabled: false },
+    { name: 'Demo',          icon: '💻',  colour: '#DE350B', enabled: false },
   ];
 
   return (
@@ -481,7 +481,7 @@ function ActivitiesPanel() {
         <SectionLabel>Activity types</SectionLabel>
         <div className="space-y-2">
           {activityTypes.map(a => (
-            <div key={a.name} className="flex items-center justify-between bg-white border border-[#E5E5E5] rounded-lg p-3">
+            <div key={a.name} className="flex items-center justify-between bg-white border border-[#E5E5E5] rounded-2xl p-3">
               <div className="flex items-center gap-3">
                 <span className="text-base">{a.icon}</span>
                 <span className="text-sm text-[#0A0A0A] font-medium">{a.name}</span>
@@ -550,7 +550,7 @@ function AnalyticsPanel() {
         <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Sell dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[#E5E5E5] rounded-lg p-3">
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[#E5E5E5] rounded-2xl p-3">
               <span className="text-sm text-[#0A0A0A]">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
@@ -599,7 +599,7 @@ function IntegrationsPanel() {
         { name: 'Google Cal','description': 'Sync activities to Google Calendar',                connected: false, colour: '#4285F4' },
         { name: 'Slack',     description: 'Post won/lost deal notifications to Slack',           connected: false, colour: '#4A154B' },
       ].map(integ => (
-        <Card key={integ.name} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+        <Card key={integ.name} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div
@@ -625,7 +625,7 @@ function IntegrationsPanel() {
                 'h-9 text-xs',
                 integ.connected
                   ? 'border-[#E5E5E5] text-[#737373]'
-                  : 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] border-0'
+                  : 'bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] border-0'
               )}
             >
               {integ.connected ? 'Configure' : 'Connect'}
@@ -654,14 +654,14 @@ export function SellSettings() {
   const PanelComponent = PANEL_MAP[activePanel];
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6">
+    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8">
       <div className="max-w-[1200px] mx-auto">
         <h1 className="text-[32px] tracking-tight text-[#0A0A0A] mb-6">Sell Settings</h1>
 
         <div className="flex gap-6">
           {/* Left Navigation */}
           <div className="w-56 flex-shrink-0">
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg p-3 h-fit">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-3 h-fit">
               <nav className="space-y-0.5">
                 {panels.map(panel => {
                   const Icon = panel.icon;
@@ -687,7 +687,7 @@ export function SellSettings() {
 
           {/* Right Panel */}
           <div className="flex-1 min-w-0">
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+            <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
               <PanelComponent />
             </Card>
           </div>

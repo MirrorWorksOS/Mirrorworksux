@@ -39,7 +39,7 @@ const mockOrders: Order[] = [
 const getStatusBadge = (status: OrderStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'confirmed': return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Confirmed', dot: '#0A7AFF' };
+    case 'confirmed': return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Confirmed', dot: '#0052CC' };
     case 'in_production': return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'In Production', dot: '#FACC15' };
     case 'shipped': return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Shipped', dot: '#36B37E' };
     case 'invoiced': return { bg: 'bg-[#E6F0FF]', text: 'text-[#0052CC]', label: 'Invoiced', dot: '#0052CC' };
@@ -53,7 +53,7 @@ export function SellOrders() {
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
 
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -80,7 +80,7 @@ export function SellOrders() {
 
       {/* Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -106,7 +106,7 @@ export function SellOrders() {
                         <input type="checkbox" className="rounded border-[#E5E5E5]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/orders/${order.id}`} className="text-[#0052CC] font-['Roboto_Mono',monospace] text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/orders/${order.id}`} className="text-[#0052CC] font-mono text-sm font-medium hover:underline flex items-center gap-1">
                           {order.orderNumber}
                           <ExternalLink className="w-3 h-3" />
                         </a>
@@ -123,10 +123,10 @@ export function SellOrders() {
                           </Badge>
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">${order.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm font-mono font-medium">${order.total.toLocaleString()}</td>
                       <td className="px-4">
                         {order.jobReference ? (
-                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[#0052CC] font-['Roboto_Mono',monospace] text-xs hover:underline">
+                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[#0052CC] font-mono text-xs hover:underline">
                             {order.jobReference}
                           </a>
                         ) : (
@@ -158,12 +158,12 @@ export function SellOrders() {
 
       {/* Empty State (hidden when data exists) */}
       {mockOrders.length === 0 && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-12">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Plus className="w-8 h-8 text-[#737373]" />
             </div>
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-2">No orders yet</h3>
+            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">No orders yet</h3>
             <p className="text-sm text-[#737373] mb-4">Create your first sales order to get started</p>
             <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">
               <Plus className="w-4 h-4 mr-2" />

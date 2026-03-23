@@ -35,7 +35,7 @@ const mockCustomers: Customer[] = [
 const getStatusBadge = (status: Customer['status']) => {
   switch (status) {
     case 'active': return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Active' };
-    case 'prospect': return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Prospect' };
+    case 'prospect': return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Prospect' };
     case 'inactive': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Inactive' };
   }
 };
@@ -55,7 +55,7 @@ export function SellCRMList() {
 
   return (
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger}>
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -99,8 +99,8 @@ export function SellCRMList() {
                         {customer.phone}
                       </a>
                     </td>
-                    <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">${customer.totalRevenue.toLocaleString()}</td>
-                    <td className="px-4 text-center text-sm font-['Roboto_Mono',monospace] font-medium">{customer.activeOpportunities}</td>
+                    <td className="px-4 text-right text-sm font-mono font-medium">${customer.totalRevenue.toLocaleString()}</td>
+                    <td className="px-4 text-center text-sm font-mono font-medium">{customer.activeOpportunities}</td>
                     <td className="px-4">
                       <div className="flex items-center justify-center">
                         <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusBadge.bg, statusBadge.text)}>{statusBadge.label}</Badge>

@@ -29,16 +29,16 @@ export interface Opportunity {
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: 'new',         label: 'New',         color: '#737373' },
-  { key: 'qualified',   label: 'Qualified',   color: '#0A7AFF' },
-  { key: 'proposal',    label: 'Proposal',    color: '#7C3AED' },
-  { key: 'negotiation', label: 'Negotiation', color: '#FF8B00' },
+  { key: 'qualified',   label: 'Qualified',   color: '#0052CC' },
+  { key: 'proposal',    label: 'Proposal',    color: '#0052CC' },
+  { key: 'negotiation', label: 'Negotiation', color: '#FACC15' },
   { key: 'won',         label: 'Won',         color: '#36B37E' },
-  { key: 'lost',        label: 'Lost',        color: '#EF4444' },
+  { key: 'lost',        label: 'Lost',        color: '#DE350B' },
 ];
 
 const PRIORITY_CONFIG: Record<Priority, { bg: string; text: string; label: string }> = {
-  urgent: { bg: 'bg-[#EF4444]', text: 'text-white',     label: 'Urgent' },
-  high:   { bg: 'bg-[#FF8B00]', text: 'text-white',     label: 'High' },
+  urgent: { bg: 'bg-[#DE350B]', text: 'text-white',     label: 'Urgent' },
+  high:   { bg: 'bg-[#FACC15]', text: 'text-[#2C2C2C]', label: 'High' },
   medium: { bg: 'bg-[#FFCF4B]', text: 'text-[#2C2C2C]', label: 'Medium' },
   low:    { bg: 'bg-[#36B37E]', text: 'text-white',     label: 'Low' },
 };
@@ -97,7 +97,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">OPP-{opportunity.id.padStart(4, '0')}</span>
+                <span className="text-xs text-[#737373] font-mono">OPP-{opportunity.id.padStart(4, '0')}</span>
                 <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', priorityCfg.bg, priorityCfg.text)}>
                   {priorityCfg.label}
                 </Badge>
@@ -169,7 +169,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     <DollarSign className="w-4 h-4 text-[#36B37E]" />
                     <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Deal value</span>
                   </div>
-                  <p className="text-[22px] font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">
+                  <p className="text-[22px] font-mono font-semibold text-[#0A0A0A]">
                     ${opportunity.value.toLocaleString()}
                   </p>
                 </div>
@@ -178,7 +178,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     <Calendar className="w-4 h-4 text-[#0A7AFF]" />
                     <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Expected close</span>
                   </div>
-                  <p className="text-[22px] font-['Geist:SemiBold',sans-serif] font-semibold text-[#0A0A0A]">
+                  <p className="text-[22px] font-semibold text-[#0A0A0A]">
                     {new Date(opportunity.expectedClose).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
                   </p>
                 </div>
@@ -226,7 +226,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-semibold text-[#0A0A0A]">Activity log</h4>
-                <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-1 text-xs">
+                <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-1 text-xs">
                   <Plus className="w-3 h-3" /> Log activity
                 </Button>
               </div>
@@ -258,7 +258,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                 defaultValue="Customer requested 6-week lead time max. Discussed powder coat options — they prefer RAL 7035 light grey. Material cost increase of ~8% flagged during last call."
               />
               <div className="mt-3 flex justify-end">
-                <Button size="sm" className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] h-9">Save notes</Button>
+                <Button size="sm" className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-9">Save notes</Button>
               </div>
             </div>
           )}
@@ -268,7 +268,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
         <div className="px-6 py-4 border-t border-[#E5E5E5] shrink-0 bg-white">
           <div className="flex gap-3">
             <Button
-              className="flex-1 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2 h-10"
+              className="flex-1 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2 h-10"
               onClick={() => { onClose(); navigate('/sell/quotes/new'); }}
             >
               <FileText className="w-4 h-4" /> Create quote

@@ -89,12 +89,12 @@ function OverviewTab() {
           { label: 'Margin',      value: `${margin.toFixed(1)}%`, mono: true, highlight: margin >= 25 ? 'green' : 'yellow' },
           { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
             <p className={cn(
               'text-[22px] font-semibold',
-              kpi.mono && 'font-[\'Roboto_Mono\',monospace]',
-              kpi.highlight === 'green' ? 'text-[#36B37E]' : kpi.highlight === 'yellow' ? 'text-[#FF8B00]' : 'text-[#0A0A0A]'
+              kpi.mono && 'font-mono',
+              kpi.highlight === 'green' ? 'text-[#36B37E]' : kpi.highlight === 'yellow' ? 'text-[#FACC15]' : 'text-[#0A0A0A]'
             )}>
               {kpi.value}
             </p>
@@ -103,7 +103,7 @@ function OverviewTab() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <Card className="lg:col-span-2 bg-white border border-[#E5E5E5] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Description</h4>
           <p className="text-sm text-[#737373] leading-relaxed">{PRODUCT.description}</p>
           <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[#F5F5F5]">
@@ -124,14 +124,14 @@ function OverviewTab() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+          <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Stock on hand</h4>
-            <p className="text-[32px] font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">8</p>
+            <p className="text-[32px] font-mono font-semibold text-[#0A0A0A]">8</p>
             <p className="text-xs text-[#737373]">units · Min reorder: 0</p>
           </Card>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+          <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">This month</h4>
-            <p className="text-[24px] font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">18 units</p>
+            <p className="text-[24px] font-mono font-semibold text-[#0A0A0A]">18 units</p>
             <p className="text-xs text-[#36B37E] mt-0.5">▲ 29% vs last month</p>
           </Card>
         </div>
@@ -145,7 +145,7 @@ function ManufacturingTab() {
   return (
     <div className="space-y-6">
       {/* Routing */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Routing — {totalTime}h total cycle time</h4>
           <Button variant="outline" size="sm" className="border-[#E5E5E5] h-8 text-xs">Edit routing</Button>
@@ -161,11 +161,11 @@ function ManufacturingTab() {
           <tbody>
             {ROUTING.map(r => (
               <tr key={r.step} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-sm font-['Roboto_Mono',monospace] font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
+                <td className="px-4 text-sm font-mono font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
                 <td className="px-4 text-sm text-[#0A0A0A] font-medium">{r.name}</td>
                 <td className="px-4"><Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{r.workCenter}</Badge></td>
-                <td className="px-4 text-sm font-['Roboto_Mono',monospace]">{r.duration}</td>
-                <td className="px-4 text-sm font-['Roboto_Mono',monospace] text-[#737373]">{r.setup > 0 ? r.setup : '—'}</td>
+                <td className="px-4 text-sm font-mono">{r.duration}</td>
+                <td className="px-4 text-sm font-mono text-[#737373]">{r.setup > 0 ? r.setup : '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -173,7 +173,7 @@ function ManufacturingTab() {
       </Card>
 
       {/* BOM */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Bill of Materials · v1.2</h4>
           <Button variant="outline" size="sm" className="border-[#E5E5E5] h-8 text-xs">Edit BOM</Button>
@@ -189,17 +189,17 @@ function ManufacturingTab() {
           <tbody>
             {BOM_LINES.map(line => (
               <tr key={line.sku} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{line.sku}</td>
+                <td className="px-4 text-xs font-mono text-[#737373]">{line.sku}</td>
                 <td className="px-4 text-sm text-[#0A0A0A]">{line.description}</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{line.qty}</td>
+                <td className="px-4 text-right text-sm font-mono">{line.qty}</td>
                 <td className="px-4 text-sm text-[#737373]">{line.unit}</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">${line.cost.toFixed(2)}</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">${(line.qty * line.cost).toFixed(2)}</td>
+                <td className="px-4 text-right text-sm font-mono">${line.cost.toFixed(2)}</td>
+                <td className="px-4 text-right text-sm font-mono font-medium">${(line.qty * line.cost).toFixed(2)}</td>
               </tr>
             ))}
             <tr className="bg-[#F8F7F4] border-t border-[#E5E5E5]">
               <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[#0A0A0A]">Total BOM cost</td>
-              <td className="px-4 py-3 text-right text-sm font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">
+              <td className="px-4 py-3 text-right text-sm font-mono font-semibold text-[#0A0A0A]">
                 ${BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0).toFixed(2)}
               </td>
             </tr>
@@ -220,15 +220,15 @@ function InventoryTab() {
           { label: 'On order',  value: '0',  sub: 'units in production' },
           { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
-            <p className="text-[22px] font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">{kpi.value}</p>
+            <p className="text-[22px] font-mono font-semibold text-[#0A0A0A]">{kpi.value}</p>
             <p className="text-xs text-[#737373] mt-0.5">{kpi.sub}</p>
           </Card>
         ))}
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E5E5]">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Stock movements</h4>
         </div>
@@ -246,18 +246,18 @@ function InventoryTab() {
                 <td className="px-4 text-sm text-[#737373]">{m.date}</td>
                 <td className="px-4">
                   <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                    m.type === 'Production' ? 'bg-[#DBEAFE] text-[#0A7AFF]' :
+                    m.type === 'Production' ? 'bg-[#DEEBFF] text-[#0052CC]' :
                     m.type === 'Shipment'   ? 'bg-[#E3FCEF] text-[#36B37E]' :
                     'bg-[#F5F5F5] text-[#737373]'
                   )}>
                     {m.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm font-['Roboto_Mono',monospace] text-[#737373]">{m.ref}</td>
-                <td className={cn('px-4 text-right text-sm font-[\'Roboto_Mono\',monospace] font-semibold', m.qty > 0 ? 'text-[#36B37E]' : 'text-[#EF4444]')}>
+                <td className="px-4 text-sm font-mono text-[#737373]">{m.ref}</td>
+                <td className={cn('px-4 text-right text-sm font-mono font-semibold', m.qty > 0 ? 'text-[#36B37E]' : 'text-[#DE350B]')}>
                   {m.qty > 0 ? `+${m.qty}` : m.qty}
                 </td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">{m.balance}</td>
+                <td className="px-4 text-right text-sm font-mono font-medium">{m.balance}</td>
               </tr>
             ))}
           </tbody>
@@ -271,7 +271,7 @@ function AccountingTab() {
   const margin = ((PRODUCT.sellPrice - PRODUCT.costPrice) / PRODUCT.sellPrice) * 100;
   return (
     <div className="space-y-6">
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
         <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Revenue — last 6 months</h4>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
@@ -285,7 +285,7 @@ function AccountingTab() {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Pricing</h4>
           <div className="space-y-3">
             {[
@@ -296,7 +296,7 @@ function AccountingTab() {
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[#F5F5F5] last:border-0">
                 <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', r.mono && 'font-[\'Roboto_Mono\',monospace]', r.green && 'text-[#36B37E]')}>
+                <span className={cn('text-sm font-medium', r.mono && 'font-mono', r.green && 'text-[#36B37E]')}>
                   {r.v}
                 </span>
               </div>
@@ -304,7 +304,7 @@ function AccountingTab() {
           </div>
         </Card>
 
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">YTD performance</h4>
           <div className="space-y-3">
             {[
@@ -315,7 +315,7 @@ function AccountingTab() {
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[#F5F5F5] last:border-0">
                 <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', (r as any).mono && 'font-[\'Roboto_Mono\',monospace]', (r as any).green && 'text-[#36B37E]')}>
+                <span className={cn('text-sm font-medium', (r as any).mono && 'font-mono', (r as any).green && 'text-[#36B37E]')}>
                   {r.v}
                 </span>
               </div>
@@ -329,19 +329,19 @@ function AccountingTab() {
 
 function DocumentsTab() {
   const typeColor: Record<string, string> = {
-    PDF: 'bg-[#FEE2E2] text-[#EF4444]',
-    DWG: 'bg-[#DBEAFE] text-[#0A7AFF]',
+    PDF: 'bg-[#FFEBE6] text-[#DE350B]',
+    DWG: 'bg-[#DEEBFF] text-[#0052CC]',
     STP: 'bg-[#E3FCEF] text-[#36B37E]',
-    XLS: 'bg-[#FFEDD5] text-[#FF8B00]',
+    XLS: 'bg-[#FFF9C4] text-[#FACC15]',
   };
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
+        <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2">
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
@@ -364,12 +364,12 @@ function DocumentsTab() {
                     {doc.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm text-[#737373] font-['Roboto_Mono',monospace]">{doc.size}</td>
+                <td className="px-4 text-sm text-[#737373] font-mono">{doc.size}</td>
                 <td className="px-4 text-sm text-[#737373]">{doc.date}</td>
                 <td className="px-4">
                   {doc.status === 'current'
                     ? <span className="flex items-center gap-1 text-xs text-[#36B37E]"><CheckCircle className="w-3.5 h-3.5" /> Current</span>
-                    : <span className="flex items-center gap-1 text-xs text-[#FF8B00]"><AlertTriangle className="w-3.5 h-3.5" /> Outdated</span>
+                    : <span className="flex items-center gap-1 text-xs text-[#FACC15]"><AlertTriangle className="w-3.5 h-3.5" /> Outdated</span>
                   }
                 </td>
                 <td className="px-4">
@@ -401,7 +401,7 @@ export function SellProductDetail() {
   const TabContent = TAB_COMPONENTS[tab];
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto">
+    <div className="p-8 space-y-8 overflow-y-auto">
       {/* Back + header */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
@@ -412,9 +412,9 @@ export function SellProductDetail() {
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-[28px] tracking-tight text-[#0A0A0A] font-semibold">{PRODUCT.name}</h1>
               <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2">Active</Badge>
-              <Badge className="bg-[#DBEAFE] text-[#0A7AFF] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
+              <Badge className="bg-[#DEEBFF] text-[#0052CC] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
             </div>
-            <p className="text-sm text-[#737373] font-['Roboto_Mono',monospace]">{PRODUCT.sku} · {PRODUCT.category}</p>
+            <p className="text-sm text-[#737373] font-mono">{PRODUCT.sku} · {PRODUCT.category}</p>
           </div>
         </div>
         <div className="flex gap-3">

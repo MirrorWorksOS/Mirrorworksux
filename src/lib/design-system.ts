@@ -11,31 +11,43 @@
 // ============================================================================
 
 export const colors = {
-  // MW Brand Colors
-  yellow: '#FFCF4B',      // MW Yellow - Primary CTA, AI highlights
-  yellowHover: '#EBC028', // Hover state for MW Yellow
-  yellowBg: '#FFFBF0',    // Yellow tinted backgrounds
-  
+  // MW Yellow Scale
+  yellow50: '#FFFBF0',
+  yellow100: '#FFF3D6',
+  yellow200: '#FFE8AD',
+  yellow300: '#FFDB7A',
+  yellow: '#FFCF4B',       // mw-yellow-400 — Primary CTA, active states
+  yellowHover: '#F2BF30',  // mw-yellow-500 — Hover on primary buttons
+  yellowActive: '#E6A600', // mw-yellow-600 — Active/pressed on primary buttons
+  yellow700: '#CC8E00',
+  yellow800: '#A67300',
+  yellow900: '#805900',
+
   // Neutrals
-  nearBlack: '#0A0A0A',   // Primary text
-  darkGray: '#2C2C2C',    // Secondary text
-  mediumGray: '#737373',  // Tertiary text / icons
-  lightGray: '#E5E5E5',   // Borders
-  bgGray: '#F5F5F5',      // Subtle backgrounds
-  bgLight: '#FAFAFA',     // Page backgrounds
+  nearBlack: '#0A0A0A',   // neutral-900 — Headlines, primary text, active icons
+  darkGray: '#2C2C2C',    // neutral-800 — Secondary text, body copy, text on yellow buttons
+  midGray: '#525252',     // neutral-600 — Table body text, descriptions
+  mediumGray: '#737373',  // neutral-500 — Labels, captions, inactive icons, table headers
+  borderGray: '#E5E5E5',  // neutral-200 — Card borders, dividers
+  subtleGray: '#F5F5F5',  // neutral-100 — Page background, input backgrounds
+  bgLight: '#FAFAFA',     // neutral-50
   white: '#FFFFFF',
-  
-  // Status Colors
-  success: '#36B37E',     // Green - Completed, Produced
-  warning: '#FF8B00',     // Orange - Warning, High priority
-  error: '#EF4444',       // Red - Error, Urgent, Overdue
-  info: '#0A7AFF',        // Blue - Info, Scheduled
-  
-  // Status Variants
+
+  // Dark Accent
+  mirage: '#1A2732',      // Dark buttons, dark badges, sidebar, pipeline cards
+  offWhite: '#F8F7F4',    // Warm grouped card background
+
+  // Status Colours (dots and badges only — never card backgrounds)
+  success: '#36B37E',
+  info: '#0052CC',
+  warning: '#FACC15',
+  error: '#DE350B',
+
+  // Status light variants (badge backgrounds)
   successLight: '#E3FCEF',
-  warningLight: '#FFEDD5',
-  errorLight: '#FEE2E2',
-  infoLight: '#DBEAFE',
+  infoLight: '#DEEBFF',
+  warningLight: '#FFF9C4',
+  errorLight: '#FFEBE6',
 } as const;
 
 // ============================================================================
@@ -73,12 +85,13 @@ export const spacing = {
 // ============================================================================
 
 export const radius = {
-  none: '0px',
-  sm: '4px',    // Small elements (badges, chips)
-  md: '8px',    // Standard (cards, buttons, inputs)
-  lg: '12px',   // Large cards
-  xl: '16px',   // Modal dialogs
-  full: '9999px', // Pills, avatars
+  none: '0px',       // shape-none — Table inner rows
+  xs: '4px',         // shape-xs — Checkboxes, small chips, toggle thumbs
+  sm: '8px',         // shape-sm — Toggle tracks, compact elements
+  md: '12px',        // shape-md — Buttons, inputs, dropdowns
+  lg: '16px',        // shape-lg — Cards, modals, dialogs, table containers
+  xl: '24px',        // shape-xl — Bottom sheets, expanded containers
+  full: '9999px',    // shape-full — Badges, pills, avatars
 } as const;
 
 // ============================================================================
@@ -194,31 +207,29 @@ export const touchTargets = {
 // ============================================================================
 
 export const componentClasses = {
-  // Card base styles
-  card: `bg-white border border-[${colors.lightGray}] rounded-[${radius.md}] shadow-sm`,
-  cardHover: `hover:shadow-md transition-shadow duration-[${motion.duration.fast}ms]`,
-  
-  // Badge styles
+  card: `bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] shadow-[var(--elevation-1)]`,
+  cardHover: `hover:shadow-[var(--elevation-2)] transition-shadow duration-[var(--duration-medium1)]`,
+
   badge: {
-    base: `inline-flex items-center justify-center px-2 py-0.5 rounded-[${radius.sm}] font-[${fonts.sansMedium}] text-xs`,
+    base: `inline-flex items-center justify-center px-2 py-0.5 rounded-full font-medium text-xs`,
     success: `bg-[${colors.success}] text-white`,
     warning: `bg-[${colors.warning}] text-white`,
     error: `bg-[${colors.error}] text-white`,
     info: `bg-[${colors.info}] text-white`,
-    neutral: `bg-[${colors.bgGray}] text-[${colors.nearBlack}]`,
+    neutral: `bg-[var(--neutral-100)] text-[var(--neutral-900)]`,
   },
-  
-  // Button styles
+
   button: {
-    primary: `bg-[${colors.yellow}] hover:bg-[${colors.yellowHover}] text-[${colors.darkGray}] font-medium transition-colors duration-[${motion.duration.fast}ms]`,
-    outline: `border border-[${colors.lightGray}] bg-white hover:bg-[${colors.bgGray}] transition-colors duration-[${motion.duration.fast}ms]`,
-    ghost: `hover:bg-[${colors.bgGray}] transition-colors duration-[${motion.duration.fast}ms]`,
+    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium`,
+    outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)]`,
+    ghost: `hover:bg-[var(--neutral-50)] active:bg-[var(--neutral-100)]`,
+    dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90`,
+    destructive: `bg-destructive text-white hover:bg-destructive/90`,
   },
-  
-  // Input styles
+
   input: {
-    base: `bg-white border border-[${colors.lightGray}] rounded-[${radius.md}] px-3 py-2 font-[${fonts.sans}] text-[14px] transition-colors duration-[${motion.duration.fast}ms]`,
-    focus: `focus:border-[${colors.nearBlack}] focus:ring-1 focus:ring-[${colors.nearBlack}]`,
+    base: `bg-white border border-[var(--neutral-200)] rounded-[var(--shape-md)] px-3 py-2 text-[14px]`,
+    focus: `focus:border-[var(--neutral-900)] focus:ring-1 focus:ring-[var(--neutral-900)]`,
   },
 } as const;
 
@@ -227,10 +238,10 @@ export const componentClasses = {
 // ============================================================================
 
 export const priorityColors = {
-  low: colors.success,
-  medium: colors.yellow,
-  high: colors.warning,
-  urgent: colors.error,
+  low: '#36B37E',
+  medium: '#FFCF4B',
+  high: '#FACC15',
+  urgent: '#DE350B',
 } as const;
 
 // ============================================================================

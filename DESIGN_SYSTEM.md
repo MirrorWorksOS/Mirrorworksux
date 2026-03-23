@@ -3,7 +3,7 @@
 **Last updated:** March 2026
 **Status:** Active — replaces v1.0
 **Maintained by:** Matt Quigley
-**Quality benchmark:** [Crextio](https://crextio.framer.website/) — reference for polish and spacing, not a template to copy.
+**Quality benchmark:** [Crextio](https://nixtio.com/cases/crextio) — reference for polish and spacing, not a template to copy.
 
 Single source of truth for Smart FactoryOS. Built on Material Design 3 (M3) principles, optimised for metal fabrication ERP on tablets and desktops. Shop floor operators wearing gloves under bright industrial lighting.
 

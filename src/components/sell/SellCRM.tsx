@@ -98,7 +98,7 @@ const getStatusBadge = (status: Customer['status']) => {
     case 'active':
       return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Active' };
     case 'prospect':
-      return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Prospect' };
+      return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Prospect' };
     case 'inactive':
       return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Inactive' };
   }
@@ -119,7 +119,7 @@ export function SellCRM() {
       initial="initial"
       animate="animate"
       variants={animationVariants.stagger}
-      className="p-6 space-y-6"
+      className="p-8 space-y-8"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ export function SellCRM() {
                 variants={animationVariants.listItem}
                 custom={idx}
               >
-                <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/sell/crm/${customer.id}`)}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -203,10 +203,10 @@ export function SellCRM() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors">
+                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors">
                           {customer.company}
                         </h3>
-                        <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373]">
+                        <p className="text-[12px] text-[#737373]">
                           {customer.contact}
                         </p>
                       </div>
@@ -233,7 +233,7 @@ export function SellCRM() {
                         <DollarSign className="w-3.5 h-3.5 text-[#737373]" />
                         <span className="text-xs text-[#737373]">Total Revenue</span>
                       </div>
-                      <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
                         ${customer.totalRevenue.toLocaleString()}
                       </p>
                     </div>
@@ -242,7 +242,7 @@ export function SellCRM() {
                         <Briefcase className="w-3.5 h-3.5 text-[#737373]" />
                         <span className="text-xs text-[#737373]">Opportunities</span>
                       </div>
-                      <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
                         {customer.activeOpportunities}
                       </p>
                     </div>
@@ -256,7 +256,7 @@ export function SellCRM() {
 
       {/* List View (placeholder for now - would implement SellCRMList) */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
           <p className="text-sm text-[#737373] text-center">
             List view - Would render SellCRMList component here
           </p>
@@ -265,12 +265,12 @@ export function SellCRM() {
 
       {/* Empty State */}
       {filteredCustomers.length === 0 && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-12">
+        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Briefcase className="w-8 h-8 text-[#737373]" />
             </div>
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-2">
+            <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">
               No customers found
             </h3>
             <p className="text-sm text-[#737373] mb-4">

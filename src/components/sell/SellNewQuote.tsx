@@ -130,7 +130,7 @@ export function SellNewQuote() {
           <div>
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#737373]" />
-              <span className="text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{quoteNumber}</span>
+              <span className="text-sm font-mono font-medium text-[#0A0A0A]">{quoteNumber}</span>
               <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs rounded-full px-2">Draft</Badge>
             </div>
             <p className="text-xs text-[#737373] mt-0.5">New quote</p>
@@ -143,7 +143,7 @@ export function SellNewQuote() {
           <Button variant="outline" className="border-[#E5E5E5] h-10">
             Save draft
           </Button>
-          <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] h-10 gap-2">
+          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-10 gap-2">
             <FileText className="w-4 h-4" /> Send quote
           </Button>
         </div>
@@ -165,7 +165,7 @@ export function SellNewQuote() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Header details */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
@@ -205,7 +205,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Line items */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
                 <div className="p-4 border-b border-[#E5E5E5] flex items-center justify-between">
                   <h3 className="text-[14px] font-semibold text-[#0A0A0A]">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
@@ -250,7 +250,7 @@ export function SellNewQuote() {
                             value={line.sku}
                             onChange={e => updateLine(line.id, { sku: e.target.value })}
                             placeholder="SKU"
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-xs font-['Roboto_Mono',monospace]"
+                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-xs font-mono"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -258,7 +258,7 @@ export function SellNewQuote() {
                             type="number"
                             value={line.qty}
                             onChange={e => updateLine(line.id, { qty: parseFloat(e.target.value) || 1 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-['Roboto_Mono',monospace]"
+                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -273,7 +273,7 @@ export function SellNewQuote() {
                             type="number"
                             value={line.unitCost}
                             onChange={e => updateLine(line.id, { unitCost: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-['Roboto_Mono',monospace] text-[#737373]"
+                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono text-[#737373]"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -283,8 +283,8 @@ export function SellNewQuote() {
                               value={line.margin}
                               onChange={e => updateLine(line.id, { margin: parseFloat(e.target.value) || 0 })}
                               className={cn(
-                                'h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-[\'Roboto_Mono\',monospace] pr-5',
-                                line.margin < 15 && 'text-[#EF4444]',
+                                'h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono pr-5',
+                                line.margin < 15 && 'text-[#DE350B]',
                                 line.margin >= 25 && 'text-[#36B37E]',
                               )}
                             />
@@ -296,18 +296,18 @@ export function SellNewQuote() {
                             type="number"
                             value={line.unitPrice}
                             onChange={e => updateLine(line.id, { unitPrice: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-['Roboto_Mono',monospace] font-medium"
+                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono font-medium"
                           />
                         </td>
-                        <td className="px-3 py-2 text-right text-sm font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A] whitespace-nowrap">
+                        <td className="px-3 py-2 text-right text-sm font-mono font-semibold text-[#0A0A0A] whitespace-nowrap">
                           ${fmtCurrency(line.qty * line.unitPrice)}
                         </td>
                         <td className="px-2 py-2">
                           <button
                             onClick={() => removeLine(line.id)}
-                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[#FEE2E2] rounded transition-all"
+                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[#FFEBE6] rounded transition-all"
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-[#EF4444]" />
+                            <Trash2 className="w-3.5 h-3.5 text-[#DE350B]" />
                           </button>
                         </td>
                       </tr>
@@ -326,7 +326,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
                 <textarea
                   value={notes}
@@ -340,21 +340,21 @@ export function SellNewQuote() {
 
             {/* Right — Summary */}
             <div className="space-y-4">
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Subtotal</span>
-                    <span className="font-['Roboto_Mono',monospace] font-medium">${fmtCurrency(subtotal)}</span>
+                    <span className="font-mono font-medium">${fmtCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">GST (10%)</span>
-                    <span className="font-['Roboto_Mono',monospace] font-medium">${fmtCurrency(tax)}</span>
+                    <span className="font-mono font-medium">${fmtCurrency(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base font-semibold">
                     <span className="text-[#0A0A0A]">Total (inc. GST)</span>
-                    <span className="font-['Roboto_Mono',monospace] text-[#0A0A0A]">${fmtCurrency(total)}</span>
+                    <span className="font-mono text-[#0A0A0A]">${fmtCurrency(total)}</span>
                   </div>
                 </div>
 
@@ -364,16 +364,16 @@ export function SellNewQuote() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Est. cost</span>
-                    <span className="font-['Roboto_Mono',monospace] text-[#737373]">${fmtCurrency(cost)}</span>
+                    <span className="font-mono text-[#737373]">${fmtCurrency(cost)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Gross profit</span>
-                    <span className="font-['Roboto_Mono',monospace] font-medium text-[#36B37E]">${fmtCurrency(subtotal - cost)}</span>
+                    <span className="font-mono font-medium text-[#36B37E]">${fmtCurrency(subtotal - cost)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[#737373]">Margin</span>
-                    <span className={cn('font-[\'Roboto_Mono\',monospace] font-semibold text-base',
-                      margin < 15 ? 'text-[#EF4444]' : margin >= 25 ? 'text-[#36B37E]' : 'text-[#FF8B00]'
+                    <span className={cn('font-mono font-semibold text-base',
+                      margin < 15 ? 'text-[#DE350B]' : margin >= 25 ? 'text-[#36B37E]' : 'text-[#FACC15]'
                     )}>
                       {margin.toFixed(1)}%
                     </span>
@@ -383,7 +383,7 @@ export function SellNewQuote() {
                       className="h-full rounded-full transition-all duration-300"
                       style={{
                         width: `${Math.min(100, margin * 2)}%`,
-                        backgroundColor: margin < 15 ? '#EF4444' : margin >= 25 ? '#36B37E' : '#FF8B00',
+                        backgroundColor: margin < 15 ? '#DE350B' : margin >= 25 ? '#36B37E' : '#FACC15',
                       }}
                     />
                   </div>
@@ -392,10 +392,10 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-5 space-y-3">
+              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5 space-y-3">
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Quote number</p>
-                  <p className="text-sm font-['Roboto_Mono',monospace] font-medium">{quoteNumber}</p>
+                  <p className="text-sm font-mono font-medium">{quoteNumber}</p>
                 </div>
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Valid until</p>
@@ -407,11 +407,11 @@ export function SellNewQuote() {
                 </div>
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Line items</p>
-                  <p className="text-sm font-['Roboto_Mono',monospace] font-medium">{lines.length}</p>
+                  <p className="text-sm font-mono font-medium">{lines.length}</p>
                 </div>
               </Card>
 
-              <Button className="w-full bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] h-12 gap-2">
+              <Button className="w-full bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-12 gap-2">
                 <FileText className="w-4 h-4" /> Send quote
               </Button>
               <Button variant="outline" className="w-full border-[#E5E5E5] h-10">
