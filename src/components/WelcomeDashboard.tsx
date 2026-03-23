@@ -4,17 +4,15 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-import { 
-  TrendingUp, 
-  ShoppingCart, 
-  Clock, 
-  Box, 
-  Package, 
-  BookOpen, 
-  Settings as SettingsIcon, 
-  Pencil,
-  ArrowRight
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Kanban } from './animate-ui/icons/kanban';
+import { ChartSpline } from './animate-ui/icons/chart-spline';
+import { List } from './animate-ui/icons/list';
+import { Cog } from './animate-ui/icons/cog';
+import { Forklift } from './animate-ui/icons/forklift';
+import { CircuitBoard } from './animate-ui/icons/circuit-board';
+import { Blocks } from './animate-ui/icons/blocks';
+import { Route } from './animate-ui/icons/route';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { motion } from 'motion/react';
@@ -25,66 +23,58 @@ const { animationVariants } = designSystem;
 const modules = [
   { 
     name: 'Sell', 
-    icon: TrendingUp, 
+    Icon: Kanban, 
     path: '/sell', 
     description: 'CRM, Opportunities, Orders, Invoices',
-    color: 'bg-[#0052CC]',
     count: 8 
   },
   { 
     name: 'Buy', 
-    icon: ShoppingCart, 
+    Icon: Blocks, 
     path: '/buy', 
     description: 'Purchasing, Suppliers, Requisitions',
-    color: 'bg-[#36B37E]',
     count: 11 
   },
   { 
     name: 'Plan', 
-    icon: Clock, 
+    Icon: List, 
     path: '/plan', 
     description: 'Production Planning, Scheduling, MRP',
-    color: 'bg-[#FFCF4B]',
     count: 6 
   },
   { 
     name: 'Make', 
-    icon: Box, 
+    Icon: CircuitBoard, 
     path: '/make', 
     description: 'Manufacturing, Shop Floor, Andon Board',
-    color: 'bg-[#FF8B00]',
     count: 3 
   },
   { 
     name: 'Ship', 
-    icon: Package, 
+    Icon: Forklift, 
     path: '/ship', 
     description: 'Logistics, Tracking, Fulfilment',
-    color: 'bg-[#7C3AED]',
     count: 9 
   },
   { 
     name: 'Book', 
-    icon: BookOpen, 
+    Icon: ChartSpline, 
     path: '/book', 
     description: 'Finance, Budgets, Job Costs',
-    color: 'bg-[#0A7AFF]',
     count: 12 
   },
   { 
     name: 'Control', 
-    icon: SettingsIcon, 
+    Icon: Cog, 
     path: '/control', 
     description: 'Admin, Master Data, Settings',
-    color: 'bg-[#525252]',
     count: 8 
   },
   { 
     name: 'Design', 
-    icon: Pencil, 
+    Icon: Route, 
     path: '/design', 
     description: 'Factory Layout, Process Builder',
-    color: 'bg-[#EF4444]',
     count: 4 
   },
 ];
@@ -132,14 +122,14 @@ export function WelcomeDashboard() {
       {/* Module Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {modules.map((module, idx) => {
-          const Icon = module.icon;
+          const Icon = module.Icon;
           return (
             <motion.div key={module.name} variants={animationVariants.listItem} custom={idx}>
               <Link to={module.path}>
                 <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-lg transition-all duration-200 group cursor-pointer h-full">
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 ${module.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 bg-[#FFCF4B] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Icon className="w-6 h-6 text-[#2C2C2C]" animateOnHover />
                     </div>
                     <Badge className="bg-[#F5F5F5] text-[#525252] border-0 text-xs">
                       {module.count} components
