@@ -59,12 +59,12 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           <span className="text-[#525252]">Con-form Group</span>
           <span className="text-[#D4D4D4]">&#8226;</span>
           <span className="text-[#525252]">Custom Handrail Assembly — Level 4</span>
-          <Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#E6F0FF] text-[#0052CC]">In Production</Badge>
+          <Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#F5F5F5] text-[#1A2732]">In Production</Badge>
         </div>
       </div>
 
       {/* Hero Metrics */}
-      <Card className="bg-white rounded-xl shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-8">
+      <Card className="bg-white rounded-xl shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-8">
         <div className="grid grid-cols-3 items-center">
           <div className="text-center">
             <div className="text-sm text-[#737373] mb-2" style={{ fontWeight: 500 }}>Quoted</div>
@@ -73,7 +73,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           <div className="text-center">
             <div className="relative w-[120px] h-[120px] mx-auto mb-2">
               <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#E5E5E5" strokeWidth="8" />
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" strokeWidth="8" />
                 <circle cx="60" cy="60" r="52" fill="none" stroke="#36B37E" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52 * 0.231} ${2 * Math.PI * 52}`} strokeLinecap="round" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -81,24 +81,24 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
               </div>
             </div>
             <div className="text-xs text-[#737373]" style={{ fontWeight: 500 }}>Profit Margin</div>
-            <div className="text-sm text-[#36B37E] mt-1">Under budget by $4,270</div>
+            <div className="text-sm text-[#1A2732] mt-1">Under budget by $4,270</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-[#737373] mb-2" style={{ fontWeight: 500 }}>Actual to Date</div>
-            <div className="text-[36px] tracking-tight text-[#36B37E]" style={{ fontFamily: 'Roboto Mono, monospace' }}>$14,230</div>
+            <div className="text-[36px] tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>$14,230</div>
           </div>
         </div>
       </Card>
 
       {/* Cost Breakdown Table */}
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
         <div className="flex items-center gap-2 mb-4">
           <h3 className="text-[#1A2732]" style={{ fontWeight: 500 }}>Cost Breakdown</h3>
           <Sparkles className="w-4 h-4 text-[#7C3AED]" />
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4]">
+            <tr className="bg-[#F5F5F5]">
               {['Cost Type', 'Budgeted', 'Actual', 'Variance', '% of Total'].map(h => (
                 <th key={h} className={cn("px-4 py-2 text-xs tracking-wider text-[#737373]", ['Budgeted', 'Actual', 'Variance', '% of Total'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
               ))}
@@ -129,7 +129,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
               <td className="px-4 text-sm" style={{ fontWeight: 700 }}>TOTAL</td>
               <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 700 }}>$18,500</td>
               <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 700 }}>$14,230</td>
-              <td className="px-4 text-sm text-right text-[#36B37E]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 700 }}>-$4,270</td>
+              <td className="px-4 text-sm text-right text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 700 }}>-$4,270</td>
               <td className="px-4 text-sm text-right text-[#737373]">100%</td>
             </tr>
           </tbody>
@@ -148,7 +148,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-sm text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Cost Breakdown</h3>
           <div className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={220}>
@@ -171,7 +171,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           </div>
         </Card>
 
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-sm text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Cost Over Time</h3>
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={costOverTime}>
@@ -187,8 +187,8 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Detail Tabs */}
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
-        <div className="flex border-b border-[#E5E5E5]">
+      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+        <div className="flex border-b border-[var(--border)]">
           {detailTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab ? "text-[#1A2732]" : "text-[#737373] hover:text-[#1A2732]")}
@@ -202,20 +202,20 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
         <div className="overflow-x-auto">
           {activeTab === 'Materials' && (
             <table className="w-full">
-              <thead><tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+              <thead><tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                 {['Date', 'Item', 'Qty', 'Unit Cost', 'Total', 'PO Ref', 'Source'].map(h => (
                   <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", ['Qty', 'Unit Cost', 'Total'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
                 ))}
               </tr></thead>
               <tbody>
                 {materialsData.map((r, i) => (
-                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
+                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)]">
                     <td className="px-4 text-sm text-[#525252]">{r.date}</td>
                     <td className="px-4 text-sm text-[#1A2732]">{r.item}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.qty}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.unitCost}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>{r.total}</td>
-                    <td className="px-4 text-[13px] text-[#0052CC]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.po}</td>
+                    <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.po}</td>
                     <td className="px-4 text-sm text-[#525252]">{r.source}</td>
                   </tr>
                 ))}
@@ -224,21 +224,21 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           )}
           {activeTab === 'Labour' && (
             <table className="w-full">
-              <thead><tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+              <thead><tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                 {['Date', 'Operator', 'Operation', 'Hours', 'Rate', 'Total', 'Status'].map(h => (
                   <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", ['Hours', 'Rate', 'Total'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
                 ))}
               </tr></thead>
               <tbody>
                 {labourData.map((r, i) => (
-                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
+                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)]">
                     <td className="px-4 text-sm text-[#525252]">{r.date}</td>
                     <td className="px-4 text-sm text-[#1A2732]">{r.operator}</td>
                     <td className="px-4 text-sm text-[#525252]">{r.operation}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.hours}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.rate}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>{r.total}</td>
-                    <td className="px-4"><Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#E6F7EF] text-[#36B37E]">{r.status}</Badge></td>
+                    <td className="px-4"><Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#F5F5F5] text-[#1A2732]">{r.status}</Badge></td>
                   </tr>
                 ))}
               </tbody>

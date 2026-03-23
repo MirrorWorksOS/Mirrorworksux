@@ -23,10 +23,10 @@ export function BuyProducts() {
   return (
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
       <h1 className="text-[32px] tracking-tight text-[#1A2732]">Products</h1>
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PRODUCT</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">SKU</th>
               <th className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium">STOCK</th>
@@ -37,11 +37,11 @@ export function BuyProducts() {
           </thead>
           <tbody>
             {mockProducts.map((product, idx) => (
-              <tr key={product.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer", idx % 2 === 1 && "bg-[#FAFAFA]")}>
-                <td className="px-4 text-sm text-[#0A0A0A]">{product.name}</td>
-                <td className="px-4 font-['Roboto_Mono',monospace] text-sm text-[#525252]">{product.sku}</td>
-                <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium">{product.stock}</td>
-                <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm text-[#737373]">{product.reorder}</td>
+              <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                <td className="px-4 text-sm text-[#1A2732]">{product.name}</td>
+                <td className="px-4  text-sm text-[#525252]">{product.sku}</td>
+                <td className="px-4 text-right  text-sm font-medium">{product.stock}</td>
+                <td className="px-4 text-right  text-sm text-[#737373]">{product.reorder}</td>
                 <td className="px-4 text-sm text-[#525252]">{product.preferredSupplier}</td>
                 <td className="px-4">
                   <div className="flex items-center justify-center">
@@ -51,7 +51,7 @@ export function BuyProducts() {
                         Low Stock
                       </Badge>
                     ) : (
-                      <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0">In Stock</Badge>
+                      <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0">In Stock</Badge>
                     )}
                   </div>
                 </td>

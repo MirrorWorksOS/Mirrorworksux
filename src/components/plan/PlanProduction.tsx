@@ -90,32 +90,32 @@ const ProductRow = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-[#E5E5E5] hover:bg-[#FAFAFA] transition-colors items-center">
+    <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-[var(--border)] hover:bg-[var(--accent)] transition-colors items-center">
       <div className="col-span-4">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${priorityColors[product.priority]}`} />
           <div>
-            <p className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A]">
+            <p className=" text-[14px] font-semibold text-[#1A2732]">
               {product.name}
             </p>
-            <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373]">
+            <p className=" text-[12px] text-[#737373]">
               {product.partNumber}
             </p>
           </div>
         </div>
       </div>
       <div className="col-span-2 text-center">
-        <span className="inline-flex items-center justify-center h-6 px-3 bg-[#F5F5F5] rounded-full font-['Roboto_Mono:Medium',sans-serif] text-[11px] font-medium text-[#0A0A0A]">
+        <span className="inline-flex items-center justify-center h-6 px-3 bg-[#F5F5F5] rounded-full font-['Roboto_Mono:Medium',sans-serif] text-[11px] font-medium text-[#1A2732]">
           {product.quantity} units
         </span>
       </div>
       <div className="col-span-2 text-center">
-        <span className="font-['Geist:Regular',sans-serif] text-[14px] text-[#0A0A0A]">
+        <span className=" text-[14px] text-[#1A2732]">
           {product.status}
         </span>
       </div>
       <div className="col-span-2 text-center">
-        <span className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+        <span className=" text-[14px] text-[#737373]">
           {new Date(product.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </span>
       </div>
@@ -141,13 +141,13 @@ const MirrorView3D = () => {
   ];
 
   return (
-    <div className="bg-white rounded-[10px] border border-[#E5E5E5] overflow-hidden">
+    <div className="bg-white rounded-[10px] border border-[var(--border)] overflow-hidden">
       {/* Header */}
       <div className="pt-6 px-6 pb-4">
-        <h2 className="font-['Geist:SemiBold',sans-serif] text-[24px] font-semibold text-[#0A0A0A] tracking-[-0.4px] mb-1">
+        <h2 className=" text-[24px] font-semibold text-[#1A2732] tracking-[-0.4px] mb-1">
           MirrorView
         </h2>
-        <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+        <p className=" text-[14px] text-[#737373]">
           3D part visualisation
         </p>
       </div>
@@ -160,11 +160,11 @@ const MirrorView3D = () => {
               key={part.id}
               onClick={() => setActiveTab(part.id)}
               className={`
-                flex-1 h-8 rounded-[8px] font-['Geist:Medium',sans-serif] text-[14px] font-medium
+                flex-1 h-8 rounded-[8px]  text-[14px] font-medium
                 transition-all
                 ${activeTab === part.id
-                  ? 'bg-white text-[#0A0A0A] shadow-sm'
-                  : 'text-[#737373] hover:text-[#0A0A0A]'
+                  ? 'bg-white text-[#1A2732] shadow-sm'
+                  : 'text-[#737373] hover:text-[#1A2732]'
                 }
               `}
             >
@@ -187,39 +187,39 @@ const MirrorView3D = () => {
           {/* Viewer Controls Overlay */}
           <div className="absolute top-4 right-4 flex gap-2">
             <button className="h-8 w-8 bg-white/90 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white transition-colors shadow-sm">
-              <Rotate3D className="w-4 h-4 text-[#0A0A0A]" />
+              <Rotate3D className="w-4 h-4 text-[#1A2732]" />
             </button>
             <button className="h-8 w-8 bg-white/90 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white transition-colors shadow-sm">
-              <ZoomIn className="w-4 h-4 text-[#0A0A0A]" />
+              <ZoomIn className="w-4 h-4 text-[#1A2732]" />
             </button>
             <button className="h-8 w-8 bg-white/90 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white transition-colors shadow-sm">
-              <ZoomOut className="w-4 h-4 text-[#0A0A0A]" />
+              <ZoomOut className="w-4 h-4 text-[#1A2732]" />
             </button>
             <button className="h-8 w-8 bg-white/90 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white transition-colors shadow-sm">
-              <Maximize2 className="w-4 h-4 text-[#0A0A0A]" />
+              <Maximize2 className="w-4 h-4 text-[#1A2732]" />
             </button>
           </div>
 
           {/* View Controls Bottom */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm rounded-[10px] px-4 py-2 flex items-center gap-4 shadow-sm">
-            <button className="flex items-center gap-2 text-[#0A0A0A] hover:text-[#737373] transition-colors">
+            <button className="flex items-center gap-2 text-[#1A2732] hover:text-[#737373] transition-colors">
               <Box className="w-4 h-4" />
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium">Home</span>
+              <span className=" text-[13px] font-medium">Home</span>
             </button>
-            <div className="w-px h-4 bg-[#E5E5E5]" />
-            <button className="flex items-center gap-2 text-[#0A0A0A] hover:text-[#737373] transition-colors">
+            <div className="w-px h-4 bg-[var(--border)]" />
+            <button className="flex items-center gap-2 text-[#1A2732] hover:text-[#737373] transition-colors">
               <Grid3x3 className="w-4 h-4" />
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium">Top</span>
+              <span className=" text-[13px] font-medium">Top</span>
             </button>
-            <div className="w-px h-4 bg-[#E5E5E5]" />
-            <button className="flex items-center gap-2 text-[#0A0A0A] hover:text-[#737373] transition-colors">
+            <div className="w-px h-4 bg-[var(--border)]" />
+            <button className="flex items-center gap-2 text-[#1A2732] hover:text-[#737373] transition-colors">
               <Move className="w-4 h-4" />
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium">Explode</span>
+              <span className=" text-[13px] font-medium">Explode</span>
             </button>
-            <div className="w-px h-4 bg-[#E5E5E5]" />
-            <button className="flex items-center gap-2 text-[#0A0A0A] hover:text-[#737373] transition-colors">
+            <div className="w-px h-4 bg-[var(--border)]" />
+            <button className="flex items-center gap-2 text-[#1A2732] hover:text-[#737373] transition-colors">
               <RotateCcw className="w-4 h-4" />
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium">Reset</span>
+              <span className=" text-[13px] font-medium">Reset</span>
             </button>
           </div>
         </div>
@@ -230,13 +230,13 @@ const MirrorView3D = () => {
 
 const ActivitiesTable = () => {
   return (
-    <div className="bg-white rounded-[10px] border border-[#E5E5E5] overflow-hidden mt-6">
+    <div className="bg-white rounded-[10px] border border-[var(--border)] overflow-hidden mt-6">
       {/* Header */}
       <div className="pt-6 px-6 pb-4">
-        <h2 className="font-['Geist:SemiBold',sans-serif] text-[24px] font-semibold text-[#0A0A0A] tracking-[-0.4px] mb-1">
+        <h2 className=" text-[24px] font-semibold text-[#1A2732] tracking-[-0.4px] mb-1">
           Instructions & Activities
         </h2>
-        <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+        <p className=" text-[14px] text-[#737373]">
           Manufacturing instructions
         </p>
       </div>
@@ -245,23 +245,23 @@ const ActivitiesTable = () => {
       <div className="overflow-x-auto">
         <div className="min-w-full">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#FAFAFA] border-y border-[#E5E5E5]">
-            <div className="col-span-3 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#F5F5F5] border-y border-[var(--border)]">
+            <div className="col-span-3  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
               Operation
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
               Work Station
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
               Operator
             </div>
-            <div className="col-span-1 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
+            <div className="col-span-1  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
               Priority
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
               Progress
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-right">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-right">
               Time Estimate
             </div>
           </div>
@@ -272,25 +272,25 @@ const ActivitiesTable = () => {
             return (
               <div
                 key={index}
-                className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-[#E5E5E5] hover:bg-[#FAFAFA] transition-colors items-center"
+                className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-[var(--border)] hover:bg-[var(--accent)] transition-colors items-center"
               >
                 <div className="col-span-3">
-                  <p className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A]">
+                  <p className=" text-[14px] font-semibold text-[#1A2732]">
                     {activity.operation}
                   </p>
                 </div>
                 <div className="col-span-2">
-                  <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#0A0A0A]">
+                  <p className=" text-[14px] text-[#1A2732]">
                     {activity.workStation}
                   </p>
                 </div>
                 <div className="col-span-2">
-                  <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+                  <p className=" text-[14px] text-[#737373]">
                     {activity.operator}
                   </p>
                 </div>
                 <div className="col-span-1 flex justify-center">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-[#F5F5F5] rounded-full font-['Roboto_Mono:Bold',sans-serif] text-[11px] font-bold text-[#0A0A0A]">
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-[#F5F5F5] rounded-full font-['Roboto_Mono:Bold',sans-serif] text-[11px] font-bold text-[#1A2732]">
                     {activity.priority}
                   </span>
                 </div>
@@ -302,13 +302,13 @@ const ActivitiesTable = () => {
                         style={{ width: `${progress}%` }}
                       />
                     </div>
-                    <span className="font-['Roboto_Mono:Medium',sans-serif] text-[11px] font-medium text-[#0A0A0A]">
+                    <span className="font-['Roboto_Mono:Medium',sans-serif] text-[11px] font-medium text-[#1A2732]">
                       {activity.completedQty}/{activity.totalQty}
                     </span>
                   </div>
                 </div>
                 <div className="col-span-2 text-right">
-                  <span className="font-['Roboto_Mono:Medium',sans-serif] text-[14px] font-medium text-[#0A0A0A]">
+                  <span className="font-['Roboto_Mono:Medium',sans-serif] text-[14px] font-medium text-[#1A2732]">
                     {activity.timeEstimate}
                   </span>
                 </div>
@@ -325,32 +325,32 @@ const ActivitiesTable = () => {
 
 export function PlanProduction() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-[#F5F5F5] p-6">
       <div className="max-w-[1400px] mx-auto">
         {/* Page Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="font-['Geist:SemiBold',sans-serif] text-[20px] font-semibold text-[#0A0A0A]">
+              <h1 className=" text-[20px] font-semibold text-[#1A2732]">
                 Job Name
               </h1>
-              <span className="inline-flex items-center h-6 px-2 bg-[#F5F5F5] rounded-[8px] font-['Geist:SemiBold',sans-serif] text-[12px] font-semibold text-[#171717]">
+              <span className="inline-flex items-center h-6 px-2 bg-[#F5F5F5] rounded-[8px]  text-[12px] font-semibold text-[#171717]">
                 New
               </span>
-              <span className="inline-flex items-center h-6 px-2 bg-[#DC2626] rounded-[8px] font-['Geist:SemiBold',sans-serif] text-[12px] font-semibold text-white">
+              <span className="inline-flex items-center h-6 px-2 bg-[#DC2626] rounded-[8px]  text-[12px] font-semibold text-white">
                 Urgent
               </span>
             </div>
-            <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+            <p className=" text-[14px] text-[#737373]">
               Manufacturing job details and production tracking
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="h-9 px-4 flex items-center gap-2 bg-[#F5F5F5] rounded-[8px] font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#171717] hover:bg-[#E5E5E5] transition-colors">
+            <button className="h-9 px-4 flex items-center gap-2 bg-[#F5F5F5] rounded-[8px]  text-[14px] font-medium text-[#171717] hover:bg-[var(--border)] transition-colors">
               <Download className="w-4 h-4" />
               Export
             </button>
-            <button className="h-9 px-4 flex items-center gap-2 bg-[#F5F5F5] rounded-[8px] font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#171717] hover:bg-[#E5E5E5] transition-colors">
+            <button className="h-9 px-4 flex items-center gap-2 bg-[#F5F5F5] rounded-[8px]  text-[14px] font-medium text-[#171717] hover:bg-[var(--border)] transition-colors">
               <Share2 className="w-4 h-4" />
               Share
             </button>
@@ -358,32 +358,32 @@ export function PlanProduction() {
         </div>
 
         {/* Products Table */}
-        <div className="bg-white rounded-[10px] border border-[#E5E5E5] overflow-hidden mb-6">
+        <div className="bg-white rounded-[10px] border border-[var(--border)] overflow-hidden mb-6">
           {/* Header */}
           <div className="pt-6 px-6 pb-4">
-            <h2 className="font-['Geist:SemiBold',sans-serif] text-[24px] font-semibold text-[#0A0A0A] tracking-[-0.4px] mb-1">
+            <h2 className=" text-[24px] font-semibold text-[#1A2732] tracking-[-0.4px] mb-1">
               Products
             </h2>
-            <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+            <p className=" text-[14px] text-[#737373]">
               Components and assemblies in this job
             </p>
           </div>
 
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#FAFAFA] border-y border-[#E5E5E5]">
-            <div className="col-span-4 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#F5F5F5] border-y border-[var(--border)]">
+            <div className="col-span-4  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
               Product
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
               Quantity
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
               Status
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-center">
               Due Date
             </div>
-            <div className="col-span-2 font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider text-right">
+            <div className="col-span-2  text-[12px] font-medium text-[#737373] uppercase tracking-wider text-right">
               Actions
             </div>
           </div>

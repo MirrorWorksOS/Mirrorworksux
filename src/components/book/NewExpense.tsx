@@ -33,13 +33,13 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-11 gap-4">
         {/* Left - Form */}
-        <Card className="lg:col-span-6 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6 space-y-4">
+        <Card className="lg:col-span-6 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6 space-y-4">
           {/* Vendor */}
           <div>
             <Label className="text-sm mb-2 block" style={{ fontWeight: 500 }}>Vendor / Supplier</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
-              <Input placeholder="Search suppliers..." className="pl-9 h-14 border-[#E5E5E5] rounded" />
+              <Input placeholder="Search suppliers..." className="pl-9 h-14 border-[var(--border)] rounded" />
             </div>
           </div>
 
@@ -47,7 +47,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
           <div>
             <Label className="text-sm mb-2 block" style={{ fontWeight: 500 }}>Expense Date</Label>
             <div className="relative">
-              <Input type="text" defaultValue="02 Mar 2026" className="h-14 border-[#E5E5E5] rounded pr-10" />
+              <Input type="text" defaultValue="02 Mar 2026" className="h-14 border-[var(--border)] rounded pr-10" />
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
             </div>
           </div>
@@ -59,13 +59,13 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#737373]" style={{ fontFamily: 'Roboto Mono, monospace' }}>$</span>
               <Input
                 value={amount} onChange={e => setAmount(e.target.value)}
-                className="pl-7 h-14 border-[#E5E5E5] rounded" style={{ fontFamily: 'Roboto Mono, monospace' }}
+                className="pl-7 h-14 border-[var(--border)] rounded" style={{ fontFamily: 'Roboto Mono, monospace' }}
               />
             </div>
             <div className="flex items-center gap-2 mt-2">
               {['exclusive', 'inclusive'].map(m => (
                 <button key={m} onClick={() => setTaxMode(m as any)}
-                  className={cn("px-4 py-2 text-xs rounded border transition-colors", taxMode === m ? 'bg-[#FFCF4B] border-[#FFCF4B] text-[#1A2732]' : 'border-[#E5E5E5] text-[#737373] hover:bg-[#F5F5F5]')}
+                  className={cn("px-4 py-2 text-xs rounded border transition-colors", taxMode === m ? 'bg-[#FFCF4B] border-[#FFCF4B] text-[#1A2732]' : 'border-[var(--border)] text-[#737373] hover:bg-[#F5F5F5]')}
                   style={{ fontWeight: 500 }}>
                   Tax {m}
                 </button>
@@ -81,7 +81,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
           <div>
             <Label className="text-sm mb-2 block" style={{ fontWeight: 500 }}>Category</Label>
             <Select>
-              <SelectTrigger className="h-14 border-[#E5E5E5] rounded"><SelectValue placeholder="Select category" /></SelectTrigger>
+              <SelectTrigger className="h-14 border-[var(--border)] rounded"><SelectValue placeholder="Select category" /></SelectTrigger>
               <SelectContent>
                 <SelectGroup><SelectLabel>Operating</SelectLabel>
                   {['Raw Materials', 'Utilities', 'Maintenance', 'Consumables', 'Freight', 'Subcontractor'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -99,7 +99,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
           {/* Payment Method */}
           <div>
             <Label className="text-sm mb-2 block" style={{ fontWeight: 500 }}>Payment Method</Label>
-            <div className="flex gap-0 border border-[#E5E5E5] rounded overflow-hidden">
+            <div className="flex gap-0 border border-[var(--border)] rounded overflow-hidden">
               {['Cash', 'Credit Card', 'Bank Transfer', 'Petty Cash'].map(m => (
                 <button key={m} onClick={() => setPaymentMethod(m)}
                   className={cn("flex-1 py-3 text-xs transition-colors", paymentMethod === m ? 'bg-[#FFCF4B] text-[#1A2732]' : 'text-[#737373] hover:bg-[#F5F5F5]')}
@@ -113,7 +113,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
           {/* Description */}
           <div>
             <Label className="text-sm mb-2 block" style={{ fontWeight: 500 }}>Description</Label>
-            <Textarea placeholder="Add notes about this expense..." className="min-h-[88px] border-[#E5E5E5] rounded" />
+            <Textarea placeholder="Add notes about this expense..." className="min-h-[88px] border-[var(--border)] rounded" />
           </div>
 
           {/* Link to Job */}
@@ -124,7 +124,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
-              <Input placeholder="Search jobs..." className="pl-9 h-14 border-[#E5E5E5] rounded" />
+              <Input placeholder="Search jobs..." className="pl-9 h-14 border-[var(--border)] rounded" />
             </div>
           </div>
 
@@ -140,18 +140,18 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" className="h-12 px-6 border-[#E5E5E5] text-[#1A2732] rounded">Save as Draft</Button>
+            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-[#1A2732] rounded">Save as Draft</Button>
             <Button className="h-12 px-6 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded">Submit for Approval</Button>
           </div>
         </Card>
 
         {/* Right - Receipt */}
         <div className="lg:col-span-5 space-y-4">
-          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             {!uploaded ? (
               <div
                 onClick={() => setUploaded(true)}
-                className="min-h-[200px] border-2 border-dashed border-[#E5E5E5] rounded-lg bg-[#FAFAFA] flex flex-col items-center justify-center cursor-pointer hover:border-[#FFCF4B] hover:bg-[#FFFBF0] transition-colors"
+                className="min-h-[200px] border-2 border-dashed border-[var(--border)] rounded-lg bg-[#F5F5F5] flex flex-col items-center justify-center cursor-pointer hover:border-[#FFCF4B] hover:bg-[var(--accent)] transition-colors"
               >
                 <Upload className="w-12 h-12 text-[#A3A3A3] mb-3" />
                 <p className="text-[#525252]">Drag receipt here or tap to upload</p>
@@ -175,7 +175,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                 {/* OCR Results */}
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-[#36B37E]" />
+                    <CheckCircle className="w-4 h-4 text-[#1A2732]" />
                     <span className="text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>Extracted data:</span>
                   </div>
                   {[
@@ -187,8 +187,8 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                     <div key={row.label} className="flex items-center justify-between">
                       <span className="text-xs text-[#737373]">{row.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className={cn("text-sm text-[#1A2732]", row.mono && "font-mono")}>{row.value}</span>
-                        <div className={cn("w-2 h-2 rounded-full", row.confidence === 'green' ? 'bg-[#36B37E]' : row.confidence === 'yellow' ? 'bg-[#FACC15]' : 'bg-[#DE350B]')} />
+                        <span className={cn("text-sm text-[#1A2732]", row.mono && "")}>{row.value}</span>
+                        <div className={cn("w-2 h-2 rounded-full", row.confidence === 'green' ? 'bg-[#1A2732]' : row.confidence === 'yellow' ? 'bg-[#FACC15]' : 'bg-[#DE350B]')} />
                       </div>
                     </div>
                   ))}

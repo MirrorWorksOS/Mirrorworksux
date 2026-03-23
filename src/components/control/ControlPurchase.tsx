@@ -38,7 +38,7 @@ function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
       <Button variant="ghost" className="text-[#737373] text-sm h-10">Discard</Button>
-      <Button className="h-10 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] rounded">Save changes</Button>
+      <Button className="h-10 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] rounded-xl">Save changes</Button>
     </div>
   );
 }
@@ -53,14 +53,14 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">PO prefix</Label>
             <div className="flex gap-3 items-center">
-              <Input defaultValue="PO-" className="h-12 border-[#E5E5E5] rounded bg-[#F5F5F5] w-28" />
-              <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">Preview: PO-0089</span>
+              <Input defaultValue="PO-" className="h-12 border-[var(--border)] rounded-xl bg-[#F5F5F5] w-28" />
+              <span className="text-xs text-[#737373] ">Preview: PO-0089</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
             <Select defaultValue="net30">
-              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="cod">COD</SelectItem>
                 <SelectItem value="net14">Net 14</SelectItem>
@@ -73,14 +73,14 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Default lead time</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="14" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+              <Input defaultValue="14" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[#737373]">days</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default delivery location</Label>
             <Select defaultValue="main">
-              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="main">Main Factory — Silverwater</SelectItem>
                 <SelectItem value="warehouse">Warehouse — Moorebank</SelectItem>
@@ -95,21 +95,21 @@ function GeneralPanel() {
         <div className="space-y-4">
           <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
             <div>
-              <span className="text-sm text-[#0A0A0A]">Auto-generate POs at reorder point</span>
+              <span className="text-sm text-[#1A2732]">Auto-generate POs at reorder point</span>
               <p className="text-xs text-[#737373] mt-0.5">Create draft POs when stock reaches minimum level</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
             <div>
-              <span className="text-sm text-[#0A0A0A]">Enable three-way matching</span>
+              <span className="text-sm text-[#1A2732]">Enable three-way matching</span>
               <p className="text-xs text-[#737373] mt-0.5">Match PO, goods receipt, and invoice before payment</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between py-2">
             <div>
-              <span className="text-sm text-[#0A0A0A]">Require goods receipt before invoice</span>
+              <span className="text-sm text-[#1A2732]">Require goods receipt before invoice</span>
               <p className="text-xs text-[#737373] mt-0.5">Block invoice processing until GRN is confirmed</p>
             </div>
             <Switch defaultChecked />
@@ -135,12 +135,12 @@ function ApprovalPanel() {
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-3 border-b border-[#F5F5F5] last:border-0">
               <div>
-                <span className="text-sm text-[#0A0A0A] font-medium">{r.label}</span>
+                <span className="text-sm text-[#1A2732] font-medium">{r.label}</span>
                 <p className="text-xs text-[#737373] mt-0.5">{r.sub}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-[#737373]">{r.suffix}</span>
-                <Input defaultValue={r.value} type="number" className="h-10 border-[#E5E5E5] rounded w-28 text-right font-['Roboto_Mono',monospace]" />
+                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-xl w-28 text-right " />
               </div>
             </div>
           ))}
@@ -156,7 +156,7 @@ function ApprovalPanel() {
             { label: 'Allow approver to edit PO before approving', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -183,11 +183,11 @@ function SuppliersPanel() {
                 { label: 'Reliability',    value: 15 },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-4">
-                  <span className="text-sm text-[#0A0A0A] w-28">{s.label}</span>
+                  <span className="text-sm text-[#1A2732] w-28">{s.label}</span>
                   <div className="flex-1 h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
                     <div className="h-full bg-[#FFCF4B] rounded-full" style={{ width: `${s.value}%` }} />
                   </div>
-                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[#E5E5E5] rounded text-right font-['Roboto_Mono',monospace] text-sm" />
+                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[var(--border)] rounded-xl text-right  text-sm" />
                   <span className="text-sm text-[#737373]">%</span>
                 </div>
               ))}
@@ -201,12 +201,12 @@ function SuppliersPanel() {
         <div className="space-y-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">Minimum suppliers to quote</Label>
-            <Input defaultValue="3" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+            <Input defaultValue="3" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">RFQ expiry period</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="7" type="number" className="h-12 border-[#E5E5E5] rounded w-24" />
+              <Input defaultValue="7" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[#737373]">days</span>
             </div>
           </div>
@@ -233,7 +233,7 @@ function NotificationsPanel() {
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-3 border-b border-[#F5F5F5] last:border-0">
               <div>
-                <span className="text-sm text-[#0A0A0A] font-medium">{r.label}</span>
+                <span className="text-sm text-[#1A2732] font-medium">{r.label}</span>
                 <p className="text-xs text-[#737373] mt-0.5">{r.sub}</p>
               </div>
               <Switch defaultChecked={r.checked} />
@@ -263,12 +263,12 @@ export function ControlPurchase() {
       variants={animationVariants.stagger}
       className="p-6"
     >
-      <h1 className="text-[32px] tracking-tight text-[#0A0A0A] mb-6">Purchase settings</h1>
+      <h1 className="text-[32px] tracking-tight text-[#1A2732] mb-6">Purchase settings</h1>
 
       <div className="flex gap-6">
         {/* Left nav */}
         <div className="w-56 flex-shrink-0">
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-3 h-fit">
+          <Card className="bg-white border border-[var(--border)] rounded-xl-2xl p-3 h-fit">
             <nav className="space-y-0.5">
               {NAV.map(n => {
                 const Icon = n.icon;
@@ -279,8 +279,8 @@ export function ControlPurchase() {
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-left',
                       active === n.key
-                        ? 'bg-[#FFFBF0] text-[#0A0A0A] font-medium'
-                        : 'text-[#737373] hover:bg-[#F5F5F5] hover:text-[#0A0A0A]'
+                        ? 'bg-[var(--accent)] text-[#1A2732] font-medium'
+                        : 'text-[#737373] hover:bg-[#F5F5F5] hover:text-[#1A2732]'
                     )}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -294,7 +294,7 @@ export function ControlPurchase() {
 
         {/* Right panel */}
         <div className="flex-1 min-w-0">
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+          <Card className="bg-white border border-[var(--border)] rounded-xl-2xl p-6">
             <PanelComponent />
           </Card>
         </div>

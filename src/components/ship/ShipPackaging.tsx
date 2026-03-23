@@ -48,7 +48,7 @@ export function ShipPackaging() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Station Bar — intentional dark header for pack-station context */}
-      <div className="bg-[#0A0A0A] text-white px-6 py-4 flex items-center justify-between shrink-0">
+      <div className="bg-[#1A2732] text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-[#FFCF4B] flex items-center justify-center text-[#1A2732] text-xs font-medium">
             MQ
@@ -59,8 +59,8 @@ export function ShipPackaging() {
           </div>
         </div>
         <div className="flex items-center gap-6 text-xs text-[#737373]">
-          <span>Packed: <span className="text-white font-['Roboto_Mono',monospace]">34</span></span>
-          <span>Orders: <span className="text-white font-['Roboto_Mono',monospace]">8</span></span>
+          <span>Packed: <span className="text-white ">34</span></span>
+          <span>Orders: <span className="text-white ">8</span></span>
         </div>
       </div>
 
@@ -69,10 +69,10 @@ export function ShipPackaging() {
         <div className="lg:col-span-3 p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h4 className="text-[#0A0A0A] font-['Roboto_Mono',monospace] font-medium text-lg">SH-001</h4>
+              <h4 className="text-[#1A2732]  font-medium text-lg">SH-001</h4>
               <p className="text-xs text-[#737373] mt-1">Con-form Group</p>
             </div>
-            <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">{checked.size}/{ITEMS.length}</span>
+            <span className="text-xs text-[#737373] ">{checked.size}/{ITEMS.length}</span>
           </div>
 
           {/* Scanner */}
@@ -88,7 +88,7 @@ export function ShipPackaging() {
               onChange={e => setScan(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleScan()}
               placeholder="Scan barcode..."
-              className="pl-12 h-14 bg-[#F5F5F5] border-transparent rounded-lg font-['Roboto_Mono',monospace]"
+              className="pl-12 h-14 bg-[#F5F5F5] border-transparent rounded-lg "
             />
           </div>
 
@@ -102,21 +102,21 @@ export function ShipPackaging() {
                   onClick={() => toggle(item.sku)}
                   className={cn(
                     'flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all duration-150 min-h-[72px]',
-                    done ? 'bg-[#FAFAFA] opacity-50' : 'bg-white border border-[#E5E5E5] hover:border-[#A3A3A3]'
+                    done ? 'bg-[#F5F5F5] opacity-50' : 'bg-white border border-[var(--border)] hover:border-[#A3A3A3]'
                   )}
                 >
                   <div className={cn(
                     'w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
-                    done ? 'bg-[#0A0A0A] border-[#0A0A0A]' : 'border-[#E5E5E5]'
+                    done ? 'bg-[#1A2732] border-[#1A2732]' : 'border-[var(--border)]'
                   )}>
                     {done && <CheckCircle className="w-5 h-5 text-white" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[10px] text-[#737373] tracking-wider font-['Roboto_Mono',monospace] font-medium">{item.sku}</span>
-                    <p className={cn('text-sm text-[#0A0A0A]', done && 'line-through')}>{item.name}</p>
+                    <span className="text-[10px] text-[#737373] tracking-wider  font-medium">{item.sku}</span>
+                    <p className={cn('text-sm text-[#1A2732]', done && 'line-through')}>{item.name}</p>
                   </div>
-                  <span className="text-lg text-[#0A0A0A] shrink-0 font-['Roboto_Mono',monospace] font-medium">×{item.qty}</span>
-                  <span className="text-[10px] text-[#737373] bg-[#F5F5F5] px-2 py-1 rounded shrink-0 font-['Roboto_Mono',monospace]">{item.bin}</span>
+                  <span className="text-lg text-[#1A2732] shrink-0  font-medium">×{item.qty}</span>
+                  <span className="text-[10px] text-[#737373] bg-[#F5F5F5] px-2 py-1 rounded shrink-0 ">{item.bin}</span>
                 </div>
               );
             })}
@@ -124,7 +124,7 @@ export function ShipPackaging() {
         </div>
 
         {/* Right — Package */}
-        <div className="lg:col-span-2 p-6 overflow-y-auto border-l border-[#E5E5E5] bg-[#FAFAFA]">
+        <div className="lg:col-span-2 p-6 overflow-y-auto border-l border-[var(--border)] bg-[#F5F5F5]">
           <p className="text-[10px] text-[#737373] tracking-widest uppercase mb-4 font-medium">Package</p>
           <div className="grid grid-cols-2 gap-2 mb-6">
             {PACKAGES.map(p => (
@@ -134,8 +134,8 @@ export function ShipPackaging() {
                 className={cn(
                   'p-4 rounded-lg text-left transition-all duration-150',
                   pkg === p.name
-                    ? 'bg-[#0A0A0A] text-white'
-                    : 'bg-white border border-[#E5E5E5] hover:border-[#A3A3A3]'
+                    ? 'bg-[#1A2732] text-white'
+                    : 'bg-white border border-[var(--border)] hover:border-[#A3A3A3]'
                 )}
               >
                 <p className="text-sm font-medium">{p.name}</p>
@@ -150,18 +150,18 @@ export function ShipPackaging() {
               <div className="relative mt-1">
                 <Input
                   defaultValue="12.4"
-                  className="h-12 bg-white border-[#E5E5E5] rounded-lg pr-10 font-['Roboto_Mono',monospace] font-medium"
+                  className="h-12 bg-white border-[var(--border)] rounded-lg pr-10  font-medium"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#737373]">kg</span>
               </div>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-[#0A0A0A]">Fragile</span>
+              <span className="text-sm text-[#1A2732]">Fragile</span>
               <Switch checked={fragile} onCheckedChange={setFragile} />
             </div>
           </div>
 
-          <div className="bg-[#FFFBF0] border border-[#FFCF4B] rounded-lg p-4 text-xs text-[#0A0A0A]">
+          <div className="bg-[#FFFBF0] border border-[#FFCF4B] rounded-lg p-4 text-xs text-[#1A2732]">
             <p className="font-medium">Special instructions</p>
             <p className="mt-1 text-[#737373]">Handle with care — powder-coated finish. Use corner protectors.</p>
           </div>
@@ -169,7 +169,7 @@ export function ShipPackaging() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-white border-t border-[#E5E5E5] px-6 py-4 flex items-center justify-between shrink-0">
+      <div className="bg-white border-t border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
         <div className="h-1.5 bg-[#E5E5E5] rounded-full flex-1 max-w-xs overflow-hidden mr-6">
           <div
             className="h-full rounded-full transition-all"
@@ -180,7 +180,7 @@ export function ShipPackaging() {
           />
         </div>
         <div className="flex gap-3">
-          <button className="h-12 px-6 rounded-lg text-sm border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5] transition-colors font-medium">
+          <button className="h-12 px-6 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors font-medium">
             Park
           </button>
           <button

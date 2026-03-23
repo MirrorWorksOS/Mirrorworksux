@@ -32,11 +32,11 @@ const INVOICES: Invoice[] = [
 
 const statusStyles: Record<InvoiceStatus, string> = {
   Draft: 'bg-[#F5F5F5] text-[#737373]',
-  Sent: 'bg-[#E6F0FF] text-[#0052CC]',
-  Viewed: 'bg-[#E6F0FF] text-[#0052CC]',
+  Sent: 'bg-[#F5F5F5] text-[#1A2732]',
+  Viewed: 'bg-[#F5F5F5] text-[#1A2732]',
   'Partially Paid': 'bg-[#FFF4CC] text-[#805900]',
-  Paid: 'bg-[#E6F7EF] text-[#1B7D4F]',
-  Overdue: 'bg-[#FFE5E5] text-[#DE350B]',
+  Paid: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Overdue: 'bg-[#DE350B]/10 text-[#DE350B]',
   Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
 };
 
@@ -71,19 +71,19 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       <div className="flex items-center gap-3">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
-          <Input placeholder="Search invoices..." className="pl-9 h-10 bg-white border-[#E5E5E5] rounded text-sm" />
+          <Input placeholder="Search invoices..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] text-[#1A2732]">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[#1A2732]">
           <SlidersHorizontal className="w-4 h-4" /> Filter
         </Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] text-[#1A2732]">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[#1A2732]">
           Export <ChevronDown className="w-4 h-4" />
         </Button>
         <span className="ml-auto text-xs text-[#737373]">1-25 of 147</span>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-[#E5E5E5]">
+      <div className="flex gap-0 border-b border-[var(--border)]">
         {TABS.map(tab => (
           <button
             key={tab.label}
@@ -104,11 +104,11 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       </div>
 
       {/* Table */}
-      <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
+      <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                 <th className="w-12 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
                 <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>INVOICE #</th>
                 <th className="text-left px-4 py-3 text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>CUSTOMER</th>
@@ -125,13 +125,13 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
                 <tr
                   key={inv.id}
                   className={cn(
-                    "border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors",
-                    i % 2 === 1 ? "bg-[#FAFAFA]" : "bg-white"
+                    "border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
+                    i % 2 === 1 ? "bg-[#F5F5F5]" : "bg-white"
                   )}
                   onClick={() => onSelectInvoice?.(inv.id)}
                 >
                   <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
-                  <td className="px-4 text-[13px] text-[#0052CC]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{inv.id}</td>
+                  <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{inv.id}</td>
                   <td className="px-4 text-sm text-[#1A2732]">{inv.customer}</td>
                   <td className="px-4 text-sm text-[#525252]">{inv.issueDate}</td>
                   <td className="px-4 text-sm text-[#525252]">{inv.dueDate}</td>
@@ -156,7 +156,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E5E5]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
           <span className="text-xs text-[#737373]">Showing 1-8 of 147 invoices</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>

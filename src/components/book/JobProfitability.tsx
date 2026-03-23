@@ -56,8 +56,8 @@ const JOBS: JobRow[] = [
 ];
 
 const getBarColor = (m: number) => m > 15 ? '#36B37E' : m > 5 ? '#FACC15' : '#DE350B';
-const getMarginBadge = (m: number) => m > 15 ? 'bg-[#E6F7EF] text-[#1B7D4F]' : m > 5 ? 'bg-[#FFF4CC] text-[#805900]' : 'bg-[#FFE5E5] text-[#DE350B]';
-const statusBadge = (s: string) => s === 'Complete' ? 'text-[#36B37E]' : s === 'In Production' ? 'text-[#0052CC]' : 'text-[#FACC15]';
+const getMarginBadge = (m: number) => m > 15 ? 'bg-[#F5F5F5] text-[#1B7D4F]' : m > 5 ? 'bg-[#FFCF4B]/20 text-[#1A2732]' : 'bg-[#DE350B]/10 text-[#DE350B]';
+const statusBadge = (s: string) => s === 'Complete' ? 'text-[#1A2732]' : s === 'In Production' ? 'text-[#1A2732]' : 'text-[#1A2732]';
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -70,9 +70,9 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           <p className="text-sm text-[#737373]">Actual costs vs quoted amounts across all jobs</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Calendar className="w-4 h-4" /> Date Range</Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]">Export <ChevronDown className="w-4 h-4" /></Button>
-          <Button variant="outline" size="icon" className="h-10 w-10 border-[#E5E5E5]"><Filter className="w-4 h-4" /></Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date Range</Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
+          <Button variant="outline" size="icon" className="h-10 w-10 border-[var(--border)]"><Filter className="w-4 h-4" /></Button>
         </div>
       </div>
 
@@ -81,10 +81,10 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         {[
           { label: 'Total Revenue', value: '$456,780', sub: '34 completed jobs' },
           { label: 'Total Costs', value: '$312,450', sub: 'materials, labour, overhead' },
-          { label: 'Average Margin', value: '31.6%', color: '#36B37E', badge: '+2.3% vs last month', badgeStyle: 'bg-[#E6F7EF] text-[#36B37E]' },
+          { label: 'Average Margin', value: '31.6%', color: '#36B37E', badge: '+2.3% vs last month', badgeStyle: 'bg-[#F5F5F5] text-[#1A2732]' },
           { label: 'Loss-Making Jobs', value: '3', color: '#DE350B', sub: '$4,200 total loss', subColor: '#DE350B' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card key={kpi.label} className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[#737373] mb-2" style={{ fontWeight: 500 }}>{kpi.label}</div>
             <div className="text-[28px] tracking-tight" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500, color: kpi.color || '#1A2732' }}>{kpi.value}</div>
             {kpi.badge && <Badge className={cn("rounded-full text-[11px] mt-2 border-0", kpi.badgeStyle)}>{kpi.badge}</Badge>}
@@ -95,7 +95,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Top 10 Jobs by Profit Margin</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={marginData} layout="vertical" margin={{ left: 20 }}>
@@ -109,7 +109,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
             </BarChart>
           </ResponsiveContainer>
         </Card>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Customer Profitability</h3>
           <ResponsiveContainer width="100%" height={280}>
             <ScatterChart margin={{ left: 10 }}>
@@ -125,11 +125,11 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
       </div>
 
       {/* Data Table */}
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
+      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                 <th className="w-10 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
                 {['JOB #', 'CUSTOMER', 'PRODUCT', 'QUOTED', 'ACTUAL COST', 'MARGIN %', 'MARGIN $', 'STATUS', ''].map(h => (
                   <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", ['QUOTED', 'ACTUAL COST', 'MARGIN %', 'MARGIN $'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
@@ -139,10 +139,10 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
             <tbody>
               {JOBS.map((job, i) => (
                 <React.Fragment key={job.id}>
-                  <tr className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", expandedRow === job.id && "border-l-4 border-l-[#FFCF4B]", i % 2 === 1 && "bg-[#FAFAFA]")}
+                  <tr className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", expandedRow === job.id && "border-l-4 border-l-[#FFCF4B]", i % 2 === 1 && "bg-[#F5F5F5]")}
                     onClick={() => onSelectJob ? onSelectJob(job.id) : setExpandedRow(expandedRow === job.id ? null : job.id)}>
                     <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
-                    <td className="px-4 text-[13px] text-[#0052CC]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{job.id}</td>
+                    <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{job.id}</td>
                     <td className="px-4 text-sm text-[#1A2732]">{job.customer}</td>
                     <td className="px-4 text-sm text-[#525252]">{job.product}</td>
                     <td className="px-4 text-right text-sm" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>${job.quoted.toLocaleString()}</td>
@@ -157,13 +157,13 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
                     <td className="px-4">{expandedRow === job.id ? <ChevronUp className="w-4 h-4 text-[#737373]" /> : <ChevronDown className="w-4 h-4 text-[#737373]" />}</td>
                   </tr>
                   {expandedRow === job.id && job.breakdown && (
-                    <tr><td colSpan={10} className="bg-[#FAFAFA] px-8 py-4">
+                    <tr><td colSpan={10} className="bg-[#F5F5F5] px-8 py-4">
                       <table className="w-full">
                         <thead><tr className="text-xs text-[#737373]" style={{ fontWeight: 500 }}>
                           <th className="text-left py-1">Type</th><th className="text-right py-1">Quoted</th><th className="text-right py-1">Actual</th><th className="text-right py-1">Variance</th>
                         </tr></thead>
                         <tbody>{job.breakdown.map(b => (
-                          <tr key={b.type} className="border-t border-[#E5E5E5]">
+                          <tr key={b.type} className="border-t border-[var(--border)]">
                             <td className="py-2 text-sm">{b.type}</td>
                             <td className="py-2 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>${b.quoted.toLocaleString()}</td>
                             <td className="py-2 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>${b.actual.toLocaleString()}</td>

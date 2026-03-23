@@ -32,10 +32,10 @@ const donutData = [
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 const ageStyles: Record<AgeCategory, string> = {
-  Fresh: 'bg-[#E6F7EF] text-[#36B37E]',
+  Fresh: 'bg-[var(--warm-200)] text-[#FFCF4B]',
   Active: 'bg-[#FFF4CC] text-[#805900]',
   Slow: 'bg-[#FFE5CC] text-[#CC4400]',
-  Stale: 'bg-[#FFE5E5] text-[#DE350B]',
+  Stale: 'bg-[#DE350B]/10 text-[#DE350B]',
 };
 
 const rawMaterials = [
@@ -60,32 +60,32 @@ export function StockValuation() {
         <h1 className="text-[32px] tracking-tight text-[#1A2732]">Stock Valuation</h1>
         <div className="flex items-center gap-3">
           <Select defaultValue="fifo">
-            <SelectTrigger className="h-10 w-48 border-[#E5E5E5]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-10 w-48 border-[var(--border)]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="fifo">FIFO</SelectItem>
               <SelectItem value="lifo">LIFO</SelectItem>
               <SelectItem value="wavg">Weighted Average</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Calendar className="w-4 h-4" /> As at</Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> As at</Button>
           <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded">Generate Report</Button>
         </div>
       </div>
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
-          <div className="flex items-center gap-2 mb-2"><Package className="w-6 h-6 text-[#0052CC]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>RAW MATERIALS</span></div>
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
+          <div className="flex items-center gap-2 mb-2"><Package className="w-6 h-6 text-[#FFCF4B]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>RAW MATERIALS</span></div>
           <div className="text-[24px] tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>$145,600</div>
           <p className="text-xs text-[#737373] mt-1">342 items</p>
         </Card>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <div className="flex items-center gap-2 mb-2"><Wrench className="w-6 h-6 text-[#FACC15]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>WORK IN PROGRESS</span></div>
           <div className="text-[24px] tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>$89,200</div>
           <p className="text-xs text-[#737373] mt-1">12 jobs</p>
         </Card>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
-          <div className="flex items-center gap-2 mb-2"><CheckCircle className="w-6 h-6 text-[#36B37E]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>FINISHED GOODS</span></div>
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
+          <div className="flex items-center gap-2 mb-2"><CheckCircle className="w-6 h-6 text-[#FFCF4B]" /><span className="text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>FINISHED GOODS</span></div>
           <div className="text-[24px] tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace', fontWeight: 500 }}>$67,800</div>
           <p className="text-xs text-[#737373] mt-1">45 items</p>
         </Card>
@@ -97,7 +97,7 @@ export function StockValuation() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Valuation Trend</h3>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={trendData}>
@@ -111,7 +111,7 @@ export function StockValuation() {
             </AreaChart>
           </ResponsiveContainer>
         </Card>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Current Split</h3>
           <div className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={200}>
@@ -135,8 +135,8 @@ export function StockValuation() {
       </div>
 
       {/* Tabs + Table */}
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
-        <div className="flex border-b border-[#E5E5E5]">
+      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
+        <div className="flex border-b border-[var(--border)]">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab ? "text-[#1A2732]" : "text-[#737373] hover:text-[#1A2732]")}
@@ -151,7 +151,7 @@ export function StockValuation() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   {['ITEM', 'SKU', 'QTY', 'UNIT COST', 'TOTAL VALUE', 'LOCATION', 'LAST MOVEMENT', 'AGE'].map(h => (
                     <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", ['QTY', 'UNIT COST', 'TOTAL VALUE'].includes(h) ? 'text-right' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
                   ))}
@@ -159,7 +159,7 @@ export function StockValuation() {
               </thead>
               <tbody>
                 {rawMaterials.map((r, i) => (
-                  <tr key={r.sku} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]", i % 2 === 1 && "bg-[#FAFAFA]")}>
+                  <tr key={r.sku} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)]", i % 2 === 1 && "bg-[#F5F5F5]")}>
                     <td className="px-4 text-sm text-[#1A2732]">{r.item}</td>
                     <td className="px-4 text-[12px] text-[#737373]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.sku}</td>
                     <td className="px-4 text-sm text-right" style={{ fontFamily: 'Roboto Mono, monospace' }}>{r.qty}</td>

@@ -121,7 +121,7 @@ export function TimeClockTab() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-6 bg-[#F8F7F4]">
+    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-6 bg-[#F5F5F5]">
       <div 
         className={cn(
           "flex flex-col h-full flex-1 transition-all duration-300 ease-in-out",
@@ -198,13 +198,13 @@ export function TimeClockTab() {
                   {getStatusText()}
                </span>
                {isClockedIn && !isOnBreak && (
-                  <div className="flex items-center gap-2 text-green-700 font-mono font-medium bg-green-50 px-3 py-1 rounded-full border border-green-100">
+                  <div className="flex items-center gap-2 text-green-700  font-medium bg-green-50 px-3 py-1 rounded-full border border-green-100">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                     {elapsedTime}
                   </div>
                )}
                {isOnBreak && (
-                  <div className="flex items-center gap-2 text-orange-700 font-mono font-medium bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
+                  <div className="flex items-center gap-2 text-orange-700  font-medium bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
                     <div className="w-2 h-2 rounded-full bg-orange-500" />
                     Paused
                   </div>
@@ -212,7 +212,7 @@ export function TimeClockTab() {
             </div>
 
             {/* Time Display */}
-            <div className="font-mono text-[56px] font-medium text-[#1A1C1E] leading-none mb-2 tracking-tight">
+            <div className=" text-[56px] font-medium text-[#1A1C1E] leading-none mb-2 tracking-tight">
               {formatTime(currentTime)}
             </div>
             <div className="text-[#43474E] text-base font-medium mb-10">
@@ -270,7 +270,7 @@ export function TimeClockTab() {
              <div className="bg-white rounded-xl shadow-sm border border-[#E5E4E0] overflow-hidden">
                 {history.map((entry, i) => (
                    <div key={i} className={cn(
-                      "flex items-center justify-between h-12 px-4 hover:bg-[#F8F7F4] transition-colors",
+                      "flex items-center justify-between h-12 px-4 hover:bg-[#F5F5F5] transition-colors",
                       i !== history.length - 1 && "border-b border-[#E5E4E0]"
                    )}>
                       <div className="text-sm font-medium text-[#2C2C2C] w-32">{entry.date}</div>

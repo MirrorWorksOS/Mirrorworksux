@@ -96,9 +96,9 @@ const mockCustomers: Customer[] = [
 const getStatusBadge = (status: Customer['status']) => {
   switch (status) {
     case 'active':
-      return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Active' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Active' };
     case 'prospect':
-      return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Prospect' };
+      return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Prospect' };
     case 'inactive':
       return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Inactive' };
   }
@@ -124,11 +124,11 @@ export function SellCRM() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Customers</h1>
+          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Customers</h1>
           <p className="text-sm text-[#737373] mt-1">{filteredCustomers.length} total customers</p>
         </div>
         <div className="flex gap-3">
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded group">
+          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Customer
           </Button>
@@ -142,20 +142,20 @@ export function SellCRM() {
           <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
           <Input
             placeholder="Search customers..."
-            className="pl-10 h-10 border-[#E5E5E5]"
+            className="pl-10 h-10 border-[var(--border)]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
         {/* Filter */}
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
 
         {/* View Toggle */}
-        <div className="flex items-center border border-[#E5E5E5] rounded-lg p-1">
+        <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
           <button
             onClick={() => setViewMode('card')}
             className={cn(
@@ -192,18 +192,18 @@ export function SellCRM() {
                 variants={animationVariants.listItem}
                 custom={idx}
               >
-                <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/sell/crm/${customer.id}`)}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-[#0052CC] text-white text-sm font-medium">
+                        <AvatarFallback className="bg-[#1A2732] text-white text-sm font-medium">
                           {customer.company.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors">
+                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#FFCF4B] transition-colors">
                           {customer.company}
                         </h3>
                         <p className="text-[12px] text-[#737373]">
@@ -227,13 +227,13 @@ export function SellCRM() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#E5E5E5]">
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
                     <div>
                       <div className="flex items-center gap-1 mb-1">
                         <DollarSign className="w-3.5 h-3.5 text-[#737373]" />
                         <span className="text-xs text-[#737373]">Total Revenue</span>
                       </div>
-                      <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className=" text-[14px] font-semibold text-[#0A0A0A]">
                         ${customer.totalRevenue.toLocaleString()}
                       </p>
                     </div>
@@ -242,7 +242,7 @@ export function SellCRM() {
                         <Briefcase className="w-3.5 h-3.5 text-[#737373]" />
                         <span className="text-xs text-[#737373]">Opportunities</span>
                       </div>
-                      <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
+                      <p className=" text-[14px] font-semibold text-[#0A0A0A]">
                         {customer.activeOpportunities}
                       </p>
                     </div>
@@ -256,7 +256,7 @@ export function SellCRM() {
 
       {/* List View (placeholder for now - would implement SellCRMList) */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <p className="text-sm text-[#737373] text-center">
             List view - Would render SellCRMList component here
           </p>
@@ -265,7 +265,7 @@ export function SellCRM() {
 
       {/* Empty State */}
       {filteredCustomers.length === 0 && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-12">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Briefcase className="w-8 h-8 text-[#737373]" />
@@ -276,7 +276,7 @@ export function SellCRM() {
             <p className="text-sm text-[#737373] mb-4">
               Try adjusting your search or create a new customer to get started
             </p>
-            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">
+            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A]">
               <Plus className="w-4 h-4 mr-2" />
               Create Customer
             </Button>

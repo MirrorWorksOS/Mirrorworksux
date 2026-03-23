@@ -15,7 +15,7 @@ import { designSystem } from '../../lib/design-system';
 const { animationVariants } = designSystem;
 
 const MW_YELLOW = '#FFCF4B';
-const NEAR_BLACK = '#0A0A0A';
+const NEAR_BLACK = '#1A2732';
 const SECONDARY = '#737373';
 
 const shipVolume = [
@@ -49,7 +49,7 @@ const returnRate = [
 const pieColors = [MW_YELLOW, '#0A7AFF', '#36B37E', '#EF4444'];
 
 const ChartCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+  <Card className="bg-white border border-[var(--border)] rounded-lg p-6">
     <p className="text-xs text-[#737373] tracking-widest uppercase mb-4 font-medium">{title}</p>
     {children}
   </Card>
@@ -66,12 +66,12 @@ export function ShipReports() {
       className="p-6 space-y-6 overflow-y-auto"
     >
       <div className="flex items-center justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Reports</h1>
+        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Reports</h1>
         <div className="flex gap-2">
-          <button className="h-10 px-4 rounded-lg text-sm border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+          <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
             <Calendar className="w-4 h-4" /> This Week
           </button>
-          <button className="h-10 px-4 rounded-lg text-sm border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
+          <button className="h-10 px-4 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors flex items-center gap-2 font-medium">
             <Download className="w-4 h-4" /> Export
           </button>
         </div>
@@ -145,7 +145,7 @@ export function ShipReports() {
                   <div key={s.name} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: pieColors[i % pieColors.length] }} />
                     <span className="text-[#737373] w-16">{s.name}</span>
-                    <span className="text-[#0A0A0A] font-['Roboto_Mono',monospace] font-medium">{s.value}</span>
+                    <span className="text-[#1A2732]  font-medium">{s.value}</span>
                   </div>
                 ))}
               </div>

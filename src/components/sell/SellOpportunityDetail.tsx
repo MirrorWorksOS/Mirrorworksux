@@ -29,10 +29,10 @@ export interface Opportunity {
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: 'new',         label: 'New',         color: '#737373' },
-  { key: 'qualified',   label: 'Qualified',   color: '#0052CC' },
-  { key: 'proposal',    label: 'Proposal',    color: '#0052CC' },
-  { key: 'negotiation', label: 'Negotiation', color: '#FACC15' },
-  { key: 'won',         label: 'Won',         color: '#36B37E' },
+  { key: 'qualified',   label: 'Qualified',   color: '#1A2732' },
+  { key: 'proposal',    label: 'Proposal',    color: '#1A2732' },
+  { key: 'negotiation', label: 'Negotiation', color: '#FFCF4B' },
+  { key: 'won',         label: 'Won',         color: '#1A2732' },
   { key: 'lost',        label: 'Lost',        color: '#DE350B' },
 ];
 
@@ -40,7 +40,7 @@ const PRIORITY_CONFIG: Record<Priority, { bg: string; text: string; label: strin
   urgent: { bg: 'bg-[#DE350B]', text: 'text-white',     label: 'Urgent' },
   high:   { bg: 'bg-[#FACC15]', text: 'text-[#2C2C2C]', label: 'High' },
   medium: { bg: 'bg-[#FFCF4B]', text: 'text-[#2C2C2C]', label: 'Medium' },
-  low:    { bg: 'bg-[#36B37E]', text: 'text-white',     label: 'Low' },
+  low:    { bg: 'bg-[#1A2732]', text: 'text-white',     label: 'Low' },
 };
 
 // Mock customer data (would come from CRM API in production)
@@ -87,17 +87,17 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent
-        className="w-[560px] sm:max-w-[560px] p-0 overflow-hidden flex flex-col border-l border-[#E5E5E5]"
+        className="w-[560px] sm:max-w-[560px] p-0 overflow-hidden flex flex-col border-l border-[var(--border)]"
         style={{ transition: 'transform 400ms cubic-bezier(0.2, 0.0, 0, 1.0)' }}
         aria-describedby={undefined}
       >
         <SheetTitle className="sr-only">Opportunity detail</SheetTitle>
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#E5E5E5] shrink-0">
+        <div className="px-6 py-5 border-b border-[var(--border)] shrink-0">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-[#737373] font-mono">OPP-{opportunity.id.padStart(4, '0')}</span>
+                <span className="text-xs text-[#737373] ">OPP-{opportunity.id.padStart(4, '0')}</span>
                 <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', priorityCfg.bg, priorityCfg.text)}>
                   {priorityCfg.label}
                 </Badge>
@@ -126,7 +126,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     'h-1.5 rounded-full transition-colors duration-200',
                     active  ? 'opacity-100' :
                     past    ? 'opacity-100' :
-                    'bg-[#E5E5E5]'
+                    'bg-[var(--border)]'
                   )} style={{ backgroundColor: (active || past) ? s.color : undefined }} />
                   {active && (
                     <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-[#0A0A0A] font-medium whitespace-nowrap">
@@ -141,7 +141,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#E5E5E5] px-6 shrink-0">
+        <div className="flex border-b border-[var(--border)] px-6 shrink-0">
           {(['overview', 'activities', 'notes'] as const).map(tab => (
             <button
               key={tab}
@@ -149,7 +149,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
               className={cn(
                 'py-3 mr-6 text-sm capitalize border-b-2 transition-colors',
                 activeTab === tab
-                  ? 'border-[#0A0A0A] text-[#0A0A0A] font-medium'
+                  ? 'border-[#1A2732] text-[#0A0A0A] font-medium'
                   : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
               )}
             >
@@ -164,16 +164,16 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
             <div className="p-6 space-y-6">
               {/* Key metrics */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#FAFAFA] rounded-lg p-4">
+                <div className="bg-[#F5F5F5] rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="w-4 h-4 text-[#36B37E]" />
+                    <DollarSign className="w-4 h-4 text-[#0A0A0A]" />
                     <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Deal value</span>
                   </div>
-                  <p className="text-[22px] font-mono font-semibold text-[#0A0A0A]">
+                  <p className="text-[22px]  font-semibold text-[#0A0A0A]">
                     ${opportunity.value.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[#FAFAFA] rounded-lg p-4">
+                <div className="bg-[#F5F5F5] rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <Calendar className="w-4 h-4 text-[#0A7AFF]" />
                     <span className="text-xs text-[#737373] uppercase tracking-wider font-medium">Expected close</span>
@@ -207,7 +207,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                 <h4 className="text-xs text-[#737373] uppercase tracking-wider font-medium mb-3">Assignment</h4>
                 <div className="flex items-center gap-3">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-[#0A0A0A] text-white text-xs">{opportunity.assignedTo}</AvatarFallback>
+                    <AvatarFallback className="bg-[#1A2732] text-white text-xs">{opportunity.assignedTo}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-[#0A0A0A] font-medium">Assigned to {opportunity.assignedTo}</span>
                 </div>
@@ -226,14 +226,14 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-semibold text-[#0A0A0A]">Activity log</h4>
-                <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-1 text-xs">
+                <Button size="sm" className="h-8 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-1 text-xs">
                   <Plus className="w-3 h-3" /> Log activity
                 </Button>
               </div>
               <div className="space-y-3">
                 {MOCK_ACTIVITIES.map((a, i) => (
-                  <div key={i} className={cn('flex gap-4 p-4 rounded-lg border', a.done ? 'bg-white border-[#E5E5E5]' : 'bg-[#FFFBF0] border-[#FFCF4B]')}>
-                    <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 shrink-0', a.done ? 'bg-[#36B37E]' : 'bg-[#FF8B00]')} />
+                  <div key={i} className={cn('flex gap-4 p-4 rounded-lg border', a.done ? 'bg-white border-[var(--border)]' : 'bg-[var(--accent)] border-[#FFCF4B]')}>
+                    <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 shrink-0', a.done ? 'bg-[#1A2732]' : 'bg-[#FF8B00]')} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xs font-medium text-[#0A0A0A]">{a.type}</span>
@@ -242,7 +242,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                       <p className="text-sm text-[#0A0A0A]">{a.text}</p>
                     </div>
                     <Avatar className="w-6 h-6 shrink-0">
-                      <AvatarFallback className="bg-[#E5E5E5] text-[#737373] text-[9px]">{a.user}</AvatarFallback>
+                      <AvatarFallback className="bg-[var(--border)] text-[#737373] text-[9px]">{a.user}</AvatarFallback>
                     </Avatar>
                   </div>
                 ))}
@@ -253,27 +253,27 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           {activeTab === 'notes' && (
             <div className="p-6">
               <textarea
-                className="w-full h-48 p-4 bg-[#F5F5F5] border-transparent rounded-lg text-sm text-[#0A0A0A] resize-none focus:outline-none focus:bg-white focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A] transition-all"
+                className="w-full h-48 p-4 bg-[#F5F5F5] border-transparent rounded-lg text-sm text-[#0A0A0A] resize-none focus:outline-none focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] transition-all"
                 placeholder="Add notes about this opportunity..."
                 defaultValue="Customer requested 6-week lead time max. Discussed powder coat options — they prefer RAL 7035 light grey. Material cost increase of ~8% flagged during last call."
               />
               <div className="mt-3 flex justify-end">
-                <Button size="sm" className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-9">Save notes</Button>
+                <Button size="sm" className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] h-9">Save notes</Button>
               </div>
             </div>
           )}
         </div>
 
         {/* Footer actions */}
-        <div className="px-6 py-4 border-t border-[#E5E5E5] shrink-0 bg-white">
+        <div className="px-6 py-4 border-t border-[var(--border)] shrink-0 bg-white">
           <div className="flex gap-3">
             <Button
-              className="flex-1 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2 h-10"
+              className="flex-1 bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-2 h-10"
               onClick={() => { onClose(); navigate('/sell/quotes/new'); }}
             >
               <FileText className="w-4 h-4" /> Create quote
             </Button>
-            <Button variant="outline" className="flex-1 border-[#E5E5E5] gap-2 h-10">
+            <Button variant="outline" className="flex-1 border-[var(--border)] gap-2 h-10">
               <MessageSquare className="w-4 h-4" /> Log activity
             </Button>
           </div>

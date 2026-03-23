@@ -43,16 +43,16 @@ const revenueData = [
 ];
 
 const jobProfitabilityData = [
-  { job: 'JOB-0012', margin: 23.1, color: '#36B37E' },
-  { job: 'JOB-0010', margin: 15.1, color: '#36B37E' },
-  { job: 'JOB-0008', margin: 18.4, color: '#36B37E' },
-  { job: 'JOB-0007', margin: 21.2, color: '#36B37E' },
-  { job: 'JOB-0006', margin: 12.8, color: '#FACC15' },
-  { job: 'JOB-0003', margin: 16.5, color: '#36B37E' },
-  { job: 'JOB-0011', margin: 6.5, color: '#FACC15' },
-  { job: 'JOB-0005', margin: 3.2, color: '#DE350B' },
-  { job: 'JOB-0004', margin: 8.9, color: '#FACC15' },
-  { job: 'JOB-0009', margin: -7.8, color: '#DE350B' },
+  { job: 'JOB-0012', margin: 23.1, color: '#FFCF4B' },
+  { job: 'JOB-0010', margin: 15.1, color: '#FFCF4B' },
+  { job: 'JOB-0008', margin: 18.4, color: '#FFCF4B' },
+  { job: 'JOB-0007', margin: 21.2, color: '#FFCF4B' },
+  { job: 'JOB-0006', margin: 12.8, color: '#1A2732' },
+  { job: 'JOB-0003', margin: 16.5, color: '#FFCF4B' },
+  { job: 'JOB-0011', margin: 6.5, color: '#1A2732' },
+  { job: 'JOB-0005', margin: 3.2, color: '#1A2732' },
+  { job: 'JOB-0004', margin: 8.9, color: '#1A2732' },
+  { job: 'JOB-0009', margin: -7.8, color: '#1A2732' },
 ];
 
 const approvalQueue = [
@@ -80,20 +80,20 @@ export function SellDashboard() {
         {/* Monthly Revenue */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#DEEBFF] rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-[#0052CC]" />
+            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-[#FFCF4B]" />
             </div>
-            <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent">
+            <Badge className="bg-[#FFCF4B]/20 text-[#0A0A0A] border-transparent">
               +{kpiData.monthlyRevenue.change}%
             </Badge>
           </div>
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Monthly Revenue
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
             ${kpiData.monthlyRevenue.value.toLocaleString()}
           </p>
           <p className="text-[12px] text-[#737373] mt-2">
@@ -104,7 +104,7 @@ export function SellDashboard() {
         {/* Outstanding Invoices */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
@@ -117,7 +117,7 @@ export function SellDashboard() {
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Outstanding Invoices
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
             ${kpiData.outstandingInvoices.value.toLocaleString()}
           </p>
           <p className="text-[12px] text-[#737373] mt-2">
@@ -128,20 +128,20 @@ export function SellDashboard() {
         {/* Profit Margin */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[#36B37E]" />
+            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-[#FFCF4B]" />
             </div>
-            <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent">
+            <Badge className="bg-[#FFCF4B]/20 text-[#0A0A0A] border-transparent">
               +{kpiData.profitMargin.change}%
             </Badge>
           </div>
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Profit Margin
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
             {kpiData.profitMargin.value}%
           </p>
           <p className="text-[12px] text-[#737373] mt-2">
@@ -152,20 +152,20 @@ export function SellDashboard() {
         {/* Cash Flow */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#DEEBFF] rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-[#0052CC]" />
+            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-[#FFCF4B]" />
             </div>
-            <Badge className="bg-[#FFEBE6] text-[#DE350B] border-transparent">
+            <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent">
               {kpiData.cashFlow.change}%
             </Badge>
           </div>
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Cash Flow
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
             ${kpiData.cashFlow.value.toLocaleString()}
           </p>
           <p className="text-[12px] text-[#737373] mt-2">
@@ -176,20 +176,20 @@ export function SellDashboard() {
         {/* Overdue Invoices */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#FFEBE6] rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-[#DE350B]" />
+            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-[#FFCF4B]" />
             </div>
-            <Badge className="bg-[#FFEBE6] text-[#DE350B] border-transparent">
+            <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent">
               {kpiData.overdueInvoices.count} overdue
             </Badge>
           </div>
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Overdue Invoices
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#DE350B]">
+          <p className=" text-[24px] font-semibold text-[#DE350B]">
             ${kpiData.overdueInvoices.value.toLocaleString()}
           </p>
           <p className="text-[12px] text-[#737373] mt-2">
@@ -200,7 +200,7 @@ export function SellDashboard() {
         {/* Expenses This Month */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
@@ -213,13 +213,13 @@ export function SellDashboard() {
           <h3 className="text-[13px] font-medium text-[#737373] mb-1">
             Expenses This Month
           </h3>
-          <p className="font-mono text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#0A0A0A]">
             ${kpiData.expensesThisMonth.value.toLocaleString()}
           </p>
           <div className="mt-3">
             <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
               <div
-                className="absolute inset-0 bg-[#36B37E] transition-all duration-300"
+                className="absolute inset-0 bg-[#FFCF4B] transition-all duration-300"
                 style={{ width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%` }}
               />
             </div>
@@ -232,7 +232,7 @@ export function SellDashboard() {
         {/* Revenue vs Expenses Area Chart */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
         >
           <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">
             Revenue vs Expenses (12 months)
@@ -241,20 +241,20 @@ export function SellDashboard() {
             <AreaChart data={revenueData}>
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#36B37E" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#36B37E" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="#FFCF4B" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#FFCF4B" stopOpacity={0.05} />
                 </linearGradient>
                 <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#DE350B" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#DE350B" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="#1A2732" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#1A2732" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono' }} />
-              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono' }} />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} />
+              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontVariantNumeric: 'tabular-nums' }} />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="revenue" stroke="#36B37E" strokeWidth={2} fill="url(#revenueGradient)" />
-              <Area type="monotone" dataKey="expenses" stroke="#DE350B" strokeWidth={2} fill="url(#expensesGradient)" />
+              <Area type="monotone" dataKey="revenue" stroke="#FFCF4B" strokeWidth={2} fill="url(#revenueGradient)" />
+              <Area type="monotone" dataKey="expenses" stroke="#1A2732" strokeWidth={2} fill="url(#expensesGradient)" />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
@@ -262,7 +262,7 @@ export function SellDashboard() {
         {/* Job Profitability Bar Chart */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
         >
           <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-4">
             Top 10 Jobs by Profit Margin
@@ -270,8 +270,8 @@ export function SellDashboard() {
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={jobProfitabilityData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" horizontal={false} />
-              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
-              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} width={80} />
+              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: '#737373' }} />
+              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: '#737373' }} width={80} />
               <Tooltip formatter={(v: number) => `${v}%`} />
               <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
                 {jobProfitabilityData.map((entry, i) => (
@@ -288,7 +288,7 @@ export function SellDashboard() {
         {/* Approval Queue */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
@@ -300,28 +300,28 @@ export function SellDashboard() {
           </div>
           <div className="space-y-3">
             {approvalQueue.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
+              <div key={i} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[13px] font-medium text-[#0A0A0A]">
                       {item.type}
                     </span>
-                    <span className="font-mono text-[12px] text-[#737373]">
+                    <span className=" text-[12px] text-[#737373]">
                       {item.id}
                     </span>
                   </div>
                   <p className="text-[12px] text-[#525252] mb-1">
                     {item.customer}
                   </p>
-                  <p className="font-mono text-[14px] font-medium text-[#0A0A0A]">
+                  <p className=" text-[14px] font-medium text-[#0A0A0A]">
                     ${item.amount.toLocaleString()}
                   </p>
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-[#36B37E]" />
+                <CheckCircle2 className="w-5 h-5 text-[#0A0A0A]" />
               </div>
             ))}
           </div>
-          <Button variant="outline" className="w-full mt-4 border-[#E5E5E5]">
+          <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
             <FileText className="w-4 h-4 mr-2" />
             View All Approvals
           </Button>
@@ -330,13 +330,13 @@ export function SellDashboard() {
         {/* Xero Sync Status */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
               Xero Sync Status
             </h3>
-            <div className="w-3 h-3 bg-[#36B37E] rounded-full" />
+            <div className="w-3 h-3 bg-[#1A2732] rounded-full" />
           </div>
           <div className="space-y-4 mb-4">
             <div className="flex items-center justify-between">
@@ -359,7 +359,7 @@ export function SellDashboard() {
               <span className="text-[13px] text-[#737373]">
                 Status
               </span>
-              <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent text-xs">
+              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-transparent text-xs">
                 Healthy
               </Badge>
             </div>
@@ -383,7 +383,7 @@ export function SellDashboard() {
         {/* Overdue Actions */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-2xl p-6"
+          className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[16px] font-semibold text-[#0A0A0A]">
@@ -395,10 +395,10 @@ export function SellDashboard() {
           </div>
           <div className="space-y-3">
             {overdueActions.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-[#FFEBE6] rounded-lg hover:bg-[#FFCDD2] transition-colors cursor-pointer">
+              <div key={i} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#E5E5E5] transition-colors cursor-pointer">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-[12px] text-[#DE350B] font-medium">
+                    <span className=" text-[12px] text-[#DE350B] font-medium">
                       {item.id}
                     </span>
                     <Badge className="bg-[#DE350B] text-white text-xs">
@@ -408,7 +408,7 @@ export function SellDashboard() {
                   <p className="text-[12px] text-[#0A0A0A] mb-1">
                     {item.customer}
                   </p>
-                  <p className="font-mono text-[13px] font-medium text-[#DE350B]">
+                  <p className=" text-[13px] font-medium text-[#DE350B]">
                     ${item.amount?.toLocaleString() || `$${item.value?.toLocaleString()}`}
                   </p>
                 </div>
@@ -416,7 +416,7 @@ export function SellDashboard() {
               </div>
             ))}
           </div>
-          <Button variant="outline" className="w-full mt-4 border-[#E5E5E5] text-[#DE350B]">
+          <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[#DE350B]">
             <AlertTriangle className="w-4 h-4 mr-2" />
             Follow Up All
           </Button>

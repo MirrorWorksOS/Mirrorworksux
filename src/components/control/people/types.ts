@@ -19,7 +19,25 @@ export type PermissionKey =
   | 'quality.approve'
   | 'maintenance.schedule'
   | 'reports.access'
-  | 'settings.access';
+  | 'settings.access'
+  // Book-specific (ARCH 00 §4.7)
+  | 'invoices.create'
+  | 'expenses.scope'
+  | 'po.approve'
+  | 'xero.access'
+  // Buy-specific (ARCH 00 §4.8)
+  | 'requisitions.scope'
+  | 'po.create'
+  | 'vendors.manage'
+  | 'goods_receipts.access'
+  // Control-specific (ARCH 00 §4.9)
+  | 'products.manage'
+  | 'boms.manage'
+  | 'locations.manage'
+  | 'machines.manage'
+  | 'people.view'
+  | 'people.manage'
+  | 'workflow.manage';
 
 export interface ModuleAssignment {
   module: ModuleKey;
@@ -46,6 +64,22 @@ export interface GroupPermissionSet {
   'maintenance.schedule': boolean;
   'reports.access': boolean;
   'settings.access': boolean;
+  // Extended keys - optional so existing data still compiles
+  'invoices.create'?: boolean;
+  'expenses.scope'?: ScopeValue;
+  'po.approve'?: boolean;
+  'xero.access'?: boolean;
+  'requisitions.scope'?: ScopeValue;
+  'po.create'?: boolean;
+  'vendors.manage'?: boolean;
+  'goods_receipts.access'?: boolean;
+  'products.manage'?: boolean;
+  'boms.manage'?: boolean;
+  'locations.manage'?: boolean;
+  'machines.manage'?: boolean;
+  'people.view'?: boolean;
+  'people.manage'?: boolean;
+  'workflow.manage'?: boolean;
 }
 
 export interface Group {
@@ -63,4 +97,12 @@ export interface ActivityEvent {
   actorName: string;
   message: string;
   timestamp: string;
+}
+
+/** Per-module permission label definitions for the Groups tab */
+export interface PermissionLabelEntry {
+  key: keyof GroupPermissionSet;
+  label: string;
+  section: 'scope' | 'actions' | 'admin';
+  type: 'boolean' | 'scope';
 }

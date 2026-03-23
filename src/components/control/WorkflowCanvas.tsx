@@ -41,11 +41,11 @@ interface WFEdge {
 // ─── Visual styles per kind ───────────────────────────────────────────────────
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string }> = {
-  trigger:      { card: 'bg-white border-[#E5E5E5]',          iconBg: 'bg-[#FF8B00]' },
+  trigger:      { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#FF8B00]' },
   ai:           { card: 'bg-[#F5F3FF] border-[#7C3AED]/30',   iconBg: 'bg-[#7C3AED]' },
-  action:       { card: 'bg-white border-[#E5E5E5]',          iconBg: 'bg-[#36B37E]' },
-  notification: { card: 'bg-white border-[#E5E5E5]',          iconBg: 'bg-[#0A7AFF]' },
-  condition:    { card: 'bg-[#0052CC] border-[#0052CC]',      iconBg: 'bg-white/25'  },
+  action:       { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#1A2732]' },
+  notification: { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[#0A7AFF]' },
+  condition:    { card: 'bg-[#1A2732] border-[#0052CC]',      iconBg: 'bg-white/25'  },
   hold:         { card: 'bg-white border-[#EF4444]/30',       iconBg: 'bg-[#EF4444]' },
 };
 
@@ -227,7 +227,7 @@ function NodeCard({
         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0', s.iconBg)}>
           <Icon className="w-3.5 h-3.5 text-white" />
         </div>
-        <span className={cn('text-[13px] font-semibold leading-tight truncate', isDark ? 'text-white' : 'text-[#0A0A0A]')}>
+        <span className={cn('text-[13px] font-semibold leading-tight truncate', isDark ? 'text-white' : 'text-[#1A2732]')}>
           {node.title}
         </span>
       </div>
@@ -268,7 +268,7 @@ export function WorkflowCanvas({
     <div
       className="flex-1 overflow-auto"
       style={{
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#F5F5F5',
         backgroundImage: 'radial-gradient(circle, #e5e5e5 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }}

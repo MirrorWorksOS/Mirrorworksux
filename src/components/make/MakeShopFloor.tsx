@@ -50,7 +50,7 @@ export function MakeShopFloor() {
     <div className="flex flex-col" style={{ height: '100vh' }}>
 
       {/* ── Tab Bar ── */}
-      <div className="shrink-0 flex items-end gap-0 border-b border-[#E5E5E5] bg-white px-6 overflow-x-auto">
+      <div className="shrink-0 flex items-end gap-0 border-b border-[var(--border)] bg-white px-6 overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -58,8 +58,8 @@ export function MakeShopFloor() {
             className={cn(
               'relative h-14 px-5 text-[14px] font-medium whitespace-nowrap transition-colors duration-150',
               activeTab === tab.id
-                ? 'text-[#0A0A0A]'
-                : 'text-[#737373] hover:text-[#0A0A0A]'
+                ? 'text-[#1A2732]'
+                : 'text-[#737373] hover:text-[#1A2732]'
             )}
           >
             {tab.label}

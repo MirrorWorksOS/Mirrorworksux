@@ -36,7 +36,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-2xl border-l border-[#E5E5E5] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-2xl border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="sr-only">User details</SheetTitle>
@@ -51,7 +51,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2">
-                <h3 className="text-2xl font-bold text-[#0A0A0A]">{user.name}</h3>
+                <h3 className="text-2xl font-bold text-[#1A2732]">{user.name}</h3>
                 <Badge
                   className={
                     user.role === 'lead'
@@ -69,7 +69,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
                     user.status === 'active'
-                      ? 'bg-[#36B37E]'
+                      ? 'bg-[#1A2732]'
                       : user.status === 'invited'
                         ? 'bg-[#0A7AFF]'
                         : 'bg-[#737373]'
@@ -99,7 +99,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </div>
           </div>
 
-          <Collapsible className="rounded-2xl border border-[#E5E5E5] bg-white p-4">
+          <Collapsible className="rounded-2xl border border-[var(--border)] bg-white p-4">
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"

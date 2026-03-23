@@ -170,7 +170,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
            <SectionHeader title="Severity" />
            <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-lg border border-[#E5E4E0] overflow-hidden bg-white">
              {['Critical', 'High', 'Medium'].map((option, index) => (
-               <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[#F8F7F4] transition-colors cursor-pointer", index !== 2 && "border-b border-[#E5E4E0]")}>
+               <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[#F5F5F5] transition-colors cursor-pointer", index !== 2 && "border-b border-[#E5E4E0]")}>
                   <RadioGroupItem 
                     value={option.toLowerCase()} 
                     id={`severity-${option.toLowerCase()}`}
@@ -238,15 +238,15 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
               <div className="space-y-3">
                  <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="text-gray-500">Required:</span>
-                    <span className="font-mono font-medium">10.50 mm</span>
+                    <span className=" font-medium">10.50 mm</span>
                     <span className="text-gray-500">Tolerance:</span>
-                    <span className="font-mono font-medium">± 0.05 mm</span>
+                    <span className=" font-medium">± 0.05 mm</span>
                  </div>
                  <Separator />
                  <div className="space-y-1.5">
                     <Label className="text-xs uppercase">Actual Measurement</Label>
                     <div className="relative">
-                       <Input placeholder="0.00" className="pr-8 font-mono text-red-600 font-bold" defaultValue="10.58" />
+                       <Input placeholder="0.00" className="pr-8  text-red-600 font-bold" defaultValue="10.58" />
                        <span className="absolute right-3 top-2.5 text-gray-400 text-sm">mm</span>
                     </div>
                  </div>

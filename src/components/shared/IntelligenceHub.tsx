@@ -31,7 +31,7 @@ interface Props {
 }
 
 const TYPE_CONFIG: Record<InsightType, { icon: any; bg: string; text: string; label: string }> = {
-  opportunity: { icon: TrendingUp,    bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Opportunity' },
+  opportunity: { icon: TrendingUp,    bg: 'bg-[#1A2732]/10', text: 'text-[#1A2732]', label: 'Opportunity' },
   risk:        { icon: AlertTriangle, bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Risk' },
   info:        { icon: Info,          bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Info' },
   action:      { icon: ChevronRight,  bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', label: 'Action' },
@@ -57,7 +57,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
             <Sparkles className="w-4 h-4 text-[#1A2732]" />
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-[#0A0A0A]">AI insights</h3>
+            <h3 className="text-[15px] font-semibold text-[#1A2732]">AI insights</h3>
             {context && <p className="text-xs text-[#737373]">{context}</p>}
           </div>
         </div>
@@ -66,7 +66,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
           size="sm"
           onClick={handleRefresh}
           disabled={loading}
-          className="h-8 gap-1 text-xs text-[#737373] hover:text-[#0A0A0A]"
+          className="h-8 gap-1 text-xs text-[#737373] hover:text-[#1A2732]"
         >
           <RefreshCw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
           {loading ? 'Refreshing…' : 'Refresh'}
@@ -76,7 +76,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Insights */}
       <div className={cn('space-y-3', compact && 'space-y-2')}>
         {insights.length === 0 ? (
-          <div className="bg-[#FAFAFA] rounded-lg p-6 text-center">
+          <div className="bg-[#F5F5F5] rounded-2xl p-6 text-center">
             <Brain className="w-8 h-8 text-[#A3A3A3] mx-auto mb-2" />
             <p className="text-sm text-[#737373]">No insights available.</p>
             <p className="text-xs text-[#A3A3A3] mt-0.5">AI will surface patterns as more data is collected.</p>
@@ -92,14 +92,14 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <Card className={cn('border rounded-lg p-4', insight.type === 'risk' ? 'border-[#FEE2E2] bg-[#FFF5F5]' : 'border-[#E5E5E5] bg-white hover:shadow-sm transition-shadow')}>
+                <Card className={cn('border rounded-2xl p-4', insight.type === 'risk' ? 'border-[#FEE2E2] bg-[#FFF5F5]' : 'border-[var(--border)] bg-white hover:shadow-sm transition-shadow')}>
                   <div className="flex items-start gap-3">
                     <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5', cfg.bg)}>
                       <Icon className={cn('w-3.5 h-3.5', cfg.text)} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-[#0A0A0A]">{insight.title}</span>
+                        <span className="text-xs font-semibold text-[#1A2732]">{insight.title}</span>
                         {insight.confidence !== undefined && (
                           <span className="text-[10px] text-[#737373] bg-[#F5F5F5] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence

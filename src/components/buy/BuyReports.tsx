@@ -32,8 +32,8 @@ export function BuyReports() {
       <h1 className="text-[32px] tracking-tight text-[#1A2732]">Procurement Reports</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-          <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">Spend by Supplier</h3>
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+          <h3 className="text-[16px] font-semibold text-[#1A2732] mb-4">Spend by Supplier</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={spendBySupplier} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="spend">
@@ -44,8 +44,8 @@ export function BuyReports() {
           </ResponsiveContainer>
         </Card>
 
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-          <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">Monthly Spend Trend</h3>
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+          <h3 className="text-[16px] font-semibold text-[#1A2732] mb-4">Monthly Spend Trend</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={monthlySpend}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />

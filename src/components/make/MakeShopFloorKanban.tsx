@@ -45,7 +45,7 @@ const getPriorityStyle = (priority: string) => {
     case 'urgent': return 'bg-[#FEE2E2] text-[#EF4444]';
     case 'high':   return 'bg-[#FFEDD5] text-[#FF8B00]';
     case 'medium': return 'bg-[#DBEAFE] text-[#0A7AFF]';
-    case 'low':    return 'bg-[#E3FCEF] text-[#36B37E]';
+    case 'low':    return 'bg-[var(--warm-200)] text-[#1A2732]';
     default:       return 'bg-[#F5F5F5] text-[#737373]';
   }
 };
@@ -71,7 +71,7 @@ export function MakeShopFloorKanban() {
   };
 
   return (
-    <div className="p-6 h-full overflow-auto bg-[#F8F7F4]">
+    <div className="p-6 h-full overflow-auto bg-[#F5F5F5]">
       <div className="flex gap-6 pb-4" style={{ minHeight: 'calc(100% - 24px)' }}>
         {columns.map((column) => {
           const ColumnIcon = column.icon;
@@ -80,10 +80,10 @@ export function MakeShopFloorKanban() {
           return (
             <div key={column.key} className="flex-shrink-0 w-[380px] flex flex-col">
               {/* Column Header */}
-              <div className={cn('rounded-t-lg px-4 py-3 flex items-center justify-between', column.headerBg)}>
+              <div className={cn('rounded-t-2xl px-4 py-3 flex items-center justify-between', column.headerBg)}>
                 <div className="flex items-center gap-2">
                   <ColumnIcon className="w-4 h-4" style={{ color: column.color }} />
-                  <span className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A]">
+                  <span className="text-[14px] font-semibold text-[#1A2732]">
                     {column.label}
                   </span>
                 </div>
@@ -96,20 +96,20 @@ export function MakeShopFloorKanban() {
               </div>
 
               {/* Cards */}
-              <div className="flex-1 bg-[#FAFAFA] rounded-b-lg p-3 space-y-3">
+              <div className="flex-1 bg-[#F5F5F5] rounded-b-2xl p-3 space-y-3">
                 {columnMOs.map((mo) => (
                   <Card
                     key={mo.id}
-                    className="bg-white border border-[#E5E5E5] rounded-lg p-5 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98]"
+                    className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98]"
                     onClick={() => handleCardClick(mo)}
                   >
                     {/* Card Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="font-['JetBrains_Mono',monospace] text-[13px] font-semibold text-[#0052CC]">
+                        <p className=" text-[13px] font-semibold text-[#1A2732]">
                           {mo.moNumber}
                         </p>
-                        <p className="font-['JetBrains_Mono',monospace] text-[11px] text-[#737373] mt-0.5">
+                        <p className=" text-[11px] text-[#737373] mt-0.5">
                           {mo.jobNumber}
                         </p>
                       </div>
@@ -119,7 +119,7 @@ export function MakeShopFloorKanban() {
                     </div>
 
                     {/* Part Name */}
-                    <h4 className="font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#0A0A0A] mb-3">
+                    <h4 className="text-[14px] font-medium text-[#1A2732] mb-3">
                       {mo.partName}
                     </h4>
 
@@ -127,26 +127,26 @@ export function MakeShopFloorKanban() {
                     <div className="space-y-1.5 mb-3 text-[13px]">
                       <div className="flex items-center justify-between">
                         <span className="text-[#737373]">Qty</span>
-                        <span className="font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{mo.quantity}</span>
+                        <span className=" font-medium text-[#1A2732]">{mo.quantity}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#737373]">Work centre</span>
-                        <span className="text-[#0A0A0A]">{mo.workCenter}</span>
+                        <span className="text-[#1A2732]">{mo.workCenter}</span>
                       </div>
                       {mo.operator && (
                         <div className="flex items-center justify-between">
                           <span className="text-[#737373]">Operator</span>
-                          <span className="text-[#0A0A0A]">{mo.operator}</span>
+                          <span className="text-[#1A2732]">{mo.operator}</span>
                         </div>
                       )}
                     </div>
 
                     {/* Due Date */}
-                    <div className="pt-3 border-t border-[#E5E5E5] flex items-center justify-between text-[13px]">
+                    <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-[13px]">
                       <span className="text-[#737373]">Due</span>
                       <span className={cn(
                         'font-medium',
-                        mo.status === 'overdue' ? 'text-[#EF4444]' : 'text-[#0A0A0A]'
+                        mo.status === 'overdue' ? 'text-[#EF4444]' : 'text-[#1A2732]'
                       )}>
                         {new Date(mo.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}
                       </span>
@@ -155,7 +155,7 @@ export function MakeShopFloorKanban() {
                 ))}
 
                 {columnMOs.length === 0 && (
-                  <div className="bg-white border border-dashed border-[#E5E5E5] rounded-lg p-6 text-center">
+                  <div className="bg-white border border-dashed border-[var(--border)] rounded-2xl p-6 text-center">
                     <p className="text-xs text-[#737373]">No orders</p>
                   </div>
                 )}

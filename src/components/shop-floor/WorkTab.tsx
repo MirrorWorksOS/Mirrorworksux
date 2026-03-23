@@ -141,7 +141,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B6B6B]" />
           <Input 
             placeholder="Search work orders..." 
-            className="pl-10 bg-[#F8F7F4] border-transparent focus:bg-white focus:border-[#FFCF4B] h-10 rounded-[8px] text-[#2C2C2C]"
+            className="pl-10 bg-[#F5F5F5] border-transparent focus:bg-white focus:border-[#FFCF4B] h-10 rounded-[8px] text-[#2C2C2C]"
           />
         </div>
         <div className="flex gap-2">
@@ -155,7 +155,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
       </div>
 
       {/* List Content */}
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-[#F8F7F4] p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-[#F5F5F5] p-4 space-y-4">
           {MOCK_DATA.filter(mo => mo.id === "MO-26-401").map(mo => (
             <div key={mo.id} className="bg-white rounded-[16px] border border-[#E5E4E0] overflow-hidden shadow-sm">
               {/* MO Header Row */}
@@ -214,8 +214,8 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             {/* ID and Name */}
                             <div className="col-span-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-mono text-sm font-semibold text-[#6B6B6B]">{wo.id}</span>
-                                <Badge variant="outline" className="bg-white text-[#2C2C2C] border-[#E5E4E0] font-mono text-[10px] px-1.5 py-0 h-5 rounded-[4px]">
+                                <span className=" text-sm font-semibold text-[#6B6B6B]">{wo.id}</span>
+                                <Badge variant="outline" className="bg-white text-[#2C2C2C] border-[#E5E4E0]  text-[10px] px-1.5 py-0 h-5 rounded-[4px]">
                                   {wo.station}
                                 </Badge>
                               </div>
@@ -240,7 +240,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             <div className="col-span-4 flex items-center justify-end gap-6">
                               <div className="text-right">
                                   <div className="text-xs text-[#6B6B6B] uppercase tracking-wide font-semibold">Units</div>
-                                  <div className="font-mono text-sm text-[#2C2C2C]">{wo.unitsCompleted}/{wo.totalUnits}</div>
+                                  <div className=" text-sm text-[#2C2C2C]">{wo.unitsCompleted}/{wo.totalUnits}</div>
                               </div>
                               <StatusBadge status={wo.status} />
                               <ChevronRight className="w-5 h-5 text-[#E5E4E0] group-hover:text-[#2C2C2C] transition-colors" />

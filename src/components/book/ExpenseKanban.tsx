@@ -9,11 +9,11 @@ import { cn } from '../ui/utils';
 type ExpenseCategory = 'Materials' | 'Utilities' | 'Maintenance' | 'Consumables' | 'Subcontractor';
 
 const categoryStyles: Record<ExpenseCategory, string> = {
-  Materials: 'bg-[#E6F0FF] text-[#0052CC]',
-  Utilities: 'bg-[#E6F7EF] text-[#1B7D4F]',
+  Materials: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Utilities: 'bg-[var(--warm-200)] text-[#1A2732]',
   Maintenance: 'bg-[#FFF4CC] text-[#805900]',
   Consumables: 'bg-[#F3E8FF] text-[#7C3AED]',
-  Subcontractor: 'bg-[#FFE5E5] text-[#DE350B]',
+  Subcontractor: 'bg-[var(--warm-200)] text-[#DE350B]',
 };
 
 interface Expense {
@@ -38,7 +38,7 @@ const columns = [
     ],
   },
   {
-    title: 'Submitted', headerBg: 'bg-[#E6F0FF] text-[#0052CC]', total: '$5,890',
+    title: 'Submitted', headerBg: 'bg-[var(--warm-200)] text-[#1A2732]', total: '$5,890',
     cards: [
       { id: 'E4', vendor: 'Blackwoods Steel', amount: 2450, category: 'Materials' as ExpenseCategory, date: '23 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0012', receipt: true },
       { id: 'E5', vendor: 'AGL Energy', amount: 890, category: 'Utilities' as ExpenseCategory, date: '22 Feb', employee: 'Office', initials: 'OF' },
@@ -47,7 +47,7 @@ const columns = [
     ],
   },
   {
-    title: 'Approved', headerBg: 'bg-[#E6F7EF] text-[#1B7D4F]', total: '$12,450',
+    title: 'Approved', headerBg: 'bg-[var(--warm-200)] text-[#1A2732]', total: '$12,450',
     cards: [
       { id: 'E8', vendor: 'OneSteel', amount: 4200, category: 'Materials' as ExpenseCategory, date: '19 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0010' },
       { id: 'E9', vendor: 'Dulux Powder Coats', amount: 1890, category: 'Subcontractor' as ExpenseCategory, date: '18 Feb', employee: 'David M.', initials: 'DM' },
@@ -68,7 +68,7 @@ const columns = [
 ];
 
 const ExpenseCard = ({ expense }: { expense: Expense }) => (
-  <div className="bg-white rounded-lg border border-[#E5E5E5] p-4 hover:border-[#FFCF4B] hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all cursor-grab active:cursor-grabbing group">
+  <div className="bg-white rounded-lg border border-[var(--border)] p-4 hover:border-[#FFCF4B] hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all cursor-grab active:cursor-grabbing group">
     <div className="flex items-start gap-2">
       <GripVertical className="w-4 h-4 text-[#D4D4D4] shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
       <div className="flex items-center justify-between mb-5 shrink-0">
         <h1 className="text-[32px] tracking-tight text-[#1A2732]">Expenses</h1>
         <div className="flex items-center gap-3">
-          <div className="flex border border-[#E5E5E5] rounded overflow-hidden">
+          <div className="flex border border-[var(--border)] rounded overflow-hidden">
             <button className="p-2 bg-[#FFCF4B]"><LayoutGrid className="w-4 h-4 text-[#1A2732]" /></button>
             <button className="p-2 hover:bg-[#F5F5F5]"><List className="w-4 h-4 text-[#737373]" /></button>
           </div>
@@ -126,17 +126,17 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
       <div className="flex items-center gap-3 mb-5 shrink-0">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
-          <Input placeholder="Search expenses..." className="pl-9 h-10 bg-white border-[#E5E5E5] rounded text-sm" />
+          <Input placeholder="Search expenses..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Calendar className="w-4 h-4" /> Date Range</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Tag className="w-4 h-4" /> Category</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><User className="w-4 h-4" /> Employee</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date Range</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Tag className="w-4 h-4" /> Category</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><User className="w-4 h-4" /> Employee</Button>
       </div>
 
       {/* Kanban Board */}
       <div className="flex-1 flex gap-4 overflow-x-auto overflow-y-hidden min-h-0 pb-4">
         {columns.map(col => (
-          <div key={col.title} className="flex-1 min-w-[280px] max-w-[360px] bg-[#F8F7F4] rounded-lg p-4 flex flex-col">
+          <div key={col.title} className="flex-1 min-w-[280px] max-w-[360px] bg-[#F5F5F5] rounded-lg p-4 flex flex-col">
             <div className="flex items-center justify-between mb-4 shrink-0">
               <div className="flex items-center gap-2">
                 <Badge className={cn("rounded-full text-xs px-3 py-1 border-0", col.headerBg)}>{col.title}</Badge>

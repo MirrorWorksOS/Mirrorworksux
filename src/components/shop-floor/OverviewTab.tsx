@@ -159,7 +159,7 @@ export function OverviewTab() {
   };
 
   return (
-    <div className="flex gap-6 h-full overflow-hidden bg-[#F8F7F4]">
+    <div className="flex gap-6 h-full overflow-hidden bg-[#F5F5F5]">
       {/* Main Content Area */}
       <ScrollArea className="flex-1 h-full">
       <div className="flex-1 flex flex-col space-y-6 min-w-0 pr-4 pb-8 pt-1">
@@ -494,7 +494,7 @@ export function OverviewTab() {
                    {/* Context Message (System/Yellow) */}
                     <div className="flex gap-3">
                      <Avatar className="w-8 h-8 mt-1 border border-[#E5E4E0]">
-                       <AvatarFallback className="bg-[#FFF9C4] text-[#F57F17] text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
+                       <AvatarFallback className="bg-[#FFCF4B]/20 text-[#1A2732] text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
@@ -512,7 +512,7 @@ export function OverviewTab() {
                {/* Input Area */}
                <div className="p-4 border-t border-[#E5E4E0] bg-white">
                  <div className="relative">
-                   <Input placeholder="Type a message..." className="pr-10 bg-[#F8F7F4] border-transparent focus:bg-white focus:border-[#FFCF4B] transition-all rounded-[8px]" />
+                   <Input placeholder="Type a message..." className="pr-10 bg-[#F5F5F5] border-transparent focus:bg-white focus:border-[#FFCF4B] transition-all rounded-[8px]" />
                    <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[#FFCF4B] hover:text-[#F4C542] hover:bg-transparent">
                      <Send className="w-4 h-4" />
                    </Button>

@@ -28,7 +28,7 @@ const MACHINES = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  active:      { label: 'Active',      bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]' },
+  active:      { label: 'Active',      bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
   maintenance: { label: 'Maintenance', bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
   idle:        { label: 'Idle',        bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
 };
@@ -50,7 +50,7 @@ export function ControlMachines() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Machines</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Machines</h1>
           <p className="text-sm text-[#737373] mt-1">
             {MACHINES.filter(m => m.status === 'active').length} active · {MACHINES.filter(m => m.status === 'maintenance').length} in maintenance
           </p>
@@ -66,14 +66,14 @@ export function ControlMachines() {
           placeholder="Search machines or work centres..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm"
+          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
         />
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Machine</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Manufacturer / Model</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Work Centre</th>
@@ -88,22 +88,22 @@ export function ControlMachines() {
               const cfg = STATUS_CONFIG[m.status];
               const utilColour = m.utilisation > 85 ? '#36B37E' : m.utilisation > 60 ? '#FFCF4B' : '#E5E5E5';
               return (
-                <tr key={m.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors', m.status === 'maintenance' && 'bg-[#FFFBF0]')}>
+                <tr key={m.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', m.status === 'maintenance' && 'bg-[var(--accent)]')}>
                   <td className="px-4">
                     <div className="flex items-center gap-2">
                       <Wrench className="w-4 h-4 text-[#A3A3A3] shrink-0" />
-                      <span className="text-sm text-[#0A0A0A] font-medium">{m.name}</span>
+                      <span className="text-sm text-[#1A2732] font-medium">{m.name}</span>
                     </div>
                   </td>
                   <td className="px-4 text-xs text-[#737373]">{m.manufacturer} {m.model}</td>
                   <td className="px-4 text-sm text-[#737373]">{m.workCenter}</td>
-                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">{m.capacity}h/day</td>
+                  <td className="px-4 text-right text-sm  font-medium">{m.capacity}h/day</td>
                   <td className="px-4">
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${m.utilisation}%`, backgroundColor: utilColour }} />
                       </div>
-                      <span className="text-xs font-['Roboto_Mono',monospace] text-[#737373] w-8 text-right">{m.utilisation}%</span>
+                      <span className="text-xs  text-[#737373] w-8 text-right">{m.utilisation}%</span>
                     </div>
                   </td>
                   <td className="px-4 text-sm text-[#737373]">{m.nextMaint}</td>

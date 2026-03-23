@@ -97,7 +97,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-[1000] bg-[#F8F7F4] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans",
+        "fixed inset-0 z-[1000] bg-[#F5F5F5] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans",
         isVisible ? "translate-y-0" : "translate-y-full"
       )}
     >
@@ -139,7 +139,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
       </div>
 
       {/* --- Content Area (3-Panel) --- */}
-      <div className="flex-1 flex min-h-0 bg-[#F8F7F4] p-6 gap-6 overflow-hidden">
+      <div className="flex-1 flex min-h-0 bg-[#F5F5F5] p-6 gap-6 overflow-hidden">
         
         {/* LEFT PANEL: Controls & Operator Info (360px fixed) */}
         <div className="w-[360px] shrink-0 flex flex-col gap-6 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
@@ -184,7 +184,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
               <div className="text-center w-full">
                  <div className="text-xs font-bold text-[#6B6B6B] uppercase tracking-widest mb-2">WORK ORDER TIME</div>
-                 <div className="text-[56px] font-mono font-bold tracking-tighter text-[#2C2C2C] leading-none mb-2 tabular-nums">{formatTime(elapsedSeconds)}</div>
+                 <div className="text-[56px]  font-bold tracking-tighter text-[#2C2C2C] leading-none mb-2 tabular-nums">{formatTime(elapsedSeconds)}</div>
                  <div className="text-base text-[#6B6B6B] font-medium bg-[#F5F5F5] inline-block px-3 py-1 rounded-full">Est. finish: 2:45 PM</div>
               </div>
            </Card>
@@ -262,7 +262,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
         </div>
 
         {/* CENTER PANEL: Visual & Machine Status (Flexible) */}
-        <div className="flex-1 flex flex-col min-w-0 bg-[#F8F7F4] relative gap-4 h-full">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#F5F5F5] relative gap-4 h-full">
            
            {/* Machine Performance Banner (Solid Yellow) */}
            <div className="bg-[#FFCF4B] rounded-[16px] p-4 shadow-sm z-20 relative flex items-center justify-between text-[#2C2C2C]">
@@ -373,7 +373,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
         <div className="w-[400px] shrink-0 bg-white border border-[#E5E4E0] rounded-[16px] flex flex-col z-20 shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden">
            
            {/* Header */}
-           <div className="p-6 border-b border-[#E5E4E0] bg-[#F8F7F4]">
+           <div className="p-6 border-b border-[#E5E4E0] bg-[#F5F5F5]">
                <div className="mb-1">
                   <span className="text-[10px] font-bold text-[#6B6B6B] uppercase tracking-widest">WORKFLOW</span>
                </div>
@@ -413,7 +413,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                     </div>
 
                     {/* Substep B (Active) */}
-                    <div className="bg-[#F8F7F4] rounded-[12px] border border-[#E5E4E0] overflow-hidden ml-9 mb-6">
+                    <div className="bg-[#F5F5F5] rounded-[12px] border border-[#E5E4E0] overflow-hidden ml-9 mb-6">
                        <div className="p-3 border-b border-[#E5E4E0] flex items-center gap-2 bg-white">
                           <div className="w-2 h-2 rounded-full bg-[#FFCF4B] animate-pulse" />
                           <span className="font-bold text-sm text-[#2C2C2C]">B. Run cutting program</span>

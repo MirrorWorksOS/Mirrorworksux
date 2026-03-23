@@ -11,10 +11,10 @@ type POStatus = 'Draft' | 'Sent' | 'Acknowledged' | 'Partial' | 'Received' | 'Ca
 
 const statusStyles: Record<POStatus, string> = {
   Draft: 'bg-[#F5F5F5] text-[#737373]',
-  Sent: 'bg-[#E6F0FF] text-[#0052CC]',
-  Acknowledged: 'bg-[#E6F0FF] text-[#0052CC]',
+  Sent: 'bg-[var(--warm-200)] text-[#1A2732]',
+  Acknowledged: 'bg-[var(--warm-200)] text-[#1A2732]',
   Partial: 'bg-[#FFF4CC] text-[#805900]',
-  Received: 'bg-[#E6F7EF] text-[#1B7D4F]',
+  Received: 'bg-[var(--warm-200)] text-[#1A2732]',
   Cancelled: 'bg-[#F5F5F5] text-[#A3A3A3]',
 };
 
@@ -39,7 +39,7 @@ const TABS = [
 ];
 
 const MatchIcon = ({ match }: { match: string }) => {
-  if (match === 'green') return <CheckCircle className="w-4 h-4 text-[#36B37E]" />;
+  if (match === 'green') return <CheckCircle className="w-4 h-4 text-[#1A2732]" />;
   if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[#FACC15]" />;
   return <Circle className="w-4 h-4 text-[#D4D4D4]" />;
 };
@@ -59,13 +59,13 @@ export function PurchaseOrders() {
       <div className="flex items-center gap-3">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
-          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-white border-[#E5E5E5] rounded text-sm" />
+          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]">Export <ChevronDown className="w-4 h-4" /></Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 
-      <div className="flex gap-0 border-b border-[#E5E5E5]">
+      <div className="flex gap-0 border-b border-[var(--border)]">
         {TABS.map(tab => (
           <button key={tab.label} onClick={() => setActiveTab(tab.label)}
             className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-[#1A2732] font-medium" : "text-[#737373]")}>
@@ -75,11 +75,11 @@ export function PurchaseOrders() {
         ))}
       </div>
 
-      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
+      <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+              <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                 <th className="w-10 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
                 {['PO #', 'VENDOR', 'ORDER DATE', 'EXPECTED DELIVERY', 'STATUS', 'TOTAL', 'JOB REF', 'MATCH', ''].map(h => (
                   <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[#737373]", h === 'TOTAL' ? 'text-right' : h === 'MATCH' ? 'text-center' : 'text-left')} style={{ fontWeight: 500 }}>{h}</th>
@@ -88,9 +88,9 @@ export function PurchaseOrders() {
             </thead>
             <tbody>
               {POS.map((po, i) => (
-                <tr key={po.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors", i % 2 === 1 && "bg-[#FAFAFA]")}>
+                <tr key={po.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] transition-colors", i % 2 === 1 && "bg-[#F5F5F5]")}>
                   <td className="px-4"><Checkbox className="w-[18px] h-[18px]" /></td>
-                  <td className="px-4 text-[13px] text-[#0052CC]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{po.id}</td>
+                  <td className="px-4 text-[13px] text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>{po.id}</td>
                   <td className="px-4 text-sm text-[#1A2732]">{po.vendor}</td>
                   <td className="px-4 text-sm text-[#525252]">{po.orderDate}</td>
                   <td className="px-4 text-sm text-[#525252]">{po.expectedDelivery}</td>
@@ -104,7 +104,7 @@ export function PurchaseOrders() {
             </tbody>
           </table>
         </div>
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E5E5]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
           <span className="text-xs text-[#737373]">Showing 1-8 of 89 purchase orders</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>

@@ -77,12 +77,12 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
   const isLeadForModule = user.role === 'lead' && user.leadModule === moduleKey;
 
   return (
-    <div className="rounded-2xl bg-[#F8F7F4] p-5">
+    <div className="rounded-2xl bg-[#F5F5F5] p-5">
       <div className="flex gap-4">
         <div className="w-1 rounded-full" style={{ backgroundColor: moduleMeta.dot }} />
         <div className="min-w-0 flex-1 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="text-base font-semibold text-[#0A0A0A]">{moduleLabels[moduleKey]}</h4>
+            <h4 className="text-base font-semibold text-[#1A2732]">{moduleLabels[moduleKey]}</h4>
             <Badge
               className="rounded-full border-0 px-2.5 py-0.5 text-xs"
               style={{ backgroundColor: moduleMeta.bg, color: moduleMeta.text }}
@@ -98,7 +98,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
                 <button
                   key={group}
                   type="button"
-                  className="rounded-full border border-[#E5E5E5] bg-white px-2.5 py-1 text-xs text-[#525252] transition-colors hover:bg-[#F5F5F5]"
+                  className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-xs text-[#525252] transition-colors hover:bg-[#F5F5F5]"
                 >
                   {group}
                 </button>
@@ -109,7 +109,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
             <CollapsibleTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 text-sm font-medium text-[#2C2C2C] hover:text-[#0A0A0A]"
+                className="flex items-center gap-2 text-sm font-medium text-[#2C2C2C] hover:text-[#1A2732]"
               >
                 View permissions
                 <ChevronDown className={cn('h-4 w-4 transition-transform', open && 'rotate-180')} />
@@ -124,7 +124,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 rounded-xl border-[#E5E5E5] bg-white px-4 text-[#2C2C2C] hover:bg-[#F5F5F5]"
+                  className="h-10 rounded-xl border-[var(--border)] bg-white px-4 text-[#2C2C2C] hover:bg-[#F5F5F5]"
                 >
                   <Plus className="h-4 w-4" />
                   Add to group
@@ -159,9 +159,9 @@ export function UnassignedModuleCard({
   moduleKey: ModuleKey;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-dashed border-[#E5E5E5] bg-white p-4 opacity-60">
+    <div className="flex items-center justify-between rounded-2xl border border-dashed border-[var(--border)] bg-white p-4 opacity-60">
       <span className="text-sm text-[#2C2C2C]">{moduleLabels[moduleKey]}</span>
-      <Button variant="outline" className="h-9 rounded-lg border-[#E5E5E5] bg-transparent px-3 text-xs">
+      <Button variant="outline" className="h-9 rounded-lg border-[var(--border)] bg-transparent px-3 text-xs">
         + Assign
       </Button>
     </div>

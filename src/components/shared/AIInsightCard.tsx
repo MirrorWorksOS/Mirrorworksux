@@ -2,7 +2,7 @@
  * AIInsightCard — Shared component for AI insight banners across all modules.
  *
  * Design spec (Guidelines §9, AI Insight Card):
- *  - White card, border #E5E5E5, rounded-lg, p-4
+ *  - White card, border var(--border), rounded-2xl, p-4
  *  - Sparkles icon in MW Yellow (#FFCF4B) next to title — NO yellow background
  *  - Natural language body text in Geist Regular 14px #737373
  *  - "Updated X ago" caption with optional refresh button
@@ -38,7 +38,7 @@ export function AIInsightCard({
   return (
     <div
       className={cn(
-        'bg-white border border-[#E5E5E5] rounded-lg p-4',
+        'bg-white border border-[var(--border)] rounded-2xl p-4',
         className
       )}
     >
@@ -47,7 +47,7 @@ export function AIInsightCard({
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#FFCF4B] flex-shrink-0" />
           <span
-            className="font-['Geist:SemiBold',sans-serif] text-[13px] font-semibold text-[#0A0A0A]"
+            className="text-[13px] font-semibold text-[#1A2732]"
             style={{ letterSpacing: '0.1px' }}
           >
             {title}
@@ -57,7 +57,7 @@ export function AIInsightCard({
           <button
             onClick={onRefresh}
             disabled={refreshing}
-            className="p-1 hover:bg-[#F5F5F5] rounded transition-colors disabled:opacity-50 text-[#737373] hover:text-[#0A0A0A]"
+            className="p-1 hover:bg-[#F5F5F5] rounded transition-colors disabled:opacity-50 text-[#737373] hover:text-[#1A2732]"
             aria-label="Refresh insight"
           >
             <RefreshCw
@@ -68,7 +68,7 @@ export function AIInsightCard({
       </div>
 
       {/* Body */}
-      <div className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373] leading-relaxed">
+      <div className="text-[13px] text-[#737373] leading-relaxed">
         {children}
       </div>
 
@@ -76,7 +76,7 @@ export function AIInsightCard({
       {(updatedAt || actionLabel) && (
         <div className="flex items-center justify-between mt-3">
           {updatedAt && (
-            <span className="font-['Geist:Regular',sans-serif] text-[11px] text-[#A3A3A3]">
+            <span className="text-[11px] text-[#A3A3A3]">
               Updated {updatedAt}
             </span>
           )}
@@ -84,7 +84,7 @@ export function AIInsightCard({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-[12px] text-[#737373] hover:text-[#0A0A0A] hover:bg-[#F5F5F5]"
+              className="h-7 px-2 text-[12px] text-[#737373] hover:text-[#1A2732] hover:bg-[#F5F5F5]"
               onClick={onAction}
             >
               {actionLabel} →
@@ -112,21 +112,21 @@ export function AIInsightMessage({
   actions,
 }: AIInsightMessageProps) {
   return (
-    <div className="bg-[#FAFAFA] border border-[#E5E5E5] rounded-lg p-3">
+    <div className="bg-[#F5F5F5] border border-[var(--border)] rounded-2xl p-3">
       <div className="flex items-center gap-2 mb-1.5">
-        <div className="w-5 h-5 bg-[#0A0A0A] rounded-full flex items-center justify-center flex-shrink-0">
+        <div className="w-5 h-5 bg-[#1A2732] rounded-full flex items-center justify-center flex-shrink-0">
           <Sparkles className="w-3 h-3 text-[#FFCF4B]" />
         </div>
-        <span className="font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#0A0A0A]">
+        <span className="text-[12px] font-medium text-[#1A2732]">
           Intelligence Hub
         </span>
         {timestamp && (
-          <span className="font-['Geist:Regular',sans-serif] text-[11px] text-[#A3A3A3] ml-auto">
+          <span className="text-[11px] text-[#A3A3A3] ml-auto">
             {timestamp}
           </span>
         )}
       </div>
-      <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#525252] leading-relaxed pl-7">
+      <p className="text-[12px] text-[#525252] leading-relaxed pl-7">
         {children}
       </p>
       {actions && <div className="flex gap-2 mt-2 pl-7">{actions}</div>}

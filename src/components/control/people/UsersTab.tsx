@@ -65,14 +65,14 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-[#E5E5E5] bg-white p-3">
+      <div className="rounded-2xl border border-[var(--border)] bg-white p-3">
         <div className="flex flex-wrap gap-2 md:flex-nowrap">
           <div className="relative w-full md:max-w-[320px]">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#737373]" />
             <Input
               value={search}
               onChange={event => setSearch(event.target.value)}
-              className="h-12 rounded-xl border-[#E5E5E5] pl-9"
+              className="h-12 rounded-xl border-[var(--border)] pl-9"
               placeholder="Search people"
             />
           </div>
@@ -112,9 +112,9 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[#E5E5E5] bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
         <table className="w-full">
-          <thead className="bg-[#F8F7F4]">
+          <thead className="bg-[#F5F5F5]">
             <tr className="text-left text-xs font-medium tracking-wider text-[#737373] uppercase">
               <th className="w-10 px-4 py-3 text-center">
                 <Checkbox
@@ -142,7 +142,7 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
                   onClick={() => onOpenUserDetail(user)}
                   className={cn(
                     'group cursor-pointer border-b border-[#F5F5F5] transition-colors',
-                    selected ? 'bg-[#FFFBF0]' : 'hover:bg-[#FFFBF0]',
+                    selected ? 'bg-[var(--accent)]' : 'hover:bg-[var(--accent)]',
                   )}
                 >
                   <td
@@ -166,7 +166,7 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-[#0A0A0A]">{user.name}</p>
+                        <p className="text-sm font-medium text-[#1A2732]">{user.name}</p>
                         <p className="text-xs text-[#737373]">{user.email}</p>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ function FilterPill<T extends string>({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="h-10 rounded-full border border-[#E5E5E5] px-3 text-sm text-[#525252] hover:bg-[#F5F5F5]"
+          className="h-10 rounded-full border border-[var(--border)] px-3 text-sm text-[#525252] hover:bg-[#F5F5F5]"
         >
           {label}
           {values.length > 0 ? ` (${values.length})` : ''}

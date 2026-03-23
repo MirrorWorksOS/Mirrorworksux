@@ -1,9 +1,9 @@
 /**
- * Make Settings — production configuration
- * Panels: General · Work Centres · Quality · Notifications
+ * Make Settings — Implements ARCH 00 group-based permissions model
+ * Panels: General, Quality, Reports, Access & Permissions
  */
 import React, { useState } from 'react';
-import { Settings, Wrench, CheckCircle2, Bell } from 'lucide-react';
+import { Settings, CheckCircle2, BarChart3 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -12,98 +12,149 @@ import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import {
+  ModuleSettingsLayout,
+  SectionLabel,
+  SaveRow,
+  type PermissionKey,
+  type PermissionGroup,
+  type SettingsPanel,
+} from '../shared/ModuleSettingsLayout';
 
-const { animationVariants } = designSystem;
-
-type Panel = 'general' | 'workcentres' | 'quality' | 'notifications';
-
-const NAV: { key: Panel; label: string; icon: any }[] = [
-  { key: 'general',      label: 'General',       icon: Settings },
-  { key: 'workcentres',  label: 'Work centres',  icon: Wrench },
-  { key: 'quality',      label: 'Quality',       icon: CheckCircle2 },
-  { key: 'notifications',label: 'Notifications', icon: Bell },
+// ── Permission keys for Make module (from ARCH 00 §4.5) ──
+const makePermissionKeys: PermissionKey[] = [
+  { key: 'documents.scope', label: 'Document visibility', description: 'Own records only, or all org records', type: 'scope' },
+  { key: 'workorders.scope', label: 'Work order visibility', description: 'Own work orders or all work orders', type: 'scope' },
+  { key: 'timers.scope', label: 'Time clock visibility', description: 'Own time entries or all entries', type: 'scope' },
+  { key: 'qc.record', label: 'Record quality checks', description: 'Record and submit quality inspections', type: 'boolean' },
+  { key: 'scrap.report', label: 'Report scrap/waste', description: 'Log scrap and waste events', type: 'boolean' },
+  { key: 'andon.manage', label: 'Manage andon alerts', description: 'Create and resolve andon alerts', type: 'boolean' },
+  { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean' },
+  { key: 'reports.access', label: 'Reports access', description: 'View analytics and reports', type: 'boolean' },
 ];
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-xs tracking-wider text-[#737373] font-medium mb-2 uppercase">{children}</div>
-      <Separator className="mb-4" />
-    </div>
-  );
-}
-function SaveRow() {
-  return (
-    <div className="flex justify-end gap-3">
-      <Button variant="ghost" className="text-[#737373] text-sm h-10">Discard</Button>
-      <Button className="h-10 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] rounded">Save changes</Button>
-    </div>
-  );
-}
+// ── Default groups (from ARCH 00 §4.5) ──
+const makeDefaultGroups: PermissionGroup[] = [
+  {
+    name: 'Production',
+    description: 'Operators, welders, machinists',
+    isDefault: true,
+    members: [
+      { name: 'Ben Cooper', email: 'ben@alliancemetal.com.au', initials: 'BC' },
+      { name: 'Ryan Nguyen', email: 'ryan@alliancemetal.com.au', initials: 'RN' },
+    ],
+    permissions: {
+      'documents.scope': 'own', 'workorders.scope': 'own', 'timers.scope': 'own',
+      'qc.record': 'true', 'scrap.report': 'true', 'andon.manage': 'false',
+      'settings.access': 'false', 'reports.access': 'false',
+    },
+  },
+  {
+    name: 'Quality',
+    description: 'QA inspectors',
+    isDefault: true,
+    members: [
+      { name: 'Amy Zhang', email: 'amy@alliancemetal.com.au', initials: 'AZ' },
+    ],
+    permissions: {
+      'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own',
+      'qc.record': 'true', 'scrap.report': 'true', 'andon.manage': 'true',
+      'settings.access': 'false', 'reports.access': 'true',
+    },
+  },
+  {
+    name: 'Maintenance',
+    description: 'Equipment technicians',
+    isDefault: true,
+    members: [
+      { name: 'Steve Rogers', email: 'steve@alliancemetal.com.au', initials: 'SR' },
+    ],
+    permissions: {
+      'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own',
+      'qc.record': 'false', 'scrap.report': 'false', 'andon.manage': 'true',
+      'settings.access': 'false', 'reports.access': 'false',
+    },
+  },
+  {
+    name: 'Office',
+    description: 'Production managers, supervisors',
+    isDefault: true,
+    members: [],
+    permissions: {
+      'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'all',
+      'qc.record': 'false', 'scrap.report': 'false', 'andon.manage': 'false',
+      'settings.access': 'false', 'reports.access': 'true',
+    },
+  },
+];
 
+// ── General Panel ──
 function GeneralPanel() {
   return (
     <div className="space-y-8 max-w-[640px]">
       <SaveRow />
       <div>
-        <SectionLabel>Manufacturing order numbering</SectionLabel>
+        <SectionLabel>Shop floor configuration</SectionLabel>
         <div className="space-y-4">
           <div>
-            <Label className="text-sm mb-2 block font-medium">MO prefix</Label>
-            <div className="flex gap-3 items-center">
-              <Input defaultValue="MO-" className="h-12 border-[#E5E5E5] rounded bg-[#F5F5F5] w-28" />
-              <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">Preview: MO-2026-0056</span>
+            <Label className="text-sm mb-2 block font-medium">Default work order view</Label>
+            <Select defaultValue="kanban">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kanban">Kanban board</SelectItem>
+                <SelectItem value="list">List view</SelectItem>
+                <SelectItem value="schedule">Schedule view</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Work centre timeout</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="15" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <span className="text-sm text-[#737373]">minutes idle before auto-pause</span>
             </div>
           </div>
-          <div>
-            <Label className="text-sm mb-2 block font-medium">Next MO number</Label>
-            <Input defaultValue="56" type="number" className="h-12 border-[#E5E5E5] rounded w-32" />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <SectionLabel>Shop floor preferences</SectionLabel>
-        <div className="space-y-4">
-          <div>
-            <Label className="text-sm mb-2 block font-medium">Time tracking method</Label>
-            <Select defaultValue="manual">
-              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="manual">Manual clock-in / clock-out</SelectItem>
-                <SelectItem value="auto">Auto-start on MO open</SelectItem>
-                <SelectItem value="barcode">Barcode scan</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-sm mb-2 block font-medium">Display language on shop floor</Label>
-            <Select defaultValue="en">
-              <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="zh">Mandarin</SelectItem>
-                <SelectItem value="vi">Vietnamese</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <SectionLabel>Production rules</SectionLabel>
-        <div className="space-y-4">
           {[
-            { label: 'Require operator sign-off to advance MO stage', checked: true },
-            { label: 'Allow splitting MOs across work centres',        checked: true },
-            { label: 'Auto-close MO when all operations complete',     checked: true },
-            { label: 'Require QC pass before dispatch',                checked: true },
-            { label: 'Enable machine monitoring (IoT)',                 checked: false },
+            { label: 'Enable barcode scanning on shop floor', checked: true },
+            { label: 'Require operator clock-on before starting work orders', checked: true },
+            { label: 'Auto-print job travellers on release', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Shift settings</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Number of shifts</Label>
+            <Select defaultValue="2">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 shift</SelectItem>
+                <SelectItem value="2">2 shifts</SelectItem>
+                <SelectItem value="3">3 shifts</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Day shift start</Label>
+            <Input defaultValue="06:00" type="time" className="h-12 border-[var(--border)] rounded-xl w-40" />
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Night shift start</Label>
+            <Input defaultValue="14:00" type="time" className="h-12 border-[var(--border)] rounded-xl w-40" />
+          </div>
+          {[
+            { label: 'Enable shift handover notes', checked: true },
+            { label: 'Notify supervisor on shift changeover', checked: false },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -113,93 +164,44 @@ function GeneralPanel() {
   );
 }
 
-function WorkCentresPanel() {
-  const wcs = [
-    { name: 'Cutting',         code: 'CUT', defaultCostRate: 120, overtimeRate: 180 },
-    { name: 'Forming',         code: 'FRM', defaultCostRate: 110, overtimeRate: 165 },
-    { name: 'Welding',         code: 'WLD', defaultCostRate: 130, overtimeRate: 195 },
-    { name: 'Machining',       code: 'MCH', defaultCostRate: 150, overtimeRate: 225 },
-    { name: 'Finishing',       code: 'FIN', defaultCostRate: 90,  overtimeRate: 135 },
-    { name: 'Assembly',        code: 'ASM', defaultCostRate: 95,  overtimeRate: 143 },
-    { name: 'Material Handling',code: 'MH', defaultCostRate: 70,  overtimeRate: 105 },
-  ];
-  return (
-    <div className="space-y-6 max-w-[720px]">
-      <SaveRow />
-      <SectionLabel>Work centre cost rates</SectionLabel>
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
-              {['Work centre', 'Code', 'Standard rate ($/hr)', 'Overtime rate ($/hr)'].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {wcs.map(wc => (
-              <tr key={wc.name} className="border-b border-[#F5F5F5] h-14">
-                <td className="px-4 text-sm text-[#0A0A0A] font-medium">{wc.name}</td>
-                <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{wc.code}</td>
-                <td className="px-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-[#737373]">$</span>
-                    <Input defaultValue={`${wc.defaultCostRate}`} type="number" className="h-9 w-24 border-[#E5E5E5] rounded text-right font-['Roboto_Mono',monospace] text-sm" />
-                  </div>
-                </td>
-                <td className="px-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-[#737373]">$</span>
-                    <Input defaultValue={`${wc.overtimeRate}`} type="number" className="h-9 w-24 border-[#E5E5E5] rounded text-right font-['Roboto_Mono',monospace] text-sm" />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-    </div>
-  );
-}
-
+// ── Quality Panel ──
 function QualityPanel() {
   return (
     <div className="space-y-8 max-w-[640px]">
       <SaveRow />
       <div>
-        <SectionLabel>NCR settings</SectionLabel>
+        <SectionLabel>QC templates</SectionLabel>
         <div className="space-y-4">
           <div>
-            <Label className="text-sm mb-2 block font-medium">NCR prefix</Label>
-            <Input defaultValue="NCR-" className="h-12 border-[#E5E5E5] rounded bg-[#F5F5F5] w-28" />
+            <Label className="text-sm mb-2 block font-medium">Default inspection type</Label>
+            <Select defaultValue="inprocess">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="incoming">Incoming material</SelectItem>
+                <SelectItem value="inprocess">In-process</SelectItem>
+                <SelectItem value="final">Final inspection</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
-            <div>
-              <span className="text-sm text-[#0A0A0A]">Automatically assign NCRs to QC team</span>
-              <p className="text-xs text-[#737373] mt-0.5">New NCRs assigned to QC manager by default</p>
-            </div>
-            <Switch defaultChecked />
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Sampling rate</Label>
+            <Select defaultValue="aql">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="100">100% inspection</SelectItem>
+                <SelectItem value="aql">AQL sampling</SelectItem>
+                <SelectItem value="skip">Skip lot</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-[#F5F5F5]">
-            <div>
-              <span className="text-sm text-[#0A0A0A]">Block dispatch when open NCR exists</span>
-              <p className="text-xs text-[#737373] mt-0.5">Prevents shipping jobs with unresolved quality issues</p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <SectionLabel>Inspection settings</SectionLabel>
-        <div className="space-y-4">
           {[
-            { label: 'Require incoming inspection for all materials', checked: true },
-            { label: 'Require first article inspection on new products', checked: true },
-            { label: 'Require dimensional report on jobs over $50,000', checked: false },
+            { label: 'Require photo evidence on non-conformance', checked: true },
+            { label: 'Auto-create NCR on failed inspection', checked: true },
+            { label: 'Enable statistical process control (SPC)', checked: false },
+            { label: 'Block shipment on open NCRs', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-              <span className="text-sm text-[#0A0A0A]">{r.label}</span>
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -209,73 +211,73 @@ function QualityPanel() {
   );
 }
 
-function NotificationsPanel() {
+// ── Reports Panel ──
+function ReportsPanel() {
+  const widgets = [
+    { label: 'OEE by work centre', enabled: true },
+    { label: 'Work order throughput', enabled: true },
+    { label: 'Scrap rate trend', enabled: true },
+    { label: 'Labour efficiency', enabled: false },
+    { label: 'Andon response times', enabled: false },
+    { label: 'First-pass yield', enabled: true },
+  ];
+
   return (
     <div className="space-y-8 max-w-[640px]">
       <SaveRow />
       <div>
-        <SectionLabel>Production alerts</SectionLabel>
-        <div className="space-y-4">
-          {[
-            { label: 'Notify when MO is overdue',                     sub: 'Alert production manager when job exceeds due date', checked: true },
-            { label: 'Notify when machine is offline',                 sub: 'Alert when monitored machine goes offline',          checked: false },
-            { label: 'Notify on NCR creation',                         sub: 'Email QC team when a defect is logged',              checked: true },
-            { label: 'Daily production summary email',                 sub: 'Summary of jobs completed, in progress, and overdue', checked: true },
-            { label: 'Alert when work centre utilisation exceeds 90%', sub: 'Warn production manager of overload',                checked: true },
-          ].map(r => (
-            <div key={r.label} className="flex items-center justify-between py-3 border-b border-[#F5F5F5] last:border-0">
-              <div>
-                <span className="text-sm text-[#0A0A0A] font-medium">{r.label}</span>
-                <p className="text-xs text-[#737373] mt-0.5">{r.sub}</p>
-              </div>
-              <Switch defaultChecked={r.checked} />
+        <SectionLabel>Dashboard widgets</SectionLabel>
+        <p className="text-sm text-[#737373] mb-4">Choose which widgets appear on the Make dashboard.</p>
+        <div className="space-y-2">
+          {widgets.map(w => (
+            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+              <span className="text-sm text-[#1A2732]">{w.label}</span>
+              <Switch defaultChecked={w.enabled} />
             </div>
           ))}
+        </div>
+      </div>
+      <div>
+        <SectionLabel>Reporting period</SectionLabel>
+        <div>
+          <Label className="text-sm mb-2 block font-medium">Default date range</Label>
+          <Select defaultValue="week">
+            <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="shift">This shift</SelectItem>
+              <SelectItem value="week">This week</SelectItem>
+              <SelectItem value="month">This month</SelectItem>
+              <SelectItem value="quarter">This quarter</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <SectionLabel>Export</SectionLabel>
+        <div className="flex gap-3">
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export production CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export QC results CSV</Button>
         </div>
       </div>
     </div>
   );
 }
 
-const PANEL_MAP: Record<Panel, () => JSX.Element> = {
-  general:       GeneralPanel,
-  workcentres:   WorkCentresPanel,
-  quality:       QualityPanel,
-  notifications: NotificationsPanel,
-};
+// ── Root ──
+const settingsPanels: SettingsPanel[] = [
+  { key: 'general', label: 'General', icon: Settings, component: GeneralPanel },
+  { key: 'quality', label: 'Quality', icon: CheckCircle2, component: QualityPanel },
+  { key: 'reports', label: 'Reports', icon: BarChart3, component: ReportsPanel },
+];
 
 export function MakeSettings() {
-  const [active, setActive] = useState<Panel>('general');
-  const PanelComponent = PANEL_MAP[active];
-
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6">
-      <h1 className="text-[32px] tracking-tight text-[#0A0A0A] mb-6">Make settings</h1>
-      <div className="flex gap-6">
-        <div className="w-56 flex-shrink-0">
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-3 h-fit">
-            <nav className="space-y-0.5">
-              {NAV.map(n => {
-                const Icon = n.icon;
-                return (
-                  <button key={n.key} onClick={() => setActive(n.key)}
-                    className={cn('w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors text-left',
-                      active === n.key ? 'bg-[#FFFBF0] text-[#0A0A0A] font-medium' : 'text-[#737373] hover:bg-[#F5F5F5] hover:text-[#0A0A0A]'
-                    )}>
-                    <Icon className="w-4 h-4 shrink-0" />
-                    {n.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </Card>
-        </div>
-        <div className="flex-1 min-w-0">
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-            <PanelComponent />
-          </Card>
-        </div>
-      </div>
-    </motion.div>
+    <ModuleSettingsLayout
+      title="Make Settings"
+      moduleName="Make"
+      panels={settingsPanels}
+      permissionKeys={makePermissionKeys}
+      defaultGroups={makeDefaultGroups}
+    />
   );
 }

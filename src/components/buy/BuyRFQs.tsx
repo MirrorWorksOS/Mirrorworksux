@@ -71,7 +71,7 @@ const RFQS: RFQ[] = [
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
   open:    { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Open' },
   closed:  { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Closed' },
-  awarded: { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Awarded' },
+  awarded: { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Awarded' },
   draft:   { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft' },
 };
 
@@ -80,14 +80,14 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
   const sorted = [...rfq.quotes].sort((a, b) => a.unitPrice - b.unitPrice);
   return (
     <Sheet open onOpenChange={onClose}>
-      <SheetContent className="w-[520px] sm:max-w-[520px] p-0 overflow-y-auto border-l border-[#E5E5E5]">
-        <SheetHeader className="p-6 pb-4 border-b border-[#E5E5E5]">
+      <SheetContent className="w-[520px] sm:max-w-[520px] p-0 overflow-y-auto border-l border-[var(--border)]">
+        <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{rfq.rfqNumber}</span>
+            <span className="text-sm  font-medium text-[#1A2732]">{rfq.rfqNumber}</span>
             <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
           </div>
-          <SheetTitle className="text-[16px] font-semibold text-[#0A0A0A]">{rfq.title}</SheetTitle>
-          <SheetDescription className="text-[#737373] font-['Roboto_Mono',monospace] text-xs">{rfq.sku} · Qty: {rfq.qty} {rfq.unit}</SheetDescription>
+          <SheetTitle className="text-[16px] font-semibold text-[#1A2732]">{rfq.title}</SheetTitle>
+          <SheetDescription className="text-[#737373]  text-xs">{rfq.sku} · Qty: {rfq.qty} {rfq.unit}</SheetDescription>
         </SheetHeader>
 
         <div className="p-6 space-y-6">
@@ -103,33 +103,33 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
               </p>
               <div className="space-y-3">
                 {sorted.map((q, i) => (
-                  <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[#FFCF4B] bg-[#FFFBF0]' : 'border-[#E5E5E5] bg-white')}>
+                  <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[#FFCF4B] bg-[var(--accent)]' : 'border-[var(--border)] bg-white')}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#0A0A0A]">{q.supplier}</span>
+                        <span className="text-sm font-semibold text-[#1A2732]">{q.supplier}</span>
                         {q.aiPick && (
                           <span className="text-[10px] bg-[#FFCF4B] text-[#1A2732] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                             <Sparkles className="w-2.5 h-2.5" /> AI pick
                           </span>
                         )}
                         {i === 0 && !q.aiPick && (
-                          <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
+                          <Badge className="bg-[#F5F5F5] text-[#1A2732] border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
                         )}
                       </div>
-                      <span className="text-xl font-['Roboto_Mono',monospace] font-semibold text-[#0A0A0A]">
+                      <span className="text-xl  font-semibold text-[#1A2732]">
                         ${q.unitPrice.toFixed(2)}<span className="text-xs text-[#737373] font-normal">/{rfq.unit.replace(/s$/, '')}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-6 text-xs text-[#737373]">
-                      <span>Lead: <strong className="text-[#0A0A0A]">{q.leadTime}d</strong></span>
-                      <span>Total: <strong className="text-[#0A0A0A] font-['Roboto_Mono',monospace]">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
+                      <span>Lead: <strong className="text-[#1A2732]">{q.leadTime}d</strong></span>
+                      <span>Total: <strong className="text-[#1A2732] ">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
                       <span>Valid to: {q.validUntil}</span>
                     </div>
                     {q.notes && <p className="text-xs text-[#FF8B00] mt-1">⚠ {q.notes}</p>}
                     {rfq.status === 'open' && (
                       <Button size="sm" className={cn('w-full mt-3 h-9 text-xs gap-1', q.aiPick
                         ? 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]'
-                        : 'bg-[#0A0A0A] hover:bg-[#2C2C2C] text-white'
+                        : 'bg-[#1A2732] hover:bg-[#2C2C2C] text-white'
                       )}>
                         <Check className="w-3 h-3" /> Award to {q.supplier.split(' ')[0]}
                       </Button>
@@ -158,7 +158,7 @@ export function BuyRFQs() {
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">RFQs</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">RFQs</h1>
           <p className="text-sm text-[#737373] mt-1">
             {RFQS.filter(r => r.status === 'open').length} open · {RFQS.filter(r => r.status === 'awarded').length} awarded
           </p>
@@ -171,13 +171,13 @@ export function BuyRFQs() {
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3]" />
         <Input placeholder="Search RFQs…" value={search} onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm" />
+          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm" />
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['RFQ #', 'Title', 'SKU', 'Qty', 'Suppliers', 'Responses', 'Due', 'Status', ''].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
               ))}
@@ -189,18 +189,18 @@ export function BuyRFQs() {
               const responseRate = rfq.suppliers > 0 ? (rfq.responses / rfq.suppliers) * 100 : 0;
               return (
                 <tr key={rfq.id} onClick={() => setSelectedRFQ(rfq)}
-                  className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                  <td className="px-4 text-sm font-['Roboto_Mono',monospace] font-medium text-[#0052CC]">{rfq.rfqNumber}</td>
-                  <td className="px-4 text-sm text-[#0A0A0A] font-medium">{rfq.title}</td>
-                  <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{rfq.sku}</td>
-                  <td className="px-4 text-sm font-['Roboto_Mono',monospace]">{rfq.qty}</td>
-                  <td className="px-4 text-sm font-['Roboto_Mono',monospace]">{rfq.suppliers}</td>
+                  className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                  <td className="px-4 text-sm  font-medium text-[#1A2732]">{rfq.rfqNumber}</td>
+                  <td className="px-4 text-sm text-[#1A2732] font-medium">{rfq.title}</td>
+                  <td className="px-4 text-xs  text-[#737373]">{rfq.sku}</td>
+                  <td className="px-4 text-sm ">{rfq.qty}</td>
+                  <td className="px-4 text-sm ">{rfq.suppliers}</td>
                   <td className="px-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#36B37E] rounded-full" style={{ width: `${responseRate}%` }} />
+                      <div className="w-16 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#FFCF4B] rounded-full" style={{ width: `${responseRate}%` }} />
                       </div>
-                      <span className="text-xs font-['Roboto_Mono',monospace] text-[#737373]">{rfq.responses}/{rfq.suppliers}</span>
+                      <span className="text-xs  text-[#737373]">{rfq.responses}/{rfq.suppliers}</span>
                     </div>
                   </td>
                   <td className="px-4 text-sm text-[#737373]">{rfq.dueDate}</td>

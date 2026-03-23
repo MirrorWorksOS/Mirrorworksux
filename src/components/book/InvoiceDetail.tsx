@@ -22,11 +22,11 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             <ArrowLeft className="w-5 h-5 text-[#1A2732]" />
           </button>
           <h1 className="text-2xl tracking-tight text-[#1A2732]" style={{ fontFamily: 'Roboto Mono, monospace' }}>INV-2026-0045</h1>
-          <Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#E6F0FF] text-[#0052CC]">Sent</Badge>
+          <Badge className="rounded-full text-[11px] px-2 py-0.5 border-0 bg-[#F5F5F5] text-[#1A2732]">Sent</Badge>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Send className="w-4 h-4" /> Send</Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Download className="w-4 h-4" /> Download PDF</Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
           <Button size="sm" className="h-10 gap-2 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]"><DollarSign className="w-4 h-4" /> Record Payment</Button>
           <Button variant="ghost" size="icon" className="w-11 h-11"><MoreVertical className="w-5 h-5 text-[#737373]" /></Button>
         </div>
@@ -34,7 +34,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Left - Invoice Preview */}
-        <Card className="lg:col-span-3 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-8">
+        <Card className="lg:col-span-3 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-8">
           {/* Company & Invoice Title */}
           <div className="flex justify-between items-start mb-6">
             <div>
@@ -69,7 +69,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               ))}
               <div className="flex justify-end gap-4">
                 <span className="text-xs text-[#737373]">Job Reference</span>
-                <span className="text-xs text-[#0052CC] cursor-pointer" style={{ fontFamily: 'Roboto Mono, monospace' }}>JOB-2026-0012</span>
+                <span className="text-xs text-[#1A2732] cursor-pointer" style={{ fontFamily: 'Roboto Mono, monospace' }}>JOB-2026-0012</span>
               </div>
             </div>
           </div>
@@ -77,7 +77,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           {/* Line Items */}
           <table className="w-full mt-4">
             <thead>
-              <tr className="bg-[#F8F7F4]">
+              <tr className="bg-[#F5F5F5]">
                 {['#', 'Product', 'Description', 'Qty', 'Unit Price', 'Disc', 'Tax', 'Total'].map(h => (
                   <th key={h} className={`px-3 py-2 text-xs tracking-wider text-[#737373] ${['Qty', 'Unit Price', 'Disc', 'Total'].includes(h) ? 'text-right' : 'text-left'}`} style={{ fontWeight: 500 }}>{h}</th>
                 ))}
@@ -85,7 +85,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             </thead>
             <tbody>
               {lineItems.map(item => (
-                <tr key={item.num} className="border-b border-[#E5E5E5]">
+                <tr key={item.num} className="border-b border-[var(--border)]">
                   <td className="px-3 py-3 text-sm text-[#525252]">{item.num}</td>
                   <td className="px-3 py-3 text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>{item.product}</td>
                   <td className="px-3 py-3 text-xs text-[#737373]">{item.desc}</td>
@@ -111,7 +111,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             </div>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-[#E5E5E5] text-xs text-[#737373] space-y-1">
+          <div className="mt-8 pt-4 border-t border-[var(--border)] text-xs text-[#737373] space-y-1">
             <p>Payment Terms: Net 30</p>
             <p>Notes: Please reference INV-2026-0045 on all remittances.</p>
           </div>
@@ -120,7 +120,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
         {/* Right Panel */}
         <div className="lg:col-span-2 space-y-4">
           {/* Payments */}
-          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-4">
+          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-4">
             <div className="flex items-center gap-2 mb-3">
               <DollarSign className="w-4 h-4 text-[#737373]" />
               <span className="text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>Payments</span>
@@ -130,22 +130,22 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Email History */}
-          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-4">
+          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-4">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="w-4 h-4 text-[#737373]" />
               <span className="text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>Email History</span>
             </div>
-            <div className="space-y-4 border-l-2 border-[#E5E5E5] pl-4 ml-2">
+            <div className="space-y-4 border-l-2 border-[var(--border)] pl-4 ml-2">
               <div>
                 <div className="flex items-center gap-2">
-                  <Send className="w-4 h-4 text-[#36B37E]" />
+                  <Send className="w-4 h-4 text-[#1A2732]" />
                   <span className="text-sm text-[#1A2732]">Invoice sent to accounts@conform.com.au</span>
                 </div>
                 <span className="text-xs text-[#737373] ml-6">24 Feb 2026, 10:32 AM</span>
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-[#0052CC]" />
+                  <Eye className="w-4 h-4 text-[#1A2732]" />
                   <span className="text-sm text-[#1A2732]">Email opened</span>
                 </div>
                 <span className="text-xs text-[#737373] ml-6">24 Feb 2026, 11:15 AM</span>
@@ -154,7 +154,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Activity */}
-          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-4">
+          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-4">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-[#737373]" />
               <span className="text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>Activity</span>
@@ -179,12 +179,12 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Xero */}
-          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-4">
-            <Button variant="ghost" className="text-[#0052CC] p-0 h-auto gap-1 text-sm">
+          <Card className="bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-4">
+            <Button variant="ghost" className="text-[#1A2732] p-0 h-auto gap-1 text-sm">
               View in Xero <ExternalLink className="w-4 h-4" />
             </Button>
             <div className="flex items-center gap-2 mt-2">
-              <div className="w-2 h-2 rounded-full bg-[#36B37E]" />
+              <div className="w-2 h-2 rounded-full bg-[#1A2732]" />
               <span className="text-xs text-[#737373]">Sync Status: Synced</span>
             </div>
             <p className="text-xs text-[#737373] mt-1">Last synced: 24 Feb 2026, 10:33 AM</p>

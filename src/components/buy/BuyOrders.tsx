@@ -41,9 +41,9 @@ const getStatusBadge = (status: POStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
     case 'sent': return { bg: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'Sent', dot: '#0A7AFF' };
-    case 'acknowledged': return { bg: 'bg-[#E6F0FF]', text: 'text-[#0052CC]', label: 'Acknowledged', dot: '#0052CC' };
+    case 'acknowledged': return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Acknowledged', dot: '#1A2732' };
     case 'partial': return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Partial', dot: '#FACC15' };
-    case 'received': return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Received', dot: '#36B37E' };
+    case 'received': return { bg: 'bg-[#F5F5F5]', text: 'text-[#1A2732]', label: 'Received', dot: '#1A2732' };
     case 'cancelled': return { bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Cancelled', dot: '#EF4444' };
   }
 };
@@ -73,15 +73,15 @@ export function BuyOrders() {
           <p className="text-sm text-[#737373] mt-1">{filteredPOs.length} orders • ${totalValue.toLocaleString()} total value</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedDownload className="w-4 h-4" />
             Export
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded group">
+          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded-xl group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New PO
           </Button>
@@ -89,11 +89,11 @@ export function BuyOrders() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E5E5E5] overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-[var(--border)] overflow-x-auto">
         {(['all', 'draft', 'sent', 'acknowledged', 'partial', 'received', 'cancelled'] as TabFilter[]).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={cn("px-4 py-2 font-['Geist:Regular',sans-serif] text-[14px] border-b-2 transition-colors whitespace-nowrap",
-              activeTab === tab ? 'border-[#FFCF4B] text-[#0A0A0A] font-medium' : 'border-transparent text-[#737373] hover:text-[#0A0A0A]')}>
+            className={cn("px-4 py-2 text-[14px] border-b-2 transition-colors whitespace-nowrap",
+              activeTab === tab ? 'border-[#FFCF4B] text-[#1A2732] font-medium' : 'border-transparent text-[#737373] hover:text-[#1A2732]')}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             <Badge className="ml-2 bg-[#F5F5F5] text-[#525252] border-0 text-xs">{tabCounts[tab]}</Badge>
           </button>
@@ -102,12 +102,12 @@ export function BuyOrders() {
 
       {/* Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
-                  <th className="px-4 py-3 w-12"><input type="checkbox" className="rounded border-[#E5E5E5]" /></th>
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
+                  <th className="px-4 py-3 w-12"><input type="checkbox" className="rounded border-[var(--border)]" /></th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PO #</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">SUPPLIER</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">DATE</th>
@@ -123,15 +123,15 @@ export function BuyOrders() {
                   const statusBadge = getStatusBadge(po.status);
                   const receivedPct = (po.received / po.total) * 100;
                   return (
-                    <tr key={po.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#FAFAFA]")}>
-                      <td className="px-4"><input type="checkbox" className="rounded border-[#E5E5E5]" /></td>
+                    <tr key={po.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
+                      <td className="px-4"><input type="checkbox" className="rounded border-[var(--border)]" /></td>
                       <td className="px-4">
-                        <a href={`/buy/orders/${po.id}`} className="text-[#0052CC] font-['Roboto_Mono',monospace] text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/buy/orders/${po.id}`} className="text-[#1A2732]  text-sm font-medium hover:underline flex items-center gap-1">
                           {po.poNumber}
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </td>
-                      <td className="px-4 text-sm text-[#0A0A0A]">{po.supplier}</td>
+                      <td className="px-4 text-sm text-[#1A2732]">{po.supplier}</td>
                       <td className="px-4 text-sm text-[#525252]">{new Date(po.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                       <td className="px-4 text-sm text-[#525252]">{new Date(po.deliveryDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                       <td className="px-4">
@@ -142,13 +142,13 @@ export function BuyOrders() {
                           </Badge>
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">${po.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm  font-medium">${po.total.toLocaleString()}</td>
                       <td className="px-4">
                         <div className="flex flex-col items-end gap-1">
-                          <span className="text-sm font-['Roboto_Mono',monospace] font-medium">${po.received.toLocaleString()}</span>
+                          <span className="text-sm  font-medium">${po.received.toLocaleString()}</span>
                           {po.received > 0 && (
-                            <div className="w-16 h-1 bg-[#E5E5E5] rounded-full overflow-hidden">
-                              <div className="h-full bg-[#36B37E]" style={{ width: `${receivedPct}%` }} />
+                            <div className="w-16 h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                              <div className="h-full bg-[#FFCF4B]" style={{ width: `${receivedPct}%` }} />
                             </div>
                           )}
                         </div>
@@ -164,11 +164,11 @@ export function BuyOrders() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E5E5]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
             <p className="text-xs text-[#737373]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[#E5E5E5] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[#E5E5E5] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Next</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Previous</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Next</button>
             </div>
           </div>
         </Card>

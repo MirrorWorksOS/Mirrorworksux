@@ -120,9 +120,9 @@ export function SellNewQuote() {
   const removeLine = (id: string) => setLines(prev => prev.filter(l => l.id !== id));
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-[#FAFAFA]">
+    <div className="h-full flex flex-col overflow-hidden bg-[#F5F5F5]">
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between shrink-0">
+      <div className="bg-white border-b border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-[#F5F5F5] rounded-lg transition-colors">
             <ArrowLeft className="w-4 h-4 text-[#737373]" />
@@ -130,20 +130,20 @@ export function SellNewQuote() {
           <div>
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#737373]" />
-              <span className="text-sm font-mono font-medium text-[#0A0A0A]">{quoteNumber}</span>
+              <span className="text-sm  font-medium text-[#0A0A0A]">{quoteNumber}</span>
               <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs rounded-full px-2">Draft</Badge>
             </div>
             <p className="text-xs text-[#737373] mt-0.5">New quote</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="border-[#E5E5E5] h-10" onClick={() => navigate(-1)}>
+          <Button variant="outline" className="border-[var(--border)] h-10" onClick={() => navigate(-1)}>
             Discard
           </Button>
-          <Button variant="outline" className="border-[#E5E5E5] h-10">
+          <Button variant="outline" className="border-[var(--border)] h-10">
             Save draft
           </Button>
-          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-10 gap-2">
+          <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] h-10 gap-2">
             <FileText className="w-4 h-4" /> Send quote
           </Button>
         </div>
@@ -165,13 +165,13 @@ export function SellNewQuote() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Header details */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label className="text-sm mb-2 block font-medium">Customer *</Label>
                     <Select value={customer} onValueChange={setCustomer}>
-                      <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue placeholder="Select customer…" /></SelectTrigger>
+                      <SelectTrigger className="h-12 border-[var(--border)] rounded"><SelectValue placeholder="Select customer…" /></SelectTrigger>
                       <SelectContent>
                         {CUSTOMERS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                       </SelectContent>
@@ -179,16 +179,16 @@ export function SellNewQuote() {
                   </div>
                   <div>
                     <Label className="text-sm mb-2 block font-medium">Quote date</Label>
-                    <Input type="date" value={quoteDate} onChange={e => setQuoteDate(e.target.value)} className="h-12 border-[#E5E5E5] rounded" />
+                    <Input type="date" value={quoteDate} onChange={e => setQuoteDate(e.target.value)} className="h-12 border-[var(--border)] rounded" />
                   </div>
                   <div>
                     <Label className="text-sm mb-2 block font-medium">Expiry date</Label>
-                    <Input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="h-12 border-[#E5E5E5] rounded" />
+                    <Input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="h-12 border-[var(--border)] rounded" />
                   </div>
                   <div>
                     <Label className="text-sm mb-2 block font-medium">Payment terms</Label>
                     <Select value={terms} onValueChange={setTerms}>
-                      <SelectTrigger className="h-12 border-[#E5E5E5] rounded"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-12 border-[var(--border)] rounded"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="cod">COD</SelectItem>
                         <SelectItem value="net14">Net 14</SelectItem>
@@ -199,17 +199,17 @@ export function SellNewQuote() {
                   </div>
                   <div>
                     <Label className="text-sm mb-2 block font-medium">Customer reference</Label>
-                    <Input value={ref} onChange={e => setRef(e.target.value)} placeholder="PO number or reference" className="h-12 border-[#E5E5E5] rounded" />
+                    <Input value={ref} onChange={e => setRef(e.target.value)} placeholder="PO number or reference" className="h-12 border-[var(--border)] rounded" />
                   </div>
                 </div>
               </Card>
 
               {/* Line items */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
-                <div className="p-4 border-b border-[#E5E5E5] flex items-center justify-between">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+                <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                   <h3 className="text-[14px] font-semibold text-[#0A0A0A]">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
-                    <SelectTrigger className="h-9 border-[#E5E5E5] w-52 text-sm">
+                    <SelectTrigger className="h-9 border-[var(--border)] w-52 text-sm">
                       <SelectValue placeholder="Add from catalogue…" />
                     </SelectTrigger>
                     <SelectContent>
@@ -222,7 +222,7 @@ export function SellNewQuote() {
 
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                    <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                       <th className="px-4 py-2.5 text-left text-xs tracking-wider text-[#737373] uppercase font-medium w-[28%]">Description</th>
                       <th className="px-3 py-2.5 text-left text-xs tracking-wider text-[#737373] uppercase font-medium w-[12%]">SKU</th>
                       <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[#737373] uppercase font-medium w-[8%]">Qty</th>
@@ -236,13 +236,13 @@ export function SellNewQuote() {
                   </thead>
                   <tbody>
                     {lines.map((line, i) => (
-                      <tr key={line.id} className="border-b border-[#F5F5F5] hover:bg-[#FAFAFA] group">
+                      <tr key={line.id} className="border-b border-[var(--border)] hover:bg-[#F5F5F5] group">
                         <td className="px-4 py-2">
                           <Input
                             value={line.description}
                             onChange={e => updateLine(line.id, { description: e.target.value })}
                             placeholder="Item description"
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -250,7 +250,7 @@ export function SellNewQuote() {
                             value={line.sku}
                             onChange={e => updateLine(line.id, { sku: e.target.value })}
                             placeholder="SKU"
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-xs font-mono"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-xs "
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -258,14 +258,14 @@ export function SellNewQuote() {
                             type="number"
                             value={line.qty}
                             onChange={e => updateLine(line.id, { qty: parseFloat(e.target.value) || 1 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm text-right "
                           />
                         </td>
                         <td className="px-3 py-2">
                           <Input
                             value={line.unit}
                             onChange={e => updateLine(line.id, { unit: e.target.value })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -273,7 +273,7 @@ export function SellNewQuote() {
                             type="number"
                             value={line.unitCost}
                             onChange={e => updateLine(line.id, { unitCost: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono text-[#737373]"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm text-right  text-[#737373]"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -283,9 +283,9 @@ export function SellNewQuote() {
                               value={line.margin}
                               onChange={e => updateLine(line.id, { margin: parseFloat(e.target.value) || 0 })}
                               className={cn(
-                                'h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono pr-5',
+                                'h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm text-right  pr-5',
                                 line.margin < 15 && 'text-[#DE350B]',
-                                line.margin >= 25 && 'text-[#36B37E]',
+                                line.margin >= 25 && 'text-[#0A0A0A]',
                               )}
                             />
                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#737373]">%</span>
@@ -296,16 +296,16 @@ export function SellNewQuote() {
                             type="number"
                             value={line.unitPrice}
                             onChange={e => updateLine(line.id, { unitPrice: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[#E5E5E5] focus:border-[#0A0A0A] text-sm text-right font-mono font-medium"
+                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[#1A2732] text-sm text-right  font-medium"
                           />
                         </td>
-                        <td className="px-3 py-2 text-right text-sm font-mono font-semibold text-[#0A0A0A] whitespace-nowrap">
+                        <td className="px-3 py-2 text-right text-sm  font-semibold text-[#0A0A0A] whitespace-nowrap">
                           ${fmtCurrency(line.qty * line.unitPrice)}
                         </td>
                         <td className="px-2 py-2">
                           <button
                             onClick={() => removeLine(line.id)}
-                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[#FFEBE6] rounded transition-all"
+                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[#F5F5F5] rounded transition-all"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-[#DE350B]" />
                           </button>
@@ -315,7 +315,7 @@ export function SellNewQuote() {
                   </tbody>
                 </table>
 
-                <div className="p-4 border-t border-[#E5E5E5]">
+                <div className="p-4 border-t border-[var(--border)]">
                   <button
                     onClick={() => setLines(prev => [...prev, newLine()])}
                     className="flex items-center gap-2 text-sm text-[#737373] hover:text-[#0A0A0A] transition-colors"
@@ -326,13 +326,13 @@ export function SellNewQuote() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full p-3 bg-[#F5F5F5] border-transparent rounded-lg text-sm text-[#0A0A0A] resize-none focus:outline-none focus:bg-white focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A] transition-all"
+                  className="w-full p-3 bg-[#F5F5F5] border-transparent rounded-lg text-sm text-[#0A0A0A] resize-none focus:outline-none focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] transition-all"
                   placeholder="Add notes, special instructions, or delivery requirements…"
                 />
               </Card>
@@ -340,21 +340,21 @@ export function SellNewQuote() {
 
             {/* Right — Summary */}
             <div className="space-y-4">
-              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
                 <h3 className="text-[14px] font-semibold text-[#0A0A0A] mb-4">Quote summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Subtotal</span>
-                    <span className="font-mono font-medium">${fmtCurrency(subtotal)}</span>
+                    <span className=" font-medium">${fmtCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">GST (10%)</span>
-                    <span className="font-mono font-medium">${fmtCurrency(tax)}</span>
+                    <span className=" font-medium">${fmtCurrency(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base font-semibold">
                     <span className="text-[#0A0A0A]">Total (inc. GST)</span>
-                    <span className="font-mono text-[#0A0A0A]">${fmtCurrency(total)}</span>
+                    <span className=" text-[#0A0A0A]">${fmtCurrency(total)}</span>
                   </div>
                 </div>
 
@@ -364,21 +364,21 @@ export function SellNewQuote() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Est. cost</span>
-                    <span className="font-mono text-[#737373]">${fmtCurrency(cost)}</span>
+                    <span className=" text-[#737373]">${fmtCurrency(cost)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#737373]">Gross profit</span>
-                    <span className="font-mono font-medium text-[#36B37E]">${fmtCurrency(subtotal - cost)}</span>
+                    <span className=" font-medium text-[#0A0A0A]">${fmtCurrency(subtotal - cost)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[#737373]">Margin</span>
-                    <span className={cn('font-mono font-semibold text-base',
-                      margin < 15 ? 'text-[#DE350B]' : margin >= 25 ? 'text-[#36B37E]' : 'text-[#FACC15]'
+                    <span className={cn(' font-semibold text-base',
+                      margin < 15 ? 'text-[#DE350B]' : margin >= 25 ? 'text-[#0A0A0A]' : 'text-[#FFCF4B]'
                     )}>
                       {margin.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-300"
                       style={{
@@ -392,10 +392,10 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5 space-y-3">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl p-5 space-y-3">
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Quote number</p>
-                  <p className="text-sm font-mono font-medium">{quoteNumber}</p>
+                  <p className="text-sm  font-medium">{quoteNumber}</p>
                 </div>
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Valid until</p>
@@ -407,14 +407,14 @@ export function SellNewQuote() {
                 </div>
                 <div>
                   <p className="text-xs text-[#737373] mb-1">Line items</p>
-                  <p className="text-sm font-mono font-medium">{lines.length}</p>
+                  <p className="text-sm  font-medium">{lines.length}</p>
                 </div>
               </Card>
 
-              <Button className="w-full bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] h-12 gap-2">
+              <Button className="w-full bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] h-12 gap-2">
                 <FileText className="w-4 h-4" /> Send quote
               </Button>
-              <Button variant="outline" className="w-full border-[#E5E5E5] h-10">
+              <Button variant="outline" className="w-full border-[var(--border)] h-10">
                 Preview PDF
               </Button>
             </div>

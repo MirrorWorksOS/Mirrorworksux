@@ -150,7 +150,7 @@ const mockBudgets: Budget[] = [
 const getStatusBadgeColors = (status: TrafficLightStatus) => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', dot: '#36B37E', label: 'On track' };
+      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732', label: 'On track' };
     case 'monitor':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', dot: '#FACC15', label: 'Monitor' };
     case 'over_budget':
@@ -163,9 +163,9 @@ const getStatusBadgeColors = (status: TrafficLightStatus) => {
 const getTypeBadgeColors = (type: BudgetType) => {
   switch (type) {
     case 'job':
-      return { bg: 'bg-[#E6F0FF]', text: 'text-[#0052CC]', label: 'Job' };
+      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Job' };
     case 'department':
-      return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Department' };
+      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Department' };
     case 'annual':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Annual' };
   }
@@ -228,7 +228,7 @@ export function BudgetOverview() {
                   "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]",
                   statusFilter === status
                     ? "bg-[#FFCF4B] text-[#2C2C2C]"
-                    : "bg-white border border-[#E5E5E5] text-[#737373] hover:border-[#FFCF4B]"
+                    : "bg-white border border-[var(--border)] text-[#737373] hover:border-[#FFCF4B]"
                 )}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -237,7 +237,7 @@ export function BudgetOverview() {
           </div>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Type: All
             <ChevronDown className="w-4 h-4" />
@@ -253,9 +253,9 @@ export function BudgetOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Budgets */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">ACTIVE BUDGETS</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732] font-['Roboto_Mono',monospace] font-medium">
+            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
               {activeBudgets.length}
             </div>
             <p className="text-xs text-[#EF4444] mt-1 font-medium">
@@ -266,9 +266,9 @@ export function BudgetOverview() {
 
         {/* Total Budgeted */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">TOTAL BUDGETED</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732] font-['Roboto_Mono',monospace] font-medium">
+            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
               ${totalBudgeted.toLocaleString()}
             </div>
             <p className="text-xs text-[#737373] mt-1">Current quarter</p>
@@ -277,9 +277,9 @@ export function BudgetOverview() {
 
         {/* Total Spent */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">TOTAL SPENT</div>
-            <div className="text-[28px] tracking-tight text-[#1A2732] font-['Roboto_Mono',monospace] font-medium">
+            <div className="text-[28px] tracking-tight text-[#1A2732]  font-medium">
               ${totalSpent.toLocaleString()}
             </div>
             <div className="mt-3 h-2 bg-[#E5E5E5] rounded-full overflow-hidden">
@@ -296,9 +296,9 @@ export function BudgetOverview() {
 
         {/* Projected Overrun */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+          <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[#737373] mb-2 font-medium">PROJECTED OVERRUN</div>
-            <div className="text-[28px] tracking-tight text-[#EF4444] font-['Roboto_Mono',monospace] font-medium">
+            <div className="text-[28px] tracking-tight text-[#EF4444]  font-medium">
               ${projectedOverrun.toLocaleString()}
             </div>
             <p className="text-xs text-[#737373] mt-1">
@@ -310,8 +310,8 @@ export function BudgetOverview() {
 
       {/* 3 Donut Charts Row */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg border border-[#E5E5E5] p-6">
-          <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">
+        <Card className="bg-white rounded-lg border border-[var(--border)] p-6">
+          <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732] mb-4">
             Budget Breakdown
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -343,7 +343,7 @@ export function BudgetOverview() {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[#525252]">{d.name}</span>
                       </div>
-                      <span className="font-['Roboto_Mono',monospace]">{d.value}%</span>
+                      <span className="">{d.value}%</span>
                     </div>
                   ))}
                 </div>
@@ -378,7 +378,7 @@ export function BudgetOverview() {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[#525252]">{d.name}</span>
                       </div>
-                      <span className="font-['Roboto_Mono',monospace]">{d.value}%</span>
+                      <span className="">{d.value}%</span>
                     </div>
                   ))}
                 </div>
@@ -413,7 +413,7 @@ export function BudgetOverview() {
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[#525252]">{d.name}</span>
                       </div>
-                      <span className="font-['Roboto_Mono',monospace]">{d.value}%</span>
+                      <span className="">{d.value}%</span>
                     </div>
                   ))}
                 </div>
@@ -425,7 +425,7 @@ export function BudgetOverview() {
 
       {/* Monthly Budget vs Actual Chart */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6">
           <h3 className="text-[#1A2732] mb-4 font-medium">Monthly Budget vs Actual</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
@@ -442,7 +442,7 @@ export function BudgetOverview() {
               <Bar
                 dataKey="budget"
                 fill="none"
-                stroke="#E5E5E5"
+                stroke="var(--border)"
                 strokeWidth={1}
                 radius={[4, 4, 0, 0]}
                 barSize={16}
@@ -459,19 +459,19 @@ export function BudgetOverview() {
 
       {/* Budget List Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('name')}
                   >
                     BUDGET NAME
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('type')}
                   >
                     TYPE
@@ -480,25 +480,25 @@ export function BudgetOverview() {
                     PERIOD
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('budgeted')}
                   >
                     BUDGETED
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('actual')}
                   >
                     ACTUAL
                   </th>
                   <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-right text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('variance')}
                   >
                     VARIANCE
                   </th>
                   <th
-                    className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#0A0A0A]"
+                    className="px-4 py-3 text-center text-xs tracking-wider text-[#737373] font-medium cursor-pointer hover:text-[#1A2732]"
                     onClick={() => handleSort('utilisation')}
                   >
                     UTILISATION
@@ -517,8 +517,8 @@ export function BudgetOverview() {
                     <tr
                       key={budget.id}
                       className={cn(
-                        "border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors",
-                        idx % 2 === 1 && "bg-[#FAFAFA]"
+                        "border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
+                        idx % 2 === 1 && "bg-[#F5F5F5]"
                       )}
                       onClick={() => {
                         // Navigate to detail view
@@ -530,7 +530,7 @@ export function BudgetOverview() {
                       <td className="px-4">
                         <a
                           href={`/book/job-costs/${budget.id}`}
-                          className="text-[#0052CC] font-['Roboto_Mono',monospace] text-sm hover:underline"
+                          className="text-[#1A2732]  text-sm hover:underline"
                         >
                           {budget.name}
                         </a>
@@ -541,14 +541,14 @@ export function BudgetOverview() {
                         </Badge>
                       </td>
                       <td className="px-4 text-sm text-[#525252]">{budget.period}</td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">
+                      <td className="px-4 text-right text-sm  font-medium">
                         ${budget.budgeted.toLocaleString()}
                       </td>
-                      <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">
+                      <td className="px-4 text-right text-sm  font-medium">
                         ${budget.actual.toLocaleString()}
                       </td>
                       <td
-                        className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium"
+                        className="px-4 text-right text-sm  font-medium"
                         style={{ color: budget.variance < 0 ? '#36B37E' : '#EF4444' }}
                       >
                         {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
@@ -566,7 +566,7 @@ export function BudgetOverview() {
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">
+                          <span className="text-xs text-[#737373] ">
                             {budget.utilisation}%
                           </span>
                         </div>

@@ -19,11 +19,11 @@ export function DesignProcessBuilder() {
         </Button>
       </div>
 
-      <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-lg p-6">
+      <Card className="bg-[#FFCF4B] border-2 border-[#2C2C2C] rounded-2xl p-6">
         <div className="flex items-start gap-3">
           <Info className="w-5 h-5 text-[#2C2C2C] flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#2C2C2C] mb-2">
+            <h3 className="text-[16px] font-semibold text-[#2C2C2C] mb-2">
               Visual Workflow Designer
             </h3>
             <p className="text-sm text-[#2C2C2C] leading-relaxed">
@@ -35,10 +35,10 @@ export function DesignProcessBuilder() {
         </div>
       </Card>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-12">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl p-12">
         <div className="text-center">
           <GitBranch className="w-16 h-16 text-[#737373] mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-[#0A0A0A] mb-2">Process Builder Coming Soon</h3>
+          <h3 className="text-xl font-semibold text-[#1A2732] mb-2">Process Builder Coming Soon</h3>
           <p className="text-sm text-[#737373]">Node-based workflow and routing designer</p>
         </div>
       </Card>

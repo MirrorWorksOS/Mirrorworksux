@@ -1,13 +1,13 @@
 /**
- * Alliance Metal Design System
- * MirrorWorks UX with Material 3 Motion Principles
- * 
- * This file defines the core design tokens and animation constants
- * used consistently across all modules: Plan, Book, Ship, Make, Sell, etc.
+ * MirrorWorks Smart FactoryOS — Design System v2.0
+ *
+ * Single font: Roboto (M3 properties)
+ * Colours: 60-30-10 rule (white/grey/MW Yellow)
+ * Shape: Large radii (rounded-2xl cards, rounded-xl buttons)
  */
 
 // ============================================================================
-// COLORS - MirrorWorks Design System
+// COLORS - MirrorWorks Design System (60-30-10)
 // ============================================================================
 
 export const colors = {
@@ -23,7 +23,7 @@ export const colors = {
   yellow800: '#A67300',
   yellow900: '#805900',
 
-  // Neutrals
+  // Neutrals — standard greyscale
   nearBlack: '#0A0A0A',   // neutral-900 — Headlines, primary text, active icons
   darkGray: '#2C2C2C',    // neutral-800 — Secondary text, body copy, text on yellow buttons
   midGray: '#525252',     // neutral-600 — Table body text, descriptions
@@ -51,19 +51,11 @@ export const colors = {
 } as const;
 
 // ============================================================================
-// TYPOGRAPHY - Font Stacks
+// TYPOGRAPHY - Roboto only, M3 properties
 // ============================================================================
 
 export const fonts = {
-  // Primary fonts — Roboto (v2.0)
-  sans: "'Roboto',sans-serif",
-  sansLight: "'Roboto',sans-serif",     // weight 300
-  sansMedium: "'Roboto',sans-serif",    // weight 500
-  sansBold: "'Roboto',sans-serif",      // weight 700
-
-  // Monospace for IDs, codes, financial figures — Roboto Mono (v2.0)
-  mono: "'Roboto Mono',monospace",
-  monoFinancial: "'Roboto Mono',monospace",
+  sans: "'Roboto', sans-serif",
 } as const;
 
 // ============================================================================
@@ -71,31 +63,31 @@ export const fonts = {
 // ============================================================================
 
 export const spacing = {
-  xs: '4px',    // 0.5 unit
-  sm: '8px',    // 1 unit
-  md: '16px',   // 2 units
-  lg: '24px',   // 3 units
-  xl: '32px',   // 4 units
-  '2xl': '48px', // 6 units
-  '3xl': '64px', // 8 units
+  xs: '4px',
+  sm: '8px',
+  md: '16px',
+  lg: '24px',
+  xl: '32px',
+  '2xl': '48px',
+  '3xl': '64px',
 } as const;
 
 // ============================================================================
-// RADIUS - Consistent corner radii
+// RADIUS - Large radii pattern (per user preference)
 // ============================================================================
 
 export const radius = {
-  none: '0px',       // shape-none — Table inner rows
-  xs: '4px',         // shape-xs — Checkboxes, small chips, toggle thumbs
-  sm: '8px',         // shape-sm — Toggle tracks, compact elements
-  md: '12px',        // shape-md — Buttons, inputs, dropdowns
-  lg: '16px',        // shape-lg — Cards, modals, dialogs, table containers
-  xl: '24px',        // shape-xl — Bottom sheets, expanded containers
-  full: '9999px',    // shape-full — Badges, pills, avatars
+  none: '0px',
+  xs: '4px',       // Checkboxes, small chips
+  sm: '8px',       // Toggle tracks
+  md: '12px',      // Buttons, inputs (rounded-xl in Tailwind)
+  lg: '16px',      // Cards, modals (rounded-2xl in Tailwind)
+  xl: '24px',      // Sheets, expanded containers
+  full: '9999px',  // Badges, pills, avatars
 } as const;
 
 // ============================================================================
-// SHADOWS - Elevation system
+// SHADOWS - M3 Elevation
 // ============================================================================
 
 export const shadows = {
@@ -110,96 +102,50 @@ export const shadows = {
 // MOTION - Material 3 Duration & Easing
 // ============================================================================
 
-/**
- * Material 3 Motion Principles + Custom Parallax Effects:
- * - Fast movements: 100-200ms (simple transitions)
- * - Medium movements: 250-400ms (standard)
- * - Slow movements: 500-700ms (emphasis, parallax)
- * 
- * Easing curves:
- * - Standard: cubic-bezier(0.2, 0.0, 0, 1.0) - General purpose
- * - Decelerate: cubic-bezier(0.0, 0.0, 0, 1.0) - Enter screen
- * - Accelerate: cubic-bezier(0.3, 0.0, 1.0, 1.0) - Exit screen
- * - EmphasizedDecelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0) - Luxurious
- * - EmphasizedAccelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15) - Quick exit
- * 
- * Sidebar Parallax Effect:
- * - Sidebar panel: cubic-bezier(0.75, 0, 0.25, 1) - Fast start, smooth decelerate
- * - Content gap: cubic-bezier(0.7, -0.15, 0.25, 1.15) - Pull-back with overshoot
- */
-
 export const motion = {
-  // Durations (milliseconds)
   duration: {
     instant: 0,
-    fast: 150,       // Quick state changes (hover, active)
-    medium: 300,     // Standard transitions (opacity, group labels)
-    standard: 400,   // Sidebar, panels, major layout changes
-    slow: 500,       // Emphasis animations
-    luxurious: 700,  // Parallax effects, complex animations
+    fast: 150,
+    medium: 300,
+    standard: 400,
+    slow: 500,
+    luxurious: 700,
   },
-  
-  // Easing functions
   easing: {
-    // Standard motion (general purpose)
     standard: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
-    
-    // Enter screen (decelerate)
     decelerate: 'cubic-bezier(0.0, 0.0, 0, 1.0)',
-    
-    // Exit screen (accelerate)
     accelerate: 'cubic-bezier(0.3, 0.0, 1.0, 1.0)',
-    
-    // Emphasized motion (luxurious, parallax)
     emphasizedDecelerate: 'cubic-bezier(0.05, 0.7, 0.1, 1.0)',
     emphasizedAccelerate: 'cubic-bezier(0.3, 0.0, 0.8, 0.15)',
-    
-    // Sidebar parallax effect
-    sidebarPanel: 'cubic-bezier(0.75, 0, 0.25, 1)',      // Fast start, smooth decelerate, no overshoot
-    sidebarContent: 'cubic-bezier(0.7, -0.15, 0.25, 1.15)', // Pull-back start, slight overshoot end
-    
-    // UI interactions
-    easeOut: 'cubic-bezier(0.0, 0.0, 0.2, 1.0)',  // Smooth deceleration for hover/active
-    linear: 'linear',                              // Linear for opacity changes
-    
-    // Spring-like bounce (special effects)
+    sidebarPanel: 'cubic-bezier(0.75, 0, 0.25, 1)',
+    sidebarContent: 'cubic-bezier(0.7, -0.15, 0.25, 1.15)',
+    easeOut: 'cubic-bezier(0.0, 0.0, 0.2, 1.0)',
+    linear: 'linear',
     bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   },
-  
-  // CSS transition strings (ready to use)
   transition: {
-    // Fast interactions (hover, active states)
     hoverColor: 'color 200ms cubic-bezier(0.0, 0.0, 0.2, 1.0)',
     hoverBackground: 'background-color 200ms cubic-bezier(0.0, 0.0, 0.2, 1.0)',
     hoverBorder: 'border-color 200ms cubic-bezier(0.0, 0.0, 0.2, 1.0)',
     hoverShadow: 'box-shadow 200ms cubic-bezier(0.0, 0.0, 0.2, 1.0)',
-    
-    // Standard transitions
     opacity: 'opacity 300ms linear',
     transform: 'transform 300ms cubic-bezier(0.2, 0.0, 0, 1.0)',
-    
-    // Sidebar parallax
     sidebarPanel: 'transform 400ms cubic-bezier(0.75, 0, 0.25, 1), width 400ms cubic-bezier(0.75, 0, 0.25, 1)',
     sidebarContent: 'width 400ms cubic-bezier(0.7, -0.15, 0.25, 1.15), margin-left 400ms cubic-bezier(0.7, -0.15, 0.25, 1.15)',
     sidebarLabel: 'opacity 300ms linear, margin 300ms linear',
-    
-    // Emphasized (luxurious)
     modal: 'all 500ms cubic-bezier(0.05, 0.7, 0.1, 1.0)',
-    
-    // Combined
     all: 'all 300ms cubic-bezier(0.2, 0.0, 0, 1.0)',
   },
 } as const;
 
 // ============================================================================
-// TOUCH TARGETS - Material 3 minimum sizes
+// TOUCH TARGETS - M3 minimum sizes
 // ============================================================================
 
 export const touchTargets = {
-  // Minimum touch target sizes for accessibility
-  minimum: '48px',      // Material 3 standard
-  comfortable: '56px',  // Preferred for shop floor
-  large: '80px',        // Gloved hands (manufacturing)
+  minimum: '48px',
+  comfortable: '56px',
+  large: '80px',
 } as const;
 
 // ============================================================================
@@ -207,112 +153,91 @@ export const touchTargets = {
 // ============================================================================
 
 export const componentClasses = {
-  card: `bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] shadow-[var(--elevation-1)]`,
-  cardHover: `hover:shadow-[var(--elevation-2)] transition-shadow duration-[var(--duration-medium1)]`,
+  card: `bg-white border border-[#E5E5E5] rounded-2xl shadow-sm`,
+  cardHover: `hover:shadow-md transition-shadow duration-[var(--duration-medium1)]`,
 
   badge: {
-    base: `inline-flex items-center justify-center px-2 py-0.5 rounded-full font-medium text-xs`,
-    success: `bg-[${colors.success}] text-white`,
-    warning: `bg-[${colors.warning}] text-white`,
-    error: `bg-[${colors.error}] text-white`,
-    info: `bg-[${colors.info}] text-white`,
-    neutral: `bg-[var(--neutral-100)] text-[var(--neutral-900)]`,
+    base: `inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-medium text-xs`,
+    success: `bg-[#E3FCEF] text-[#36B37E]`,
+    warning: `bg-[#FFF9C4] text-[#A67300]`,
+    error: `bg-[#FFEBE6] text-[#DE350B]`,
+    info: `bg-[#F5F5F5] text-[#0A0A0A]`,
+    neutral: `bg-[#F5F5F5] text-[#525252]`,
   },
 
   button: {
-    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium`,
-    outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)]`,
-    ghost: `hover:bg-[var(--neutral-50)] active:bg-[var(--neutral-100)]`,
-    dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90`,
-    destructive: `bg-destructive text-white hover:bg-destructive/90`,
+    primary: `bg-[#FFCF4B] hover:bg-[#F2BF30] active:bg-[#E6A600] text-[#2C2C2C] font-medium rounded-xl`,
+    outline: `border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] rounded-xl`,
+    ghost: `hover:bg-[#F5F5F5] active:bg-[#E5E5E5] rounded-xl`,
+    dark: `bg-[#1A2732] text-white hover:bg-[#1A2732]/90 rounded-xl`,
+    destructive: `bg-[#DE350B] text-white hover:bg-[#DE350B]/90 rounded-xl`,
   },
 
   input: {
-    base: `bg-white border border-[var(--neutral-200)] rounded-[var(--shape-md)] px-3 py-2 text-[14px]`,
-    focus: `focus:border-[var(--neutral-900)] focus:ring-1 focus:ring-[var(--neutral-900)]`,
+    base: `bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-[14px]`,
+    focus: `focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A]`,
   },
 } as const;
 
 // ============================================================================
-// PRIORITY COLORS - Consistent across modules
+// PRIORITY COLORS
 // ============================================================================
 
 export const priorityColors = {
-  low: '#36B37E',
+  low: '#737373',
   medium: '#FFCF4B',
-  high: '#FACC15',
+  high: '#E6A600',
   urgent: '#DE350B',
 } as const;
 
 // ============================================================================
-// STATUS COLORS - For badges and indicators
+// STATUS COLORS
 // ============================================================================
 
 export const statusColors = {
-  // Jobs/Orders
   draft: colors.mediumGray,
-  new: colors.info,
+  new: colors.nearBlack,
   pending: colors.yellow,
   inProgress: colors.yellow,
   completed: colors.success,
   cancelled: colors.mediumGray,
-  
-  // Invoices
-  sent: colors.info,
-  viewed: colors.info,
+  sent: colors.nearBlack,
+  viewed: colors.nearBlack,
   paid: colors.success,
   overdue: colors.error,
-  partiallyPaid: colors.warning,
-  
-  // Production
-  scheduled: colors.info,
+  partiallyPaid: colors.yellow,
+  scheduled: colors.nearBlack,
   producing: colors.yellow,
   produced: colors.success,
-  onHold: colors.warning,
+  onHold: colors.yellow,
 } as const;
 
 // ============================================================================
-// ANIMATION VARIANTS - For motion/react usage
+// ANIMATION VARIANTS
 // ============================================================================
 
 export const animationVariants = {
-  // Fade in/out
   fade: {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: { duration: motion.duration.medium / 1000 },
   },
-  
-  // Slide from bottom (modals, sheets)
   slideUp: {
     initial: { y: '100%', opacity: 0 },
     animate: { y: 0, opacity: 1 },
     exit: { y: '100%', opacity: 0 },
-    transition: {
-      duration: motion.duration.slow / 1000,
-      ease: [0.05, 0.7, 0.1, 1.0], // emphasizedDecelerate
-    },
+    transition: { duration: motion.duration.slow / 1000, ease: [0.05, 0.7, 0.1, 1.0] },
   },
-  
-  // Scale (buttons, chips)
   scale: {
     initial: { scale: 0.95, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
     exit: { scale: 0.95, opacity: 0 },
     transition: { duration: motion.duration.fast / 1000 },
   },
-  
-  // Stagger children (lists)
   stagger: {
-    animate: {
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
+    animate: { transition: { staggerChildren: 0.05 } },
   },
-  
-  // List item
   listItem: {
     initial: { x: -20, opacity: 0 },
     animate: { x: 0, opacity: 1 },
@@ -321,7 +246,7 @@ export const animationVariants = {
 } as const;
 
 // ============================================================================
-// EXPORT EVERYTHING
+// EXPORT
 // ============================================================================
 
 export const designSystem = {

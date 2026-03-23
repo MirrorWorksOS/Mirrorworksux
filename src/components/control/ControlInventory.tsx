@@ -28,7 +28,7 @@ const INVENTORY = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  ok:  { label: 'OK',       bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', dot: '#36B37E' },
+  ok:  { label: 'OK',       bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#1A2732' },
   low: { label: 'Low',      bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', dot: '#FF8B00' },
   out: { label: 'Out',      bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', dot: '#EF4444' },
 };
@@ -60,7 +60,7 @@ export function ControlInventory() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Inventory</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Inventory</h1>
           <p className="text-sm text-[#737373] mt-1">
             {totals.items} SKUs
             {totals.low > 0 && <span className="text-[#FF8B00] ml-2">· {totals.low} low stock</span>}
@@ -68,7 +68,7 @@ export function ControlInventory() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Download className="w-4 h-4" /> Export
           </Button>
           <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2 h-10">
@@ -85,11 +85,11 @@ export function ControlInventory() {
             placeholder="Search by name or SKU..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm"
+            className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
           />
         </div>
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="h-10 border-[#E5E5E5] w-48 rounded-lg">
+          <SelectTrigger className="h-10 border-[var(--border)] w-48 rounded-xl">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -99,10 +99,10 @@ export function ControlInventory() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">SKU</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Name</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Category</th>
@@ -117,19 +117,19 @@ export function ControlInventory() {
             {filtered.map((item) => {
               const cfg = STATUS_CONFIG[item.status];
               return (
-                <tr key={item.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                  <td className="px-4 text-xs font-['Roboto_Mono',monospace] font-medium text-[#737373]">{item.sku}</td>
-                  <td className="px-4 text-sm text-[#0A0A0A] font-medium">{item.name}</td>
+                <tr key={item.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                  <td className="px-4 text-xs  font-medium text-[#737373]">{item.sku}</td>
+                  <td className="px-4 text-sm text-[#1A2732] font-medium">{item.name}</td>
                   <td className="px-4">
                     <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{item.category}</Badge>
                   </td>
-                  <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm font-medium"
-                    style={{ color: item.status === 'out' ? '#EF4444' : item.status === 'low' ? '#FF8B00' : '#0A0A0A' }}>
+                  <td className="px-4 text-right  text-sm font-medium"
+                    style={{ color: item.status === 'out' ? '#EF4444' : item.status === 'low' ? '#FF8B00' : '#1A2732' }}>
                     {item.onHand} {item.unit}
                   </td>
-                  <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm text-[#737373]">{item.minStock}</td>
-                  <td className="px-4 text-right font-['Roboto_Mono',monospace] text-sm">${item.costPrice.toFixed(2)}</td>
-                  <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{item.location}</td>
+                  <td className="px-4 text-right  text-sm text-[#737373]">{item.minStock}</td>
+                  <td className="px-4 text-right  text-sm">${item.costPrice.toFixed(2)}</td>
+                  <td className="px-4 text-xs  text-[#737373]">{item.location}</td>
                   <td className="px-4">
                     <div className="flex justify-center">
                       <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>

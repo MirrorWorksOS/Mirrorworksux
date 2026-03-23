@@ -89,12 +89,12 @@ function OverviewTab() {
           { label: 'Margin',      value: `${margin.toFixed(1)}%`, mono: true, highlight: margin >= 25 ? 'green' : 'yellow' },
           { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
             <p className={cn(
               'text-[22px] font-semibold',
-              kpi.mono && 'font-mono',
-              kpi.highlight === 'green' ? 'text-[#36B37E]' : kpi.highlight === 'yellow' ? 'text-[#FACC15]' : 'text-[#0A0A0A]'
+              kpi.mono && '',
+              kpi.highlight === 'green' ? 'text-[#0A0A0A]' : kpi.highlight === 'yellow' ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]'
             )}>
               {kpi.value}
             </p>
@@ -103,10 +103,10 @@ function OverviewTab() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-white border border-[#E5E5E5] rounded-2xl p-6">
+        <Card className="lg:col-span-2 bg-white border border-[var(--border)] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Description</h4>
           <p className="text-sm text-[#737373] leading-relaxed">{PRODUCT.description}</p>
-          <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[#F5F5F5]">
+          <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[var(--border)]">
             {[
               { l: 'SKU',         v: PRODUCT.sku },
               { l: 'Category',    v: PRODUCT.category },
@@ -124,15 +124,15 @@ function OverviewTab() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">Stock on hand</h4>
-            <p className="text-[32px] font-mono font-semibold text-[#0A0A0A]">8</p>
+            <p className="text-[32px]  font-semibold text-[#0A0A0A]">8</p>
             <p className="text-xs text-[#737373]">units · Min reorder: 0</p>
           </Card>
-          <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-5">
             <h4 className="text-sm font-semibold text-[#0A0A0A] mb-3">This month</h4>
-            <p className="text-[24px] font-mono font-semibold text-[#0A0A0A]">18 units</p>
-            <p className="text-xs text-[#36B37E] mt-0.5">▲ 29% vs last month</p>
+            <p className="text-[24px]  font-semibold text-[#0A0A0A]">18 units</p>
+            <p className="text-xs text-[#0A0A0A] mt-0.5">▲ 29% vs last month</p>
           </Card>
         </div>
       </div>
@@ -145,14 +145,14 @@ function ManufacturingTab() {
   return (
     <div className="space-y-6">
       {/* Routing */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Routing — {totalTime}h total cycle time</h4>
-          <Button variant="outline" size="sm" className="border-[#E5E5E5] h-8 text-xs">Edit routing</Button>
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit routing</Button>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['Step', 'Operation', 'Work Centre', 'Cycle (hrs)', 'Setup (min)'].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
               ))}
@@ -160,12 +160,12 @@ function ManufacturingTab() {
           </thead>
           <tbody>
             {ROUTING.map(r => (
-              <tr key={r.step} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-sm font-mono font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
+              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+                <td className="px-4 text-sm  font-medium text-[#737373]">{String(r.step).padStart(2, '0')}</td>
                 <td className="px-4 text-sm text-[#0A0A0A] font-medium">{r.name}</td>
                 <td className="px-4"><Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{r.workCenter}</Badge></td>
-                <td className="px-4 text-sm font-mono">{r.duration}</td>
-                <td className="px-4 text-sm font-mono text-[#737373]">{r.setup > 0 ? r.setup : '—'}</td>
+                <td className="px-4 text-sm ">{r.duration}</td>
+                <td className="px-4 text-sm  text-[#737373]">{r.setup > 0 ? r.setup : '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -173,14 +173,14 @@ function ManufacturingTab() {
       </Card>
 
       {/* BOM */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Bill of Materials · v1.2</h4>
-          <Button variant="outline" size="sm" className="border-[#E5E5E5] h-8 text-xs">Edit BOM</Button>
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit BOM</Button>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['SKU', 'Description', 'Qty', 'Unit', 'Unit cost', 'Line total'].map(h => (
                 <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Qty', 'Unit cost', 'Line total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
               ))}
@@ -188,18 +188,18 @@ function ManufacturingTab() {
           </thead>
           <tbody>
             {BOM_LINES.map(line => (
-              <tr key={line.sku} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
-                <td className="px-4 text-xs font-mono text-[#737373]">{line.sku}</td>
+              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
+                <td className="px-4 text-xs  text-[#737373]">{line.sku}</td>
                 <td className="px-4 text-sm text-[#0A0A0A]">{line.description}</td>
-                <td className="px-4 text-right text-sm font-mono">{line.qty}</td>
+                <td className="px-4 text-right text-sm ">{line.qty}</td>
                 <td className="px-4 text-sm text-[#737373]">{line.unit}</td>
-                <td className="px-4 text-right text-sm font-mono">${line.cost.toFixed(2)}</td>
-                <td className="px-4 text-right text-sm font-mono font-medium">${(line.qty * line.cost).toFixed(2)}</td>
+                <td className="px-4 text-right text-sm ">${line.cost.toFixed(2)}</td>
+                <td className="px-4 text-right text-sm  font-medium">${(line.qty * line.cost).toFixed(2)}</td>
               </tr>
             ))}
-            <tr className="bg-[#F8F7F4] border-t border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-t border-[var(--border)]">
               <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[#0A0A0A]">Total BOM cost</td>
-              <td className="px-4 py-3 text-right text-sm font-mono font-semibold text-[#0A0A0A]">
+              <td className="px-4 py-3 text-right text-sm  font-semibold text-[#0A0A0A]">
                 ${BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0).toFixed(2)}
               </td>
             </tr>
@@ -220,21 +220,21 @@ function InventoryTab() {
           { label: 'On order',  value: '0',  sub: 'units in production' },
           { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[#E5E5E5] rounded-2xl p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
             <p className="text-xs text-[#737373] mb-1 font-medium">{kpi.label}</p>
-            <p className="text-[22px] font-mono font-semibold text-[#0A0A0A]">{kpi.value}</p>
+            <p className="text-[22px]  font-semibold text-[#0A0A0A]">{kpi.value}</p>
             <p className="text-xs text-[#737373] mt-0.5">{kpi.sub}</p>
           </Card>
         ))}
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E5E5E5]">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--border)]">
           <h4 className="text-sm font-semibold text-[#0A0A0A]">Stock movements</h4>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['Date', 'Type', 'Reference', 'Qty', 'Balance'].map(h => (
                 <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium', ['Qty', 'Balance'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
               ))}
@@ -242,22 +242,22 @@ function InventoryTab() {
           </thead>
           <tbody>
             {INVENTORY_MOVEMENTS.map((m, i) => (
-              <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
                 <td className="px-4 text-sm text-[#737373]">{m.date}</td>
                 <td className="px-4">
                   <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                    m.type === 'Production' ? 'bg-[#DEEBFF] text-[#0052CC]' :
-                    m.type === 'Shipment'   ? 'bg-[#E3FCEF] text-[#36B37E]' :
+                    m.type === 'Production' ? 'bg-[#F5F5F5] text-[#0A0A0A]' :
+                    m.type === 'Shipment'   ? 'bg-[#F5F5F5] text-[#0A0A0A]' :
                     'bg-[#F5F5F5] text-[#737373]'
                   )}>
                     {m.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm font-mono text-[#737373]">{m.ref}</td>
-                <td className={cn('px-4 text-right text-sm font-mono font-semibold', m.qty > 0 ? 'text-[#36B37E]' : 'text-[#DE350B]')}>
+                <td className="px-4 text-sm  text-[#737373]">{m.ref}</td>
+                <td className={cn('px-4 text-right text-sm  font-semibold', m.qty > 0 ? 'text-[#0A0A0A]' : 'text-[#DE350B]')}>
                   {m.qty > 0 ? `+${m.qty}` : m.qty}
                 </td>
-                <td className="px-4 text-right text-sm font-mono font-medium">{m.balance}</td>
+                <td className="px-4 text-right text-sm  font-medium">{m.balance}</td>
               </tr>
             ))}
           </tbody>
@@ -271,7 +271,7 @@ function AccountingTab() {
   const margin = ((PRODUCT.sellPrice - PRODUCT.costPrice) / PRODUCT.sellPrice) * 100;
   return (
     <div className="space-y-6">
-      <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
         <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Revenue — last 6 months</h4>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
@@ -279,13 +279,13 @@ function AccountingTab() {
             <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono, monospace' }} axisLine={false} tickLine={false} />
             <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: '#737373', fontFamily: 'Roboto Mono, monospace' }} axisLine={false} tickLine={false} />
             <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-            <Area key="revenue" type="monotone" dataKey="revenue" stroke="#FFCF4B" fill="#FFFBF0" strokeWidth={2} />
+            <Area key="revenue" type="monotone" dataKey="revenue" stroke="#FFCF4B" fill="var(--accent)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">Pricing</h4>
           <div className="space-y-3">
             {[
@@ -294,9 +294,9 @@ function AccountingTab() {
               { l: 'Gross profit',         v: `$${(PRODUCT.sellPrice - PRODUCT.costPrice).toFixed(2)}`, mono: true, green: true },
               { l: 'Gross margin',         v: `${margin.toFixed(1)}%`, mono: true, green: true },
             ].map(r => (
-              <div key={r.l} className="flex justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
                 <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', r.mono && 'font-mono', r.green && 'text-[#36B37E]')}>
+                <span className={cn('text-sm font-medium', r.mono && '', r.green && 'text-[#0A0A0A]')}>
                   {r.v}
                 </span>
               </div>
@@ -304,7 +304,7 @@ function AccountingTab() {
           </div>
         </Card>
 
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <h4 className="text-sm font-semibold text-[#0A0A0A] mb-4">YTD performance</h4>
           <div className="space-y-3">
             {[
@@ -313,9 +313,9 @@ function AccountingTab() {
               { l: 'COGS',          v: '$72,980.00',  mono: true },
               { l: 'Gross profit',  v: '$40,940.00',  mono: true, green: true },
             ].map(r => (
-              <div key={r.l} className="flex justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
                 <span className="text-sm text-[#737373]">{r.l}</span>
-                <span className={cn('text-sm font-medium', (r as any).mono && 'font-mono', (r as any).green && 'text-[#36B37E]')}>
+                <span className={cn('text-sm font-medium', (r as any).mono && '', (r as any).green && 'text-[#0A0A0A]')}>
                   {r.v}
                 </span>
               </div>
@@ -329,22 +329,22 @@ function AccountingTab() {
 
 function DocumentsTab() {
   const typeColor: Record<string, string> = {
-    PDF: 'bg-[#FFEBE6] text-[#DE350B]',
-    DWG: 'bg-[#DEEBFF] text-[#0052CC]',
-    STP: 'bg-[#E3FCEF] text-[#36B37E]',
-    XLS: 'bg-[#FFF9C4] text-[#FACC15]',
+    PDF: 'bg-[#F5F5F5] text-[#DE350B]',
+    DWG: 'bg-[#F5F5F5] text-[#0A0A0A]',
+    STP: 'bg-[#F5F5F5] text-[#0A0A0A]',
+    XLS: 'bg-[#F5F5F5] text-[#0A0A0A]',
   };
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#1A2732] gap-2">
+        <Button className="bg-[#FFCF4B] hover:bg-[var(--mw-yellow-500)] text-[#0A0A0A] gap-2">
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
-      <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['Document', 'Type', 'Size', 'Updated', 'Status', ''].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
               ))}
@@ -352,7 +352,7 @@ function DocumentsTab() {
           </thead>
           <tbody>
             {DOCUMENTS.map((doc, i) => (
-              <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
+              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)]">
                 <td className="px-4">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-[#A3A3A3] shrink-0" />
@@ -360,16 +360,16 @@ function DocumentsTab() {
                   </div>
                 </td>
                 <td className="px-4">
-                  <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 font-mono', typeColor[doc.type] ?? 'bg-[#F5F5F5] text-[#737373]')}>
+                  <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 ', typeColor[doc.type] ?? 'bg-[#F5F5F5] text-[#737373]')}>
                     {doc.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm text-[#737373] font-mono">{doc.size}</td>
+                <td className="px-4 text-sm text-[#737373] ">{doc.size}</td>
                 <td className="px-4 text-sm text-[#737373]">{doc.date}</td>
                 <td className="px-4">
                   {doc.status === 'current'
-                    ? <span className="flex items-center gap-1 text-xs text-[#36B37E]"><CheckCircle className="w-3.5 h-3.5" /> Current</span>
-                    : <span className="flex items-center gap-1 text-xs text-[#FACC15]"><AlertTriangle className="w-3.5 h-3.5" /> Outdated</span>
+                    ? <span className="flex items-center gap-1 text-xs text-[#0A0A0A]"><CheckCircle className="w-3.5 h-3.5" /> Current</span>
+                    : <span className="flex items-center gap-1 text-xs text-[#0A0A0A]"><AlertTriangle className="w-3.5 h-3.5" /> Outdated</span>
                   }
                 </td>
                 <td className="px-4">
@@ -411,14 +411,14 @@ export function SellProductDetail() {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-[28px] tracking-tight text-[#0A0A0A] font-semibold">{PRODUCT.name}</h1>
-              <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2">Active</Badge>
-              <Badge className="bg-[#DEEBFF] text-[#0052CC] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
+              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2">Active</Badge>
+              <Badge className="bg-[#F5F5F5] text-[#0A0A0A] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
             </div>
-            <p className="text-sm text-[#737373] font-mono">{PRODUCT.sku} · {PRODUCT.category}</p>
+            <p className="text-sm text-[#737373] ">{PRODUCT.sku} · {PRODUCT.category}</p>
           </div>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Edit className="w-4 h-4" /> Edit
           </Button>
           <Button variant="ghost" className="h-10 px-2">
@@ -428,7 +428,7 @@ export function SellProductDetail() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#E5E5E5]">
+      <div className="flex border-b border-[var(--border)]">
         {TABS.map(t => (
           <button
             key={t}
@@ -436,7 +436,7 @@ export function SellProductDetail() {
             className={cn(
               'py-3 mr-8 text-sm border-b-2 transition-colors',
               tab === t
-                ? 'border-[#0A0A0A] text-[#0A0A0A] font-medium'
+                ? 'border-[#1A2732] text-[#0A0A0A] font-medium'
                 : 'border-transparent text-[#737373] hover:text-[#0A0A0A]'
             )}
           >

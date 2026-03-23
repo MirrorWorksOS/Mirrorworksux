@@ -166,14 +166,14 @@ const INSIGHTS: Insight[] = [
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-           <div className="bg-[#F8F7F4] p-3 rounded-[8px] border border-[#E5E4E0]">
+           <div className="bg-[#F5F5F5] p-3 rounded-[8px] border border-[#E5E4E0]">
               <div className="text-[10px] font-bold text-[#6B6B6B] uppercase mb-2">Benefits</div>
               <ul className="text-sm space-y-1 text-[#2C2C2C]">
                  <li>• Zero idle time</li>
                  <li>• Save 2h total</li>
               </ul>
            </div>
-           <div className="bg-[#F8F7F4] p-3 rounded-[8px] border border-[#E5E4E0]">
+           <div className="bg-[#F5F5F5] p-3 rounded-[8px] border border-[#E5E4E0]">
               <div className="text-[10px] font-bold text-[#6B6B6B] uppercase mb-2">Requirements</div>
               <ul className="text-sm space-y-1 text-[#2C2C2C]">
                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3 h-3 text-[#4CAF50]"/> 5052 Alum ready</li>
@@ -211,7 +211,7 @@ const INSIGHTS: Insight[] = [
           </div>
 
           <div className="space-y-3">
-             <div className="p-3 bg-[#F8F7F4] rounded-[8px] border border-[#E5E4E0]">
+             <div className="p-3 bg-[#F5F5F5] rounded-[8px] border border-[#E5E4E0]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[#2C2C2C]">David Miller (Amada Ensis) 
                      <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[#FFCF4B]/10 text-[#2C2C2C] border-transparent font-medium rounded-full">Below Target</Badge>
@@ -220,7 +220,7 @@ const INSIGHTS: Insight[] = [
                 </div>
                 <div className="text-xs text-[#6B6B6B]">MO-26-401: Slower than historical average</div>
              </div>
-             <div className="p-3 bg-[#F8F7F4] rounded-[8px] border border-[#E5E4E0]">
+             <div className="p-3 bg-[#F5F5F5] rounded-[8px] border border-[#E5E4E0]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[#2C2C2C]">Elena Rodriguez (TruBend) 
                      <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[#4CAF50]/10 text-[#2C2C2C] border-transparent font-medium rounded-full">Exceeding Target</Badge>
@@ -283,7 +283,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
          <CardContent className="p-6">
             {insight.content}
          </CardContent>
-         <CardFooter className="bg-[#F8F7F4] px-6 py-4 gap-3 flex flex-wrap border-t border-[#E5E4E0]">
+         <CardFooter className="bg-[#F5F5F5] px-6 py-4 gap-3 flex flex-wrap border-t border-[#E5E4E0]">
             {insight.actions.map((action, i) => (
                <Button 
                   key={i} 
@@ -333,7 +333,7 @@ export function IntelligenceHubTab() {
      : INSIGHTS.filter(i => i.title.toLowerCase().includes(filter.toLowerCase()) || i.type === filter.toLowerCase());
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-4 gap-6 bg-[#F8F7F4]">
+    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-4 gap-6 bg-[#F5F5F5]">
        
        {/* Header */}
        <div className="shrink-0 flex flex-col gap-6">
@@ -411,7 +411,7 @@ export function IntelligenceHubTab() {
                          </div>
                       </div>
                       <div className="text-2xl font-bold mb-2">Listening...</div>
-                      <div className="text-[#A78BFA] font-mono text-xl mb-8">{formatTime(recordingTime)}</div>
+                      <div className="text-[#A78BFA]  text-xl mb-8">{formatTime(recordingTime)}</div>
                       <div className="w-full max-w-xs h-12 flex items-center justify-center gap-1 mb-12">
                          {[...Array(12)].map((_, i) => (
                             <div 

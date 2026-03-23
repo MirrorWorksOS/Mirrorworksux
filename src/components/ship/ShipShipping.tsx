@@ -43,7 +43,7 @@ export function ShipShipping() {
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
-      <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Shipping</h1>
+      <h1 className="text-[32px] tracking-tight text-[#1A2732]">Shipping</h1>
 
       <div className="flex gap-1 bg-[#F5F5F5] rounded-lg p-1 w-fit">
         {tabs.map(t => (
@@ -52,7 +52,7 @@ export function ShipShipping() {
             onClick={() => setTab(t.id)}
             className={cn(
               'px-4 py-2 rounded-md text-sm transition-colors font-medium',
-              tab === t.id ? 'bg-[#0A0A0A] text-white' : 'text-[#737373] hover:text-[#0A0A0A]'
+              tab === t.id ? 'bg-[#1A2732] text-white' : 'text-[#737373] hover:text-[#1A2732]'
             )}
           >
             {t.label}
@@ -64,13 +64,13 @@ export function ShipShipping() {
       {tab === 'carriers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {CARRIERS.map(c => (
-            <div key={c.name} className="bg-white rounded-lg p-5 border border-[#E5E5E5] hover:shadow-md transition-shadow duration-150">
+            <div key={c.name} className="bg-white rounded-lg p-5 border border-[var(--border)] hover:shadow-md transition-shadow duration-150">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-[#0A0A0A]" strokeWidth={1.5} />
-                  <span className="text-sm text-[#0A0A0A] font-medium">{c.name}</span>
+                  <Truck className="w-5 h-5 text-[#1A2732]" strokeWidth={1.5} />
+                  <span className="text-sm text-[#1A2732] font-medium">{c.name}</span>
                 </div>
-                <div className={cn('w-2 h-2 rounded-full', c.ok ? 'bg-[#36B37E]' : 'bg-[#E5E5E5]')} />
+                <div className={cn('w-2 h-2 rounded-full', c.ok ? 'bg-[#1A2732]' : 'bg-[#E5E5E5]')} />
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 {[
@@ -79,7 +79,7 @@ export function ShipShipping() {
                   { l: 'On-time', v: `${c.onTime}%` },
                 ].map(s => (
                   <div key={s.l}>
-                    <div className="text-lg text-[#0A0A0A] font-['Roboto_Mono',monospace] font-medium">{s.v}</div>
+                    <div className="text-lg text-[#1A2732]  font-medium">{s.v}</div>
                     <span className="text-[10px] text-[#737373] tracking-wider">{s.l}</span>
                   </div>
                 ))}
@@ -92,7 +92,7 @@ export function ShipShipping() {
       {/* Rates */}
       {tab === 'rates' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-lg p-6 border border-[#E5E5E5]">
+          <div className="bg-white rounded-lg p-6 border border-[var(--border)]">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { l: 'FROM', v: '2787' }, { l: 'TO', v: '2128' },
@@ -100,7 +100,7 @@ export function ShipShipping() {
               ].map(f => (
                 <div key={f.l}>
                   <span className="text-[10px] text-[#737373] tracking-widest uppercase font-medium">{f.l}</span>
-                  <Input defaultValue={f.v} className="h-12 mt-1 bg-[#F5F5F5] border-transparent rounded-lg font-['Roboto_Mono',monospace]" />
+                  <Input defaultValue={f.v} className="h-12 mt-1 bg-[#F5F5F5] border-transparent rounded-lg " />
                 </div>
               ))}
             </div>
@@ -112,12 +112,12 @@ export function ShipShipping() {
                 key={`${r.carrier}-${r.service}`}
                 className={cn(
                   'flex items-center gap-4 bg-white rounded-lg p-5 transition-colors duration-150 cursor-pointer',
-                  r.ai ? 'border-2 border-[#FFCF4B]' : 'border border-[#E5E5E5] hover:border-[#A3A3A3]'
+                  r.ai ? 'border-2 border-[#FFCF4B]' : 'border border-[var(--border)] hover:border-[#A3A3A3]'
                 )}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[#0A0A0A] font-medium">{r.carrier}</span>
+                    <span className="text-sm text-[#1A2732] font-medium">{r.carrier}</span>
                     <span className="text-xs text-[#737373]">{r.service}</span>
                     {r.ai && (
                       <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[#FFCF4B] text-[#1A2732] font-medium flex items-center gap-1">
@@ -127,13 +127,13 @@ export function ShipShipping() {
                   </div>
                   <span className="text-xs text-[#737373]">{r.days}d transit</span>
                 </div>
-                <span className="text-xl text-[#0A0A0A] font-['Roboto_Mono',monospace] font-medium">${r.cost.toFixed(2)}</span>
+                <span className="text-xl text-[#1A2732]  font-medium">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
                     'h-10 px-5 rounded-lg text-sm transition-colors font-medium',
                     i === 0 || r.ai
                       ? 'bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732]'
-                      : 'border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5]'
+                      : 'border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5]'
                   )}
                 >
                   Select
@@ -152,10 +152,10 @@ export function ShipShipping() {
               Generate manifest
             </button>
           </div>
-          <div className="bg-white rounded-lg border border-[#E5E5E5] overflow-hidden">
+          <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   {['DATE', 'CARRIER', 'SHIPMENTS', 'WEIGHT', 'STATUS', ''].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
                   ))}
@@ -163,14 +163,14 @@ export function ShipShipping() {
               </thead>
               <tbody>
                 {MANIFESTS.map((m, i) => (
-                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors">
-                    <td className="px-4 py-3 text-sm text-[#0A0A0A]">{m.date}</td>
+                  <tr key={i} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] transition-colors">
+                    <td className="px-4 py-3 text-sm text-[#1A2732]">{m.date}</td>
                     <td className="px-4 py-3 text-sm text-[#737373]">{m.carrier}</td>
-                    <td className="px-4 py-3 text-sm font-['Roboto_Mono',monospace] font-medium">{m.count}</td>
-                    <td className="px-4 py-3 text-sm font-['Roboto_Mono',monospace]">{m.weight}</td>
+                    <td className="px-4 py-3 text-sm  font-medium">{m.count}</td>
+                    <td className="px-4 py-3 text-sm ">{m.weight}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[#FFCF4B]' : 'bg-[#36B37E]')} />
+                        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[#FFCF4B]' : 'bg-[#1A2732]')} />
                         <span className="text-xs text-[#737373]">{m.open ? 'Open' : 'Closed'}</span>
                       </div>
                     </td>

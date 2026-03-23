@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { ChevronDown, Plus, Shield, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -8,24 +8,14 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/components/ui/utils';
-import { mockGroups, mockUsers, moduleLabels } from './mock-data';
-import type { Group, GroupPermissionSet, ModuleKey } from './types';
+import { mockGroups, mockUsers, moduleLabels, modulePermissionLabels } from './mock-data';
+import type { Group, GroupPermissionSet, ModuleKey, PermissionLabelEntry } from './types';
 
 interface GroupsTabProps {
   onOpenGroupDetail: (group: Group) => void;
 }
 
 const moduleOrder: ModuleKey[] = ['sell', 'plan', 'make', 'ship', 'book', 'buy', 'control'];
-
-const permissionLabels: Array<{ key: keyof GroupPermissionSet; label: string; section: 'actions' | 'admin' }> = [
-  { key: 'quotes.create', label: 'Create quotes', section: 'actions' },
-  { key: 'orders.create', label: 'Create orders', section: 'actions' },
-  { key: 'jobs.assign', label: 'Assign jobs', section: 'actions' },
-  { key: 'quality.approve', label: 'Approve quality', section: 'actions' },
-  { key: 'maintenance.schedule', label: 'Schedule maintenance', section: 'actions' },
-  { key: 'settings.access', label: 'Access settings', section: 'admin' },
-  { key: 'reports.access', label: 'Access reports', section: 'admin' },
-];
 
 const initials = (name: string) =>
   name
@@ -47,6 +37,9 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
     [],
   );
 
+  const currentPermissionLabels = modulePermissionLabels[activeModule];
+  const totalPermissions = currentPermissionLabels.length + 1; // +1 for documents.scope
+
   return (
     <div className="space-y-6">
       <Tabs value={activeModule} onValueChange={value => setActiveModule(value as ModuleKey)}>
@@ -55,7 +48,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
             <TabsTrigger
               key={moduleKey}
               value={moduleKey}
-              className="relative h-10 rounded-xl data-[state=active]:bg-[#FFFBF0] data-[state=active]:text-[#0A0A0A]"
+              className="relative h-10 rounded-xl data-[state=active]:bg-[var(--accent)] data-[state=active]:text-[#1A2732]"
             >
               {moduleLabels[moduleKey]} ({grouped[moduleKey].length})
               {activeModule === moduleKey ? (
@@ -66,16 +59,36 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
         </TabsList>
       </Tabs>
 
+      {/* Permission hierarchy info for Control module */}
+      {activeModule === 'control' && (
+        <div className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[#F5F5F5] p-4">
+          <Shield className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#FFCF4B]" />
+          <div className="text-sm text-[#525252]">
+            <p className="mb-1 font-medium text-[#1A2732]">Control module permissions</p>
+            <p>
+              Control groups manage master data (products, BOMs, locations, machines) and people administration.
+              <strong> People Admin</strong> can onboard users but cannot create or delete groups.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         {grouped[activeModule].map(group => {
           const members = mockUsers.filter(user => group.members.includes(user.id));
-          const totalPermissions = 8;
-          const enabledCount = Object.values(group.permissions).filter(value => value === true || value === 'all').length;
+          const enabledCount = currentPermissionLabels.filter(entry => {
+            const val = group.permissions[entry.key];
+            return val === true || val === 'all';
+          }).length;
+          const scopeVal = group.permissions['documents.scope'];
+          if (scopeVal === 'all') {
+            // Count documents.scope=all as an enabled permission
+          }
           const progress = Math.round((enabledCount / totalPermissions) * 100);
           const open = expandedId === group.id;
 
           return (
-            <div key={group.id} className="overflow-hidden rounded-2xl border border-[#E5E5E5] bg-white shadow-sm">
+            <div key={group.id} className="overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm">
               <button
                 type="button"
                 className="flex w-full items-center justify-between gap-4 p-5 text-left"
@@ -86,9 +99,9 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-semibold text-[#0A0A0A]">{group.name}</h4>
+                    <h4 className="text-base font-semibold text-[#1A2732]">{group.name}</h4>
                     {group.isDefault ? (
-                      <Badge className="rounded-full border border-[#E5E5E5] bg-white px-2 py-0.5 text-xs text-[#737373]">
+                      <Badge className="rounded-full border border-[var(--border)] bg-white px-2 py-0.5 text-xs text-[#737373]">
                         Default
                       </Badge>
                     ) : null}
@@ -110,9 +123,9 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                     <div
                       className="h-1.5 overflow-hidden rounded-full"
                       style={{
-                        backgroundColor: '#E5E5E5',
+                        backgroundColor: 'var(--border)',
                         backgroundImage:
-                          'repeating-linear-gradient(135deg, #E5E5E5, #E5E5E5 3px, #F5F5F5 3px, #F5F5F5 6px)',
+                          'repeating-linear-gradient(135deg, var(--border), var(--border) 3px, #F5F5F5 3px, #F5F5F5 6px)',
                       }}
                     >
                       <div className="h-full rounded-full bg-[#FFCF4B]" style={{ width: `${progress}%` }} />
@@ -133,6 +146,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
               >
                 <div className="grid gap-6 border-t border-[#F5F5F5] p-5 md:grid-cols-2">
                   <div className="space-y-4">
+                    {/* Document scope toggle */}
                     <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">Scope</p>
                     <div className="rounded-lg bg-[#F5F5F5] p-1">
                       <ToggleGroup
@@ -148,13 +162,38 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                         </ToggleGroupItem>
                       </ToggleGroup>
                     </div>
-                    <PermissionSection group={group} section="actions" />
-                    <PermissionSection group={group} section="admin" />
+
+                    {/* Additional scope permissions (module-specific) */}
+                    {currentPermissionLabels
+                      .filter(entry => entry.type === 'scope')
+                      .map(entry => (
+                        <div key={entry.key}>
+                          <p className="mb-2 text-xs font-medium text-[#737373]">{entry.label}</p>
+                          <div className="rounded-lg bg-[#F5F5F5] p-1">
+                            <ToggleGroup
+                              type="single"
+                              value={(group.permissions[entry.key] as string) ?? 'own'}
+                              className="w-full"
+                            >
+                              <ToggleGroupItem value="own" className="h-10 flex-1 rounded-lg text-xs">
+                                Own
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="all" className="h-10 flex-1 rounded-lg text-xs">
+                                All
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          </div>
+                        </div>
+                      ))}
+
+                    {/* Boolean permission sections */}
+                    <PermissionSection group={group} section="actions" labels={currentPermissionLabels} />
+                    <PermissionSection group={group} section="admin" labels={currentPermissionLabels} />
                   </div>
                   <div className="space-y-3">
                     <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">Members</p>
                     {members.map(member => (
-                      <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#F8F7F4] p-2.5">
+                      <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#F5F5F5] p-2.5">
                         <div className="flex items-center gap-2">
                           <Avatar className="h-8 w-8 ring-1 ring-white">
                             <AvatarFallback className="bg-[#F5F5F5] text-xs text-[#2C2C2C]">
@@ -170,7 +209,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                     ))}
                     <Button
                       variant="outline"
-                      className="h-10 w-full rounded-xl border-[#E5E5E5] bg-white text-[#2C2C2C] hover:bg-[#F5F5F5]"
+                      className="h-10 w-full rounded-xl border-[var(--border)] bg-white text-[#2C2C2C] hover:bg-[#F5F5F5]"
                     >
                       <Plus className="h-4 w-4" />
                       Add member
@@ -189,18 +228,22 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
 function PermissionSection({
   group,
   section,
+  labels,
 }: {
   group: Group;
   section: 'actions' | 'admin';
+  labels: PermissionLabelEntry[];
 }) {
-  const sectionRows = permissionLabels.filter(item => item.section === section);
+  const sectionRows = labels.filter(item => item.section === section && item.type === 'boolean');
+  if (sectionRows.length === 0) return null;
+
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium tracking-wider text-[#737373] uppercase">{section}</p>
       {sectionRows.map(row => (
         <div key={row.key} className="flex items-center justify-between rounded-lg bg-white p-2">
           <span className="text-sm text-[#2C2C2C]">{row.label}</span>
-          <Switch checked={group.permissions[row.key]} className="h-7 w-12" />
+          <Switch checked={group.permissions[row.key] === true} className="h-7 w-12" />
         </div>
       ))}
     </div>

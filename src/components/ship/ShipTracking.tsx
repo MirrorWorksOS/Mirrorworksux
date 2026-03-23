@@ -15,7 +15,7 @@ const statusConfig: Record<Status, { label: string; dot: string; badge: string; 
   shipped:    { label: 'Shipped',     dot: '#A3A3A3', badge: 'bg-[#F5F5F5]',  text: 'text-[#737373]' },
   transit:    { label: 'In Transit',  dot: '#0A7AFF', badge: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
   delivering: { label: 'Delivering',  dot: '#FF8B00', badge: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
-  delivered:  { label: 'Delivered',   dot: '#36B37E', badge: 'bg-[#E3FCEF]',  text: 'text-[#36B37E]' },
+  delivered:  { label: 'Delivered',   dot: '#1A2732', badge: 'bg-[var(--warm-200)]',  text: 'text-[#1A2732]' },
   exception:  { label: 'Exception',   dot: '#EF4444', badge: 'bg-[#FEE2E2]',  text: 'text-[#EF4444]' },
 };
 
@@ -52,14 +52,14 @@ export function ShipTracking() {
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Tracking</h1>
+        <h1 className="text-[32px] tracking-tight text-[#1A2732]">Tracking</h1>
         <button
           onClick={() => setExceptionsOnly(!exceptionsOnly)}
           className={cn(
             'h-10 px-4 rounded-lg text-sm flex items-center gap-2 transition-colors font-medium',
             exceptionsOnly
               ? 'bg-[#FEE2E2] text-[#EF4444]'
-              : 'border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5]'
+              : 'border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5]'
           )}
         >
           <AlertTriangle className="w-4 h-4" /> Exceptions
@@ -71,10 +71,10 @@ export function ShipTracking() {
         <Input placeholder="Search tracking..." className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm" />
       </div>
 
-      <div className="bg-white rounded-lg border border-[#E5E5E5] overflow-hidden">
+      <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['TRACKING', 'CUSTOMER', 'CARRIER', 'STATUS', 'ETA', 'UPDATED'].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
               ))}
@@ -86,11 +86,11 @@ export function ShipTracking() {
               return (
                 <tr
                   key={s.tracking}
-                  className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors"
+                  className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
                   onClick={() => setSelected(s)}
                 >
-                  <td className="px-4 py-3 text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{s.tracking}</td>
-                  <td className="px-4 py-3 text-sm text-[#0A0A0A]">{s.customer}</td>
+                  <td className="px-4 py-3 text-sm  font-medium text-[#1A2732]">{s.tracking}</td>
+                  <td className="px-4 py-3 text-sm text-[#1A2732]">{s.customer}</td>
                   <td className="px-4 py-3 text-sm text-[#737373]">{s.carrier}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -111,14 +111,14 @@ export function ShipTracking() {
 
       {/* Detail Sheet */}
       <Sheet open={!!selected} onOpenChange={() => setSelected(null)}>
-        <SheetContent className="w-[420px] sm:max-w-[420px] p-0 overflow-y-auto border-l border-[#E5E5E5]" aria-describedby={undefined}>
+        <SheetContent className="w-[420px] sm:max-w-[420px] p-0 overflow-y-auto border-l border-[var(--border)]" aria-describedby={undefined}>
           <SheetTitle className="sr-only">Tracking details</SheetTitle>
           {selected && (() => {
             const cfg = statusConfig[selected.status];
             return (
               <>
-                <SheetHeader className="p-6 pb-4 border-b border-[#E5E5E5]">
-                  <p className="text-xl font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{selected.tracking}</p>
+                <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+                  <p className="text-xl  font-medium text-[#1A2732]">{selected.tracking}</p>
                   <SheetDescription className="text-[#737373]">{selected.customer} · {selected.carrier}</SheetDescription>
                 </SheetHeader>
                 <div className="px-6 py-6 space-y-6">
@@ -131,11 +131,11 @@ export function ShipTracking() {
                         <div key={i} className="flex items-start gap-4 relative py-3">
                           <div className={cn(
                             'w-4 h-4 rounded-full shrink-0 z-10 border-2',
-                            evt.done ? 'bg-[#0A0A0A] border-[#0A0A0A]' : 'bg-white border-[#E5E5E5]',
+                            evt.done ? 'bg-[#1A2732] border-[#1A2732]' : 'bg-white border-[var(--border)]',
                             evt.current && 'ring-4 ring-[#FFCF4B]/30'
                           )} />
                           <div>
-                            <p className={cn('text-sm', evt.done ? 'text-[#0A0A0A]' : 'text-[#A3A3A3]')} style={{ fontWeight: evt.current ? 600 : 400 }}>
+                            <p className={cn('text-sm', evt.done ? 'text-[#1A2732]' : 'text-[#A3A3A3]')} style={{ fontWeight: evt.current ? 600 : 400 }}>
                               {evt.step}
                             </p>
                             {evt.time && <span className="text-xs text-[#737373]">{evt.time}</span>}
@@ -146,7 +146,7 @@ export function ShipTracking() {
                   </div>
 
                   {/* Details */}
-                  <div className="bg-[#FAFAFA] rounded-lg p-4 space-y-2">
+                  <div className="bg-[#F5F5F5] rounded-lg p-4 space-y-2">
                     {[
                       { l: 'Weight',  v: '12.4 kg',                          mono: true },
                       { l: 'Dims',    v: '45×35×25 cm',                      mono: true },
@@ -154,7 +154,7 @@ export function ShipTracking() {
                     ].map(d => (
                       <div key={d.l} className="flex justify-between text-sm">
                         <span className="text-[#737373]">{d.l}</span>
-                        <span className={cn('text-[#0A0A0A] font-medium', d.mono && 'font-[\'Roboto_Mono\',monospace]')}>{d.v}</span>
+                        <span className={cn('text-[#1A2732] font-medium', d.mono && 'font-[\'Roboto_Mono\',monospace]')}>{d.v}</span>
                       </div>
                     ))}
                   </div>
@@ -163,7 +163,7 @@ export function ShipTracking() {
                     <button className="w-full h-11 rounded-lg text-sm bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] transition-colors font-medium flex items-center justify-center gap-2">
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
-                    <button className="w-full h-11 rounded-lg text-sm border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F5F5F5] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-11 rounded-lg text-sm border border-[var(--border)] text-[#1A2732] hover:bg-[#F5F5F5] transition-colors font-medium flex items-center justify-center gap-2">
                       <ExternalLink className="w-4 h-4" /> Carrier portal
                     </button>
                   </div>

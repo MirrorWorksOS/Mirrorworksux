@@ -1,139 +1,308 @@
 /**
- * Buy Settings - Left nav with panels
- * Panels: General, Approval Workflows, Suppliers, Categories, Units, Integrations
+ * Buy Settings — Implements ARCH 00 §4.8 group-based permissions model
+ * Panels: General, Suppliers, Reports, Access & Permissions
+ *
+ * Note: PO approval is separated from PO creation by default (segregation of duties).
  */
-
 import React, { useState } from 'react';
-import { Settings, GitBranch, Users, Tag, Package, Plug } from 'lucide-react';
+import { Settings, Users, BarChart3, Plus, Trash2 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
+import { Switch } from '../ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { designSystem } from '../../lib/design-system';
+import {
+  ModuleSettingsLayout,
+  SectionLabel,
+  SaveRow,
+  type PermissionKey,
+  type PermissionGroup,
+  type SettingsPanel,
+} from '../shared/ModuleSettingsLayout';
 
-const { animationVariants } = designSystem;
-
-type SettingsPanel = 'general' | 'approvals' | 'suppliers' | 'categories' | 'units' | 'integrations';
-
-const panels: { key: SettingsPanel; label: string; icon: any }[] = [
-  { key: 'general', label: 'General', icon: Settings },
-  { key: 'approvals', label: 'Approval Workflows', icon: GitBranch },
-  { key: 'suppliers', label: 'Supplier Defaults', icon: Users },
-  { key: 'categories', label: 'Categories', icon: Tag },
-  { key: 'units', label: 'Units of Measure', icon: Package },
-  { key: 'integrations', label: 'Integrations', icon: Plug },
+// ── Permission keys for Buy module (from ARCH 00 §4.8) ──
+const buyPermissionKeys: PermissionKey[] = [
+  { key: 'documents.scope', label: 'Document visibility', description: 'Own records only, or all org records', type: 'scope' },
+  { key: 'requisitions.scope', label: 'Requisition visibility', description: 'See own requisitions or all requisitions', type: 'scope' },
+  { key: 'po.create', label: 'Create purchase orders', description: 'Create and submit purchase orders', type: 'boolean' },
+  { key: 'po.approve', label: 'Approve purchase orders', description: 'Approve POs (separated from creation for segregation of duties)', type: 'boolean' },
+  { key: 'vendors.manage', label: 'Manage suppliers', description: 'Create, edit, and deactivate supplier records', type: 'boolean' },
+  { key: 'goods_receipts.access', label: 'Goods receipts', description: 'Access goods receipt and delivery tracking', type: 'boolean' },
+  { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean' },
+  { key: 'reports.access', label: 'Reports access', description: 'View procurement analytics and reports', type: 'boolean' },
 ];
 
-export function BuySettings() {
-  const [activePanel, setActivePanel] = useState<SettingsPanel>('general');
+// ── Default groups (from ARCH 00 §4.8) ──
+const buyDefaultGroups: PermissionGroup[] = [
+  {
+    name: 'Purchasing',
+    description: 'Buyers, procurement officers',
+    isDefault: true,
+    members: [
+      { name: 'Mike Tremblay', email: 'mike.t@alliancemetal.com.au', initials: 'MT' },
+    ],
+    permissions: {
+      'documents.scope': 'all', 'requisitions.scope': 'all', 'po.create': 'true',
+      'po.approve': 'false', 'vendors.manage': 'true', 'goods_receipts.access': 'true',
+      'settings.access': 'false', 'reports.access': 'false',
+    },
+  },
+  {
+    name: 'Receiving',
+    description: 'Warehouse and receiving staff',
+    isDefault: true,
+    members: [
+      { name: 'Jake Wilson', email: 'jake@alliancemetal.com.au', initials: 'JW' },
+    ],
+    permissions: {
+      'documents.scope': 'own', 'requisitions.scope': 'own', 'po.create': 'false',
+      'po.approve': 'false', 'vendors.manage': 'false', 'goods_receipts.access': 'true',
+      'settings.access': 'false', 'reports.access': 'false',
+    },
+  },
+  {
+    name: 'Accounts',
+    description: 'AP staff for procurement billing',
+    isDefault: true,
+    members: [
+      { name: 'Rachel Kim', email: 'rachel@alliancemetal.com.au', initials: 'RK' },
+    ],
+    permissions: {
+      'documents.scope': 'all', 'requisitions.scope': 'all', 'po.create': 'false',
+      'po.approve': 'true', 'vendors.manage': 'false', 'goods_receipts.access': 'false',
+      'settings.access': 'false', 'reports.access': 'true',
+    },
+  },
+];
 
+// ── General Panel ──
+function GeneralPanel() {
   return (
-    <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6">
-      <div className="max-w-[1200px] mx-auto">
-        <h1 className="text-[32px] tracking-tight text-[#1A2732] mb-6">Buy Settings</h1>
-
-        <div className="flex gap-6">
-          {/* Left Navigation */}
-          <Card className="w-64 flex-shrink-0 bg-white border border-[#E5E5E5] rounded-lg p-4 h-fit">
-            <nav className="space-y-1">
-              {panels.map(panel => {
-                const Icon = panel.icon;
-                return (
-                  <button key={panel.key} onClick={() => setActivePanel(panel.key)}
-                    className={cn("w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                      activePanel === panel.key ? "bg-[#FFFBF0] text-[#0A0A0A] font-medium" : "text-[#737373] hover:bg-[#F5F5F5]")}>
-                    <Icon className="w-4 h-4" />
-                    {panel.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </Card>
-
-          {/* Right Panel Content */}
-          <div className="flex-1">
-            {activePanel === 'general' && (
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-[#0A0A0A] mb-4">General Settings</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Default Currency</label>
-                    <Input placeholder="AUD" className="border-[#E5E5E5]" defaultValue="AUD" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Default Lead Time (days)</label>
-                    <Input placeholder="14" type="number" className="border-[#E5E5E5]" defaultValue="14" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#0A0A0A] mb-2">Auto-create PRs from MRP</label>
-                    <div className="flex items-center gap-2">
-                      <input type="checkbox" defaultChecked className="rounded border-[#E5E5E5]" />
-                      <span className="text-sm text-[#525252]">Automatically generate purchase requisitions</span>
-                    </div>
-                  </div>
-                  <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">Save Changes</Button>
-                </div>
-              </Card>
-            )}
-
-            {activePanel === 'approvals' && (
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-[#0A0A0A] mb-4">Approval Workflows</h2>
-                <div className="space-y-4">
-                  <div className="p-4 border border-[#E5E5E5] rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-[#0A0A0A]">Requisitions</h3>
-                      <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0">Active</Badge>
-                    </div>
-                    <p className="text-sm text-[#737373] mb-3">Require approval for all purchase requisitions</p>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[#525252]">Under $1,000</span>
-                        <span className="text-[#0A0A0A] font-medium">Supervisor</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[#525252]">$1,000 - $10,000</span>
-                        <span className="text-[#0A0A0A] font-medium">Manager</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[#525252]">Over $10,000</span>
-                        <span className="text-[#0A0A0A] font-medium">Director</span>
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="border-[#E5E5E5]">Edit Workflow</Button>
-                </div>
-              </Card>
-            )}
-
-            {activePanel === 'categories' && (
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-[#0A0A0A]">Product Categories</h2>
-                  <Button size="sm" className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">Add Category</Button>
-                </div>
-                <div className="space-y-2">
-                  {['Raw Materials', 'Consumables', 'Equipment', 'Components', 'Services'].map(cat => (
-                    <div key={cat} className="flex items-center justify-between p-3 border border-[#E5E5E5] rounded-lg">
-                      <span className="text-sm text-[#0A0A0A]">{cat}</span>
-                      <Button variant="ghost" size="sm" className="text-[#737373] hover:text-[#0A0A0A]">Edit</Button>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            {!['general', 'approvals', 'categories'].includes(activePanel) && (
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-[#0A0A0A] mb-4">{panels.find(p => p.key === activePanel)?.label}</h2>
-                <p className="text-sm text-[#737373]">Settings panel content for {activePanel}</p>
-              </Card>
-            )}
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>PO numbering</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">PO prefix</Label>
+            <div className="flex gap-3 items-center">
+              <Input defaultValue="PO-" className="h-12 border-[var(--border)] rounded-xl w-32" />
+              <span className="text-xs text-[#737373] ">Preview: PO-2026-0089</span>
+            </div>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Next number</Label>
+            <Input defaultValue="90" type="number" className="h-12 border-[var(--border)] rounded-xl w-32" />
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Requisition prefix</Label>
+            <div className="flex gap-3 items-center">
+              <Input defaultValue="REQ-" className="h-12 border-[var(--border)] rounded-xl w-32" />
+              <span className="text-xs text-[#737373] ">Preview: REQ-2026-0201</span>
+            </div>
           </div>
         </div>
       </div>
-    </motion.div>
+
+      <div>
+        <SectionLabel>Approval thresholds</SectionLabel>
+        <p className="text-sm text-[#737373] mb-4">
+          PO approval is separated from PO creation by default to enforce segregation of duties.
+        </p>
+        <div className="space-y-3">
+          {[
+            { label: 'Under $1,000', approver: 'Supervisor' },
+            { label: '$1,000 – $10,000', approver: 'Manager' },
+            { label: 'Over $10,000', approver: 'Director' },
+          ].map(t => (
+            <div key={t.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+              <span className="text-sm text-[#1A2732]">{t.label}</span>
+              <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
+            </div>
+          ))}
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+            <Plus className="w-4 h-4" /> Add threshold
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Procurement preferences</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'Auto-create POs from MRP requisitions', checked: true },
+            { label: 'Require three quotes for purchases over $5,000', checked: true },
+            { label: 'Notify buyer when goods are received', checked: true },
+            { label: 'Allow partial deliveries', checked: true },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Suppliers Panel ──
+function SuppliersPanel() {
+  const categories = ['Raw Materials', 'Consumables', 'Equipment', 'Components', 'Services'];
+
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Vendor defaults</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
+            <Select defaultValue="net30">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cod">COD</SelectItem>
+                <SelectItem value="net14">Net 14</SelectItem>
+                <SelectItem value="net30">Net 30</SelectItem>
+                <SelectItem value="net60">Net 60</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default lead time</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="14" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <span className="text-sm text-[#737373]">days</span>
+            </div>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default currency</Label>
+            <Select defaultValue="aud">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="aud">AUD</SelectItem>
+                <SelectItem value="usd">USD</SelectItem>
+                <SelectItem value="cny">CNY</SelectItem>
+                <SelectItem value="eur">EUR</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Product categories</SectionLabel>
+        <div className="space-y-2">
+          {categories.map(c => (
+            <div key={c} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3 hover:bg-[#F5F5F5] transition-colors">
+              <span className="text-sm text-[#1A2732] font-medium">{c}</span>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="text-xs text-[#737373] rounded-lg">Edit</Button>
+                <button className="text-[#A3A3A3] hover:text-[#DE350B] transition-colors">
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[#737373] hover:border-[#A3A3A3] transition-colors">
+            <Plus className="w-4 h-4" /> Add category
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Supplier rating</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'Enable supplier performance scoring', checked: true },
+            { label: 'Track on-time delivery rate', checked: true },
+            { label: 'Track quality rejection rate', checked: true },
+            { label: 'Auto-flag suppliers below 70% score', checked: false },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Reports Panel ──
+function ReportsPanel() {
+  const reports = [
+    { label: 'Spend by supplier', enabled: true },
+    { label: 'Spend by category', enabled: true },
+    { label: 'PO cycle time', enabled: true },
+    { label: 'Supplier on-time delivery', enabled: true },
+    { label: 'Open requisitions ageing', enabled: false },
+    { label: 'Price variance analysis', enabled: false },
+  ];
+
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Available reports</SectionLabel>
+        <p className="text-sm text-[#737373] mb-4">Choose which reports appear in the Buy reports gallery.</p>
+        <div className="space-y-2">
+          {reports.map(r => (
+            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-2xl p-3">
+              <span className="text-sm text-[#1A2732]">{r.label}</span>
+              <Switch defaultChecked={r.enabled} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Reporting period</SectionLabel>
+        <div>
+          <Label className="text-sm mb-2 block font-medium">Default date range</Label>
+          <Select defaultValue="quarter">
+            <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">This week</SelectItem>
+              <SelectItem value="month">This month</SelectItem>
+              <SelectItem value="quarter">This quarter</SelectItem>
+              <SelectItem value="year">This financial year</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Export</SectionLabel>
+        <div className="flex gap-3">
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export POs CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export suppliers CSV</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Root ──
+const settingsPanels: SettingsPanel[] = [
+  { key: 'general', label: 'General', icon: Settings, component: GeneralPanel },
+  { key: 'suppliers', label: 'Suppliers', icon: Users, component: SuppliersPanel },
+  { key: 'reports', label: 'Reports', icon: BarChart3, component: ReportsPanel },
+];
+
+export function BuySettings() {
+  return (
+    <ModuleSettingsLayout
+      title="Buy Settings"
+      moduleName="Buy"
+      panels={settingsPanels}
+      permissionKeys={buyPermissionKeys}
+      defaultGroups={buyDefaultGroups}
+    />
   );
 }

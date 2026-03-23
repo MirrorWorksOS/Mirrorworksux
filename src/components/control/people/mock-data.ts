@@ -1,4 +1,4 @@
-import type { ActivityEvent, Group, GroupPermissionSet, ModuleKey, User } from './types';
+import type { ActivityEvent, Group, GroupPermissionSet, ModuleKey, PermissionLabelEntry, User } from './types';
 
 export const moduleLabels: Record<ModuleKey, string> = {
   sell: 'Sell',
@@ -43,6 +43,7 @@ export const mockUsers: User[] = [
     modules: [
       { module: 'make', groups: [] },
       { module: 'plan', groups: ['Scheduling'] },
+      { module: 'control', groups: ['Master Data'] },
     ],
     lastActive: '15 min ago',
   },
@@ -62,7 +63,10 @@ export const mockUsers: User[] = [
     role: 'lead',
     leadModule: 'sell',
     status: 'active',
-    modules: [{ module: 'sell', groups: [] }],
+    modules: [
+      { module: 'sell', groups: [] },
+      { module: 'control', groups: ['Master Data', 'People Admin'] },
+    ],
     lastActive: '30 min ago',
   },
   {
@@ -126,34 +130,125 @@ const permissions = (overrides: Partial<GroupPermissionSet>): GroupPermissionSet
 });
 
 export const mockGroups: Group[] = [
+  // ── Sell ──
   { id: 'g-sell-sales', module: 'sell', name: 'Sales', description: 'Quotes and order pipeline', isDefault: true, members: ['4', '8', '2'], permissions: permissions({ 'documents.scope': 'all', 'quotes.create': true, 'orders.create': true, 'reports.access': true }) },
   { id: 'g-sell-estimating', module: 'sell', name: 'Estimating', description: 'Cost estimation and pricing', isDefault: true, members: ['1', '3'], permissions: permissions({ 'quotes.create': true, 'reports.access': true }) },
   { id: 'g-sell-cs', module: 'sell', name: 'Customer Service', description: 'Order updates and customer contact', isDefault: true, members: ['6'], permissions: permissions({ 'documents.scope': 'all', 'orders.create': true }) },
 
+  // ── Plan ──
   { id: 'g-plan-scheduling', module: 'plan', name: 'Scheduling', description: 'Capacity and sequencing', isDefault: true, members: ['2', '3'], permissions: permissions({ 'documents.scope': 'all', 'jobs.assign': true, 'reports.access': true }) },
   { id: 'g-plan-engineering', module: 'plan', name: 'Engineering', description: 'Routing and process planning', isDefault: true, members: ['1', '7'], permissions: permissions({ 'documents.scope': 'all', 'jobs.assign': true }) },
   { id: 'g-plan-costing', module: 'plan', name: 'Costing', description: 'Cost rollups and margin checks', isDefault: true, members: ['3'], permissions: permissions({ 'reports.access': true }) },
 
+  // ── Make ──
   { id: 'g-make-production', module: 'make', name: 'Production', description: 'Daily production execution', isDefault: true, members: ['1', '2', '6', '7'], permissions: permissions({ 'documents.scope': 'all', 'jobs.assign': true, 'orders.create': true }) },
   { id: 'g-make-quality', module: 'make', name: 'Quality', description: 'Inspection and non-conformance', isDefault: true, members: ['1', '3'], permissions: permissions({ 'quality.approve': true, 'reports.access': true }) },
   { id: 'g-make-maintenance', module: 'make', name: 'Maintenance', description: 'Machine upkeep and service', isDefault: true, members: ['7'], permissions: permissions({ 'maintenance.schedule': true }) },
   { id: 'g-make-office', module: 'make', name: 'Office', description: 'Admin support for make workflows', isDefault: true, members: ['5', '2'], permissions: permissions({ 'reports.access': true, 'settings.access': true }) },
 
+  // ── Ship ──
   { id: 'g-ship-warehouse', module: 'ship', name: 'Warehouse', description: 'Pick, pack, and stock flow', isDefault: true, members: ['6', '5'], permissions: permissions({ 'documents.scope': 'all', 'orders.create': true }) },
   { id: 'g-ship-shipping', module: 'ship', name: 'Shipping', description: 'Carrier booking and dispatch', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'orders.create': true, 'reports.access': true }) },
   { id: 'g-ship-cs', module: 'ship', name: 'Customer Service', description: 'Delivery updates and support', isDefault: true, members: ['1'], permissions: permissions({ 'documents.scope': 'all' }) },
 
-  { id: 'g-book-ar', module: 'book', name: 'Accounts Receivable', description: 'Invoices and receipts', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'reports.access': true }) },
-  { id: 'g-book-ap', module: 'book', name: 'Accounts Payable', description: 'Bills and payments', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'reports.access': true }) },
+  // ── Book ──
+  { id: 'g-book-ar', module: 'book', name: 'Accounts Receivable', description: 'Invoices and receipts', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'invoices.create': true, 'reports.access': true }) },
+  { id: 'g-book-ap', module: 'book', name: 'Accounts Payable', description: 'Bills and payments', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'po.approve': true, 'reports.access': true }) },
   { id: 'g-book-expenses', module: 'book', name: 'Expenses', description: 'Expense approvals and coding', isDefault: true, members: ['1', '3', '5'], permissions: permissions({ 'reports.access': true }) },
 
-  { id: 'g-buy-purchasing', module: 'buy', name: 'Purchasing', description: 'Supplier ordering and terms', isDefault: true, members: ['5', '2'], permissions: permissions({ 'documents.scope': 'all', 'orders.create': true, 'reports.access': true }) },
-  { id: 'g-buy-receiving', module: 'buy', name: 'Receiving', description: 'Goods receipt and checks', isDefault: true, members: ['6'], permissions: permissions({ 'documents.scope': 'all' }) },
-  { id: 'g-buy-accounts', module: 'buy', name: 'Accounts', description: 'Vendor bills and reconciliation', isDefault: true, members: ['5'], permissions: permissions({ 'reports.access': true }) },
+  // ── Buy ──
+  { id: 'g-buy-purchasing', module: 'buy', name: 'Purchasing', description: 'Supplier ordering and terms', isDefault: true, members: ['5', '2'], permissions: permissions({ 'documents.scope': 'all', 'po.create': true, 'vendors.manage': true, 'goods_receipts.access': true, 'reports.access': true }) },
+  { id: 'g-buy-receiving', module: 'buy', name: 'Receiving', description: 'Goods receipt and checks', isDefault: true, members: ['6'], permissions: permissions({ 'goods_receipts.access': true }) },
+  { id: 'g-buy-accounts', module: 'buy', name: 'Accounts', description: 'Vendor bills and reconciliation', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'po.approve': true, 'reports.access': true }) },
 
-  { id: 'g-control-master-data', module: 'control', name: 'Master Data', description: 'Products, BOM, and references', isDefault: true, members: ['2', '4'], permissions: permissions({ 'documents.scope': 'all', 'settings.access': true, 'reports.access': true }) },
-  { id: 'g-control-people-admin', module: 'control', name: 'People Admin', description: 'People and group administration', isDefault: true, members: ['4'], permissions: permissions({ 'documents.scope': 'all', 'settings.access': true, 'reports.access': true }) },
+  // ── Control (ARCH 00 §4.9) ──
+  {
+    id: 'g-control-master-data',
+    module: 'control',
+    name: 'Master Data',
+    description: 'Products, BOMs, locations, and machines maintainers',
+    isDefault: true,
+    members: ['2', '4'],
+    permissions: permissions({
+      'documents.scope': 'all',
+      'products.manage': true,
+      'boms.manage': true,
+      'locations.manage': true,
+      'machines.manage': true,
+      'people.view': false,
+      'people.manage': false,
+      'workflow.manage': false,
+      'settings.access': false,
+      'reports.access': true,
+    }),
+  },
+  {
+    id: 'g-control-people-admin',
+    module: 'control',
+    name: 'People Admin',
+    description: 'Office managers who onboard users',
+    isDefault: true,
+    members: ['4'],
+    permissions: permissions({
+      'documents.scope': 'own',
+      'products.manage': false,
+      'boms.manage': false,
+      'locations.manage': false,
+      'machines.manage': false,
+      'people.view': true,
+      'people.manage': true,
+      'workflow.manage': false,
+      'settings.access': false,
+      'reports.access': false,
+    }),
+  },
 ];
+
+// ── Per-module permission labels (used by GroupsTab) ──
+const genericPermissionLabels: PermissionLabelEntry[] = [
+  { key: 'quotes.create', label: 'Create quotes', section: 'actions', type: 'boolean' },
+  { key: 'orders.create', label: 'Create orders', section: 'actions', type: 'boolean' },
+  { key: 'jobs.assign', label: 'Assign jobs', section: 'actions', type: 'boolean' },
+  { key: 'quality.approve', label: 'Approve quality', section: 'actions', type: 'boolean' },
+  { key: 'maintenance.schedule', label: 'Schedule maintenance', section: 'actions', type: 'boolean' },
+  { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
+  { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
+];
+
+export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> = {
+  sell: genericPermissionLabels,
+  plan: genericPermissionLabels,
+  make: genericPermissionLabels,
+  ship: genericPermissionLabels,
+  book: [
+    { key: 'invoices.create', label: 'Create invoices', section: 'actions', type: 'boolean' },
+    { key: 'expenses.scope', label: 'Expense visibility', section: 'scope', type: 'scope' },
+    { key: 'po.approve', label: 'Approve purchase orders', section: 'actions', type: 'boolean' },
+    { key: 'xero.access', label: 'Xero integration', section: 'actions', type: 'boolean' },
+    { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
+    { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
+  ],
+  buy: [
+    { key: 'requisitions.scope', label: 'Requisition visibility', section: 'scope', type: 'scope' },
+    { key: 'po.create', label: 'Create purchase orders', section: 'actions', type: 'boolean' },
+    { key: 'po.approve', label: 'Approve purchase orders', section: 'actions', type: 'boolean' },
+    { key: 'vendors.manage', label: 'Manage suppliers', section: 'actions', type: 'boolean' },
+    { key: 'goods_receipts.access', label: 'Goods receipts', section: 'actions', type: 'boolean' },
+    { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
+    { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
+  ],
+  control: [
+    { key: 'products.manage', label: 'Manage products', section: 'actions', type: 'boolean' },
+    { key: 'boms.manage', label: 'Manage BOMs', section: 'actions', type: 'boolean' },
+    { key: 'locations.manage', label: 'Manage locations', section: 'actions', type: 'boolean' },
+    { key: 'machines.manage', label: 'Manage machines', section: 'actions', type: 'boolean' },
+    { key: 'people.view', label: 'View people', section: 'actions', type: 'boolean' },
+    { key: 'people.manage', label: 'Manage people', section: 'actions', type: 'boolean' },
+    { key: 'workflow.manage', label: 'Manage workflows', section: 'actions', type: 'boolean' },
+    { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
+    { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
+  ],
+};
 
 export const mockActivity: ActivityEvent[] = [
   { id: 'a1', actorName: 'Mike Thompson', message: 'Sarah added to Make > Quality', timestamp: '3 days ago' },

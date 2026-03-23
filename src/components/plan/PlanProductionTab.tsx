@@ -52,23 +52,23 @@ export function PlanProductionTab() {
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
       {/* Products Section */}
-      <div className="bg-white border border-[#E5E5E5]">
+      <div className="bg-white border border-[var(--border)]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A] mb-1">
+            <h2 className=" text-[18px] font-semibold text-[#1A2732] mb-1">
               Products
             </h2>
-            <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+            <p className=" text-[14px] text-[#737373]">
               3 Products • 14,350 units total
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="h-8 px-3 text-xs border border-[#E5E5E5] rounded hover:bg-[#FAFAFA] transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-[var(--accent)] transition-colors">
               <Eye className="w-3.5 h-3.5 inline mr-1.5" />
               Filter
             </button>
-            <button className="h-8 px-3 text-xs border border-[#E5E5E5] rounded hover:bg-[#FAFAFA] transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-[var(--accent)] transition-colors">
               <Download className="w-3.5 h-3.5 inline mr-1.5" />
               Export
             </button>
@@ -76,8 +76,8 @@ export function PlanProductionTab() {
         </div>
 
         {/* Table Header */}
-        <div className="px-6 py-3 bg-[#FAFAFA] border-b border-[#E5E5E5]">
-          <div className="grid grid-cols-12 gap-4 items-center font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+        <div className="px-6 py-3 bg-[#F5F5F5] border-b border-[var(--border)]">
+          <div className="grid grid-cols-12 gap-4 items-center  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
             <div className="col-span-1"></div>
             <div className="col-span-2">Name</div>
             <div className="col-span-1">Produced</div>
@@ -92,9 +92,9 @@ export function PlanProductionTab() {
         </div>
 
         {/* Table Rows */}
-        <div className="divide-y divide-[#E5E5E5]">
+        <div className="divide-y divide-[var(--border)]">
           {products.map((product) => (
-            <div key={product.id} className="px-6 py-4 hover:bg-[#FAFAFA] transition-colors">
+            <div key={product.id} className="px-6 py-4 hover:bg-[var(--accent)] transition-colors">
               <div className="grid grid-cols-12 gap-4 items-center">
                 {/* Image/Icon */}
                 <div className="col-span-1">
@@ -105,13 +105,13 @@ export function PlanProductionTab() {
 
                 {/* Name */}
                 <div className="col-span-2">
-                  <p className="font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#0A0A0A]">
+                  <p className=" text-[14px] font-medium text-[#1A2732]">
                     {product.name}
                   </p>
                   {product.tags.length > 0 && (
                     <div className="flex gap-1 mt-1">
                       {product.tags.map((tag, i) => (
-                        <span key={i} className="px-1.5 py-0.5 bg-[#FFCF4B] text-[10px] text-[#0A0A0A]">
+                        <span key={i} className="px-1.5 py-0.5 bg-[#FFCF4B] text-[10px] text-[#1A2732]">
                           {tag}
                         </span>
                       ))}
@@ -121,28 +121,28 @@ export function PlanProductionTab() {
 
                 {/* Produced */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#0A0A0A]">
+                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
                     {product.produced}
                   </p>
                 </div>
 
                 {/* Quantity */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#0A0A0A]">
+                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
                     {product.quantity.toLocaleString()}
                   </p>
                 </div>
 
                 {/* Remaining */}
                 <div className="col-span-1">
-                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#0A0A0A]">
+                  <p className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
                     {product.remaining}
                   </p>
                 </div>
 
                 {/* Date */}
                 <div className="col-span-1">
-                  <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+                  <p className=" text-[13px] text-[#737373]">
                     {product.date}
                   </p>
                 </div>
@@ -150,13 +150,13 @@ export function PlanProductionTab() {
                 {/* Est Price - Progress Bar */}
                 <div className="col-span-2">
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-[#E5E5E5] rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-[var(--border)] rounded-full overflow-hidden">
                       <div 
                         className={cn(
                           "h-full",
                           product.status === 'Done' ? 'bg-[#4CAF50]' :
                           product.status === 'WIP' ? 'bg-[#FFCF4B]' :
-                          'bg-[#E5E5E5]'
+                          'bg-[var(--border)]'
                         )}
                         style={{ width: product.status === 'Done' ? '100%' : product.status === 'WIP' ? '50%' : '0%' }}
                       />
@@ -173,7 +173,7 @@ export function PlanProductionTab() {
                     {product.assigned.map((user, i) => (
                       <div 
                         key={i}
-                        className="w-6 h-6 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center text-[10px] font-medium border-2 border-white"
+                        className="w-6 h-6 rounded-full bg-[#1A2732] text-white flex items-center justify-center text-[10px] font-medium border-2 border-white"
                       >
                         {user}
                       </div>
@@ -186,8 +186,8 @@ export function PlanProductionTab() {
                   <span className={cn(
                     "px-2 py-1 text-xs font-medium rounded",
                     product.status === 'Done' ? 'bg-[#4CAF50]/10 text-[#4CAF50]' :
-                    product.status === 'WIP' ? 'bg-[#FFCF4B]/20 text-[#0A0A0A]' :
-                    'bg-[#E5E5E5] text-[#737373]'
+                    product.status === 'WIP' ? 'bg-[#FFCF4B]/20 text-[#1A2732]' :
+                    'bg-[var(--border)] text-[#737373]'
                   )}>
                     {product.status}
                   </span>
@@ -205,15 +205,15 @@ export function PlanProductionTab() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-[#FAFAFA] border-t border-[#E5E5E5] flex items-center justify-between">
-          <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+        <div className="px-6 py-3 bg-[#F5F5F5] border-t border-[var(--border)] flex items-center justify-between">
+          <p className=" text-[13px] text-[#737373]">
             Page 1 of 1
           </p>
           <div className="flex items-center gap-2">
-            <button className="h-8 px-3 text-xs border border-[#E5E5E5] rounded hover:bg-white transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-white transition-colors">
               Previous
             </button>
-            <button className="h-8 px-3 text-xs border border-[#E5E5E5] rounded hover:bg-white transition-colors">
+            <button className="h-8 px-3 text-xs border border-[var(--border)] rounded hover:bg-white transition-colors">
               Next
             </button>
           </div>
@@ -221,20 +221,20 @@ export function PlanProductionTab() {
       </div>
 
       {/* MirrorView Section */}
-      <div className="bg-white border border-[#E5E5E5]">
-        <div className="px-6 py-4 border-b border-[#E5E5E5]">
-          <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">
+      <div className="bg-white border border-[var(--border)]">
+        <div className="px-6 py-4 border-b border-[var(--border)]">
+          <h2 className=" text-[18px] font-semibold text-[#1A2732]">
             MirrorView
           </h2>
-          <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373] mt-1">
+          <p className=" text-[14px] text-[#737373] mt-1">
             3D view of production progress
           </p>
         </div>
         <div className="p-6">
-          <div className="aspect-video bg-[#FAFAFA] rounded flex items-center justify-center">
+          <div className="aspect-video bg-[#F5F5F5] rounded flex items-center justify-center">
             <div className="text-center">
-              <Package className="w-16 h-16 text-[#E5E5E5] mx-auto mb-3" />
-              <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+              <Package className="w-16 h-16 text-[var(--border)] mx-auto mb-3" />
+              <p className=" text-[14px] text-[#737373]">
                 3D Model View Placeholder
               </p>
             </div>
@@ -243,19 +243,19 @@ export function PlanProductionTab() {
       </div>
 
       {/* Instructions & Activities Section */}
-      <div className="bg-white border border-[#E5E5E5]">
-        <div className="px-6 py-4 border-b border-[#E5E5E5]">
-          <h2 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">
+      <div className="bg-white border border-[var(--border)]">
+        <div className="px-6 py-4 border-b border-[var(--border)]">
+          <h2 className=" text-[18px] font-semibold text-[#1A2732]">
             Instructions & Activities
           </h2>
-          <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373] mt-1">
+          <p className=" text-[14px] text-[#737373] mt-1">
             Recent activities and production notes
           </p>
         </div>
 
         {/* Table Header */}
-        <div className="px-6 py-3 bg-[#FAFAFA] border-b border-[#E5E5E5]">
-          <div className="grid grid-cols-7 gap-4 items-center font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] uppercase tracking-wider">
+        <div className="px-6 py-3 bg-[#F5F5F5] border-b border-[var(--border)]">
+          <div className="grid grid-cols-7 gap-4 items-center  text-[12px] font-medium text-[#737373] uppercase tracking-wider">
             <div>Partner</div>
             <div>Work Center</div>
             <div>Operation</div>
@@ -267,31 +267,31 @@ export function PlanProductionTab() {
         </div>
 
         {/* Table Rows - Mock Data */}
-        <div className="divide-y divide-[#E5E5E5]">
+        <div className="divide-y divide-[var(--border)]">
           {[
             { partner: 'External-supplier-01', center: 'Tools X', operation: 'Weld, 3 production', minutes: '20', qc: 'Pass', operator: 'OP-14513', status: 'In progress' },
             { partner: 'Outram', center: 'Table 3', operation: 'Weld, 3 production', minutes: '20', qc: 'Pass', operator: 'OP-14513', status: 'In check' },
             { partner: 'Fillmore', center: 'Piece here', operation: 'Weld, 3 production', minutes: '20', qc: 'Pass', operator: 'OP-14513', status: 'Awaiting consumable' },
             { partner: 'Park', center: 'Table 3', operation: '50520 Sub', minutes: '20', qc: 'In progress', operator: 'OP-14513', status: 'Awaiting consumable' },
           ].map((row, i) => (
-            <div key={i} className="px-6 py-4 hover:bg-[#FAFAFA] transition-colors">
+            <div key={i} className="px-6 py-4 hover:bg-[var(--accent)] transition-colors">
               <div className="grid grid-cols-7 gap-4 items-center">
-                <div className="font-['Geist:Regular',sans-serif] text-[13px] text-[#0A0A0A]">
+                <div className=" text-[13px] text-[#1A2732]">
                   {row.partner}
                 </div>
-                <div className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+                <div className=" text-[13px] text-[#737373]">
                   {row.center}
                 </div>
-                <div className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+                <div className=" text-[13px] text-[#737373]">
                   {row.operation}
                 </div>
-                <div className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#0A0A0A]">
+                <div className="font-['Roboto_Mono:Regular',monospace] text-[13px] text-[#1A2732]">
                   {row.minutes}
                 </div>
                 <div>
                   <span className={cn(
                     "px-2 py-1 text-xs font-medium rounded",
-                    row.qc === 'Pass' ? 'bg-[#4CAF50]/10 text-[#4CAF50]' : 'bg-[#FFCF4B]/20 text-[#0A0A0A]'
+                    row.qc === 'Pass' ? 'bg-[#4CAF50]/10 text-[#4CAF50]' : 'bg-[#FFCF4B]/20 text-[#1A2732]'
                   )}>
                     {row.qc}
                   </span>
@@ -310,8 +310,8 @@ export function PlanProductionTab() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-[#FAFAFA] border-t border-[#E5E5E5] flex items-center justify-between">
-          <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+        <div className="px-6 py-3 bg-[#F5F5F5] border-t border-[var(--border)] flex items-center justify-between">
+          <p className=" text-[13px] text-[#737373]">
             Page 1 of 1
           </p>
         </div>

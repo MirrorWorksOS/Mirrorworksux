@@ -37,7 +37,7 @@ export function PlanPurchase() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Material requirements</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Material requirements</h1>
           <p className="text-sm text-[#737373] mt-1">
             {shortages.filter(s => s.status === 'critical').length > 0 && (
               <span className="text-[#EF4444]">{shortages.filter(s => s.status === 'critical').length} critical shortage · </span>
@@ -46,10 +46,10 @@ export function PlanPurchase() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <RefreshCw className="w-4 h-4" /> Recalculate MRP
           </Button>
-          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Download className="w-4 h-4" /> Export
           </Button>
           <Button
@@ -69,11 +69,11 @@ export function PlanPurchase() {
         {[
           { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', icon: AlertTriangle },
           { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]', icon: AlertTriangle },
-          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', icon: CheckCircle },
+          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', icon: CheckCircle },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="bg-white border border-[#E5E5E5] rounded-lg p-5">
+            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-2xl p-5">
               <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-3', s.bg)}>
                 <Icon className={cn('w-4 h-4', s.text)} />
               </div>
@@ -85,10 +85,10 @@ export function PlanPurchase() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               <th className="px-4 py-3 w-10">
                 <input type="checkbox"
                   checked={selected.size === shortages.length && shortages.length > 0}
@@ -106,7 +106,7 @@ export function PlanPurchase() {
               const isShortage = row.status !== 'ok';
               const isCritical = row.status === 'critical';
               return (
-                <tr key={row.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors', isCritical && 'bg-[#FFF5F5]')}>
+                <tr key={row.id} className={cn('border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', isCritical && 'bg-[#FFF5F5]')}>
                   <td className="px-4">
                     {isShortage && (
                       <input type="checkbox"
@@ -117,20 +117,20 @@ export function PlanPurchase() {
                       />
                     )}
                   </td>
-                  <td className="px-4 text-sm text-[#0A0A0A] font-medium">{row.product}</td>
-                  <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{row.sku}</td>
-                  <td className="px-4 text-sm font-['JetBrains_Mono',monospace] text-[#0052CC]">{row.job}</td>
+                  <td className="px-4 text-sm text-[#1A2732] font-medium">{row.product}</td>
+                  <td className="px-4 text-xs  text-[#737373]">{row.sku}</td>
+                  <td className="px-4 text-sm font-['JetBrains_Mono',monospace] text-[#1A2732]">{row.job}</td>
                   <td className="px-4 text-sm text-[#737373]">{row.due}</td>
-                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium">{row.required}</td>
-                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{row.available}</td>
-                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] text-[#737373]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
-                  <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-semibold"
+                  <td className="px-4 text-right text-sm  font-medium">{row.required}</td>
+                  <td className="px-4 text-right text-sm ">{row.available}</td>
+                  <td className="px-4 text-right text-sm  text-[#737373]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
+                  <td className="px-4 text-right text-sm  font-semibold"
                     style={{ color: row.net > 0 ? '#EF4444' : '#36B37E' }}>
                     {row.net > 0 ? `+${row.net}` : row.net}
                   </td>
                   <td className="px-4">
                     {row.status === 'ok'
-                      ? <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2">OK</Badge>
+                      ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2">OK</Badge>
                       : row.status === 'critical'
                       ? <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0 text-xs rounded-full px-2">Critical</Badge>
                       : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Shortage</Badge>

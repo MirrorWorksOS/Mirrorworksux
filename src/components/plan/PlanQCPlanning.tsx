@@ -42,7 +42,7 @@ export function PlanQCPlanning() {
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">QC checkpoints</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">QC checkpoints</h1>
           <p className="text-sm text-[#737373] mt-1">
             {CHECKPOINTS.filter(c => c.mandatory).length} mandatory · {CHECKPOINTS.filter(c => !c.mandatory).length} optional
           </p>
@@ -57,7 +57,7 @@ export function PlanQCPlanning() {
         {STAGES.map(s => (
           <button key={s} onClick={() => setStageTab(s)}
             className={cn('px-3 py-1.5 rounded-md text-sm transition-colors font-medium',
-              stageTab === s ? 'bg-white text-[#0A0A0A] shadow-sm' : 'text-[#737373] hover:text-[#0A0A0A]'
+              stageTab === s ? 'bg-white text-[#1A2732] shadow-sm' : 'text-[#737373] hover:text-[#FFCF4B]'
             )}>
             {s}
           </button>
@@ -75,11 +75,11 @@ export function PlanQCPlanning() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map(cp => (
           <motion.div key={cp.id} variants={animationVariants.listItem}>
-            <Card className="bg-white border border-[#E5E5E5] rounded-lg p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+            <Card className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[#36B37E]' : 'text-[#A3A3A3]')} />
-                  <h3 className="text-[14px] font-semibold text-[#0A0A0A] leading-tight group-hover:text-[#0052CC] transition-colors">
+                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[#1A2732]' : 'text-[#A3A3A3]')} />
+                  <h3 className="text-[14px] font-semibold text-[#1A2732] leading-tight group-hover:text-[#FFCF4B] transition-colors">
                     {cp.name}
                   </h3>
                 </div>
@@ -95,15 +95,15 @@ export function PlanQCPlanning() {
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[#737373]">Frequency</span>
-                  <span className="text-[#0A0A0A] font-medium">{cp.frequency}</span>
+                  <span className="text-[#1A2732] font-medium">{cp.frequency}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#737373]">Duration</span>
-                  <span className="font-['Roboto_Mono',monospace] text-[#0A0A0A]">{cp.duration} min</span>
+                  <span className=" text-[#1A2732]">{cp.duration} min</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#737373]">Applies to</span>
-                  <span className="text-[#0A0A0A] text-xs">{cp.products}</span>
+                  <span className="text-[#1A2732] text-xs">{cp.products}</span>
                 </div>
               </div>
               <p className="text-xs text-[#A3A3A3] mt-3">Updated {cp.lastUpdated}</p>

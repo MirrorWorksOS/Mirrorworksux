@@ -25,13 +25,13 @@ const mwReports = [
 ];
 
 const scheduled = [
-  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[#E6F7EF] text-[#1B7D4F]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
+  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[var(--warm-200)] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
   { name: 'Expense Report', schedule: 'Monthly', scheduleBg: 'bg-[#FFF4CC] text-[#805900]', recipients: ['cormac@mirrorworks.io', 'matt@mirrorworks.io'], lastRun: '01 Feb', nextRun: '01 Mar', active: true },
-  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[#E6F0FF] text-[#0052CC]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
+  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[var(--warm-200)] text-[#1A2732]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
 ];
 
 const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) => (
-  <Card className={cn("bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] p-6 hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow", borderColor && `border-l-[3px] ${borderColor}`)}>
+  <Card className={cn("bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] p-6 hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow", borderColor && `border-l-[3px] ${borderColor}`)}>
     <Icon className="w-8 h-8 text-[#1A2732] mb-3" />
     <div className="flex items-center gap-2 mb-1">
       <h3 className="text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>{title}</h3>
@@ -39,7 +39,7 @@ const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) =>
     </div>
     <p className="text-xs text-[#737373] mb-4">{desc}</p>
     <div className="flex items-center justify-between">
-      <Button variant="outline" size="sm" className="h-10 border-[#E5E5E5] text-[#1A2732] rounded">Generate</Button>
+      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-[#1A2732] rounded">Generate</Button>
       {badge && <span className="text-[11px] text-[#A3A3A3]">{badge}</span>}
     </div>
   </Card>
@@ -54,7 +54,7 @@ export function ReportsGallery() {
           <p className="text-sm text-[#737373]">Financial reports and manufacturing analytics</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5]"><Calendar className="w-4 h-4" /> Schedule Report</Button>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Schedule Report</Button>
           <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded gap-2"><Sparkles className="w-4 h-4" /> Custom Report</Button>
         </div>
       </div>
@@ -85,11 +85,11 @@ export function ReportsGallery() {
       {/* Scheduled */}
       <div>
         <h2 className="text-[#1A2732] mb-4" style={{ fontWeight: 500 }}>Scheduled Reports</h2>
-        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[#E5E5E5] overflow-hidden">
+        <Card className="bg-white rounded-lg shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] border border-[var(--border)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   {['REPORT NAME', 'SCHEDULE', 'RECIPIENTS', 'LAST RUN', 'NEXT RUN', 'ACTIVE'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373]" style={{ fontWeight: 500 }}>{h}</th>
                   ))}
@@ -97,7 +97,7 @@ export function ReportsGallery() {
               </thead>
               <tbody>
                 {scheduled.map(s => (
-                  <tr key={s.name} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0]">
+                  <tr key={s.name} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)]">
                     <td className="px-4 text-sm text-[#1A2732]" style={{ fontWeight: 500 }}>{s.name}</td>
                     <td className="px-4"><Badge className={cn("rounded-full text-[11px] px-2 py-0.5 border-0", s.scheduleBg)}>{s.schedule}</Badge></td>
                     <td className="px-4">

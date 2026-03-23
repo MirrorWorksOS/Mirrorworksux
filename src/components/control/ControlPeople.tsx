@@ -32,7 +32,7 @@ export function ControlPeople() {
     <div className="space-y-8 bg-[#F5F5F5] p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-bold tracking-tight text-[#0A0A0A]">People</h1>
+          <h1 className="text-[32px] font-bold tracking-tight text-[#1A2732]">People</h1>
           <p className="mt-1 text-sm text-[#737373]">
             Manage team members, module access, and group permissions
           </p>
@@ -66,11 +66,11 @@ export function ControlPeople() {
 
       <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
         <TabsList className="h-auto w-full justify-start rounded-2xl bg-white p-1">
-          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[#FFFBF0] data-[state=inactive]:text-[#737373]">
+          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[#737373]">
             Users
             {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
           </TabsTrigger>
-          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[#FFFBF0] data-[state=inactive]:text-[#737373]">
+          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[#737373]">
             Groups
             {activeTab === 'groups' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[#FFCF4B]" /> : null}
           </TabsTrigger>

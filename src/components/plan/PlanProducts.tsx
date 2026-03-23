@@ -34,7 +34,7 @@ export function PlanProducts() {
     <motion.div initial="initial" animate="animate" variants={animationVariants.stagger} className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Products</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Products</h1>
           <p className="text-sm text-[#737373] mt-1">
             {PRODUCTS.length} products · {PRODUCTS.filter(p => p.hasBOM).length} with BOMs
             {PRODUCTS.filter(p => !p.hasBOM).length > 0 && <span className="text-[#FF8B00] ml-1">· {PRODUCTS.filter(p => !p.hasBOM).length} missing BOM</span>}
@@ -51,10 +51,10 @@ export function PlanProducts() {
           className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm" />
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               {['Product', 'SKU', 'Lead time', 'Cycle hrs', 'Routing steps', 'Work centres', 'BOM', 'Last produced'].map(h => (
                 <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[#737373] uppercase font-medium',
                   ['Lead time', 'Cycle hrs', 'Routing steps'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
@@ -63,17 +63,17 @@ export function PlanProducts() {
           </thead>
           <tbody>
             {filtered.map(p => (
-              <tr key={p.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
+              <tr key={p.id} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
                 <td className="px-4">
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-[#A3A3A3] shrink-0" />
-                    <span className="text-sm text-[#0A0A0A] font-medium">{p.name}</span>
+                    <span className="text-sm text-[#1A2732] font-medium">{p.name}</span>
                   </div>
                 </td>
-                <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{p.sku}</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{p.leadTime}d</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{p.cycleHrs}h</td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace]">{p.routingSteps}</td>
+                <td className="px-4 text-xs  text-[#737373]">{p.sku}</td>
+                <td className="px-4 text-right text-sm ">{p.leadTime}d</td>
+                <td className="px-4 text-right text-sm ">{p.cycleHrs}h</td>
+                <td className="px-4 text-right text-sm ">{p.routingSteps}</td>
                 <td className="px-4">
                   <div className="flex flex-wrap gap-1">
                     {p.workCenters.slice(0, 3).map(wc => (
@@ -84,7 +84,7 @@ export function PlanProducts() {
                 </td>
                 <td className="px-4">
                   {p.hasBOM
-                    ? <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2">Yes</Badge>
+                    ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2">Yes</Badge>
                     : <Badge className="bg-[#FFEDD5] text-[#FF8B00] border-0 text-xs rounded-full px-2">Missing</Badge>
                   }
                 </td>

@@ -64,9 +64,9 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-2xl border-[#E5E5E5] bg-white p-6">
+      <DialogContent className="max-w-lg rounded-2xl border-[var(--border)] bg-white p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[#0A0A0A]">Invite team member</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-[#1A2732]">Invite team member</DialogTitle>
           <DialogDescription className="text-[13px] text-[#737373]">
             They&apos;ll receive an email to join your organisation.
           </DialogDescription>
@@ -77,13 +77,13 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
             value={name}
             onChange={event => setName(event.target.value)}
             placeholder="Full name"
-            className="h-12 rounded-xl border-[#E5E5E5]"
+            className="h-12 rounded-xl border-[var(--border)]"
           />
           <Input
             value={email}
             onChange={event => setEmail(event.target.value)}
             placeholder="name@organisation.com"
-            className="h-12 rounded-xl border-[#E5E5E5]"
+            className="h-12 rounded-xl border-[var(--border)]"
           />
 
           <div className="space-y-3">
@@ -95,7 +95,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                   <label
                     key={moduleKey}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${
-                      checked ? 'border-[#FFCF4B] bg-[#FFFBF0]' : 'border-[#E5E5E5] bg-white'
+                      checked ? 'border-[#FFCF4B] bg-[var(--accent)]' : 'border-[var(--border)] bg-white'
                     }`}
                   >
                     <Checkbox
@@ -116,7 +116,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                 key={moduleKey}
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-[#E5E5E5] bg-[#F8F7F4] p-3"
+                className="rounded-xl border border-[var(--border)] bg-[#F5F5F5] p-3"
               >
                 <p className="mb-2 text-sm font-medium text-[#2C2C2C]">{moduleLabels[moduleKey]} groups</p>
                 <div className="flex flex-wrap gap-2">
@@ -130,7 +130,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                         className={`rounded-full border px-3 py-1 text-xs ${
                           selected
                             ? 'border-[#FFCF4B] bg-[#FFCF4B] text-[#2C2C2C]'
-                            : 'border-[#E5E5E5] bg-white text-[#525252]'
+                            : 'border-[var(--border)] bg-white text-[#525252]'
                         }`}
                       >
                         {groupName}

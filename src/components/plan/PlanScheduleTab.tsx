@@ -8,7 +8,7 @@ type ViewMode = 'gantt' | 'calendar';
 type FilterMode = 'all' | 'done' | 'pending';
 
 const OPERATIONS = [
-  { id: 1, name: 'Prepare BOM', days: [2, 3], color: 'bg-[#36B37E]', status: 'done' },
+  { id: 1, name: 'Prepare BOM', days: [2, 3], color: 'bg-[#1A2732]', status: 'done' },
   { id: 2, name: 'Prepare NC files', days: [4, 5], color: 'bg-[#FFCF4B]', status: 'pending' },
   { id: 3, name: 'Laser Cutting', days: [7, 8, 9], color: 'bg-[#FFCF4B]', status: 'pending' },
   { id: 4, name: 'Deburr Cut Parts', days: [8, 9, 10, 11, 12], color: 'bg-[#FFCF4B]', status: 'pending' },
@@ -31,12 +31,12 @@ export function PlanScheduleTab() {
   });
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA]">
+    <div className="flex flex-col h-full bg-[#F5F5F5]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-6 py-4">
+      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mr-4">
+            <h2 className=" text-[16px] font-semibold text-[#1A2732] mr-4">
               Schedule
             </h2>
             <Button
@@ -46,7 +46,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'all' 
-                  ? 'bg-[#F5F5F5] text-[#0A0A0A] hover:bg-[#E5E5E5]' 
+                  ? 'bg-[#F5F5F5] text-[#1A2732] hover:bg-[var(--border)]' 
                   : 'text-[#737373]'
               )}
             >
@@ -59,7 +59,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'done' 
-                  ? 'bg-[#F5F5F5] text-[#0A0A0A] hover:bg-[#E5E5E5]' 
+                  ? 'bg-[#F5F5F5] text-[#1A2732] hover:bg-[var(--border)]' 
                   : 'text-[#737373]'
               )}
             >
@@ -72,7 +72,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'pending' 
-                  ? 'bg-[#F5F5F5] text-[#0A0A0A] hover:bg-[#E5E5E5]' 
+                  ? 'bg-[#F5F5F5] text-[#1A2732] hover:bg-[var(--border)]' 
                   : 'text-[#737373]'
               )}
             >
@@ -81,24 +81,24 @@ export function PlanScheduleTab() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center border border-[#E5E5E5] rounded-lg p-1">
+            <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
               <button
                 onClick={() => setViewMode('gantt')}
                 className={cn(
                   'p-2 rounded transition-colors',
-                  viewMode === 'gantt' ? 'bg-[#F5F5F5]' : 'hover:bg-[#FAFAFA]'
+                  viewMode === 'gantt' ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
                 )}
               >
-                <List className="w-4 h-4 text-[#0A0A0A]" />
+                <List className="w-4 h-4 text-[#1A2732]" />
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
                 className={cn(
                   'p-2 rounded transition-colors',
-                  viewMode === 'calendar' ? 'bg-[#F5F5F5]' : 'hover:bg-[#FAFAFA]'
+                  viewMode === 'calendar' ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
                 )}
               >
-                <Calendar className="w-4 h-4 text-[#0A0A0A]" />
+                <Calendar className="w-4 h-4 text-[#1A2732]" />
               </button>
             </div>
           </div>
@@ -108,26 +108,26 @@ export function PlanScheduleTab() {
       {/* Gantt View */}
       {viewMode === 'gantt' && (
         <div className="flex-1 overflow-auto p-6">
-          <div className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+          <div className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
             {/* Month Navigation */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E5E5] bg-[#FAFAFA]">
-              <button className="p-1 hover:bg-[#E5E5E5] rounded transition-colors">
-                <ChevronLeft className="w-5 h-5 text-[#0A0A0A]" />
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[#F5F5F5]">
+              <button className="p-1 hover:bg-[var(--border)] rounded transition-colors">
+                <ChevronLeft className="w-5 h-5 text-[#1A2732]" />
               </button>
-              <span className="font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#0A0A0A]">
+              <span className=" text-[14px] font-medium text-[#1A2732]">
                 {currentMonth}
               </span>
-              <button className="p-1 hover:bg-[#E5E5E5] rounded transition-colors">
-                <ChevronRight className="w-5 h-5 text-[#0A0A0A]" />
+              <button className="p-1 hover:bg-[var(--border)] rounded transition-colors">
+                <ChevronRight className="w-5 h-5 text-[#1A2732]" />
               </button>
             </div>
 
             {/* Gantt Chart */}
             <div className="flex">
               {/* Operations Column */}
-              <div className="w-64 flex-shrink-0 border-r border-[#E5E5E5]">
-                <div className="px-4 py-3 bg-[#F5F5F5] border-b border-[#E5E5E5]">
-                  <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#0A0A0A]">
+              <div className="w-64 flex-shrink-0 border-r border-[var(--border)]">
+                <div className="px-4 py-3 bg-[#F5F5F5] border-b border-[var(--border)]">
+                  <span className=" text-[13px] font-medium text-[#1A2732]">
                     Operations ({filteredOperations.length} tasks)
                   </span>
                 </div>
@@ -135,9 +135,9 @@ export function PlanScheduleTab() {
                   {filteredOperations.map((operation) => (
                     <div
                       key={operation.id}
-                      className="px-4 py-3 border-b border-[#E5E5E5] hover:bg-[#FAFAFA] transition-colors"
+                      className="px-4 py-3 border-b border-[var(--border)] hover:bg-[#F5F5F5] transition-colors"
                     >
-                      <span className="font-['Geist:Regular',sans-serif] text-[13px] text-[#0A0A0A]">
+                      <span className=" text-[13px] text-[#1A2732]">
                         {operation.name}
                       </span>
                     </div>
@@ -148,12 +148,12 @@ export function PlanScheduleTab() {
               {/* Timeline Grid */}
               <div className="flex-1 overflow-x-auto">
                 {/* Day Headers */}
-                <div className="flex bg-[#F5F5F5] border-b border-[#E5E5E5] sticky top-0">
+                <div className="flex bg-[#F5F5F5] border-b border-[var(--border)] sticky top-0">
                   {Array.from({ length: 20 }, (_, i) => i + 1).map((day) => (
                     <div
                       key={day}
                       className={cn(
-                        'flex-shrink-0 w-12 py-3 text-center border-r border-[#E5E5E5]',
+                        'flex-shrink-0 w-12 py-3 text-center border-r border-[var(--border)]',
                         day === currentDay && 'bg-[#FFCF4B]'
                       )}
                     >
@@ -174,7 +174,7 @@ export function PlanScheduleTab() {
                   {filteredOperations.map((operation) => (
                     <div
                       key={operation.id}
-                      className="flex border-b border-[#E5E5E5] py-3"
+                      className="flex border-b border-[var(--border)] py-3"
                       style={{ height: '52px' }}
                     >
                       {Array.from({ length: 20 }, (_, i) => i + 1).map((day) => {
@@ -185,7 +185,7 @@ export function PlanScheduleTab() {
                         return (
                           <div
                             key={day}
-                            className="flex-shrink-0 w-12 px-1 border-r border-[#E5E5E5]"
+                            className="flex-shrink-0 w-12 px-1 border-r border-[var(--border)]"
                           >
                             {isInRange && (
                               <div
@@ -212,17 +212,17 @@ export function PlanScheduleTab() {
       {/* Calendar View */}
       {viewMode === 'calendar' && (
         <div className="flex-1 overflow-auto p-6">
-          <div className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+          <div className="bg-white border border-[var(--border)] rounded-2xl p-6">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-6">
               <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                <ChevronLeft className="w-5 h-5 text-[#0A0A0A]" />
+                <ChevronLeft className="w-5 h-5 text-[#1A2732]" />
               </button>
-              <h3 className="font-['Geist:SemiBold',sans-serif] text-[18px] font-semibold text-[#0A0A0A]">
+              <h3 className=" text-[18px] font-semibold text-[#1A2732]">
                 {currentMonth}
               </h3>
               <button className="p-1 hover:bg-[#F5F5F5] rounded transition-colors">
-                <ChevronRight className="w-5 h-5 text-[#0A0A0A]" />
+                <ChevronRight className="w-5 h-5 text-[#1A2732]" />
               </button>
             </div>
 
@@ -232,7 +232,7 @@ export function PlanScheduleTab() {
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                 <div
                   key={day}
-                  className="text-center font-['Geist:Medium',sans-serif] text-[12px] font-medium text-[#737373] pb-2"
+                  className="text-center  text-[12px] font-medium text-[#737373] pb-2"
                 >
                   {day}
                 </div>
@@ -246,9 +246,9 @@ export function PlanScheduleTab() {
                   <div
                     key={day}
                     className={cn(
-                      'min-h-[100px] border border-[#E5E5E5] rounded-lg p-2 transition-colors',
-                      day === currentDay && 'bg-[#FFFBF0] border-[#FFCF4B]',
-                      hasEvents && day !== currentDay && 'bg-[#FAFAFA]',
+                      'min-h-[100px] border border-[var(--border)] rounded-lg p-2 transition-colors',
+                      day === currentDay && 'bg-[var(--accent)] border-[#FFCF4B]',
+                      hasEvents && day !== currentDay && 'bg-[#F5F5F5]',
                       'hover:bg-[#F5F5F5] cursor-pointer'
                     )}
                   >
@@ -256,7 +256,7 @@ export function PlanScheduleTab() {
                       <span
                         className={cn(
                           'font-[\'Geist:Medium\',sans-serif] text-[13px]',
-                          day === currentDay ? 'font-semibold text-[#0A0A0A]' : 'text-[#737373]'
+                          day === currentDay ? 'font-semibold text-[#1A2732]' : 'text-[#737373]'
                         )}
                       >
                         {day}
@@ -266,29 +266,29 @@ export function PlanScheduleTab() {
                     {hasEvents && (
                       <div className="space-y-1">
                         {day >= 2 && day <= 3 && (
-                          <div className="bg-[#36B37E] rounded px-2 py-1">
-                            <p className="font-['Geist:Regular',sans-serif] text-[10px] text-white truncate">
+                          <div className="bg-[#1A2732] rounded px-2 py-1">
+                            <p className=" text-[10px] text-white truncate">
                               Prepare BOM
                             </p>
                           </div>
                         )}
                         {day >= 7 && day <= 9 && (
                           <div className="bg-[#FFCF4B] rounded px-2 py-1">
-                            <p className="font-['Geist:Regular',sans-serif] text-[10px] text-[#2C2C2C] truncate">
+                            <p className=" text-[10px] text-[#2C2C2C] truncate">
                               Laser Cutting
                             </p>
                           </div>
                         )}
                         {day >= 8 && day <= 12 && (
                           <div className="bg-[#FFCF4B] rounded px-2 py-1">
-                            <p className="font-['Geist:Regular',sans-serif] text-[10px] text-[#2C2C2C] truncate">
+                            <p className=" text-[10px] text-[#2C2C2C] truncate">
                               Deburr Parts
                             </p>
                           </div>
                         )}
                         {day >= 13 && day <= 14 && (
                           <div className="bg-[#FFCF4B] rounded px-2 py-1">
-                            <p className="font-['Geist:Regular',sans-serif] text-[10px] text-[#2C2C2C] truncate">
+                            <p className=" text-[10px] text-[#2C2C2C] truncate">
                               Press Brake
                             </p>
                           </div>

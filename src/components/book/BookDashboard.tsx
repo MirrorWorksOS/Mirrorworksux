@@ -42,23 +42,23 @@ export function BookDashboard() {
         {/* Monthly Revenue */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-[#0A7AFF]" />
             </div>
-            <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent">
+            <Badge className="bg-[#1A2732] text-[#FFCF4B] border-transparent">
               +{kpiData.monthlyRevenue.change}%
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Monthly Revenue
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#1A2732]">
             ${kpiData.monthlyRevenue.value.toLocaleString()}
           </p>
-          <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+          <p className="font-normal text-[12px] text-[#737373] mt-2">
             vs. previous month
           </p>
         </motion.div>
@@ -66,7 +66,7 @@ export function BookDashboard() {
         {/* Outstanding Invoices */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
@@ -76,13 +76,13 @@ export function BookDashboard() {
               {kpiData.outstandingInvoices.count} invoices
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Outstanding Invoices
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#1A2732]">
             ${kpiData.outstandingInvoices.value.toLocaleString()}
           </p>
-          <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+          <p className="font-normal text-[12px] text-[#737373] mt-2">
             Awaiting payment
           </p>
         </motion.div>
@@ -90,23 +90,23 @@ export function BookDashboard() {
         {/* Profit Margin */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[#36B37E]" />
+            <div className="w-10 h-10 bg-[#1A2732] rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-[#FFCF4B]" />
             </div>
-            <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent">
+            <Badge className="bg-[#1A2732] text-[#FFCF4B] border-transparent">
               +{kpiData.profitMargin.change}%
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Profit Margin
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#1A2732]">
             {kpiData.profitMargin.value}%
           </p>
-          <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+          <p className="font-normal text-[12px] text-[#737373] mt-2">
             Average job margin
           </p>
         </motion.div>
@@ -114,7 +114,7 @@ export function BookDashboard() {
         {/* Cash Flow */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
@@ -124,13 +124,13 @@ export function BookDashboard() {
               {kpiData.cashFlow.change}%
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Cash Flow
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#1A2732]">
             ${kpiData.cashFlow.value.toLocaleString()}
           </p>
-          <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+          <p className="font-normal text-[12px] text-[#737373] mt-2">
             Net invoiced - expenses
           </p>
         </motion.div>
@@ -138,7 +138,7 @@ export function BookDashboard() {
         {/* Overdue Invoices */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#FEE2E2] rounded-lg flex items-center justify-center">
@@ -148,13 +148,13 @@ export function BookDashboard() {
               {kpiData.overdueInvoices.count} overdue
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Overdue Invoices
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#EF4444]">
+          <p className=" text-[24px] font-semibold text-[#EF4444]">
             ${kpiData.overdueInvoices.value.toLocaleString()}
           </p>
-          <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+          <p className="font-normal text-[12px] text-[#737373] mt-2">
             Requires attention
           </p>
         </motion.div>
@@ -162,7 +162,7 @@ export function BookDashboard() {
         {/* Expenses This Month */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
+          className="bg-white border border-[var(--border)] rounded-lg p-6 hover:shadow-md transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
@@ -172,16 +172,16 @@ export function BookDashboard() {
               {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
             </Badge>
           </div>
-          <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+          <h3 className="font-medium text-[13px] font-medium text-[#737373] mb-1">
             Expenses This Month
           </h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+          <p className=" text-[24px] font-semibold text-[#1A2732]">
             ${kpiData.expensesThisMonth.value.toLocaleString()}
           </p>
           <div className="mt-3">
             <div className="relative h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
               <div
-                className="absolute inset-0 bg-[#36B37E] transition-all duration-300"
+                className="absolute inset-0 bg-[#FFCF4B] transition-all duration-300"
                 style={{ width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%` }}
               />
             </div>
@@ -194,10 +194,10 @@ export function BookDashboard() {
         {/* Approval Queue */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6"
+          className="bg-white border border-[var(--border)] rounded-lg p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">
+            <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732]">
               Approval Queue
             </h3>
             <Badge className="bg-[#FFCF4B] text-[#2C2C2C] border-transparent">
@@ -207,26 +207,26 @@ export function BookDashboard() {
           
           <div className="space-y-3">
             {approvalQueue.map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
+              <div key={i} className="flex items-center justify-between p-3 bg-[#F5F5F5] rounded-lg hover:bg-[#F5F5F5] transition-colors cursor-pointer">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#0A0A0A]">
+                    <span className="font-medium text-[13px] font-medium text-[#1A2732]">
                       {item.type}
                     </span>
-                    <span className="font-['JetBrains_Mono',monospace] text-[12px] text-[#737373]">
+                    <span className=" text-[12px] text-[#737373]">
                       {item.id}
                     </span>
                   </div>
-                  <p className="font-['Roboto_Mono',monospace] text-[14px] font-medium text-[#0A0A0A]">
+                  <p className=" text-[14px] font-medium text-[#1A2732]">
                     ${item.amount.toLocaleString()}
                   </p>
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-[#36B37E]" />
+                <CheckCircle2 className="w-5 h-5 text-[#FFCF4B]" />
               </div>
             ))}
           </div>
           
-          <Button variant="outline" className="w-full mt-4 border-[#E5E5E5]">
+          <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
             <FileText className="w-4 h-4 mr-2" />
             View All Approvals
           </Button>
@@ -235,37 +235,37 @@ export function BookDashboard() {
         {/* Xero Sync Status */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6"
+          className="bg-white border border-[var(--border)] rounded-lg p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">
+            <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732]">
               Xero Sync Status
             </h3>
-            <div className="w-3 h-3 bg-[#36B37E] rounded-full" />
+            <div className="w-3 h-3 bg-[#FFCF4B] rounded-full" />
           </div>
           
           <div className="space-y-4 mb-4">
             <div className="flex items-center justify-between">
-              <span className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+              <span className="font-normal text-[13px] text-[#737373]">
                 Last synced
               </span>
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#0A0A0A]">
+              <span className="font-medium text-[13px] font-medium text-[#1A2732]">
                 2 minutes ago
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+              <span className="font-normal text-[13px] text-[#737373]">
                 Invoices synced
               </span>
-              <span className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#0A0A0A]">
+              <span className="font-medium text-[13px] font-medium text-[#1A2732]">
                 147 / 147
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-['Geist:Regular',sans-serif] text-[13px] text-[#737373]">
+              <span className="font-normal text-[13px] text-[#737373]">
                 Status
               </span>
-              <Badge className="bg-[#E3FCEF] text-[#36B37E] border-transparent text-xs">
+              <Badge className="bg-[#1A2732] text-[#FFCF4B] border-transparent text-xs">
                 Healthy
               </Badge>
             </div>
@@ -290,10 +290,10 @@ export function BookDashboard() {
         {/* Overdue Actions */}
         <motion.div
           variants={animationVariants.listItem}
-          className="bg-white border border-[#E5E5E5] rounded-lg p-6"
+          className="bg-white border border-[var(--border)] rounded-lg p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">
+            <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732]">
               Overdue Actions
             </h3>
             <Badge className="bg-[#FEE2E2] text-[#EF4444] border-transparent">
@@ -306,17 +306,17 @@ export function BookDashboard() {
               <div key={i} className="flex items-center justify-between p-3 bg-[#FEE2E2] rounded-lg hover:bg-[#FECACA] transition-colors cursor-pointer">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-['JetBrains_Mono',monospace] text-[12px] text-[#EF4444] font-medium">
+                    <span className=" text-[12px] text-[#EF4444] font-medium">
                       {item.id}
                     </span>
                     <Badge className="bg-[#EF4444] text-white text-xs">
                       {item.daysOverdue}d
                     </Badge>
                   </div>
-                  <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#0A0A0A] mb-1">
+                  <p className="font-normal text-[12px] text-[#1A2732] mb-1">
                     {item.type === 'Invoice' ? item.customer : item.vendor}
                   </p>
-                  <p className="font-['Roboto_Mono',monospace] text-[13px] font-medium text-[#EF4444]">
+                  <p className=" text-[13px] font-medium text-[#EF4444]">
                     ${item.amount.toLocaleString()}
                   </p>
                 </div>
@@ -325,7 +325,7 @@ export function BookDashboard() {
             ))}
           </div>
           
-          <Button variant="outline" className="w-full mt-4 border-[#E5E5E5] text-[#EF4444]">
+          <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[#EF4444]">
             <AlertTriangle className="w-4 h-4 mr-2" />
             Follow Up All
           </Button>
@@ -335,13 +335,13 @@ export function BookDashboard() {
       {/* Revenue vs Expenses Chart Placeholder */}
       <motion.div
         variants={animationVariants.listItem}
-        className="bg-white border border-[#E5E5E5] rounded-lg p-6"
+        className="bg-white border border-[var(--border)] rounded-lg p-6"
       >
-        <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">
+        <h3 className="font-semibold text-[16px] font-semibold text-[#1A2732] mb-4">
           Revenue vs Expenses
         </h3>
-        <div className="h-[300px] bg-[#FAFAFA] rounded-lg flex items-center justify-center">
-          <p className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+        <div className="h-[300px] bg-[#F5F5F5] rounded-lg flex items-center justify-center">
+          <p className="font-normal text-[14px] text-[#737373]">
             Chart visualization (Recharts integration)
           </p>
         </div>

@@ -36,7 +36,7 @@ const mockMachines: Machine[] = [
 
 const getStatusColor = (status: MachineStatus) => {
   switch (status) {
-    case 'running': return { bg: 'bg-[#36B37E]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
+    case 'running': return { bg: 'bg-[#1A2732]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
     case 'idle': return { bg: 'bg-[#FACC15]', text: 'text-[#2C2C2C]', icon: Clock, label: 'Idle' };
     case 'down': return { bg: 'bg-[#EF4444]', text: 'text-white', icon: AlertTriangle, label: 'Down' };
     case 'maintenance': return { bg: 'bg-[#7C3AED]', text: 'text-white', icon: Wrench, label: 'Maintenance' };
@@ -57,7 +57,7 @@ export function MakeDashboard() {
         <div className="flex items-center gap-6">
           <div className="text-center">
             <p className="text-sm text-[#737373] mb-1">Running</p>
-            <p className="text-[32px] font-bold text-[#36B37E]">{runningCount}/{mockMachines.length}</p>
+            <p className="text-[32px] font-bold text-[#1A2732]">{runningCount}/{mockMachines.length}</p>
           </div>
           <div className="text-center">
             <p className="text-sm text-[#737373] mb-1">Down</p>
@@ -65,7 +65,7 @@ export function MakeDashboard() {
           </div>
           <div className="text-center">
             <p className="text-sm text-[#737373] mb-1">Avg Utilization</p>
-            <p className="text-[32px] font-bold text-[#0A0A0A]">{avgUtilization}%</p>
+            <p className="text-[32px] font-bold text-[#1A2732]">{avgUtilization}%</p>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@ export function MakeDashboard() {
           return (
             <motion.div key={machine.id} variants={animationVariants.listItem}>
               <Card className={cn(
-                "rounded-lg p-8 cursor-pointer transition-all duration-300 border-4",
+                "rounded-2xl p-8 cursor-pointer transition-all duration-300 border-4",
                 statusConfig.bg,
                 statusConfig.text
               )}>
@@ -95,7 +95,7 @@ export function MakeDashboard() {
                   {machine.currentJob && (
                     <div>
                       <p className="text-[12px] opacity-75 mb-1">Current Job</p>
-                      <p className="text-[18px] font-bold font-['Roboto_Mono',monospace]">{machine.currentJob}</p>
+                      <p className="text-[18px] font-bold ">{machine.currentJob}</p>
                     </div>
                   )}
                   {machine.operator && (
@@ -113,7 +113,7 @@ export function MakeDashboard() {
                           style={{ width: `${machine.utilizationToday}%` }}
                         />
                       </div>
-                      <span className="text-[18px] font-bold font-['Roboto_Mono',monospace] min-w-[60px]">
+                      <span className="text-[18px] font-bold  min-w-[60px]">
                         {machine.utilizationToday}%
                       </span>
                     </div>
@@ -137,7 +137,7 @@ export function MakeDashboard() {
       </div>
 
       {/* Legend */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
         <h3 className="text-sm font-medium text-[#737373] mb-3">STATUS LEGEND</h3>
         <div className="flex flex-wrap gap-4">
           {(['running', 'idle', 'setup', 'down', 'maintenance'] as MachineStatus[]).map(status => {
@@ -145,7 +145,7 @@ export function MakeDashboard() {
             return (
               <div key={status} className="flex items-center gap-2">
                 <div className={cn("w-6 h-6 rounded", config.bg)} />
-                <span className="text-sm text-[#0A0A0A]">{config.label}</span>
+                <span className="text-sm text-[#1A2732]">{config.label}</span>
               </div>
             );
           })}

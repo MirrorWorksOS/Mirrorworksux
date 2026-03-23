@@ -126,7 +126,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
               className="flex-1 flex flex-col items-center justify-center -mt-20"
             >
               <div className="text-2xl font-medium text-white mb-2">Listening...</div>
-              <div className="text-[#A78BFA] font-mono text-xl mb-12 tracking-wider">{formatTime(recordingTime)}</div>
+              <div className="text-[#A78BFA]  text-xl mb-12 tracking-wider">{formatTime(recordingTime)}</div>
 
               {/* Dynamic Waveform Visualization */}
               <div className="h-24 flex items-center justify-center gap-1.5 w-full max-w-[300px]">

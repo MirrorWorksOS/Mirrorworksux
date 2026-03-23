@@ -26,7 +26,7 @@ const getEventColor = (type: 'job' | 'maintenance' | 'qc') => {
   switch (type) {
     case 'job': return 'bg-[#DBEAFE] text-[#0A7AFF] border-[#0A7AFF]';
     case 'maintenance': return 'bg-[#FFEDD5] text-[#FF8B00] border-[#FF8B00]';
-    case 'qc': return 'bg-[#E3FCEF] text-[#36B37E] border-[#36B37E]';
+    case 'qc': return 'bg-[var(--warm-200)] text-[#1A2732] border-[#36B37E]';
   }
 };
 
@@ -39,13 +39,13 @@ export function PlanActivities() {
         <div className="flex items-center gap-4">
           <h1 className="text-[32px] tracking-tight text-[#1A2732]">Production Calendar</h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 w-8 p-0 border-[#E5E5E5]">
+            <Button variant="outline" size="sm" className="h-8 w-8 p-0 border-[var(--border)]">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="text-sm font-medium text-[#0A0A0A] min-w-[120px] text-center">
+            <span className="text-sm font-medium text-[#1A2732] min-w-[120px] text-center">
               {currentDate.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' })}
             </span>
-            <Button variant="outline" size="sm" className="h-8 w-8 p-0 border-[#E5E5E5]">
+            <Button variant="outline" size="sm" className="h-8 w-8 p-0 border-[var(--border)]">
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -67,13 +67,13 @@ export function PlanActivities() {
           <span className="text-sm text-[#737373]">Maintenance</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-[#E3FCEF] border border-[#36B37E] rounded" />
+          <div className="w-3 h-3 bg-[var(--warm-200)] border border-[#36B37E] rounded" />
           <span className="text-sm text-[#737373]">QC</span>
         </div>
       </div>
 
       {/* Calendar Grid */}
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg p-4">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl p-4">
         <div className="grid grid-cols-7 gap-2 mb-4">
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
             <div key={day} className="text-center text-xs font-medium text-[#737373] py-2">
@@ -92,12 +92,12 @@ export function PlanActivities() {
 
             return (
               <div key={i} className={cn(
-                "min-h-[100px] border border-[#E5E5E5] rounded-lg p-2",
-                isValid ? "bg-white hover:bg-[#FAFAFA] cursor-pointer" : "bg-[#F5F5F5]"
+                "min-h-[100px] border border-[var(--border)] rounded-lg p-2",
+                isValid ? "bg-white hover:bg-[#F5F5F5] cursor-pointer" : "bg-[#F5F5F5]"
               )}>
                 {isValid && (
                   <>
-                    <div className="text-sm font-medium text-[#0A0A0A] mb-2">{dayNum}</div>
+                    <div className="text-sm font-medium text-[#1A2732] mb-2">{dayNum}</div>
                     <div className="space-y-1">
                       {dayEvents.map(event => (
                         <div key={event.id} className={cn("text-xs p-1 rounded border-l-2", getEventColor(event.type))}>

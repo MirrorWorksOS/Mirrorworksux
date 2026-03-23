@@ -52,7 +52,7 @@ export function ControlProducts() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Product master</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Product master</h1>
           <p className="text-sm text-[#737373] mt-1">
             {PRODUCTS.filter(p => p.status === 'active').length} active products
           </p>
@@ -70,27 +70,27 @@ export function ControlProducts() {
             placeholder="Search by name or SKU..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm"
+            className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
           />
         </div>
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="h-10 border-[#E5E5E5] w-44 rounded-lg"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-10 border-[var(--border)] w-44 rounded-xl"><SelectValue /></SelectTrigger>
           <SelectContent>
             {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={type} onValueChange={setType}>
-          <SelectTrigger className="h-10 border-[#E5E5E5] w-40 rounded-lg"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-10 border-[var(--border)] w-40 rounded-xl"><SelectValue /></SelectTrigger>
           <SelectContent>
             {TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
 
-      <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+      <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+            <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Product</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">SKU</th>
               <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">Category</th>
@@ -102,36 +102,36 @@ export function ControlProducts() {
           </thead>
           <tbody>
             {filtered.map(p => (
-              <tr key={p.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors', p.status === 'inactive' && 'opacity-60')}>
+              <tr key={p.id} className={cn('border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', p.status === 'inactive' && 'opacity-60')}>
                 <td className="px-4">
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-[#A3A3A3] shrink-0" />
-                    <span className="text-sm text-[#0A0A0A] font-medium">{p.name}</span>
+                    <span className="text-sm text-[#1A2732] font-medium">{p.name}</span>
                   </div>
                 </td>
-                <td className="px-4 text-xs font-['Roboto_Mono',monospace] text-[#737373]">{p.sku}</td>
+                <td className="px-4 text-xs  text-[#737373]">{p.sku}</td>
                 <td className="px-4">
                   <Badge className="bg-[#F5F5F5] text-[#737373] border-0 text-xs">{p.category}</Badge>
                 </td>
                 <td className="px-4">
                   <div className="flex justify-center">
                     <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                      p.type === 'Manufactured' ? 'bg-[#DBEAFE] text-[#0A7AFF]' : 'bg-[#E3FCEF] text-[#36B37E]'
+                      p.type === 'Manufactured' ? 'bg-[var(--warm-200)] text-[#1A2732]' : 'bg-[var(--warm-200)] text-[#1A2732]'
                     )}>
                       {p.type}
                     </Badge>
                   </div>
                 </td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">
+                <td className="px-4 text-right text-sm  font-medium text-[#1A2732]">
                   {p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '—'}
                 </td>
-                <td className="px-4 text-right text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">
+                <td className="px-4 text-right text-sm  font-medium text-[#1A2732]">
                   {p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '—'}
                 </td>
                 <td className="px-4">
                   <div className="flex justify-center">
                     {p.hasBOM
-                      ? <Badge className="bg-[#E3FCEF] text-[#36B37E] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
+                      ? <Badge className="bg-[var(--warm-200)] text-[#1A2732] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
                       : <span className="text-xs text-[#A3A3A3]">—</span>
                     }
                   </div>

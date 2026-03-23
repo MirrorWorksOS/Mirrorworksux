@@ -42,9 +42,9 @@ const mockInvoices: Invoice[] = [
 const getStatusBadge = (status: InvoiceStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Draft', dot: '#737373' };
-    case 'sent': return { bg: 'bg-[#DEEBFF]', text: 'text-[#0052CC]', label: 'Sent', dot: '#0052CC' };
-    case 'paid': return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Paid', dot: '#36B37E' };
-    case 'overdue': return { bg: 'bg-[#FFEBE6]', text: 'text-[#DE350B]', label: 'Overdue', dot: '#DE350B' };
+    case 'sent': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Sent', dot: '#1A2732' };
+    case 'paid': return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'Paid', dot: '#1A2732' };
+    case 'overdue': return { bg: 'bg-[#DE350B]/10', text: 'text-[#DE350B]', label: 'Overdue', dot: '#DE350B' };
   }
 };
 
@@ -71,21 +71,21 @@ export function SellInvoices() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Invoices</h1>
+          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Invoices</h1>
           <p className="text-sm text-[#737373] mt-1">
             {filteredInvoices.length} invoices • ${totalValue.toLocaleString()} total • ${totalOutstanding.toLocaleString()} outstanding
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedDownload className="w-4 h-4" />
             Export
           </Button>
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded group">
+          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Invoice
           </Button>
@@ -93,7 +93,7 @@ export function SellInvoices() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E5E5E5]">
+      <div className="flex items-center gap-2 border-b border-[var(--border)]">
         {(['all', 'draft', 'sent', 'paid', 'overdue'] as TabFilter[]).map(tab => (
           <button
             key={tab}
@@ -113,13 +113,13 @@ export function SellInvoices() {
 
       {/* Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12">
-                    <input type="checkbox" className="rounded border-[#E5E5E5]" />
+                    <input type="checkbox" className="rounded border-[var(--border)]" />
                   </th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">INVOICE #</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CUSTOMER</th>
@@ -139,12 +139,12 @@ export function SellInvoices() {
                     : 0;
 
                   return (
-                    <tr key={invoice.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#FAFAFA]")}>
+                    <tr key={invoice.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
                       <td className="px-4">
-                        <input type="checkbox" className="rounded border-[#E5E5E5]" />
+                        <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/invoices/${invoice.id}`} className="text-[#0052CC] font-mono text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/invoices/${invoice.id}`} className="text-[#0A0A0A]  text-sm font-medium hover:underline flex items-center gap-1">
                           {invoice.invoiceNumber}
                           <ExternalLink className="w-3 h-3" />
                         </a>
@@ -167,8 +167,8 @@ export function SellInvoices() {
                           </Badge>
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm font-mono font-medium">${invoice.total.toLocaleString()}</td>
-                      <td className="px-4 text-right text-sm font-mono font-medium" style={{ color: invoice.balanceDue > 0 ? '#DE350B' : '#36B37E' }}>
+                      <td className="px-4 text-right text-sm  font-medium">${invoice.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm  font-medium" style={{ color: invoice.balanceDue > 0 ? '#DE350B' : '#36B37E' }}>
                         ${invoice.balanceDue.toLocaleString()}
                       </td>
                       <td className="px-4">
@@ -184,11 +184,11 @@ export function SellInvoices() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E5E5E5]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
             <p className="text-xs text-[#737373]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[#E5E5E5] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[#E5E5E5] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Next</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Previous</button>
+              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[#F5F5F5] disabled:opacity-50" disabled>Next</button>
             </div>
           </div>
         </Card>

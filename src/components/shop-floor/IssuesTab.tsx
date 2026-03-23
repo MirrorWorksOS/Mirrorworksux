@@ -139,7 +139,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
            </div>
         </div>
       </div>
-      <Button variant="outline" size="sm" className="bg-white border-[#E5E4E0] hover:bg-[#F8F7F4] text-[#2C2C2C] rounded-[8px] h-9">
+      <Button variant="outline" size="sm" className="bg-white border-[#E5E4E0] hover:bg-[#F5F5F5] text-[#2C2C2C] rounded-[8px] h-9">
          View Details
       </Button>
     </div>
@@ -157,7 +157,7 @@ export function IssuesTab() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-4 bg-[#F8F7F4]">
+    <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-4 bg-[#F5F5F5]">
       
       {/* Hero Action Section */}
       <div className="shrink-0 py-4 flex justify-start items-center gap-6">
@@ -273,7 +273,7 @@ export function IssuesTab() {
 
             {/* Active Issues Panel */}
             <div className="bg-white rounded-[16px] border border-[#E5E4E0] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
-               <div className="p-5 border-b border-[#E5E4E0] bg-[#F8F7F4] flex items-center justify-between">
+               <div className="p-5 border-b border-[#E5E4E0] bg-[#F5F5F5] flex items-center justify-between">
                   <h3 className="font-bold text-[#2C2C2C] text-lg flex items-center gap-2">
                      <AlertTriangle className="w-5 h-5 text-[#6B6B6B]" /> ACTIVE ISSUES
                   </h3>
@@ -313,7 +313,7 @@ export function IssuesTab() {
                      <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-black border-0 rounded-[4px] font-bold">ATTENTION</Badge>
                   </div>
                </div>
-               <div className="bg-[#F8F7F4] p-3 text-center border-t border-[#E5E4E0]">
+               <div className="bg-[#F5F5F5] p-3 text-center border-t border-[#E5E4E0]">
                   <Button variant="link" size="sm" className="text-[#6B6B6B] hover:text-[#2C2C2C] h-auto p-0 font-medium">View Full Andon Board</Button>
                </div>
             </Card>

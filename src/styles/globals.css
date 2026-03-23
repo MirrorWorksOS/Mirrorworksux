@@ -28,10 +28,9 @@
 }
 
 :root {
-  /* Font Family */
+  /* Font Family — Roboto only, M3 */
   --font-sans: 'Roboto', sans-serif;
   --font-family-sans: 'Roboto', sans-serif;
-  --font-family-mono: 'Roboto Mono', monospace;
 
   /* MW Yellow Scale */
   --mw-yellow-50: #FFFBF0;
@@ -45,7 +44,7 @@
   --mw-yellow-800: #A67300;
   --mw-yellow-900: #805900;
 
-  /* Neutral Scale */
+  /* Neutral Scale — as per DESIGN_SYSTEM.md */
   --neutral-50: #FAFAFA;
   --neutral-100: #F5F5F5;
   --neutral-200: #E5E5E5;
@@ -61,7 +60,7 @@
   --mw-mirage: #1A2732;
   --mw-off-white: #F8F7F4;
 
-  /* Status Colours */
+  /* Status Colours — dots and badges only, never card backgrounds */
   --mw-success: #36B37E;
   --mw-info: #0052CC;
   --mw-warning: #FACC15;
@@ -107,76 +106,57 @@
   --state-dragged: 0.16;
 
   /* M3 Typography Scale Variables */
-  /* Display */
   --font-display-large: 57px;
   --line-display-large: 64px;
   --tracking-display-large: -0.25px;
-  
   --font-display-medium: 45px;
   --line-display-medium: 52px;
   --tracking-display-medium: 0px;
-
   --font-display-small: 36px;
   --line-display-small: 44px;
   --tracking-display-small: 0px;
-
-  /* Headline */
   --font-headline-large: 32px;
   --line-headline-large: 40px;
   --tracking-headline-large: 0px;
-
   --font-headline-medium: 28px;
   --line-headline-medium: 36px;
   --tracking-headline-medium: 0px;
-
   --font-headline-small: 24px;
   --line-headline-small: 32px;
   --tracking-headline-small: 0px;
-
-  /* Title */
   --font-title-large: 22px;
   --line-title-large: 28px;
   --tracking-title-large: 0px;
-
   --font-title-medium: 16px;
   --line-title-medium: 24px;
   --tracking-title-medium: 0.15px;
-
   --font-title-small: 14px;
   --line-title-small: 20px;
   --tracking-title-small: 0.1px;
-
-  /* Body */
   --font-body-large: 16px;
   --line-body-large: 24px;
   --tracking-body-large: 0.5px;
-
   --font-body-medium: 14px;
   --line-body-medium: 20px;
   --tracking-body-medium: 0.25px;
-
   --font-body-small: 12px;
   --line-body-small: 16px;
   --tracking-body-small: 0.4px;
-
-  /* Label */
   --font-label-large: 14px;
   --line-label-large: 20px;
   --tracking-label-large: 0.1px;
-
   --font-label-medium: 12px;
   --line-label-medium: 16px;
   --tracking-label-medium: 0.5px;
-
   --font-label-small: 11px;
   --line-label-small: 16px;
   --tracking-label-small: 0.5px;
 
-  /* Colors and Base Vars */
+  /* Colors and Base Vars — 60-30-10 rule */
   --font-size: 16px;
   --background: #F5F5F5;
   --foreground: #0A0A0A;
-  --card: #ffffff;
+  --card: #FFFFFF;
   --card-foreground: #0A0A0A;
   --popover: #FFFFFF;
   --popover-foreground: #0A0A0A;
@@ -188,7 +168,7 @@
   --muted-foreground: #737373;
   --accent: #FFFBF0;
   --accent-foreground: #2C2C2C;
-  --destructive: #d4183d;
+  --destructive: #DE350B;
   --destructive-foreground: #ffffff;
   --border: #E5E5E5;
   --input: #F5F5F5;
@@ -197,20 +177,25 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: #0A0A0A;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Charts — monochromatic: yellow hero, greys supporting */
+  --chart-1: #FFCF4B;
+  --chart-2: #1A2732;
+  --chart-3: #A3A3A3;
+  --chart-4: #D4D4D4;
+  --chart-5: #737373;
+
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.002 264);
-  --sidebar-accent-foreground: oklch(0.145 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Sidebar */
+  --sidebar: #FAFAFA;
+  --sidebar-foreground: #0A0A0A;
+  --sidebar-primary: #1A2732;
+  --sidebar-primary-foreground: #FAFAFA;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #0A0A0A;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #737373;
 }
 
 .dark {
@@ -252,7 +237,6 @@
 
 @theme inline {
   --font-sans: var(--font-family-sans);
-  --font-mono: var(--font-family-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -295,65 +279,46 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Collapsible Animations */
   @keyframes collapsible-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-collapsible-content-height);
-    }
+    from { height: 0; }
+    to { height: var(--radix-collapsible-content-height); }
   }
-
   @keyframes collapsible-up {
-    from {
-      height: var(--radix-collapsible-content-height);
-    }
-    to {
-      height: 0;
-    }
+    from { height: var(--radix-collapsible-content-height); }
+    to { height: 0; }
   }
-
-  /* Icon Animations - Subtle and Professional */
   @keyframes wiggle {
     0%, 100% { transform: rotate(0deg); }
     10%, 30% { transform: rotate(-3deg); }
     20%, 40% { transform: rotate(3deg); }
   }
-
   @keyframes bounce-subtle {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
   }
-
   @keyframes scale-in {
     0% { transform: scale(0); opacity: 0; }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); opacity: 1; }
   }
-
   @keyframes slide-up {
     0% { transform: translateY(4px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
   }
-
   @keyframes slide-down {
     0% { transform: translateY(-4px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
   }
-
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.8; }
   }
-
   @keyframes sparkle {
     0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
     25% { opacity: 0.7; transform: scale(0.95) rotate(-5deg); }
     50% { opacity: 1; transform: scale(1.05) rotate(5deg); }
     75% { opacity: 0.7; transform: scale(0.95) rotate(-5deg); }
   }
-
   @keyframes tick {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -375,87 +340,20 @@
   }
 }
 
-/**
- * M3 Typography Mapping
- */
+/** M3 Typography Mapping */
 @layer base {
   :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
-    h1 {
-      font-size: var(--font-headline-large);
-      line-height: var(--line-headline-large);
-      font-weight: 400;
-      letter-spacing: var(--tracking-headline-large);
-    }
-
-    h2 {
-      font-size: var(--font-headline-medium);
-      line-height: var(--line-headline-medium);
-      font-weight: 400;
-      letter-spacing: var(--tracking-headline-medium);
-    }
-
-    h3 {
-      font-size: var(--font-headline-small);
-      line-height: var(--line-headline-small);
-      font-weight: 400;
-      letter-spacing: var(--tracking-headline-small);
-    }
-
-    h4 {
-      font-size: var(--font-title-large);
-      line-height: var(--line-title-large);
-      font-weight: 400;
-      letter-spacing: var(--tracking-title-large);
-    }
-
-    h5 {
-      font-size: var(--font-title-medium);
-      line-height: var(--line-title-medium);
-      font-weight: 500;
-      letter-spacing: var(--tracking-title-medium);
-    }
-    
-    h6 {
-      font-size: var(--font-title-small);
-      line-height: var(--line-title-small);
-      font-weight: 500;
-      letter-spacing: var(--tracking-title-small);
-    }
-
-    p {
-      font-size: var(--font-body-large);
-      line-height: var(--line-body-large);
-      font-weight: 400;
-      letter-spacing: var(--tracking-body-large);
-    }
-
-    label {
-      font-size: var(--font-label-large);
-      line-height: var(--line-label-large);
-      font-weight: 500;
-      letter-spacing: var(--tracking-label-large);
-    }
-
-    button {
-      font-size: var(--font-label-large);
-      line-height: var(--line-label-large);
-      font-weight: 500;
-      letter-spacing: var(--tracking-label-large);
-    }
-
-    input, textarea, select {
-      font-size: var(--font-body-large);
-      line-height: var(--line-body-large);
-      font-weight: 400;
-      letter-spacing: var(--tracking-body-large);
-    }
-    
-    small {
-      font-size: var(--font-body-small);
-      line-height: var(--line-body-small);
-      font-weight: 400;
-      letter-spacing: var(--tracking-body-small);
-    }
+    h1 { font-size: var(--font-headline-large); line-height: var(--line-headline-large); font-weight: 400; letter-spacing: var(--tracking-headline-large); }
+    h2 { font-size: var(--font-headline-medium); line-height: var(--line-headline-medium); font-weight: 400; letter-spacing: var(--tracking-headline-medium); }
+    h3 { font-size: var(--font-headline-small); line-height: var(--line-headline-small); font-weight: 400; letter-spacing: var(--tracking-headline-small); }
+    h4 { font-size: var(--font-title-large); line-height: var(--line-title-large); font-weight: 400; letter-spacing: var(--tracking-title-large); }
+    h5 { font-size: var(--font-title-medium); line-height: var(--line-title-medium); font-weight: 500; letter-spacing: var(--tracking-title-medium); }
+    h6 { font-size: var(--font-title-small); line-height: var(--line-title-small); font-weight: 500; letter-spacing: var(--tracking-title-small); }
+    p { font-size: var(--font-body-large); line-height: var(--line-body-large); font-weight: 400; letter-spacing: var(--tracking-body-large); }
+    label { font-size: var(--font-label-large); line-height: var(--line-label-large); font-weight: 500; letter-spacing: var(--tracking-label-large); }
+    button { font-size: var(--font-label-large); line-height: var(--line-label-large); font-weight: 500; letter-spacing: var(--tracking-label-large); }
+    input, textarea, select { font-size: var(--font-body-large); line-height: var(--line-body-large); font-weight: 400; letter-spacing: var(--tracking-body-large); }
+    small { font-size: var(--font-body-small); line-height: var(--line-body-small); font-weight: 400; letter-spacing: var(--tracking-body-small); }
   }
 }
 

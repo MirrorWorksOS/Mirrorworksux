@@ -33,7 +33,7 @@ export function PermissionGrid({ resolved, grantedBy }: PermissionGridProps) {
   }));
 
   return (
-    <div className="rounded-xl border border-[#E5E5E5] bg-white p-4">
+    <div className="rounded-xl border border-[var(--border)] bg-white p-4">
       <div className="grid grid-cols-1 gap-1 md:grid-cols-2 md:gap-0">
         {rows.map((row, idx) => {
           const value = resolved[row.key];
@@ -44,7 +44,7 @@ export function PermissionGrid({ resolved, grantedBy }: PermissionGridProps) {
           return (
             <div
               key={row.key}
-              className={`grid min-h-10 grid-cols-[1fr_auto] items-center gap-3 rounded-md px-3 ${striped ? 'bg-[#F8F7F4]' : 'bg-transparent'}`}
+              className={`grid min-h-10 grid-cols-[1fr_auto] items-center gap-3 rounded-md px-3 ${striped ? 'bg-[#F5F5F5]' : 'bg-transparent'}`}
             >
               <p className="text-sm text-[#2C2C2C]">{row.label}</p>
               <TooltipProvider delayDuration={200}>
@@ -55,8 +55,8 @@ export function PermissionGrid({ resolved, grantedBy }: PermissionGridProps) {
                         <span>{value === 'all' ? 'All records' : 'Own records'}</span>
                       ) : value ? (
                         <>
-                          <CheckCircle2 className="h-3.5 w-3.5 text-[#36B37E]" />
-                          <span className="text-[#36B37E]">Enabled</span>
+                          <CheckCircle2 className="h-3.5 w-3.5 text-[#1A2732]" />
+                          <span className="text-[#1A2732]">Enabled</span>
                         </>
                       ) : (
                         <>

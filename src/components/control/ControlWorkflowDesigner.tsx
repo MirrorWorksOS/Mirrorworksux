@@ -29,7 +29,7 @@ const WORKFLOWS = [
 type WFStatus = 'active' | 'paused' | 'draft';
 
 const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
-  active: { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]' },
+  active: { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]' },
   paused: { bg: 'bg-[#FFEDD5]', text: 'text-[#FF8B00]' },
   draft:  { bg: 'bg-[#F5F5F5]', text: 'text-[#737373]' },
 };
@@ -39,12 +39,12 @@ const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
 const NODE_PALETTE = [
   { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[#FF8B00]', icon: Zap         },
   { kind: 'ai',           label: 'AI action',      bg: 'bg-[#7C3AED]', icon: Sparkles    },
-  { kind: 'action',       label: 'Update record',  bg: 'bg-[#36B37E]', icon: RefreshCw   },
+  { kind: 'action',       label: 'Update record',  bg: 'bg-[#1A2732]', icon: RefreshCw   },
   { kind: 'notification', label: 'Notification',   bg: 'bg-[#0A7AFF]', icon: Bell        },
-  { kind: 'condition',    label: 'Condition',      bg: 'bg-[#0052CC]', icon: GitBranch   },
+  { kind: 'condition',    label: 'Condition',      bg: 'bg-[#1A2732]', icon: GitBranch   },
   { kind: 'email',        label: 'Send email',     bg: 'bg-[#0A7AFF]', icon: Mail        },
-  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[#36B37E]', icon: ShoppingCart},
-  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[#36B37E]', icon: Calendar    },
+  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[#1A2732]', icon: ShoppingCart},
+  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[#1A2732]', icon: Calendar    },
   { kind: 'machine',      label: 'Assign machine', bg: 'bg-[#525252]', icon: Settings2   },
   { kind: 'hold',         label: 'Hold job',       bg: 'bg-[#EF4444]', icon: Pause       },
 ];
@@ -59,10 +59,10 @@ function NodeDetailPanel({
   onClose: () => void;
 }) {
   return (
-    <div className="w-[272px] flex-shrink-0 border-l border-[#E5E5E5] bg-white flex flex-col overflow-hidden">
+    <div className="w-[272px] flex-shrink-0 border-l border-[var(--border)] bg-white flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="h-14 border-b border-[#E5E5E5] px-4 flex items-center justify-between flex-shrink-0">
-        <span className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A]">
+      <div className="h-14 border-b border-[var(--border)] px-4 flex items-center justify-between flex-shrink-0">
+        <span className="text-[14px] font-semibold text-[#1A2732]">
           Node properties
         </span>
         <button
@@ -78,7 +78,7 @@ function NodeDetailPanel({
         {/* Kind badge */}
         <div>
           <p className="text-[11px] font-medium text-[#737373] uppercase tracking-wider mb-1.5">Node type</p>
-          <span className="inline-flex items-center gap-1.5 bg-[#F5F5F5] border border-[#E5E5E5] px-2 py-1 rounded text-[12px] text-[#0A0A0A] capitalize font-medium">
+          <span className="inline-flex items-center gap-1.5 bg-[#F5F5F5] border border-[var(--border)] px-2 py-1 rounded text-[12px] text-[#1A2732] capitalize font-medium">
             {node.kind}
           </span>
         </div>
@@ -89,7 +89,7 @@ function NodeDetailPanel({
             Title
           </label>
           <input
-            className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A] outline-none transition-colors"
+            className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#1A2732] focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] outline-none transition-colors"
             defaultValue={node.title}
           />
         </div>
@@ -101,7 +101,7 @@ function NodeDetailPanel({
               {label}
             </label>
             <input
-              className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A] outline-none transition-colors"
+              className="w-full bg-[#F5F5F5] border border-transparent rounded-md px-3 py-2 text-[13px] text-[#1A2732] focus:bg-white focus:border-[#1A2732] focus:ring-1 focus:ring-[#1A2732] outline-none transition-colors"
               defaultValue={value}
             />
           </div>
@@ -119,7 +119,7 @@ function NodeDetailPanel({
       </div>
 
       {/* AI tip */}
-      <div className="p-4 border-t border-[#E5E5E5] flex-shrink-0">
+      <div className="p-4 border-t border-[var(--border)] flex-shrink-0">
         <AIInsightCard title="AI suggestion" className="text-[11px]">
           {node.kind === 'condition'
             ? 'Condition nodes work best with a 2–3 branch limit. Add an "Else" branch to catch unmatched cases.'
@@ -157,12 +157,12 @@ export function ControlWorkflowDesigner() {
     <div className="flex h-full overflow-hidden">
 
       {/* ── Left panel ────────────────────────────────────────────────────── */}
-      <div className="w-[268px] flex-shrink-0 border-r border-[#E5E5E5] bg-white flex flex-col overflow-hidden">
+      <div className="w-[268px] flex-shrink-0 border-r border-[var(--border)] bg-white flex flex-col overflow-hidden">
 
         {/* Panel header */}
-        <div className="p-4 border-b border-[#E5E5E5] space-y-3 flex-shrink-0">
+        <div className="p-4 border-b border-[var(--border)] space-y-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A]">
+            <h2 className="text-[14px] font-semibold text-[#1A2732]">
               Workflows
             </h2>
             <Button size="sm" className="h-7 w-7 p-0 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C]">
@@ -177,7 +177,7 @@ export function ControlWorkflowDesigner() {
               <span className="text-[12px] font-semibold text-[#7C3AED]">Generate with AI</span>
             </div>
             <textarea
-              className="w-full bg-white border border-[#E5E5E5] rounded-md text-[12px] px-2.5 py-2 text-[#0A0A0A] resize-none focus:outline-none focus:border-[#7C3AED] transition-colors leading-relaxed"
+              className="w-full bg-white border border-[var(--border)] rounded-md text-[12px] px-2.5 py-2 text-[#1A2732] resize-none focus:outline-none focus:border-[#7C3AED] transition-colors leading-relaxed"
               rows={2}
               placeholder="e.g. When a job is overdue, notify the manager and reschedule the machine…"
               value={aiPrompt}
@@ -213,11 +213,11 @@ export function ControlWorkflowDesigner() {
                 onClick={() => { setSelectedWF(wf); setSelectedNode(null); }}
                 className={cn(
                   'w-full text-left px-3 py-2.5 rounded-lg transition-colors',
-                  isSelected ? 'bg-[#F5F5F5] border border-[#E5E5E5]' : 'hover:bg-[#F5F5F5]',
+                  isSelected ? 'bg-[#F5F5F5] border border-[var(--border)]' : 'hover:bg-[#F5F5F5]',
                 )}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[13px] font-medium text-[#0A0A0A] truncate pr-2 leading-tight">{wf.name}</span>
+                  <span className="text-[13px] font-medium text-[#1A2732] truncate pr-2 leading-tight">{wf.name}</span>
                   <Badge className={cn('text-[10px] px-1.5 py-0 h-4 border-0 flex-shrink-0 rounded', sc.bg, sc.text)}>
                     {wf.status}
                   </Badge>
@@ -230,7 +230,7 @@ export function ControlWorkflowDesigner() {
         </div>
 
         {/* Node palette */}
-        <div className="border-t border-[#E5E5E5] p-3 flex-shrink-0">
+        <div className="border-t border-[var(--border)] p-3 flex-shrink-0">
           <p className="text-[11px] font-medium text-[#737373] uppercase tracking-wider mb-2">
             Node palette
           </p>
@@ -240,13 +240,13 @@ export function ControlWorkflowDesigner() {
               return (
                 <div
                   key={nt.kind}
-                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[#FAFAFA] border border-[#E5E5E5] cursor-grab active:cursor-grabbing hover:bg-[#F5F5F5] transition-colors"
+                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[#F5F5F5] border border-[var(--border)] cursor-grab active:cursor-grabbing hover:bg-[#F5F5F5] transition-colors"
                   draggable
                 >
                   <div className={cn('w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0', nt.bg)}>
                     <Icon className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-[11px] text-[#0A0A0A] truncate leading-tight">{nt.label}</span>
+                  <span className="text-[11px] text-[#1A2732] truncate leading-tight">{nt.label}</span>
                 </div>
               );
             })}
@@ -258,13 +258,13 @@ export function ControlWorkflowDesigner() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Toolbar */}
-        <div className="h-14 border-b border-[#E5E5E5] bg-white flex items-center px-4 gap-3 flex-shrink-0">
+        <div className="h-14 border-b border-[var(--border)] bg-white flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
           <div className="w-8 h-8 bg-[#7C3AED] rounded-lg flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-['Geist:SemiBold',sans-serif] text-[14px] font-semibold text-[#0A0A0A] truncate leading-tight">
+            <p className="text-[14px] font-semibold text-[#1A2732] truncate leading-tight">
               {selectedWF.name}
             </p>
             <p className="text-[11px] text-[#737373]">Trigger: {selectedWF.trigger}</p>
@@ -277,13 +277,13 @@ export function ControlWorkflowDesigner() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[#E5E5E5] text-[#0A0A0A] text-[12px] hidden sm:flex">
+            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[#1A2732] text-[12px] hidden sm:flex">
               <Edit2 className="w-3.5 h-3.5" /> Edit
             </Button>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[#E5E5E5] text-[#0A0A0A] text-[12px] hidden md:flex">
+            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[#1A2732] text-[12px] hidden md:flex">
               <Copy className="w-3.5 h-3.5" /> Duplicate
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[#36B37E] hover:bg-[#2D9E6D] text-white text-[12px]">
+            <Button size="sm" className="h-8 gap-1.5 bg-[#1A2732] hover:bg-[#2D9E6D] text-white text-[12px]">
               <Play className="w-3.5 h-3.5" /> Run
             </Button>
             <Button size="sm" className="h-8 gap-1.5 bg-[#FFCF4B] hover:bg-[#EBC028] text-[#2C2C2C] text-[12px] font-medium">

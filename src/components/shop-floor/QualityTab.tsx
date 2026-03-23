@@ -189,7 +189,7 @@ export function QualityTab() {
   const [showLogModal, setShowLogModal] = useState(false);
 
   return (
-    <div className="flex flex-col h-full bg-[#F8F7F4] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
+    <div className="flex flex-col h-full bg-[#F5F5F5] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 flex-shrink-0">
@@ -288,7 +288,7 @@ export function QualityTab() {
                    <Badge variant="secondary" className="bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20 border-0 mb-4 font-medium">
                      {hold.issue}
                    </Badge>
-                   <Button variant="outline" className="w-full h-10 border-[#E5E4E0] text-[#2C2C2C] hover:bg-[#F8F7F4]">
+                   <Button variant="outline" className="w-full h-10 border-[#E5E4E0] text-[#2C2C2C] hover:bg-[#F5F5F5]">
                      Review Hold
                    </Button>
                 </div>
@@ -315,7 +315,7 @@ export function QualityTab() {
                <div className="bg-white rounded-[16px] border border-[#E5E4E0] shadow-sm overflow-hidden">
                  {RECENT_INSPECTIONS.map((insp, i) => (
                    <div key={insp.id} className={cn(
-                     "flex items-center justify-between p-4 hover:bg-[#F8F7F4] transition-colors cursor-pointer",
+                     "flex items-center justify-between p-4 hover:bg-[#F5F5F5] transition-colors cursor-pointer",
                      i !== RECENT_INSPECTIONS.length - 1 && "border-b border-[#E5E4E0]"
                    )}>
                       <div className="flex flex-col gap-1">
@@ -463,12 +463,12 @@ export function QualityTab() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {INSPECTION_TEMPLATES.map((tpl, i) => (
                <Card key={i} className="p-6 border-[#E5E4E0] shadow-md rounded-[16px] hover:shadow-lg transition-shadow cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-[#F8F7F4] flex items-center justify-center mb-4 group-hover:bg-[#FFCF4B]/20 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-[#F5F5F5] flex items-center justify-center mb-4 group-hover:bg-[#FFCF4B]/20 transition-colors">
                      <tpl.icon className="w-6 h-6 text-[#2C2C2C]" />
                   </div>
                   <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{tpl.title}</h3>
                   <p className="text-sm text-[#6B6B6B] mb-6 min-h-[40px]">{tpl.desc}</p>
-                  <Button variant="outline" className="w-full border-[#E5E4E0] text-[#2C2C2C] font-medium h-11 hover:bg-[#F8F7F4]">Start Inspection</Button>
+                  <Button variant="outline" className="w-full border-[#E5E4E0] text-[#2C2C2C] font-medium h-11 hover:bg-[#F5F5F5]">Start Inspection</Button>
                </Card>
              ))}
           </div>
@@ -481,7 +481,7 @@ export function QualityTab() {
            {REPORTS.map((report, i) => (
               <Card key={i} className="p-6 border-[#E5E4E0] shadow-md rounded-[16px]">
                   <div className="flex items-start justify-between mb-4">
-                     <div className="w-10 h-10 rounded-lg bg-[#F8F7F4] flex items-center justify-center">
+                     <div className="w-10 h-10 rounded-lg bg-[#F5F5F5] flex items-center justify-center">
                         <BarChart3 className="w-5 h-5 text-[#6B6B6B]" />
                      </div>
                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[#6B6B6B]"><MoreHorizontal className="w-4 h-4"/></Button>
@@ -514,7 +514,7 @@ export function QualityTab() {
                     <label className="text-sm font-semibold text-[#2C2C2C]">Issue Type <span className="text-red-500">*</span></label>
                     <div className="grid grid-cols-2 gap-3">
                        {['Material Defect', 'Dimensional', 'Surface Finish', 'Equipment Failure'].map(type => (
-                          <button key={type} className="h-12 border border-[#E5E4E0] rounded-lg text-sm font-medium text-[#2C2C2C] hover:bg-[#F8F7F4] hover:border-[#2C2C2C] transition-colors focus:ring-2 focus:ring-[#FFCF4B] focus:border-transparent outline-none">
+                          <button key={type} className="h-12 border border-[#E5E4E0] rounded-lg text-sm font-medium text-[#2C2C2C] hover:bg-[#F5F5F5] hover:border-[#2C2C2C] transition-colors focus:ring-2 focus:ring-[#FFCF4B] focus:border-transparent outline-none">
                              {type}
                           </button>
                        ))}
@@ -573,7 +573,7 @@ export function QualityTab() {
                  </div>
               </div>
 
-              <div className="p-6 border-t border-[#E5E4E0] bg-[#F8F7F4] flex items-center justify-between gap-4">
+              <div className="p-6 border-t border-[#E5E4E0] bg-[#F5F5F5] flex items-center justify-between gap-4">
                  <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1 h-12 bg-white border-[#E5E4E0] text-[#6B6B6B] font-medium hover:text-[#2C2C2C]">
                     Cancel
                  </Button>

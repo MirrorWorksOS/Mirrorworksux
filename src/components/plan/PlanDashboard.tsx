@@ -36,27 +36,27 @@ export function PlanDashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
               <Calendar className="w-5 h-5 text-[#0A7AFF]" />
             </div>
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Active Jobs</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">{kpiData.activeJobs}</p>
+          <p className=" text-[24px] font-semibold text-[#1A2732]">{kpiData.activeJobs}</p>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center">
-              <Wrench className="w-5 h-5 text-[#36B37E]" />
+            <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+              <Wrench className="w-5 h-5 text-[#1A2732]" />
             </div>
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Scheduled MOs</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">{kpiData.scheduledMOs}</p>
+          <p className=" text-[24px] font-semibold text-[#1A2732]">{kpiData.scheduledMOs}</p>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 bg-[#FEE2E2] rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-[#EF4444]" />
@@ -64,45 +64,45 @@ export function PlanDashboard() {
             <Badge className="bg-[#FEE2E2] text-[#EF4444] border-0">{kpiData.overdueJobs}</Badge>
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Overdue Jobs</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#EF4444]">{kpiData.overdueJobs}</p>
+          <p className=" text-[24px] font-semibold text-[#EF4444]">{kpiData.overdueJobs}</p>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center mb-4">
             <Clock className="w-5 h-5 text-[#FF8B00]" />
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Avg Lead Time</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">{kpiData.avgLeadTime} days</p>
+          <p className=" text-[24px] font-semibold text-[#1A2732]">{kpiData.avgLeadTime} days</p>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-          <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center mb-4">
-            <TrendingUp className="w-5 h-5 text-[#36B37E]" />
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
+          <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center mb-4">
+            <TrendingUp className="w-5 h-5 text-[#1A2732]" />
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">Utilization Rate</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#36B37E]">{kpiData.utilizationRate}%</p>
+          <p className=" text-[24px] font-semibold text-[#1A2732]">{kpiData.utilizationRate}%</p>
         </motion.div>
 
-        <motion.div variants={animationVariants.listItem} className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <motion.div variants={animationVariants.listItem} className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center mb-4">
             <Package className="w-5 h-5 text-[#0A7AFF]" />
           </div>
           <h3 className="text-[13px] text-[#737373] mb-1">On-Time Delivery</h3>
-          <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#36B37E]">{kpiData.onTimeDelivery}%</p>
+          <p className=" text-[24px] font-semibold text-[#1A2732]">{kpiData.onTimeDelivery}%</p>
         </motion.div>
       </div>
 
       {/* Weekly Capacity Chart */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
-          <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A] mb-4">Weekly Capacity (% Utilization)</h3>
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
+          <h3 className=" text-[16px] font-semibold text-[#1A2732] mb-4">Weekly Capacity (% Utilization)</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={weeklyCapacity}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
               <XAxis dataKey="week" tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }} />
               <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar key="planned" dataKey="planned" fill="#E5E5E5" radius={[4, 4, 0, 0]} name="Planned" />
+              <Bar key="planned" dataKey="planned" fill="#E8E2D9" radius={[4, 4, 0, 0]} name="Planned" />
               <Bar key="actual" dataKey="actual" fill="#FFCF4B" radius={[4, 4, 0, 0]} name="Actual" />
             </BarChart>
           </ResponsiveContainer>

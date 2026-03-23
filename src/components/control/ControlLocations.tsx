@@ -66,7 +66,7 @@ const LOCATIONS = [
 
 const TYPE_CONFIG: Record<string, { icon: any; badge: string; text: string }> = {
   Factory:   { icon: Building2, badge: 'bg-[#DBEAFE]',  text: 'text-[#0A7AFF]' },
-  Warehouse: { icon: Warehouse, badge: 'bg-[#E3FCEF]',  text: 'text-[#36B37E]' },
+  Warehouse: { icon: Warehouse, badge: 'bg-[var(--warm-200)]',  text: 'text-[#1A2732]' },
   Office:    { icon: MapPin,    badge: 'bg-[#F5F5F5]',  text: 'text-[#737373]' },
   Storage:   { icon: Warehouse, badge: 'bg-[#FFEDD5]',  text: 'text-[#FF8B00]' },
 };
@@ -88,7 +88,7 @@ export function ControlLocations() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Locations</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Locations</h1>
           <p className="text-sm text-[#737373] mt-1">{LOCATIONS.filter(l => l.status === 'active').length} active sites</p>
         </div>
         <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2">
@@ -103,7 +103,7 @@ export function ControlLocations() {
           placeholder="Search locations..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-lg text-sm"
+          className="pl-10 h-10 bg-[#F5F5F5] border-transparent rounded-xl text-sm"
         />
       </div>
 
@@ -114,14 +114,14 @@ export function ControlLocations() {
           const Icon = cfg.icon;
           return (
             <motion.div key={loc.id} variants={animationVariants.listItem}>
-              <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-[#F5F5F5] rounded-lg flex items-center justify-center shrink-0">
                       <Icon className="w-5 h-5 text-[#737373]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[15px] text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors">
+                      <h3 className="font-semibold text-[15px] text-[#1A2732] group-hover:text-[#FFCF4B] transition-colors">
                         {loc.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -134,7 +134,7 @@ export function ControlLocations() {
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#0A0A0A] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#FFCF4B] transition-colors" />
                 </div>
 
                 <div className="space-y-2 mb-4">
@@ -147,15 +147,15 @@ export function ControlLocations() {
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[#F5F5F5]">
                   <div>
                     <p className="text-xs text-[#737373] mb-0.5">Floor area</p>
-                    <p className="text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{loc.floorArea}</p>
+                    <p className="text-sm  font-medium text-[#1A2732]">{loc.floorArea}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[#737373] mb-0.5">Machines</p>
-                    <p className="text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{loc.machines}</p>
+                    <p className="text-sm  font-medium text-[#1A2732]">{loc.machines}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[#737373] mb-0.5">Staff</p>
-                    <p className="text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{loc.staff}</p>
+                    <p className="text-sm  font-medium text-[#1A2732]">{loc.staff}</p>
                   </div>
                 </div>
 

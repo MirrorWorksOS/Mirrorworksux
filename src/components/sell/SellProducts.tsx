@@ -37,9 +37,9 @@ const mockProducts: Product[] = [
 ];
 
 const getStockBadge = (stockLevel: number, reorderPoint: number) => {
-  if (stockLevel === 0) return { bg: 'bg-[#FFEBE6]', text: 'text-[#DE350B]', label: 'Out of stock' };
-  if (stockLevel < reorderPoint) return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', label: 'Low stock' };
-  return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'In stock' };
+  if (stockLevel === 0) return { bg: 'bg-[#DE350B]/10', text: 'text-[#DE350B]', label: 'Out of stock' };
+  if (stockLevel < reorderPoint) return { bg: 'bg-[#FFCF4B]/20', text: 'text-[#0A0A0A]', label: 'Low stock' };
+  return { bg: 'bg-[#F5F5F5]', text: 'text-[#0A0A0A]', label: 'In stock' };
 };
 
 export function SellProducts() {
@@ -56,11 +56,11 @@ export function SellProducts() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Products</h1>
+          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Products</h1>
           <p className="text-sm text-[#737373] mt-1">{filteredProducts.length} total products</p>
         </div>
         <div className="flex gap-3">
-          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732] rounded group">
+          <Button className="h-10 px-5 bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Product
           </Button>
@@ -74,20 +74,20 @@ export function SellProducts() {
           <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
           <Input
             placeholder="Search products..."
-            className="pl-10 h-10 border-[#E5E5E5]"
+            className="pl-10 h-10 border-[var(--border)]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
         {/* Filter */}
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[#E5E5E5] group">
+        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
 
         {/* View Toggle */}
-        <div className="flex items-center border border-[#E5E5E5] rounded-lg p-1">
+        <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
           <button
             onClick={() => setViewMode('card')}
             className={cn(
@@ -120,19 +120,19 @@ export function SellProducts() {
             const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={animationVariants.listItem} custom={idx}>
-                <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
                   {/* Product Image Placeholder */}
-                  <div className="h-40 bg-gradient-to-br from-[#F5F5F5] to-[#E5E5E5] flex items-center justify-center">
+                  <div className="h-40 bg-gradient-to-br from-[#F5F5F5] to-[var(--border)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[#A3A3A3]" />
                   </div>
 
                   <div className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#0052CC] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-[14px] font-semibold text-[#0A0A0A] group-hover:text-[#FFCF4B] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
-                        <p className="font-mono text-[12px] text-[#737373]">{product.sku}</p>
+                        <p className=" text-[12px] text-[#737373]">{product.sku}</p>
                       </div>
                     </div>
 
@@ -143,16 +143,16 @@ export function SellProducts() {
                       </Badge>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-[#E5E5E5]">
+                    <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                       <div>
                         <p className="text-xs text-[#737373] mb-1">Stock Level</p>
-                        <p className="font-mono text-[14px] font-semibold text-[#0A0A0A]">
+                        <p className=" text-[14px] font-semibold text-[#0A0A0A]">
                           {product.stockLevel} units
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[#737373] mb-1">Unit Price</p>
-                        <p className="font-mono text-[14px] font-semibold text-[#36B37E]">
+                        <p className=" text-[14px] font-semibold text-[#0A0A0A]">
                           ${product.unitPrice.toFixed(2)}
                         </p>
                       </div>
@@ -167,11 +167,11 @@ export function SellProducts() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">PRODUCT</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">SKU</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">CATEGORY</th>
@@ -184,16 +184,16 @@ export function SellProducts() {
                 {filteredProducts.map((product, idx) => {
                   const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
                   return (
-                    <tr key={product.id} className={cn("border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#FAFAFA]")}>
+                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[#F5F5F5]")}>
                       <td className="px-4">
-                        <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[#0052CC] hover:underline">
+                        <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[#0A0A0A] hover:underline">
                           {product.name}
                         </a>
                       </td>
-                      <td className="px-4 font-mono text-sm text-[#525252]">{product.sku}</td>
+                      <td className="px-4  text-sm text-[#525252]">{product.sku}</td>
                       <td className="px-4 text-sm text-[#525252]">{product.category}</td>
-                      <td className="px-4 text-right font-mono text-sm font-medium">{product.stockLevel}</td>
-                      <td className="px-4 text-right font-mono text-sm font-medium text-[#36B37E]">
+                      <td className="px-4 text-right  text-sm font-medium">{product.stockLevel}</td>
+                      <td className="px-4 text-right  text-sm font-medium text-[#0A0A0A]">
                         ${product.unitPrice.toFixed(2)}
                       </td>
                       <td className="px-4">
@@ -214,14 +214,14 @@ export function SellProducts() {
 
       {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-2xl p-12">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-12">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-[#737373]" />
             </div>
             <h3 className="text-[16px] font-semibold text-[#0A0A0A] mb-2">No products found</h3>
             <p className="text-sm text-[#737373] mb-4">Try adjusting your search or create a new product</p>
-            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#1A2732]">
+            <Button className="bg-[#FFCF4B] hover:bg-[#E6A600] text-[#0A0A0A]">
               <Plus className="w-4 h-4 mr-2" />
               Create Product
             </Button>

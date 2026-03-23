@@ -44,7 +44,7 @@ const MOs: MO[] = [
 const WORK_CENTERS = ['Cutting', 'Forming', 'Welding', 'Machining', 'Finishing'];
 
 const STATUS_CONFIG: Record<MOStatus, { bar: string; badge: string; text: string; label: string }> = {
-  completed:   { bar: '#36B37E', badge: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', label: 'Completed' },
+  completed:   { bar: '#FFCF4B', badge: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', label: 'Completed' },
   in_progress: { bar: '#0A7AFF', badge: 'bg-[#DBEAFE]', text: 'text-[#0A7AFF]', label: 'In Progress' },
   scheduled:   { bar: '#A3A3A3', badge: 'bg-[#F5F5F5]', text: 'text-[#737373]', label: 'Scheduled' },
   overdue:     { bar: '#EF4444', badge: 'bg-[#FEE2E2]', text: 'text-[#EF4444]', label: 'Overdue' },
@@ -94,7 +94,7 @@ function GanttChart() {
           return (
             <g key={`day-${d}`}>
               {isWeekend && (
-                <rect x={x} y={0} width={DAY_W} height={totalH + 32} fill="#FAFAFA" />
+                <rect x={x} y={0} width={DAY_W} height={totalH + 32} fill="#F5F5F5" />
               )}
               {isToday && (
                 <rect x={x} y={0} width={DAY_W} height={totalH + 32} fill="#FFFBF0" opacity={0.7} />
@@ -104,7 +104,7 @@ function GanttChart() {
                 y={18}
                 textAnchor="middle"
                 fontSize={10}
-                fill={isToday ? '#0A0A0A' : '#737373'}
+                fill={isToday ? '#1A2732' : '#737373'}
                 fontWeight={isToday ? '600' : '400'}
                 fontFamily="Roboto Mono, monospace"
               >
@@ -119,7 +119,7 @@ function GanttChart() {
 
         {/* Grid lines */}
         {Array.from({ length: NUM_DAYS + 1 }).map((_, d) => (
-          <line key={`vline-${d}`} x1={LEFT_W + d * DAY_W} y1={24} x2={LEFT_W + d * DAY_W} y2={totalH + 32} stroke="#E5E5E5" strokeWidth={1} />
+          <line key={`vline-${d}`} x1={LEFT_W + d * DAY_W} y1={24} x2={LEFT_W + d * DAY_W} y2={totalH + 32} stroke="var(--border)" strokeWidth={1} />
         ))}
 
         {/* Work center rows */}
@@ -130,11 +130,11 @@ function GanttChart() {
           return (
             <g key={`row-${wc}`}>
               {/* Row background */}
-              <rect x={0} y={y} width={totalW} height={ROW_H} fill={rowIdx % 2 === 0 ? '#FFFFFF' : '#FAFAFA'} />
-              <line x1={0} y1={y + ROW_H} x2={totalW} y2={y + ROW_H} stroke="#E5E5E5" strokeWidth={1} />
+              <rect x={0} y={y} width={totalW} height={ROW_H} fill={rowIdx % 2 === 0 ? '#FFFFFF' : '#F5F5F5'} />
+              <line x1={0} y1={y + ROW_H} x2={totalW} y2={y + ROW_H} stroke="var(--border)" strokeWidth={1} />
 
               {/* Work centre label */}
-              <text x={8} y={y + ROW_H / 2 + 5} fontSize={12} fill="#0A0A0A" fontWeight="500" fontFamily="Geist, sans-serif">{wc}</text>
+              <text x={8} y={y + ROW_H / 2 + 5} fontSize={12} fill="#1A2732" fontWeight="500" fontFamily="Geist, sans-serif">{wc}</text>
 
               {/* MO bars */}
               {rowMOs.map(mo => {
@@ -173,8 +173,8 @@ function GanttChart() {
           className="fixed z-50 pointer-events-none"
           style={{ left: tooltip.x + 20, top: tooltip.y + 40 }}
         >
-          <div className="bg-[#0A0A0A] text-white rounded-lg px-3 py-2 shadow-lg text-xs whitespace-nowrap">
-            <p className="font-['Roboto_Mono',monospace] font-semibold">{tooltip.mo.moNumber}</p>
+          <div className="bg-[#1A2732] text-white rounded-xl px-3 py-2 shadow-lg text-xs whitespace-nowrap">
+            <p className=" font-semibold">{tooltip.mo.moNumber}</p>
             <p className="text-[#A3A3A3] mt-0.5">{tooltip.mo.product}</p>
             <p className="text-[#A3A3A3]">Job: {tooltip.mo.job} · Op: {tooltip.mo.operator}</p>
             <p className="text-[#A3A3A3]">{tooltip.mo.durationDays}d duration</p>
@@ -191,10 +191,10 @@ function GanttChart() {
 // ── List view ─────────────────────────────────────────────
 function ListView() {
   return (
-    <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
+    <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+          <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
             {['MO #', 'JOB', 'PRODUCT', 'WORK CENTRE', 'OPERATOR', 'START', 'END', 'STATUS'].map(h => (
               <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[#737373] uppercase font-medium">{h}</th>
             ))}
@@ -207,13 +207,13 @@ function ListView() {
             const end   = new Date(START_DATE); end.setDate(end.getDate() + mo.startDay + mo.durationDays - 1);
             const fmt   = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
             return (
-              <tr key={mo.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] cursor-pointer transition-colors">
-                <td className="px-4 text-sm font-['Roboto_Mono',monospace] font-medium text-[#0A0A0A]">{mo.moNumber}</td>
-                <td className="px-4 text-sm font-['JetBrains_Mono',monospace] text-[#0052CC]">{mo.job}</td>
-                <td className="px-4 text-sm text-[#0A0A0A]">{mo.product}</td>
+              <tr key={mo.id} className="border-b border-[#F5F5F5] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
+                <td className="px-4 text-sm  font-medium text-[#1A2732]">{mo.moNumber}</td>
+                <td className="px-4 text-sm  text-[#1A2732]">{mo.job}</td>
+                <td className="px-4 text-sm text-[#1A2732]">{mo.product}</td>
                 <td className="px-4 text-sm text-[#737373]">{mo.workCenter}</td>
                 <td className="px-4">
-                  <div className="w-7 h-7 rounded-full bg-[#0A0A0A] flex items-center justify-center text-white text-[10px] font-medium">{mo.operator}</div>
+                  <div className="w-7 h-7 rounded-full bg-[#1A2732] flex items-center justify-center text-white text-[10px] font-medium">{mo.operator}</div>
                 </td>
                 <td className="px-4 text-sm text-[#737373]">{fmt(start)}</td>
                 <td className="px-4 text-sm text-[#737373]">{fmt(end)}</td>
@@ -252,7 +252,7 @@ export function MakeSchedule() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[32px] tracking-tight text-[#0A0A0A]">Production schedule</h1>
+          <h1 className="text-[32px] tracking-tight text-[#1A2732]">Production schedule</h1>
           <p className="text-sm text-[#737373] mt-1">
             <span className="text-[#0A7AFF]">{statusCounts.in_progress} in progress</span>
             {' · '}
@@ -263,13 +263,13 @@ export function MakeSchedule() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="border-[#E5E5E5] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Filter className="w-4 h-4" /> Filter
           </Button>
           <Button className="bg-[#FFCF4B] hover:bg-[#EBC028] text-[#1A2732] gap-2 h-10">
             <Plus className="w-4 h-4" /> New MO
           </Button>
-          <div className="flex bg-[#F5F5F5] rounded-lg p-1">
+          <div className="flex bg-[#F5F5F5] rounded-xl p-1">
             <button
               onClick={() => setView('gantt')}
               className={cn('p-2 rounded-md transition-colors', view === 'gantt' ? 'bg-[#FFCF4B] text-[#1A2732]' : 'text-[#737373]')}
@@ -304,7 +304,7 @@ export function MakeSchedule() {
 
       {/* Gantt or List */}
       {view === 'gantt' && (
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden p-4">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden p-4">
           <GanttChart />
         </Card>
       )}

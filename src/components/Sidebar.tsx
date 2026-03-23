@@ -1,13 +1,8 @@
 /**
  * Sidebar - Main navigation sidebar with all modules
- * 
- * Features:
- * - Accordion behavior: only one parent module open at a time
- * - Smooth CSS grid-row animation for expand/collapse (500ms)
- * - Animated chevron rotation on toggle
- * - Icon scale animation on click
- * - Increased border contrast (#d4d4d4)
- * - Auto-opens parent when navigating to a child route
+ *
+ * Updated design: warm cream palette, softer borders, rounded elements
+ * matching the Crextio-inspired reference design system.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -153,7 +148,7 @@ const menuConfig: MenuItem[] = [
       { label: 'Products',           path: '/control/products' },
       { label: 'BOMs',               path: '/control/boms' },
       { label: 'Role designer',      path: '/control/role-designer' },
-      { label: 'Workflow designer',  path: '/control/workflow-designer' },
+      { label: 'Workflow designer',   path: '/control/workflow-designer' },
     ],
   },
   {
@@ -194,7 +189,6 @@ function getActiveModule(pathname: string): string | null {
 
 // ---------------------------------------------------------------------------
 // Animated collapsible sub-menu
-// Uses CSS grid-template-rows trick for smooth height animation.
 // ---------------------------------------------------------------------------
 
 function CollapsibleSubMenu({
@@ -221,7 +215,7 @@ function CollapsibleSubMenu({
           }}
         >
           {/* Vertical connector line */}
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-[#d4d4d4]" />
+          <div className="absolute left-0 top-0 bottom-0 w-px bg-[var(--border)]" />
           {children}
         </div>
       </div>
@@ -236,16 +230,13 @@ function CollapsibleSubMenu({
 export function Sidebar() {
   const location = useLocation();
 
-  // Accordion: only one module open at a time
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
 
-  // Icon bounce animation state
   const [clickedIcon, setClickedIcon] = useState<string | null>(null);
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Auto-open the parent module when route changes (e.g. direct URL nav)
   useEffect(() => {
     const active = getActiveModule(location.pathname);
     if (active && active !== expandedModule) {
@@ -253,7 +244,6 @@ export function Sidebar() {
     }
   }, [location.pathname]);
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
@@ -261,54 +251,48 @@ export function Sidebar() {
   }, []);
 
   const toggleModule = (label: string) => {
-    // Accordion: toggle current, or switch to new (closes the old one)
     setExpandedModule(prev => (prev === label ? null : label));
-
-    // Trigger icon click bounce
     setClickedIcon(label);
     if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
     clickTimeoutRef.current = setTimeout(() => setClickedIcon(null), 400);
   };
 
   const isActiveRoute = (path: string) => {
-    // Exact match only — prefix matching causes parent index routes like
-    // "/buy" to activate whenever any child route (e.g. "/buy/requisitions")
-    // is current, producing multiple active dots in the same module.
     return location.pathname === path;
   };
 
   return (
-    <div className="bg-[#fafafa] flex flex-col h-screen w-64 border-r border-[#d4d4d4]">
+    <div className="bg-[#FAFAFA] flex flex-col h-screen w-64 border-r border-[#E5E5E5]">
       {/* Header */}
-      <div className="p-2">
-        <div className="h-[32px] flex items-center gap-2 px-2">
-          <div className="w-8 h-8 bg-[#171717] rounded-lg flex items-center justify-center">
+      <div className="p-3">
+        <div className="h-[36px] flex items-center gap-2.5 px-2">
+          <div className="w-8 h-8 bg-[#1A2732] rounded-[var(--shape-md)] flex items-center justify-center">
             <span className="text-white font-bold text-sm">MW</span>
           </div>
-          <p className="font-['Geist:SemiBold',sans-serif] font-semibold text-[16px] text-[#0a0a0a]">
+          <p className="font-semibold text-[16px] text-[#0A0A0A]">
             Alliance Metal
           </p>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="px-2 space-y-2">
-        <button className="w-full bg-[#ffcf4b] hover:bg-[#EBC028] h-[32px] rounded-lg flex items-center gap-2 px-3 transition-colors duration-200">
-          <Plus className="w-4 h-4 text-[#18181b]" />
-          <span className="font-['Geist:Regular',sans-serif] text-[14px] text-[#18181b]">
+      <div className="px-3 space-y-2">
+        <button className="w-full bg-[#FFCF4B] hover:bg-[#F2BF30] h-[36px] rounded-[var(--shape-md)] flex items-center gap-2 px-3 transition-colors duration-200">
+          <Plus className="w-4 h-4 text-[#0A0A0A]" />
+          <span className="text-[14px] text-[#0A0A0A] font-medium">
             Quick Create
           </span>
         </button>
-        <button className="w-full bg-white border border-[#d4d4d4] h-[32px] rounded-lg flex items-center gap-2 px-3 hover:bg-[#f5f5f5] transition-colors duration-200">
-          <Search className="w-4 h-4 text-[#0a0a0a]" />
-          <span className="font-['Geist:Regular',sans-serif] text-[14px] text-[#18181b]">
+        <button className="w-full bg-white border border-[var(--border)] h-[36px] rounded-[var(--shape-md)] flex items-center gap-2 px-3 hover:bg-[#F5F5F5] transition-colors duration-200">
+          <Search className="w-4 h-4 text-[#0A0A0A]" />
+          <span className="text-[14px] text-[#737373]">
             Search (Cmd + K)
           </span>
         </button>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-1">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {menuConfig.map((item) => {
           const Icon = item.icon;
           const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -318,38 +302,35 @@ export function Sidebar() {
 
           return (
             <div key={item.label} className="w-full">
-              {/* Top-level item (no children) */}
               {item.path && !hasSubItems ? (
                 <Link to={item.path} className="w-full">
                   <div
                     className={cn(
-                      'flex items-center gap-2 p-2 rounded-lg cursor-pointer',
+                      'flex items-center gap-2.5 p-2 rounded-[var(--shape-md)] cursor-pointer',
                       'transition-colors duration-200',
-                      isActive ? 'bg-[#fffbf0]' : 'hover:bg-[#f5f5f5]'
+                      isActive ? 'bg-[#FFFBF0]' : 'hover:bg-[#F5F5F5]'
                     )}
                   >
-                    <div className="bg-[#171717] p-2 rounded-lg">
+                    <div className="bg-[#1A2732] p-2 rounded-[var(--shape-md)]">
                       <Icon className="w-4 h-4 text-white" />
                     </div>
-                    <span className="flex-1 font-['Geist:Medium',sans-serif] font-medium text-[16px] text-[#0a0a0a]">
+                    <span className="flex-1 font-medium text-[15px] text-[#0A0A0A]">
                       {item.label}
                     </span>
-                    <ChevronRight className="w-4 h-4 text-[#a3a3a3]" />
+                    <ChevronRight className="w-4 h-4 text-[#A3A3A3]" />
                   </div>
                 </Link>
               ) : (
-                /* Module parent (collapsible) */
                 <button
                   onClick={() => hasSubItems && toggleModule(item.label)}
                   className={cn(
-                    'w-full flex items-center gap-2 p-2 rounded-lg',
+                    'w-full flex items-center gap-2.5 p-2 rounded-[var(--shape-md)]',
                     'transition-colors duration-200',
-                    isExpanded ? 'bg-[#f5f5f5]' : 'hover:bg-[#f5f5f5]'
+                    isExpanded ? 'bg-[#F5F5F5]' : 'hover:bg-[#F5F5F5]'
                   )}
                 >
-                  {/* Icon with click bounce animation */}
                   <div
-                    className="bg-[#171717] p-2 rounded-lg"
+                    className="bg-[#1A2732] p-2 rounded-[var(--shape-md)]"
                     style={{
                       transform: isIconBouncing ? 'scale(1.15)' : 'scale(1)',
                       transition: `transform 300ms ${ICON_EASING}`,
@@ -358,14 +339,13 @@ export function Sidebar() {
                     <Icon className="w-4 h-4 text-white" />
                   </div>
 
-                  <span className="flex-1 font-['Geist:Medium',sans-serif] font-medium text-[16px] text-[#0a0a0a] text-left">
+                  <span className="flex-1 font-medium text-[15px] text-[#0A0A0A] text-left">
                     {item.label}
                   </span>
 
-                  {/* Animated chevron: rotates 90deg when expanded */}
                   {hasSubItems && (
                     <ChevronRight
-                      className="w-4 h-4 text-[#a3a3a3]"
+                      className="w-4 h-4 text-[#A3A3A3]"
                       style={{
                         transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
                         transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
@@ -375,7 +355,6 @@ export function Sidebar() {
                 </button>
               )}
 
-              {/* Animated sub-menu */}
               {hasSubItems && (
                 <CollapsibleSubMenu isOpen={isExpanded}>
                   {item.subItems!.map((subItem) => {
@@ -384,18 +363,17 @@ export function Sidebar() {
                       <Link key={subItem.path} to={subItem.path}>
                         <div
                           className={cn(
-                            'h-[32px] flex items-center px-3 rounded-lg',
+                            'h-[34px] flex items-center px-3 rounded-lg',
                             'transition-all duration-200',
                             isSubActive
-                              ? "bg-[#fffbf0] font-['Geist:SemiBold',sans-serif] font-semibold"
-                              : "hover:bg-[#f0f0f0] font-['Geist:Regular',sans-serif] font-normal"
+                              ? 'bg-[#FFFBF0] font-semibold'
+                              : 'hover:bg-[#F5F5F5] font-normal'
                           )}
                         >
-                          {/* Active indicator dot */}
                           {isSubActive && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#ffcf4b] mr-2 flex-shrink-0" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FFCF4B] mr-2 flex-shrink-0" />
                           )}
-                          <span className="text-[14px] text-[#0a0a0a]">
+                          <span className="text-[14px] text-[#0A0A0A]">
                             {subItem.label}
                           </span>
                         </div>
@@ -410,10 +388,10 @@ export function Sidebar() {
       </div>
 
       {/* Footer */}
-      <div className="p-2 border-t border-[#d4d4d4] space-y-1">
-        <button className="w-full flex items-center gap-2 px-2 h-[32px] rounded-lg hover:bg-[#f5f5f5] transition-colors duration-200 group">
+      <div className="p-3 border-t border-[#E5E5E5] space-y-1">
+        <button className="w-full flex items-center gap-2 px-2 h-[34px] rounded-[var(--shape-md)] hover:bg-[#F5F5F5] transition-colors duration-200 group">
           <SettingsIcon className="w-4 h-4 text-[#737373] transition-transform duration-300 group-hover:rotate-45" />
-          <span className="font-['Geist:Regular',sans-serif] text-[14px] text-[#737373]">
+          <span className="text-[14px] text-[#737373]">
             Settings
           </span>
         </button>

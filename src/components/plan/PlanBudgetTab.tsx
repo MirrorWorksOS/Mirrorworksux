@@ -99,7 +99,7 @@ const mockSpendData = [
 const getStatusColor = (status: 'on_track' | 'monitor' | 'over_budget') => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[#E3FCEF]', text: 'text-[#36B37E]', dot: '#36B37E' };
+      return { bg: 'bg-[var(--warm-200)]', text: 'text-[#1A2732]', dot: '#36B37E' };
     case 'monitor':
       return { bg: 'bg-[#FFF4CC]', text: 'text-[#805900]', dot: '#FACC15' };
     case 'over_budget':
@@ -125,10 +125,10 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
           <div className="flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-[#805900]" />
             <div>
-              <h3 className="font-['Geist:Medium',sans-serif] text-[14px] font-medium text-[#805900]">
+              <h3 className=" text-[14px] font-medium text-[#805900]">
                 Access Restricted
               </h3>
-              <p className="font-['Geist:Regular',sans-serif] text-[13px] text-[#805900] mt-1">
+              <p className=" text-[13px] text-[#805900] mt-1">
                 Budget information is only visible to Scheduler, Manager, and Admin roles.
               </p>
             </div>
@@ -155,27 +155,27 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       initial="initial"
       animate="animate"
       variants={animationVariants.stagger}
-      className="p-6 space-y-6 bg-[#FAFAFA]"
+      className="p-6 space-y-6 bg-[#F5F5F5]"
     >
       {/* Budget Summary - 4 Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Budget */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
                 <DollarSign className="w-5 h-5 text-[#0A7AFF]" />
               </div>
             </div>
-            <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+            <h3 className=" text-[13px] font-medium text-[#737373] mb-1">
               Total Budget
             </h3>
-            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+            <p className=" text-[24px] font-semibold text-[#1A2732]">
               ${mockBudgetData.totalBudget.toLocaleString()}
             </p>
-            <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+            <p className=" text-[12px] text-[#737373] mt-2">
               from quote{' '}
-              <a href={`/sell/quotes/${quoteId || mockBudgetData.quoteReference}`} className="text-[#0052CC] hover:underline">
+              <a href={`/sell/quotes/${quoteId || mockBudgetData.quoteReference}`} className="text-[#1A2732] hover:underline">
                 {mockBudgetData.quoteReference}
               </a>
             </p>
@@ -184,7 +184,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Total Spent */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200 relative group">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200 relative group">
             <div className="flex items-center justify-between mb-4">
               <div className="w-10 h-10 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
                 <Receipt className="w-5 h-5 text-[#FF8B00]" />
@@ -193,15 +193,15 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 "rounded-full text-[11px] px-2 py-0.5 border-0",
                 utilizationPercent > 95 ? "bg-[#FEE2E2] text-[#EF4444]" :
                 utilizationPercent > 80 ? "bg-[#FFF4CC] text-[#805900]" :
-                "bg-[#E3FCEF] text-[#36B37E]"
+                "bg-[var(--warm-200)] text-[#1A2732]"
               )}>
                 {utilizationPercent.toFixed(0)}% used
               </Badge>
             </div>
-            <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+            <h3 className=" text-[13px] font-medium text-[#737373] mb-1">
               Total Spent
             </h3>
-            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#0A0A0A]">
+            <p className=" text-[24px] font-semibold text-[#1A2732]">
               ${mockBudgetData.totalSpent.toLocaleString()}
             </p>
             <div className="mt-3">
@@ -227,16 +227,16 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             >
               {/* Arrow */}
               <div className="flex justify-center">
-                <div className="w-2 h-2 bg-[#0A0A0A] rotate-45 -mb-1" />
+                <div className="w-2 h-2 bg-[#1A2732] rotate-45 -mb-1" />
               </div>
-              <div className="bg-[#0A0A0A] text-white rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
-                <p className="font-['Geist:Medium',sans-serif] text-[11px] text-[#A3A3A3] mb-0.5">
+              <div className="bg-[#1A2732] text-white rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
+                <p className=" text-[11px] text-[#A3A3A3] mb-0.5">
                   Total Budget
                 </p>
-                <p className="font-['Roboto_Mono',monospace] text-[14px] font-semibold">
+                <p className=" text-[14px] font-semibold">
                   ${mockBudgetData.totalBudget.toLocaleString()}
                 </p>
-                <p className="font-['Geist:Regular',sans-serif] text-[11px] text-[#A3A3A3] mt-0.5">
+                <p className=" text-[11px] text-[#A3A3A3] mt-0.5">
                   ${(mockBudgetData.totalBudget - mockBudgetData.totalSpent).toLocaleString()} remaining
                 </p>
               </div>
@@ -246,19 +246,19 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Remaining */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[#36B37E]" />
+              <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+                <Clock className="w-5 h-5 text-[#1A2732]" />
               </div>
             </div>
-            <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+            <h3 className=" text-[13px] font-medium text-[#737373] mb-1">
               Remaining
             </h3>
-            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#36B37E]">
+            <p className=" text-[24px] font-semibold text-[#1A2732]">
               ${mockBudgetData.remaining.toLocaleString()}
             </p>
-            <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+            <p className=" text-[12px] text-[#737373] mt-2">
               Est. final spend: ${mockBudgetData.estimatedFinalSpend.toLocaleString()}
             </p>
           </Card>
@@ -266,16 +266,16 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Margin */}
         <motion.div variants={animationVariants.listItem}>
-          <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[#E3FCEF] rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-[#36B37E]" />
+              <div className="w-10 h-10 bg-[var(--warm-200)] rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-[#1A2732]" />
               </div>
               <div className="flex items-center gap-1">
                 {mockBudgetData.currentMargin > mockBudgetData.targetMargin ? (
                   <>
-                    <AnimatedTrendingUp className="w-4 h-4 text-[#36B37E]" />
-                    <span className="text-[11px] font-medium text-[#36B37E]">
+                    <AnimatedTrendingUp className="w-4 h-4 text-[#1A2732]" />
+                    <span className="text-[11px] font-medium text-[#1A2732]">
                       +{(mockBudgetData.currentMargin - mockBudgetData.targetMargin).toFixed(1)}%
                     </span>
                   </>
@@ -289,13 +289,13 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 )}
               </div>
             </div>
-            <h3 className="font-['Geist:Medium',sans-serif] text-[13px] font-medium text-[#737373] mb-1">
+            <h3 className=" text-[13px] font-medium text-[#737373] mb-1">
               Margin
             </h3>
-            <p className="font-['Roboto_Mono',monospace] text-[24px] font-semibold text-[#36B37E]">
+            <p className=" text-[24px] font-semibold text-[#1A2732]">
               {mockBudgetData.currentMargin.toFixed(1)}%
             </p>
-            <p className="font-['Geist:Regular',sans-serif] text-[12px] text-[#737373] mt-2">
+            <p className=" text-[12px] text-[#737373] mt-2">
               Target: {mockBudgetData.targetMargin}% (configurable)
             </p>
           </Card>
@@ -304,16 +304,16 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
       {/* Category Breakdown Table */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg overflow-hidden">
-          <div className="p-6 border-b border-[#E5E5E5]">
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-[var(--border)]">
+            <h3 className=" text-[16px] font-semibold text-[#1A2732]">
               Category Breakdown
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F8F7F4] border-b border-[#E5E5E5]">
+                <tr className="bg-[#F5F5F5] border-b border-[var(--border)]">
                   <th className="px-6 py-3 text-left text-xs tracking-wider text-[#737373] font-medium">
                     CATEGORY
                   </th>
@@ -338,23 +338,23 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 {mockCategories.map((row, idx) => {
                   const statusColors = getStatusColor(row.status);
                   return (
-                    <tr key={row.category} className="border-b border-[#F5F5F5] h-14 hover:bg-[#FFFBF0] transition-colors">
-                      <td className="px-6 text-sm text-[#0A0A0A] font-medium">
+                    <tr key={row.category} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] transition-colors">
+                      <td className="px-6 text-sm text-[#1A2732] font-medium">
                         {row.displayName}
                       </td>
-                      <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-medium">
+                      <td className="px-6 text-right text-sm  font-medium">
                         ${row.budget.toLocaleString()}
                       </td>
-                      <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-medium">
+                      <td className="px-6 text-right text-sm  font-medium">
                         ${row.actual.toLocaleString()}
                       </td>
-                      <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-medium"
+                      <td className="px-6 text-right text-sm  font-medium"
                         style={{ color: row.variance < 0 ? '#36B37E' : '#EF4444' }}>
                         {row.variance < 0 ? '-' : '+'}${Math.abs(row.variance).toLocaleString()}
                       </td>
                       <td className="px-6">
                         <div className="flex flex-col items-center gap-1">
-                          <div className="w-full h-1.5 bg-[#E5E5E5] rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-300"
                               style={{
@@ -363,7 +363,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[#737373] font-['Roboto_Mono',monospace]">
+                          <span className="text-xs text-[#737373] ">
                             {row.percentUsed}%
                           </span>
                         </div>
@@ -387,17 +387,17 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   );
                 })}
                 {/* Total Row */}
-                <tr className="border-t-2 border-[#0A0A0A] h-14 bg-[#FAFAFA]">
-                  <td className="px-6 text-sm font-bold text-[#0A0A0A]">
+                <tr className="border-t-2 border-[#1A2732] h-14 bg-[#F5F5F5]">
+                  <td className="px-6 text-sm font-bold text-[#1A2732]">
                     TOTAL
                   </td>
-                  <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-bold">
+                  <td className="px-6 text-right text-sm  font-bold">
                     ${totalBudgeted.toLocaleString()}
                   </td>
-                  <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-bold">
+                  <td className="px-6 text-right text-sm  font-bold">
                     ${totalActual.toLocaleString()}
                   </td>
-                  <td className="px-6 text-right text-sm font-['Roboto_Mono',monospace] font-bold text-[#36B37E]">
+                  <td className="px-6 text-right text-sm  font-bold text-[#1A2732]">
                     -${(totalBudgeted - totalActual).toLocaleString()}
                   </td>
                   <td className="px-6 text-center text-sm text-[#737373]">
@@ -413,9 +413,9 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
       {/* Spend vs Plan Chart */}
       <motion.div variants={animationVariants.listItem}>
-        <Card className="bg-white border border-[#E5E5E5] rounded-lg p-6">
+        <Card className="bg-white border border-[var(--border)] rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-['Geist:SemiBold',sans-serif] text-[16px] font-semibold text-[#0A0A0A]">
+            <h3 className=" text-[16px] font-semibold text-[#1A2732]">
               Spend vs Plan
             </h3>
             <div className="flex items-center gap-2">
@@ -425,7 +425,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'week'
                     ? "bg-[#FFCF4B] text-[#2C2C2C] font-medium"
-                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[#E5E5E5]"
+                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[var(--border)]"
                 )}
               >
                 Week
@@ -436,7 +436,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'month'
                     ? "bg-[#FFCF4B] text-[#2C2C2C] font-medium"
-                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[#E5E5E5]"
+                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[var(--border)]"
                 )}
               >
                 Month
@@ -447,7 +447,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'all'
                     ? "bg-[#FFCF4B] text-[#2C2C2C] font-medium"
-                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[#E5E5E5]"
+                    : "bg-[#F5F5F5] text-[#737373] hover:bg-[var(--border)]"
                 )}
               >
                 All
@@ -462,7 +462,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   <stop offset="95%" stopColor="#FFCF4B" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 11, fontFamily: 'Roboto Mono', fill: '#737373' }}
@@ -476,7 +476,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 labelFormatter={(label) => `Week ${label.replace('Wk ', '')}`}
               />
               {/* Vertical line marking "today" — x must match the XAxis dataKey value */}
-              <ReferenceLine x="Wk 5" stroke="#0A0A0A" strokeDasharray="4 4" label={{ value: 'Today', position: 'top', fill: '#737373', fontSize: 11 }} />
+              <ReferenceLine x="Wk 5" stroke="#1A2732" strokeDasharray="4 4" label={{ value: 'Today', position: 'top', fill: '#737373', fontSize: 11 }} />
               {/* Planned burn — dashed line */}
               <Area
                 type="monotone"
