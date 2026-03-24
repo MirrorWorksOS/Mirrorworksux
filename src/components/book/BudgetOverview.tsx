@@ -3,25 +3,38 @@
  * Matches BOOK 04 specification from Confluence
  */
 
-import React, { useState } from 'react';
-import { ChevronDown, Plus, Filter, Download, Calendar } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ChevronDown, Layers, Wallet, CreditCard, AlertTriangle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie
 } from 'recharts';
-import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import {
+  MW_AXIS_TICK,
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_CARTESIAN_GRID,
+  MW_CHART_COLOURS,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
 
 
 type BudgetStatus = 'active' | 'draft' | 'closed';
 type BudgetType = 'job' | 'department' | 'annual';
-type TrafficLightStatus = 'on_track' | 'monitor' | 'over_budget' | 'draft';
+type BudgetHealthStatus = 'on_track' | 'monitor' | 'over_budget' | 'draft';
 
 interface Budget {
   id: string;
@@ -32,7 +45,7 @@ interface Budget {
   actual: number;
   variance: number;
   utilisation: number;
-  status: TrafficLightStatus;
+  status: BudgetHealthStatus;
 }
 
 const monthlyData = [
@@ -50,31 +63,24 @@ const monthlyData = [
   { month: 'Feb', budget: 74000, actual: 68400 },
 ];
 
-const getActualColor = (actual: number, budget: number) => {
-  const pct = actual / budget;
-  if (pct > 0.95) return 'var(--mw-error)';
-  if (pct > 0.80) return 'var(--mw-warning)';
-  return 'var(--mw-success)';
-};
-
-// Donut chart data
+// Donut chart data — categorical slices use shared chart scale (see BuyReports, chart-theme)
 const typeData = [
-  { name: 'Job', value: 65, color: 'var(--mw-info)' },
-  { name: 'Department', value: 25, color: 'var(--mw-success)' },
-  { name: 'Annual', value: 10, color: 'var(--mw-warning)' },
+  { name: 'Job', value: 65, color: MW_CHART_COLOURS[0] },
+  { name: 'Department', value: 25, color: MW_CHART_COLOURS[1] },
+  { name: 'Annual', value: 10, color: MW_CHART_COLOURS[2] },
 ];
 
 const categoryData = [
-  { name: 'Materials', value: 45, color: 'var(--mw-info)' },
-  { name: 'Labour', value: 30, color: 'var(--mw-success)' },
-  { name: 'Overhead', value: 15, color: 'var(--mw-warning)' },
-  { name: 'Subcontract', value: 10, color: 'var(--chart-scale-mid)' },
+  { name: 'Materials', value: 45, color: MW_CHART_COLOURS[0] },
+  { name: 'Labour', value: 30, color: MW_CHART_COLOURS[1] },
+  { name: 'Overhead', value: 15, color: MW_CHART_COLOURS[2] },
+  { name: 'Subcontract', value: 10, color: MW_CHART_COLOURS[3] },
 ];
 
 const utilisationData = [
-  { name: 'On track', value: 60, color: 'var(--mw-success)' },
-  { name: 'Monitor', value: 25, color: 'var(--mw-warning)' },
-  { name: 'Over budget', value: 15, color: 'var(--mw-error)' },
+  { name: 'On track', value: 60, color: MW_CHART_COLOURS[0] },
+  { name: 'Monitor', value: 25, color: MW_CHART_COLOURS[1] },
+  { name: 'Over budget', value: 15, color: MW_CHART_COLOURS[2] },
 ];
 
 // Mock budget data
@@ -147,14 +153,14 @@ const mockBudgets: Budget[] = [
   },
 ];
 
-const getStatusBadgeColors = (status: TrafficLightStatus) => {
+const getStatusBadgeColors = (status: BudgetHealthStatus) => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-mirage)', label: 'On track' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'On track' };
     case 'monitor':
-      return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', dot: 'var(--mw-warning)', label: 'Monitor' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'Monitor' };
     case 'over_budget':
-      return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)', label: 'Over budget' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'Over budget' };
     case 'draft':
       return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', dot: 'var(--neutral-500)', label: 'Draft' };
   }
@@ -167,11 +173,38 @@ const getTypeBadgeColors = (type: BudgetType) => {
     case 'department':
       return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Department' };
     case 'annual':
-      return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', label: 'Annual' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Annual' };
   }
 };
 
+function SortableHead({
+  label,
+  active,
+  direction,
+  onSort,
+}: {
+  label: string;
+  active: boolean;
+  direction: 'asc' | 'desc';
+  onSort: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        'inline-flex items-center gap-1 font-medium uppercase tracking-wider',
+        active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+      )}
+      onClick={onSort}
+    >
+      {label}
+      {active ? <span className="tabular-nums text-[10px]">{direction === 'asc' ? '↑' : '↓'}</span> : null}
+    </button>
+  );
+}
+
 export function BudgetOverview() {
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<BudgetStatus>('active');
   const [sortColumn, setSortColumn] = useState<keyof Budget | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -183,15 +216,18 @@ export function BudgetOverview() {
   const totalSpent = activeBudgets.reduce((sum, b) => sum + b.actual, 0);
   const overBudgetBudgets = activeBudgets.filter(b => b.variance > 0);
   const projectedOverrun = overBudgetBudgets.reduce((sum, b) => sum + b.variance, 0);
+  const utilisationPct = totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0;
 
-  const handleSort = (column: keyof Budget) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
+  const handleSort = useCallback((column: keyof Budget) => {
+    setSortColumn((prev) => {
+      if (prev === column) {
+        setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+        return prev;
+      }
       setSortDirection('asc');
-    }
-  };
+      return column;
+    });
+  }, []);
 
   let sortedBudgets = [...mockBudgets];
   if (sortColumn) {
@@ -207,117 +243,259 @@ export function BudgetOverview() {
     });
   }
 
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={staggerContainer}
-      className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto"
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Budgets</h1>
-          {/* Status Filter Chips */}
-          <div className="flex items-center gap-2 mt-3">
-            {(['active', 'draft', 'closed'] as BudgetStatus[]).map(status => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={cn(
-                  "px-4 py-2 rounded-[var(--shape-lg)] text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]",
-                  statusFilter === status
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
-                    : "bg-white border border-[var(--border)] text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]"
-                )}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </button>
-            ))}
+  const budgetColumns: MwColumnDef<Budget>[] = useMemo(
+    () => [
+      {
+        key: 'name',
+        header: (
+          <SortableHead
+            label="Budget name"
+            active={sortColumn === 'name'}
+            direction={sortDirection}
+            onSort={() => handleSort('name')}
+          />
+        ),
+        cell: (budget) => (
+          <Link
+            to={`/book/job-costs/${budget.id}`}
+            className="text-sm font-medium text-[var(--neutral-900)] hover:underline"
+          >
+            {budget.name}
+          </Link>
+        ),
+      },
+      {
+        key: 'type',
+        header: (
+          <SortableHead
+            label="Type"
+            active={sortColumn === 'type'}
+            direction={sortDirection}
+            onSort={() => handleSort('type')}
+          />
+        ),
+        cell: (budget) => {
+          const typeColors = getTypeBadgeColors(budget.type);
+          return (
+            <Badge className={cn('rounded border-0 px-2 py-0.5 text-xs', typeColors.bg, typeColors.text)}>
+              {typeColors.label}
+            </Badge>
+          );
+        },
+      },
+      {
+        key: 'period',
+        header: 'Period',
+        cell: (budget) => <span className="text-[var(--neutral-600)]">{budget.period}</span>,
+      },
+      {
+        key: 'budgeted',
+        header: (
+          <SortableHead
+            label="Budgeted"
+            active={sortColumn === 'budgeted'}
+            direction={sortDirection}
+            onSort={() => handleSort('budgeted')}
+          />
+        ),
+        className: 'text-right',
+        headerClassName: 'text-right',
+        cell: (budget) => (
+          <span className="tabular-nums text-sm font-medium">${budget.budgeted.toLocaleString()}</span>
+        ),
+      },
+      {
+        key: 'actual',
+        header: (
+          <SortableHead
+            label="Actual"
+            active={sortColumn === 'actual'}
+            direction={sortDirection}
+            onSort={() => handleSort('actual')}
+          />
+        ),
+        className: 'text-right',
+        headerClassName: 'text-right',
+        cell: (budget) => (
+          <span className="tabular-nums text-sm font-medium">${budget.actual.toLocaleString()}</span>
+        ),
+      },
+      {
+        key: 'variance',
+        header: (
+          <SortableHead
+            label="Variance"
+            active={sortColumn === 'variance'}
+            direction={sortDirection}
+            onSort={() => handleSort('variance')}
+          />
+        ),
+        className: 'text-right',
+        headerClassName: 'text-right',
+        cell: (budget) => (
+          <span className="tabular-nums text-sm font-medium text-[var(--neutral-900)]">
+            {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
+          </span>
+        ),
+      },
+      {
+        key: 'utilisation',
+        header: (
+          <div className="text-center">
+            <SortableHead
+              label="Utilisation"
+              active={sortColumn === 'utilisation'}
+              direction={sortDirection}
+              onSort={() => handleSort('utilisation')}
+            />
           </div>
-        </div>
-        <div className="flex gap-4">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedFilter className="w-4 h-4" />
-            Type: All
-            <ChevronDown className="w-4 h-4" />
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded group">
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Budget
-          </Button>
-        </div>
-      </div>
-
-      {/* KPI Cards - 4 cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Budgets */}
-        <motion.div variants={staggerItem}>
-          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">ACTIVE BUDGETS</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
-              {activeBudgets.length}
-            </div>
-            <p className="text-xs text-[var(--mw-error)] mt-1 font-medium">
-              {atRiskBudgets.length} at risk (&gt;80% utilised)
-            </p>
-          </Card>
-        </motion.div>
-
-        {/* Total Budgeted */}
-        <motion.div variants={staggerItem}>
-          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL BUDGETED</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
-              ${totalBudgeted.toLocaleString()}
-            </div>
-            <p className="text-xs text-[var(--neutral-500)] mt-1">Current quarter</p>
-          </Card>
-        </motion.div>
-
-        {/* Total Spent */}
-        <motion.div variants={staggerItem}>
-          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL SPENT</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
-              ${totalSpent.toLocaleString()}
-            </div>
-            <div className="mt-3 h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
+        ),
+        className: 'text-center',
+        headerClassName: 'text-center',
+        cell: (budget) => (
+          <div className="flex flex-col items-center gap-1">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--neutral-200)]">
               <div
-                className="h-full bg-[var(--mw-yellow-400)] rounded-full transition-all duration-[var(--duration-medium1)]"
-                style={{ width: `${((totalSpent / totalBudgeted) * 100).toFixed(0)}%` }}
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width: `${Math.min(budget.utilisation, 100)}%`,
+                  backgroundColor: getChartScaleColour(Math.min(100, budget.utilisation)),
+                }}
               />
             </div>
-            <p className="text-xs text-[var(--neutral-500)] mt-1">
-              {((totalSpent / totalBudgeted) * 100).toFixed(0)}% utilised
-            </p>
-          </Card>
+            <span className="tabular-nums text-xs text-[var(--neutral-500)]">{budget.utilisation}%</span>
+          </div>
+        ),
+      },
+      {
+        key: 'status',
+        header: <span className="text-center">Status</span>,
+        className: 'text-center',
+        headerClassName: 'text-center',
+        cell: (budget) => {
+          const statusColors = getStatusBadgeColors(budget.status);
+          return (
+            <div className="flex justify-center">
+              <Badge
+                className={cn(
+                  'flex items-center gap-1.5 rounded-full border-0 px-2 py-0.5 text-xs',
+                  statusColors.bg,
+                  statusColors.text
+                )}
+              >
+                <span
+                  className="inline-block h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: statusColors.dot }}
+                />
+                {statusColors.label}
+              </Badge>
+            </div>
+          );
+        },
+      },
+    ],
+    [sortColumn, sortDirection, handleSort],
+  );
+
+  return (
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Budgets"
+        subtitle={`Showing ${statusFilter} budgets`}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="group h-10 gap-2 border-[var(--border)]">
+              <AnimatedFilter className="h-4 w-4" />
+              Type: All
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+            <Button className="group h-10 rounded bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
+              <AnimatedPlus className="mr-2 h-4 w-4" />
+              New Budget
+            </Button>
+          </>
+        }
+      />
+
+      <div className="flex flex-wrap gap-2">
+        {(['active', 'draft', 'closed'] as BudgetStatus[]).map(status => (
+          <button
+            key={status}
+            type="button"
+            onClick={() => setStatusFilter(status)}
+            className={cn(
+              'rounded-[var(--shape-lg)] px-4 py-2 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]',
+              statusFilter === status
+                ? 'bg-[var(--mw-yellow-400)] text-[#2C2C2C]'
+                : 'border border-[var(--neutral-200)] bg-white text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]',
+            )}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            label="Active budgets"
+            value={activeBudgets.length}
+            icon={Layers}
+            iconSurface="key"
+            footer={
+              atRiskBudgets.length > 0 ? (
+                <p className="mt-2 text-xs font-medium text-[var(--neutral-600)]">
+                  {`${atRiskBudgets.length} at risk (>80% utilised)`}
+                </p>
+              ) : null
+            }
+          />
         </motion.div>
 
-        {/* Projected Overrun */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-            <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">PROJECTED OVERRUN</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-error)] tabular-nums font-medium">
-              ${projectedOverrun.toLocaleString()}
-            </div>
-            <p className="text-xs text-[var(--neutral-500)] mt-1">
-              {overBudgetBudgets.length} flagged jobs
-            </p>
-          </Card>
+          <KpiStatCard
+            label="Total budgeted"
+            value={`$${totalBudgeted.toLocaleString()}`}
+            icon={Wallet}
+            hint="Current quarter"
+          />
+        </motion.div>
+
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            label="Total spent"
+            value={`$${totalSpent.toLocaleString()}`}
+            icon={CreditCard}
+            footer={
+              <div className="mt-3">
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--neutral-200)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--mw-yellow-400)] transition-all duration-[var(--duration-medium1)]"
+                    style={{ width: `${utilisationPct.toFixed(0)}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-[var(--neutral-500)]">{utilisationPct.toFixed(0)}% utilised</p>
+              </div>
+            }
+          />
+        </motion.div>
+
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            label="Projected overrun"
+            value={`$${projectedOverrun.toLocaleString()}`}
+            icon={AlertTriangle}
+            hint={`${overBudgetBudgets.length} flagged jobs`}
+          />
         </motion.div>
       </div>
 
-      {/* 3 Donut Charts Row */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] p-6">
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">
-            Budget breakdown
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* By Type */}
+        <Card variant="flat" className="border border-[var(--neutral-200)] p-6 shadow-xs">
+          <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Budget breakdown</h3>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div>
-              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">BY TYPE</h4>
+              <h4 className="mb-3 text-xs font-medium tracking-wider text-[var(--neutral-500)]">BY TYPE</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -336,23 +514,22 @@ export function BudgetOverview() {
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="space-y-1 mt-2 w-full">
+                <div className="mt-2 w-full space-y-1">
                   {typeData.map(d => (
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
-                      <span className="">{d.value}%</span>
+                      <span className="tabular-nums">{d.value}%</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* By Category */}
             <div>
-              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">BY CATEGORY</h4>
+              <h4 className="mb-3 text-xs font-medium tracking-wider text-[var(--neutral-500)]">BY CATEGORY</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -371,23 +548,22 @@ export function BudgetOverview() {
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="space-y-1 mt-2 w-full">
+                <div className="mt-2 w-full space-y-1">
                   {categoryData.map(d => (
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
-                      <span className="">{d.value}%</span>
+                      <span className="tabular-nums">{d.value}%</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Utilisation */}
             <div>
-              <h4 className="text-xs text-[var(--neutral-500)] mb-3 font-medium tracking-wider">UTILISATION</h4>
+              <h4 className="mb-3 text-xs font-medium tracking-wider text-[var(--neutral-500)]">UTILISATION</h4>
               <div className="flex flex-col items-center">
                 <ResponsiveContainer width="100%" height={140}>
                   <PieChart>
@@ -406,14 +582,14 @@ export function BudgetOverview() {
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="space-y-1 mt-2 w-full">
+                <div className="mt-2 w-full space-y-1">
                   {utilisationData.map(d => (
                     <div key={d.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span className="text-[var(--neutral-600)]">{d.name}</span>
                       </div>
-                      <span className="">{d.value}%</span>
+                      <span className="tabular-nums">{d.value}%</span>
                     </div>
                   ))}
                 </div>
@@ -423,179 +599,51 @@ export function BudgetOverview() {
         </Card>
       </motion.div>
 
-      {/* Monthly Budget vs Actual Chart */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Monthly Budget vs Actual</h3>
+        <ChartCard title="Monthly budget vs actual">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
               <CartesianGrid {...MW_CARTESIAN_GRID} />
-              <XAxis
-                dataKey="month"
-                tick={MW_AXIS_TICK}
-              />
-              <YAxis
-                tickFormatter={v => `$${v / 1000}k`}
-                tick={MW_AXIS_TICK}
-              />
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+              <XAxis dataKey="month" tick={MW_AXIS_TICK} />
+              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
+              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Bar
                 dataKey="budget"
                 fill="none"
-                stroke="var(--border)"
+                stroke="var(--neutral-200)"
                 strokeWidth={1}
                 radius={[4, 4, 0, 0]}
                 barSize={16}
+                {...MW_RECHARTS_ANIMATION_BAR}
               />
-              <Bar dataKey="actual" radius={[4, 4, 0, 0]} barSize={16}>
+              <Bar dataKey="actual" radius={[4, 4, 0, 0]} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
                 {monthlyData.map((e, i) => (
-                  <Cell key={`budget-${i}`} fill={getActualColor(e.actual, e.budget)} />
+                  <Cell
+                    key={`budget-${i}`}
+                    fill={getChartScaleColour(
+                      e.budget > 0 ? Math.min(100, (e.actual / e.budget) * 100) : 0,
+                    )}
+                  />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
       </motion.div>
 
-      {/* Budget List Table */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('name')}
-                  >
-                    BUDGET NAME
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('type')}
-                  >
-                    TYPE
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    PERIOD
-                  </th>
-                  <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('budgeted')}
-                  >
-                    BUDGETED
-                  </th>
-                  <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('actual')}
-                  >
-                    ACTUAL
-                  </th>
-                  <th
-                    className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('variance')}
-                  >
-                    VARIANCE
-                  </th>
-                  <th
-                    className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium cursor-pointer hover:text-[var(--mw-mirage)]"
-                    onClick={() => handleSort('utilisation')}
-                  >
-                    UTILISATION
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    STATUS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedBudgets.map((budget, idx) => {
-                  const statusColors = getStatusBadgeColors(budget.status);
-                  const typeColors = getTypeBadgeColors(budget.type);
-                  
-                  return (
-                    <tr
-                      key={budget.id}
-                      className={cn(
-                        "border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
-                        idx % 2 === 1 && "bg-[var(--neutral-100)]"
-                      )}
-                      onClick={() => {
-                        // Navigate to detail view
-                        if (budget.type === 'job') {
-                          window.location.href = `/book/job-costs/${budget.id}`;
-                        }
-                      }}
-                    >
-                      <td className="px-4">
-                        <a
-                          href={`/book/job-costs/${budget.id}`}
-                          className="text-[var(--mw-mirage)]  text-sm hover:underline"
-                        >
-                          {budget.name}
-                        </a>
-                      </td>
-                      <td className="px-4">
-                        <Badge className={cn("rounded text-xs px-2 py-0.5 border-0", typeColors.bg, typeColors.text)}>
-                          {typeColors.label}
-                        </Badge>
-                      </td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">{budget.period}</td>
-                      <td className="px-4 text-right text-sm tabular-nums font-medium">
-                        ${budget.budgeted.toLocaleString()}
-                      </td>
-                      <td className="px-4 text-right text-sm tabular-nums font-medium">
-                        ${budget.actual.toLocaleString()}
-                      </td>
-                      <td
-                        className="px-4 text-right text-sm tabular-nums font-medium"
-                        style={{ color: budget.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}
-                      >
-                        {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
-                      </td>
-                      <td className="px-4">
-                        <div className="flex flex-col items-center gap-1">
-                          <div className="w-full h-1.5 bg-[var(--neutral-200)] rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-300"
-                              style={{
-                                width: `${Math.min(budget.utilisation, 100)}%`,
-                                backgroundColor:
-                                  budget.utilisation > 95 ? 'var(--mw-error)' :
-                                  budget.utilisation > 80 ? 'var(--mw-warning)' : 'var(--mw-success)'
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs text-[var(--neutral-500)] tabular-nums">
-                            {budget.utilisation}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4">
-                        <div className="flex items-center justify-center">
-                          <Badge
-                            className={cn(
-                              "rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5",
-                              statusColors.bg,
-                              statusColors.text
-                            )}
-                          >
-                            <span
-                              className="inline-block w-1.5 h-1.5 rounded-full"
-                              style={{ backgroundColor: statusColors.dot }}
-                            />
-                            {statusColors.label}
-                          </Badge>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <MwDataTable
+          columns={budgetColumns}
+          data={sortedBudgets}
+          keyExtractor={(row) => row.id}
+          striped
+          onRowClick={(budget) => {
+            if (budget.type === 'job') {
+              navigate(`/book/job-costs/${budget.id}`);
+            }
+          }}
+        />
       </motion.div>
-    </motion.div>
+    </PageShell>
   );
 }

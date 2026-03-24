@@ -51,7 +51,7 @@ export function PurchaseOrders() {
     <div className="p-6 space-y-5 overflow-y-auto max-w-[1200px] mx-auto">
       <div className="flex items-start justify-between">
         <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Orders</h1>
-        <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded gap-2">
+        <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
           <PlusCircle className="w-5 h-5" /> New PO
         </Button>
       </div>
@@ -61,8 +61,8 @@ export function PurchaseOrders() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
           <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]"><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 
       <div className="flex gap-0 border-b border-[var(--border)]">

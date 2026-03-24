@@ -1,16 +1,21 @@
 "use client";
 
 import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs@1.1.3";
 
+import {
+  Tabs as TabsPrimitive,
+  TabsList as TabsListPrimitive,
+  TabsTrigger as TabsTriggerPrimitive,
+  TabsContent as TabsContentPrimitive,
+} from "@/components/animate-ui/primitives/radix/tabs";
 import { cn } from "./utils";
 
 function Tabs({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: React.ComponentProps<typeof TabsPrimitive>) {
   return (
-    <TabsPrimitive.Root
+    <TabsPrimitive
       data-slot="tabs"
       className={cn("flex flex-col gap-2", className)}
       {...props}
@@ -21,12 +26,12 @@ function Tabs({
 function TabsList({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: React.ComponentProps<typeof TabsListPrimitive>) {
   return (
-    <TabsPrimitive.List
+    <TabsListPrimitive
       data-slot="tabs-list"
       className={cn(
-        "bg-[#E5E4E0]/50 inline-flex h-11 w-fit items-center justify-center rounded-xl p-1 backdrop-blur-sm",
+        "inline-flex h-11 w-fit items-center justify-center rounded-xl bg-[#E5E4E0]/50 p-1 backdrop-blur-sm",
         className,
       )}
       {...props}
@@ -37,9 +42,9 @@ function TabsList({
 function TabsTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+}: React.ComponentProps<typeof TabsTriggerPrimitive>) {
   return (
-    <TabsPrimitive.Trigger
+    <TabsTriggerPrimitive
       data-slot="tabs-trigger"
       className={cn(
         "inline-flex h-9 items-center justify-center rounded-xl px-4 text-sm font-medium whitespace-nowrap outline-none",
@@ -59,9 +64,9 @@ function TabsTrigger({
 function TabsContent({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
+}: React.ComponentProps<typeof TabsContentPrimitive>) {
   return (
-    <TabsPrimitive.Content
+    <TabsContentPrimitive
       data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)}
       {...props}

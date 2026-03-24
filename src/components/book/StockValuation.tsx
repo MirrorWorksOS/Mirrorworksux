@@ -8,7 +8,7 @@ import { cn } from '../ui/utils';
 import {
   AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_CHART_COLOURS } from '@/components/shared/charts/chart-theme';
 
 const trendData = [
   { month: 'Mar', raw: 120000, wip: 65000, finished: 45000 },
@@ -26,17 +26,17 @@ const trendData = [
 ];
 
 const donutData = [
-  { name: 'Raw Materials', value: 145600, color: 'var(--mw-info)' },
-  { name: 'Work in Progress', value: 89200, color: 'var(--mw-warning)' },
-  { name: 'Finished Goods', value: 67800, color: 'var(--mw-success)' },
+  { name: 'Raw Materials', value: 145600, color: MW_CHART_COLOURS[0] },
+  { name: 'Work in Progress', value: 89200, color: MW_CHART_COLOURS[1] },
+  { name: 'Finished Goods', value: 67800, color: MW_CHART_COLOURS[2] },
 ];
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 const ageStyles: Record<AgeCategory, string> = {
-  Fresh: 'bg-[var(--neutral-100)] text-[var(--mw-yellow-400)]',
-  Active: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
-  Slow: 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]',
-  Stale: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
+  Fresh: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Active: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Slow: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
+  Stale: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
 };
 
 const rawMaterials = [
@@ -106,9 +106,9 @@ export function StockValuation() {
               <XAxis dataKey="month" tick={MW_AXIS_TICK} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="finished" stackId="1" stroke="var(--mw-success)" fill="var(--mw-success)" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="wip" stackId="1" stroke="var(--mw-warning)" fill="var(--mw-warning)" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="raw" stackId="1" stroke="var(--mw-info)" fill="var(--mw-info)" fillOpacity={0.2} />
+              <Area type="monotone" dataKey="finished" stackId="1" stroke={MW_CHART_COLOURS[0]} fill={MW_CHART_COLOURS[0]} fillOpacity={0.2} />
+              <Area type="monotone" dataKey="wip" stackId="1" stroke={MW_CHART_COLOURS[1]} fill={MW_CHART_COLOURS[1]} fillOpacity={0.2} />
+              <Area type="monotone" dataKey="raw" stackId="1" stroke={MW_CHART_COLOURS[2]} fill={MW_CHART_COLOURS[2]} fillOpacity={0.2} />
             </AreaChart>
           </ResponsiveContainer>
         </Card>

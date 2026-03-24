@@ -8,7 +8,7 @@ globs: ["src/**/*.tsx", "src/**/*.css", "src/components/**/*"]
 - **Colours in UI:** `src/styles/globals.css` CSS variables — avoid ad hoc `#RRGGBB` in feature code (exceptions: documented brand SVG / carrier swatch data only).
 - **Routed pages:** `PageShell` (`p-6 space-y-6` default) + `PageHeader` — override `className` for full-bleed (e.g. kanban `p-0`).
 - **Tables:** `MwDataTable` / `FinancialTable` for data grids in new work.
-- **Charts:** `getChartScaleColour`, `MW_RECHARTS_ANIMATION`, `chart-theme.ts` — see `src/guidelines/DesignSystem.md` implementation checklist.
+- **Charts:** `getChartScaleColour`, `MW_CHART_COLOURS`, `MW_RECHARTS_ANIMATION`, `MW_RECHARTS_ANIMATION_BAR`, `MW_BAR_TOOLTIP_CURSOR`, `chart-theme.ts` — see §8.5 below and `src/guidelines/DesignSystem.md` §9. Run `npm run audit:charts` before merge on chart-heavy PRs.
 - **`src/lib/design-system.ts`:** `colors` is legacy; prefer CSS vars in `.tsx`.
 
 ## 1. Colours
@@ -244,6 +244,26 @@ className="disabled:bg-[#0A0A0A]/[0.12] disabled:text-[#0A0A0A]/[0.38]"
 // Dark surface
 className="disabled:bg-white/[0.12] disabled:text-white/[0.38]"
 ```
+
+## 8.5 Charts (Recharts) — mandatory patterns
+
+**Two colour strategies** (choose explicitly; add a one-line comment above the chart):
+
+| Strategy | API | Use when |
+|---|---|---|
+| **0–100 scale** | `getChartScaleColour(n)` | One numeric KPI normalised to 0–100 (spend vs cap, margin, utilisation %). |
+| **Categorical** | `MW_CHART_COLOURS[i]` | Distinct segments (suppliers, budget type, stacked series). |
+
+Do **not** encode “good / bad / caution” with green / yellow / red in charts — use the scale ramp and typography/labels for meaning.
+
+**Shell (always):** `MW_AXIS_TICK`, `MW_CARTESIAN_GRID`, `ChartCard` or `Card variant="flat"` + `border-[var(--neutral-200)]`; tooltips via `ChartTooltip` + `MW_TOOLTIP_STYLE` where custom; `MW_RECHARTS_ANIMATION` on areas/lines; **`MW_RECHARTS_ANIMATION_BAR`** on `<Bar>`; **`cursor={MW_BAR_TOOLTIP_CURSOR}`** on `BarChart` `<Tooltip />`.
+
+**Verification checklist (human or PR):**
+1. No `#RRGGBB` in `fill` / `stroke` / chart `style` — only `var(--*)` or helpers from `chart-theme.ts`.
+2. Pie/donut slices use `MW_CHART_COLOURS` or scale-based `Cell` fills — not arbitrary semantic colours.
+3. Bar `Cell` colours match the same normalisation as any related table column if the metric is shared.
+4. Bar charts use `MW_BAR_TOOLTIP_CURSOR` on `<Tooltip />` (no grey default band).
+5. `npm run audit:charts` passes.
 
 ## 9. Motion
 

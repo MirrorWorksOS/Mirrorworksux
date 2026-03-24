@@ -34,6 +34,8 @@ interface MwDataTableProps<T> {
   selectedKeys?: Set<string | number>;
   emptyState?: React.ReactNode;
   className?: string;
+  /** Alternating row background (odd rows) for dense financial tables */
+  striped?: boolean;
 }
 
 function MwDataTable<T>({
@@ -45,6 +47,7 @@ function MwDataTable<T>({
   selectedKeys,
   emptyState,
   className,
+  striped,
 }: MwDataTableProps<T>) {
   return (
     <Card variant="flat" className={cn("overflow-hidden p-0", className)}>
@@ -92,6 +95,7 @@ function MwDataTable<T>({
                     "min-h-[56px] border-b border-[var(--neutral-100)] transition-colors",
                     "hover:bg-[var(--neutral-900)]/[0.04]",
                     onRowClick && "cursor-pointer",
+                    striped && index % 2 === 1 && "bg-[var(--neutral-50)]",
                     isSelected &&
                       "bg-[var(--mw-yellow-50)] border-l-[3px] border-l-[var(--mw-yellow-400)]",
                   )}

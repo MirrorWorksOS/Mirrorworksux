@@ -14,12 +14,19 @@ When building or refactoring screens:
 1. **Colours**: Use CSS variables (`var(--neutral-*)`, `var(--mw-*)`, `var(--border)`, `var(--chart-scale-*)`). No arbitrary `#RRGGBB` in feature code except documented exceptions (brand SVGs, carrier swatches in data with a comment).
 2. **Layout**: Routed pages use **`PageShell`** (`p-6 space-y-6` default) + **`PageHeader`** (title, subtitle, actions, breadcrumbs). Full-bleed views override with `className` (e.g. `p-0`, kanban).
 3. **Tables**: Prefer **`MwDataTable`** (or **`FinancialTable`** for money-heavy grids) over raw `<table>`.
-4. **Charts**: **`getChartScaleColour`**, **`MW_RECHARTS_ANIMATION`**, optional **`ChartCard`**; no orphan hex fills.
+4. **Charts**: **`getChartScaleColour`**, **`MW_RECHARTS_ANIMATION`** (areas/lines) / **`MW_RECHARTS_ANIMATION_BAR`** (bars), **`MW_BAR_TOOLTIP_CURSOR`** on bar `Tooltip`, optional **`ChartCard`**; no orphan hex fills.
 5. **KPI / icons**: **`KpiStatCard`** / **`StatCard`** + **`IconWell`** (`iconSurface`); Lucide **`strokeWidth={1.5}`** on chrome.
 6. **Spacing**: Section stacks `space-y-6`; primary grids **`gap-6`** (8px grid elsewhere).
 7. **Source of truth**: **`src/styles/globals.css`** for tokens; **`src/lib/design-system.ts`** — use **`fonts`**, **`motion`**, **`radius`**; **`colors` object is legacy** — prefer CSS vars in new UI.
 
 Run **`npm run build`** after each batch.
+
+### UI primitives (Animate UI + Radix)
+
+- **Sheet**: [`ui/sheet.tsx`](src/components/ui/sheet.tsx) re-exports **Animate UI** [`components/radix/sheet`](src/components/animate-ui/components/radix/sheet.tsx) (motion slide, `radix-ui` Dialog).
+- **Tabs**: [`ui/tabs.tsx`](src/components/ui/tabs.tsx) uses **Animate UI primitives** [`primitives/radix/tabs`](src/components/animate-ui/primitives/radix/tabs.tsx) (motion tab content) with existing MirrorWorks tab styles (underline tabs in `ModuleDashboard` override `TabsList` / `TabsTrigger` classes).
+- **Switch / Checkbox**: [`ui/switch.tsx`](src/components/ui/switch.tsx) and [`ui/checkbox.tsx`](src/components/ui/checkbox.tsx) re-export **Animate UI** radix components under `animate-ui/components/radix/`.
+- **Tooltip**: [`ui/tooltip.tsx`](src/components/ui/tooltip.tsx) keeps Radix Tooltip with **spring motion** on the content panel. [`MwTooltip`](src/components/shared/layout/MwTooltip.tsx) exposes the same API under `Mw*` names. Animate UI **Base** tooltip was not wired: the upstream registry references a non-published npm package (`@base-ui-components/react`).
 
 ---
 
@@ -391,7 +398,7 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 
 - Map the metric to **0–100** (or use `marginToScalePercent` for job margins), then colour with **`getChartScaleColour`** so fills follow **low / mid / high** bands (see §1 Chart colour scale).
 - CSS tokens: `--chart-scale-low`, `--chart-scale-mid`, `--chart-scale-high` — align with Recharts `Cell` fills or area/bar series.
-- Use shared **`MW_RECHARTS_ANIMATION`** (subtle duration/easing) for bar/area transitions where appropriate.
+- Use **`MW_RECHARTS_ANIMATION`** for area/line transitions; use **`MW_RECHARTS_ANIMATION_BAR`** for `<Bar>` (slightly longer ease-in-out). On **bar charts**, always pass **`cursor={MW_BAR_TOOLTIP_CURSOR}`** to `<Tooltip />` so Recharts does not draw the default grey hover band behind columns.
 
 **Supporting rules:**
 
@@ -401,6 +408,15 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 - Roboto with `tabular-nums` for axis labels and values
 
 **Legacy series charts** (e.g. revenue vs time): still **monochromatic** — prefer Mirage + neutrals for secondary series; reserve **full yellow** for the single primary series or for segments in the **67–100%** band when using the scale helper.
+
+**Categorical vs scale:** distinct slices (e.g. budget by type) use **`MW_CHART_COLOURS`**. Normalised performance (actual vs budget, utilisation %) uses **`getChartScaleColour`**. Do not use green / yellow / red semantic encoding in charts — rely on the grey → mirage → yellow ramp and labels.
+
+**Verification (ship with every chart PR):**
+
+1. No raw hex in Recharts `fill` / `stroke` — only `var(--*)` or exports from `src/components/shared/charts/chart-theme.ts`.
+2. Tooltips use **`ChartTooltip`** / **`MW_TOOLTIP_STYLE`** where a custom tooltip is needed.
+3. One-line comment above the chart stating scale vs categorical.
+4. Run **`npm run audit:charts`** (catches common hex leaks in Recharts files).
 
 ---
 

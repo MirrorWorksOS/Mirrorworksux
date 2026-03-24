@@ -8,13 +8,14 @@ import { cn } from '../ui/utils';
 import {
   PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart, ReferenceLine
 } from 'recharts';
+import { MW_CHART_COLOURS } from '@/components/shared/charts/chart-theme';
 
 const costBreakdown = [
-  { type: 'Materials', budgeted: 8200, actual: 7450, variance: -750, pct: 52, color: 'var(--mw-info)' },
-  { type: 'Labour', budgeted: 6100, actual: 4890, variance: -1210, pct: 34, color: 'var(--mw-success)' },
-  { type: 'Overhead', budgeted: 2500, actual: 1490, variance: -1010, pct: 10, color: 'var(--mw-warning)' },
-  { type: 'Subcontract', budgeted: 1200, actual: 400, variance: -800, pct: 3, color: '#7C3AED' },
-  { type: 'Other', budgeted: 500, actual: 0, variance: -500, pct: 0, color: 'var(--neutral-400)' },
+  { type: 'Materials', budgeted: 8200, actual: 7450, variance: -750, pct: 52, color: MW_CHART_COLOURS[0] },
+  { type: 'Labour', budgeted: 6100, actual: 4890, variance: -1210, pct: 34, color: MW_CHART_COLOURS[1] },
+  { type: 'Overhead', budgeted: 2500, actual: 1490, variance: -1010, pct: 10, color: MW_CHART_COLOURS[2] },
+  { type: 'Subcontract', budgeted: 1200, actual: 400, variance: -800, pct: 3, color: MW_CHART_COLOURS[3] },
+  { type: 'Other', budgeted: 500, actual: 0, variance: -500, pct: 0, color: MW_CHART_COLOURS[4] },
 ];
 
 const donutData = costBreakdown.filter(c => c.actual > 0).map(c => ({ name: c.type, value: c.actual, color: c.color }));
@@ -74,7 +75,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
             <div className="relative w-[120px] h-[120px] mx-auto mb-2">
               <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
                 <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" strokeWidth="8" />
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#36B37E" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52 * 0.231} ${2 * Math.PI * 52}`} strokeLinecap="round" />
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--chart-scale-high)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52 * 0.231} ${2 * Math.PI * 52}`} strokeLinecap="round" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-xl tabular-nums font-bold">23.1%</span>
@@ -110,7 +111,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
                 <td className="px-4 text-sm text-[var(--mw-mirage)]">{row.type}</td>
                 <td className="px-4 text-sm text-right tabular-nums font-medium">${row.budgeted.toLocaleString()}</td>
                 <td className="px-4 text-sm text-right tabular-nums font-medium">${row.actual.toLocaleString()}</td>
-                <td className="px-4 text-sm text-right tabular-nums font-medium" style={{ color: row.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}>
+                <td className="px-4 text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                   <span className="flex items-center justify-end gap-1">
                     <ArrowDown className="w-4 h-4" />-${Math.abs(row.variance).toLocaleString()}
                   </span>
@@ -180,7 +181,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Area type="monotone" dataKey="budget" stroke="var(--neutral-400)" strokeWidth={2} strokeDasharray="6 4" fill="none" />
-              <Area type="monotone" dataKey="actual" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="#FFCF4B" fillOpacity={0.15} />
+              <Area type="monotone" dataKey="actual" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="var(--mw-yellow-400)" fillOpacity={0.15} />
             </AreaChart>
           </ResponsiveContainer>
         </Card>

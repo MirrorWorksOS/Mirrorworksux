@@ -116,7 +116,7 @@ export function SellCRM() {
         title="Customers"
         subtitle={`${filteredCustomers.length} total customers`}
         actions={
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Customer
           </Button>
@@ -129,22 +129,22 @@ export function SellCRM() {
           <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
           <Input
             placeholder="Search customers..."
-            className="pl-10 h-10 border-[var(--border)]"
+            className="h-10 rounded-full border-[var(--border)] pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
 
-        <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
+        <div className="flex items-center border border-[var(--border)] rounded-full p-1">
           <button
             onClick={() => setViewMode('card')}
             className={cn(
-              "p-2 rounded transition-all duration-200",
+              "p-2 rounded-full transition-all duration-200",
               viewMode === 'card'
                 ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
                 : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
@@ -155,7 +155,7 @@ export function SellCRM() {
           <button
             onClick={() => setViewMode('list')}
             className={cn(
-              "p-2 rounded transition-all duration-200",
+              "p-2 rounded-full transition-all duration-200",
               viewMode === 'list'
                 ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
                 : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"

@@ -11,7 +11,12 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import {
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_RECHARTS_ANIMATION,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 const kpiData = {
@@ -215,8 +220,8 @@ export function BuyDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" vertical={false} />
                 <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                 <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={120} />
-                <Tooltip formatter={(v: number) => `${v}%`} />
-                <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION}>
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+                <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION_BAR}>
                   {supplierPerformance.map((entry, i) => (
                     <Cell key={`perf-${i}`} fill={getChartScaleColour(entry.onTime)} />
                   ))}

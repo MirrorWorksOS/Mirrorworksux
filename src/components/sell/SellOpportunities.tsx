@@ -78,11 +78,11 @@ export function SellOpportunities() {
           </p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Opportunity
           </Button>

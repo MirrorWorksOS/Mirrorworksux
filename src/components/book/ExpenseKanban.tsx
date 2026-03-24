@@ -166,7 +166,7 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
             <button type="button" className="p-2 bg-[var(--mw-yellow-400)]"><LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" /></button>
             <button type="button" className="p-2 hover:bg-[var(--neutral-100)]"><List className="w-4 h-4 text-[var(--neutral-500)]" /></button>
           </div>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded gap-2" onClick={onNewExpense}>
+          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={onNewExpense}>
             <PlusCircle className="w-5 h-5" /> New Expense
           </Button>
         </div>

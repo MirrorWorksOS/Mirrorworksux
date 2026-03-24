@@ -21,6 +21,7 @@ import { Separator } from '../../ui/separator';
 import { cn } from '../../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 
 
 // ---------------------------------------------------------------------------
@@ -147,19 +148,17 @@ function AccessPermissionsPanel({
       </div>
 
       {/* Role hierarchy info */}
-      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
-        <div className="flex items-start gap-3">
-          <Shield className="w-5 h-5 text-[var(--mw-yellow-400)] mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-[var(--neutral-600)]">
-            <p className="font-medium text-[var(--mw-mirage)] mb-1">Permission hierarchy</p>
-            <p>
-              <strong>Super Admin</strong> has full access to all modules.{' '}
-              <strong>Lead</strong> has full access to this module.{' '}
-              <strong>Team</strong> members get permissions from their group membership below.
-            </p>
-          </div>
-        </div>
-      </Card>
+      <ModuleInfoCallout
+        icon={<Shield className="w-5 h-5" />}
+        title="Permission hierarchy"
+        description={
+          <>
+            <strong>Super Admin</strong> has full access to all modules.{' '}
+            <strong>Lead</strong> has full access to this module.{' '}
+            <strong>Team</strong> members get permissions from their group membership below.
+          </>
+        }
+      />
 
       {/* Groups list */}
       <div className="space-y-3">

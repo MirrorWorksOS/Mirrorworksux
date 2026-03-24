@@ -25,7 +25,7 @@ import {
 } from 'recharts';
 import { AnimatedRefresh, AnimatedTrendingUp, AnimatedTrendingDown, AnimatedSparkles } from '../ui/animated-icons';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, getChartScaleColour } from '@/components/shared/charts/chart-theme';
 
 
 interface PlanBudgetTabProps {
@@ -99,19 +99,15 @@ const mockSpendData = [
 const getStatusColor = (status: 'on_track' | 'monitor' | 'over_budget') => {
   switch (status) {
     case 'on_track':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-success)' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
     case 'monitor':
-      return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', dot: 'var(--mw-warning)' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
     case 'over_budget':
-      return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)' };
+      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
   }
 };
 
-const getProgressColor = (pct: number) => {
-  if (pct > 95) return 'var(--mw-error)'; // Red
-  if (pct > 80) return 'var(--mw-warning)'; // Yellow
-  return 'var(--mw-success)'; // Green
-};
+const getProgressColor = (pct: number) => getChartScaleColour(Math.min(100, pct));
 
 export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) {
   const [dateRange, setDateRange] = useState<'all' | 'month' | 'week'>('all');
@@ -121,14 +117,14 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
   if (!['Scheduler', 'Manager', 'Admin'].includes(userRole)) {
     return (
       <div className="p-6">
-        <Card className="bg-[var(--mw-amber-50)] border-[var(--mw-warning)] p-6">
+        <Card className="border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-[var(--mw-yellow-900)]" />
+            <AlertCircle className="h-5 w-5 text-[var(--mw-mirage)]" />
             <div>
-              <h3 className=" text-sm font-medium text-[var(--mw-yellow-900)]">
+              <h3 className="text-sm font-medium text-[var(--mw-mirage)]">
                 Access Restricted
               </h3>
-              <p className=" text-xs text-[var(--mw-yellow-900)] mt-1">
+              <p className="mt-1 text-xs text-[var(--neutral-600)]">
                 Budget information is only visible to Scheduler, Manager, and Admin roles.
               </p>
             </div>
@@ -189,12 +185,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
               <div className="w-10 h-10 bg-[var(--mw-amber-100)] rounded-[var(--shape-md)] flex items-center justify-center">
                 <Receipt className="w-5 h-5 text-[var(--mw-amber)]" />
               </div>
-              <Badge className={cn(
-                "rounded-full text-xs px-2 py-0.5 border-0",
-                utilizationPercent > 95 ? "bg-[var(--mw-error-100)] text-[var(--mw-error)]" :
-                utilizationPercent > 80 ? "bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]" :
-                "bg-[var(--neutral-100)] text-[var(--mw-mirage)]"
-              )}>
+              <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2 py-0.5 text-xs text-[var(--mw-mirage)]">
                 <span className="tabular-nums">{utilizationPercent.toFixed(0)}% used</span>
               </Badge>
             </div>
@@ -281,8 +272,8 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   </>
                 ) : (
                   <>
-                    <AnimatedTrendingDown className="w-4 h-4 text-[var(--mw-error)]" />
-                    <span className="text-xs font-medium tabular-nums text-[var(--mw-error)]">
+                    <AnimatedTrendingDown className="h-4 w-4 text-[var(--neutral-600)]" />
+                    <span className="text-xs font-medium tabular-nums text-[var(--neutral-600)]">
                       {(mockBudgetData.currentMargin - mockBudgetData.targetMargin).toFixed(1)}%
                     </span>
                   </>
@@ -348,8 +339,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                       <td className="px-6 text-right text-sm tabular-nums font-medium">
                         ${row.actual.toLocaleString()}
                       </td>
-                      <td className="px-6 text-right text-sm tabular-nums font-medium"
-                        style={{ color: row.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}>
+                      <td className="px-6 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                         {row.variance < 0 ? '-' : '+'}${Math.abs(row.variance).toLocaleString()}
                       </td>
                       <td className="px-6">

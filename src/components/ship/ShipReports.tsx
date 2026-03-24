@@ -11,7 +11,14 @@ import {
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import {
+  MW_AXIS_TICK,
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_CARTESIAN_GRID,
+  MW_CHART_COLOURS,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 
@@ -45,12 +52,7 @@ const returnRate = [
   { d: '27', r: 2.2 }, { d: '28', r: 2.9 }, { d: '01', r: 3.0 }, { d: '02', r: 2.6 },
 ];
 
-const pieColors = [
-  'var(--chart-scale-high)',
-  'var(--mw-info)',
-  'var(--mw-success)',
-  'var(--mw-error)',
-];
+const pieColors = [...MW_CHART_COLOURS];
 
 export function ShipReports() {
   const carrierCostMax = Math.max(...carrierCost.map((c) => c.v), 1);
@@ -114,8 +116,8 @@ export function ShipReports() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
-                <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20} {...MW_RECHARTS_ANIMATION}>
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toFixed(2)}`} />
+                <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {carrierCost.map((e, i) => (
                     <Cell
                       key={`carrier-cost-${e.c}-${i}`}
@@ -162,8 +164,8 @@ export function ShipReports() {
               <BarChart data={destData} layout="vertical" margin={{ left: 5 }}>
                 <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Bar key="v" dataKey="v" fill="var(--chart-scale-mid)" radius={[0, 4, 4, 0]} barSize={12} {...MW_RECHARTS_ANIMATION} />
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} />
+                <Bar key="v" dataKey="v" fill="var(--chart-scale-mid)" radius={[0, 4, 4, 0]} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

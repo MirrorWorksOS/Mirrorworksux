@@ -191,19 +191,19 @@ export function OverviewTab() {
                >
                  <div className="bg-[var(--neutral-100)] border-t border-[var(--neutral-200)] p-2 space-y-2">
                     <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
-                       <AlertCircle className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <AlertCircle className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
                        </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
-                       <Zap className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <Zap className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
                        </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
-                       <Info className="w-5 h-5 text-[var(--mw-yellow-400)] shrink-0" />
+                       <Info className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Efficiency:</span> Shop running 8% above target efficiency today
                        </div>

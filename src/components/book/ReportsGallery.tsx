@@ -55,7 +55,7 @@ export function ReportsGallery() {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Schedule Report</Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded gap-2"><Sparkles className="w-4 h-4" /> Custom Report</Button>
+          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]"><Sparkles className="w-4 h-4" /> Custom Report</Button>
         </div>
       </div>
 

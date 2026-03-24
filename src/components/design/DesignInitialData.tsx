@@ -6,8 +6,8 @@ import React, { useState } from 'react';
 import { Upload, Database, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
+import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 
 const dataTypes = [
   { key: 'customers', label: 'Customers', icon: Database, imported: 45, total: 45, status: 'complete' },
@@ -24,14 +24,11 @@ export function DesignInitialData() {
     <div className="p-6 space-y-6">
       <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Data Import Wizard</h1>
 
-      <Card className="bg-[var(--mw-yellow-400)] border-2 border-[var(--neutral-800)] rounded-2xl p-6">
-        <h3 className="text-base font-semibold text-[var(--neutral-800)] mb-2">
-          Step {activeStep} of 3: Import Master Data
-        </h3>
-        <p className="text-sm text-[var(--neutral-800)]">
-          Import your existing data from CSV, Excel, or connect to external systems
-        </p>
-      </Card>
+      <ModuleInfoCallout
+        showIcon={false}
+        title={`Step ${activeStep} of 3: Import master data`}
+        description="Import your existing data from CSV, Excel, or connect to external systems."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {dataTypes.map(type => {

@@ -10,7 +10,13 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import {
+  MW_AXIS_TICK,
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_CARTESIAN_GRID,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 const kpiData = {
@@ -117,13 +123,13 @@ export function PlanDashboard() {
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="week" tick={MW_AXIS_TICK} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
-              <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar key="planned" dataKey="planned" radius={[4, 4, 0, 0]} name="Planned" {...MW_RECHARTS_ANIMATION}>
+              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+              <Bar key="planned" dataKey="planned" radius={[4, 4, 0, 0]} name="Planned" {...MW_RECHARTS_ANIMATION_BAR}>
                 {weeklyCapacity.map((e, i) => (
                   <Cell key={`planned-${i}`} fill={getChartScaleColour(e.planned)} />
                 ))}
               </Bar>
-              <Bar key="actual" dataKey="actual" radius={[4, 4, 0, 0]} name="Actual" {...MW_RECHARTS_ANIMATION}>
+              <Bar key="actual" dataKey="actual" radius={[4, 4, 0, 0]} name="Actual" {...MW_RECHARTS_ANIMATION_BAR}>
                 {weeklyCapacity.map((e, i) => (
                   <Cell key={`actual-${i}`} fill={getChartScaleColour(e.actual)} />
                 ))}

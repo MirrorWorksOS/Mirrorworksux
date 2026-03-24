@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip@1.1.8";
+import { motion } from "motion/react";
 
 import { cn } from "./utils";
 
@@ -34,6 +35,13 @@ function TooltipTrigger({
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
+const tooltipMotion = {
+  initial: { opacity: 0, scale: 0.97, y: 4 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.97, y: 2 },
+  transition: { type: "spring" as const, stiffness: 420, damping: 28 },
+};
+
 function TooltipContent({
   className,
   sideOffset = 0,
@@ -45,14 +53,22 @@ function TooltipContent({
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className={cn(
-          "bg-white/90 text-[#0A0A0A] backdrop-blur-md border border-[#E5E5E5] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-xl px-3 py-1.5 text-xs text-balance",
-          className,
-        )}
+        asChild
         {...props}
       >
-        {children}
-        <TooltipPrimitive.Arrow className="fill-white/90 z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
+        <motion.div
+          className={cn(
+            "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-xl border border-[#E5E5E5] bg-white/90 px-3 py-1.5 text-xs text-balance text-[#0A0A0A] shadow-md backdrop-blur-md",
+            className,
+          )}
+          initial={tooltipMotion.initial}
+          animate={tooltipMotion.animate}
+          exit={tooltipMotion.exit}
+          transition={tooltipMotion.transition}
+        >
+          {children}
+          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] fill-white/90" />
+        </motion.div>
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );

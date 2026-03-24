@@ -11,7 +11,12 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
-import { MW_AXIS_TICK, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import {
+  MW_AXIS_TICK,
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
 import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
 
 const KPI: {
@@ -132,8 +137,8 @@ export function ShipDashboard() {
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip formatter={(v: number) => `${v}%`} />
-                <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16} {...MW_RECHARTS_ANIMATION}>
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+                <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
                   {CARRIER_DATA.map((e, i) => (
                     <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={getChartScaleColour(e.onTime)} />
                   ))}

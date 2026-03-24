@@ -8,6 +8,7 @@ import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
+import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 
 export function NewExpense({ onBack }: { onBack: () => void }) {
   const [amount, setAmount] = useState('2450.00');
@@ -198,15 +199,19 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
           {/* Duplicate Warning */}
           {uploaded && (
-            <Card className="bg-[var(--mw-amber-50)] border-[var(--mw-warning)] p-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-[var(--mw-warning)] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-[var(--mw-yellow-900)]">Possible duplicate: $2,450.00 from Blackwoods on 23 Feb 2026</p>
-                  <Button variant="ghost" className="p-0 h-auto text-sm text-[var(--mw-yellow-900)] underline mt-1">View Existing</Button>
-                </div>
-              </div>
-            </Card>
+            <ModuleInfoCallout
+              icon={<AlertTriangle className="w-5 h-5 text-[var(--mw-warning)]" />}
+              title="Possible duplicate"
+              descriptionClassName="text-[var(--mw-mirage)]"
+              description={
+                <>
+                  <p>$2,450.00 from Blackwoods on 23 Feb 2026</p>
+                  <Button variant="ghost" className="mt-2 h-auto p-0 text-sm font-medium text-[var(--mw-mirage)] underline">
+                    View existing
+                  </Button>
+                </>
+              }
+            />
           )}
         </div>
       </div>

@@ -150,9 +150,9 @@ export function ShipPackaging() {
             </div>
           </div>
 
-          <div className="bg-[var(--mw-yellow-50)] border border-[var(--mw-yellow-400)] rounded-[var(--shape-lg)] p-4 text-xs text-[var(--mw-mirage)]">
-            <p className="font-medium">Special instructions</p>
-            <p className="mt-1 text-[var(--neutral-500)]">Handle with care — powder-coated finish. Use corner protectors.</p>
+          <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-4 text-xs shadow-xs">
+            <p className="font-medium text-[var(--mw-mirage)]">Special instructions</p>
+            <p className="mt-1 text-muted-foreground">Handle with care — powder-coated finish. Use corner protectors.</p>
           </div>
         </div>
       </div>

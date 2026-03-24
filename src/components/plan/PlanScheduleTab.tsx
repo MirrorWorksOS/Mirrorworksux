@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, List } from 'lucide-react';
+import { Calendar as CalendarIcon, ChartGantt } from 'lucide-react';
 import { addDays } from 'date-fns';
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
 type ViewMode = 'gantt' | 'calendar';
 type FilterMode = 'all' | 'done' | 'pending';
@@ -113,26 +114,14 @@ export function PlanScheduleTab() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center border border-[var(--border)] rounded-[var(--shape-lg)] p-1">
-              <button
-                onClick={() => setViewMode('gantt')}
-                className={cn(
-                  'p-2 rounded transition-colors',
-                  viewMode === 'gantt' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]',
-                )}
-              >
-                <List className="w-4 h-4 text-[var(--mw-mirage)]" />
-              </button>
-              <button
-                onClick={() => setViewMode('calendar')}
-                className={cn(
-                  'p-2 rounded transition-colors',
-                  viewMode === 'calendar' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]',
-                )}
-              >
-                <Calendar className="w-4 h-4 text-[var(--mw-mirage)]" />
-              </button>
-            </div>
+            <IconViewToggle
+              value={viewMode}
+              onChange={(k) => setViewMode(k as ViewMode)}
+              options={[
+                { key: 'gantt', icon: ChartGantt, label: 'Gantt chart' },
+                { key: 'calendar', icon: CalendarIcon, label: 'Calendar' },
+              ]}
+            />
           </div>
         </div>
       </div>

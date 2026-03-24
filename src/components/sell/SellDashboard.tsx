@@ -14,7 +14,9 @@ import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import {
   MW_AXIS_TICK,
   MW_CARTESIAN_GRID,
+  MW_BAR_TOOLTIP_CURSOR,
   MW_RECHARTS_ANIMATION,
+  MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
   getChartScaleColour,
   marginToScalePercent,
@@ -249,8 +251,8 @@ export function SellDashboard() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
                 <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />
-                <Tooltip formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
-                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION}>
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
+                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {jobProfitabilityData.map((entry, i) => (
                     <Cell
                       key={`cell-${entry.job}-${i}`}

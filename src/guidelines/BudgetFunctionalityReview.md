@@ -59,7 +59,7 @@ The Alliance Metal budget functionality currently has **partial implementation**
 4. **Budget List Table:**
    - Spec requires: Sortable table with columns (Budget name, Type, Period, Budgeted, Actual, Variance, Utilisation, Status)
    - Currently: Cards grid instead of table
-   - Missing: Type badges (Job/Department/Annual), Period column, Status traffic lights
+   - Missing: Type badges (Job/Department/Annual), Period column, Status badges
 
 5. **New Budget CTA:**
    - Present: ✅ "New Budget" button exists
@@ -436,7 +436,7 @@ CREATE TABLE job_costs (
    - Add 4th summary card (Projected overrun)
    - Add 3 donut charts row (By Type, By Category, Utilisation)
    - Convert job/dept cards to sortable table format
-   - Add Type badges, Period column, Status traffic lights
+   - Add Type badges, Period column, Status badges
    - **Estimated effort:** 3-4 hours
 
 3. **Update PlanJobDetail.tsx** ✅ Medium Impact

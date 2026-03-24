@@ -40,6 +40,7 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.487.0",
     "motion": "^12.38.0",
+    "radix-ui": "^1.4.3",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dnd": "^16.0.1",
@@ -62,6 +63,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "audit:charts": "node scripts/audit-charts.mjs"
   }
 }

@@ -59,15 +59,15 @@ export function SellOrders() {
         subtitle={`${mockOrders.length} orders • $${totalValue.toLocaleString()} total value`}
         actions={
           <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
               <AnimatedDownload className="w-4 h-4" />
               Export
             </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Order
             </Button>

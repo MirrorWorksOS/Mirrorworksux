@@ -10,6 +10,7 @@ import { Badge } from '../ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { MW_BAR_TOOLTIP_CURSOR, MW_RECHARTS_ANIMATION_BAR } from '@/components/shared/charts/chart-theme';
 
 type RStatus = 'pending' | 'approved' | 'in_transit' | 'received' | 'refunded' | 'closed';
 
@@ -106,8 +107,8 @@ export function ShipReturns() {
               <BarChart data={REASONS} layout="vertical" margin={{ left: 0 }}>
                 <XAxis type="number" hide />
                 <YAxis dataKey="reason" type="category" tick={{ fontSize: 10, fill: 'var(--neutral-500)' }} width={70} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Bar key="count" dataKey="count" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} barSize={10} />
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} />
+                <Bar key="count" dataKey="count" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} barSize={10} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
           </div>

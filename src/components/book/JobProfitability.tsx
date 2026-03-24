@@ -9,7 +9,14 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   ScatterChart, Scatter, ZAxis
 } from 'recharts';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import {
+  MW_AXIS_TICK,
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_CARTESIAN_GRID,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+  marginToScalePercent,
+} from '@/components/shared/charts/chart-theme';
 
 const marginData = [
   { job: 'JOB-0012', margin: 23.1 },
@@ -56,8 +63,8 @@ const JOBS: JobRow[] = [
   { id: 'JOB-2026-0005', customer: 'Oberon Eng', product: 'Mounting Plate', quoted: 4100, actual: 3969, margin: 3.2, marginDollar: 131, status: 'On Hold' },
 ];
 
-const getBarColor = (m: number) => m > 15 ? 'var(--mw-success)' : m > 5 ? 'var(--mw-warning)' : 'var(--mw-error)';
-const getMarginBadge = (m: number) => m > 15 ? 'bg-[var(--neutral-100)] text-[var(--mw-success)]' : m > 5 ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]' : 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]';
+const getBarColor = (m: number) => getChartScaleColour(marginToScalePercent(m));
+const marginBadgeClass = 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
 const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
@@ -82,8 +89,8 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         {[
           { label: 'Total Revenue', value: '$456,780', sub: '34 completed jobs' },
           { label: 'Total Costs', value: '$312,450', sub: 'materials, labour, overhead' },
-          { label: 'Average Margin', value: '31.6%', color: 'var(--mw-success)', badge: '+2.3% vs last month', badgeStyle: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' },
-          { label: 'Loss-Making Jobs', value: '3', color: 'var(--mw-error)', sub: '$4,200 total loss', subColor: 'var(--mw-error)' },
+          { label: 'Average Margin', value: '31.6%', color: 'var(--mw-mirage)', badge: '+2.3% vs last month', badgeStyle: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' },
+          { label: 'Loss-Making Jobs', value: '3', color: 'var(--mw-mirage)', sub: '$4,200 total loss', subColor: 'var(--neutral-600)' },
         ].map(kpi => (
           <Card key={kpi.label} className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">{kpi.label}</div>
@@ -103,8 +110,8 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
               <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
               <XAxis type="number" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <YAxis dataKey="job" type="category" tick={MW_AXIS_TICK} width={80} />
-              <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
+              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+              <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                 {marginData.map((e, i) => <Cell key={`margin-${e.job}-${i}`} fill={getBarColor(e.margin)} />)}
               </Bar>
             </BarChart>
@@ -149,9 +156,9 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
                     <td className="px-4 text-right text-sm tabular-nums font-medium">${job.quoted.toLocaleString()}</td>
                     <td className="px-4 text-right text-sm tabular-nums font-medium">${job.actual.toLocaleString()}</td>
                     <td className="px-4 text-right">
-                      <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", getMarginBadge(job.margin))}>{job.margin}%</Badge>
+                      <Badge className={cn('rounded-full border-0 px-2 py-0.5 text-xs', marginBadgeClass)}>{job.margin}%</Badge>
                     </td>
-                    <td className="px-4 text-right text-sm tabular-nums font-medium" style={{ color: job.marginDollar < 0 ? 'var(--mw-error)' : 'var(--mw-mirage)' }}>
+                    <td className="px-4 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                       {job.marginDollar < 0 ? '-' : ''}${Math.abs(job.marginDollar).toLocaleString()}
                     </td>
                     <td className={cn("px-4 text-sm font-medium", statusBadge(job.status))}>{job.status}</td>
@@ -168,7 +175,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
                             <td className="py-2 text-sm">{b.type}</td>
 <td className="py-2 text-sm text-right tabular-nums">${b.quoted.toLocaleString()}</td>
                           <td className="py-2 text-sm text-right tabular-nums">${b.actual.toLocaleString()}</td>
-                          <td className="py-2 text-sm text-right flex items-center justify-end gap-1 tabular-nums" style={{ color: b.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}>
+                          <td className="flex items-center justify-end gap-1 py-2 text-right text-sm tabular-nums text-[var(--neutral-900)]">
                               {b.variance < 0 ? <ArrowDown className="w-4 h-4" /> : <ArrowUp className="w-4 h-4" />}
                               {b.variance < 0 ? '-' : '+'}${Math.abs(b.variance).toLocaleString()}
                             </td>

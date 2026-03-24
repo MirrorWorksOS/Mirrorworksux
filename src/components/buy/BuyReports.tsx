@@ -9,7 +9,13 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import {
+  MW_BAR_TOOLTIP_CURSOR,
+  MW_CARTESIAN_GRID,
+  MW_RECHARTS_ANIMATION,
+  MW_RECHARTS_ANIMATION_BAR,
+  getChartScaleColour,
+} from '@/components/shared/charts/chart-theme';
 
 const spendBySupplier = [
   { name: 'Hunter Steel Co', spend: 156000 },
@@ -81,12 +87,12 @@ export function BuyReports() {
                   <CartesianGrid {...MW_CARTESIAN_GRID} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                   <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                  <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
                   <Bar
                     dataKey="spend"
                     fill="var(--mw-yellow-400)"
                     radius={[4, 4, 0, 0]}
-                    {...MW_RECHARTS_ANIMATION}
+                    {...MW_RECHARTS_ANIMATION_BAR}
                   />
                 </BarChart>
               </ResponsiveContainer>

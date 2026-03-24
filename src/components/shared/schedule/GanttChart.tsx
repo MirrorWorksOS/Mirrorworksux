@@ -25,6 +25,8 @@ export interface GanttChartProps {
   tasks: GanttTask[];
   startDate: Date;
   endDate: Date;
+  /** Defaults to current date. Set for prototypes with fixed timeline data. */
+  today?: Date;
   onTaskClick?: (task: GanttTask) => void;
   className?: string;
 }
@@ -50,7 +52,7 @@ function clampTaskToWindow(
   };
 }
 
-export function GanttChart({ tasks, startDate, endDate, onTaskClick, className }: GanttChartProps) {
+export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTaskClick, className }: GanttChartProps) {
   const windowStart = startOfDay(startDate);
   const windowEnd = startOfDay(endDate);
   const totalDays = differenceInCalendarDays(windowEnd, windowStart) + 1;
@@ -58,7 +60,7 @@ export function GanttChart({ tasks, startDate, endDate, onTaskClick, className }
   const svgW = LABEL_W + timelineW;
   const rows = tasks.length;
   const svgH = HEADER_H + rows * ROW_H;
-  const today = startOfDay(new Date());
+  const today = startOfDay(todayProp ?? new Date());
   const todayX =
     isWithinInterval(today, { start: windowStart, end: windowEnd }) ?
       LABEL_W + differenceInCalendarDays(today, windowStart) * DAY_W + DAY_W / 2
@@ -147,8 +149,9 @@ export function GanttChart({ tasks, startDate, endDate, onTaskClick, className }
             y1={HEADER_H}
             x2={todayX}
             y2={svgH}
-            stroke="var(--mw-error)"
+            stroke="var(--mw-yellow-400)"
             strokeWidth={2}
+            strokeDasharray="4 3"
             pointerEvents="none"
           />
         )}

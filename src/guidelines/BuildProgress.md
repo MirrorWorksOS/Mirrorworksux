@@ -36,7 +36,7 @@
   - Sortable table view replacing card grid
   - Type badges (Job/Department/Annual)
   - Period column
-  - Traffic light status badges with colored dots
+  - Status badges with neutral dots
   - Utilisation progress bars
   - Variance display (green for under budget, red for over)
   - Monthly budget vs actual bar chart

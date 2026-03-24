@@ -144,7 +144,9 @@ export function ScheduleCalendar({
                     }}
                     className="max-w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium leading-tight text-[var(--neutral-900)] transition-opacity hover:opacity-90"
                     style={{
-                      backgroundColor: ev.color ? `${ev.color}33` : "var(--mw-yellow-50)",
+                      backgroundColor: ev.color
+                        ? `color-mix(in srgb, ${ev.color} 22%, white)`
+                        : "var(--mw-yellow-50)",
                       borderLeft: `3px solid ${ev.color ?? "var(--mw-yellow-400)"}`,
                     }}
                     title={ev.title}
