@@ -10,6 +10,9 @@ import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 const bookTabs = [{ key: 'overview', label: 'Overview' }];
 
+const badgeNeutral =
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
+
 export function BookDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -45,15 +48,15 @@ export function BookDashboard() {
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards - Top Row */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Monthly Revenue"
             value={`$${kpiData.monthlyRevenue.value.toLocaleString()}`}
             icon={DollarSign}
-            tone="info"
+            iconSurface="key"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-mirage)] text-[var(--mw-yellow-400)]">
+              <Badge className={badgeNeutral}>
                 +{kpiData.monthlyRevenue.change}%
               </Badge>
             }
@@ -66,9 +69,8 @@ export function BookDashboard() {
             label="Outstanding Invoices"
             value={`$${kpiData.outstandingInvoices.value.toLocaleString()}`}
             icon={Receipt}
-            tone="warning"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.outstandingInvoices.count} invoices
               </Badge>
             }
@@ -81,9 +83,8 @@ export function BookDashboard() {
             label="Profit Margin"
             value={`${kpiData.profitMargin.value}%`}
             icon={TrendingUp}
-            tone="brand"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-mirage)] text-[var(--mw-yellow-400)]">
+              <Badge className={badgeNeutral}>
                 +{kpiData.profitMargin.change}%
               </Badge>
             }
@@ -96,9 +97,8 @@ export function BookDashboard() {
             label="Cash Flow"
             value={`$${kpiData.cashFlow.value.toLocaleString()}`}
             icon={BarChart3}
-            tone="info"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-error-100)] text-[var(--mw-error)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.cashFlow.change}%
               </Badge>
             }
@@ -111,10 +111,9 @@ export function BookDashboard() {
             label="Overdue Invoices"
             value={`$${kpiData.overdueInvoices.value.toLocaleString()}`}
             icon={AlertTriangle}
-            tone="danger"
             valueClassName="text-[var(--mw-error)]"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-error-100)] text-[var(--mw-error)]">
+              <Badge className="border-0 bg-[var(--mw-error-100)] text-[var(--mw-error)]">
                 {kpiData.overdueInvoices.count} overdue
               </Badge>
             }
@@ -127,9 +126,8 @@ export function BookDashboard() {
             label="Expenses This Month"
             value={`$${kpiData.expensesThisMonth.value.toLocaleString()}`}
             icon={CreditCard}
-            tone="neutral"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+              <Badge className={badgeNeutral}>
                 {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
               </Badge>
             }
@@ -150,7 +148,7 @@ export function BookDashboard() {
       </div>
 
       {/* Action Cards Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Approval Queue */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
@@ -158,7 +156,7 @@ export function BookDashboard() {
               <h3 className="text-base font-medium text-[var(--mw-mirage)]">
                 Approval Queue
               </h3>
-              <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent">
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]">
                 {approvalQueue.length}
               </Badge>
             </div>
@@ -179,13 +177,13 @@ export function BookDashboard() {
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-[var(--mw-yellow-400)]" />
+                  <CheckCircle2 className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} aria-hidden />
                 </div>
               ))}
             </div>
             
             <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
-              <FileText className="w-4 h-4 mr-2" />
+              <FileText className="w-4 h-4 mr-2" strokeWidth={1.5} />
               View All Approvals
             </Button>
           </Card>
@@ -222,7 +220,7 @@ export function BookDashboard() {
                 <span className="font-normal text-xs text-[var(--neutral-500)]">
                   Status
                 </span>
-                <Badge className="bg-[var(--mw-mirage)] text-[var(--mw-yellow-400)] border-transparent text-xs">
+                <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
                   Healthy
                 </Badge>
               </div>
@@ -238,7 +236,7 @@ export function BookDashboard() {
                   repeatDelay: 3
                 }}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="w-4 h-4 mr-2" strokeWidth={1.5} />
               </motion.div>
               Sync Now
             </Button>
@@ -276,13 +274,13 @@ export function BookDashboard() {
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
-                  <Clock className="w-5 h-5 text-[var(--mw-error)]" />
+                  <Clock className="w-5 h-5 text-[var(--mw-error)]" strokeWidth={1.5} />
                 </div>
               ))}
             </div>
             
             <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]">
-              <AlertTriangle className="w-4 h-4 mr-2" />
+              <AlertTriangle className="w-4 h-4 mr-2" strokeWidth={1.5} />
               Follow Up All
             </Button>
           </Card>

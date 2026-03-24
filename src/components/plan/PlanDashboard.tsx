@@ -9,10 +9,9 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
-
 
 const kpiData = {
   activeJobs: 12,
@@ -33,6 +32,9 @@ const weeklyCapacity = [
 
 const planTabs = [{ key: 'overview', label: 'Overview' }];
 
+const badgeNeutral =
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
+
 export function PlanDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -46,13 +48,13 @@ export function PlanDashboard() {
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Active Jobs"
             value={kpiData.activeJobs}
             icon={Calendar}
-            tone="info"
+            iconSurface="key"
           />
         </motion.div>
 
@@ -61,7 +63,6 @@ export function PlanDashboard() {
             label="Scheduled MOs"
             value={kpiData.scheduledMOs}
             icon={Wrench}
-            tone="neutral"
           />
         </motion.div>
 
@@ -70,7 +71,6 @@ export function PlanDashboard() {
             label="Overdue Jobs"
             value={kpiData.overdueJobs}
             icon={AlertTriangle}
-            tone="danger"
             valueClassName="text-[var(--mw-error)]"
             trailing={
               <Badge className="border-0 bg-[var(--mw-error-100)] text-[var(--mw-error)]">
@@ -85,7 +85,7 @@ export function PlanDashboard() {
             label="Avg Lead Time"
             value={`${kpiData.avgLeadTime} days`}
             icon={Clock}
-            tone="warning"
+            trailing={<Badge className={badgeNeutral}>Rolling</Badge>}
           />
         </motion.div>
 
@@ -94,7 +94,7 @@ export function PlanDashboard() {
             label="Utilisation Rate"
             value={`${kpiData.utilizationRate}%`}
             icon={TrendingUp}
-            tone="neutral"
+            trailing={<Badge className={badgeNeutral}>Shop floor</Badge>}
           />
         </motion.div>
 
@@ -103,7 +103,7 @@ export function PlanDashboard() {
             label="On-Time Delivery"
             value={`${kpiData.onTimeDelivery}%`}
             icon={Package}
-            tone="info"
+            trailing={<Badge className={badgeNeutral}>Rolling</Badge>}
           />
         </motion.div>
       </div>
@@ -118,8 +118,16 @@ export function PlanDashboard() {
               <XAxis dataKey="week" tick={MW_AXIS_TICK} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar key="planned" dataKey="planned" fill={MW_CHART_COLOURS[3]} radius={[4, 4, 0, 0]} name="Planned" />
-              <Bar key="actual" dataKey="actual" fill={MW_CHART_COLOURS[0]} radius={[4, 4, 0, 0]} name="Actual" />
+              <Bar key="planned" dataKey="planned" radius={[4, 4, 0, 0]} name="Planned" {...MW_RECHARTS_ANIMATION}>
+                {weeklyCapacity.map((e, i) => (
+                  <Cell key={`planned-${i}`} fill={getChartScaleColour(e.planned)} />
+                ))}
+              </Bar>
+              <Bar key="actual" dataKey="actual" radius={[4, 4, 0, 0]} name="Actual" {...MW_RECHARTS_ANIMATION}>
+                {weeklyCapacity.map((e, i) => (
+                  <Cell key={`actual-${i}`} fill={getChartScaleColour(e.actual)} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </Card>

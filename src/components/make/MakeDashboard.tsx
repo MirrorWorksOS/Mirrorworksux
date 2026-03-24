@@ -40,7 +40,7 @@ const getStatusColor = (status: MachineStatus) => {
     case 'running': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
     case 'idle': return { bg: 'bg-[var(--mw-warning)]', text: 'text-[var(--neutral-800)]', icon: Clock, label: 'Idle' };
     case 'down': return { bg: 'bg-[var(--mw-error)]', text: 'text-white', icon: AlertTriangle, label: 'Down' };
-    case 'maintenance': return { bg: 'bg-[var(--mw-purple)]', text: 'text-white', icon: Wrench, label: 'Maintenance' };
+    case 'maintenance': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: Wrench, label: 'Maintenance' };
     case 'setup': return { bg: 'bg-[var(--mw-amber)]', text: 'text-white', icon: Zap, label: 'Setup' };
   }
 };
@@ -62,14 +62,14 @@ export function MakeDashboard() {
       aiScope="make"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard
             layout="compact"
             label="Running"
             value={`${runningCount}/${mockMachines.length}`}
             icon={CheckCircle2}
-            tone="success"
+            iconSurface="key"
             valueClassName="text-3xl font-bold"
           />
         </motion.div>
@@ -79,7 +79,6 @@ export function MakeDashboard() {
             label="Down"
             value={downCount}
             icon={AlertTriangle}
-            tone="danger"
             valueClassName="text-3xl font-bold text-[var(--mw-error)]"
           />
         </motion.div>
@@ -89,7 +88,6 @@ export function MakeDashboard() {
             label="Avg utilisation"
             value={`${avgUtilization}%`}
             icon={Clock}
-            tone="neutral"
             valueClassName="text-3xl font-bold"
           />
         </motion.div>
@@ -113,7 +111,7 @@ export function MakeDashboard() {
                     <h2 className="text-2xl font-medium mb-2">{machine.name}</h2>
                     <p className="text-base opacity-90">{machine.workCenter}</p>
                   </div>
-                  <StatusIcon className="w-12 h-12" />
+                  <StatusIcon className="w-12 h-12" strokeWidth={1.5} aria-hidden />
                 </div>
 
                 <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>

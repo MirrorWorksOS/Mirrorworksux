@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/components/ui/utils";
+import { IconWell } from "@/components/shared/icons/IconWell";
 
 export type AiCommandScope =
   | "app"
@@ -136,10 +137,7 @@ export function AiCommandBar({
         <span id={labelId} className="sr-only">
           {ariaLabel ?? `MirrorWorks AI — ${scope}`}
         </span>
-        <Sparkles
-          className="h-5 w-5 shrink-0 text-[var(--mw-mirage)]"
-          aria-hidden
-        />
+        <IconWell icon={Sparkles} surface="onLight" shape="round" size="md" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -149,9 +147,9 @@ export function AiCommandBar({
         />
         <Button
           type="submit"
-          className="h-12 min-h-[48px] shrink-0 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]"
+          className="h-12 min-h-[48px] w-12 shrink-0 rounded-full bg-[var(--mw-yellow-400)] p-0 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
         >
-          <Send className="h-5 w-5" aria-hidden />
+          <Send className="mx-auto h-5 w-5" strokeWidth={1.5} aria-hidden />
           <span className="sr-only">Send</span>
         </Button>
       </form>

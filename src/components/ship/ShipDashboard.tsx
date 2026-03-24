@@ -11,22 +11,21 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
-import { MW_AXIS_TICK } from '@/components/shared/charts/chart-theme';
-import { KpiStatCard, type KpiTone } from '@/components/shared/cards/KpiStatCard';
-
+import { MW_AXIS_TICK, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
 
 const KPI: {
   label: string;
   value: string;
   icon: LucideIcon;
-  tone: KpiTone;
+  iconSurface: IconSurface;
 }[] = [
-  { label: 'Active Shipments', value: '47', icon: Package, tone: 'neutral' },
-  { label: 'Pending Orders', value: '18', icon: Clock, tone: 'warning' },
-  { label: 'On-Time Rate', value: '96.2%', icon: Truck, tone: 'success' },
-  { label: 'Avg Transit', value: '2.4d', icon: Clock, tone: 'info' },
-  { label: 'Exceptions', value: '3', icon: AlertTriangle, tone: 'danger' },
-  { label: 'Returns', value: '5', icon: RotateCcw, tone: 'warning' },
+  { label: 'Active Shipments', value: '47', icon: Package, iconSurface: 'onLight' },
+  { label: 'Pending Orders', value: '18', icon: Clock, iconSurface: 'onLight' },
+  { label: 'On-Time Rate', value: '96.2%', icon: Truck, iconSurface: 'key' },
+  { label: 'Avg Transit', value: '2.4d', icon: Clock, iconSurface: 'onLight' },
+  { label: 'Exceptions', value: '3', icon: AlertTriangle, iconSurface: 'onLight' },
+  { label: 'Returns', value: '5', icon: RotateCcw, iconSurface: 'onLight' },
 ];
 
 const PIPELINE = [
@@ -67,7 +66,7 @@ export function ShipDashboard() {
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
         {KPI.map((k) => (
           <motion.div key={k.label} variants={staggerItem}>
             <KpiStatCard
@@ -75,7 +74,7 @@ export function ShipDashboard() {
               label={k.label}
               value={k.value}
               icon={k.icon}
-              tone={k.tone}
+              iconSurface={k.iconSurface}
               iconSize="sm"
             />
           </motion.div>
@@ -110,7 +109,7 @@ export function ShipDashboard() {
         </Card>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Carrier Performance */}
         <motion.div variants={staggerItem} className="lg:col-span-3">
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
@@ -134,9 +133,9 @@ export function ShipDashboard() {
                   tickLine={false}
                 />
                 <Tooltip formatter={(v: number) => `${v}%`} />
-                <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16}>
+                <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16} {...MW_RECHARTS_ANIMATION}>
                   {CARRIER_DATA.map((e, i) => (
-                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={e.onTime >= 95 ? 'var(--mw-yellow-400)' : 'var(--mw-mirage)'} />
+                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={getChartScaleColour(e.onTime)} />
                   ))}
                 </Bar>
               </BarChart>

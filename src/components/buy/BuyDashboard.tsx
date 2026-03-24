@@ -1,9 +1,8 @@
 /**
  * Buy Dashboard - Procurement KPIs and action cards
- * Matches BookDashboard/SellDashboard pattern
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ShoppingCart, FileText, AlertTriangle, Clock, DollarSign, Package } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -12,9 +11,8 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { MW_AXIS_TICK, MW_CHART_PURPLE } from '@/components/shared/charts/chart-theme';
+import { MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
-
 
 const kpiData = {
   openPOs: { count: 18, value: 156800 },
@@ -26,18 +24,18 @@ const kpiData = {
 };
 
 const spendByCategory = [
-  { category: 'Materials', amount: 45000, color: 'var(--mw-info)' },
-  { category: 'Subcontract', amount: 28000, color: MW_CHART_PURPLE },
-  { category: 'Consumables', amount: 12400, color: 'var(--mw-success)' },
-  { category: 'Equipment', amount: 4000, color: 'var(--mw-warning)' },
+  { category: 'Materials', amount: 45000 },
+  { category: 'Subcontract', amount: 28000 },
+  { category: 'Consumables', amount: 12400 },
+  { category: 'Equipment', amount: 4000 },
 ];
 
 const supplierPerformance = [
-  { supplier: 'Hunter Steel Co', onTime: 98, color: 'var(--mw-success)' },
-  { supplier: 'Pacific Metals', onTime: 95, color: 'var(--mw-success)' },
-  { supplier: 'Sydney Welding', onTime: 88, color: 'var(--mw-warning)' },
-  { supplier: 'BHP Suppliers', onTime: 82, color: 'var(--mw-warning)' },
-  { supplier: 'Generic Parts Co', onTime: 65, color: 'var(--mw-error)' },
+  { supplier: 'Hunter Steel Co', onTime: 98 },
+  { supplier: 'Pacific Metals', onTime: 95 },
+  { supplier: 'Sydney Welding', onTime: 88 },
+  { supplier: 'BHP Suppliers', onTime: 82 },
+  { supplier: 'Generic Parts Co', onTime: 65 },
 ];
 
 const approvalQueue = [
@@ -48,8 +46,25 @@ const approvalQueue = [
 
 const buyTabs = [{ key: 'overview', label: 'Overview' }];
 
+const badgeNeutral =
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
+
 export function BuyDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+
+  const spendTotal = useMemo(
+    () => spendByCategory.reduce((s, x) => s + x.amount, 0),
+    [],
+  );
+
+  const spendSlices = useMemo(
+    () =>
+      spendByCategory.map((c) => ({
+        ...c,
+        fill: getChartScaleColour((c.amount / spendTotal) * 100),
+      })),
+    [spendTotal],
+  );
 
   return (
     <ModuleDashboard
@@ -60,16 +75,15 @@ export function BuyDashboard() {
       aiScope="buy"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Open Purchase Orders"
             value={`$${kpiData.openPOs.value.toLocaleString()}`}
             icon={ShoppingCart}
-            tone="info"
+            iconSurface="key"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.openPOs.count} POs
               </Badge>
             }
@@ -81,9 +95,8 @@ export function BuyDashboard() {
             label="Pending Requisitions"
             value={kpiData.pendingRequisitions.count}
             icon={FileText}
-            tone="warning"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.pendingRequisitions.count}
               </Badge>
             }
@@ -96,10 +109,8 @@ export function BuyDashboard() {
             label="Overdue Deliveries"
             value={`$${kpiData.overdueDeliveries.value.toLocaleString()}`}
             icon={AlertTriangle}
-            tone="danger"
-            valueClassName="text-[var(--mw-error)]"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-error-100)] text-[var(--mw-error)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.overdueDeliveries.count}
               </Badge>
             }
@@ -112,7 +123,6 @@ export function BuyDashboard() {
             label="Avg Lead Time"
             value={`${kpiData.avgLeadTime.days} days`}
             icon={Clock}
-            tone="brand"
             hint="Last 30 days"
           />
         </motion.div>
@@ -122,9 +132,8 @@ export function BuyDashboard() {
             label="Spend This Month"
             value={`$${kpiData.spendThisMonth.value.toLocaleString()}`}
             icon={DollarSign}
-            tone="info"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+              <Badge className={badgeNeutral}>
                 {Math.round((kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100)}% of budget
               </Badge>
             }
@@ -148,9 +157,8 @@ export function BuyDashboard() {
             label="Pending Bills"
             value={`$${kpiData.pendingBills.value.toLocaleString()}`}
             icon={Package}
-            tone="warning"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]">
+              <Badge className={badgeNeutral}>
                 {kpiData.pendingBills.count}
               </Badge>
             }
@@ -159,44 +167,59 @@ export function BuyDashboard() {
         </motion.div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Spend by Category */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Spend by Category</h3>
+            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Spend by Category</h3>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={spendByCategory} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="amount">
-                  {spendByCategory.map((entry, i) => (<Cell key={`cat-${i}`} fill={entry.color} />))}
+                <Pie
+                  data={spendSlices}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="amount"
+                  {...MW_RECHARTS_ANIMATION}
+                >
+                  {spendSlices.map((entry, i) => (
+                    <Cell key={`cat-${i}`} fill={entry.fill} />
+                  ))}
                 </Pie>
                 <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              {spendByCategory.map(cat => (
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {spendSlices.map((cat) => (
                 <div key={cat.category} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: cat.fill }}
+                  />
                   <span className="text-xs text-[var(--neutral-600)]">{cat.category}</span>
-                  <span className="text-xs  text-[var(--neutral-500)] ml-auto">${(cat.amount / 1000).toFixed(0)}k</span>
+                  <span className="ml-auto text-xs text-[var(--neutral-500)] tabular-nums">
+                    ${(cat.amount / 1000).toFixed(0)}k
+                  </span>
                 </div>
               ))}
             </div>
           </Card>
         </motion.div>
 
-        {/* Supplier Performance */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Supplier Performance (On-Time %)</h3>
+            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Supplier Performance (On-Time %)</h3>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={supplierPerformance} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" vertical={false} />
                 <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                 <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={120} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
-                <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %">
-                  {supplierPerformance.map((entry, i) => (<Cell key={`perf-${i}`} fill={entry.color} />))}
+                <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION}>
+                  {supplierPerformance.map((entry, i) => (
+                    <Cell key={`perf-${i}`} fill={getChartScaleColour(entry.onTime)} />
+                  ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -204,50 +227,49 @@ export function BuyDashboard() {
         </motion.div>
       </div>
 
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">Approval Queue</h3>
-              <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent">{approvalQueue.length}</Badge>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">Approval Queue</h3>
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]">{approvalQueue.length}</Badge>
             </div>
             <div className="space-y-3">
               {approvalQueue.map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-lg hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
+                <div key={i} className="flex cursor-pointer items-center justify-between rounded-lg bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-[var(--mw-mirage)]">{item.type}</span>
-                      <span className="tabular-nums text-xs text-[var(--neutral-500)]">{item.id}</span>
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="text-xs font-medium text-[var(--neutral-900)]">{item.type}</span>
+                      <span className="text-xs tabular-nums text-[var(--neutral-500)]">{item.id}</span>
                     </div>
                     <p className="text-xs text-[var(--neutral-600)]">{item.requestor || item.supplier}</p>
-                    <p className=" text-sm font-medium text-[var(--mw-mirage)] mt-1">${item.value.toLocaleString()}</p>
+                    <p className="mt-1 text-sm font-medium text-[var(--neutral-900)] tabular-nums">${item.value.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)]">View All Approvals</Button>
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)]">View All Approvals</Button>
           </Card>
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">Goods Awaiting Receipt</h3>
-              <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-transparent">3</Badge>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">Goods Awaiting Receipt</h3>
+              <Badge className={badgeNeutral}>3</Badge>
             </div>
-            <p className="text-sm text-[var(--neutral-500)] mb-4">3 purchase orders ready for goods receipt</p>
+            <p className="mb-4 text-sm text-[var(--neutral-500)]">3 purchase orders ready for goods receipt</p>
             <Button variant="outline" className="w-full border-[var(--border)]">Go to Receipts</Button>
           </Card>
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">Bills Needing Matching</h3>
-              <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-transparent">5</Badge>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">Bills Needing Matching</h3>
+              <Badge className={badgeNeutral}>5</Badge>
             </div>
-            <p className="text-sm text-[var(--neutral-500)] mb-4">5 bills awaiting three-way match</p>
+            <p className="mb-4 text-sm text-[var(--neutral-500)]">5 bills awaiting three-way match</p>
             <Button variant="outline" className="w-full border-[var(--border)]">Go to Bills</Button>
           </Card>
         </motion.div>

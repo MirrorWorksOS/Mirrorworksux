@@ -1,17 +1,17 @@
 import type { LucideIcon } from "lucide-react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/components/ui/utils";
-import { KpiStatCard, type KpiTone } from "@/components/shared/cards/KpiStatCard";
+import { KpiStatCard, type IconSurface } from "@/components/shared/cards/KpiStatCard";
 
 interface StatCardProps {
   label: string;
   value: string | number;
   change?: { value: number; label?: string };
   icon?: LucideIcon;
-  /** @deprecated Prefer `tone` — kept for backward compatibility with custom wells */
+  /** @deprecated Merged into icon well styling via design tokens */
   iconBg?: string;
   className?: string;
-  tone?: KpiTone;
+  iconSurface?: IconSurface;
 }
 
 /**
@@ -25,7 +25,7 @@ export function StatCard({
   icon: Icon,
   iconBg,
   className,
-  tone = "neutral",
+  iconSurface = "onLight",
 }: StatCardProps) {
   const changePositive = change !== undefined && change.value > 0;
   const changeNegative = change !== undefined && change.value < 0;
@@ -34,17 +34,24 @@ export function StatCard({
     change !== undefined ? (
       <div
         className={cn(
-          "mt-1 flex items-center gap-1 text-sm font-medium tabular-nums",
-          changePositive && "text-[var(--mw-success)]",
-          changeNegative && "text-[var(--mw-error)]",
-          !changePositive && !changeNegative && "text-muted-foreground",
+          "mt-1 flex items-center gap-1 text-sm font-medium tabular-nums text-[var(--neutral-600)]",
+          changePositive && "text-[var(--neutral-900)]",
+          changeNegative && "text-[var(--neutral-700)]",
         )}
       >
         {changePositive && (
-          <TrendingUp className="h-4 w-4 shrink-0" aria-hidden />
+          <TrendingUp
+            className="h-4 w-4 shrink-0"
+            strokeWidth={1.5}
+            aria-hidden
+          />
         )}
         {changeNegative && (
-          <TrendingDown className="h-4 w-4 shrink-0" aria-hidden />
+          <TrendingDown
+            className="h-4 w-4 shrink-0"
+            strokeWidth={1.5}
+            aria-hidden
+          />
         )}
         <span>
           {changePositive ? "+" : ""}
@@ -59,7 +66,7 @@ export function StatCard({
       label={label}
       value={value}
       icon={Icon}
-      tone={tone}
+      iconSurface={iconSurface}
       layout="inlineEnd"
       className={className}
       footer={footer}

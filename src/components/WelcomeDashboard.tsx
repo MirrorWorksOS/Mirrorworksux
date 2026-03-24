@@ -152,7 +152,7 @@ export function WelcomeDashboard() {
       ) : (
         <>
           {/* KPI strip — persona snapshot */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
               <p className="text-xs font-medium text-muted-foreground">
                 My open approvals
@@ -168,7 +168,7 @@ export function WelcomeDashboard() {
               <p className="text-xs font-medium text-muted-foreground">
                 Exceptions / SLA
               </p>
-              <p className="mt-1 text-3xl font-semibold tabular-nums text-[var(--mw-error)]">
+              <p className="mt-1 text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">
                 3
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
@@ -407,10 +407,10 @@ export function WelcomeDashboard() {
                           to={module.path}
                           className="flex items-center gap-3 rounded-[var(--shape-md)] p-3 hover:bg-[var(--neutral-50)]"
                         >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--mw-yellow-400)]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-mirage)]">
                             <Icon
                               size={ICON_SIZES.dashboard}
-                              className="text-[var(--mw-mirage)]"
+                              className="text-white"
                             />
                           </div>
                           <div>

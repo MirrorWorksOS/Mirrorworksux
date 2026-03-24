@@ -293,14 +293,20 @@ export function Sidebar() {
 
       {/* Quick Actions */}
       <div className="px-3 space-y-2">
-        <button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] h-[36px] rounded-[var(--shape-md)] flex items-center gap-2 px-3 transition-colors duration-200">
-          <Plus className="w-4 h-4 text-[var(--neutral-900)]" />
-          <span className="text-sm text-[var(--neutral-900)] font-medium">
+        <button
+          type="button"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-200 hover:bg-[var(--mw-yellow-500)]"
+        >
+          <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
+          <span className="text-sm font-medium text-[var(--neutral-900)]">
             Quick Create
           </span>
         </button>
-        <button className="w-full bg-white border border-[var(--border)] h-[36px] rounded-[var(--shape-md)] flex items-center gap-2 px-3 hover:bg-[var(--neutral-100)] transition-colors duration-200">
-          <Search className="w-4 h-4 text-foreground" />
+        <button
+          type="button"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-[var(--shape-md)] border border-[var(--border)] bg-white px-3 transition-colors duration-200 hover:bg-[var(--neutral-100)]"
+        >
+          <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
           <span className="text-sm text-muted-foreground">
             Search (Cmd + K)
           </span>

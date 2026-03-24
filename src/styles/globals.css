@@ -186,9 +186,20 @@
   --line-label-small: 16px;
   --tracking-label-small: 0.5px;
 
-  /* Colors and Base Vars — 60-30-10 rule */
+  /* App canvas — warm neutral (Crextio benchmark; ~60% visual weight base) */
+  --app-canvas: #f9fafb;
+  /* Icon wells — Lucide 1.5px stroke; mirage+white on light UI, grey+mirage on dark, yellow thread for key */
+  --icon-well-on-light-bg: var(--mw-mirage);
+  --icon-well-on-dark-bg: var(--neutral-200);
+  --icon-well-key-bg: var(--mw-yellow-400);
+  /* Recharts 0–100 scale: low / mid / high */
+  --chart-scale-low: var(--neutral-300);
+  --chart-scale-mid: var(--mw-mirage);
+  --chart-scale-high: var(--mw-yellow-400);
+
+  /* Colors and Base Vars — 60-30-10 rule (~60% base / ~30% content / ~10% mw-yellow thread) */
   --font-size: 16px;
-  --background: #F5F5F5;
+  --background: var(--app-canvas);
   --foreground: #0A0A0A;
   --card: #FFFFFF;
   --card-foreground: #0A0A0A;

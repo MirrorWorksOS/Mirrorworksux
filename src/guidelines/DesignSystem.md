@@ -1,6 +1,6 @@
 # MirrorWorks Smart FactoryOS — Design System v2.0
 
-**Last updated:** March 2026
+**Last updated:** 24 March 2026
 **Status:** Active — replaces v1.0
 **Maintained by:** Matt Quigley
 **Quality benchmark:** [Crextio](https://nixtio.com/cases/crextio) — reference for polish and spacing, not a template to copy.
@@ -11,13 +11,59 @@ Single source of truth for Smart FactoryOS. Built on Material Design 3 (M3) prin
 
 ## 1. Colour System
 
-### The 60-30-10 Rule
+### The 60-30-10 Rule (Crextio visual weight)
 
-Every screen follows this ratio:
+Every screen follows this **visual weight** ratio (tune, not pixel math):
 
-- **60% Background**: White (#FFFFFF) cards on #F5F5F5 page background
-- **30% Structure**: Greyscale (#0A0A0A through #737373) for text, borders, icons
-- **10% Accent**: MW Yellow (#FFCF4B) for CTAs, active states, checked controls
+- **~60% Base / structure**: Page canvas (`--app-canvas`, off-white), white cards, `--neutral-50`–`100`, breathing room
+- **~30% Content & chrome**: Primary text (`--neutral-900`), `--neutral-500`–`800`, borders — **Mirage** (`--mw-mirage`) for headlines and default icon wells on light surfaces
+- **~10% Thread / emphasis**: **MW Yellow** (`--mw-yellow-400`, `-500` hover) — **sparingly**: active nav hints, one primary KPI highlight per row, notification dots, chart band 67–100%, **≤1–2 yellow icon wells** per viewport, primary CTAs
+
+**Principle:** Mirage carries contrast; yellow is the **thread** for “this matters,” not decoration sprawl.
+
+### MW Yellow thread (where it’s allowed)
+
+Use yellow for key information and wayfinding only:
+
+- Active tab / step indicator (underline or pill)
+- Optional single “key” KPI tile accent
+- **Primary** Quick Create / one primary CTA per view
+- Chart fills in the **67–100%** band only (see chart scale below)
+- **Key** `IconWell` variant — rare
+
+Avoid: yellow body copy, yellow borders on every card, rainbow KPIs.
+
+### Icon wells (Lucide, stroke 1.5)
+
+| Context | Well | Icon stroke |
+| --- | --- | --- |
+| On light (dashboard canvas) | `bg-[var(--mw-mirage)]` circle/squircle | White (`text-white`) |
+| On dark (sidebar, mirage cards) | `bg-[var(--neutral-200)]` or `neutral-100` | Mirage |
+| Key (sparing) | `bg-[var(--mw-yellow-400)]` | Mirage |
+
+Implement via `IconWell` / `KpiStatCard` `iconSurface` — do not hand-roll.
+
+### Chart colour scale (0–100%)
+
+| Range | Colour |
+| --- | --- |
+| 0–33% | Light grey (`--chart-scale-low` / `neutral-300`) |
+| 34–66% | Mirage (`--chart-scale-mid`) |
+| 67–100% | MW yellow (`--chart-scale-high`) |
+
+Use `getChartScaleColour(normalised0to100)` from `@/components/shared/charts/chart-scale` (re-exported in `chart-theme.ts`). For job-style margins, map to 0–100 first with `marginToScalePercent` where applicable.
+
+**CSS variables** (see `src/styles/globals.css`):
+
+| Token | Maps to | Role |
+| --- | --- | --- |
+| `--app-canvas` | Warm off-white (e.g. `#f9fafb`) | Main content area behind cards (`Layout` / `main`) |
+| `--chart-scale-low` | `neutral-300` | Chart band 0–33% |
+| `--chart-scale-mid` | `--mw-mirage` | Chart band 34–66% |
+| `--chart-scale-high` | `--mw-yellow-400` | Chart band 67–100% |
+| `--icon-well-on-light-bg` | `--mw-mirage` | Default icon well on light surfaces |
+| `--icon-well-on-dark-bg` | `--neutral-200` | Icon well on dark chrome |
+| `--icon-well-key-bg` | `--mw-yellow-400` | Rare “key” accent well |
 
 ### MW Yellow Scale (Brand Accent)
 
@@ -43,8 +89,9 @@ Every screen follows this ratio:
 | Mid Grey | #525252 | Table body text, descriptions |
 | Medium Grey | #737373 | Labels, captions, inactive icons, table headers |
 | Border Grey | #E5E5E5 | Card borders, dividers |
-| Subtle Grey | #F5F5F5 | Page background, input backgrounds |
-| Warm Grey | #F8F7F4 | Grouped card backgrounds inside sheets |
+| Subtle Grey | #F5F5F5 | Input backgrounds, subtle fills |
+| Warm Grey | #F8F7F4 | Grouped card backgrounds inside sheets (`--mw-off-white`) |
+| App canvas | `--app-canvas` | Full-page background behind the card grid (warm, slightly cooler than pure grey) |
 | White | #FFFFFF | Card backgrounds, content surfaces |
 
 **Rule:** Text must never be lighter than #737373. Below that fails readability under industrial lighting.
@@ -55,8 +102,9 @@ Every screen follows this ratio:
 
 ### Dark Accent
 
-- **Mirage**: #1A2732 — dark buttons, dark badges, sidebar background, pipeline cards
-- **Off-white**: #F8F7F4 — warm grouped card background
+- **Mirage**: #1A2732 — dark buttons, dark badges, module icon wells on light canvas, pipeline step discs, chart mid-band
+- **Off-white**: #F8F7F4 — warm grouped card background (`--mw-off-white`)
+- **Sidebar (shell)**: In the UX prototype, the nav rail uses `neutral-50` / `neutral-200` borders; module row icons sit in **Mirage** wells with white glyphs (see Icon wells above).
 
 ### Status Colours (dots and badges only — never card backgrounds)
 
@@ -121,7 +169,9 @@ M3 defaults to Regular (400) and Medium (500). Bold (700) for page titles and he
 | label-medium | 12px | 500 | 16px | 0.5px | Column headers, badges, chips |
 | label-small | 11px | 500 | 16px | 0.5px | Micro text, version numbers |
 
-**Custom token:** `stat-display` — 48px, weight 400, 56px line-height, -0.25px tracking. Roboto with `tabular-nums`. For KPI numbers on dark accent cards.
+**Custom token:** `stat-display` — 48px, weight 400, 56px line-height, -0.25px tracking. Roboto with `tabular-nums`. For hero KPI numbers on dark accent cards.
+
+**KPI tiles (light dashboard):** Large values use **weight 300 (Light)** with `tabular-nums` and `tracking-tight` for a Crextio-style stat read — see `KpiStatCard` in the codebase.
 
 ### Typography Rules
 
@@ -250,6 +300,13 @@ Three tiers:
 2. **Elevated** (elevation-2): `border border-[var(--neutral-200)] shadow-sm rounded-[var(--shape-lg)]`
 3. **Dark accent**: `bg-[var(--mw-mirage)] text-white border-none rounded-[var(--shape-lg)]` — no shadow
 
+### Module dashboards (shared shell)
+
+- **`ModuleDashboard`**: Page title + tabs; active tab uses **yellow thread** (underline / bar), not full grey chrome.
+- **`KpiStatCard`**: Use `iconSurface` (`onLight` default, `onDark` on mirage surfaces, `key` sparingly — one hero metric per section). Prefer **`IconWell`** for Lucide icons; do not use removed `tone` colour wells.
+- **`AiCommandBar`**: Single primary AI entry; sparkle/send styling follows the icon matrix + yellow thread for the primary submit control.
+- **Grids**: KPI and chart rows use **`gap-6`** between cards (`space-y-6` between sections).
+
 ### Tables
 
 - Wrap in a Card container with `rounded-[var(--shape-lg)]`
@@ -316,25 +373,33 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 
 ## 9. Charts and Data Visualisation
 
-- **Monochromatic palette** — MW Yellow as hero series, greys for supporting
-- Hero series: `var(--mw-yellow-400)` (#FFCF4B)
-- Supporting: neutral-300, neutral-400, neutral-500
-- Projected/forecast: hatched pattern or dashed
-- Tooltip: frosted glass style (`bg-white/90 backdrop-blur-md`)
+**Normalized 0–100 scale (primary pattern):**
+
+- Map the metric to **0–100** (or use `marginToScalePercent` for job margins), then colour with **`getChartScaleColour`** so fills follow **low / mid / high** bands (see §1 Chart colour scale).
+- CSS tokens: `--chart-scale-low`, `--chart-scale-mid`, `--chart-scale-high` — align with Recharts `Cell` fills or area/bar series.
+- Use shared **`MW_RECHARTS_ANIMATION`** (subtle duration/easing) for bar/area transitions where appropriate.
+
+**Supporting rules:**
+
+- Tooltip: frosted glass style (`bg-white/90 backdrop-blur-md`) or shared `ChartTooltip` / `MW_TOOLTIP_STYLE`
 - No 3D effects, no colour gradients on chart elements
-- Right-align all numeric axes
-- Use Roboto with `tabular-nums` for axis labels and values
+- Right-align numeric axes where it aids scanning
+- Roboto with `tabular-nums` for axis labels and values
+
+**Legacy series charts** (e.g. revenue vs time): still **monochromatic** — prefer Mirage + neutrals for secondary series; reserve **full yellow** for the single primary series or for segments in the **67–100%** band when using the scale helper.
 
 ---
 
 ## 10. Icons
 
 - **Library**: Lucide React only
-- **Style**: Monochromatic — single colour matching text
-- **Size**: Default 16px (`size-4`), touch target minimum 20px (`size-5`)
-- **Colour**: Inherit from text colour (currentColor)
-- **Status indicators**: Use colour dots (8px circles), not coloured icons
-- No multi-colour icons. No filled variants except for status dots.
+- **Stroke**: **`strokeWidth={1.5}`** on dashboard/shell icons (global default; `IconWell` / shared cards enforce this)
+- **Style**: Monochromatic — single stroke colour per icon
+- **Size**: Inline default **20px** (`w-5 h-5`); standalone **24px** (`w-6 h-6`); touch targets ≥48px where interactive
+- **Icon wells**: Use **`IconWell`** with `surface` (`onLight` | `onDark` | `key`) — see §1 table. Do not hand-roll colours per screen.
+- **Colour**: On light surfaces, default pattern is **Mirage well + white icon**; **key** wells are yellow + Mirage icon and should be **≤1–2 per viewport**
+- **Status indicators**: colour **dots** (8px circles), not rainbow icon fills
+- No multi-colour icons. No filled decorative variants except status dots.
 
 ---
 
@@ -342,10 +407,10 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 
 1. **No gradients** — flat colours only, everywhere
 2. **No decorative borders** — borders serve structure (card boundaries, dividers)
-3. **No colour emphasis** — MW Yellow is the only accent colour. Status colours for dots/badges only.
+3. **One accent thread** — **MW Yellow** is the only brand accent for CTAs and wayfinding; use **sparingly** (~10% visual weight) per §1. Status colours (**success / info / warning / error**) for dots/badges and true alerts — not for decorative KPI rainbows.
 4. **No blue for primary actions** — MW Yellow is the primary action colour
-5. **No coloured card backgrounds** — white cards, #F5F5F5 page, Mirage for dark accent only
-6. **Monochromatic icons** — single colour, no multi-colour
+5. **No coloured card backgrounds** — white cards, `--app-canvas` page, Mirage for dark accent cards only
+6. **Monochromatic icons** — single stroke colour; use **IconWell** + matrix rules
 7. **No drop shadows for decoration** — shadows indicate elevation only
 8. **No animated backgrounds** — static surfaces only
 9. **No custom scrollbars** on content areas
@@ -371,18 +436,19 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 
 ### Sell (CRM + Quoting)
 - Dark accent cards for pipeline stage columns
-- MW Yellow for won deal indicators
+- MW Yellow thread for **won** indicators and **one** primary KPI highlight per row where needed
+- Bar/area charts: prefer **`getChartScaleColour`** for normalized metrics
 - Currency values in Roboto `tabular-nums`, right-aligned
 - Quote line items in table format with card container
 
 ### Plan (Scheduling)
 - Segmented progress bars for schedule stages
 - Timeline views with vertical connectors
-- Gantt-style bars use MW Yellow for active, neutral-200 for pending
+- Capacity / utilisation charts: **scale colours** for planned vs actual bars per week
 - Date pickers: selected day `bg-[var(--mw-yellow-400)] text-[#2C2C2C]`
 
 ### Make (Production)
-- 56px minimum touch targets (glove-friendly)
+- 56px minimum touch targets (glove-friendly); Andon may use stronger status fills — validate in QA
 - Large checkboxes for quality checklists
 - Progress bars for job stages
 - Timer displays in Roboto `tabular-nums` stat-display size
@@ -390,6 +456,7 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 
 ### Ship (Dispatch + Logistics)
 - Timeline component for delivery tracking
+- Carrier / on-time **horizontal bars**: **`getChartScaleColour(onTimePercent)`** on `Cell` fills
 - Large checkboxes for dispatch checklists (56px)
 - Status badges for shipment states
 - Delivery timestamps in Roboto `tabular-nums`
@@ -402,12 +469,14 @@ Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
 - Negative values in `--mw-error` colour
 
 ### Buy (Procurement)
+- Spend / supplier charts: pie and bar segments use **chart scale** colours
 - Card nesting for PO → line items
 - Three-way match indicators (PO / receipt / invoice)
 - Supplier cards with contact info
 - Approval workflow with status badges
 
 ### Control (Admin + Settings)
+- Admin callouts: prefer **neutral card + left yellow thread** over full yellow panel fills
 - Settings in card groups
 - Toggle switches for feature flags
 - Role/permission tables
@@ -543,6 +612,7 @@ export default {
 | Area | v1.0 | v2.0 |
 |---|---|---|
 | Fonts | Roboto + Roboto Mono + Geist | Roboto only (with `tabular-nums` for numbers) |
+| Crextio alignment | — | ~60/30/10 visual weight, yellow **thread**, `IconWell` + `iconSurface`, chart scale `getChartScaleColour`, `--app-canvas`, Lucide **1.5** stroke |
 | Type scale | Custom 8-token | Full M3 15-token scale |
 | Colour palette | Multi-colour anchors (earth, saddle, sea-foam) | Monochromatic + MW Yellow only |
 | AI indicator | Purple accent (#7C3AED) | Deprecated — use MW Yellow or badge |

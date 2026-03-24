@@ -5,6 +5,14 @@ globs: ["src/**/*.tsx", "src/**/*.css", "src/components/**/*"]
 
 ## 1. Colours
 
+**Crextio-aligned visual weight (~60 / ~30 / ~10):** ~60% base (canvas, white cards, neutral-50–100), ~30% content/chrome (neutral text, Mirage headlines, default icon wells on light), ~10% **yellow thread** (primary CTA, active nav, key KPI accent, chart 67–100% band, ≤1–2 yellow `IconWell`s per viewport). Mirage carries contrast; yellow is continuity, not fill-everywhere.
+
+**MW Yellow thread:** use sparingly for wayfinding and one primary action per section — not yellow body text or rainbow KPIs.
+
+**Icon wells (Lucide `strokeWidth={1.5}`):** on light → Mirage well + white icon; on dark → light grey well + Mirage icon; **key** → yellow well + Mirage icon (rare). Prefer `IconWell` / `KpiStatCard` `iconSurface`.
+
+**Chart scale 0–100:** `getChartScaleColour` — 0–33% low grey, 34–66% Mirage, 67–100% mw-yellow (`chart-scale-*` tokens).
+
 MW Yellow (brand accent — 10% of UI):
 - `mw-yellow-50`: #FFFBF0 — selected row bg, subtle highlight
 - `mw-yellow-100`: #FFF3D6 — text selection highlight
@@ -149,7 +157,7 @@ Use `<Card>` variants from `@/components/ui/card`:
 - `<Card variant="elevated">` — elevation-2, interactive/hover card
 - `<Card variant="dark">` — Mirage background, no shadow
 
-For **module dashboard KPI rows**, use `<KpiStatCard>` from `@/components/shared/cards/KpiStatCard` (`tone` variants, `standard` vs `compact` for dense 6-up KPI strips). For simple legacy inline-end KPIs, use `<StatCard>` (thin wrapper around `KpiStatCard`).
+For **module dashboard KPI rows**, use `<KpiStatCard>` from `@/components/shared/cards/KpiStatCard` (`iconSurface`: `onLight` | `onDark` | `key`, `standard` vs `compact` for dense 6-up KPI strips). For simple legacy inline-end KPIs, use `<StatCard>` (thin wrapper around `KpiStatCard`).
 For dark hero KPI cards, use `<DarkAccentCard>` from `@/components/shared/cards/DarkAccentCard`.
 For entity cards (people, suppliers), use `<EntityCard>` from `@/components/shared/cards/EntityCard`.
 

@@ -44,7 +44,7 @@ export function ModuleDashboard({
     <div className={cn("flex flex-col gap-6 p-6", className)}>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">
+          <h1 className="text-[length:var(--font-headline-medium)] font-bold leading-[var(--line-headline-medium)] tracking-tight text-[var(--neutral-900)]">
             {title}
           </h1>
           {subtitle ? (
@@ -75,11 +75,13 @@ export function ModuleDashboard({
                   "hover:text-[var(--mw-mirage)]",
                   "focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]/50 focus-visible:ring-offset-2",
                   "data-[state=active]:bg-transparent data-[state=active]:text-[var(--mw-mirage)] data-[state=active]:font-medium data-[state=active]:shadow-none",
-                  "after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5 after:origin-center after:scale-x-0 after:bg-[var(--mw-yellow-400)] after:transition-transform after:duration-[var(--duration-medium1)] after:ease-[var(--ease-standard)]",
+                  "after:absolute after:right-0 after:bottom-0 after:left-0 after:h-1 after:origin-center after:scale-x-0 after:bg-[var(--mw-yellow-400)] after:transition-transform after:duration-[var(--duration-medium1)] after:ease-[var(--ease-standard)]",
                   "data-[state=active]:after:scale-x-100",
                 )}
               >
-                {Icon ? <Icon className="h-4 w-4 shrink-0" aria-hidden /> : null}
+                {Icon ? (
+                  <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                ) : null}
                 {tab.label}
               </TabsTrigger>
             );

@@ -1,13 +1,22 @@
 export const MW_CHART_COLOURS = [
-  "var(--mw-yellow-400)",
-  "var(--mw-mirage)",
+  "var(--chart-scale-high)",
+  "var(--chart-scale-mid)",
+  "var(--chart-scale-low)",
   "var(--neutral-400)",
-  "var(--neutral-300)",
   "var(--neutral-500)",
 ] as const;
 
-/** Subcontract / category accent (maps to `--mw-purple` in globals.css) */
-export const MW_CHART_PURPLE = "var(--mw-purple)";
+/** @deprecated Use getChartScaleColour — kept for gradual migration */
+export const MW_CHART_PURPLE = "var(--chart-scale-mid)";
+
+export { getChartScaleColour, marginToScalePercent } from "@/components/shared/charts/chart-scale";
+
+/** Default Recharts motion — subtle */
+export const MW_RECHARTS_ANIMATION = {
+  isAnimationActive: true,
+  animationDuration: 400,
+  animationEasing: "ease-out" as const,
+};
 
 export const MW_AXIS_TICK = {
   fontSize: 12,

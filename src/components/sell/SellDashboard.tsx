@@ -1,6 +1,5 @@
 /**
  * Sell Dashboard - Commercial engine KPIs and action cards
- * Matches BookDashboard pattern with MW design system
  */
 
 import React, { useState } from 'react';
@@ -12,14 +11,27 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
-import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
-  AreaChart, Area
+  MW_AXIS_TICK,
+  MW_CARTESIAN_GRID,
+  MW_RECHARTS_ANIMATION,
+  MW_TOOLTIP_STYLE,
+  getChartScaleColour,
+  marginToScalePercent,
+} from '@/components/shared/charts/chart-theme';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  AreaChart,
+  Area,
 } from 'recharts';
 
-
-// Mock data
 const kpiData = {
   monthlyRevenue: { value: 287500, change: 12.5, trend: 'up' },
   outstandingInvoices: { count: 12, value: 45800, trend: 'neutral' },
@@ -45,17 +57,20 @@ const revenueData = [
 ];
 
 const jobProfitabilityData = [
-  { job: 'JOB-0012', margin: 23.1, color: 'var(--mw-yellow-400)' },
-  { job: 'JOB-0010', margin: 15.1, color: 'var(--mw-yellow-400)' },
-  { job: 'JOB-0008', margin: 18.4, color: 'var(--mw-yellow-400)' },
-  { job: 'JOB-0007', margin: 21.2, color: 'var(--mw-yellow-400)' },
-  { job: 'JOB-0006', margin: 12.8, color: 'var(--mw-mirage)' },
-  { job: 'JOB-0003', margin: 16.5, color: 'var(--mw-yellow-400)' },
-  { job: 'JOB-0011', margin: 6.5, color: 'var(--mw-mirage)' },
-  { job: 'JOB-0005', margin: 3.2, color: 'var(--mw-mirage)' },
-  { job: 'JOB-0004', margin: 8.9, color: 'var(--mw-mirage)' },
-  { job: 'JOB-0009', margin: -7.8, color: 'var(--mw-mirage)' },
+  { job: 'JOB-0012', margin: 23.1 },
+  { job: 'JOB-0010', margin: 15.1 },
+  { job: 'JOB-0008', margin: 18.4 },
+  { job: 'JOB-0007', margin: 21.2 },
+  { job: 'JOB-0006', margin: 12.8 },
+  { job: 'JOB-0003', margin: 16.5 },
+  { job: 'JOB-0011', margin: 6.5 },
+  { job: 'JOB-0005', margin: 3.2 },
+  { job: 'JOB-0004', margin: 8.9 },
+  { job: 'JOB-0009', margin: -7.8 },
 ];
+
+const badgeNeutral =
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
 
 const approvalQueue = [
   { type: 'Quote', id: 'QT-2026-0142', amount: 12500, customer: 'TechCorp Industries' },
@@ -83,16 +98,15 @@ export function SellDashboard() {
       aiScope="sell"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-      {/* KPI Cards - Top Row */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Monthly Revenue"
             value={`$${kpiData.monthlyRevenue.value.toLocaleString()}`}
             icon={DollarSign}
-            tone="brand"
+            iconSurface="key"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]">
+              <Badge className={badgeNeutral}>
                 +{kpiData.monthlyRevenue.change}%
               </Badge>
             }
@@ -105,9 +119,8 @@ export function SellDashboard() {
             label="Outstanding Invoices"
             value={`$${kpiData.outstandingInvoices.value.toLocaleString()}`}
             icon={Receipt}
-            tone="warning"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-muted-foreground">
+              <Badge className={badgeNeutral}>
                 {kpiData.outstandingInvoices.count} invoices
               </Badge>
             }
@@ -120,9 +133,8 @@ export function SellDashboard() {
             label="Profit Margin"
             value={`${kpiData.profitMargin.value}%`}
             icon={TrendingUp}
-            tone="brand"
             trailing={
-              <Badge className="border-transparent bg-[var(--mw-yellow-400)]/20 text-foreground">
+              <Badge className={badgeNeutral}>
                 +{kpiData.profitMargin.change}%
               </Badge>
             }
@@ -135,9 +147,8 @@ export function SellDashboard() {
             label="Cash Flow"
             value={`$${kpiData.cashFlow.value.toLocaleString()}`}
             icon={BarChart3}
-            tone="brand"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-foreground">
+              <Badge className={badgeNeutral}>
                 {kpiData.cashFlow.change}%
               </Badge>
             }
@@ -150,10 +161,8 @@ export function SellDashboard() {
             label="Overdue Invoices"
             value={`$${kpiData.overdueInvoices.value.toLocaleString()}`}
             icon={AlertTriangle}
-            tone="brand"
-            valueClassName="text-[var(--mw-error)]"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-foreground">
+              <Badge className={badgeNeutral}>
                 {kpiData.overdueInvoices.count} overdue
               </Badge>
             }
@@ -166,9 +175,8 @@ export function SellDashboard() {
             label="Expenses This Month"
             value={`$${kpiData.expensesThisMonth.value.toLocaleString()}`}
             icon={CreditCard}
-            tone="neutral"
             trailing={
-              <Badge className="border-transparent bg-[var(--neutral-100)] text-muted-foreground">
+              <Badge className={badgeNeutral}>
                 {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
               </Badge>
             }
@@ -188,41 +196,52 @@ export function SellDashboard() {
         </motion.div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Revenue vs Expenses Area Chart */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-medium text-foreground mb-4">
+            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
               Revenue vs Expenses (12 months)
             </h3>
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--mw-yellow-400)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--mw-yellow-400)" stopOpacity={0.05} />
+                    <stop offset="5%" stopColor="var(--chart-scale-high)" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="var(--chart-scale-high)" stopOpacity={0.05} />
                   </linearGradient>
                   <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--mw-mirage)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--mw-mirage)" stopOpacity={0.05} />
+                    <stop offset="5%" stopColor="var(--chart-scale-mid)" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="var(--chart-scale-mid)" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="month" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
-                <Area type="monotone" dataKey="revenue" stroke={MW_CHART_COLOURS[0]} strokeWidth={2} fill="url(#revenueGradient)" />
-                <Area type="monotone" dataKey="expenses" stroke={MW_CHART_COLOURS[1]} strokeWidth={2} fill="url(#expensesGradient)" />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="var(--chart-scale-high)"
+                  strokeWidth={2}
+                  fill="url(#revenueGradient)"
+                  {...MW_RECHARTS_ANIMATION}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="var(--chart-scale-mid)"
+                  strokeWidth={2}
+                  fill="url(#expensesGradient)"
+                  {...MW_RECHARTS_ANIMATION}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </Card>
         </motion.div>
 
-        {/* Job Profitability Bar Chart */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-medium text-foreground mb-4">
+            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
               Top 10 Jobs by Profit Margin
             </h3>
             <ResponsiveContainer width="100%" height={280}>
@@ -231,9 +250,12 @@ export function SellDashboard() {
                 <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />
                 <Tooltip formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
-                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
+                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION}>
                   {jobProfitabilityData.map((entry, i) => (
-                    <Cell key={`cell-${entry.job}-${i}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${entry.job}-${i}`}
+                      fill={getChartScaleColour(marginToScalePercent(entry.margin))}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -242,85 +264,82 @@ export function SellDashboard() {
         </motion.div>
       </div>
 
-      {/* Action Cards Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Approval Queue */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-foreground">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">
                 Approval Queue
               </h3>
-              <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent">
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]">
                 {approvalQueue.length}
               </Badge>
             </div>
             <div className="space-y-3">
               {approvalQueue.map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-md)] hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
+                <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-foreground">
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="text-xs font-medium text-[var(--neutral-900)]">
                         {item.type}
                       </span>
-                      <span className="text-xs text-muted-foreground tabular-nums">
+                      <span className="text-xs text-[var(--neutral-500)] tabular-nums">
                         {item.id}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--neutral-600)] mb-1">
+                    <p className="mb-1 text-xs text-[var(--neutral-600)]">
                       {item.customer}
                     </p>
-                    <p className="text-sm font-medium tabular-nums text-foreground">
+                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-foreground" />
+                  <CheckCircle2 className="h-5 w-5 text-[var(--neutral-700)]" strokeWidth={1.5} />
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
-              <FileText className="w-4 h-4 mr-2" />
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)]">
+              <FileText className="mr-2 h-4 w-4" strokeWidth={1.5} />
               View All Approvals
             </Button>
           </Card>
         </motion.div>
 
-        {/* Xero Sync Status */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-foreground">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">
                 Xero Sync Status
               </h3>
-              <div className="w-3 h-3 bg-[var(--mw-mirage)] rounded-full" />
+              <div className="h-3 w-3 rounded-full bg-[var(--mw-yellow-400)]" />
             </div>
-            <div className="space-y-4 mb-4">
+            <div className="mb-4 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[var(--neutral-500)]">
                   Last synced
                 </span>
-                <span className="text-xs font-medium text-foreground">
+                <span className="text-xs font-medium text-[var(--neutral-900)]">
                   2 minutes ago
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[var(--neutral-500)]">
                   Invoices synced
                 </span>
-                <span className="text-xs font-medium text-foreground">
+                <span className="text-xs font-medium text-[var(--neutral-900)]">
                   147 / 147
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[var(--neutral-500)]">
                   Status
                 </span>
-                <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent text-xs">
+                <Badge className={badgeNeutral}>
                   Healthy
                 </Badge>
               </div>
             </div>
-            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] group">
+            <Button className="group w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{
@@ -330,49 +349,48 @@ export function SellDashboard() {
                   repeatDelay: 3
                 }}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="mr-2 h-4 w-4" strokeWidth={1.5} />
               </motion.div>
               Sync Now
             </Button>
           </Card>
         </motion.div>
 
-        {/* Overdue Actions */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-foreground">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-base font-medium text-[var(--neutral-900)]">
                 Overdue Actions
               </h3>
-              <Badge className="bg-[var(--mw-error-light)] text-[var(--mw-error)] border-transparent">
+              <Badge className="border-0 bg-[var(--neutral-200)] text-[var(--neutral-800)]">
                 {overdueActions.length}
               </Badge>
             </div>
             <div className="space-y-3">
               {overdueActions.map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-md)] hover:bg-[var(--neutral-200)] transition-colors cursor-pointer">
+                <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-200)]">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-[var(--mw-error)] font-medium tabular-nums">
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">
                         {item.id}
                       </span>
-                      <Badge className="bg-[var(--mw-error)] text-white text-xs">
+                      <Badge className="border-0 bg-[var(--neutral-300)] text-[var(--neutral-900)] text-xs">
                         {item.daysOverdue}d
                       </Badge>
                     </div>
-                    <p className="text-xs text-foreground mb-1">
+                    <p className="mb-1 text-xs text-[var(--neutral-900)]">
                       {item.customer}
                     </p>
-                    <p className="text-xs font-medium tabular-nums text-[var(--mw-error)]">
+                    <p className="text-xs font-medium tabular-nums text-[var(--neutral-800)]">
                       ${item.amount?.toLocaleString() || `$${item.value?.toLocaleString()}`}
                     </p>
                   </div>
-                  <Clock className="w-5 h-5 text-[var(--mw-error)]" />
+                  <Clock className="h-5 w-5 text-[var(--neutral-600)]" strokeWidth={1.5} />
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]">
-              <AlertTriangle className="w-4 h-4 mr-2" />
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)] text-[var(--neutral-900)]">
+              <AlertTriangle className="mr-2 h-4 w-4" strokeWidth={1.5} />
               Follow Up All
             </Button>
           </Card>
