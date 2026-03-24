@@ -68,7 +68,7 @@ const categoryData = [
   { name: 'Materials', value: 45, color: 'var(--mw-info)' },
   { name: 'Labour', value: 30, color: 'var(--mw-success)' },
   { name: 'Overhead', value: 15, color: 'var(--mw-warning)' },
-  { name: 'Subcontract', value: 10, color: '#7C3AED' },
+  { name: 'Subcontract', value: 10, color: 'var(--chart-scale-mid)' },
 ];
 
 const utilisationData = [

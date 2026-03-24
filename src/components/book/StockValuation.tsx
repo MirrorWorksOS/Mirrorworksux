@@ -35,7 +35,7 @@ type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 const ageStyles: Record<AgeCategory, string> = {
   Fresh: 'bg-[var(--neutral-100)] text-[var(--mw-yellow-400)]',
   Active: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
-  Slow: 'bg-[#FFE5CC] text-[#CC4400]',
+  Slow: 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]',
   Stale: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
 };
 

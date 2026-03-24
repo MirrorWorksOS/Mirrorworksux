@@ -4,10 +4,14 @@
  * Single font: Roboto (M3 properties)
  * Colours: 60-30-10 rule (white/grey/MW Yellow)
  * Shape: Large radii (rounded-2xl cards, rounded-xl buttons)
+ *
+ * **Colours in UI:** Prefer `var(--*)` from `src/styles/globals.css` in components.
+ * The `colors` object below remains for TS constants / gradual migration; new code
+ * should not add parallel hex sources — use CSS variables.
  */
 
 // ============================================================================
-// COLORS - MirrorWorks Design System (60-30-10)
+// COLORS - Legacy TS mirror (prefer CSS variables in `.tsx`)
 // ============================================================================
 
 export const colors = {

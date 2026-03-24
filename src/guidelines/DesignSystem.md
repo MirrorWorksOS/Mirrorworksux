@@ -7,6 +7,20 @@
 
 Single source of truth for Smart FactoryOS. Built on Material Design 3 (M3) principles, optimised for metal fabrication ERP on tablets and desktops. Shop floor operators wearing gloves under bright industrial lighting.
 
+### Implementation checklist (app-wide sync)
+
+When building or refactoring screens:
+
+1. **Colours**: Use CSS variables (`var(--neutral-*)`, `var(--mw-*)`, `var(--border)`, `var(--chart-scale-*)`). No arbitrary `#RRGGBB` in feature code except documented exceptions (brand SVGs, carrier swatches in data with a comment).
+2. **Layout**: Routed pages use **`PageShell`** (`p-6 space-y-6` default) + **`PageHeader`** (title, subtitle, actions, breadcrumbs). Full-bleed views override with `className` (e.g. `p-0`, kanban).
+3. **Tables**: Prefer **`MwDataTable`** (or **`FinancialTable`** for money-heavy grids) over raw `<table>`.
+4. **Charts**: **`getChartScaleColour`**, **`MW_RECHARTS_ANIMATION`**, optional **`ChartCard`**; no orphan hex fills.
+5. **KPI / icons**: **`KpiStatCard`** / **`StatCard`** + **`IconWell`** (`iconSurface`); Lucide **`strokeWidth={1.5}`** on chrome.
+6. **Spacing**: Section stacks `space-y-6`; primary grids **`gap-6`** (8px grid elsewhere).
+7. **Source of truth**: **`src/styles/globals.css`** for tokens; **`src/lib/design-system.ts`** — use **`fonts`**, **`motion`**, **`radius`**; **`colors` object is legacy** — prefer CSS vars in new UI.
+
+Run **`npm run build`** after each batch.
+
 ---
 
 ## 1. Colour System

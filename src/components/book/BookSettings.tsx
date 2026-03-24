@@ -272,7 +272,7 @@ function XeroPanel() {
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-[#13B5EA] flex items-center justify-center text-white font-bold text-sm">X</div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--mw-info)] text-sm font-bold text-white">X</div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Xero</h3>

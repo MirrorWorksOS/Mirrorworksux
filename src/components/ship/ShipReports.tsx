@@ -11,10 +11,11 @@ import {
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
-import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
-const MW_YELLOW = MW_CHART_COLOURS[0];
-const NEAR_BLACK = MW_CHART_COLOURS[1];
+const LINE_STROKE = 'var(--chart-scale-mid)';
 
 const shipVolume = [
   { d: '24', v: 12 }, { d: '25', v: 15 }, { d: '26', v: 8 },
@@ -44,30 +45,39 @@ const returnRate = [
   { d: '27', r: 2.2 }, { d: '28', r: 2.9 }, { d: '01', r: 3.0 }, { d: '02', r: 2.6 },
 ];
 
-const pieColors = [MW_YELLOW, 'var(--mw-blue)', 'var(--mw-success)', 'var(--mw-error)'];
-
+const pieColors = [
+  'var(--chart-scale-high)',
+  'var(--mw-info)',
+  'var(--mw-success)',
+  'var(--mw-error)',
+];
 
 export function ShipReports() {
+  const carrierCostMax = Math.max(...carrierCost.map((c) => c.v), 1);
+
   return (
+    <PageShell className="overflow-y-auto">
     <motion.div
       initial="initial"
       animate="animate"
       variants={staggerContainer}
-      className="p-6 space-y-6 overflow-y-auto"
+      className="space-y-6"
     >
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Reports</h1>
-        <div className="flex gap-2">
-          <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
-            <Calendar className="w-4 h-4" /> This Week
-          </button>
-          <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
-            <Download className="w-4 h-4" /> Export
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Reports"
+        actions={
+          <>
+            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
+              <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
+            </button>
+            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
+              <Download className="h-4 w-4" strokeWidth={1.5} /> Export
+            </button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <ChartCard title="Shipments">
             <ResponsiveContainer width="100%" height={180}>
@@ -76,7 +86,7 @@ export function ShipReports() {
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Line key="v" type="monotone" dataKey="v" stroke={NEAR_BLACK} strokeWidth={2} dot={{ r: 2.5, fill: NEAR_BLACK }} />
+                <Line key="v" type="monotone" dataKey="v" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -90,8 +100,8 @@ export function ShipReports() {
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis domain={[85, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
-                <ReferenceLine y={95} stroke={MW_YELLOW} strokeWidth={2} />
-                <Line key="r" type="monotone" dataKey="r" stroke={NEAR_BLACK} strokeWidth={2} dot={{ r: 2.5, fill: NEAR_BLACK }} />
+                <ReferenceLine y={95} stroke="var(--mw-yellow-400)" strokeWidth={2} />
+                <Line key="r" type="monotone" dataKey="r" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -105,9 +115,12 @@ export function ShipReports() {
                 <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
-                <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20}>
+                <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20} {...MW_RECHARTS_ANIMATION}>
                   {carrierCost.map((e, i) => (
-                    <Cell key={`carrier-cost-${e.c}-${i}`} fill={e.v <= 10 ? MW_YELLOW : NEAR_BLACK} />
+                    <Cell
+                      key={`carrier-cost-${e.c}-${i}`}
+                      fill={getChartScaleColour((e.v / carrierCostMax) * 100)}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -116,7 +129,7 @@ export function ShipReports() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <ChartCard title="Status distribution">
             <div className="flex items-center gap-4">
@@ -150,7 +163,7 @@ export function ShipReports() {
                 <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Bar key="v" dataKey="v" fill={NEAR_BLACK} radius={[0, 4, 4, 0]} barSize={12} />
+                <Bar key="v" dataKey="v" fill="var(--chart-scale-mid)" radius={[0, 4, 4, 0]} barSize={12} {...MW_RECHARTS_ANIMATION} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -164,12 +177,13 @@ export function ShipReports() {
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
-                <Line key="r" type="monotone" dataKey="r" stroke={MW_YELLOW} strokeWidth={2} dot={{ r: 2.5, fill: MW_YELLOW }} />
+                <Line key="r" type="monotone" dataKey="r" stroke="var(--mw-yellow-400)" strokeWidth={2} dot={{ r: 2.5, fill: 'var(--mw-yellow-400)' }} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
         </motion.div>
       </div>
     </motion.div>
+    </PageShell>
   );
 }

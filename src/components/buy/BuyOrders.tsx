@@ -12,6 +12,8 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 type POStatus = 'draft' | 'sent' | 'acknowledged' | 'partial' | 'received' | 'cancelled';
@@ -64,28 +66,28 @@ export function BuyOrders() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Orders</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredPOs.length} orders • ${totalValue.toLocaleString()} total value</p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedFilter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedDownload className="w-4 h-4" />
-            Export
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group">
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New PO
-          </Button>
-        </div>
-      </div>
+    <PageShell>
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
+      <PageHeader
+        title="Purchase Orders"
+        subtitle={`${filteredPOs.length} orders • $${totalValue.toLocaleString()} total value`}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedFilter className="w-4 h-4" />
+              Filter
+            </Button>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedDownload className="w-4 h-4" />
+              Export
+            </Button>
+            <Button className="group h-10 rounded-xl bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
+              <AnimatedPlus className="mr-2 h-4 w-4" />
+              New PO
+            </Button>
+          </>
+        }
+      />
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-[var(--border)] overflow-x-auto">
@@ -173,5 +175,6 @@ export function BuyOrders() {
         </Card>
       </motion.div>
     </motion.div>
+    </PageShell>
   );
 }

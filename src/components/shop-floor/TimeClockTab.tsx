@@ -167,7 +167,7 @@ export function TimeClockTab() {
                      Cancel
                    </Button>
                    <Button 
-                     className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[#FFC020] text-[var(--neutral-800)] font-medium"
+                     className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium"
                      onClick={handlePinSubmit}
                      disabled={pin.length !== 4}
                    >
@@ -184,12 +184,12 @@ export function TimeClockTab() {
                 <AvatarFallback>DM</AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-bold text-[#1A1C1E]">David Miller</h3>
-                <p className="text-sm font-medium text-[#43474E]">Senior Operator • Amada Ensis Laser</p>
+                <h3 className="text-xl font-bold text-[var(--neutral-900)]">David Miller</h3>
+                <p className="text-sm font-medium text-[var(--neutral-600)]">Senior Operator • Amada Ensis Laser</p>
               </div>
             </div>
 
-            <div className="w-full h-px bg-[#E5E4E0] mb-8" />
+            <div className="w-full h-px bg-[var(--neutral-200)] mb-8" />
 
             {/* Status */}
             <div className="flex flex-col items-center justify-center gap-3 mb-6">
@@ -211,10 +211,10 @@ export function TimeClockTab() {
             </div>
 
             {/* Time Display */}
-            <div className=" text-[56px] font-medium text-[#1A1C1E] leading-none mb-2 tracking-tight">
+            <div className=" text-[56px] font-medium text-[var(--neutral-900)] leading-none mb-2 tracking-tight">
               {formatTime(currentTime)}
             </div>
-            <div className="text-[#43474E] text-base font-medium mb-10">
+            <div className="text-[var(--neutral-600)] text-base font-medium mb-10">
               {formatDate(currentTime)}
             </div>
 
@@ -225,7 +225,7 @@ export function TimeClockTab() {
                 className={cn(
                   "w-full h-16 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[#FFC020] hover:shadow-md" 
+                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-md" 
                     : "bg-white border-2 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200"
                 )}
               >
@@ -240,7 +240,7 @@ export function TimeClockTab() {
                   "w-full h-14 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2",
                   isOnBreak
                     ? "bg-blue-50 text-blue-700 border-2 border-blue-200 hover:bg-blue-100"
-                    : "bg-white border border-[var(--neutral-200)] text-[#43474E] hover:bg-[var(--neutral-100)]",
+                    : "bg-white border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-100)]",
                   !isClockedIn && "opacity-50 cursor-not-allowed hover:bg-white"
                 )}
               >
@@ -250,14 +250,14 @@ export function TimeClockTab() {
             </div>
 
             {/* Today's Summary */}
-            <div className="w-full bg-[#F8F9FA] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
+            <div className="w-full bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
                <div className="flex flex-col gap-1">
-                  <div className="text-sm font-semibold text-[#1A1C1E]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
+                  <div className="text-sm font-semibold text-[var(--neutral-900)]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
                   {isClockedIn && startTime && (
-                     <div className="text-xs text-[#43474E]">Started at {formatTime(startTime)}</div>
+                     <div className="text-xs text-[var(--neutral-600)]">Started at {formatTime(startTime)}</div>
                   )}
                   {!isClockedIn && (
-                     <div className="text-xs text-[#43474E]">Shift started at 7:30 AM</div>
+                     <div className="text-xs text-[var(--neutral-600)]">Shift started at 7:30 AM</div>
                   )}
                </div>
             </div>

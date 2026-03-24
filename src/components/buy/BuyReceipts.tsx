@@ -12,6 +12,8 @@ import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 interface POForReceipt {
@@ -54,13 +56,12 @@ export function BuyReceipts() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Goods Receipt</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{mockPOs.length} POs awaiting receipt</p>
-        </div>
-      </div>
+    <PageShell>
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
+      <PageHeader
+        title="Goods Receipt"
+        subtitle={`${mockPOs.length} POs awaiting receipt`}
+      />
 
       {!selectedPO ? (
         /* PO Selection */
@@ -178,5 +179,6 @@ export function BuyReceipts() {
         </Card>
       )}
     </motion.div>
+    </PageShell>
   );
 }

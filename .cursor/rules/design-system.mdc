@@ -3,6 +3,14 @@ description: MirrorWorks Smart FactoryOS design system. Apply to ALL React compo
 globs: ["src/**/*.tsx", "src/**/*.css", "src/components/**/*"]
 ---
 
+## 0. App-wide implementation (tokens + layout)
+
+- **Colours in UI:** `src/styles/globals.css` CSS variables — avoid ad hoc `#RRGGBB` in feature code (exceptions: documented brand SVG / carrier swatch data only).
+- **Routed pages:** `PageShell` (`p-6 space-y-6` default) + `PageHeader` — override `className` for full-bleed (e.g. kanban `p-0`).
+- **Tables:** `MwDataTable` / `FinancialTable` for data grids in new work.
+- **Charts:** `getChartScaleColour`, `MW_RECHARTS_ANIMATION`, `chart-theme.ts` — see `src/guidelines/DesignSystem.md` implementation checklist.
+- **`src/lib/design-system.ts`:** `colors` is legacy; prefer CSS vars in `.tsx`.
+
 ## 1. Colours
 
 **Crextio-aligned visual weight (~60 / ~30 / ~10):** ~60% base (canvas, white cards, neutral-50–100), ~30% content/chrome (neutral text, Mirage headlines, default icon wells on light), ~10% **yellow thread** (primary CTA, active nav, key KPI accent, chart 67–100% band, ≤1–2 yellow `IconWell`s per viewport). Mirage carries contrast; yellow is continuity, not fill-everywhere.

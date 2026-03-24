@@ -2,18 +2,20 @@
  * Buy Reports - Spend analysis and procurement analytics
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
-
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { MW_CARTESIAN_GRID, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
 
 const spendBySupplier = [
-  { name: 'Hunter Steel Co', spend: 156000, color: 'var(--mw-info)' },
-  { name: 'Pacific Metals', spend: 89000, color: 'var(--mw-success)' },
-  { name: 'Sydney Welding', spend: 45000, color: 'var(--mw-warning)' },
-  { name: 'BHP Suppliers', spend: 128000, color: '#7C3AED' },
+  { name: 'Hunter Steel Co', spend: 156000 },
+  { name: 'Pacific Metals', spend: 89000 },
+  { name: 'Sydney Welding', spend: 45000 },
+  { name: 'BHP Suppliers', spend: 128000 },
 ];
 
 const monthlySpend = [
@@ -26,36 +28,72 @@ const monthlySpend = [
 ];
 
 export function BuyReports() {
+  const spendTotal = useMemo(
+    () => spendBySupplier.reduce((s, x) => s + x.spend, 0),
+    [],
+  );
+
+  const spendSlices = useMemo(
+    () =>
+      spendBySupplier.map((s) => ({
+        ...s,
+        fill: getChartScaleColour((s.spend / spendTotal) * 100),
+      })),
+    [spendTotal],
+  );
+
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Procurement Reports</h1>
+    <PageShell>
+      <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
+        <PageHeader title="Procurement Reports" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Spend by Supplier</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={spendBySupplier} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="spend">
-                {spendBySupplier.map((entry, i) => <Cell key={`cell-${i}`} fill={entry.color} />)}
-              </Pie>
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <motion.div variants={staggerItem}>
+            <Card className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6">
+              <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Spend by Supplier</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={spendSlices}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="spend"
+                    {...MW_RECHARTS_ANIMATION}
+                  >
+                    {spendSlices.map((entry, i) => (
+                      <Cell key={`cell-${i}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
 
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Monthly Spend Trend</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={monthlySpend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Bar dataKey="spend" fill="#FFCF4B" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-    </motion.div>
+          <motion.div variants={staggerItem}>
+            <Card className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6">
+              <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Monthly Spend Trend</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={monthlySpend}>
+                  <CartesianGrid {...MW_CARTESIAN_GRID} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+                  <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                  <Bar
+                    dataKey="spend"
+                    fill="var(--mw-yellow-400)"
+                    radius={[4, 4, 0, 0]}
+                    {...MW_RECHARTS_ANIMATION}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+        </div>
+      </motion.div>
+    </PageShell>
   );
 }

@@ -154,10 +154,11 @@ function GeneralPanel() {
 // ── Carriers Panel ──
 function CarriersPanel() {
   const carriers = [
-    { name: 'Toll', description: 'National freight and express parcel', connected: true, colour: '#003DA5' },
-    { name: 'StarTrack', description: 'Domestic parcel and express courier', connected: true, colour: '#E4002B' },
-    { name: 'TNT', description: 'Road express and international freight', connected: false, colour: '#FF6600' },
-    { name: 'DHL', description: 'International shipping and express', connected: false, colour: '#FFCC00' },
+    // Carrier brand swatches (marketing colours; not design-system semantic tokens)
+    { name: 'Toll', description: 'National freight and express parcel', connected: true, colour: 'var(--mw-info)' },
+    { name: 'StarTrack', description: 'Domestic parcel and express courier', connected: true, colour: 'var(--mw-error)' },
+    { name: 'TNT', description: 'Road express and international freight', connected: false, colour: 'var(--mw-amber)' },
+    { name: 'DHL', description: 'International shipping and express', connected: false, colour: 'var(--mw-yellow-400)' },
     { name: 'Customer collect', description: 'Customer arranges own pickup', connected: true, colour: 'var(--neutral-500)' },
   ];
 

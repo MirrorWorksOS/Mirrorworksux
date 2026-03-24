@@ -155,7 +155,7 @@ function Connections() {
     >
       <defs>
         <marker id="wf-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-          <path d="M 0 0.5 L 5 3 L 0 5.5 Z" fill="#C4C4C4" />
+          <path d="M 0 0.5 L 5 3 L 0 5.5 Z" fill="var(--neutral-400)" />
         </marker>
       </defs>
 

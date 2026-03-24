@@ -57,7 +57,7 @@ const JOBS: JobRow[] = [
 ];
 
 const getBarColor = (m: number) => m > 15 ? 'var(--mw-success)' : m > 5 ? 'var(--mw-warning)' : 'var(--mw-error)';
-const getMarginBadge = (m: number) => m > 15 ? 'bg-[var(--neutral-100)] text-[#1B7D4F]' : m > 5 ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]' : 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]';
+const getMarginBadge = (m: number) => m > 15 ? 'bg-[var(--neutral-100)] text-[var(--mw-success)]' : m > 5 ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)]' : 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]';
 const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {

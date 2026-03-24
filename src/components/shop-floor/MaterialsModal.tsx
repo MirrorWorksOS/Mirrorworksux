@@ -33,7 +33,7 @@ function Heading() {
   return (
     <div className="h-[32px] relative shrink-0 w-[171.008px]" data-name="Heading 2">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[32px] relative w-[171.008px]">
-        <p className="absolute font-bold leading-[32px] left-0 not-italic text-[#0f172b] text-2xl text-nowrap top-0 tracking-[0.0703px] whitespace-pre">Bill of materials</p>
+        <p className="absolute font-bold leading-[32px] left-0 not-italic text-[var(--neutral-900)] text-2xl text-nowrap top-0 tracking-[0.0703px] whitespace-pre">Bill of materials</p>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ function Paragraph() {
   return (
     <div className="h-[24px] relative shrink-0 w-[280.938px]" data-name="Paragraph">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[24px] relative w-[280.938px]">
-        <p className="absolute font-normal leading-[24px] left-0 not-italic text-[#62748e] text-base text-nowrap top-[-0.5px] tracking-[-0.3125px] whitespace-pre">Upload a bill of materials to get started</p>
+        <p className="absolute font-normal leading-[24px] left-0 not-italic text-[var(--neutral-500)] text-base text-nowrap top-[-0.5px] tracking-[-0.3125px] whitespace-pre">Upload a bill of materials to get started</p>
       </div>
     </div>
   );
@@ -92,7 +92,7 @@ function Button() {
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[8px]" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[40px] relative w-full">
         <Icon1 />
-        <p className="absolute font-medium leading-[20px] left-[74px] not-italic text-[#314158] text-sm text-center text-nowrap top-[10.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Columns</p>
+        <p className="absolute font-medium leading-[20px] left-[74px] not-italic text-[var(--neutral-600)] text-sm text-center text-nowrap top-[10.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Columns</p>
         <Icon2 />
       </div>
     </div>
@@ -135,7 +135,7 @@ function Container2() {
 function Button2() {
   return (
     <div className="absolute h-[32px] left-[4px] rounded-[1.67772e+07px] top-[4px] w-[56.492px]" data-name="Button">
-      <p className="absolute font-medium leading-[20px] left-[28.5px] not-italic text-[#62748e] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Flat</p>
+      <p className="absolute font-medium leading-[20px] left-[28.5px] not-italic text-[var(--neutral-500)] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Flat</p>
     </div>
   );
 }
@@ -148,7 +148,7 @@ function Button3() {
   return (
     <div className="absolute h-[32px] left-[60.49px] rounded-[1.67772e+07px] top-[4px] w-[101.563px]" data-name="Button">
       <Container3 />
-      <p className="absolute font-medium leading-[20px] left-[51.5px] not-italic text-[#0f172b] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Multi-level</p>
+      <p className="absolute font-medium leading-[20px] left-[51.5px] not-italic text-[var(--neutral-900)] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Multi-level</p>
     </div>
   );
 }
@@ -176,13 +176,13 @@ function Container5() {
 }
 
 function PrimitiveButton() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[13.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[13.5px]" data-name="Primitive.button" />;
 }
 
 function Container6() {
   return (
     <div className="absolute h-[19.5px] left-[80px] top-[11.75px] w-[200px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function Container6() {
 function Container7() {
   return (
     <div className="absolute h-[19.5px] left-[280px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
     </div>
   );
 }
@@ -198,7 +198,7 @@ function Container7() {
 function Container8() {
   return (
     <div className="absolute h-[19.5px] left-[400px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[49.81px] not-italic text-[#0f172b] text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[49.81px] not-italic text-[var(--neutral-900)] text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
     </div>
   );
 }
@@ -206,7 +206,7 @@ function Container8() {
 function Container9() {
   return (
     <div className="absolute h-[19.5px] left-[500px] top-[11.75px] w-[80px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -214,7 +214,7 @@ function Container9() {
 function Container10() {
   return (
     <div className="absolute h-[19.5px] left-[580px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[88.03px] not-italic text-[#0f172b] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[88.03px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
     </div>
   );
 }
@@ -222,7 +222,7 @@ function Container10() {
 function Container11() {
   return (
     <div className="absolute h-[19.5px] left-[680px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[88.09px] not-italic text-[#0f172b] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[88.09px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
     </div>
   );
 }
@@ -230,7 +230,7 @@ function Container11() {
 function Container12() {
   return (
     <div className="absolute h-[19.5px] left-[780px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
     </div>
   );
 }
@@ -238,7 +238,7 @@ function Container12() {
 function Container13() {
   return (
     <div className="absolute h-[19.5px] left-[880px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
     </div>
   );
 }
@@ -246,7 +246,7 @@ function Container13() {
 function Container14() {
   return (
     <div className="absolute h-[19.5px] left-[1000px] top-[11.75px] w-[140px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[#0f172b] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
+      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
     </div>
   );
 }
@@ -301,7 +301,7 @@ function Container17() {
 }
 
 function PrimitiveButton1() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container18() {
@@ -333,7 +333,7 @@ function Button4() {
 function Text() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[124px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm top-[0.5px] tracking-[-0.1504px] w-[138px]">Bracket 1200 x 2400</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm top-[0.5px] tracking-[-0.1504px] w-[138px]">Bracket 1200 x 2400</p>
     </div>
   );
 }
@@ -384,7 +384,7 @@ function Container21() {
       <input 
         type="number" 
         defaultValue="60"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -415,7 +415,7 @@ function Container22() {
 function Container23() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px]">$45.07</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px]">$45.07</p>
     </div>
   );
 }
@@ -423,7 +423,7 @@ function Container23() {
 function Container24() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px]">$2704.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px]">$2704.20</p>
     </div>
   );
 }
@@ -431,7 +431,7 @@ function Container24() {
 function Badge() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#0f172b] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -467,7 +467,7 @@ function Button6() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
       <Icon7 />
-      <p className="absolute font-medium leading-[16px] left-[66.5px] not-italic text-[#314158] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Assembly</p>
+      <p className="absolute font-medium leading-[16px] left-[66.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Assembly</p>
     </div>
   );
 }
@@ -542,7 +542,7 @@ function Container26() {
 }
 
 function PrimitiveButton2() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container27() {
@@ -569,7 +569,7 @@ function Text1() {
 function Text2() {
   return (
     <div className="absolute h-[20px] left-[71.96px] overflow-clip top-[2px] w-[84.039px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm top-[0.5px] tracking-[-0.1504px] w-[113px]">Steel Sheet 2mm</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm top-[0.5px] tracking-[-0.1504px] w-[113px]">Steel Sheet 2mm</p>
     </div>
   );
 }
@@ -621,7 +621,7 @@ function Container30() {
       <input 
         type="number" 
         defaultValue="1"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -652,7 +652,7 @@ function Container31() {
 function Container32() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
     </div>
   );
 }
@@ -660,7 +660,7 @@ function Container32() {
 function Container33() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
     </div>
   );
 }
@@ -668,7 +668,7 @@ function Container33() {
 function Badge2() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#62748e] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
 }
@@ -755,7 +755,7 @@ function Container36() {
 }
 
 function PrimitiveButton3() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container37() {
@@ -769,7 +769,7 @@ function Text3() {
 function Text4() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[101.125px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle Brace 56</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle Brace 56</p>
     </div>
   );
 }
@@ -820,7 +820,7 @@ function Container40() {
       <input 
         type="number" 
         defaultValue="20"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -851,7 +851,7 @@ function Container41() {
 function Container42() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$22.56</p>
+      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$22.56</p>
     </div>
   );
 }
@@ -859,7 +859,7 @@ function Container42() {
 function Container43() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px]">$451.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px]">$451.20</p>
     </div>
   );
 }
@@ -867,7 +867,7 @@ function Container43() {
 function Badge4() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#0f172b] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -898,7 +898,7 @@ function Button11() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
       <Icon15 />
-      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[#314158] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
+      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
   );
 }
@@ -973,7 +973,7 @@ function Container45() {
 }
 
 function PrimitiveButton4() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container46() {
@@ -987,7 +987,7 @@ function Text5() {
 function Text6() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[86.758px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sliding Brace</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sliding Brace</p>
     </div>
   );
 }
@@ -1038,7 +1038,7 @@ function Container49() {
       <input 
         type="number" 
         defaultValue="45"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1069,7 +1069,7 @@ function Container50() {
 function Container51() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px]">$13.67</p>
+      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px]">$13.67</p>
     </div>
   );
 }
@@ -1077,7 +1077,7 @@ function Container51() {
 function Container52() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px]">$615.15</p>
+      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px]">$615.15</p>
     </div>
   );
 }
@@ -1085,7 +1085,7 @@ function Container52() {
 function Badge6() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#0f172b] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -1116,7 +1116,7 @@ function Button14() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
       <Icon19 />
-      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[#314158] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
+      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
   );
 }
@@ -1191,7 +1191,7 @@ function Container54() {
 }
 
 function PrimitiveButton5() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container55() {
@@ -1205,7 +1205,7 @@ function Text7() {
 function Text8() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[113.211px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle 50 x 50 EA</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle 50 x 50 EA</p>
     </div>
   );
 }
@@ -1256,7 +1256,7 @@ function Container58() {
       <input 
         type="number" 
         defaultValue="60"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1287,7 +1287,7 @@ function Container59() {
 function Container60() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px]">$12.74</p>
+      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px]">$12.74</p>
     </div>
   );
 }
@@ -1295,7 +1295,7 @@ function Container60() {
 function Container61() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px]">$764.40</p>
+      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px]">$764.40</p>
     </div>
   );
 }
@@ -1303,7 +1303,7 @@ function Container61() {
 function Badge8() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#62748e] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
 }
@@ -1334,7 +1334,7 @@ function Button17() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
       <Icon23 />
-      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[#314158] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
+      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
   );
 }
@@ -1409,7 +1409,7 @@ function Container63() {
 }
 
 function PrimitiveButton6() {
-  return <div className="absolute bg-[#f3f3f5] border border-[#cad5e2] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[20px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[20px]" data-name="Primitive.button" />;
 }
 
 function Container64() {
@@ -1423,7 +1423,7 @@ function Text9() {
 function Text10() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[74.352px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Toggle Bolt</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Toggle Bolt</p>
     </div>
   );
 }
@@ -1474,7 +1474,7 @@ function Container67() {
       <input 
         type="number" 
         defaultValue="45"
-        className="w-12 text-center font-normal text-[#0f172b] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1505,7 +1505,7 @@ function Container68() {
 function Container69() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px]">$8.06</p>
+      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px]">$8.06</p>
     </div>
   );
 }
@@ -1513,7 +1513,7 @@ function Container69() {
 function Container70() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[#0f172b] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px]">$362.70</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px]">$362.70</p>
     </div>
   );
 }
@@ -1521,7 +1521,7 @@ function Container70() {
 function Badge10() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[17px] w-[42.32px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[#62748e] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
 }
@@ -1552,7 +1552,7 @@ function Button20() {
   return (
     <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[14px] w-[116px]" data-name="Button">
       <Icon27 />
-      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[#314158] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
+      <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
   );
 }
@@ -1631,7 +1631,7 @@ function Text11() {
   return (
     <div className="h-[20px] relative shrink-0 w-[70.5px]" data-name="Text">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[20px] relative w-[70.5px]">
-        <p className="absolute font-medium leading-[20px] left-0 not-italic text-[#0f172b] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Page 1 of 1</p>
+        <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Page 1 of 1</p>
       </div>
     </div>
   );

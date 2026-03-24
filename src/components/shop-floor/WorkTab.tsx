@@ -162,7 +162,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                 className="flex items-center gap-4 p-5 cursor-pointer transition-colors hover:bg-[var(--neutral-100)]"
                 onClick={() => toggleMO(mo.id)}
               >
-                <div className={`p-1 rounded-full hover:bg-[#E5E4E0] transition-colors`}>
+                <div className={`p-1 rounded-full hover:bg-[var(--neutral-200)] transition-colors`}>
                   <ChevronRight className={`w-5 h-5 text-[var(--neutral-500)] transition-transform duration-200 ${expandedMOs[mo.id] ? 'rotate-90' : ''}`} />
                 </div>
                 
@@ -227,7 +227,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                                 <span>Progress</span>
                                 <span className="text-[var(--neutral-800)]">{wo.progress}%</span>
                               </div>
-                              <div className="w-full h-2 bg-[#E5E4E0] rounded-full overflow-hidden">
+                              <div className="w-full h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
                                 <div 
                                   className={`h-full rounded-full ${wo.status === 'progress' ? 'bg-[var(--neutral-800)]' : wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--neutral-500)]'}`}
                                   style={{ width: `${wo.progress}%` }}
@@ -242,7 +242,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                                   <div className=" text-sm text-[var(--neutral-800)]">{wo.unitsCompleted}/{wo.totalUnits}</div>
                               </div>
                               <StatusBadge status={wo.status} />
-                              <ChevronRight className="w-5 h-5 text-[#E5E4E0] group-hover:text-[var(--neutral-800)] transition-colors" />
+                              <ChevronRight className="w-5 h-5 text-[var(--neutral-200)] group-hover:text-[var(--neutral-800)] transition-colors" />
                             </div>
                           </div>
                         </div>
