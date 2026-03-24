@@ -73,6 +73,7 @@ import { ControlFactoryDesigner } from './components/control/ControlFactoryDesig
 import { ControlProcessBuilder } from './components/control/ControlProcessBuilder';
 import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
 import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
+import { BridgeWizard } from './components/bridge/BridgeWizard';
 
 // Book Module (existing)
 import { BudgetOverview } from './components/book/BudgetOverview';
@@ -179,12 +180,26 @@ export const router = createBrowserRouter([
         ],
       },
 
+      // Bridge — full wizard (PLAT 01)
+      {
+        path: 'bridge',
+        element: (
+          <div className="p-6 space-y-6 max-w-5xl mx-auto">
+            <BridgeWizard />
+          </div>
+        ),
+      },
+
       // Control Module Routes (includes former Design module: factory designer, process builder, MirrorWorks Bridge)
       {
         path: 'control',
         children: [
           { index: true, element: <ControlDashboard /> },
-          { path: 'mirrorworks-bridge', element: <MirrorWorksBridge /> },
+          { path: 'mirrorworks-bridge', element: (
+            <div className="p-6 space-y-6 max-w-5xl mx-auto">
+              <BridgeWizard />
+            </div>
+          ) },
           { path: 'factory-layout', element: <ControlFactoryDesigner /> },
           { path: 'process-builder', element: <ControlProcessBuilder /> },
           { path: 'locations', element: <ControlLocations /> },

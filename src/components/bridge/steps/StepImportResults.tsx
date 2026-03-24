@@ -1,0 +1,152 @@
+/**
+ * Step 7 — Import execution and results.
+ */
+import { useEffect, useState } from 'react';
+import { useBridge } from '@/hooks/useBridge';
+import { bridgeService } from '@/services/bridgeService';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, AlertTriangle, MinusCircle, Loader2, Users } from 'lucide-react';
+
+export function StepImportResults() {
+  const { sessionId, sessionStatus, setSessionStatus, importSummary, setImportSummary, importProgress, setImportProgress, goToNextStep, files } = useBridge();
+  const [step, setStep] = useState(0);
+
+  const hasEmployees = files.some((f) => f.detectedEntityType === 'employees');
+
+  // Run import simulation
+  useEffect(() => {
+    if (sessionStatus !== 'importing') return;
+
+    async function runImport() {
+      let s = 0;
+      while (true) {
+        const progress = await bridgeService.pollProgress(sessionId || '', s);
+        if (!progress) break;
+        setImportProgress(progress);
+        setStep(s + 1);
+        s++;
+      }
+      const summary = await bridgeService.getImportSummary(sessionId || '');
+      setImportSummary(summary);
+      setImportProgress(null);
+      setSessionStatus('completed');
+    }
+
+    runImport();
+  }, [sessionStatus]);
+
+  const isImporting = sessionStatus === 'importing';
+  const isComplete = sessionStatus === 'completed';
+
+  const totalCreated = importSummary ? Object.values(importSummary.created).reduce((a, b) => a + b, 0) : 0;
+  const totalFlagged = importSummary ? Object.values(importSummary.flagged).reduce((a, b) => a + b, 0) : 0;
+  const totalSkipped = importSummary ? Object.values(importSummary.skipped).reduce((a, b) => a + b, 0) : 0;
+
+  return (
+    <div className="space-y-6">
+      {isImporting && (
+        <>
+          <div className="text-center space-y-4 py-12">
+            <Loader2 className="w-12 h-12 text-[#FFCF4B] animate-spin mx-auto" />
+            <h2 className="text-2xl font-semibold tracking-tight">Importing your data...</h2>
+            {importProgress && (
+              <div className="max-w-md mx-auto space-y-2">
+                <p className="text-sm text-muted-foreground capitalize">
+                  {importProgress.entity} — {importProgress.processed} of {importProgress.total}
+                </p>
+                <Progress value={(importProgress.processed / importProgress.total) * 100} className="h-2" />
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {isComplete && importSummary && (
+        <>
+          <div className="text-center space-y-2">
+            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+            <h2 className="text-2xl font-semibold tracking-tight">Import complete</h2>
+            <p className="text-sm text-muted-foreground">Your data has been imported into MirrorWorks.</p>
+          </div>
+
+          {/* Summary cards */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Card className="p-5 text-center space-y-1">
+              <CheckCircle className="w-6 h-6 text-green-500 mx-auto" />
+              <p className="text-3xl font-bold">{totalCreated}</p>
+              <p className="text-sm text-muted-foreground">Records created</p>
+            </Card>
+            <Card className="p-5 text-center space-y-1">
+              <AlertTriangle className="w-6 h-6 text-amber-500 mx-auto" />
+              <p className="text-3xl font-bold">{totalFlagged}</p>
+              <p className="text-sm text-muted-foreground">Flagged for review</p>
+            </Card>
+            <Card className="p-5 text-center space-y-1">
+              <MinusCircle className="w-6 h-6 text-gray-400 mx-auto" />
+              <p className="text-3xl font-bold">{totalSkipped}</p>
+              <p className="text-sm text-muted-foreground">Skipped</p>
+            </Card>
+          </div>
+
+          {/* Per-entity breakdown */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">Breakdown by type</h3>
+            {Object.entries(importSummary.created).map(([entity, count]) => (
+              <div key={entity} className="flex items-center justify-between rounded-lg border px-4 py-3">
+                <span className="text-sm font-medium capitalize">{entity}</span>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-green-600">{count} created</span>
+                  {(importSummary.flagged[entity] || 0) > 0 && (
+                    <span className="text-amber-600">{importSummary.flagged[entity]} flagged</span>
+                  )}
+                  {(importSummary.skipped[entity] || 0) > 0 && (
+                    <span className="text-muted-foreground">{importSummary.skipped[entity]} skipped</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Team setup CTA */}
+          {hasEmployees && (
+            <Card className="p-5 border-[#FFCF4B] bg-[#FFCF4B]/5">
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFCF4B]/20">
+                  <Users className="w-5 h-5 text-[#191406]" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-sm">Set up your team</p>
+                  <p className="text-xs text-muted-foreground">Assign imported employees to modules and groups.</p>
+                </div>
+                <Button
+                  onClick={goToNextStep}
+                  className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium"
+                >
+                  Set up team
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex gap-3">
+              <button type="button" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Import more data
+              </button>
+            </div>
+            {!hasEmployees && (
+              <Button
+                onClick={() => { window.location.href = '/'; }}
+                className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
+              >
+                Go to dashboard
+              </Button>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
