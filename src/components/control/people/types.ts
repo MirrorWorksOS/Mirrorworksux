@@ -20,8 +20,28 @@ export type PermissionKey =
   | 'maintenance.schedule'
   | 'reports.access'
   | 'settings.access'
-  // Book-specific (ARCH 00 §4.7)
+  // Sell (ARCH 00 §4.3)
+  | 'crm.access'
+  | 'pipeline.visibility'
   | 'invoices.create'
+  | 'pricing.edit'
+  // Plan (ARCH 00 §4.4)
+  | 'schedule.edit'
+  | 'budget.visibility'
+  | 'bom.edit'
+  | 'intelligence_hub.access'
+  // Make (ARCH 00 §4.5)
+  | 'workorders.scope'
+  | 'timers.scope'
+  | 'qc.record'
+  | 'scrap.report'
+  | 'andon.manage'
+  // Ship (ARCH 00 §4.6)
+  | 'orders.scope'
+  | 'manifests.create'
+  | 'carrier.config'
+  | 'returns.approve'
+  // Book-specific (ARCH 00 §4.7)
   | 'expenses.scope'
   | 'po.approve'
   | 'xero.access'
@@ -64,8 +84,25 @@ export interface GroupPermissionSet {
   'maintenance.schedule': boolean;
   'reports.access': boolean;
   'settings.access': boolean;
-  // Extended keys - optional so existing data still compiles
+  // Sell / Plan / Make / Ship — optional on groups; see ARCH 00 §4.3–§4.6
+  'crm.access'?: boolean;
+  'pipeline.visibility'?: ScopeValue;
   'invoices.create'?: boolean;
+  'pricing.edit'?: boolean;
+  'schedule.edit'?: boolean;
+  'budget.visibility'?: boolean;
+  'bom.edit'?: boolean;
+  'intelligence_hub.access'?: boolean;
+  'workorders.scope'?: ScopeValue;
+  'timers.scope'?: ScopeValue;
+  'qc.record'?: boolean;
+  'scrap.report'?: boolean;
+  'andon.manage'?: boolean;
+  'orders.scope'?: ScopeValue;
+  'manifests.create'?: boolean;
+  'carrier.config'?: boolean;
+  'returns.approve'?: boolean;
+  // Book / Buy / Control — optional
   'expenses.scope'?: ScopeValue;
   'po.approve'?: boolean;
   'xero.access'?: boolean;

@@ -1,6 +1,7 @@
 /**
  * ModuleSettingsLayout — Shared layout for module settings pages
  * Implements the group-based permissions model from ARCH 00.
+ * @see src/guidelines/AccessRightsAndPermissions.md
  *
  * Every module settings page has the same structure:
  * - Left sidebar: settings panel navigation + Access & Permissions tab

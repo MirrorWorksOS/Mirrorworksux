@@ -26,8 +26,7 @@ export type AiCommandScope =
   | "ship"
   | "book"
   | "buy"
-  | "control"
-  | "design";
+  | "control";
 
 const PLACEHOLDER: Record<AiCommandScope, string> = {
   app: "Ask MirrorWorks anything — jobs, inventory, orders, exceptions…",
@@ -37,8 +36,8 @@ const PLACEHOLDER: Record<AiCommandScope, string> = {
   ship: "Ask about shipments, carriers, exceptions, or SLA…",
   book: "Ask about invoices, job costs, budgets, or sync…",
   buy: "Ask about POs, suppliers, requisitions, or spend…",
-  control: "Ask about users, master data, machines, or health…",
-  design: "Ask about factory layout, roles, or process flows…",
+  control:
+    "Ask about MirrorWorks Bridge, factory layout, users, master data, machines, or health…",
 };
 
 const MOCK_REPLY: Record<AiCommandScope, { title: string; body: string; actions: string[] }> = {
@@ -85,16 +84,10 @@ const MOCK_REPLY: Record<AiCommandScope, { title: string; body: string; actions:
     actions: ["Open requisition", "Check stock", "Split line"],
   },
   control: {
-    title: "System",
+    title: "Control",
     body:
-      "All integrations healthy. Last security patch was applied 4 days ago. Two pending user invites for the shop floor role.",
-    actions: ["View integrations", "Resend invites", "Audit log"],
-  },
-  design: {
-    title: "Design workspace",
-    body:
-      "Factory layout v3 has three unplaced work centres. Role designer shows 2 roles without a mapped home module.",
-    actions: ["Open layout", "Place work centres", "Fix role mapping"],
+      "MirrorWorks Bridge import queue is clear. Factory layout v3 has three unplaced work centres. Two pending user invites for the shop floor role.",
+    actions: ["Open Bridge", "Open factory designer", "Resend invites"],
   },
 };
 

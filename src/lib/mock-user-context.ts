@@ -9,8 +9,7 @@ export type MockModuleKey =
   | "ship"
   | "book"
   | "buy"
-  | "control"
-  | "design";
+  | "control";
 
 export interface MockUserContext {
   displayName: string;
@@ -26,6 +25,6 @@ export const mockUserContext: MockUserContext = {
   org: "Alliance Metal Fabrication",
   role: "Operations manager",
   groups: ["production", "approvals", "shipments"],
-  allowedModules: ["sell", "plan", "make", "ship", "book", "buy", "control", "design"],
+  allowedModules: ["sell", "plan", "make", "ship", "book", "buy", "control"],
   primaryModule: "plan",
 };

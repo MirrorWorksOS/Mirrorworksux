@@ -13,13 +13,23 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/ui/utils';
 import { PermissionGrid } from './PermissionGrid';
 import { moduleColors, moduleLabels } from './mock-data';
-import type { Group, GroupPermissionSet, ModuleAssignment, ModuleKey, User } from './types';
+import type { Group, GroupPermissionSet, ModuleAssignment, ModuleKey, ScopeValue, User } from './types';
 
 interface ModuleAccessCardProps {
   user: User;
   assignment: ModuleAssignment;
   groups: Group[];
 }
+
+const SCOPE_KEYS = new Set<string>([
+  'documents.scope',
+  'pipeline.visibility',
+  'workorders.scope',
+  'timers.scope',
+  'orders.scope',
+  'requisitions.scope',
+  'expenses.scope',
+]);
 
 const defaultResolved: GroupPermissionSet = {
   'documents.scope': 'own',
@@ -33,36 +43,39 @@ const defaultResolved: GroupPermissionSet = {
 };
 
 function resolvePermissions(groupRecords: Group[]) {
-  const grantedBy: Record<keyof GroupPermissionSet, string[]> = {
-    'documents.scope': [],
-    'quotes.create': [],
-    'orders.create': [],
-    'jobs.assign': [],
-    'quality.approve': [],
-    'maintenance.schedule': [],
-    'reports.access': [],
-    'settings.access': [],
-  };
-
-  const resolved = { ...defaultResolved };
+  const grantedBy: Record<string, string[]> = {};
+  const acc: Partial<GroupPermissionSet> = {};
 
   groupRecords.forEach(group => {
-    (Object.keys(group.permissions) as Array<keyof GroupPermissionSet>).forEach(key => {
-      const value = group.permissions[key];
-      if (key === 'documents.scope') {
-        if (value === 'all' || resolved[key] === 'all') {
-          resolved[key] = 'all';
+    (Object.entries(group.permissions) as [keyof GroupPermissionSet, unknown][]).forEach(([key, raw]) => {
+      if (raw === undefined) return;
+      const k = String(key);
+      if (!grantedBy[k]) grantedBy[k] = [];
+
+      if (SCOPE_KEYS.has(k)) {
+        const v = raw as ScopeValue;
+        const prev = acc[key] as ScopeValue | undefined;
+        if (v === 'all' || prev === 'all') {
+          acc[key] = 'all' as GroupPermissionSet[typeof key];
+        } else {
+          acc[key] = (v ?? prev ?? 'own') as GroupPermissionSet[typeof key];
         }
-      } else if (value) {
-        resolved[key] = true;
-      }
-      if ((key === 'documents.scope' && value === 'all') || (key !== 'documents.scope' && value)) {
-        grantedBy[key].push(group.name);
+        grantedBy[k].push(group.name);
+      } else if (typeof raw === 'boolean') {
+        if (raw) {
+          acc[key] = true as GroupPermissionSet[typeof key];
+          grantedBy[k].push(group.name);
+        } else if (acc[key] === undefined) {
+          acc[key] = false as GroupPermissionSet[typeof key];
+        }
       }
     });
   });
 
-  return { resolved, grantedBy };
+  return {
+    resolved: { ...defaultResolved, ...acc } as GroupPermissionSet,
+    grantedBy,
+  };
 }
 
 export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardProps) {
@@ -117,7 +130,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-3">
-              <PermissionGrid resolved={resolved} grantedBy={grantedBy} />
+              <PermissionGrid module={moduleKey} resolved={resolved} grantedBy={grantedBy} />
             </CollapsibleContent>
           </Collapsible>
           <div className="flex flex-wrap gap-2">

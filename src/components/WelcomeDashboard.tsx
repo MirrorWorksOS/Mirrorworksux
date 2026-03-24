@@ -87,14 +87,7 @@ const MODULE_META: {
     name: "Control",
     Icon: MODULE_ICONS.control,
     path: "/control",
-    description: "Admin, master data, settings",
-  },
-  {
-    key: "design",
-    name: "Design",
-    Icon: MODULE_ICONS.design,
-    path: "/design",
-    description: "Factory layout, process builder",
+    description: "MirrorWorks Bridge, factory designer, people, master data",
   },
 ];
 
@@ -372,6 +365,15 @@ export function WelcomeDashboard() {
                     <Button asChild size="sm" variant="outline" className="border-[var(--neutral-200)]">
                       <Link to="/sell">New quote</Link>
                     </Button>
+                    {user.allowedModules.includes("control") ? (
+                      <Button
+                        asChild
+                        size="sm"
+                        className="bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]"
+                      >
+                        <Link to="/control/mirrorworks-bridge">MirrorWorks Bridge</Link>
+                      </Button>
+                    ) : null}
                   </div>
                 </Card>
               </motion.div>

@@ -1,6 +1,6 @@
 # Screen-by-screen specifications (§4)
 
-Structured extracts from the combined module specification PDF live alongside this folder. **Source of truth in-repo:** [`MirrorWorksModuleSpec.pdf`](../MirrorWorksModuleSpec.pdf) (Section 4 per module).
+Structured extracts from the combined module specification PDF live alongside this folder. **Source of truth in-repo:** [`MirrorWorksModuleSpec.pdf`](../MirrorWorksModuleSpec.pdf) (`src/guidelines/MirrorWorksModuleSpec.pdf`) — Section 4 (screen-by-screen) per module. Each `*-04-Screen-by-Screen.md` file opens with a **Canonical source** block pointing at this PDF.
 
 | File | Module | Notes |
 | --- | --- | --- |
@@ -28,4 +28,9 @@ Replace the placeholder body in each `*-04-*.md` file with the exported §4 text
 ### States
 ```
 
-Cross-link to routes and to `DESIGN_SYSTEM.md` where tokens supersede older PDF hex or monospace guidance.
+Cross-link to routes and to [`DesignSystem.md`](../DesignSystem.md) where tokens supersede older PDF hex or monospace guidance.
+
+## Related guidelines
+
+- [`AccessRightsAndPermissions.md`](../AccessRightsAndPermissions.md) — ARCH 00 (permissions, groups, Control People).
+- [`MirrorWorksBridge.md`](../MirrorWorksBridge.md) — PLAT 01 (data import after onboarding).

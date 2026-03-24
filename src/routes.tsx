@@ -2,7 +2,7 @@
  * Routes - Complete routing configuration for all modules
  */
 
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
 import { Layout } from './components/Layout';
 import { WelcomeDashboard } from './components/WelcomeDashboard';
 
@@ -69,12 +69,10 @@ import { ControlPeople } from './components/control/ControlPeople';
 import { ControlProducts } from './components/control/ControlProducts';
 import { ControlBOMs } from './components/control/ControlBOMs';
 import { ControlWorkflowDesigner } from './components/control/ControlWorkflowDesigner';
-
-// Design Module
-import { DesignFactoryLayout } from './components/design/DesignFactoryLayout';
-import { DesignProcessBuilder } from './components/design/DesignProcessBuilder';
-import { DesignRoleDesigner } from './components/design/DesignRoleDesigner';
-import { DesignInitialData } from './components/design/DesignInitialData';
+import { ControlFactoryDesigner } from './components/control/ControlFactoryDesigner';
+import { ControlProcessBuilder } from './components/control/ControlProcessBuilder';
+import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
+import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
 
 // Book Module (existing)
 import { BudgetOverview } from './components/book/BudgetOverview';
@@ -181,31 +179,34 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // Control Module Routes
+      // Control Module Routes (includes former Design module: factory designer, process builder, MirrorWorks Bridge)
       {
         path: 'control',
         children: [
-          { index: true,              element: <ControlDashboard /> },
-          { path: 'locations',        element: <ControlLocations /> },
-          { path: 'machines',         element: <ControlMachines /> },
-          { path: 'inventory',        element: <ControlInventory /> },
-          { path: 'purchase',         element: <ControlPurchase /> },
-          { path: 'people',           element: <ControlPeople /> },
-          { path: 'products',         element: <ControlProducts /> },
-          { path: 'boms',             element: <ControlBOMs /> },
-          { path: 'role-designer',    element: <DesignRoleDesigner /> },
-          { path: 'workflow-designer',element: <ControlWorkflowDesigner /> },
+          { index: true, element: <ControlDashboard /> },
+          { path: 'mirrorworks-bridge', element: <MirrorWorksBridge /> },
+          { path: 'factory-layout', element: <ControlFactoryDesigner /> },
+          { path: 'process-builder', element: <ControlProcessBuilder /> },
+          { path: 'locations', element: <ControlLocations /> },
+          { path: 'machines', element: <ControlMachines /> },
+          { path: 'inventory', element: <ControlInventory /> },
+          { path: 'purchase', element: <ControlPurchase /> },
+          { path: 'people', element: <ControlPeople /> },
+          { path: 'products', element: <ControlProducts /> },
+          { path: 'boms', element: <ControlBOMs /> },
+          { path: 'role-designer', element: <ControlRoleDesigner /> },
+          { path: 'workflow-designer', element: <ControlWorkflowDesigner /> },
         ],
       },
 
-      // Design Module Routes
+      // Legacy /design URLs → Control (bookmarks)
       {
         path: 'design',
         children: [
-          { index: true,               element: <DesignFactoryLayout /> },
-          { path: 'factory-layout',    element: <DesignFactoryLayout /> },
-          { path: 'process-builder',   element: <DesignProcessBuilder /> },
-          { path: 'initial-data',      element: <DesignInitialData /> },
+          { index: true, element: <Navigate to="/control/factory-layout" replace /> },
+          { path: 'factory-layout', element: <Navigate to="/control/factory-layout" replace /> },
+          { path: 'process-builder', element: <Navigate to="/control/process-builder" replace /> },
+          { path: 'initial-data', element: <Navigate to="/control/mirrorworks-bridge" replace /> },
         ],
       },
 
