@@ -11,6 +11,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
@@ -74,151 +75,116 @@ export function SellDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <ModuleDashboard title="Sell" tabs={sellTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+    <ModuleDashboard
+      title="Sell"
+      tabs={sellTabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      aiScope="sell"
+    >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards - Top Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Monthly Revenue */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-              </div>
-              <Badge className="bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)] border-transparent">
+          <KpiStatCard
+            label="Monthly Revenue"
+            value={`$${kpiData.monthlyRevenue.value.toLocaleString()}`}
+            icon={DollarSign}
+            tone="brand"
+            trailing={
+              <Badge className="border-transparent bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]">
                 +{kpiData.monthlyRevenue.change}%
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Monthly Revenue
-            </h3>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">
-              ${kpiData.monthlyRevenue.value.toLocaleString()}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              vs. previous month
-            </p>
-          </Card>
+            }
+            hint="vs. previous month"
+          />
         </motion.div>
 
-        {/* Outstanding Invoices */}
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-yellow-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <Receipt className="w-5 h-5 text-[var(--mw-yellow-700)]" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-muted-foreground border-transparent">
+          <KpiStatCard
+            label="Outstanding Invoices"
+            value={`$${kpiData.outstandingInvoices.value.toLocaleString()}`}
+            icon={Receipt}
+            tone="warning"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-muted-foreground">
                 {kpiData.outstandingInvoices.count} invoices
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Outstanding Invoices
-            </h3>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">
-              ${kpiData.outstandingInvoices.value.toLocaleString()}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Awaiting payment
-            </p>
-          </Card>
+            }
+            hint="Awaiting payment"
+          />
         </motion.div>
 
-        {/* Profit Margin */}
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-              </div>
-              <Badge className="bg-[var(--mw-yellow-400)]/20 text-foreground border-transparent">
+          <KpiStatCard
+            label="Profit Margin"
+            value={`${kpiData.profitMargin.value}%`}
+            icon={TrendingUp}
+            tone="brand"
+            trailing={
+              <Badge className="border-transparent bg-[var(--mw-yellow-400)]/20 text-foreground">
                 +{kpiData.profitMargin.change}%
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Profit Margin
-            </h3>
-            <p className="text-2xl font-semibold text-foreground">
-              {kpiData.profitMargin.value}%
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Average job margin
-            </p>
-          </Card>
+            }
+            hint="Average job margin"
+          />
         </motion.div>
 
-        {/* Cash Flow */}
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent">
+          <KpiStatCard
+            label="Cash Flow"
+            value={`$${kpiData.cashFlow.value.toLocaleString()}`}
+            icon={BarChart3}
+            tone="brand"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-foreground">
                 {kpiData.cashFlow.change}%
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Cash Flow
-            </h3>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">
-              ${kpiData.cashFlow.value.toLocaleString()}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Net invoiced - expenses
-            </p>
-          </Card>
+            }
+            hint="Net invoiced - expenses"
+          />
         </motion.div>
 
-        {/* Overdue Invoices */}
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-foreground border-transparent">
+          <KpiStatCard
+            label="Overdue Invoices"
+            value={`$${kpiData.overdueInvoices.value.toLocaleString()}`}
+            icon={AlertTriangle}
+            tone="brand"
+            valueClassName="text-[var(--mw-error)]"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-foreground">
                 {kpiData.overdueInvoices.count} overdue
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Overdue Invoices
-            </h3>
-            <p className="text-2xl font-semibold text-[var(--mw-error)] tabular-nums">
-              ${kpiData.overdueInvoices.value.toLocaleString()}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Requires attention
-            </p>
-          </Card>
+            }
+            hint="Requires attention"
+          />
         </motion.div>
 
-        {/* Expenses This Month */}
         <motion.div variants={staggerItem}>
-          <Card className="p-6 hover:shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-muted-foreground" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-muted-foreground border-transparent">
+          <KpiStatCard
+            label="Expenses This Month"
+            value={`$${kpiData.expensesThisMonth.value.toLocaleString()}`}
+            icon={CreditCard}
+            tone="neutral"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-muted-foreground">
                 {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-muted-foreground mb-1">
-              Expenses This Month
-            </h3>
-            <p className="text-2xl font-semibold text-foreground tabular-nums">
-              ${kpiData.expensesThisMonth.value.toLocaleString()}
-            </p>
-            <div className="mt-3">
-              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
-                  style={{ width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%` }}
-                />
+            }
+            footer={
+              <div className="mt-3">
+                <div className="relative h-2 overflow-hidden rounded-full bg-[var(--neutral-100)]">
+                  <div
+                    className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
+                    style={{
+                      width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          </Card>
+            }
+          />
         </motion.div>
       </div>
 

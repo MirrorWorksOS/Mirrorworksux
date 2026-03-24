@@ -4,6 +4,8 @@ An interactive UX prototype for MirrorWorks Smart FactoryOS, an AI-native manufa
 
 The goal is to refine UX patterns, validate information architecture, and establish a component library before building the full-stack product.
 
+The **home dashboard** is a persona/widget prototype (mock user context, bento widgets, skeleton first paint) with module access secondary. **Module dashboards** share **`KpiStatCard`** for KPI rows and the **`AiCommandBar`** (set `aiScope` on `ModuleDashboard`) for a consistent AI entry point.
+
 **Figma source:** [MirrorWorks UX on Figma](https://www.figma.com/design/GHlDNdtoNbRuObqFEPr2eV/MirrorWorks-UX)
 
 ## Modules

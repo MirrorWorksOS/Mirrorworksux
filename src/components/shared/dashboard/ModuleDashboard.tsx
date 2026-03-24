@@ -5,6 +5,10 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fadeVariants } from "@/components/shared/motion/motion-variants";
+import {
+  AiCommandBar,
+  type AiCommandScope,
+} from "@/components/shared/ai/AiCommandBar";
 
 export interface DashboardTab {
   key: string;
@@ -21,6 +25,8 @@ export interface ModuleDashboardProps {
   actions?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  /** When set, renders the AI command bar below the tab strip (prototype). */
+  aiScope?: AiCommandScope;
 }
 
 export function ModuleDashboard({
@@ -32,6 +38,7 @@ export function ModuleDashboard({
   actions,
   children,
   className,
+  aiScope,
 }: ModuleDashboardProps) {
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)}>
@@ -84,11 +91,15 @@ export function ModuleDashboard({
         role="tabpanel"
         id={`dashboard-panel-${activeTab}`}
         aria-labelledby={`dashboard-tab-${activeTab}`}
-        className="min-h-0 flex-1"
+        className="flex min-h-0 flex-1 flex-col gap-6"
       >
+        {aiScope !== undefined ? (
+          <AiCommandBar scope={aiScope} aria-label={`Ask MirrorWorks AI, ${aiScope} module`} />
+        ) : null}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
+            className="min-h-0 flex-1"
             variants={fadeVariants}
             initial="initial"
             animate="animate"

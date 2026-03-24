@@ -11,6 +11,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 
 const kpiData = {
@@ -36,75 +37,74 @@ export function PlanDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <ModuleDashboard title="Production Planning" tabs={planTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+    <ModuleDashboard
+      title="Production Planning"
+      tabs={planTabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      aiScope="plan"
+    >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-blue-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-[var(--mw-blue)]" />
-              </div>
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">Active Jobs</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.activeJobs}</p>
-          </Card>
+          <KpiStatCard
+            label="Active Jobs"
+            value={kpiData.activeJobs}
+            icon={Calendar}
+            tone="info"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-[var(--mw-mirage)]" />
-              </div>
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">Scheduled MOs</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.scheduledMOs}</p>
-          </Card>
+          <KpiStatCard
+            label="Scheduled MOs"
+            value={kpiData.scheduledMOs}
+            icon={Wrench}
+            tone="neutral"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-error-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-[var(--mw-error)]" />
-              </div>
-              <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-0">{kpiData.overdueJobs}</Badge>
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">Overdue Jobs</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-error)]">{kpiData.overdueJobs}</p>
-          </Card>
+          <KpiStatCard
+            label="Overdue Jobs"
+            value={kpiData.overdueJobs}
+            icon={AlertTriangle}
+            tone="danger"
+            valueClassName="text-[var(--mw-error)]"
+            trailing={
+              <Badge className="border-0 bg-[var(--mw-error-100)] text-[var(--mw-error)]">
+                {kpiData.overdueJobs}
+              </Badge>
+            }
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="w-10 h-10 bg-[var(--mw-amber-100)] rounded-[var(--shape-md)] flex items-center justify-center mb-4">
-              <Clock className="w-5 h-5 text-[var(--mw-amber)]" />
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">Avg Lead Time</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.avgLeadTime} days</p>
-          </Card>
+          <KpiStatCard
+            label="Avg Lead Time"
+            value={`${kpiData.avgLeadTime} days`}
+            icon={Clock}
+            tone="warning"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center mb-4">
-              <TrendingUp className="w-5 h-5 text-[var(--mw-mirage)]" />
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">Utilization Rate</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.utilizationRate}%</p>
-          </Card>
+          <KpiStatCard
+            label="Utilisation Rate"
+            value={`${kpiData.utilizationRate}%`}
+            icon={TrendingUp}
+            tone="neutral"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="w-10 h-10 bg-[var(--mw-blue-100)] rounded-[var(--shape-md)] flex items-center justify-center mb-4">
-              <Package className="w-5 h-5 text-[var(--mw-blue)]" />
-            </div>
-            <h3 className="text-xs text-[var(--neutral-500)] mb-1">On-Time Delivery</h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.onTimeDelivery}%</p>
-          </Card>
+          <KpiStatCard
+            label="On-Time Delivery"
+            value={`${kpiData.onTimeDelivery}%`}
+            icon={Package}
+            tone="info"
+          />
         </motion.div>
       </div>
 

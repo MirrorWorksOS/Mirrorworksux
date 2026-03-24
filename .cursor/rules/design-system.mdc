@@ -149,7 +149,7 @@ Use `<Card>` variants from `@/components/ui/card`:
 - `<Card variant="elevated">` — elevation-2, interactive/hover card
 - `<Card variant="dark">` — Mirage background, no shadow
 
-For KPI stat cards, use `<StatCard>` from `@/components/shared/cards/StatCard`.
+For **module dashboard KPI rows**, use `<KpiStatCard>` from `@/components/shared/cards/KpiStatCard` (`tone` variants, `standard` vs `compact` for dense 6-up KPI strips). For simple legacy inline-end KPIs, use `<StatCard>` (thin wrapper around `KpiStatCard`).
 For dark hero KPI cards, use `<DarkAccentCard>` from `@/components/shared/cards/DarkAccentCard`.
 For entity cards (people, suppliers), use `<EntityCard>` from `@/components/shared/cards/EntityCard`.
 

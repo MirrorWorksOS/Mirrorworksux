@@ -12,7 +12,8 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CHART_PURPLE } from '@/components/shared/charts/chart-theme';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 
 const kpiData = {
@@ -26,7 +27,7 @@ const kpiData = {
 
 const spendByCategory = [
   { category: 'Materials', amount: 45000, color: 'var(--mw-info)' },
-  { category: 'Subcontract', amount: 28000, color: '#7C3AED' },
+  { category: 'Subcontract', amount: 28000, color: MW_CHART_PURPLE },
   { category: 'Consumables', amount: 12400, color: 'var(--mw-success)' },
   { category: 'Equipment', amount: 4000, color: 'var(--mw-warning)' },
 ];
@@ -51,96 +52,110 @@ export function BuyDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <ModuleDashboard title="Buy" tabs={buyTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+    <ModuleDashboard
+      title="Buy"
+      tabs={buyTabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      aiScope="buy"
+    >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-blue-100)] rounded-lg flex items-center justify-center">
-                <ShoppingCart className="w-5 h-5 text-[var(--mw-blue)]" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-transparent">{kpiData.openPOs.count} POs</Badge>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Open Purchase Orders</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">${kpiData.openPOs.value.toLocaleString()}</p>
-          </Card>
+          <KpiStatCard
+            label="Open Purchase Orders"
+            value={`$${kpiData.openPOs.value.toLocaleString()}`}
+            icon={ShoppingCart}
+            tone="info"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+                {kpiData.openPOs.count} POs
+              </Badge>
+            }
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-amber-50)] rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-[var(--mw-yellow-900)]" />
-              </div>
-              <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-transparent">{kpiData.pendingRequisitions.count}</Badge>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Pending Requisitions</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.pendingRequisitions.count}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-2">Awaiting approval</p>
-          </Card>
+          <KpiStatCard
+            label="Pending Requisitions"
+            value={kpiData.pendingRequisitions.count}
+            icon={FileText}
+            tone="warning"
+            trailing={
+              <Badge className="border-transparent bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]">
+                {kpiData.pendingRequisitions.count}
+              </Badge>
+            }
+            hint="Awaiting approval"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-error-100)] rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-[var(--mw-error)]" />
-              </div>
-              <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-transparent">{kpiData.overdueDeliveries.count}</Badge>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Overdue Deliveries</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-error)]">${kpiData.overdueDeliveries.value.toLocaleString()}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-2">Requires follow-up</p>
-          </Card>
+          <KpiStatCard
+            label="Overdue Deliveries"
+            value={`$${kpiData.overdueDeliveries.value.toLocaleString()}`}
+            icon={AlertTriangle}
+            tone="danger"
+            valueClassName="text-[var(--mw-error)]"
+            trailing={
+              <Badge className="border-transparent bg-[var(--mw-error-100)] text-[var(--mw-error)]">
+                {kpiData.overdueDeliveries.count}
+              </Badge>
+            }
+            hint="Requires follow-up"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-              </div>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Avg Lead Time</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.avgLeadTime.days} days</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-2">Last 30 days</p>
-          </Card>
+          <KpiStatCard
+            label="Avg Lead Time"
+            value={`${kpiData.avgLeadTime.days} days`}
+            icon={Clock}
+            tone="brand"
+            hint="Last 30 days"
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-blue-100)] rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-[var(--mw-blue)]" />
-              </div>
-              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-transparent">
+          <KpiStatCard
+            label="Spend This Month"
+            value={`$${kpiData.spendThisMonth.value.toLocaleString()}`}
+            icon={DollarSign}
+            tone="info"
+            trailing={
+              <Badge className="border-transparent bg-[var(--neutral-100)] text-[var(--neutral-500)]">
                 {Math.round((kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100)}% of budget
               </Badge>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Spend This Month</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">${kpiData.spendThisMonth.value.toLocaleString()}</p>
-            <div className="mt-3">
-              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300" style={{ width: `${(kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100}%` }} />
+            }
+            footer={
+              <div className="mt-3">
+                <div className="relative h-2 overflow-hidden rounded-full bg-[var(--neutral-100)]">
+                  <div
+                    className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
+                    style={{
+                      width: `${(kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          </Card>
+            }
+          />
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-amber-100)] rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-[var(--mw-amber)]" />
-              </div>
-              <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-transparent">{kpiData.pendingBills.count}</Badge>
-            </div>
-            <h3 className="text-xs font-medium text-[var(--neutral-500)] mb-1">Pending Bills</h3>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">${kpiData.pendingBills.value.toLocaleString()}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-2">Needs matching</p>
-          </Card>
+          <KpiStatCard
+            label="Pending Bills"
+            value={`$${kpiData.pendingBills.value.toLocaleString()}`}
+            icon={Package}
+            tone="warning"
+            trailing={
+              <Badge className="border-transparent bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]">
+                {kpiData.pendingBills.count}
+              </Badge>
+            }
+            hint="Needs matching"
+          />
         </motion.div>
       </div>
 

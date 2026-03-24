@@ -4,6 +4,7 @@
  * Added motion/react animation
  */
 import React, { useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { Package, Clock, Truck, AlertTriangle, RotateCcw, ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card } from '../ui/card';
@@ -11,15 +12,21 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { MW_AXIS_TICK } from '@/components/shared/charts/chart-theme';
+import { KpiStatCard, type KpiTone } from '@/components/shared/cards/KpiStatCard';
 
 
-const KPI = [
-  { label: 'Active Shipments', value: '47', icon: Package },
-  { label: 'Pending Orders',   value: '18', icon: Clock },
-  { label: 'On-Time Rate',     value: '96.2%', icon: Truck },
-  { label: 'Avg Transit',      value: '2.4d', icon: Clock },
-  { label: 'Exceptions',       value: '3', icon: AlertTriangle },
-  { label: 'Returns',          value: '5', icon: RotateCcw },
+const KPI: {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+  tone: KpiTone;
+}[] = [
+  { label: 'Active Shipments', value: '47', icon: Package, tone: 'neutral' },
+  { label: 'Pending Orders', value: '18', icon: Clock, tone: 'warning' },
+  { label: 'On-Time Rate', value: '96.2%', icon: Truck, tone: 'success' },
+  { label: 'Avg Transit', value: '2.4d', icon: Clock, tone: 'info' },
+  { label: 'Exceptions', value: '3', icon: AlertTriangle, tone: 'danger' },
+  { label: 'Returns', value: '5', icon: RotateCcw, tone: 'warning' },
 ];
 
 const PIPELINE = [
@@ -51,17 +58,26 @@ export function ShipDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <ModuleDashboard title="Shipments" tabs={shipTabs} activeTab={activeTab} onTabChange={setActiveTab}>
+    <ModuleDashboard
+      title="Shipments"
+      tabs={shipTabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      aiScope="ship"
+    >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {KPI.map(k => (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        {KPI.map((k) => (
           <motion.div key={k.label} variants={staggerItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
-              <k.icon className="w-4 h-4 text-[var(--neutral-500)] mb-4" strokeWidth={1.5} />
-              <div className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)] tracking-tight">{k.value}</div>
-              <div className="text-xs text-[var(--neutral-500)] mt-1 font-medium">{k.label}</div>
-            </Card>
+            <KpiStatCard
+              layout="compact"
+              label={k.label}
+              value={k.value}
+              icon={k.icon}
+              tone={k.tone}
+              iconSize="sm"
+            />
           </motion.div>
         ))}
       </div>

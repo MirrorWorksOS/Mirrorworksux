@@ -6,6 +6,9 @@ export const MW_CHART_COLOURS = [
   "var(--neutral-500)",
 ] as const;
 
+/** Subcontract / category accent (maps to `--mw-purple` in globals.css) */
+export const MW_CHART_PURPLE = "var(--mw-purple)";
+
 export const MW_AXIS_TICK = {
   fontSize: 12,
   fontFamily: "'Roboto', sans-serif",

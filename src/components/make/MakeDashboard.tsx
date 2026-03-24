@@ -11,6 +11,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 
 type MachineStatus = 'running' | 'idle' | 'down' | 'maintenance' | 'setup';
@@ -58,24 +59,42 @@ export function MakeDashboard() {
       tabs={makeTabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      actions={
-        <div className="flex items-center gap-6">
-          <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-2">Running</p>
-            <p className="text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">{runningCount}/{mockMachines.length}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-2">Down</p>
-            <p className="text-3xl font-bold tabular-nums text-[var(--mw-error)]">{downCount}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-2">Avg Utilization</p>
-            <p className="text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">{avgUtilization}%</p>
-          </div>
-        </div>
-      }
+      aiScope="make"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            layout="compact"
+            label="Running"
+            value={`${runningCount}/${mockMachines.length}`}
+            icon={CheckCircle2}
+            tone="success"
+            valueClassName="text-3xl font-bold"
+          />
+        </motion.div>
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            layout="compact"
+            label="Down"
+            value={downCount}
+            icon={AlertTriangle}
+            tone="danger"
+            valueClassName="text-3xl font-bold text-[var(--mw-error)]"
+          />
+        </motion.div>
+        <motion.div variants={staggerItem}>
+          <KpiStatCard
+            layout="compact"
+            label="Avg utilisation"
+            value={`${avgUtilization}%`}
+            icon={Clock}
+            tone="neutral"
+            valueClassName="text-3xl font-bold"
+          />
+        </motion.div>
+      </div>
+
       {/* Machine Status Grid - LARGE TOUCH TARGETS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {mockMachines.map((machine) => {
