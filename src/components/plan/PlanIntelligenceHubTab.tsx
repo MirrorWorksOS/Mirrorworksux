@@ -5,14 +5,14 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
-import { AIInsightCard, AIInsightMessage } from '../shared/ai/AIInsightCard';
+import { AIInsightCard, AIInsightMessage } from '@/components/shared/ai/AIInsightCard';
 
 export function PlanIntelligenceHubTab() {
   return (
     <div className="p-6 space-y-6">
       {/* Quote Status Timeline */}
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className=" text-base font-semibold text-[var(--mw-mirage)] mb-6">
+        <h3 className=" text-base font-medium text-[var(--mw-mirage)] mb-6">
           Quote Status
         </h3>
         
@@ -26,7 +26,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className=" text-sm font-medium text-[var(--mw-mirage)]">
-                  Quote #QT-2026-145 Sent by email
+                  Quote #QT-2026-145 sent by email
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
                   Completed
@@ -44,7 +44,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className=" text-sm font-medium text-[var(--mw-mirage)]">
-                  Quote #QT-2026-145 Opened
+                  Quote #QT-2026-145 opened
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
                   Completed
@@ -63,7 +63,7 @@ export function PlanIntelligenceHubTab() {
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
                 <span className=" text-sm font-medium text-[var(--mw-mirage)]">
-                  Quote #QT-2026-145 Confirmed
+                  Quote #QT-2026-145 confirmed
                 </span>
                 <Badge className="bg-[var(--mw-mirage)] text-white text-xs">
                   Success
@@ -81,7 +81,7 @@ export function PlanIntelligenceHubTab() {
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Budget Tracker
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -95,13 +95,13 @@ export function PlanIntelligenceHubTab() {
             <div className=" text-xs font-medium text-[var(--mw-mirage)]">
               Materials
             </div>
-            <div className=" text-xs text-[var(--neutral-500)]">
+            <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
               $20,000
             </div>
-            <div className=" text-xs text-[var(--mw-mirage)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
               $500
             </div>
-            <div className=" text-xs text-[var(--mw-mirage)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
               $19,500
             </div>
             <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
@@ -113,13 +113,13 @@ export function PlanIntelligenceHubTab() {
             <div className=" text-xs font-medium text-[var(--mw-mirage)]">
               Labour
             </div>
-            <div className=" text-xs text-[var(--neutral-500)]">
+            <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
               $20,000
             </div>
-            <div className=" text-xs text-[var(--mw-mirage)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
               $10,000
             </div>
-            <div className=" text-xs text-[var(--mw-amber)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-amber)]">
               $10,000
             </div>
             <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
@@ -131,13 +131,13 @@ export function PlanIntelligenceHubTab() {
             <div className=" text-xs font-medium text-[var(--mw-mirage)]">
               Purchase
             </div>
-            <div className=" text-xs text-[var(--neutral-500)]">
+            <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
               $10,000
             </div>
-            <div className=" text-xs text-[var(--mw-mirage)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
               $3,000
             </div>
-            <div className=" text-xs text-[var(--mw-mirage)]">
+            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
               $7,000
             </div>
             <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
@@ -153,7 +153,7 @@ export function PlanIntelligenceHubTab() {
           actionLabel="View full budget"
           className="mb-4"
         >
-          Labor costs are tracking 50% of budget allocation. Consider optimising machine utilisation for operations 3–5 to reduce cycle time by an estimated 15%. Current trajectory suggests completion within budget constraints.
+          Labour costs are tracking 50% of budget allocation. Consider optimising machine utilisation for operations 3–5 to reduce cycle time by an estimated 15%. Current trajectory suggests completion within budget constraints.
         </AIInsightCard>
 
         <div className="flex items-center gap-2">
@@ -175,7 +175,7 @@ export function PlanIntelligenceHubTab() {
       {/* Files Section */}
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+          <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
             Files
           </h3>
           <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
@@ -230,7 +230,7 @@ export function PlanIntelligenceHubTab() {
 
       {/* Chatter - Full View */}
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className=" text-base font-semibold text-[var(--mw-mirage)] mb-6">
+        <h3 className=" text-base font-medium text-[var(--mw-mirage)] mb-6">
           Chatter
         </h3>
 

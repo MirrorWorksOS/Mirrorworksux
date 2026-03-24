@@ -5,12 +5,15 @@
 
 import React, { useState } from 'react';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
 
@@ -38,15 +41,6 @@ const mockInvoices: Invoice[] = [
   { id: '7', invoiceNumber: 'INV-2026-DRAFT-01', customer: 'TechCorp Industries', issueDate: '2026-03-19', dueDate: '2026-04-18', status: 'draft', total: 15500, balanceDue: 15500 },
 ];
 
-const getStatusBadge = (status: InvoiceStatus) => {
-  switch (status) {
-    case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
-    case 'sent': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Sent', dot: 'var(--mw-mirage)' };
-    case 'paid': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Paid', dot: 'var(--mw-mirage)' };
-    case 'overdue': return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Overdue', dot: 'var(--mw-error)' };
-  }
-};
-
 export function SellInvoices() {
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
 
@@ -66,30 +60,27 @@ export function SellInvoices() {
   };
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Invoices</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {filteredInvoices.length} invoices • ${totalValue.toLocaleString()} total • ${totalOutstanding.toLocaleString()} outstanding
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedFilter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedDownload className="w-4 h-4" />
-            Export
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Invoice
-          </Button>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Invoices"
+        subtitle={`${filteredInvoices.length} invoices • $${totalValue.toLocaleString()} total • $${totalOutstanding.toLocaleString()} outstanding`}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedFilter className="w-4 h-4" />
+              Filter
+            </Button>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedDownload className="w-4 h-4" />
+              Export
+            </Button>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
+              <AnimatedPlus className="w-4 h-4 mr-2" />
+              New Invoice
+            </Button>
+          </>
+        }
+      />
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-[var(--border)]">
@@ -105,7 +96,7 @@ export function SellInvoices() {
             )}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{tabCounts[tab]}</Badge>
+            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs tabular-nums">{tabCounts[tab]}</Badge>
           </button>
         ))}
       </div>
@@ -132,7 +123,6 @@ export function SellInvoices() {
               </thead>
               <tbody>
                 {filteredInvoices.map((invoice, idx) => {
-                  const statusBadge = getStatusBadge(invoice.status);
                   const daysOverdue = invoice.status === 'overdue'
                     ? Math.floor((new Date().getTime() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24))
                     : 0;
@@ -143,7 +133,7 @@ export function SellInvoices() {
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/invoices/${invoice.id}`} className="text-[var(--neutral-900)]  text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/invoices/${invoice.id}`} className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
                           {invoice.invoiceNumber}
                           <ExternalLink className="w-4 h-4" />
                         </a>
@@ -155,19 +145,16 @@ export function SellInvoices() {
                       <td className="px-4 text-sm text-[var(--neutral-600)]">
                         {new Date(invoice.dueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
                         {invoice.status === 'overdue' && (
-                          <span className="ml-2 text-xs text-[var(--mw-error)]">({daysOverdue}d overdue)</span>
+                          <span className="ml-2 text-xs text-[var(--mw-error)] tabular-nums">({daysOverdue}d overdue)</span>
                         )}
                       </td>
                       <td className="px-4">
                         <div className="flex items-center justify-center">
-                          <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5", statusBadge.bg, statusBadge.text)}>
-                            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusBadge.dot }} />
-                            {statusBadge.label}
-                          </Badge>
+                          <StatusBadge status={invoice.status} withDot />
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm  font-medium">${invoice.total.toLocaleString()}</td>
-                      <td className="px-4 text-right text-sm  font-medium" style={{ color: invoice.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
+                      <td className="px-4 text-right text-sm font-medium tabular-nums">${invoice.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm font-medium tabular-nums" style={{ color: invoice.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
                         ${invoice.balanceDue.toLocaleString()}
                       </td>
                       <td className="px-4">
@@ -192,6 +179,6 @@ export function SellInvoices() {
           </div>
         </Card>
       </motion.div>
-    </motion.div>
+    </PageShell>
   );
 }

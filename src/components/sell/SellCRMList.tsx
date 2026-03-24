@@ -5,11 +5,11 @@
 
 import React, { useState } from 'react';
 import { Phone, Mail, ExternalLink } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 
 
 interface Customer {
@@ -31,12 +31,9 @@ const mockCustomers: Customer[] = [
   { id: '5', company: 'Sydney Rail Corp', contact: 'Jessica Brown', email: 'jbrown@sydneyrail.gov.au', phone: '+61 2 8765 4321', totalRevenue: 67000, activeOpportunities: 1, status: 'prospect' },
 ];
 
-const getStatusBadge = (status: Customer['status']) => {
-  switch (status) {
-    case 'active': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Active' };
-    case 'prospect': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Prospect' };
-    case 'inactive': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Inactive' };
-  }
+const renderStatusBadge = (status: Customer['status']) => {
+  if (status === 'prospect') return <StatusBadge variant="info">Prospect</StatusBadge>;
+  return <StatusBadge status={status} />;
 };
 
 export function SellCRMList() {
@@ -72,42 +69,39 @@ export function SellCRMList() {
               </tr>
             </thead>
             <tbody>
-              {mockCustomers.map((customer, idx) => {
-                const statusBadge = getStatusBadge(customer.status);
-                return (
-                  <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                    <td className="px-4">
-                      <input type="checkbox" checked={selectedRows.has(customer.id)} onChange={() => toggleRow(customer.id)} className="rounded border-[var(--border)]" />
-                    </td>
-                    <td className="px-4">
-                      <a href={`/sell/customers/${customer.id}`} className="text-[var(--neutral-900)] text-sm font-medium hover:underline flex items-center gap-2">
-                        {customer.company}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </td>
-                    <td className="px-4 text-sm text-[var(--neutral-900)]">{customer.contact}</td>
-                    <td className="px-4">
-                      <a href={`mailto:${customer.email}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
-                        <Mail className="w-4 h-4" />
-                        {customer.email}
-                      </a>
-                    </td>
-                    <td className="px-4">
-                      <a href={`tel:${customer.phone}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
-                        <Phone className="w-4 h-4" />
-                        {customer.phone}
-                      </a>
-                    </td>
-                    <td className="px-4 text-right text-sm  font-medium">${customer.totalRevenue.toLocaleString()}</td>
-                    <td className="px-4 text-center text-sm  font-medium">{customer.activeOpportunities}</td>
-                    <td className="px-4">
-                      <div className="flex items-center justify-center">
-                        <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusBadge.bg, statusBadge.text)}>{statusBadge.label}</Badge>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {mockCustomers.map((customer, idx) => (
+                <tr key={customer.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
+                  <td className="px-4">
+                    <input type="checkbox" checked={selectedRows.has(customer.id)} onChange={() => toggleRow(customer.id)} className="rounded border-[var(--border)]" />
+                  </td>
+                  <td className="px-4">
+                    <a href={`/sell/customers/${customer.id}`} className="text-[var(--neutral-900)] text-sm font-medium hover:underline flex items-center gap-2">
+                      {customer.company}
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </td>
+                  <td className="px-4 text-sm text-[var(--neutral-900)]">{customer.contact}</td>
+                  <td className="px-4">
+                    <a href={`mailto:${customer.email}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {customer.email}
+                    </a>
+                  </td>
+                  <td className="px-4">
+                    <a href={`tel:${customer.phone}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                      <Phone className="w-4 h-4" />
+                      {customer.phone}
+                    </a>
+                  </td>
+                  <td className="px-4 text-right text-sm font-medium tabular-nums">${customer.totalRevenue.toLocaleString()}</td>
+                  <td className="px-4 text-center text-sm font-medium tabular-nums">{customer.activeOpportunities}</td>
+                  <td className="px-4">
+                    <div className="flex items-center justify-center">
+                      {renderStatusBadge(customer.status)}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

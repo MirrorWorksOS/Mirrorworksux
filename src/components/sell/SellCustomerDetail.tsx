@@ -185,7 +185,7 @@ export function SellCustomerDetail() {
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-[20px] font-semibold text-[var(--neutral-900)]">
+            <h1 className="text-[20px] font-medium text-[var(--neutral-900)]">
               {customer.company}
             </h1>
             {customer.types.map((t: string) => (
@@ -279,7 +279,7 @@ export function SellCustomerDetail() {
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Company information</h2>
+                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
                   <Field label="ABN" value={customer.abn} mono />
@@ -294,7 +294,7 @@ export function SellCustomerDetail() {
 
               {/* Primary Contact */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Primary contact</h2>
+                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
                   <Field label="Job title" value={customer.primaryContact.title} />
@@ -323,7 +323,7 @@ export function SellCustomerDetail() {
               {/* Address */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Address</h2>
+                  <h2 className="text-lg font-medium text-[var(--neutral-900)]">Address</h2>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
                     target="_blank"
@@ -346,8 +346,8 @@ export function SellCustomerDetail() {
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
                 >
-                  <h2 className="text-lg font-semibold text-[var(--neutral-900)]">
-                    Additional contacts ({customer.additionalContacts.length})
+                  <h2 className="text-lg font-medium text-[var(--neutral-900)]">
+                    Additional contacts (<span className="tabular-nums">{customer.additionalContacts.length}</span>)
                   </h2>
                   {additionalContactsOpen ? <ChevronUp className="w-5 h-5 text-[var(--neutral-500)]" /> : <ChevronDown className="w-5 h-5 text-[var(--neutral-500)]" />}
                 </button>
@@ -377,15 +377,15 @@ export function SellCustomerDetail() {
 
               {/* Financial Summary */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-6">Financial summary</h2>
+                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Lifetime revenue</span>
-                    <p className=" text-[20px] font-semibold text-[var(--neutral-900)]">{fmt(customer.financial.lifetimeRevenue)}</p>
+                    <p className="text-[20px] font-semibold tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.lifetimeRevenue)}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Outstanding</span>
-                    <p className=" text-[20px] font-semibold text-[var(--neutral-900)]">{fmt(customer.financial.outstanding)}</p>
+                    <p className="text-[20px] font-semibold tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.outstanding)}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Payment terms</span>
@@ -393,14 +393,14 @@ export function SellCustomerDetail() {
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Credit limit</span>
-                    <p className=" text-base font-medium text-[var(--neutral-900)]">{fmt(customer.financial.creditLimit)}</p>
+                    <p className="text-base font-medium tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.creditLimit)}</p>
                   </div>
                 </div>
               </Card>
 
               {/* Tags & Notes */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-semibold text-[var(--neutral-900)] mb-4">Tags & notes</h2>
+                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
                     <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-[var(--neutral-800)] border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
@@ -421,7 +421,7 @@ export function SellCustomerDetail() {
               {/* Activity Timeline */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Recent activity</h3>
+                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Recent activity</h3>
                   <button className="text-xs text-[var(--neutral-900)] hover:underline">View all</button>
                 </div>
                 <div className="space-y-4">
@@ -445,7 +445,7 @@ export function SellCustomerDetail() {
               {/* Active Opportunities */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Active opportunities</h3>
+                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Active opportunities</h3>
                   <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1">
                     <Plus className="w-4 h-4" /> New
                   </button>
@@ -454,12 +454,12 @@ export function SellCustomerDetail() {
                   {customer.opportunities.map((opp: any) => (
                     <div key={opp.id} className="p-3 bg-[var(--neutral-100)] rounded-lg hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-1">
-                        <span className=" text-xs font-bold text-[var(--neutral-900)]">{opp.id}</span>
+                        <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">{opp.id}</span>
                         <Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge>
                       </div>
                       <p className="text-xs font-medium text-[var(--neutral-900)] mb-1">{opp.name}</p>
                       <div className="flex items-center justify-between">
-                        <span className=" text-xs text-[var(--neutral-900)]">{fmt(opp.value)}</span>
+                        <span className="text-xs tabular-nums text-[var(--neutral-900)]">{fmt(opp.value)}</span>
                         <span className="text-xs text-[var(--neutral-500)]">{opp.closeDate}</span>
                       </div>
                     </div>
@@ -469,16 +469,16 @@ export function SellCustomerDetail() {
 
               {/* Recent Quotes & Orders */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-base font-semibold text-[var(--neutral-900)] mb-4">Recent quotes & orders</h3>
+                <h3 className="text-base font-medium text-[var(--neutral-900)] mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0">
                       <div>
-                        <span className=" text-xs font-bold text-[var(--neutral-900)]">{item.ref}</span>
+                        <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">{item.ref}</span>
                         <p className="text-xs text-[var(--neutral-500)]">{item.date}</p>
                       </div>
                       <div className="text-right flex items-center gap-2">
-                        <span className=" text-xs text-[var(--neutral-900)]">{fmt(item.value)}</span>
+                        <span className="text-xs tabular-nums text-[var(--neutral-900)]">{fmt(item.value)}</span>
                         <Badge className={cn('rounded text-[10px] px-1.5 py-0 border-0', badgeStatus(item.status))}>{item.status}</Badge>
                       </div>
                     </div>
@@ -491,7 +491,7 @@ export function SellCustomerDetail() {
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
-                  <h3 className="text-base font-semibold text-[var(--neutral-900)]">Intelligence Hub</h3>
+                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Intelligence Hub</h3>
                 </div>
                 <p className="text-xs text-[var(--neutral-500)] leading-relaxed">
                   TechCorp's order frequency has increased 40% this quarter. Consider offering volume pricing on 5052 aluminium enclosures to lock in Q2 demand.
@@ -506,7 +506,7 @@ export function SellCustomerDetail() {
         {activeTab === 'sales' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Quotes & orders</h2>
+              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Quotes & orders</h2>
               <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
@@ -530,10 +530,10 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.opportunities.map((opp: any) => (
                     <tr key={opp.id} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
-                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{opp.id}</td>
+                      <td className="px-6 text-xs font-medium tabular-nums text-[var(--neutral-900)]">{opp.id}</td>
                       <td className="px-6 text-sm text-[var(--neutral-900)]">{opp.name}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(opp.stage))}>{opp.stage}</Badge></td>
-                      <td className="px-6 text-right  text-sm">{fmt(opp.value)}</td>
+                      <td className="px-6 text-right text-sm tabular-nums">{fmt(opp.value)}</td>
                       <td className="px-6 text-sm text-[var(--neutral-500)]">{opp.closeDate}</td>
                     </tr>
                   ))}
@@ -558,9 +558,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.recentQuotes.map((q: any) => (
                     <tr key={q.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
-                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{q.ref}</td>
+                      <td className="px-6 text-xs font-medium tabular-nums text-[var(--neutral-900)]">{q.ref}</td>
                       <td className="px-6 text-sm text-[var(--neutral-500)]">{q.date}</td>
-                      <td className="px-6 text-right  text-sm">{fmt(q.value)}</td>
+                      <td className="px-6 text-right text-sm tabular-nums">{fmt(q.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(q.status))}>{q.status}</Badge></td>
                     </tr>
                   ))}
@@ -585,9 +585,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.recentOrders.map((o: any) => (
                     <tr key={o.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
-                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{o.ref}</td>
+                      <td className="px-6 text-xs font-medium tabular-nums text-[var(--neutral-900)]">{o.ref}</td>
                       <td className="px-6 text-sm text-[var(--neutral-500)]">{o.date}</td>
-                      <td className="px-6 text-right  text-sm">{fmt(o.value)}</td>
+                      <td className="px-6 text-right text-sm tabular-nums">{fmt(o.value)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(o.status))}>{o.status}</Badge></td>
                     </tr>
                   ))}
@@ -610,7 +610,7 @@ export function SellCustomerDetail() {
               ].map((kpi) => (
                 <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                   <span className="block text-xs font-medium text-[var(--neutral-500)] mb-2">{kpi.label}</span>
-                  <p className={cn('text-2xl font-semibold', kpi.color, !kpi.noMono && "")}>{kpi.value}</p>
+                  <p className={cn('text-2xl font-semibold tabular-nums', kpi.color)}>{kpi.value}</p>
                 </Card>
               ))}
             </div>
@@ -633,9 +633,9 @@ export function SellCustomerDetail() {
                 <tbody>
                   {customer.invoices.map((inv: any) => (
                     <tr key={inv.ref} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors">
-                      <td className="px-6  text-xs font-bold text-[var(--neutral-900)]">{inv.ref}</td>
+                      <td className="px-6 text-xs font-medium tabular-nums text-[var(--neutral-900)]">{inv.ref}</td>
                       <td className="px-6 text-sm text-[var(--neutral-500)]">{inv.date}</td>
-                      <td className="px-6 text-right  text-sm">{fmt(inv.amount)}</td>
+                      <td className="px-6 text-right text-sm tabular-nums">{fmt(inv.amount)}</td>
                       <td className="px-6"><Badge className={cn('rounded text-xs px-2 py-0.5 border-0', badgeStatus(inv.status))}>{inv.status}</Badge></td>
                       <td className="px-6 text-sm text-[var(--neutral-500)]">{inv.due}</td>
                     </tr>
@@ -650,7 +650,7 @@ export function SellCustomerDetail() {
         {activeTab === 'contacts' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">All contacts at {customer.company}</h2>
+              <h2 className="text-lg font-medium text-[var(--neutral-900)]">All contacts at {customer.company}</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
             </div>
             <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
@@ -691,7 +691,7 @@ export function SellCustomerDetail() {
         {activeTab === 'documents' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Documents</h2>
+              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Documents</h2>
               <Button variant="outline" className="border-[var(--border)]"><Upload className="w-4 h-4 mr-2" /> Upload</Button>
             </div>
             {/* Drop zone */}
@@ -733,7 +733,7 @@ export function SellCustomerDetail() {
         {activeTab === 'activity' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--neutral-900)]">Activity log</h2>
+              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Activity log</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Log activity</Button>
             </div>
             {/* Filter chips */}
@@ -783,7 +783,7 @@ function Field({ label, value, mono, link }: { label: string; value: string; mon
           <Globe className="w-4 h-4" /> {value.replace('https://', '')}
         </a>
       ) : (
-        <p className={cn('text-sm text-[var(--neutral-900)]', mono && "")}>{value}</p>
+        <p className={cn('text-sm text-[var(--neutral-900)]', mono && 'tabular-nums')}>{value}</p>
       )}
     </div>
   );

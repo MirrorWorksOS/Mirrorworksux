@@ -24,7 +24,8 @@ import {
   ReferenceLine
 } from 'recharts';
 import { AnimatedRefresh, AnimatedTrendingUp, AnimatedTrendingDown, AnimatedSparkles } from '../ui/animated-icons';
-import { AIInsightCard } from '../shared/ai/AIInsightCard';
+import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
 
 interface PlanBudgetTabProps {
@@ -169,7 +170,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Budget
             </h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.totalBudget.toLocaleString()}
             </p>
             <p className=" text-xs text-[var(--neutral-500)] mt-2">
@@ -194,13 +195,13 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 utilizationPercent > 80 ? "bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]" :
                 "bg-[var(--neutral-100)] text-[var(--mw-mirage)]"
               )}>
-                {utilizationPercent.toFixed(0)}% used
+                <span className="tabular-nums">{utilizationPercent.toFixed(0)}% used</span>
               </Badge>
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Spent
             </h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.totalSpent.toLocaleString()}
             </p>
             <div className="mt-3">
@@ -232,10 +233,10 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 <p className=" text-xs text-[var(--neutral-400)] mb-0.5">
                   Total Budget
                 </p>
-                <p className=" text-sm font-semibold">
+                <p className=" text-sm font-medium tabular-nums">
                   ${mockBudgetData.totalBudget.toLocaleString()}
                 </p>
-                <p className=" text-xs text-[var(--neutral-400)] mt-0.5">
+                <p className=" text-xs tabular-nums text-[var(--neutral-400)] mt-0.5">
                   ${(mockBudgetData.totalBudget - mockBudgetData.totalSpent).toLocaleString()} remaining
                 </p>
               </div>
@@ -254,10 +255,10 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Remaining
             </h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.remaining.toLocaleString()}
             </p>
-            <p className=" text-xs text-[var(--neutral-500)] mt-2">
+            <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
               Est. final spend: ${mockBudgetData.estimatedFinalSpend.toLocaleString()}
             </p>
           </Card>
@@ -274,14 +275,14 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 {mockBudgetData.currentMargin > mockBudgetData.targetMargin ? (
                   <>
                     <AnimatedTrendingUp className="w-4 h-4 text-[var(--mw-mirage)]" />
-                    <span className="text-xs font-medium text-[var(--mw-mirage)]">
+                    <span className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">
                       +{(mockBudgetData.currentMargin - mockBudgetData.targetMargin).toFixed(1)}%
                     </span>
                   </>
                 ) : (
                   <>
                     <AnimatedTrendingDown className="w-4 h-4 text-[var(--mw-error)]" />
-                    <span className="text-xs font-medium text-[var(--mw-error)]">
+                    <span className="text-xs font-medium tabular-nums text-[var(--mw-error)]">
                       {(mockBudgetData.currentMargin - mockBudgetData.targetMargin).toFixed(1)}%
                     </span>
                   </>
@@ -291,10 +292,10 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Margin
             </h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
               {mockBudgetData.currentMargin.toFixed(1)}%
             </p>
-            <p className=" text-xs text-[var(--neutral-500)] mt-2">
+            <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
               Target: {mockBudgetData.targetMargin}% (configurable)
             </p>
           </Card>
@@ -305,7 +306,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <div className="p-6 border-b border-[var(--border)]">
-            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Category Breakdown
             </h3>
           </div>
@@ -341,13 +342,13 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                       <td className="px-6 text-sm text-[var(--mw-mirage)] font-medium">
                         {row.displayName}
                       </td>
-                      <td className="px-6 text-right text-sm  font-medium">
+                      <td className="px-6 text-right text-sm tabular-nums font-medium">
                         ${row.budget.toLocaleString()}
                       </td>
-                      <td className="px-6 text-right text-sm  font-medium">
+                      <td className="px-6 text-right text-sm tabular-nums font-medium">
                         ${row.actual.toLocaleString()}
                       </td>
-                      <td className="px-6 text-right text-sm  font-medium"
+                      <td className="px-6 text-right text-sm tabular-nums font-medium"
                         style={{ color: row.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}>
                         {row.variance < 0 ? '-' : '+'}${Math.abs(row.variance).toLocaleString()}
                       </td>
@@ -362,7 +363,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[var(--neutral-500)] ">
+                          <span className="text-xs tabular-nums text-[var(--neutral-500)]">
                             {row.percentUsed}%
                           </span>
                         </div>
@@ -387,19 +388,19 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 })}
                 {/* Total Row */}
                 <tr className="border-t-2 border-[var(--mw-mirage)] h-14 bg-[var(--neutral-100)]">
-                  <td className="px-6 text-sm font-bold text-[var(--mw-mirage)]">
+                  <td className="px-6 text-sm font-medium text-[var(--mw-mirage)]">
                     TOTAL
                   </td>
-                  <td className="px-6 text-right text-sm  font-bold">
+                  <td className="px-6 text-right text-sm tabular-nums font-medium">
                     ${totalBudgeted.toLocaleString()}
                   </td>
-                  <td className="px-6 text-right text-sm  font-bold">
+                  <td className="px-6 text-right text-sm tabular-nums font-medium">
                     ${totalActual.toLocaleString()}
                   </td>
-                  <td className="px-6 text-right text-sm  font-bold text-[var(--mw-mirage)]">
+                  <td className="px-6 text-right text-sm tabular-nums font-medium text-[var(--mw-mirage)]">
                     -${(totalBudgeted - totalActual).toLocaleString()}
                   </td>
-                  <td className="px-6 text-center text-sm text-[var(--neutral-500)]">
+                  <td className="px-6 text-center text-sm tabular-nums text-[var(--neutral-500)]">
                     {((totalActual / totalBudgeted) * 100).toFixed(0)}%
                   </td>
                   <td className="px-6"></td>
@@ -414,7 +415,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Spend vs Plan
             </h3>
             <div className="flex items-center gap-2">
@@ -461,14 +462,14 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                   <stop offset="95%" stopColor="var(--mw-yellow-400)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                tick={MW_AXIS_TICK}
               />
               <YAxis
                 tickFormatter={v => `$${(v / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                tick={MW_AXIS_TICK}
               />
               <Tooltip
                 formatter={(v: number) => [`$${v.toLocaleString()}`, '']}

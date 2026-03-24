@@ -73,7 +73,7 @@ export function BuyReceipts() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-[var(--mw-mirage)]">{po.poNumber}</h3>
+                    <h3 className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">{po.poNumber}</h3>
                     <p className="text-sm text-[var(--neutral-500)]">{po.supplier}</p>
                   </div>
                   <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-0">Pending</Badge>
@@ -94,7 +94,7 @@ export function BuyReceipts() {
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-semibold text-[var(--mw-mirage)]">{selectedPO.poNumber}</h2>
+              <h2 className="text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">{selectedPO.poNumber}</h2>
               <p className="text-sm text-[var(--neutral-500)]">{selectedPO.supplier}</p>
             </div>
             <Button variant="outline" onClick={() => setSelectedPO(null)} className="h-12 px-6 text-base">
@@ -122,19 +122,19 @@ export function BuyReceipts() {
                 <div className="flex items-center gap-4 mb-4">
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Ordered</p>
-                    <p className=" text-lg font-semibold text-[var(--mw-mirage)]">
+                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-mirage)]">
                       {item.ordered} {item.unit}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Already Received</p>
-                    <p className=" text-lg font-semibold text-[var(--neutral-500)]">
+                    <p className="text-lg font-semibold tabular-nums text-[var(--neutral-500)]">
                       {item.received} {item.unit}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Outstanding</p>
-                    <p className=" text-lg font-semibold text-[var(--mw-yellow-400)]">
+                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-yellow-400)]">
                       {item.ordered - item.received} {item.unit}
                     </p>
                   </div>

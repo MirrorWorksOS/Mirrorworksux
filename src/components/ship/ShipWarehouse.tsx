@@ -126,11 +126,11 @@ export function ShipWarehouse() {
                   const cfg = statusBadge[inv.status];
                   return (
                     <tr key={inv.bin} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
-                      <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{inv.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] ">{inv.sku}</td>
+                      <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{inv.bin}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] tabular-nums">{inv.sku}</td>
                       <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{inv.name}</td>
-                      <td className="px-4 py-3 text-sm text-right  font-medium">{inv.onHand}</td>
-                      <td className="px-4 py-3 text-sm text-right  font-medium">{inv.avail}</td>
+                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{inv.onHand}</td>
+                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{inv.avail}</td>
                       <td className="px-4 py-3">
                         <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>
                           {cfg.label}
@@ -151,7 +151,7 @@ export function ShipWarehouse() {
           <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <span className="text-sm text-[var(--mw-mirage)] font-medium ">CC-2026-012</span>
+                <span className="text-sm text-[var(--mw-mirage)] font-medium tabular-nums">CC-2026-012</span>
                 <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
               <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
@@ -177,13 +177,13 @@ export function ShipWarehouse() {
                   const v = c.actual !== null ? c.actual - c.expected : null;
                   return (
                     <tr key={c.bin} className="border-b border-[var(--neutral-100)] h-14">
-                      <td className="px-4 py-3 text-sm  font-medium">{c.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] ">{c.sku}</td>
-                      <td className="px-4 py-3 text-sm text-right  font-medium">{c.expected}</td>
+                      <td className="px-4 py-3 text-sm font-medium tabular-nums">{c.bin}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] tabular-nums">{c.sku}</td>
+                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{c.expected}</td>
                       <td className="px-4 py-3 text-right">
                         {c.actual !== null
-                          ? <span className="text-sm  font-medium">{c.actual}</span>
-                          : <Input className="h-10 w-20 text-right bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto " placeholder="—" />
+                          ? <span className="text-sm font-medium tabular-nums">{c.actual}</span>
+                          : <Input className="h-10 w-20 text-right tabular-nums bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto" placeholder="—" />
                         }
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -193,7 +193,7 @@ export function ShipWarehouse() {
                             : (
                               <div className="flex items-center justify-center gap-1">
                                 <AlertCircle className="w-4 h-4 text-[var(--mw-amber)]" />
-                                <span className="text-xs  font-medium text-[var(--mw-amber)]">{v > 0 ? '+' : ''}{v}</span>
+                                <span className="text-xs font-medium tabular-nums text-[var(--mw-amber)]">{v > 0 ? '+' : ''}{v}</span>
                               </div>
                             )
                         )}

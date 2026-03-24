@@ -89,11 +89,10 @@ function OverviewTab() {
           { label: 'Margin',      value: `${margin.toFixed(1)}%`, mono: true, highlight: margin >= 25 ? 'green' : 'yellow' },
           { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
             <p className={cn(
-              'text-xl font-semibold',
-              kpi.mono && '',
+              'text-xl font-semibold tabular-nums',
               kpi.highlight === 'green' ? 'text-[var(--neutral-900)]' : kpi.highlight === 'yellow' ? 'text-[var(--neutral-900)]' : 'text-[var(--neutral-900)]'
             )}>
               {kpi.value}
@@ -104,7 +103,7 @@ function OverviewTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Description</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Description</h4>
           <p className="text-sm text-[var(--neutral-500)] leading-relaxed">{PRODUCT.description}</p>
           <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-[var(--border)]">
             {[
@@ -124,14 +123,14 @@ function OverviewTab() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Stock on hand</h4>
-            <p className="text-3xl  font-semibold text-[var(--neutral-900)]">8</p>
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Stock on hand</h4>
+            <p className="text-3xl font-semibold tabular-nums text-[var(--neutral-900)]">8</p>
             <p className="text-xs text-[var(--neutral-500)]">units · Min reorder: 0</p>
           </Card>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-            <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">This month</h4>
-            <p className="text-2xl  font-semibold text-[var(--neutral-900)]">18 units</p>
+          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">This month</h4>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--neutral-900)]">18 units</p>
             <p className="text-xs text-[var(--neutral-900)] mt-0.5">▲ 29% vs last month</p>
           </Card>
         </div>
@@ -147,7 +146,7 @@ function ManufacturingTab() {
       {/* Routing */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Routing — {totalTime}h total cycle time</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)]">Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit routing</Button>
         </div>
         <table className="w-full">
@@ -161,11 +160,11 @@ function ManufacturingTab() {
           <tbody>
             {ROUTING.map(r => (
               <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4 text-sm  font-medium text-[var(--neutral-500)]">{String(r.step).padStart(2, '0')}</td>
+                <td className="px-4 text-sm font-medium tabular-nums text-[var(--neutral-500)]">{String(r.step).padStart(2, '0')}</td>
                 <td className="px-4 text-sm text-[var(--neutral-900)] font-medium">{r.name}</td>
                 <td className="px-4"><Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{r.workCenter}</Badge></td>
-                <td className="px-4 text-sm ">{r.duration}</td>
-                <td className="px-4 text-sm  text-[var(--neutral-500)]">{r.setup > 0 ? r.setup : '—'}</td>
+                <td className="px-4 text-sm tabular-nums">{r.duration}</td>
+                <td className="px-4 text-sm tabular-nums text-[var(--neutral-500)]">{r.setup > 0 ? r.setup : '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -175,7 +174,7 @@ function ManufacturingTab() {
       {/* BOM */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Bill of Materials · v1.2</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)]">Bill of Materials · v1.2</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit BOM</Button>
         </div>
         <table className="w-full">
@@ -189,17 +188,17 @@ function ManufacturingTab() {
           <tbody>
             {BOM_LINES.map(line => (
               <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4 text-xs  text-[var(--neutral-500)]">{line.sku}</td>
+                <td className="px-4 text-xs tabular-nums text-[var(--neutral-500)]">{line.sku}</td>
                 <td className="px-4 text-sm text-[var(--neutral-900)]">{line.description}</td>
-                <td className="px-4 text-right text-sm ">{line.qty}</td>
+                <td className="px-4 text-right text-sm tabular-nums">{line.qty}</td>
                 <td className="px-4 text-sm text-[var(--neutral-500)]">{line.unit}</td>
-                <td className="px-4 text-right text-sm ">${line.cost.toFixed(2)}</td>
-                <td className="px-4 text-right text-sm  font-medium">${(line.qty * line.cost).toFixed(2)}</td>
+                <td className="px-4 text-right text-sm tabular-nums">${line.cost.toFixed(2)}</td>
+                <td className="px-4 text-right text-sm font-medium tabular-nums">${(line.qty * line.cost).toFixed(2)}</td>
               </tr>
             ))}
             <tr className="bg-[var(--neutral-100)] border-t border-[var(--border)]">
               <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[var(--neutral-900)]">Total BOM cost</td>
-              <td className="px-4 py-3 text-right text-sm  font-semibold text-[var(--neutral-900)]">
+              <td className="px-4 py-3 text-right text-sm font-semibold tabular-nums text-[var(--neutral-900)]">
                 ${BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0).toFixed(2)}
               </td>
             </tr>
@@ -220,9 +219,9 @@ function InventoryTab() {
           { label: 'On order',  value: '0',  sub: 'units in production' },
           { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
         ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
-            <p className="text-xl  font-semibold text-[var(--neutral-900)]">{kpi.value}</p>
+            <p className="text-xl font-semibold tabular-nums text-[var(--neutral-900)]">{kpi.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{kpi.sub}</p>
           </Card>
         ))}
@@ -230,7 +229,7 @@ function InventoryTab() {
 
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)]">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Stock movements</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)]">Stock movements</h4>
         </div>
         <table className="w-full">
           <thead>
@@ -253,11 +252,11 @@ function InventoryTab() {
                     {m.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm  text-[var(--neutral-500)]">{m.ref}</td>
-                <td className={cn('px-4 text-right text-sm  font-semibold', m.qty > 0 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
+                <td className="px-4 text-sm tabular-nums text-[var(--neutral-500)]">{m.ref}</td>
+                <td className={cn('px-4 text-right text-sm font-medium tabular-nums', m.qty > 0 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
                   {m.qty > 0 ? `+${m.qty}` : m.qty}
                 </td>
-                <td className="px-4 text-right text-sm  font-medium">{m.balance}</td>
+                <td className="px-4 text-right text-sm font-medium tabular-nums">{m.balance}</td>
               </tr>
             ))}
           </tbody>
@@ -272,7 +271,7 @@ function AccountingTab() {
   return (
     <div className="space-y-6">
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Revenue — last 6 months</h4>
+        <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Revenue — last 6 months</h4>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
@@ -286,7 +285,7 @@ function AccountingTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Pricing</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Pricing</h4>
           <div className="space-y-3">
             {[
               { l: 'Sell price (ex GST)',  v: `$${PRODUCT.sellPrice.toFixed(2)}`, mono: true },
@@ -296,7 +295,7 @@ function AccountingTab() {
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
                 <span className="text-sm text-[var(--neutral-500)]">{r.l}</span>
-                <span className={cn('text-sm font-medium', r.mono && '', r.green && 'text-[var(--neutral-900)]')}>
+                <span className={cn('text-sm font-medium tabular-nums', r.green && 'text-[var(--neutral-900)]')}>
                   {r.v}
                 </span>
               </div>
@@ -305,7 +304,7 @@ function AccountingTab() {
         </Card>
 
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">YTD performance</h4>
+          <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">YTD performance</h4>
           <div className="space-y-3">
             {[
               { l: 'Units sold',    v: '89' },
@@ -315,7 +314,7 @@ function AccountingTab() {
             ].map(r => (
               <div key={r.l} className="flex justify-between py-2 border-b border-[var(--border)] last:border-0">
                 <span className="text-sm text-[var(--neutral-500)]">{r.l}</span>
-                <span className={cn('text-sm font-medium', (r as any).mono && '', (r as any).green && 'text-[var(--neutral-900)]')}>
+                <span className={cn('text-sm font-medium tabular-nums', (r as any).green && 'text-[var(--neutral-900)]')}>
                   {r.v}
                 </span>
               </div>
@@ -364,7 +363,7 @@ function DocumentsTab() {
                     {doc.type}
                   </Badge>
                 </td>
-                <td className="px-4 text-sm text-[var(--neutral-500)] ">{doc.size}</td>
+                <td className="px-4 text-sm text-[var(--neutral-500)] tabular-nums">{doc.size}</td>
                 <td className="px-4 text-sm text-[var(--neutral-500)]">{doc.date}</td>
                 <td className="px-4">
                   {doc.status === 'current'
@@ -410,14 +409,14 @@ export function SellProductDetail() {
           </button>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl tracking-tight text-[var(--neutral-900)] font-semibold">{PRODUCT.name}</h1>
+              <h1 className="text-2xl tracking-tight text-[var(--neutral-900)] font-medium">{PRODUCT.name}</h1>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">Active</Badge>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
             </div>
-            <p className="text-sm text-[var(--neutral-500)] ">{PRODUCT.sku} · {PRODUCT.category}</p>
+            <p className="text-sm text-[var(--neutral-500)]"><span className="tabular-nums">{PRODUCT.sku}</span> · {PRODUCT.category}</p>
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Edit className="w-4 h-4" /> Edit
           </Button>

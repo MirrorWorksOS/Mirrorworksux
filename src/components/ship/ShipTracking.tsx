@@ -90,7 +90,7 @@ export function ShipTracking() {
                   className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
                   onClick={() => setSelected(s)}
                 >
-                  <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{s.tracking}</td>
+                  <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{s.tracking}</td>
                   <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{s.customer}</td>
                   <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{s.carrier}</td>
                   <td className="px-4 py-3">
@@ -99,7 +99,7 @@ export function ShipTracking() {
                       <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.badge, cfg.text)}>{cfg.label}</Badge>
                     </div>
                   </td>
-                  <td className={cn('px-4 py-3 text-sm', s.eta === 'Today' ? 'font-semibold' : 'font-normal', s.status === 'exception' ? 'text-[var(--mw-error)]' : 'text-[var(--neutral-500)]')}>
+                  <td className={cn('px-4 py-3 text-sm', s.eta === 'Today' ? 'font-medium' : 'font-normal', s.status === 'exception' ? 'text-[var(--mw-error)]' : 'text-[var(--neutral-500)]')}>
                     {s.eta}
                   </td>
                   <td className="px-4 py-3 text-xs text-[var(--neutral-500)]">{s.updated}</td>

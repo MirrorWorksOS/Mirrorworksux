@@ -113,14 +113,14 @@ export function ControlLocations() {
           const Icon = cfg.icon;
           return (
             <motion.div key={loc.id} variants={staggerItem}>
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)] cursor-pointer group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center shrink-0">
                       <Icon className="w-5 h-5 text-[var(--neutral-500)]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="font-medium text-sm text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
                         {loc.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">

@@ -78,12 +78,12 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
   const isLeadForModule = user.role === 'lead' && user.leadModule === moduleKey;
 
   return (
-    <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-5">
+    <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-6">
       <div className="flex gap-4">
         <div className="w-1 rounded-full" style={{ backgroundColor: moduleMeta.dot }} />
         <div className="min-w-0 flex-1 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="text-base font-semibold text-[var(--mw-mirage)]">{moduleLabels[moduleKey]}</h4>
+            <h4 className="text-base font-medium text-[var(--mw-mirage)]">{moduleLabels[moduleKey]}</h4>
             <Badge
               className="rounded-full border-0 px-2.5 py-0.5 text-xs"
               style={{ backgroundColor: moduleMeta.bg, color: moduleMeta.text }}

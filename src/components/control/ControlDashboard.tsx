@@ -36,7 +36,7 @@ export function ControlDashboard() {
               <Users className="w-5 h-5 text-[var(--mw-blue)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Total Users</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{systemHealth.totalUsers}</p>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{systemHealth.totalUsers}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-2">{systemHealth.activeUsers} active</p>
           </Card>
         </motion.div>
@@ -47,7 +47,7 @@ export function ControlDashboard() {
               <Database className="w-5 h-5 text-[var(--mw-yellow-400)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Products</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{systemHealth.totalProducts}</p>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{systemHealth.totalProducts}</p>
           </Card>
         </motion.div>
 
@@ -57,7 +57,7 @@ export function ControlDashboard() {
               <Settings className="w-5 h-5 text-[var(--mw-amber)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Machines</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{systemHealth.totalMachines}</p>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{systemHealth.totalMachines}</p>
           </Card>
         </motion.div>
 
@@ -67,7 +67,7 @@ export function ControlDashboard() {
               <Shield className="w-5 h-5 text-[var(--mw-yellow-400)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Suppliers</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{systemHealth.totalSuppliers}</p>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{systemHealth.totalSuppliers}</p>
           </Card>
         </motion.div>
 
@@ -80,7 +80,7 @@ export function ControlDashboard() {
               <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-0">{systemHealth.openIssues}</Badge>
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Open Issues</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-error)]">{systemHealth.openIssues}</p>
+            <p className="text-2xl font-semibold tabular-nums text-[var(--mw-error)]">{systemHealth.openIssues}</p>
           </Card>
         </motion.div>
 
@@ -96,7 +96,7 @@ export function ControlDashboard() {
       </div>
 
       <Card className="bg-[var(--mw-yellow-400)] border-2 border-[var(--neutral-800)] rounded-[var(--shape-lg)] p-6">
-        <h3 className="text-base font-semibold text-[var(--neutral-800)] mb-2">Admin Control Panel</h3>
+        <h3 className="text-base font-medium text-[var(--neutral-800)] mb-2">Admin Control Panel</h3>
         <p className="text-sm text-[var(--neutral-800)]">Manage system-wide settings, master data, and user permissions from this module.</p>
       </Card>
       </motion.div>

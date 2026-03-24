@@ -18,7 +18,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/settings/ModuleSettingsLayout';
+} from '@/components/shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Make module (from ARCH 00 §4.5) ──
 const makePermissionKeys: PermissionKey[] = [
@@ -108,7 +108,7 @@ function GeneralPanel() {
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Work centre timeout</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Input defaultValue="15" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[var(--neutral-500)]">minutes idle before auto-pause</span>
             </div>
@@ -253,7 +253,7 @@ function ReportsPanel() {
       </div>
       <div>
         <SectionLabel>Export</SectionLabel>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export production CSV</Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export QC results CSV</Button>
         </div>

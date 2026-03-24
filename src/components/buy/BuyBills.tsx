@@ -130,14 +130,14 @@ export function BuyBills() {
                   <td className="px-4 text-sm  font-medium text-[var(--mw-mirage)]">{bill.billNumber}</td>
                   <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{bill.supplier}</td>
                   <td className="px-4 text-sm text-[var(--neutral-500)]">{bill.invoiceDate}</td>
-                  <td className={cn('px-4 text-sm', bill.status === 'overdue' ? 'text-[var(--mw-error)] font-semibold' : 'text-[var(--neutral-500)] font-normal')}>
+                  <td className={cn('px-4 text-sm', bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
                     {bill.dueDate}
                   </td>
                   <td className="px-4 text-sm  text-[var(--mw-mirage)]">{bill.poNumber}</td>
                   <td className="px-4">
                     <MatchDots ms={bill.matchStatus} />
                   </td>
-                  <td className="px-4 text-right text-sm  font-semibold">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 text-right text-sm font-medium tabular-nums">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
                   <td className="px-4">
                     <div className="flex items-center gap-1.5">
                       <Icon className={cn('w-4 h-4', cfg.text)} />

@@ -77,7 +77,7 @@ export function ShipReturns() {
                 const cfg = rStatusConfig[r.status];
                 return (
                   <tr key={r.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors" onClick={() => setSelected(r)}>
-                    <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{r.id}</td>
+                    <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{r.id}</td>
                     <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{r.customer}</td>
                     <td className="px-4 py-3 text-xs text-[var(--neutral-500)]">{r.reason}</td>
                     <td className="px-4 py-3">
@@ -96,30 +96,30 @@ export function ShipReturns() {
 
         {/* Sidebar Stats */}
         <div className="space-y-4">
-          <div className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)]">
-            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">This Month</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1  font-semibold">12</div>
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">This month</span>
+            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-semibold tabular-nums">12</div>
           </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)]">
-            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium block mb-3">Top Reasons</span>
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium block mb-4">Top reasons</span>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart data={REASONS} layout="vertical" margin={{ left: 0 }}>
                 <XAxis type="number" hide />
                 <YAxis dataKey="reason" type="category" tick={{ fontSize: 10, fill: 'var(--neutral-500)' }} width={70} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Bar key="count" dataKey="count" fill="#0A0A0A" radius={[0, 4, 4, 0]} barSize={10} />
+                <Bar key="count" dataKey="count" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} barSize={10} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)]">
-            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Avg Processing</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1  font-semibold">
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Avg processing</span>
+            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-semibold tabular-nums">
               4.2<span className="text-sm text-[var(--neutral-500)] ml-1">days</span>
             </div>
           </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)]">
-            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Return Rate</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1  font-semibold">2.8%</div>
+          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+            <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Return rate</span>
+            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-semibold tabular-nums">2.8%</div>
           </div>
         </div>
       </div>
@@ -138,8 +138,8 @@ export function ShipReturns() {
                 </SheetHeader>
                 <div className="px-6 py-6 space-y-6">
                   <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-4 space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Order</span><span className=" font-medium">{selected.order}</span></div>
-                    <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Items</span><span className=" font-medium">{selected.items}</span></div>
+                    <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Order</span><span className="font-medium tabular-nums">{selected.order}</span></div>
+                    <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Items</span><span className="font-medium tabular-nums">{selected.items}</span></div>
                     <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Created</span><span>{selected.date}</span></div>
                   </div>
 
@@ -152,7 +152,7 @@ export function ShipReturns() {
                         const done = i <= idx;
                         const stageCfg = rStatusConfig[stage];
                         return (
-                          <div key={stage} className="flex items-center gap-4 relative py-2.5">
+                          <div key={stage} className="flex items-center gap-4 relative py-2">
                             <div className={cn(
                               'w-4 h-4 rounded-full shrink-0 z-10 border-2 transition-colors',
                               done ? 'bg-[var(--mw-mirage)] border-[var(--mw-mirage)]' : 'bg-white border-[var(--border)]'

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MoreVertical, FileText } from 'lucide-react';
-import { EmptyState } from '../shared/feedback/EmptyState';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -131,7 +131,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
       {/* Toolbar */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
               <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
               <Input
@@ -238,7 +238,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                 >
                   <td className="px-4 py-3">
                     <div className="flex flex-col">
-                      <span className=" text-xs text-[var(--mw-mirage)] font-medium">
+                      <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
                         {invoice.id}
                       </span>
                       {invoice.jobReference && (
@@ -287,7 +287,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                       {statusConfig[invoice.status].label}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3  text-xs text-[var(--mw-mirage)] font-medium">
+                  <td className="px-4 py-3 text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
                     ${invoice.total.toLocaleString()}
                   </td>
                   <td className="px-4 py-3">

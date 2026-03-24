@@ -32,7 +32,7 @@ export function BuyReports() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Spend by Supplier</h3>
+          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Spend by Supplier</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={spendBySupplier} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="spend">
@@ -44,7 +44,7 @@ export function BuyReports() {
         </Card>
 
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Monthly Spend Trend</h3>
+          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Monthly Spend Trend</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={monthlySpend}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />

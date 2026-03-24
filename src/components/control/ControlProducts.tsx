@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Plus, Search, Package } from 'lucide-react';
-import { EmptyState } from '../shared/feedback/EmptyState';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';

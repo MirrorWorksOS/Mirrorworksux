@@ -61,16 +61,16 @@ export function MakeDashboard() {
       actions={
         <div className="flex items-center gap-6">
           <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-1">Running</p>
-            <p className="text-3xl font-bold text-[var(--mw-mirage)]">{runningCount}/{mockMachines.length}</p>
+            <p className="text-sm text-[var(--neutral-500)] mb-2">Running</p>
+            <p className="text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">{runningCount}/{mockMachines.length}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-1">Down</p>
-            <p className="text-3xl font-bold text-[var(--mw-error)]">{downCount}</p>
+            <p className="text-sm text-[var(--neutral-500)] mb-2">Down</p>
+            <p className="text-3xl font-bold tabular-nums text-[var(--mw-error)]">{downCount}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-[var(--neutral-500)] mb-1">Avg Utilization</p>
-            <p className="text-3xl font-bold text-[var(--mw-mirage)]">{avgUtilization}%</p>
+            <p className="text-sm text-[var(--neutral-500)] mb-2">Avg Utilization</p>
+            <p className="text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">{avgUtilization}%</p>
           </div>
         </div>
       }
@@ -85,41 +85,41 @@ export function MakeDashboard() {
           return (
             <motion.div key={machine.id} variants={staggerItem}>
               <Card className={cn(
-                "rounded-[var(--shape-lg)] p-8 cursor-pointer transition-all duration-300 border-4",
+                "rounded-[var(--shape-lg)] p-8 cursor-pointer transition-all duration-[var(--duration-medium1)] border-4",
                 statusConfig.bg,
                 statusConfig.text
               )}>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold mb-1">{machine.name}</h2>
+                    <h2 className="text-2xl font-medium mb-2">{machine.name}</h2>
                     <p className="text-base opacity-90">{machine.workCenter}</p>
                   </div>
                   <StatusIcon className="w-12 h-12" />
                 </div>
 
-                <div className="space-y-3 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>
+                <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>
                   {machine.currentJob && (
                     <div>
-                      <p className="text-xs opacity-75 mb-1">Current Job</p>
-                      <p className="text-lg font-bold ">{machine.currentJob}</p>
+                      <p className="text-xs opacity-75 mb-2">Current Job</p>
+                      <p className="text-lg font-medium tabular-nums">{machine.currentJob}</p>
                     </div>
                   )}
                   {machine.operator && (
                     <div>
-                      <p className="text-xs opacity-75 mb-1">Operator</p>
+                      <p className="text-xs opacity-75 mb-2">Operator</p>
                       <p className="text-base font-medium">{machine.operator}</p>
                     </div>
                   )}
                   <div>
-                    <p className="text-xs opacity-75 mb-1">Utilization Today</p>
-                    <div className="flex items-center gap-3">
+                    <p className="text-xs opacity-75 mb-2">Utilization Today</p>
+                    <div className="flex items-center gap-4">
                       <div className="flex-1 h-3 bg-black bg-opacity-20 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-white rounded-full transition-all duration-300"
+                          className="h-full bg-white rounded-full transition-all duration-[var(--duration-medium1)]"
                           style={{ width: `${machine.utilizationToday}%` }}
                         />
                       </div>
-                      <span className="text-lg font-bold  min-w-[60px]">
+                      <span className="text-lg font-medium tabular-nums min-w-[60px]">
                         {machine.utilizationToday}%
                       </span>
                     </div>
@@ -127,12 +127,7 @@ export function MakeDashboard() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>
-                  <Badge className="w-full justify-center py-3 text-base font-bold"
-                    style={{
-                      backgroundColor: 'rgba(255,255,255,0.2)',
-                      color: 'currentColor',
-                      border: 'none'
-                    }}>
+                  <Badge className="w-full justify-center py-3 text-base font-medium bg-white/20 text-current border-0">
                     {statusConfig.label}
                   </Badge>
                 </div>
@@ -144,7 +139,7 @@ export function MakeDashboard() {
 
       {/* Legend */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className="text-sm font-medium text-[var(--neutral-500)] mb-3">STATUS LEGEND</h3>
+        <h3 className="text-sm font-medium text-[var(--neutral-500)] mb-4">Status legend</h3>
         <div className="flex flex-wrap gap-4">
           {(['running', 'idle', 'setup', 'down', 'maintenance'] as MachineStatus[]).map(status => {
             const config = getStatusColor(status);

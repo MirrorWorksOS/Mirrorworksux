@@ -64,9 +64,9 @@ export function ShipShipping() {
       {tab === 'carriers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {CARRIERS.map(c => (
-            <div key={c.name} className="bg-white rounded-[var(--shape-lg)] p-5 border border-[var(--border)] hover:shadow-md transition-shadow duration-150">
+            <div key={c.name} className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)] hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   <Truck className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} />
                   <span className="text-sm text-[var(--mw-mirage)] font-medium">{c.name}</span>
                 </div>
@@ -79,7 +79,7 @@ export function ShipShipping() {
                   { l: 'On-time', v: `${c.onTime}%` },
                 ].map(s => (
                   <div key={s.l}>
-                    <div className="text-lg text-[var(--mw-mirage)]  font-medium">{s.v}</div>
+                    <div className="text-lg text-[var(--mw-mirage)] font-medium tabular-nums">{s.v}</div>
                     <span className="text-[10px] text-[var(--neutral-500)] tracking-wider">{s.l}</span>
                   </div>
                 ))}
@@ -111,7 +111,7 @@ export function ShipShipping() {
               <div
                 key={`${r.carrier}-${r.service}`}
                 className={cn(
-                  'flex items-center gap-4 bg-white rounded-[var(--shape-lg)] p-5 transition-colors duration-150 cursor-pointer',
+                  'flex items-center gap-4 bg-white rounded-[var(--shape-lg)] p-6 transition-colors duration-[var(--duration-short2)] cursor-pointer',
                   r.ai ? 'border-2 border-[var(--mw-yellow-400)]' : 'border border-[var(--border)] hover:border-[var(--neutral-400)]'
                 )}
               >
@@ -127,7 +127,7 @@ export function ShipShipping() {
                   </div>
                   <span className="text-xs text-[var(--neutral-500)]">{r.days}d transit</span>
                 </div>
-                <span className="text-xl text-[var(--mw-mirage)]  font-medium">${r.cost.toFixed(2)}</span>
+                <span className="text-xl text-[var(--mw-mirage)] font-medium tabular-nums">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
                     'h-10 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
@@ -148,7 +148,7 @@ export function ShipShipping() {
       {tab === 'manifests' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="h-10 px-5 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
+            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
               Generate manifest
             </button>
           </div>
@@ -166,8 +166,8 @@ export function ShipShipping() {
                   <tr key={i} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
                     <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{m.date}</td>
                     <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{m.carrier}</td>
-                    <td className="px-4 py-3 text-sm  font-medium">{m.count}</td>
-                    <td className="px-4 py-3 text-sm ">{m.weight}</td>
+                    <td className="px-4 py-3 text-sm font-medium tabular-nums">{m.count}</td>
+                    <td className="px-4 py-3 text-sm tabular-nums">{m.weight}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[var(--mw-yellow-400)]' : 'bg-[var(--mw-mirage)]')} />

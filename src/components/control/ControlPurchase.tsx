@@ -276,7 +276,7 @@ export function ControlPurchase() {
                     key={n.key}
                     onClick={() => setActive(n.key)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--shape-lg)] text-sm transition-colors text-left',
+                      'w-full flex items-center gap-4 px-3 py-2 rounded-[var(--shape-lg)] text-sm transition-colors text-left',
                       active === n.key
                         ? 'bg-[var(--accent)] text-[var(--mw-mirage)] font-medium'
                         : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-mirage)]'

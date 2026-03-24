@@ -10,6 +10,7 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
 
 const kpiData = {
@@ -47,7 +48,7 @@ export function PlanDashboard() {
               </div>
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Active Jobs</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{kpiData.activeJobs}</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.activeJobs}</p>
           </Card>
         </motion.div>
 
@@ -59,7 +60,7 @@ export function PlanDashboard() {
               </div>
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Scheduled MOs</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{kpiData.scheduledMOs}</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.scheduledMOs}</p>
           </Card>
         </motion.div>
 
@@ -72,7 +73,7 @@ export function PlanDashboard() {
               <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-0">{kpiData.overdueJobs}</Badge>
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Overdue Jobs</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-error)]">{kpiData.overdueJobs}</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-error)]">{kpiData.overdueJobs}</p>
           </Card>
         </motion.div>
 
@@ -82,7 +83,7 @@ export function PlanDashboard() {
               <Clock className="w-5 h-5 text-[var(--mw-amber)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Avg Lead Time</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{kpiData.avgLeadTime} days</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.avgLeadTime} days</p>
           </Card>
         </motion.div>
 
@@ -92,7 +93,7 @@ export function PlanDashboard() {
               <TrendingUp className="w-5 h-5 text-[var(--mw-mirage)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">Utilization Rate</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{kpiData.utilizationRate}%</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.utilizationRate}%</p>
           </Card>
         </motion.div>
 
@@ -102,7 +103,7 @@ export function PlanDashboard() {
               <Package className="w-5 h-5 text-[var(--mw-blue)]" />
             </div>
             <h3 className="text-xs text-[var(--neutral-500)] mb-1">On-Time Delivery</h3>
-            <p className=" text-2xl font-semibold text-[var(--mw-mirage)]">{kpiData.onTimeDelivery}%</p>
+            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">{kpiData.onTimeDelivery}%</p>
           </Card>
         </motion.div>
       </div>
@@ -110,15 +111,15 @@ export function PlanDashboard() {
       {/* Weekly Capacity Chart */}
       <motion.div variants={staggerItem}>
         <Card className="p-6">
-          <h3 className=" text-base font-semibold text-[var(--mw-mirage)] mb-4">Weekly Capacity (% Utilization)</h3>
+          <h3 className=" text-base font-medium text-[var(--mw-mirage)] mb-4">Weekly Capacity (% Utilisation)</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={weeklyCapacity}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D9" />
-              <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
+              <XAxis dataKey="week" tick={MW_AXIS_TICK} />
+              <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <Tooltip formatter={(v: number) => `${v}%`} />
-              <Bar key="planned" dataKey="planned" fill="#E8E2D9" radius={[4, 4, 0, 0]} name="Planned" />
-              <Bar key="actual" dataKey="actual" fill="#FFCF4B" radius={[4, 4, 0, 0]} name="Actual" />
+              <Bar key="planned" dataKey="planned" fill={MW_CHART_COLOURS[3]} radius={[4, 4, 0, 0]} name="Planned" />
+              <Bar key="actual" dataKey="actual" fill={MW_CHART_COLOURS[0]} radius={[4, 4, 0, 0]} name="Actual" />
             </BarChart>
           </ResponsiveContainer>
         </Card>

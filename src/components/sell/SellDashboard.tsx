@@ -11,6 +11,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   AreaChart, Area
@@ -226,7 +227,7 @@ export function SellDashboard() {
         {/* Revenue vs Expenses Area Chart */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-semibold text-foreground mb-4">
+            <h3 className="text-base font-medium text-foreground mb-4">
               Revenue vs Expenses (12 months)
             </h3>
             <ResponsiveContainer width="100%" height={280}>
@@ -241,12 +242,12 @@ export function SellDashboard() {
                     <stop offset="95%" stopColor="var(--mw-mirage)" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--muted-foreground)', fontVariantNumeric: 'tabular-nums' }} />
-                <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--muted-foreground)', fontVariantNumeric: 'tabular-nums' }} />
-                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-                <Area type="monotone" dataKey="revenue" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="url(#revenueGradient)" />
-                <Area type="monotone" dataKey="expenses" stroke="var(--mw-mirage)" strokeWidth={2} fill="url(#expensesGradient)" />
+                <CartesianGrid {...MW_CARTESIAN_GRID} />
+                <XAxis dataKey="month" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
+                <Area type="monotone" dataKey="revenue" stroke={MW_CHART_COLOURS[0]} strokeWidth={2} fill="url(#revenueGradient)" />
+                <Area type="monotone" dataKey="expenses" stroke={MW_CHART_COLOURS[1]} strokeWidth={2} fill="url(#expensesGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </Card>
@@ -255,15 +256,15 @@ export function SellDashboard() {
         {/* Job Profitability Bar Chart */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-base font-semibold text-foreground mb-4">
+            <h3 className="text-base font-medium text-foreground mb-4">
               Top 10 Jobs by Profit Margin
             </h3>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={jobProfitabilityData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" horizontal={false} />
-                <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: 'var(--muted-foreground)' }} />
-                <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fontVariantNumeric: 'tabular-nums', fill: 'var(--muted-foreground)' }} width={80} />
-                <Tooltip formatter={(v: number) => `${v}%`} />
+                <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
+                <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />
+                <Tooltip formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
                 <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
                   {jobProfitabilityData.map((entry, i) => (
                     <Cell key={`cell-${entry.job}-${i}`} fill={entry.color} />
@@ -281,7 +282,7 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-medium text-foreground">
                 Approval Queue
               </h3>
               <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent">
@@ -296,14 +297,14 @@ export function SellDashboard() {
                       <span className="text-xs font-medium text-foreground">
                         {item.type}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground tabular-nums">
                         {item.id}
                       </span>
                     </div>
                     <p className="text-xs text-[var(--neutral-600)] mb-1">
                       {item.customer}
                     </p>
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-medium tabular-nums text-foreground">
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
@@ -322,7 +323,7 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-medium text-foreground">
                 Xero Sync Status
               </h3>
               <div className="w-3 h-3 bg-[var(--mw-mirage)] rounded-full" />
@@ -374,7 +375,7 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-medium text-foreground">
                 Overdue Actions
               </h3>
               <Badge className="bg-[var(--mw-error-light)] text-[var(--mw-error)] border-transparent">
@@ -386,7 +387,7 @@ export function SellDashboard() {
                 <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-md)] hover:bg-[var(--neutral-200)] transition-colors cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-[var(--mw-error)] font-medium">
+                      <span className="text-xs text-[var(--mw-error)] font-medium tabular-nums">
                         {item.id}
                       </span>
                       <Badge className="bg-[var(--mw-error)] text-white text-xs">
@@ -396,7 +397,7 @@ export function SellDashboard() {
                     <p className="text-xs text-foreground mb-1">
                       {item.customer}
                     </p>
-                    <p className="text-xs font-medium text-[var(--mw-error)]">
+                    <p className="text-xs font-medium tabular-nums text-[var(--mw-error)]">
                       ${item.amount?.toLocaleString() || `$${item.value?.toLocaleString()}`}
                     </p>
                   </div>

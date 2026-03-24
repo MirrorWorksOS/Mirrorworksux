@@ -6,7 +6,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { Clock, Zap, Calendar } from 'lucide-react';
-import { InlineEmpty } from '../shared/feedback/EmptyState';
+import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
 import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
@@ -108,7 +108,7 @@ export function MakeShopFloorKanban() {
                     <div
                       role="button"
                       tabIndex={0}
-                      className="p-5 cursor-pointer active:scale-[0.98] transition-transform"
+                      className="p-6 cursor-pointer active:scale-[0.98] transition-transform"
                       onClick={() => handleCardClick(mo)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -118,12 +118,12 @@ export function MakeShopFloorKanban() {
                       }}
                     >
                       {/* Card Header */}
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className=" text-xs font-semibold text-[var(--mw-mirage)]">
+                          <p className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">
                             {mo.moNumber}
                           </p>
-                          <p className=" text-xs text-[var(--neutral-500)] mt-0.5">
+                          <p className="text-xs tabular-nums text-[var(--neutral-500)] mt-0.5">
                             {mo.jobNumber}
                           </p>
                         </div>
@@ -133,15 +133,15 @@ export function MakeShopFloorKanban() {
                       </div>
 
                       {/* Part Name */}
-                      <h4 className="text-sm font-medium text-[var(--mw-mirage)] mb-3">
+                      <h4 className="text-sm font-medium text-[var(--mw-mirage)] mb-4">
                         {mo.partName}
                       </h4>
 
                       {/* Metadata */}
-                      <div className="space-y-1.5 mb-3 text-xs">
+                      <div className="space-y-1.5 mb-4 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="text-[var(--neutral-500)]">Qty</span>
-                          <span className=" font-medium text-[var(--mw-mirage)]">{mo.quantity}</span>
+                          <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.quantity}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[var(--neutral-500)]">Work centre</span>
@@ -159,7 +159,7 @@ export function MakeShopFloorKanban() {
                       <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs">
                         <span className="text-[var(--neutral-500)]">Due</span>
                         <span className={cn(
-                          'font-medium',
+                          'font-medium tabular-nums',
                           mo.status === 'overdue' ? 'text-[var(--mw-error)]' : 'text-[var(--mw-mirage)]'
                         )}>
                           {new Date(mo.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}

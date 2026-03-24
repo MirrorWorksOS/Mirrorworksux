@@ -9,6 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   ScatterChart, Scatter, ZAxis
 } from 'recharts';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
 const marginData = [
   { job: 'JOB-0012', margin: 23.1 },
@@ -69,8 +70,8 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Job Profitability</h1>
           <p className="text-sm text-[var(--neutral-500)]">Actual costs vs quoted amounts across all jobs</p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date Range</Button>
+        <div className="flex gap-4">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date range</Button>
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
           <Button variant="outline" size="icon" className="h-10 w-10 border-[var(--border)]"><Filter className="w-4 h-4" /></Button>
         </div>
@@ -99,9 +100,9 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Top 10 Jobs by Profit Margin</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={marginData} layout="vertical" margin={{ left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" horizontal={false} />
-              <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <YAxis dataKey="job" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={80} />
+              <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
+              <XAxis type="number" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
+              <YAxis dataKey="job" type="category" tick={MW_AXIS_TICK} width={80} />
               <Tooltip formatter={(v: number) => `${v}%`} />
               <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20}>
                 {marginData.map((e, i) => <Cell key={`margin-${e.job}-${i}`} fill={getBarColor(e.margin)} />)}
@@ -113,12 +114,12 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Customer Profitability</h3>
           <ResponsiveContainer width="100%" height={280}>
             <ScatterChart margin={{ left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
-              <XAxis dataKey="x" name="Revenue" tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <YAxis dataKey="y" name="Margin" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
+              <XAxis dataKey="x" name="Revenue" tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
+              <YAxis dataKey="y" name="Margin" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <ZAxis dataKey="z" range={[100, 600]} />
               <Tooltip formatter={(v: number, name: string) => name === 'Revenue' ? `$${v.toLocaleString()}` : `${v}%`} />
-              <Scatter data={scatterData} fill="#FFCF4B" stroke="var(--mw-mirage)" strokeWidth={1} />
+              <Scatter data={scatterData} fill="var(--mw-yellow-400)" stroke="var(--mw-mirage)" strokeWidth={1} />
             </ScatterChart>
           </ResponsiveContainer>
         </Card>

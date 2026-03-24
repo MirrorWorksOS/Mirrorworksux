@@ -56,7 +56,7 @@ export function MakeShopFloor() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'relative h-14 px-5 text-sm font-medium whitespace-nowrap transition-colors duration-150',
+              'relative h-14 px-6 text-sm font-medium whitespace-nowrap transition-colors duration-[var(--duration-short2)]',
               activeTab === tab.id
                 ? 'text-[var(--mw-mirage)]'
                 : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'

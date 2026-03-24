@@ -6,6 +6,9 @@ import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { PlanJobDetail } from './PlanJobDetail';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 // remove unused PlanJobsProps interface
 type ViewMode = 'kanban' | 'list' | 'card';
@@ -146,12 +149,6 @@ const STAGES = [
   { id: 'reviewClose', label: 'Review & Close', description: 'Production complete, awaiting QC sign-off' }
 ];
 
-const priorityColors = {
-  low: 'bg-[var(--mw-yellow-400)] text-white',
-  medium: 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]',
-  high: 'bg-[var(--mw-amber)] text-white',
-  urgent: 'bg-[var(--mw-error)] text-white'
-};
 
 export function PlanJobs() {
   const [viewMode, setViewMode]         = useState<ViewMode>('kanban');
@@ -169,7 +166,7 @@ export function PlanJobs() {
       className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
-        <span className="tabular-nums text-sm font-bold text-[var(--mw-mirage)]">
+        <span className="tabular-nums text-sm font-medium text-[var(--mw-mirage)]">
           {job.id}
         </span>
         <Avatar className="w-8 h-8 border border-[var(--border)]">
@@ -187,16 +184,14 @@ export function PlanJobs() {
       </p>
       
       {job.priority && (
-        <Badge className={cn('mb-2 text-xs rounded px-2 py-0.5', priorityColors[job.priority])}>
-          {job.priority.charAt(0).toUpperCase() + job.priority.slice(1)}
-        </Badge>
+        <StatusBadge priority={job.priority} className="mb-2" />
       )}
       
       <div className="flex items-center justify-between text-xs">
         <span className=" text-[var(--neutral-500)]">
           {job.quoteCount} {job.quoteCount === 1 ? 'Quote' : 'Quotes'}
         </span>
-        <span className=" font-medium text-[var(--mw-mirage)]">
+        <span className=" font-medium tabular-nums text-[var(--mw-mirage)]">
           ${job.value.toLocaleString()}
         </span>
       </div>
@@ -204,11 +199,20 @@ export function PlanJobs() {
   );
 
   return (
-    <div className="flex flex-col h-full bg-[var(--neutral-100)]">
+    <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
+      <div className="bg-white border-b border-[var(--border)] px-6 py-4 space-y-4">
+        <PageHeader
+          title="Jobs"
+          actions={
+            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Job
+            </Button>
+          }
+        />
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
               <Input
@@ -254,11 +258,6 @@ export function PlanJobs() {
                 <LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" />
               </button>
             </div>
-            
-            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Job
-            </Button>
           </div>
         </div>
       </div>
@@ -285,7 +284,7 @@ export function PlanJobs() {
                     </p>
                   </div>
                   
-                  <div className="flex-1 space-y-3 overflow-y-auto pb-4">
+                  <div className="flex-1 space-y-4 overflow-y-auto pb-4">
                     {jobs.map((job) => (
                       <JobCard key={job.id} job={job} />
                     ))}
@@ -325,7 +324,7 @@ export function PlanJobs() {
                         onClick={() => setSelectedJobId(job.id)}
                         className="border-b border-[var(--border)] hover:bg-[var(--accent)] cursor-pointer transition-colors"
                       >
-                        <td className="px-4 py-3 tabular-nums text-xs text-[var(--mw-mirage)]">
+                        <td className="px-4 py-3 tabular-nums text-xs font-medium text-[var(--mw-mirage)]">
                           {job.id}
                         </td>
                         <td className="px-4 py-3  text-xs text-[var(--mw-mirage)]">
@@ -341,12 +340,10 @@ export function PlanJobs() {
                         </td>
                         <td className="px-4 py-3">
                           {job.priority && (
-                            <Badge className={cn('text-xs rounded px-2 py-0.5', priorityColors[job.priority])}>
-                              {job.priority.charAt(0).toUpperCase() + job.priority.slice(1)}
-                            </Badge>
+                            <StatusBadge priority={job.priority} />
                           )}
                         </td>
-                        <td className="px-4 py-3  text-xs text-[var(--mw-mirage)]">
+                        <td className="px-4 py-3 tabular-nums text-xs text-[var(--mw-mirage)]">
                           ${job.value.toLocaleString()}
                         </td>
                         <td className="px-4 py-3  text-xs text-[var(--neutral-500)]">
@@ -368,7 +365,7 @@ export function PlanJobs() {
                                 style={{ width: `${job.progress}%` }}
                               />
                             </div>
-                            <span className=" text-xs text-[var(--neutral-500)] w-10 text-right">
+                            <span className=" text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">
                               {job.progress}%
                             </span>
                           </div>
@@ -393,6 +390,6 @@ export function PlanJobs() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

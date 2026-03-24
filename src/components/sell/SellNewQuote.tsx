@@ -4,7 +4,7 @@
  */
 import React, { useState } from 'react';
 import { Plus, Trash2, ChevronDown, FileText, X, Sparkles, ArrowLeft } from 'lucide-react';
-import { ConfirmDialog } from '../shared/feedback/ConfirmDialog';
+import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -15,7 +15,7 @@ import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
 
-import { AIInsightCard } from '../shared/ai/AIInsightCard';
+import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 
 // ── Types ─────────────────────────────────────────────────
 interface LineItem {
@@ -131,13 +131,13 @@ export function SellNewQuote() {
           <div>
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[var(--neutral-500)]" />
-              <span className="text-sm  font-medium text-[var(--neutral-900)]">{quoteNumber}</span>
+              <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">{quoteNumber}</span>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">Draft</Badge>
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">New quote</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <ConfirmDialog
             trigger={
               <Button variant="outline" className="border-[var(--border)] h-10">
@@ -176,7 +176,7 @@ export function SellNewQuote() {
 
               {/* Header details */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Quote details</h3>
+                <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label className="text-sm mb-2 block font-medium">Customer *</Label>
@@ -217,7 +217,7 @@ export function SellNewQuote() {
               {/* Line items */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-[var(--neutral-900)]">Line items</h3>
+                  <h3 className="text-sm font-medium text-[var(--neutral-900)]">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
                     <SelectTrigger className="h-9 border-[var(--border)] w-52 text-sm">
                       <SelectValue placeholder="Add from catalogue…" />
@@ -233,15 +233,15 @@ export function SellNewQuote() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                      <th className="px-4 py-2.5 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[28%]">Description</th>
-                      <th className="px-3 py-2.5 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">SKU</th>
-                      <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[8%]">Qty</th>
-                      <th className="px-3 py-2.5 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[6%]">Unit</th>
-                      <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Cost</th>
-                      <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Margin %</th>
-                      <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Unit price</th>
-                      <th className="px-3 py-2.5 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Total</th>
-                      <th className="px-2 py-2.5 w-8" />
+                      <th className="px-4 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[28%]">Description</th>
+                      <th className="px-3 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">SKU</th>
+                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[8%]">Qty</th>
+                      <th className="px-3 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[6%]">Unit</th>
+                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Cost</th>
+                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Margin %</th>
+                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Unit price</th>
+                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Total</th>
+                      <th className="px-2 py-2 w-8" />
                     </tr>
                   </thead>
                   <tbody>
@@ -309,7 +309,7 @@ export function SellNewQuote() {
                             className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right  font-medium"
                           />
                         </td>
-                        <td className="px-3 py-2 text-right text-sm  font-semibold text-[var(--neutral-900)] whitespace-nowrap">
+                        <td className="px-3 py-2 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)] whitespace-nowrap">
                           ${fmtCurrency(line.qty * line.unitPrice)}
                         </td>
                         <td className="px-2 py-2">
@@ -351,20 +351,20 @@ export function SellNewQuote() {
             {/* Right — Summary */}
             <div className="space-y-4">
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-sm font-semibold text-[var(--neutral-900)] mb-4">Quote summary</h3>
-                <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Quote summary</h3>
+                <div className="space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Subtotal</span>
-                    <span className=" font-medium">${fmtCurrency(subtotal)}</span>
+                    <span className="font-medium tabular-nums">${fmtCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">GST (10%)</span>
-                    <span className=" font-medium">${fmtCurrency(tax)}</span>
+                    <span className="font-medium tabular-nums">${fmtCurrency(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base font-semibold">
                     <span className="text-[var(--neutral-900)]">Total (inc. GST)</span>
-                    <span className=" text-[var(--neutral-900)]">${fmtCurrency(total)}</span>
+                    <span className="tabular-nums text-[var(--neutral-900)]">${fmtCurrency(total)}</span>
                   </div>
                 </div>
 
@@ -374,15 +374,15 @@ export function SellNewQuote() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Est. cost</span>
-                    <span className=" text-[var(--neutral-500)]">${fmtCurrency(cost)}</span>
+                    <span className="tabular-nums text-[var(--neutral-500)]">${fmtCurrency(cost)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Gross profit</span>
-                    <span className=" font-medium text-[var(--neutral-900)]">${fmtCurrency(subtotal - cost)}</span>
+                    <span className="font-medium tabular-nums text-[var(--neutral-900)]">${fmtCurrency(subtotal - cost)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Margin</span>
-                    <span className={cn(' font-semibold text-base',
+                    <span className={cn('font-semibold tabular-nums text-base',
                       margin < 15 ? 'text-[var(--mw-error)]' : margin >= 25 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-yellow-400)]'
                     )}>
                       {margin.toFixed(1)}%
@@ -402,10 +402,10 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 space-y-3">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">Quote number</p>
-                  <p className="text-sm  font-medium">{quoteNumber}</p>
+                  <p className="text-sm font-medium tabular-nums">{quoteNumber}</p>
                 </div>
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">Valid until</p>
@@ -417,7 +417,7 @@ export function SellNewQuote() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">Line items</p>
-                  <p className="text-sm  font-medium">{lines.length}</p>
+                  <p className="text-sm font-medium tabular-nums">{lines.length}</p>
                 </div>
               </Card>
 

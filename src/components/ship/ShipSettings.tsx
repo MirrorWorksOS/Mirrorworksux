@@ -20,7 +20,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/settings/ModuleSettingsLayout';
+} from '@/components/shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Ship module (from ARCH 00 §4.6) ──
 const shipPermissionKeys: PermissionKey[] = [
@@ -168,7 +168,7 @@ function CarriersPanel() {
         <SectionLabel>Carrier management</SectionLabel>
         <div className="space-y-4">
           {carriers.map(c => (
-            <Card key={c.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+            <Card key={c.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: c.colour }}>
@@ -176,7 +176,7 @@ function CarriersPanel() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{c.name}</h3>
+                      <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{c.name}</h3>
                       {c.connected && (
                         <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
                       )}
@@ -263,7 +263,7 @@ function ReportsPanel() {
       </div>
       <div>
         <SectionLabel>Export</SectionLabel>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export dispatch log CSV</Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export returns CSV</Button>
         </div>

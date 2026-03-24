@@ -21,7 +21,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/settings/ModuleSettingsLayout';
+} from '@/components/shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Buy module (from ARCH 00 §4.8) ──
 const buyPermissionKeys: PermissionKey[] = [

@@ -18,7 +18,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/settings/ModuleSettingsLayout';
+} from '@/components/shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Plan module (from ARCH 00 §4.4) ──
 const planPermissionKeys: PermissionKey[] = [
@@ -95,14 +95,14 @@ function GeneralPanel() {
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Planning horizon</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Input defaultValue="12" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[var(--neutral-500)]">weeks</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default lead time buffer</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Input defaultValue="2" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[var(--neutral-500)]">days</span>
             </div>
@@ -115,7 +115,7 @@ function GeneralPanel() {
         <div className="space-y-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">Working hours per day</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Input defaultValue="8" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
               <span className="text-sm text-[var(--neutral-500)]">hours</span>
             </div>
@@ -235,7 +235,7 @@ function ReportsPanel() {
       </div>
       <div>
         <SectionLabel>Export</SectionLabel>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export schedule CSV</Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export BOM report CSV</Button>
         </div>

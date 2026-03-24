@@ -7,7 +7,7 @@ import {
   Settings, FileText, Link, BarChart3, Lock, Calendar, RefreshCw,
   AlertTriangle, Plus, Trash2,
 } from 'lucide-react';
-import { ConfirmDialog } from '../shared/feedback/ConfirmDialog';
+import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -24,7 +24,7 @@ import {
   type PermissionKey,
   type PermissionGroup,
   type SettingsPanel,
-} from '../shared/settings/ModuleSettingsLayout';
+} from '@/components/shared/settings/ModuleSettingsLayout';
 
 // ── Permission keys for Book module (from ARCH 00 §4.7) ──
 const bookPermissionKeys: PermissionKey[] = [
@@ -192,7 +192,7 @@ function InvoicingPanel() {
 
       <div>
         <SectionLabel>Invoice templates</SectionLabel>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[
             { name: 'Standard Invoice', active: true },
             { name: 'Progress Claim', active: true },
@@ -269,13 +269,13 @@ function XeroPanel() {
       </Card>
 
       {/* Connection Card */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-[#13B5EA] flex items-center justify-center text-white font-bold text-sm">X</div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">Xero</h3>
+                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Xero</h3>
                 <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
               </div>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Connected to Alliance Metal Pty Ltd since 15 Jan 2026</p>
@@ -294,8 +294,8 @@ function XeroPanel() {
       </Card>
 
       {/* Sync Entities */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-        <h3 className="text-sm font-semibold text-[var(--mw-mirage)] mb-4">Sync entities</h3>
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-4">Sync entities</h3>
         <div className="space-y-2">
           {syncEntities.map(e => (
             <div key={e.name} className="flex items-center gap-4 py-2 border-b border-[var(--neutral-100)] last:border-0">
@@ -319,10 +319,10 @@ function XeroPanel() {
       </Card>
 
       {/* Account Mapping Preview */}
-      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-sm font-semibold text-[var(--mw-mirage)]">Account mapping</h4>
+            <h4 className="text-sm font-medium text-[var(--mw-mirage)]">Account mapping</h4>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
           <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm">Configure mapping</Button>
@@ -379,7 +379,7 @@ function ReportsPanel() {
 
       <div>
         <SectionLabel>Export</SectionLabel>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export invoices CSV</Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export expenses CSV</Button>
         </div>

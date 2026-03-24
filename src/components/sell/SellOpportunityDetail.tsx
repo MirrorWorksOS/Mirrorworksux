@@ -11,7 +11,7 @@ import { Button } from '../ui/button';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
-import { AIInsightCard } from '../shared/ai/AIInsightCard';
+import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { TimelineView, type TimelineEvent } from '@/components/shared/schedule/TimelineView';
 
 type Priority   = 'low' | 'medium' | 'high' | 'urgent';
@@ -98,12 +98,12 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-[var(--neutral-500)] ">OPP-{opportunity.id.padStart(4, '0')}</span>
+                <span className="text-xs text-[var(--neutral-500)] tabular-nums">OPP-{opportunity.id.padStart(4, '0')}</span>
                 <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', priorityCfg.bg, priorityCfg.text)}>
                   {priorityCfg.label}
                 </Badge>
               </div>
-              <h2 className="text-lg font-semibold text-[var(--neutral-900)] leading-tight">{opportunity.title}</h2>
+              <h2 className="text-lg font-medium text-[var(--neutral-900)] leading-tight">{opportunity.title}</h2>
               <p className="text-sm text-[var(--neutral-500)] mt-0.5">{opportunity.customer}</p>
             </div>
             <button onClick={onClose} className="p-1.5 hover:bg-[var(--neutral-100)] rounded-lg transition-colors shrink-0">
@@ -170,7 +170,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                     <DollarSign className="w-4 h-4 text-[var(--neutral-900)]" />
                     <span className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium">Deal value</span>
                   </div>
-                  <p className="text-xl  font-semibold text-[var(--neutral-900)]">
+                  <p className="text-xl font-semibold tabular-nums text-[var(--neutral-900)]">
                     ${opportunity.value.toLocaleString()}
                   </p>
                 </div>
@@ -187,8 +187,8 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
 
               {/* Customer contact */}
               <div>
-                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-3">Customer contact</h4>
-                <div className="space-y-3">
+                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-4">Customer contact</h4>
+                <div className="space-y-4">
                   {[
                     { icon: User,    value: customer.contact },
                     { icon: Phone,   value: customer.phone },
@@ -205,7 +205,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
 
               {/* Assignment */}
               <div>
-                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-3">Assignment</h4>
+                <h4 className="text-xs text-[var(--neutral-500)] uppercase tracking-wider font-medium mb-4">Assignment</h4>
                 <div className="flex items-center gap-3">
                   <Avatar className="w-8 h-8">
                     <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-xs">{opportunity.assignedTo}</AvatarFallback>
@@ -226,7 +226,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
           {activeTab === 'activities' && (
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-[var(--neutral-900)]">Activity log</h4>
+                <h4 className="text-sm font-medium text-[var(--neutral-900)]">Activity log</h4>
                 <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-1 text-xs">
                   <Plus className="w-4 h-4" /> Log activity
                 </Button>
@@ -250,7 +250,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
                 placeholder="Add notes about this opportunity..."
                 defaultValue="Customer requested 6-week lead time max. Discussed powder coat options — they prefer RAL 7035 light grey. Material cost increase of ~8% flagged during last call."
               />
-              <div className="mt-3 flex justify-end">
+              <div className="mt-4 flex justify-end">
                 <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-9">Save notes</Button>
               </div>
             </div>
@@ -259,7 +259,7 @@ export function SellOpportunityDetail({ opportunity, open, onClose, onStageChang
 
         {/* Footer actions */}
         <div className="px-6 py-4 border-t border-[var(--border)] shrink-0 bg-white">
-          <div className="flex gap-3">
+            <div className="flex gap-4">
             <Button
               className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-2 h-10"
               onClick={() => { onClose(); navigate('/sell/quotes/new'); }}

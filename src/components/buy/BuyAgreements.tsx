@@ -89,7 +89,7 @@ export function BuyAgreements() {
         ].map(s => (
           <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className="text-xl  font-semibold text-[var(--mw-mirage)]">{s.value}</p>
+            <p className="text-xl font-semibold tabular-nums text-[var(--mw-mirage)]">{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
           </Card>
         ))}
@@ -118,12 +118,12 @@ export function BuyAgreements() {
 
                       <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
                     </div>
-                    <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{agr.supplier}</h3>
+                    <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{agr.supplier}</h3>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{agr.category} · {agr.startDate} – {agr.endDate} · {agr.discount} discount · {agr.terms}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-[var(--neutral-500)]">Contract value</p>
-                    <p className="text-lg  font-semibold text-[var(--mw-mirage)]">${agr.value.toLocaleString()}</p>
+                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-mirage)]">${agr.value.toLocaleString()}</p>
                   </div>
                 </div>
 

@@ -5,13 +5,15 @@
 
 import React, { useState } from 'react';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
-import { EmptyState } from '../shared/feedback/EmptyState';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 
 
@@ -36,15 +38,13 @@ const mockOrders: Order[] = [
   { id: '6', orderNumber: 'SO-2026-0084', customer: 'Kemppi Australia', date: '2026-03-03', status: 'draft', total: 12000 },
 ];
 
-const getStatusBadge = (status: OrderStatus) => {
-  switch (status) {
-    case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
-    case 'confirmed': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Confirmed', dot: 'var(--mw-mirage)' };
-    case 'in_production': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'In Production', dot: 'var(--mw-yellow-400)' };
-    case 'shipped': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Shipped', dot: 'var(--mw-mirage)' };
-    case 'invoiced': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Invoiced', dot: 'var(--mw-mirage)' };
-    case 'complete': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Complete', dot: 'var(--mw-mirage)' };
-  }
+const ORDER_STATUS_MAP: Record<OrderStatus, { status: StatusKey; label?: string }> = {
+  draft:         { status: 'draft' },
+  confirmed:     { status: 'approved', label: 'Confirmed' },
+  in_production: { status: 'in_progress', label: 'In Production' },
+  shipped:       { status: 'shipped' },
+  invoiced:      { status: 'sent', label: 'Invoiced' },
+  complete:      { status: 'completed', label: 'Complete' },
 };
 
 export function SellOrders() {
@@ -53,30 +53,27 @@ export function SellOrders() {
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Sales Orders</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {mockOrders.length} orders • ${totalValue.toLocaleString()} total value
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedFilter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
-            <AnimatedDownload className="w-4 h-4" />
-            Export
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Order
-          </Button>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Sales Orders"
+        subtitle={`${mockOrders.length} orders • $${totalValue.toLocaleString()} total value`}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedFilter className="w-4 h-4" />
+              Filter
+            </Button>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+              <AnimatedDownload className="w-4 h-4" />
+              Export
+            </Button>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
+              <AnimatedPlus className="w-4 h-4 mr-2" />
+              New Order
+            </Button>
+          </>
+        }
+      />
 
       {/* Table */}
       <motion.div variants={staggerItem}>
@@ -99,14 +96,14 @@ export function SellOrders() {
               </thead>
               <tbody>
                 {mockOrders.map((order, idx) => {
-                  const statusBadge = getStatusBadge(order.status);
+                  const sp = ORDER_STATUS_MAP[order.status];
                   return (
                     <tr key={order.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)]  text-sm font-medium hover:underline flex items-center gap-1">
+                        <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
                           {order.orderNumber}
                           <ExternalLink className="w-4 h-4" />
                         </a>
@@ -117,16 +114,13 @@ export function SellOrders() {
                       </td>
                       <td className="px-4">
                         <div className="flex items-center justify-center">
-                          <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5", statusBadge.bg, statusBadge.text)}>
-                            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusBadge.dot }} />
-                            {statusBadge.label}
-                          </Badge>
+                          <StatusBadge status={sp.status} withDot>{sp.label}</StatusBadge>
                         </div>
                       </td>
-                      <td className="px-4 text-right text-sm  font-medium">${order.total.toLocaleString()}</td>
+                      <td className="px-4 text-right text-sm font-medium tabular-nums">${order.total.toLocaleString()}</td>
                       <td className="px-4">
                         {order.jobReference ? (
-                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)]  text-xs hover:underline">
+                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)] text-xs tabular-nums hover:underline">
                             {order.jobReference}
                           </a>
                         ) : (
@@ -166,6 +160,6 @@ export function SellOrders() {
           />
         </Card>
       )}
-    </motion.div>
+    </PageShell>
   );
 }

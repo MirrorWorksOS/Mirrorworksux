@@ -8,14 +8,13 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
-import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { MW_CHART_COLOURS, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
-
-const MW_YELLOW = 'var(--mw-yellow-400)';
-const NEAR_BLACK = 'var(--mw-mirage)';
-const SECONDARY = 'var(--neutral-500)';
+const MW_YELLOW = MW_CHART_COLOURS[0];
+const NEAR_BLACK = MW_CHART_COLOURS[1];
 
 const shipVolume = [
   { d: '24', v: 12 }, { d: '25', v: 15 }, { d: '26', v: 8 },
@@ -47,14 +46,6 @@ const returnRate = [
 
 const pieColors = [MW_YELLOW, 'var(--mw-blue)', 'var(--mw-success)', 'var(--mw-error)'];
 
-const ChartCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-    <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">{title}</p>
-    {children}
-  </Card>
-);
-
-const axisStyle = { fontSize: 10, fill: SECONDARY };
 
 export function ShipReports() {
   return (
@@ -81,9 +72,9 @@ export function ShipReports() {
           <ChartCard title="Shipments">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={shipVolume}>
-                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
-                <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
-                <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+                <CartesianGrid {...MW_CARTESIAN_GRID} />
+                <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+                <YAxis tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip />
                 <Line key="v" type="monotone" dataKey="v" stroke={NEAR_BLACK} strokeWidth={2} dot={{ r: 2.5, fill: NEAR_BLACK }} />
               </LineChart>
@@ -95,9 +86,9 @@ export function ShipReports() {
           <ChartCard title="On-Time %">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={onTime}>
-                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
-                <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
-                <YAxis domain={[85, 100]} tickFormatter={v => `${v}%`} tick={axisStyle} axisLine={false} tickLine={false} />
+                <CartesianGrid {...MW_CARTESIAN_GRID} />
+                <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+                <YAxis domain={[85, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
                 <ReferenceLine y={95} stroke={MW_YELLOW} strokeWidth={2} />
                 <Line key="r" type="monotone" dataKey="r" stroke={NEAR_BLACK} strokeWidth={2} dot={{ r: 2.5, fill: NEAR_BLACK }} />
@@ -110,9 +101,9 @@ export function ShipReports() {
           <ChartCard title="Carrier cost (avg)">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={carrierCost}>
-                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
-                <XAxis dataKey="c" tick={{ fontSize: 9, fill: SECONDARY }} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={v => `$${v}`} tick={axisStyle} axisLine={false} tickLine={false} />
+                <CartesianGrid {...MW_CARTESIAN_GRID} />
+                <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
                 <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20}>
                   {carrierCost.map((e, i) => (
@@ -144,7 +135,7 @@ export function ShipReports() {
                   <div key={s.name} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: pieColors[i % pieColors.length] }} />
                     <span className="text-[var(--neutral-500)] w-16">{s.name}</span>
-                    <span className="text-[var(--mw-mirage)]  font-medium">{s.value}</span>
+                    <span className="text-[var(--mw-mirage)] font-medium tabular-nums">{s.value}</span>
                   </div>
                 ))}
               </div>
@@ -156,8 +147,8 @@ export function ShipReports() {
           <ChartCard title="Destinations">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={destData} layout="vertical" margin={{ left: 5 }}>
-                <XAxis type="number" tick={axisStyle} axisLine={false} tickLine={false} />
-                <YAxis dataKey="s" type="category" tick={{ fontSize: 10, fill: NEAR_BLACK, fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
+                <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+                <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
                 <Tooltip />
                 <Bar key="v" dataKey="v" fill={NEAR_BLACK} radius={[0, 4, 4, 0]} barSize={12} />
               </BarChart>
@@ -169,9 +160,9 @@ export function ShipReports() {
           <ChartCard title="Return rate">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={returnRate}>
-                <CartesianGrid stroke="var(--neutral-100)" strokeDasharray="3 3" />
-                <XAxis dataKey="d" tick={axisStyle} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={v => `${v}%`} tick={axisStyle} axisLine={false} tickLine={false} />
+                <CartesianGrid {...MW_CARTESIAN_GRID} />
+                <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(v: number) => `${v}%`} />
                 <Line key="r" type="monotone" dataKey="r" stroke={MW_YELLOW} strokeWidth={2} dot={{ r: 2.5, fill: MW_YELLOW }} />
               </LineChart>

@@ -5,16 +5,18 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
-import { EmptyState } from '../shared/feedback/EmptyState';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { useNavigate } from 'react-router';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedSearch, AnimatedFilter, AnimatedPlus } from '../ui/animated-icons';
 
 
@@ -93,15 +95,9 @@ const mockCustomers: Customer[] = [
   },
 ];
 
-const getStatusBadge = (status: Customer['status']) => {
-  switch (status) {
-    case 'active':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Active' };
-    case 'prospect':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Prospect' };
-    case 'inactive':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Inactive' };
-  }
+const renderStatusBadge = (status: Customer['status']) => {
+  if (status === 'prospect') return <StatusBadge variant="info">Prospect</StatusBadge>;
+  return <StatusBadge status={status} />;
 };
 
 export function SellCRM() {
@@ -115,29 +111,20 @@ export function SellCRM() {
   );
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={staggerContainer}
-      className="p-8 space-y-8"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Customers</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredCustomers.length} total customers</p>
-        </div>
-        <div className="flex gap-3">
+    <PageShell>
+      <PageHeader
+        title="Customers"
+        subtitle={`${filteredCustomers.length} total customers`}
+        actions={
           <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Customer
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        {/* Search */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
           <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
           <Input
@@ -148,13 +135,11 @@ export function SellCRM() {
           />
         </div>
 
-        {/* Filter */}
         <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
 
-        {/* View Toggle */}
         <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
           <button
             onClick={() => setViewMode('card')}
@@ -184,77 +169,72 @@ export function SellCRM() {
       {/* Customer Cards Grid */}
       {viewMode === 'card' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCustomers.map((customer, idx) => {
-            const statusBadge = getStatusBadge(customer.status);
-            return (
-              <motion.div
-                key={customer.id}
-                variants={staggerItem}
-                custom={idx}
+          {filteredCustomers.map((customer, idx) => (
+            <motion.div
+              key={customer.id}
+              variants={staggerItem}
+              custom={idx}
+            >
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                onClick={() => navigate(`/sell/crm/${customer.id}`)}
               >
-                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
-                  onClick={() => navigate(`/sell/crm/${customer.id}`)}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
-                          {customer.company.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-sm font-semibold text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
-                          {customer.company}
-                        </h3>
-                        <p className="text-xs text-[var(--neutral-500)]">
-                          {customer.contact}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusBadge.bg, statusBadge.text)}>
-                      {statusBadge.label}
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
-                      <Mail className="w-4 h-4" />
-                      <span className="truncate">{customer.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
-                      <Phone className="w-4 h-4" />
-                      <span>{customer.phone}</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-12 h-12">
+                      <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
+                        {customer.company.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <DollarSign className="w-4 h-4 text-[var(--neutral-500)]" />
-                        <span className="text-xs text-[var(--neutral-500)]">Total Revenue</span>
-                      </div>
-                      <p className=" text-sm font-semibold text-[var(--neutral-900)]">
-                        ${customer.totalRevenue.toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Briefcase className="w-4 h-4 text-[var(--neutral-500)]" />
-                        <span className="text-xs text-[var(--neutral-500)]">Opportunities</span>
-                      </div>
-                      <p className=" text-sm font-semibold text-[var(--neutral-900)]">
-                        {customer.activeOpportunities}
+                      <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                        {customer.company}
+                      </h3>
+                      <p className="text-xs text-[var(--neutral-500)]">
+                        {customer.contact}
                       </p>
                     </div>
                   </div>
-                </Card>
-              </motion.div>
-            );
-          })}
+                  {renderStatusBadge(customer.status)}
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+                    <Mail className="w-4 h-4" />
+                    <span className="truncate">{customer.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-[var(--neutral-500)]">
+                    <Phone className="w-4 h-4" />
+                    <span>{customer.phone}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <DollarSign className="w-4 h-4 text-[var(--neutral-500)]" />
+                      <span className="text-xs text-[var(--neutral-500)]">Total Revenue</span>
+                    </div>
+                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                      ${customer.totalRevenue.toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <Briefcase className="w-4 h-4 text-[var(--neutral-500)]" />
+                      <span className="text-xs text-[var(--neutral-500)]">Opportunities</span>
+                    </div>
+                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                      {customer.activeOpportunities}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       )}
 
-      {/* List View (placeholder for now - would implement SellCRMList) */}
+      {/* List View */}
       {viewMode === 'list' && (
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <p className="text-sm text-[var(--neutral-500)] text-center">
@@ -273,6 +253,6 @@ export function SellCRM() {
           />
         </Card>
       )}
-    </motion.div>
+    </PageShell>
   );
 }

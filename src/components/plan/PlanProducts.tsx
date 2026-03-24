@@ -4,12 +4,14 @@
  */
 import React, { useState } from 'react';
 import { Search, ExternalLink, Package } from 'lucide-react';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 const PRODUCTS = [
@@ -30,19 +32,16 @@ export function PlanProducts() {
   );
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Products</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {PRODUCTS.length} products · {PRODUCTS.filter(p => p.hasBOM).length} with BOMs
-            {PRODUCTS.filter(p => !p.hasBOM).length > 0 && <span className="text-[var(--mw-amber)] ml-1">· {PRODUCTS.filter(p => !p.hasBOM).length} missing BOM</span>}
+    <PageShell>
+      <PageHeader
+        title="Products"
+        subtitle={`${PRODUCTS.length} products · ${PRODUCTS.filter(p => p.hasBOM).length} with BOMs${PRODUCTS.filter(p => !p.hasBOM).length > 0 ? ` · ${PRODUCTS.filter(p => !p.hasBOM).length} missing BOM` : ''}`}
+        actions={
+          <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-[var(--shape-lg)]">
+            Product master managed in <span className="font-medium">Control → Products</span>
           </p>
-        </div>
-        <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-[var(--shape-lg)]">
-          Product master managed in <span className="font-medium">Control → Products</span>
-        </p>
-      </div>
+        }
+      />
 
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
@@ -69,10 +68,10 @@ export function PlanProducts() {
                     <span className="text-sm text-[var(--mw-mirage)] font-medium">{p.name}</span>
                   </div>
                 </td>
-                <td className="px-4 text-xs  text-[var(--neutral-500)]">{p.sku}</td>
-                <td className="px-4 text-right text-sm ">{p.leadTime}d</td>
-                <td className="px-4 text-right text-sm ">{p.cycleHrs}h</td>
-                <td className="px-4 text-right text-sm ">{p.routingSteps}</td>
+                <td className="px-4 text-xs tabular-nums text-[var(--neutral-500)]">{p.sku}</td>
+                <td className="px-4 text-right text-sm tabular-nums">{p.leadTime}d</td>
+                <td className="px-4 text-right text-sm tabular-nums">{p.cycleHrs}h</td>
+                <td className="px-4 text-right text-sm tabular-nums">{p.routingSteps}</td>
                 <td className="px-4">
                   <div className="flex flex-wrap gap-1">
                     {p.workCenters.slice(0, 3).map(wc => (
@@ -83,8 +82,8 @@ export function PlanProducts() {
                 </td>
                 <td className="px-4">
                   {p.hasBOM
-                    ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2">Yes</Badge>
-                    : <Badge className="bg-[var(--mw-amber-100)] text-[var(--mw-amber)] border-0 text-xs rounded-full px-2">Missing</Badge>
+                    ? <StatusBadge variant="neutral">Yes</StatusBadge>
+                    : <StatusBadge variant="warning">Missing</StatusBadge>
                   }
                 </td>
                 <td className="px-4 text-sm text-[var(--neutral-500)]">{p.lastProduced}</td>
@@ -93,6 +92,6 @@ export function PlanProducts() {
           </tbody>
         </table>
       </Card>
-    </motion.div>
+    </PageShell>
   );
 }

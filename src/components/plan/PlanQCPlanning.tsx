@@ -4,12 +4,14 @@
 import React, { useState } from 'react';
 import { Plus, CheckCircle2, AlertTriangle, Search, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 const CHECKPOINTS = [
@@ -38,18 +40,16 @@ export function PlanQCPlanning() {
   });
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">QC checkpoints</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {CHECKPOINTS.filter(c => c.mandatory).length} mandatory · {CHECKPOINTS.filter(c => !c.mandatory).length} optional
-          </p>
-        </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
-          <Plus className="w-4 h-4" /> New checkpoint
-        </Button>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="QC checkpoints"
+        subtitle={`${CHECKPOINTS.filter(c => c.mandatory).length} mandatory · ${CHECKPOINTS.filter(c => !c.mandatory).length} optional`}
+        actions={
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
+            <Plus className="w-4 h-4" /> New checkpoint
+          </Button>
+        }
+      />
 
       {/* Stage filter tabs */}
       <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit flex-wrap">
@@ -74,21 +74,21 @@ export function PlanQCPlanning() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map(cp => (
           <motion.div key={cp.id} variants={staggerItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
-              <div className="flex items-start justify-between mb-3">
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[var(--mw-mirage)]' : 'text-[var(--neutral-400)]')} />
-                  <h3 className="text-sm font-semibold text-[var(--mw-mirage)] leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                  <h3 className="text-sm font-medium text-[var(--mw-mirage)] leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
                     {cp.name}
                   </h3>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
               </div>
-              <div className="flex flex-wrap gap-2 mb-3">
-                <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{cp.stage}</Badge>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <StatusBadge variant="neutral">{cp.stage}</StatusBadge>
                 {cp.mandatory
-                  ? <Badge className="bg-[var(--mw-blue-100)] text-[var(--mw-blue)] border-0 text-xs">Required</Badge>
-                  : <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">Optional</Badge>
+                  ? <StatusBadge variant="info">Required</StatusBadge>
+                  : <StatusBadge variant="neutral">Optional</StatusBadge>
                 }
               </div>
               <div className="space-y-1.5 text-sm">
@@ -98,7 +98,7 @@ export function PlanQCPlanning() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--neutral-500)]">Duration</span>
-                  <span className=" text-[var(--mw-mirage)]">{cp.duration} min</span>
+                  <span className="tabular-nums text-[var(--mw-mirage)]">{cp.duration} min</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--neutral-500)]">Applies to</span>
@@ -110,6 +110,6 @@ export function PlanQCPlanning() {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+    </PageShell>
   );
 }

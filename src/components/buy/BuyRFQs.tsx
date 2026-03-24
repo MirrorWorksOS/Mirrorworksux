@@ -85,7 +85,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
             <span className="text-sm  font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span>
             <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
           </div>
-          <SheetTitle className="text-base font-semibold text-[var(--mw-mirage)]">{rfq.title}</SheetTitle>
+          <SheetTitle className="text-base font-medium text-[var(--mw-mirage)]">{rfq.title}</SheetTitle>
           <SheetDescription className="text-[var(--neutral-500)]  text-xs">{rfq.sku} · Qty: {rfq.qty} {rfq.unit}</SheetDescription>
         </SheetHeader>
 
@@ -105,7 +105,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                   <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-white')}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[var(--mw-mirage)]">{q.supplier}</span>
+                        <span className="text-sm font-medium text-[var(--mw-mirage)]">{q.supplier}</span>
                         {q.aiPick && (
                           <span className="text-[10px] bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                             <Sparkles className="w-2.5 h-2.5" /> AI pick
@@ -115,7 +115,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                           <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
                         )}
                       </div>
-                      <span className="text-xl  font-semibold text-[var(--mw-mirage)]">
+                      <span className="text-xl font-semibold tabular-nums text-[var(--mw-mirage)]">
                         ${q.unitPrice.toFixed(2)}<span className="text-xs text-[var(--neutral-500)] font-normal">/{rfq.unit.replace(/s$/, '')}</span>
                       </span>
                     </div>

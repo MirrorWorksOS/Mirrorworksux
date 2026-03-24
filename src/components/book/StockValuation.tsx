@@ -8,6 +8,7 @@ import { cn } from '../ui/utils';
 import {
   AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
 const trendData = [
   { month: 'Mar', raw: 120000, wip: 65000, finished: 45000 },
@@ -58,7 +59,7 @@ export function StockValuation() {
     <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Stock Valuation</h1>
-        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
           <Select defaultValue="fifo">
             <SelectTrigger className="h-10 w-48 border-[var(--border)]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -101,13 +102,13 @@ export function StockValuation() {
           <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Valuation Trend</h3>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={trendData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
+              <XAxis dataKey="month" tick={MW_AXIS_TICK} />
+              <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="finished" stackId="1" stroke="#36B37E" fill="#36B37E" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="wip" stackId="1" stroke="#FACC15" fill="#FACC15" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="raw" stackId="1" stroke="#0052CC" fill="#0052CC" fillOpacity={0.2} />
+              <Area type="monotone" dataKey="finished" stackId="1" stroke="var(--mw-success)" fill="var(--mw-success)" fillOpacity={0.2} />
+              <Area type="monotone" dataKey="wip" stackId="1" stroke="var(--mw-warning)" fill="var(--mw-warning)" fillOpacity={0.2} />
+              <Area type="monotone" dataKey="raw" stackId="1" stroke="var(--mw-info)" fill="var(--mw-info)" fillOpacity={0.2} />
             </AreaChart>
           </ResponsiveContainer>
         </Card>

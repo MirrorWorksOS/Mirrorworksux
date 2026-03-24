@@ -215,7 +215,7 @@ function NodeCard({
     <div
       className={cn(
         'absolute border rounded-[var(--shape-lg)] p-3 cursor-pointer shadow-sm select-none',
-        'transition-all duration-150',
+        'transition-all duration-[var(--duration-short2)]',
         s.card,
         selected ? 'ring-2 ring-[var(--mw-yellow-400)] shadow-md' : 'hover:shadow-md',
       )}

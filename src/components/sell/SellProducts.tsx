@@ -5,14 +5,17 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, Filter, Grid3x3, List, Package, DollarSign } from 'lucide-react';
-import { EmptyState } from '../shared/feedback/EmptyState';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedSearch } from '../ui/animated-icons';
 
 
@@ -36,10 +39,10 @@ const mockProducts: Product[] = [
   { id: '6', name: 'Powder Coat - Black Matt', sku: 'CONS-PC-BLK', category: 'Consumables', stockLevel: 35, reorderPoint: 20, unitPrice: 65.00 },
 ];
 
-const getStockBadge = (stockLevel: number, reorderPoint: number) => {
-  if (stockLevel === 0) return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Out of stock' };
-  if (stockLevel < reorderPoint) return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'Low stock' };
-  return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'In stock' };
+const getStockBadgeProps = (stockLevel: number, reorderPoint: number) => {
+  if (stockLevel === 0) return { variant: 'error' as const, label: 'Out of stock' };
+  if (stockLevel < reorderPoint) return { variant: 'warning' as const, label: 'Low stock' };
+  return { variant: 'success' as const, label: 'In stock' };
 };
 
 export function SellProducts() {
@@ -52,24 +55,20 @@ export function SellProducts() {
   );
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Products</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredProducts.length} total products</p>
-        </div>
-        <div className="flex gap-3">
+    <PageShell>
+      <PageHeader
+        title="Products"
+        subtitle={`${filteredProducts.length} total products`}
+        actions={
           <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded group">
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Product
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        {/* Search */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
           <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
           <Input
@@ -80,13 +79,11 @@ export function SellProducts() {
           />
         </div>
 
-        {/* Filter */}
         <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
 
-        {/* View Toggle */}
         <div className="flex items-center border border-[var(--border)] rounded-lg p-1">
           <button
             onClick={() => setViewMode('card')}
@@ -117,42 +114,39 @@ export function SellProducts() {
       {viewMode === 'card' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProducts.map((product, idx) => {
-            const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
+            const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
                 <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
-                  {/* Product Image Placeholder */}
                   <div className="h-40 bg-gradient-to-br from-[var(--neutral-100)] to-[var(--border)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
 
-                  <div className="p-4">
+                  <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-semibold text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
-                        <p className=" text-xs text-[var(--neutral-500)]">{product.sku}</p>
+                        <p className="text-xs text-[var(--neutral-500)] tabular-nums">{product.sku}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-4">
                       <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{product.category}</Badge>
-                      <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", stockBadge.bg, stockBadge.text)}>
-                        {stockBadge.label}
-                      </Badge>
+                      <StatusBadge variant={stockBadge.variant}>{stockBadge.label}</StatusBadge>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
+                    <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
                       <div>
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Stock Level</p>
-                        <p className=" text-sm font-semibold text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                           {product.stockLevel} units
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Unit Price</p>
-                        <p className=" text-sm font-semibold text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                           ${product.unitPrice.toFixed(2)}
                         </p>
                       </div>
@@ -182,7 +176,7 @@ export function SellProducts() {
               </thead>
               <tbody>
                 {filteredProducts.map((product, idx) => {
-                  const stockBadge = getStockBadge(product.stockLevel, product.reorderPoint);
+                  const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
                   return (
                     <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
@@ -190,17 +184,15 @@ export function SellProducts() {
                           {product.name}
                         </a>
                       </td>
-                      <td className="px-4  text-sm text-[var(--neutral-600)]">{product.sku}</td>
+                      <td className="px-4 text-sm text-[var(--neutral-600)] tabular-nums">{product.sku}</td>
                       <td className="px-4 text-sm text-[var(--neutral-600)]">{product.category}</td>
-                      <td className="px-4 text-right  text-sm font-medium">{product.stockLevel}</td>
-                      <td className="px-4 text-right  text-sm font-medium text-[var(--neutral-900)]">
+                      <td className="px-4 text-right text-sm font-medium tabular-nums">{product.stockLevel}</td>
+                      <td className="px-4 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
                         ${product.unitPrice.toFixed(2)}
                       </td>
                       <td className="px-4">
                         <div className="flex items-center justify-center">
-                          <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", stockBadge.bg, stockBadge.text)}>
-                            {stockBadge.label}
-                          </Badge>
+                          <StatusBadge variant={stockBadge.variant}>{stockBadge.label}</StatusBadge>
                         </div>
                       </td>
                     </tr>
@@ -222,6 +214,6 @@ export function SellProducts() {
           />
         </Card>
       )}
-    </motion.div>
+    </PageShell>
   );
 }

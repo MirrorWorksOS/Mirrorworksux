@@ -10,6 +10,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { MW_AXIS_TICK } from '@/components/shared/charts/chart-theme';
 
 
 const KPI = [
@@ -56,9 +57,9 @@ export function ShipDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {KPI.map(k => (
           <motion.div key={k.label} variants={staggerItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow duration-150">
-              <k.icon className="w-4 h-4 text-[var(--neutral-500)] mb-3" strokeWidth={1.5} />
-              <div className=" text-2xl font-semibold text-[var(--mw-mirage)] tracking-tight">{k.value}</div>
+            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
+              <k.icon className="w-4 h-4 text-[var(--neutral-500)] mb-4" strokeWidth={1.5} />
+              <div className="text-2xl font-semibold tabular-nums text-[var(--mw-mirage)] tracking-tight">{k.value}</div>
               <div className="text-xs text-[var(--neutral-500)] mt-1 font-medium">{k.label}</div>
             </Card>
           </motion.div>
@@ -68,7 +69,7 @@ export function ShipDashboard() {
       {/* Pipeline */}
       <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-5 font-medium">Fulfilment pipeline</p>
+          <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Fulfilment pipeline</p>
           <div className="flex items-center justify-between">
             {PIPELINE.map((s, i) => (
               <React.Fragment key={s.label}>
@@ -77,7 +78,7 @@ export function ShipDashboard() {
                     className="w-12 h-12 rounded-full flex items-center justify-center text-sm  font-medium"
                     style={{
                       backgroundColor: i === PIPELINE.length - 1 ? 'var(--mw-yellow-400)' : 'var(--mw-mirage)',
-                      color:           i === PIPELINE.length - 1 ? 'var(--mw-mirage)' : '#fff',
+                      color:           i === PIPELINE.length - 1 ? 'var(--mw-mirage)' : 'white',
                     }}
                   >
                     {s.count}
@@ -104,14 +105,14 @@ export function ShipDashboard() {
                   type="number"
                   domain={[0, 100]}
                   tickFormatter={v => `${v}%`}
-                  tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                  tick={MW_AXIS_TICK}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   dataKey="carrier"
                   type="category"
-                  tick={{ fontSize: 12, fill: 'var(--mw-mirage)' }}
+                  tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)' }}
                   width={80}
                   axisLine={false}
                   tickLine={false}
@@ -131,15 +132,15 @@ export function ShipDashboard() {
         <motion.div variants={staggerItem} className="lg:col-span-2">
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 flex flex-col h-full">
             <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Exceptions</p>
-            <div className="flex-1 space-y-3">
+            <div className="flex-1 space-y-4">
               {EXCEPTIONS.map(exc => (
                 <div
                   key={exc.id}
-                  className="flex items-center gap-4 p-4 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] cursor-pointer hover:bg-[var(--neutral-100)] transition-colors duration-150"
+                  className="flex items-center gap-4 p-4 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] cursor-pointer hover:bg-[var(--neutral-100)] transition-colors duration-[var(--duration-short2)]"
                 >
                   <div className="w-2 h-2 rounded-full bg-[var(--mw-error)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs text-[var(--mw-mirage)]  font-medium">{exc.id}</span>
+                    <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{exc.id}</span>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{exc.customer}</p>
                   </div>
                   <span className="text-[10px] text-[var(--neutral-500)] tracking-wide uppercase shrink-0">{exc.type}</span>

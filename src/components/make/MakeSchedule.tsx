@@ -106,8 +106,8 @@ function ListView() {
             const fmt   = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
             return (
               <tr key={mo.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
-                <td className="px-4 text-sm  font-medium text-[var(--mw-mirage)]">{mo.moNumber}</td>
-                <td className="px-4 text-sm  text-[var(--mw-mirage)]">{mo.job}</td>
+                <td className="px-4 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{mo.moNumber}</td>
+                <td className="px-4 text-sm tabular-nums text-[var(--mw-mirage)]">{mo.job}</td>
                 <td className="px-4 text-sm text-[var(--mw-mirage)]">{mo.product}</td>
                 <td className="px-4 text-sm text-[var(--neutral-500)]">{mo.workCenter}</td>
                 <td className="px-4">
@@ -161,7 +161,7 @@ export function MakeSchedule() {
             {statusCounts.completed} completed
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
             <Filter className="w-4 h-4" /> Filter
           </Button>

@@ -16,6 +16,7 @@ import {
   PieChart, Pie
 } from 'recharts';
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
 
 
 type BudgetStatus = 'active' | 'draft' | 'closed';
@@ -235,7 +236,7 @@ export function BudgetOverview() {
             ))}
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Type: All
@@ -254,7 +255,7 @@ export function BudgetOverview() {
         <motion.div variants={staggerItem}>
           <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">ACTIVE BUDGETS</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
               {activeBudgets.length}
             </div>
             <p className="text-xs text-[var(--mw-error)] mt-1 font-medium">
@@ -267,7 +268,7 @@ export function BudgetOverview() {
         <motion.div variants={staggerItem}>
           <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL BUDGETED</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
               ${totalBudgeted.toLocaleString()}
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-1">Current quarter</p>
@@ -278,12 +279,12 @@ export function BudgetOverview() {
         <motion.div variants={staggerItem}>
           <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">TOTAL SPENT</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-mirage)]  font-medium">
+            <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">
               ${totalSpent.toLocaleString()}
             </div>
             <div className="mt-3 h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-[var(--mw-yellow-400)] rounded-full transition-all duration-300"
+                className="h-full bg-[var(--mw-yellow-400)] rounded-full transition-all duration-[var(--duration-medium1)]"
                 style={{ width: `${((totalSpent / totalBudgeted) * 100).toFixed(0)}%` }}
               />
             </div>
@@ -297,7 +298,7 @@ export function BudgetOverview() {
         <motion.div variants={staggerItem}>
           <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
             <div className="text-xs tracking-wider text-[var(--neutral-500)] mb-2 font-medium">PROJECTED OVERRUN</div>
-            <div className="text-2xl tracking-tight text-[var(--mw-error)]  font-medium">
+            <div className="text-2xl tracking-tight text-[var(--mw-error)] tabular-nums font-medium">
               ${projectedOverrun.toLocaleString()}
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-1">
@@ -310,8 +311,8 @@ export function BudgetOverview() {
       {/* 3 Donut Charts Row */}
       <motion.div variants={staggerItem}>
         <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] p-6">
-          <h3 className="font-semibold text-base font-semibold text-[var(--mw-mirage)] mb-4">
-            Budget Breakdown
+          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">
+            Budget breakdown
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* By Type */}
@@ -428,14 +429,14 @@ export function BudgetOverview() {
           <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Monthly Budget vs Actual</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                tick={MW_AXIS_TICK}
               />
               <YAxis
                 tickFormatter={v => `$${v / 1000}k`}
-                tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                tick={MW_AXIS_TICK}
               />
               <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Bar
@@ -540,14 +541,14 @@ export function BudgetOverview() {
                         </Badge>
                       </td>
                       <td className="px-4 text-sm text-[var(--neutral-600)]">{budget.period}</td>
-                      <td className="px-4 text-right text-sm  font-medium">
+                      <td className="px-4 text-right text-sm tabular-nums font-medium">
                         ${budget.budgeted.toLocaleString()}
                       </td>
-                      <td className="px-4 text-right text-sm  font-medium">
+                      <td className="px-4 text-right text-sm tabular-nums font-medium">
                         ${budget.actual.toLocaleString()}
                       </td>
                       <td
-                        className="px-4 text-right text-sm  font-medium"
+                        className="px-4 text-right text-sm tabular-nums font-medium"
                         style={{ color: budget.variance < 0 ? 'var(--mw-success)' : 'var(--mw-error)' }}
                       >
                         {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
@@ -565,7 +566,7 @@ export function BudgetOverview() {
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[var(--neutral-500)] ">
+                          <span className="text-xs text-[var(--neutral-500)] tabular-nums">
                             {budget.utilisation}%
                           </span>
                         </div>

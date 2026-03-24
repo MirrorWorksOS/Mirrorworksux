@@ -6,6 +6,8 @@ import { Search, LayoutGrid, List, ArrowRight } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 type Stage = 'Pick' | 'Pack' | 'Ship' | 'Transit' | 'Delivered';
 
@@ -33,17 +35,17 @@ const OrderCard = ({ order, onClick }: { order: Order; onClick: () => void }) =>
   <div
     onClick={onClick}
     className={cn(
-      'bg-white rounded-[var(--shape-lg)] p-4 cursor-pointer transition-all duration-150 border hover:shadow-md',
+      'bg-white rounded-[var(--shape-lg)] p-4 cursor-pointer transition-all duration-[var(--duration-short2)] border hover:shadow-md',
       order.urgent ? 'border-[var(--mw-yellow-400)]' : 'border-[var(--border)] hover:border-[var(--neutral-300)]'
     )}
   >
     <div className="flex items-center justify-between mb-2">
-      <span className="text-xs text-[var(--mw-mirage)]  font-medium">{order.id}</span>
+      <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{order.id}</span>
       {order.urgent && <div className="w-2 h-2 rounded-full bg-[var(--mw-error)]" />}
     </div>
     <p className="text-sm text-[var(--mw-mirage)] mb-0.5 font-medium">{order.customer}</p>
-    <p className="text-xs text-[var(--neutral-500)] mb-3">{order.items} items · {order.weight}</p>
-    <div className="h-1 bg-[var(--neutral-200)] rounded-full overflow-hidden mb-3">
+    <p className="text-xs text-[var(--neutral-500)] tabular-nums mb-4">{order.items} items · {order.weight}</p>
+    <div className="h-1 bg-[var(--neutral-200)] rounded-full overflow-hidden mb-4">
       <div
         className="h-full rounded-full transition-all"
         style={{ width: `${order.progress}%`, backgroundColor: order.progress === 100 ? 'var(--mw-success)' : 'var(--mw-yellow-400)' }}
@@ -81,31 +83,32 @@ export function ShipOrders() {
   const [selected, setSelected] = useState<Order | null>(null);
 
   return (
-    <div className="p-6 flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 shrink-0">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Orders</h1>
-        <div className="flex items-center gap-3">
-          <div className="relative w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
-            <Input placeholder="Search orders..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
+    <PageShell className="flex flex-col h-full overflow-hidden">
+      <PageHeader
+        title="Orders"
+        actions={
+          <div className="flex items-center gap-4">
+            <div className="relative w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
+              <Input placeholder="Search orders..." className="pl-10 h-12 min-h-[48px] bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
+            </div>
+            <div className="flex bg-[var(--neutral-100)] rounded-xl p-1">
+              <button
+                onClick={() => setView('kanban')}
+                className={cn('p-2 rounded-md transition-colors', view === 'kanban' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setView('list')}
+                className={cn('p-2 rounded-md transition-colors', view === 'list' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <div className="flex bg-[var(--neutral-100)] rounded-xl p-1">
-            <button
-              onClick={() => setView('kanban')}
-              className={cn('p-2 rounded-md transition-colors', view === 'kanban' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className={cn('p-2 rounded-md transition-colors', view === 'list' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Kanban */}
       {view === 'kanban' && (
@@ -114,7 +117,7 @@ export function ShipOrders() {
             const stageOrders = ORDERS.filter(o => o.stage === stage);
             return (
               <div key={stage} className="min-w-[260px] max-w-[320px] flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-3 px-1">
+                <div className="flex items-center gap-2 mb-4 px-1">
                   <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">{stage}</span>
                   <span className="text-xs text-[var(--neutral-400)] ">{stageOrders.length}</span>
                 </div>
@@ -143,11 +146,11 @@ export function ShipOrders() {
             <tbody>
               {ORDERS.map((o) => (
                 <tr key={o.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors" onClick={() => setSelected(o)}>
-                  <td className="px-4 py-3 text-sm  font-medium text-[var(--mw-mirage)]">{o.id}</td>
+                  <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{o.id}</td>
                   <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{o.customer}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)] ">{o.items}</td>
+                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)] tabular-nums">{o.items}</td>
                   <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{o.carrier}</td>
-                  <td className={cn('px-4 py-3 text-sm text-[var(--neutral-500)]', o.due === 'Today' ? 'font-semibold' : 'font-normal')}>{o.due}</td>
+                  <td className={cn('px-4 py-3 text-sm text-[var(--neutral-500)]', o.due === 'Today' ? 'font-medium' : 'font-normal')}>{o.due}</td>
                   <td className="px-4 py-3">
                     <span className="text-xs tracking-widest uppercase text-[var(--neutral-500)] font-medium">{o.stage}</span>
                   </td>
@@ -187,11 +190,11 @@ export function ShipOrders() {
                   <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Progress</span>
                   <DetailTimeline current={selected.stage} />
                 </div>
-                <div className="flex gap-3">
-                  <button className="flex-1 h-11 rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors">
+                <div className="flex gap-4">
+                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors">
                     Advance stage
                   </button>
-                  <button className="flex-1 h-11 rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors">
+                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors">
                     Flag issue
                   </button>
                 </div>
@@ -200,6 +203,6 @@ export function ShipOrders() {
           )}
         </SheetContent>
       </Sheet>
-    </div>
+    </PageShell>
   );
 }

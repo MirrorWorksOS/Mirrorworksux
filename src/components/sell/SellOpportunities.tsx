@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Filter, DollarSign, Calendar, Flag } from 'lucide-react';
-import { InlineEmpty } from '../shared/feedback/EmptyState';
+import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
 import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
@@ -74,10 +74,10 @@ export function SellOpportunities() {
         <div>
           <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Opportunities</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {opportunities.length} total • ${opportunities.reduce((sum, o) => sum + o.value, 0).toLocaleString()} pipeline value
+            <span className="tabular-nums">{opportunities.length}</span> total • <span className="tabular-nums">${opportunities.reduce((sum, o) => sum + o.value, 0).toLocaleString()}</span> pipeline value
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
             <AnimatedFilter className="w-4 h-4" />
             Filter
@@ -130,7 +130,7 @@ export function SellOpportunities() {
                           }
                         }}
                       >
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-4">
                           <h4 className="text-xs font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
                             {opp.title}
                           </h4>
@@ -139,12 +139,12 @@ export function SellOpportunities() {
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-[var(--neutral-500)] mb-3">{opp.customer}</p>
+                        <p className="text-xs text-[var(--neutral-500)] mb-4">{opp.customer}</p>
 
-                        <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-1 text-xs text-[var(--neutral-900)]">
                             <DollarSign className="w-4 h-4 text-[var(--neutral-900)]" />
-                            <span className=" font-semibold">${opp.value.toLocaleString()}</span>
+                            <span className="font-medium tabular-nums">${opp.value.toLocaleString()}</span>
                           </div>
                           <div className="flex items-center gap-1 text-xs text-[var(--neutral-500)]">
                             <Calendar className="w-4 h-4" />

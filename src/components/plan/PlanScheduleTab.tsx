@@ -68,7 +68,7 @@ export function PlanScheduleTab() {
       <div className="bg-white border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-[var(--mw-mirage)] mr-4">
+            <h2 className="text-base font-medium text-[var(--mw-mirage)] mr-4">
               Schedule
             </h2>
             <Button

@@ -49,7 +49,7 @@ export function PlanActivities() {
             </Button>
           </div>
         </div>
-        <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]">
+        <Button className="h-10 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]">
           <AnimatedPlus className="w-4 h-4 mr-2" />
           New Event
         </Button>

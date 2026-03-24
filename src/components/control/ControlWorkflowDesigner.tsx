@@ -10,12 +10,12 @@ import {
   RefreshCw, Zap, Bell, GitBranch, ShoppingCart, Mail,
   Settings2, Calendar, Pause, ChevronRight,
 } from 'lucide-react';
-import { ConfirmDialog } from '../shared/feedback/ConfirmDialog';
+import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { WorkflowCanvas, type WFNode } from './WorkflowCanvas';
-import { AIInsightCard } from '../shared/ai/AIInsightCard';
+import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 
 // ─── Workflow list data ───────────────────────────────────────────────────────
 
@@ -221,7 +221,7 @@ export function ControlWorkflowDesigner() {
                 key={wf.id}
                 onClick={() => { setSelectedWF(wf); setSelectedNode(null); }}
                 className={cn(
-                  'w-full text-left px-3 py-2.5 rounded-[var(--shape-lg)] transition-colors',
+                  'w-full text-left px-3 py-2 rounded-[var(--shape-lg)] transition-colors',
                   isSelected ? 'bg-[var(--neutral-100)] border border-[var(--border)]' : 'hover:bg-[var(--neutral-100)]',
                 )}
               >
@@ -292,7 +292,7 @@ export function ControlWorkflowDesigner() {
             <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden md:flex">
               <Copy className="w-4 h-4" /> Duplicate
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[#2D9E6D] text-white text-xs">
+            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[var(--mw-success)] text-white text-xs">
               <Play className="w-4 h-4" /> Run
             </Button>
             <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium">

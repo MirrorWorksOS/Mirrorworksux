@@ -5,11 +5,13 @@
 import React, { useState } from 'react';
 import { ShoppingCart, AlertTriangle, CheckCircle, RefreshCw, Download } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 const MRP_ROWS = [
@@ -32,36 +34,30 @@ export function PlanPurchase() {
   const toggleAll  = () => setSelected(prev => prev.size === shortages.length ? new Set() : new Set(shortages.map(r => r.id)));
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Material requirements</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {shortages.filter(s => s.status === 'critical').length > 0 && (
-              <span className="text-[var(--mw-error)]">{shortages.filter(s => s.status === 'critical').length} critical shortage · </span>
-            )}
-            {shortages.filter(s => s.status === 'shortage').length} shortages · {MRP_ROWS.filter(r => r.status === 'ok').length} items available
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
-            <RefreshCw className="w-4 h-4" /> Recalculate MRP
-          </Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
-            <Download className="w-4 h-4" /> Export
-          </Button>
-          <Button
-            className={cn('gap-2 h-10', selected.size > 0
-              ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
-              : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] cursor-not-allowed'
-            )}
-            disabled={selected.size === 0}
-          >
-            <ShoppingCart className="w-4 h-4" /> Create {selected.size > 0 ? `${selected.size} PRs` : 'PRs'}
-          </Button>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Material requirements"
+        subtitle={`${shortages.filter(s => s.status === 'critical').length > 0 ? `${shortages.filter(s => s.status === 'critical').length} critical shortage · ` : ''}${shortages.filter(s => s.status === 'shortage').length} shortages · ${MRP_ROWS.filter(r => r.status === 'ok').length} items available`}
+        actions={
+          <div className="flex gap-4">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+              <RefreshCw className="w-4 h-4" /> Recalculate MRP
+            </Button>
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+              <Download className="w-4 h-4" /> Export
+            </Button>
+            <Button
+              className={cn('gap-2 h-10', selected.size > 0
+                ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
+                : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] cursor-not-allowed'
+              )}
+              disabled={selected.size === 0}
+            >
+              <ShoppingCart className="w-4 h-4" /> Create {selected.size > 0 ? `${selected.size} PRs` : 'PRs'}
+            </Button>
+          </div>
+        }
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
@@ -72,8 +68,8 @@ export function PlanPurchase() {
         ].map(s => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-              <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-3', s.bg)}>
+            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
                 <Icon className={cn('w-4 h-4', s.text)} />
               </div>
               <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
@@ -120,19 +116,19 @@ export function PlanPurchase() {
                   <td className="px-4 text-xs  text-[var(--neutral-500)]">{row.sku}</td>
                   <td className="px-4 text-sm tabular-nums text-[var(--mw-mirage)]">{row.job}</td>
                   <td className="px-4 text-sm text-[var(--neutral-500)]">{row.due}</td>
-                  <td className="px-4 text-right text-sm  font-medium">{row.required}</td>
-                  <td className="px-4 text-right text-sm ">{row.available}</td>
-                  <td className="px-4 text-right text-sm  text-[var(--neutral-500)]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
-                  <td className="px-4 text-right text-sm  font-semibold"
+                  <td className="px-4 text-right text-sm tabular-nums font-medium">{row.required}</td>
+                  <td className="px-4 text-right text-sm tabular-nums">{row.available}</td>
+                  <td className="px-4 text-right text-sm tabular-nums text-[var(--neutral-500)]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
+                  <td className="px-4 text-right text-sm tabular-nums font-medium"
                     style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
                     {row.net > 0 ? `+${row.net}` : row.net}
                   </td>
                   <td className="px-4">
                     {row.status === 'ok'
-                      ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2">OK</Badge>
+                      ? <StatusBadge variant="neutral">OK</StatusBadge>
                       : row.status === 'critical'
-                      ? <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-0 text-xs rounded-full px-2">Critical</Badge>
-                      : <Badge className="bg-[var(--mw-amber-100)] text-[var(--mw-amber)] border-0 text-xs rounded-full px-2">Shortage</Badge>
+                      ? <StatusBadge variant="error">Critical</StatusBadge>
+                      : <StatusBadge variant="warning">Shortage</StatusBadge>
                     }
                   </td>
                 </tr>
@@ -141,6 +137,6 @@ export function PlanPurchase() {
           </tbody>
         </table>
       </Card>
-    </motion.div>
+    </PageShell>
   );
 }

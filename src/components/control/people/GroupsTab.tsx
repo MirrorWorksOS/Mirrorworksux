@@ -91,7 +91,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
             <div key={group.id} className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--border)] bg-white shadow-sm">
               <button
                 type="button"
-                className="flex w-full items-center justify-between gap-4 p-5 text-left"
+                className="flex w-full items-center justify-between gap-4 p-6 text-left"
                 onClick={() => {
                   setExpandedId(open ? null : group.id);
                   onOpenGroupDetail(group);
@@ -99,7 +99,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-semibold text-[var(--mw-mirage)]">{group.name}</h4>
+                    <h4 className="text-base font-medium text-[var(--mw-mirage)]">{group.name}</h4>
                     {group.isDefault ? (
                       <Badge className="rounded-full border border-[var(--border)] bg-white px-2 py-0.5 text-xs text-[var(--neutral-500)]">
                         Default
@@ -144,7 +144,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                 transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
                 className="overflow-hidden"
               >
-                <div className="grid gap-6 border-t border-[var(--neutral-100)] p-5 md:grid-cols-2">
+                <div className="grid gap-6 border-t border-[var(--neutral-100)] p-6 md:grid-cols-2">
                   <div className="space-y-4">
                     {/* Document scope toggle */}
                     <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Scope</p>
@@ -190,7 +190,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                     <PermissionSection group={group} section="actions" labels={currentPermissionLabels} />
                     <PermissionSection group={group} section="admin" labels={currentPermissionLabels} />
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Members</p>
                     {members.map(member => (
                       <div key={member.id} className="flex items-center justify-between rounded-xl bg-[var(--neutral-100)] p-2.5">

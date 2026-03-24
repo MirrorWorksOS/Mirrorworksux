@@ -102,7 +102,7 @@ export function BuySuppliers() {
                         <AvatarFallback className="bg-[var(--mw-purple)] text-white text-sm font-medium">{supplier.company.substring(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="text-sm font-semibold text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">{supplier.company}</h3>
+                        <h3 className="text-sm font-medium text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">{supplier.company}</h3>
                         <p className="text-xs text-[var(--neutral-500)]">{supplier.contact}</p>
                       </div>
                     </div>
@@ -129,15 +129,15 @@ export function BuySuppliers() {
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--border)]">
                     <div>
                       <p className="text-xs text-[var(--neutral-500)] mb-1">Active POs</p>
-                      <p className=" text-sm font-semibold text-[var(--mw-mirage)]">{supplier.activePOs}</p>
+                      <p className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{supplier.activePOs}</p>
                     </div>
                     <div>
                       <p className="text-xs text-[var(--neutral-500)] mb-1">On-Time</p>
-                      <p className=" text-sm font-semibold text-[var(--mw-mirage)]">{supplier.onTimeRate}%</p>
+                      <p className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{supplier.onTimeRate}%</p>
                     </div>
                     <div>
                       <p className="text-xs text-[var(--neutral-500)] mb-1">Total Spend</p>
-                      <p className=" text-xs font-semibold text-[var(--mw-mirage)]">${(supplier.totalSpend / 1000).toFixed(0)}k</p>
+                      <p className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">${(supplier.totalSpend / 1000).toFixed(0)}k</p>
                     </div>
                   </div>
                 </Card>
