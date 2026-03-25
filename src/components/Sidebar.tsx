@@ -196,7 +196,7 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1 space-y-0.5 relative"
+          className="ml-6 mt-1 space-y-1 relative"
           style={{
             opacity: isOpen ? 1 : 0,
             transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,

@@ -70,7 +70,7 @@ export function StepReviewConfirm() {
               <Badge variant="outline" className="text-xs">{e.mapped}/{e.total} fields</Badge>
             </div>
             <div className="flex items-center gap-4 text-sm">
-              <span className="flex items-center gap-1 text-green-600">
+              <span className="flex items-center gap-1 text-[var(--mw-success)]">
                 <CheckCircle className="w-3.5 h-3.5" />
                 {e.activeCount} to create
               </span>
@@ -128,7 +128,7 @@ export function StepReviewConfirm() {
                             {record.warnings[0]}
                           </span>
                         ) : (
-                          <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                          <CheckCircle className="w-3.5 h-3.5 text-[var(--mw-success)]" />
                         )}
                       </td>
                     </tr>

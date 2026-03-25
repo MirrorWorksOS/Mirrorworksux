@@ -1,5 +1,6 @@
 /**
- * Bridge wizard footer: paired primary + secondary actions as one segmented control.
+ * Bridge wizard footer: paired primary + secondary actions (wizard “Continue | Skip” pair).
+ * This is the split-action variant, not the view `IconViewToggle` / `TextSegmentedControl` pattern.
  * Tooltips use `@/components/ui/tooltip` (Radix + Tailwind `animate-in` — same motion family as Animate UI primitives).
  */
 import type { ReactElement } from 'react';

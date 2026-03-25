@@ -9,6 +9,7 @@ import { PlanJobDetail } from './PlanJobDetail';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
 // remove unused PlanJobsProps interface
 type ViewMode = 'kanban' | 'list' | 'card';
@@ -228,37 +229,15 @@ export function PlanJobs() {
             </Button>
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border border-[var(--border)] rounded-[var(--shape-lg)] p-1">
-              <button
-                onClick={() => setViewMode('kanban')}
-                className={cn(
-                  'p-2 rounded transition-colors',
-                  viewMode === 'kanban' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
-                )}
-              >
-                <KanbanSquare className="w-4 h-4 text-[var(--mw-mirage)]" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={cn(
-                  'p-2 rounded transition-colors',
-                  viewMode === 'list' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
-                )}
-              >
-                <List className="w-4 h-4 text-[var(--mw-mirage)]" />
-              </button>
-              <button
-                onClick={() => setViewMode('card')}
-                className={cn(
-                  'p-2 rounded transition-colors',
-                  viewMode === 'card' ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
-                )}
-              >
-                <LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" />
-              </button>
-            </div>
-          </div>
+          <IconViewToggle
+            value={viewMode}
+            onChange={(k) => setViewMode(k as ViewMode)}
+            options={[
+              { key: 'kanban', icon: KanbanSquare, label: 'Kanban view' },
+              { key: 'list', icon: List, label: 'List view' },
+              { key: 'card', icon: LayoutGrid, label: 'Card view' },
+            ]}
+          />
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Truck, Download, Printer, Sparkles } from 'lucide-react';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
+import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
 
 const CARRIERS = [
   { name: 'Australia Post', ships: 12, avg: 3.2, onTime: 97, ok: true },
@@ -36,29 +37,21 @@ const MANIFESTS = [
 export function ShipShipping() {
   const [tab, setTab] = useState('carriers');
   const tabs = [
-    { id: 'carriers',  label: 'Carriers' },
-    { id: 'rates',     label: 'Rates' },
-    { id: 'manifests', label: 'Manifests' },
+    { key: 'carriers', label: 'Carriers' },
+    { key: 'rates', label: 'Rates' },
+    { key: 'manifests', label: 'Manifests' },
   ];
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
       <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Shipping</h1>
 
-      <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit">
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              'px-4 py-2 rounded-md text-sm transition-colors font-medium',
-              tab === t.id ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <TextSegmentedControl
+        ariaLabel="Shipping sections"
+        value={tab}
+        onChange={setTab}
+        options={tabs}
+      />
 
       {/* Carriers */}
       {tab === 'carriers' && (

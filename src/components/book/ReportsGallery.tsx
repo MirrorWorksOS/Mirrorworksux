@@ -5,6 +5,8 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const xeroReports = [
   { icon: BarChart3, title: 'Profit & Loss', desc: 'Income statement with job-level tracking via Xero' },
@@ -47,23 +49,27 @@ const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) =>
 
 export function ReportsGallery() {
   return (
-    <div className="p-6 space-y-8 overflow-y-auto max-w-[1200px] mx-auto">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Reports</h1>
-          <p className="text-sm text-[var(--neutral-500)]">Financial reports and manufacturing analytics</p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Schedule Report</Button>
-          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]"><Sparkles className="w-4 h-4" /> Custom Report</Button>
-        </div>
-      </div>
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Reports"
+        subtitle="Financial reports and manufacturing analytics"
+        actions={
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+              <Calendar className="h-4 w-4" /> Schedule report
+            </Button>
+            <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              <Sparkles className="h-4 w-4" /> Custom report
+            </Button>
+          </div>
+        }
+      />
 
       {/* Xero Reports */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-[var(--mw-mirage)] font-medium">From Xero</h2>
-          <div className="w-4 h-4 rounded-full bg-[#13B5EA]" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <h2 className="font-medium text-[var(--mw-mirage)]">From Xero</h2>
+          <div className="h-4 w-4 rounded-full bg-[#13B5EA]" aria-hidden />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {xeroReports.map(r => (
@@ -73,8 +79,8 @@ export function ReportsGallery() {
       </div>
 
       {/* MW Reports */}
-      <div>
-        <h2 className="text-[var(--mw-mirage)] mb-4 font-medium">MirrorWorks Reports</h2>
+      <div className="space-y-4">
+        <h2 className="font-medium text-[var(--mw-mirage)]">MirrorWorks reports</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mwReports.map(r => (
             <ReportCard key={r.title} {...r} borderColor="border-l-[var(--mw-yellow-400)]" />
@@ -83,8 +89,8 @@ export function ReportsGallery() {
       </div>
 
       {/* Scheduled */}
-      <div>
-        <h2 className="text-[var(--mw-mirage)] mb-4 font-medium">Scheduled Reports</h2>
+      <div className="space-y-4">
+        <h2 className="font-medium text-[var(--mw-mirage)]">Scheduled reports</h2>
         <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -117,6 +123,6 @@ export function ReportsGallery() {
           </div>
         </Card>
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
 type Stage = 'Pick' | 'Pack' | 'Ship' | 'Transit' | 'Delivered';
 
@@ -92,20 +93,14 @@ export function ShipOrders() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
               <Input placeholder="Search orders..." className="pl-10 h-12 min-h-[48px] bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
             </div>
-            <div className="flex bg-[var(--neutral-100)] rounded-xl p-1">
-              <button
-                onClick={() => setView('kanban')}
-                className={cn('p-2 rounded-md transition-colors', view === 'kanban' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setView('list')}
-                className={cn('p-2 rounded-md transition-colors', view === 'list' ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)]')}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
+            <IconViewToggle
+              value={view}
+              onChange={(k) => setView(k as 'kanban' | 'list')}
+              options={[
+                { key: 'kanban', icon: LayoutGrid, label: 'Kanban view' },
+                { key: 'list', icon: List, label: 'List view' },
+              ]}
+            />
           </div>
         }
       />

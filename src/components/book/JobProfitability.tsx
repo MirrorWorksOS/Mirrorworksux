@@ -17,6 +17,8 @@ import {
   getChartScaleColour,
   marginToScalePercent,
 } from '@/components/shared/charts/chart-theme';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const marginData = [
   { job: 'JOB-0012', margin: 23.1 },
@@ -71,18 +73,24 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Job Profitability</h1>
-          <p className="text-sm text-[var(--neutral-500)]">Actual costs vs quoted amounts across all jobs</p>
-        </div>
-        <div className="flex gap-4">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date range</Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">Export <ChevronDown className="w-4 h-4" /></Button>
-          <Button variant="outline" size="icon" className="h-10 w-10 border-[var(--border)]"><Filter className="w-4 h-4" /></Button>
-        </div>
-      </div>
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Job profitability"
+        subtitle="Actual costs vs quoted amounts across all jobs"
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+              <Calendar className="h-4 w-4" /> Date range
+            </Button>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+              Export <ChevronDown className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="h-10 w-10 border-[var(--border)]">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -190,6 +198,6 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           </table>
         </div>
       </Card>
-    </div>
+    </PageShell>
   );
 }

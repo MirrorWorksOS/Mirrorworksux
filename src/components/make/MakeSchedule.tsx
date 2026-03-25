@@ -206,7 +206,7 @@ export function MakeSchedule() {
       </div>
 
       {view === 'gantt' && (
-        <motion.div variants={staggerItem}>
+        <motion.div className="w-full min-w-0" variants={staggerItem}>
           <GanttChart tasks={tasks} startDate={startDate} endDate={endDate} today={DEMO_TODAY} />
         </motion.div>
       )}

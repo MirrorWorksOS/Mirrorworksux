@@ -6,6 +6,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 type POStatus = 'Draft' | 'Sent' | 'Acknowledged' | 'Partial' | 'Received' | 'Cancelled';
 
@@ -48,13 +50,15 @@ export function PurchaseOrders() {
   const [activeTab, setActiveTab] = useState('All');
 
   return (
-    <div className="p-6 space-y-5 overflow-y-auto max-w-[1200px] mx-auto">
-      <div className="flex items-start justify-between">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Orders</h1>
-        <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
-          <PlusCircle className="w-5 h-5" /> New PO
-        </Button>
-      </div>
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Purchase orders"
+        actions={
+          <Button className="h-12 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+            <PlusCircle className="h-5 w-5" /> New PO
+          </Button>
+        }
+      />
 
       <div className="flex items-center gap-3">
         <div className="relative w-80">
@@ -116,6 +120,6 @@ export function PurchaseOrders() {
           </div>
         </div>
       </Card>
-    </div>
+    </PageShell>
   );
 }

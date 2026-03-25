@@ -142,7 +142,7 @@ function FileCard({
 
   return (
     <div className="flex items-start gap-4 rounded-xl border bg-background p-4">
-      <FileSpreadsheet className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+      <FileSpreadsheet className="w-5 h-5 shrink-0 mt-0.5 text-[var(--mw-success)]" />
       <div className="flex-1 min-w-0 space-y-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm truncate">{file.fileName}</span>
@@ -151,7 +151,7 @@ function FileCard({
             <>
               <Badge variant="outline" className="text-xs shrink-0">{file.rowCount} rows</Badge>
               {file.detectedEntityType && file.detectedEntityType !== 'unknown' && (
-                <Badge className="text-xs shrink-0 bg-green-100 text-green-800 hover:bg-green-100">
+                <Badge className="bg-[var(--mw-success-light)] text-xs text-[var(--mw-success)] hover:bg-[var(--mw-success-light)] shrink-0">
                   {file.detectedEntityType}
                 </Badge>
               )}
@@ -168,7 +168,7 @@ function FileCard({
         )}
 
         {file.analysisStatus === 'complete' && !isAnalysing && (
-          <div className="flex items-center gap-1.5 text-xs text-green-600">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--mw-success)]">
             <CheckCircle className="w-3.5 h-3.5" />
             <span>Analysis complete — {file.headers.length} columns detected</span>
           </div>

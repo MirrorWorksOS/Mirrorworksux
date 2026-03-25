@@ -30,8 +30,8 @@ const MODULE_META: Record<string, { icon: React.ReactNode; color: string }> = {
   sell: { icon: <BarChart3 className="w-4 h-4" />, color: 'text-blue-600' },
   plan: { icon: <ClipboardList className="w-4 h-4" />, color: 'text-purple-600' },
   make: { icon: <Wrench className="w-4 h-4" />, color: 'text-orange-600' },
-  ship: { icon: <Truck className="w-4 h-4" />, color: 'text-green-600' },
-  book: { icon: <Calculator className="w-4 h-4" />, color: 'text-red-600' },
+  ship: { icon: <Truck className="w-4 h-4" />, color: 'text-[var(--mw-success)]' },
+  book: { icon: <Calculator className="w-4 h-4" />, color: 'text-[var(--mw-error)]' },
   buy: { icon: <ShoppingCart className="w-4 h-4" />, color: 'text-teal-600' },
   control: { icon: <Settings className="w-4 h-4" />, color: 'text-gray-600' },
 };
@@ -142,7 +142,7 @@ export function StepTeamSetup() {
                 key={suggestion.employeeId}
                 className={cn(
                   'flex items-center gap-4 rounded-xl border p-4 transition-colors',
-                  isAccepted && 'bg-green-50 border-green-200'
+                  isAccepted && 'border-[color-mix(in_srgb,var(--mw-success)_35%,transparent)] bg-[var(--mw-success-light)]'
                 )}
               >
                 <div className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export function StepTeamSetup() {
 
                 <div className="flex items-center gap-2 shrink-0">
                   {isAccepted ? (
-                    <span className="flex items-center gap-1 text-green-600 text-xs">
+                    <span className="flex items-center gap-1 text-xs text-[var(--mw-success)]">
                       <CheckCircle className="w-3.5 h-3.5" />
                       Accepted
                     </span>

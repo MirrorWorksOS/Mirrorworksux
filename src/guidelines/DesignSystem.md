@@ -136,6 +136,8 @@ Use `getChartScaleColour(normalised0to100)` from `@/components/shared/charts/cha
 | Warning | #FACC15 | `--mw-warning` |
 | Error | #DE350B | `--mw-error` |
 
+**Semantic success in UI:** Prefer `var(--mw-success)` and `var(--mw-success-light)` — avoid Tailwind default `green-*` utilities (different hue than `#36B37E`). A legacy `--mw-green` scale exists in `globals.css` for older shop-floor screens; new work should use `--mw-success`.
+
 ### Deprecated (do not use in new components)
 
 - `--mw-earth` (#8FA6A6)

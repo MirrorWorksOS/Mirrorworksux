@@ -9,6 +9,8 @@ import {
   AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_CHART_COLOURS } from '@/components/shared/charts/chart-theme';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const trendData = [
   { month: 'Mar', raw: 120000, wip: 65000, finished: 45000 },
@@ -56,22 +58,30 @@ export function StockValuation() {
   const [activeTab, setActiveTab] = useState('Raw Materials');
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Stock Valuation</h1>
-          <div className="flex items-center gap-4">
-          <Select defaultValue="fifo">
-            <SelectTrigger className="h-10 w-48 border-[var(--border)]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fifo">FIFO</SelectItem>
-              <SelectItem value="lifo">LIFO</SelectItem>
-              <SelectItem value="wavg">Weighted Average</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> As at</Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded">Generate Report</Button>
-        </div>
-      </div>
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Stock valuation"
+        actions={
+          <div className="flex flex-wrap items-center gap-4">
+            <Select defaultValue="fifo">
+              <SelectTrigger className="h-10 w-48 border-[var(--border)]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="fifo">FIFO</SelectItem>
+                <SelectItem value="lifo">LIFO</SelectItem>
+                <SelectItem value="wavg">Weighted average</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+              <Calendar className="h-4 w-4" /> As at
+            </Button>
+            <Button className="h-10 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              Generate report
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -181,6 +191,6 @@ export function StockValuation() {
           <div className="p-8 text-center text-sm text-[var(--neutral-400)]">No {activeTab.toLowerCase()} data to display.</div>
         )}
       </Card>
-    </div>
+    </PageShell>
   );
 }

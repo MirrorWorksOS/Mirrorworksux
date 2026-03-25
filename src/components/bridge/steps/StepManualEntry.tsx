@@ -149,7 +149,7 @@ export function StepManualEntry() {
                 className={cn(
                   'w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-left transition-colors',
                   isCurrent && 'bg-[#FFCF4B]/10 font-medium text-foreground',
-                  isDone && 'text-green-600',
+                  isDone && 'text-[var(--mw-success)]',
                   !isCurrent && !isDone && 'text-muted-foreground'
                 )}
               >

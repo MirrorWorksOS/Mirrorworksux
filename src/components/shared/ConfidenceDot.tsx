@@ -15,10 +15,10 @@ interface ConfidenceDotProps {
 }
 
 function getColor(confidence: number | null): string {
-  if (confidence === null) return 'bg-gray-400';
-  if (confidence >= 0.8) return 'bg-green-500';
-  if (confidence >= 0.5) return 'bg-amber-500';
-  return 'bg-red-500';
+  if (confidence === null) return 'bg-[var(--neutral-400)]';
+  if (confidence >= 0.8) return 'bg-[var(--mw-success)]';
+  if (confidence >= 0.5) return 'bg-[var(--mw-warning)]';
+  return 'bg-[var(--mw-error)]';
 }
 
 function getLabel(confidence: number | null): string {

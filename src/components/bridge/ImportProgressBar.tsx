@@ -39,8 +39,8 @@ export function ImportProgressBar({ analysisStatus, matchedCount, totalCount }: 
     <div className="space-y-2">
       {stages.map((stage) => (
         <div key={stage.label} className="flex items-center gap-2 text-sm">
-          {stage.status === 'active' && <Loader2 className="w-4 h-4 text-[#FFCF4B] animate-spin" />}
-          {stage.status === 'done' && <CheckCircle className="w-4 h-4 text-green-500" />}
+          {stage.status === 'active' && <Loader2 className="w-4 h-4 animate-spin text-[var(--mw-yellow-400)]" />}
+          {stage.status === 'done' && <CheckCircle className="w-4 h-4 text-[var(--mw-success)]" />}
           {stage.status === 'pending' && <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30" />}
           <span className={stage.status === 'pending' ? 'text-muted-foreground' : 'text-foreground'}>
             {stage.detail || stage.label}

@@ -20,8 +20,8 @@ export interface IconViewToggleProps {
 }
 
 /**
- * Icon-only segmented control for Gantt / calendar / list (or any 2–3 view modes).
- * Active segment uses MW yellow thread; container is neutral pill (design system §7).
+ * Icon-only segmented control (Sell CRM toolbar pattern).
+ * Bordered pill track + MW yellow active segment; min 48px touch targets.
  */
 export function IconViewToggle({
   options,
@@ -34,7 +34,7 @@ export function IconViewToggle({
       role="tablist"
       aria-label="View"
       className={cn(
-        "inline-flex rounded-full bg-[var(--neutral-100)] p-1",
+        "inline-flex rounded-full border border-[var(--border)] bg-[var(--neutral-100)] p-1",
         className,
       )}
     >
@@ -53,8 +53,8 @@ export function IconViewToggle({
             className={cn(
               "flex h-12 min-h-[48px] w-12 shrink-0 items-center justify-center rounded-full transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
               active
-                ? "bg-[var(--mw-yellow-400)] text-[#2C2C2C]"
-                : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]",
+                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-50)] hover:text-[var(--neutral-800)]",
             )}
           >
             <Icon className="h-4 w-4" strokeWidth={LUCIDE_STROKE} aria-hidden />

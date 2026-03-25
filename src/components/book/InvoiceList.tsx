@@ -6,6 +6,8 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 type InvoiceStatus = 'Draft' | 'Sent' | 'Viewed' | 'Partially Paid' | 'Paid' | 'Overdue' | 'Cancelled';
 
@@ -55,17 +57,16 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
   const filtered = activeTab === 'All' ? INVOICES : INVOICES.filter(inv => inv.status === activeTab || (activeTab === 'Partially Paid' && inv.status === 'Partially Paid'));
 
   return (
-    <div className="p-6 space-y-5 overflow-y-auto max-w-[1200px] mx-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Invoices</h1>
-          <p className="text-sm text-[var(--neutral-500)]">Manage customer invoices and track payments</p>
-        </div>
-        <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded shadow-sm gap-2">
-          <PlusCircle className="w-5 h-5" /> New Invoice
-        </Button>
-      </div>
+    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+      <PageHeader
+        title="Invoices"
+        subtitle="Manage customer invoices and track payments"
+        actions={
+          <Button className="h-12 gap-2 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] px-6 text-[var(--neutral-900)] shadow-sm hover:bg-[var(--mw-yellow-500)]">
+            <PlusCircle className="h-5 w-5" /> New invoice
+          </Button>
+        }
+      />
 
       {/* Toolbar */}
       <div className="flex items-center gap-3">
@@ -169,6 +170,6 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
           </div>
         </div>
       </Card>
-    </div>
+    </PageShell>
   );
 }

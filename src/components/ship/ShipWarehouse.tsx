@@ -7,6 +7,7 @@ import { Search, Download, CheckCircle, AlertCircle, Play } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
+import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
 
 const ZONES = [
   { name: 'Receiving', items: 34,  util: 45, x: 5,  y: 5,  w: 25, h: 35 },
@@ -45,29 +46,21 @@ const CYCLE = [
 export function ShipWarehouse() {
   const [tab, setTab] = useState('map');
   const tabs = [
-    { id: 'map',       label: 'Map' },
-    { id: 'inventory', label: 'Inventory' },
-    { id: 'count',     label: 'Cycle count' },
+    { key: 'map', label: 'Map' },
+    { key: 'inventory', label: 'Inventory' },
+    { key: 'count', label: 'Cycle count' },
   ];
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto">
       <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Warehouse</h1>
 
-      <div className="flex gap-1 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-1 w-fit">
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              'px-4 py-2 rounded-md text-sm transition-colors font-medium',
-              tab === t.id ? 'bg-[var(--mw-mirage)] text-white' : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <TextSegmentedControl
+        ariaLabel="Warehouse sections"
+        value={tab}
+        onChange={setTab}
+        options={tabs}
+      />
 
       {/* Map */}
       {tab === 'map' && (

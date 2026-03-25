@@ -34,7 +34,10 @@ export interface GanttChartProps {
 const LABEL_W = 200;
 const ROW_H = 40;
 const HEADER_H = 40;
-const DAY_W = 28;
+/** Minimum day column width when the chart must scroll horizontally */
+const MIN_DAY_W = 10;
+/** Fallback before first resize measurement */
+const FALLBACK_DAY_W = 28;
 
 function clampTaskToWindow(
   task: GanttTask,
@@ -53,17 +56,51 @@ function clampTaskToWindow(
 }
 
 export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTaskClick, className }: GanttChartProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = React.useState(0);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      setContainerWidth(w);
+    });
+    ro.observe(el);
+    setContainerWidth(el.getBoundingClientRect().width);
+    return () => ro.disconnect();
+  }, []);
+
   const windowStart = startOfDay(startDate);
   const windowEnd = startOfDay(endDate);
   const totalDays = differenceInCalendarDays(windowEnd, windowStart) + 1;
-  const timelineW = Math.max(totalDays * DAY_W, 1);
-  const svgW = LABEL_W + timelineW;
+  const availableTimeline = Math.max(containerWidth - LABEL_W, 0);
+
+  const { dayW, svgW } = React.useMemo(() => {
+    if (totalDays < 1) {
+      return { dayW: FALLBACK_DAY_W, svgW: LABEL_W + FALLBACK_DAY_W };
+    }
+    if (containerWidth <= 0) {
+      const dw = FALLBACK_DAY_W;
+      return { dayW: dw, svgW: LABEL_W + totalDays * dw };
+    }
+    const ideal = availableTimeline / totalDays;
+    if (ideal >= MIN_DAY_W) {
+      const dw = ideal;
+      const tw = totalDays * dw;
+      return { dayW: dw, svgW: LABEL_W + tw };
+    }
+    const dw = MIN_DAY_W;
+    const tw = totalDays * dw;
+    return { dayW: dw, svgW: LABEL_W + tw };
+  }, [containerWidth, availableTimeline, totalDays]);
+
   const rows = tasks.length;
   const svgH = HEADER_H + rows * ROW_H;
   const today = startOfDay(todayProp ?? new Date());
   const todayX =
     isWithinInterval(today, { start: windowStart, end: windowEnd }) ?
-      LABEL_W + differenceInCalendarDays(today, windowStart) * DAY_W + DAY_W / 2
+      LABEL_W + differenceInCalendarDays(today, windowStart) * dayW + dayW / 2
     : null;
 
   const dayTicks = React.useMemo(() => {
@@ -76,15 +113,16 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
 
   return (
     <div
+      ref={containerRef}
       className={cn(
-        "overflow-x-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white shadow-xs",
+        "w-full min-w-0 overflow-x-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white shadow-xs",
         className,
       )}
     >
       <svg
         width={svgW}
         height={svgH}
-        className="block font-sans text-[11px] tabular-nums"
+        className="block min-w-0 font-sans text-[11px] tabular-nums"
         role="img"
         aria-label="Gantt chart"
       >
@@ -98,7 +136,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
           strokeWidth={1}
         />
         {dayTicks.map((d, i) => {
-          const x = LABEL_W + i * DAY_W;
+          const x = LABEL_W + i * dayW;
           return (
             <g key={d.toISOString()}>
               <line
@@ -110,7 +148,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                 strokeWidth={1}
               />
               <text
-                x={x + DAY_W / 2}
+                x={x + dayW / 2}
                 y={HEADER_H - 10}
                 textAnchor="middle"
                 fill="var(--neutral-600)"
@@ -118,7 +156,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                 {format(d, "d")}
               </text>
               <text
-                x={x + DAY_W / 2}
+                x={x + dayW / 2}
                 y={HEADER_H - 22}
                 textAnchor="middle"
                 fill="var(--neutral-500)"
@@ -166,8 +204,8 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
           if (clipped) {
             const offset = differenceInCalendarDays(clipped.start, windowStart);
             const span = differenceInCalendarDays(clipped.end, clipped.start) + 1;
-            const bx = LABEL_W + offset * DAY_W + 1;
-            const bw = span * DAY_W - 2;
+            const bx = LABEL_W + offset * dayW + 1;
+            const bw = span * dayW - 2;
             const pct = Math.min(100, Math.max(0, task.progress ?? 0));
             const fill = task.color ?? defaultFill;
             bar = (

@@ -14,7 +14,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { cn } from '../ui/utils';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedSearch, AnimatedFilter, AnimatedPlus } from '../ui/animated-icons';
@@ -140,30 +140,14 @@ export function SellCRM() {
           Filter
         </Button>
 
-        <div className="flex items-center border border-[var(--border)] rounded-full p-1">
-          <button
-            onClick={() => setViewMode('card')}
-            className={cn(
-              "p-2 rounded-full transition-all duration-200",
-              viewMode === 'card'
-                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
-                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
-            )}
-          >
-            <Grid3x3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={cn(
-              "p-2 rounded-full transition-all duration-200",
-              viewMode === 'list'
-                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
-                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
-            )}
-          >
-            <List className="w-4 h-4" />
-          </button>
-        </div>
+        <IconViewToggle
+          value={viewMode}
+          onChange={(k) => setViewMode(k as 'card' | 'list')}
+          options={[
+            { key: 'card', icon: Grid3x3, label: 'Card view' },
+            { key: 'list', icon: List, label: 'List view' },
+          ]}
+        />
       </div>
 
       {/* Customer Cards Grid */}

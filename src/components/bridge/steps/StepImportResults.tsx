@@ -60,7 +60,7 @@ export function StepImportResults() {
       {isImporting && (
         <>
           <div className="text-center space-y-4 py-12">
-            <Loader2 className="w-12 h-12 text-[#FFCF4B] animate-spin mx-auto" />
+            <Loader2 className="w-12 h-12 text-[var(--mw-yellow-400)] animate-spin mx-auto" />
             <h2 className="text-2xl font-semibold tracking-tight">Importing your data...</h2>
             {importProgress && (
               <div className="max-w-md mx-auto space-y-2">
@@ -77,7 +77,7 @@ export function StepImportResults() {
       {isComplete && importSummary && (
         <>
           <div className="text-center space-y-2">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+            <CheckCircle className="w-12 h-12 text-[var(--mw-success)] mx-auto" />
             <h2 className="text-2xl font-semibold tracking-tight">Import complete</h2>
             <p className="text-sm text-muted-foreground">Your data has been imported into MirrorWorks.</p>
           </div>
@@ -85,17 +85,17 @@ export function StepImportResults() {
           {/* Summary cards */}
           <div className="grid gap-4 sm:grid-cols-3">
             <Card className="p-5 text-center space-y-1">
-              <CheckCircle className="w-6 h-6 text-green-500 mx-auto" />
+              <CheckCircle className="w-6 h-6 text-[var(--mw-success)] mx-auto" />
               <p className="text-3xl font-bold">{totalCreated}</p>
               <p className="text-sm text-muted-foreground">Records created</p>
             </Card>
             <Card className="p-5 text-center space-y-1">
-              <AlertTriangle className="w-6 h-6 text-amber-500 mx-auto" />
+              <AlertTriangle className="w-6 h-6 text-[var(--mw-warning)] mx-auto" />
               <p className="text-3xl font-bold">{totalFlagged}</p>
               <p className="text-sm text-muted-foreground">Flagged for review</p>
             </Card>
             <Card className="p-5 text-center space-y-1">
-              <MinusCircle className="w-6 h-6 text-gray-400 mx-auto" />
+              <MinusCircle className="w-6 h-6 text-[var(--neutral-400)] mx-auto" />
               <p className="text-3xl font-bold">{totalSkipped}</p>
               <p className="text-sm text-muted-foreground">Skipped</p>
             </Card>
@@ -108,9 +108,9 @@ export function StepImportResults() {
               <div key={entity} className="flex items-center justify-between rounded-lg border px-4 py-3">
                 <span className="text-sm font-medium capitalize">{entity}</span>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-green-600">{count} created</span>
+                  <span className="text-[var(--mw-success)]">{count} created</span>
                   {(importSummary.flagged[entity] || 0) > 0 && (
-                    <span className="text-amber-600">{importSummary.flagged[entity]} flagged</span>
+                    <span className="text-[var(--mw-warning)]">{importSummary.flagged[entity]} flagged</span>
                   )}
                   {(importSummary.skipped[entity] || 0) > 0 && (
                     <span className="text-muted-foreground">{importSummary.skipped[entity]} skipped</span>
@@ -122,10 +122,10 @@ export function StepImportResults() {
 
           {/* Team setup CTA */}
           {hasEmployees && (
-            <Card className="p-5 border-[#FFCF4B] bg-[#FFCF4B]/5">
+            <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] p-5">
               <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFCF4B]/20">
-                  <Users className="w-5 h-5 text-[#191406]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--mw-yellow-400)_22%,transparent)]">
+                  <Users className="w-5 h-5 text-[var(--neutral-900)]" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-sm">Set up your team</p>

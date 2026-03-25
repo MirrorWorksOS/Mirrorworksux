@@ -33,7 +33,7 @@ export function BridgeStepper() {
                 disabled={isFuture}
                 className={cn(
                   'flex items-center gap-2 text-sm font-medium transition-colors',
-                  isCompleted && 'text-green-600 cursor-pointer hover:text-green-700',
+                  isCompleted && 'cursor-pointer text-[var(--mw-success)] hover:opacity-90',
                   isCurrent && 'text-foreground',
                   isFuture && 'text-muted-foreground/50 cursor-default'
                 )}
@@ -41,8 +41,8 @@ export function BridgeStepper() {
                 <span
                   className={cn(
                     'flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold shrink-0 transition-colors',
-                    isCompleted && 'bg-green-100 text-green-600',
-                    isCurrent && 'bg-[#FFCF4B] text-[#191406]',
+                    isCompleted && 'bg-[var(--mw-success-light)] text-[var(--mw-success)]',
+                    isCurrent && 'bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]',
                     isFuture && 'bg-muted text-muted-foreground/50'
                   )}
                 >
@@ -62,7 +62,7 @@ export function BridgeStepper() {
                 <div
                   className={cn(
                     'flex-1 h-px mx-2',
-                    isCompleted ? 'bg-green-300' : 'bg-border'
+                    isCompleted ? 'bg-[color-mix(in_srgb,var(--mw-success)_45%,transparent)]' : 'bg-border'
                   )}
                 />
               )}
