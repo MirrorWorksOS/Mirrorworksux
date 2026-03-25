@@ -3,10 +3,13 @@
  */
 import { useBridge } from '@/hooks/useBridge';
 import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FieldMappingRow } from '@/components/bridge/FieldMappingRow';
 import { bridgeService } from '@/services/bridgeService';
+import { Save } from 'lucide-react';
 import type { FieldMapping } from '@/types/bridge';
 
 export function StepFieldMapping() {
@@ -87,18 +90,19 @@ export function StepFieldMapping() {
       )}
 
       <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" onClick={goToPreviousStep}>Back</Button>
-        <div className="flex items-center gap-3">
-          <button type="button" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Save as template
-          </button>
-          <Button
-            onClick={goToNextStep}
-            className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-          >
-            Confirm mappings
-          </Button>
-        </div>
+        <Button variant="ghost" className="h-12 min-h-[48px]" onClick={goToPreviousStep}>
+          Back
+        </Button>
+        <BridgeSegmentedSkipPrimary
+          order="skip-first"
+          skipLabel="Save as template"
+          primaryLabel="Confirm mappings"
+          skipIcon={Save}
+          onSkip={() => toast.message('Template saved (preview)', { description: 'Reusable mapping layouts will be available in a future release.' })}
+          onPrimary={goToNextStep}
+          skipTooltip="Store this column mapping as a template for the next import (prototype preview)."
+          primaryTooltip="Continue to review imported rows before running the import."
+        />
       </div>
     </div>
   );

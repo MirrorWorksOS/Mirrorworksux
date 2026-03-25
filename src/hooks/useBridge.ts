@@ -9,14 +9,28 @@ function deriveImportPath(system: SourceSystem): ImportPath {
 /** Get ordered steps for the current import path */
 function getStepsForPath(
   importPath: ImportPath | null,
-  hasEmployees: boolean
+  hasEmployees: boolean,
+  hasUploadedFiles: boolean
 ): BridgeStep[] {
   if (!importPath) return ['source'];
 
-  const steps: BridgeStep[] =
-    importPath === 'file_upload'
-      ? ['source', 'upload', 'mapping', 'review', 'results']
-      : ['source', 'scope', 'manual_entry', 'review', 'results'];
+  const steps: BridgeStep[] = ['source'];
+
+  if (importPath === 'manual_entry') {
+    steps.push('scope');
+  }
+
+  // All paths get the upload step — pen & paper users can skip it
+  steps.push('upload');
+
+  // If files were uploaded, show mapping; otherwise show manual entry for all paths
+  if (hasUploadedFiles) {
+    steps.push('mapping');
+  } else {
+    steps.push('manual_entry');
+  }
+
+  steps.push('review', 'results');
 
   if (hasEmployees) {
     steps.push('team_setup');
@@ -27,10 +41,12 @@ function getStepsForPath(
 export function useBridge() {
   const store = useBridgeStore();
 
+  const hasUploadedFiles = store.files.length > 0;
   const activeSteps = getStepsForPath(
     store.importPath,
     store.teamSuggestions.length > 0 ||
-      store.files.some((f) => f.detectedEntityType === 'employees')
+      store.files.some((f) => f.detectedEntityType === 'employees'),
+    hasUploadedFiles
   );
 
   const currentStepIndex = activeSteps.indexOf(store.currentStep);
@@ -42,7 +58,7 @@ export function useBridge() {
     store.setSourceSystem(system);
     store.setImportPath(path);
     // Advance to the second step of the new path
-    const newSteps = getStepsForPath(path, false);
+    const newSteps = getStepsForPath(path, false, false);
     if (newSteps.length > 1) {
       store.setCurrentStep(newSteps[1]);
     }

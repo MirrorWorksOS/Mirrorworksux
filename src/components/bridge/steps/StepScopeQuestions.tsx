@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { cn } from '@/components/ui/utils';
 import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { AlertCircle } from 'lucide-react';
@@ -223,13 +224,18 @@ export function StepScopeQuestions() {
       </div>
 
       <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" onClick={goToPreviousStep}>Back</Button>
-        <Button
-          onClick={handleContinue}
-          className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-        >
-          Continue
+        <Button variant="ghost" className="h-12 min-h-[48px]" onClick={goToPreviousStep}>
+          Back
         </Button>
+        <BridgeSegmentedSkipPrimary
+          order="skip-first"
+          skipLabel="Skip for now"
+          primaryLabel="Continue"
+          onSkip={goToNextStep}
+          onPrimary={handleContinue}
+          skipTooltip="Continue with default shop profile answers. You can refine these later in settings."
+          primaryTooltip="Save your answers and go to the next step."
+        />
       </div>
     </div>
   );

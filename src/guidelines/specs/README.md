@@ -4,21 +4,25 @@ Structured extracts from the combined module specification PDF live alongside th
 
 | File | Module | Notes |
 | --- | --- | --- |
-| [Sell-04-Screen-by-Screen.md](./Sell-04-Screen-by-Screen.md) | Sell | Dashboard bento, CRM, pipeline |
-| [Plan-04-Screen-by-Screen.md](./Plan-04-Screen-by-Screen.md) | Plan | `PlanDashboard`, jobs, schedule |
-| [Book-04-Screen-by-Screen.md](./Book-04-Screen-by-Screen.md) | Book | Finance bento, settings |
-| [Ship-04-Screen-by-Screen.md](./Ship-04-Screen-by-Screen.md) | Ship | 6 KPI strip, fulfilment |
-| [Control-04-Screen-by-Screen.md](./Control-04-Screen-by-Screen.md) | Control | Executive overview |
-| [Buy-04-Screen-by-Screen.md](./Buy-04-Screen-by-Screen.md) | Buy | Procurement |
-| [Make-04-Screen-by-Screen.md](./Make-04-Screen-by-Screen.md) | Make | Andon, shop floor |
+| [Sell-04-Screen-by-Screen.md](./Sell-04-Screen-by-Screen.md) | Sell | Dashboard, CRM, opportunities, orders, quotes, products, invoices, settings |
+| [Plan-04-Screen-by-Screen.md](./Plan-04-Screen-by-Screen.md) | Plan | Dashboard, jobs, activities, purchase, QC planning, products, settings |
+| [Book-04-Screen-by-Screen.md](./Book-04-Screen-by-Screen.md) | Book | Finance bento, budget, invoices, expenses, purchases, job costs, stock, reports, settings |
+| [Ship-04-Screen-by-Screen.md](./Ship-04-Screen-by-Screen.md) | Ship | Dashboard, orders, packaging, shipping, tracking, returns, warehouse, reports, settings |
+| [Control-04-Screen-by-Screen.md](./Control-04-Screen-by-Screen.md) | Control | Dashboard, master data, MirrorWorks Bridge, factory/process designers, workflow, people, role designer |
+| [Buy-04-Screen-by-Screen.md](./Buy-04-Screen-by-Screen.md) | Buy | Procurement: orders, requisitions, receipts, suppliers, RFQs, bills, products, agreements, reports, settings |
+| [Make-04-Screen-by-Screen.md](./Make-04-Screen-by-Screen.md) | Make | Andon/dashboard, schedule, shop floor, work, issues, settings |
 
 ## Prototype mapping
 
-Routes are defined in [`src/routes.tsx`](../../routes.tsx). When §4 references paths that differ from the prototype (e.g. `/plan` vs `/plan/dashboard`), add a **Prototype mapping** subsection in each file.
+**Canonical list:** [`PrototypeRouteMap.md`](./PrototypeRouteMap.md) — route ↔ component for **all modules** (including Control), app shell, and `/design` redirects.
 
-## Process
+Routes are defined in [`src/routes.tsx`](../../routes.tsx). When §4 references paths that differ from the prototype (e.g. `/plan` vs `/plan/dashboard`), add a **Prototype mapping** subsection in each file or a note in `PrototypeRouteMap.md`.
 
-Replace the placeholder body in each `*-04-*.md` file with the exported §4 text from Confluence/PDF, normalised to:
+**Sell — “pipeline”:** The prototype does **not** expose `/sell/pipeline`. Use **Opportunities** (`/sell/opportunities`) and **CRM** (`/sell/crm`) for pipeline-style flows unless a new route is added.
+
+## §4 content (PDF extract)
+
+Section 4 text is lifted from [`MirrorWorksModuleSpec.pdf`](../MirrorWorksModuleSpec.pdf) into each `*-04-*.md` file, normalised to:
 
 ```markdown
 ## Screen name
@@ -27,6 +31,8 @@ Replace the placeholder body in each `*-04-*.md` file with the exported §4 text
 ### Actions
 ### States
 ```
+
+Verbatim PDF text (per screen) appears in collapsible `<details>` blocks where extraction was automated. To regenerate from the PDF, run `python3 scripts/extract-module-s4.py` from the repo root (requires `pypdf`).
 
 Cross-link to routes and to [`DesignSystem.md`](../DesignSystem.md) where tokens supersede older PDF hex or monospace guidance.
 

@@ -4,13 +4,24 @@
 import { useEffect, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
-import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary, BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, AlertTriangle, MinusCircle, Loader2, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle, Loader2, MinusCircle, Upload, Users } from 'lucide-react';
 
 export function StepImportResults() {
-  const { sessionId, sessionStatus, setSessionStatus, importSummary, setImportSummary, importProgress, setImportProgress, goToNextStep, files } = useBridge();
+  const {
+    sessionId,
+    sessionStatus,
+    setSessionStatus,
+    importSummary,
+    setImportSummary,
+    importProgress,
+    setImportProgress,
+    goToNextStep,
+    goToStep,
+    files,
+  } = useBridge();
   const [step, setStep] = useState(0);
 
   const hasEmployees = files.some((f) => f.detectedEntityType === 'employees');
@@ -120,30 +131,29 @@ export function StepImportResults() {
                   <p className="font-medium text-sm">Set up your team</p>
                   <p className="text-xs text-muted-foreground">Assign imported employees to modules and groups.</p>
                 </div>
-                <Button
+                <BridgePrimaryWithTooltip
+                  label="Set up team"
                   onClick={goToNextStep}
-                  className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium"
-                >
-                  Set up team
-                </Button>
+                  tooltip="Assign imported people to modules and security groups."
+                  icon={ArrowRight}
+                  className="shrink-0"
+                />
               </div>
             </Card>
           )}
 
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex gap-3">
-              <button type="button" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Import more data
-              </button>
-            </div>
-            {!hasEmployees && (
-              <Button
-                onClick={() => { window.location.href = '/'; }}
-                className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-              >
-                Go to dashboard
-              </Button>
-            )}
+          <div className="flex justify-end pt-2">
+            <BridgeSegmentedSkipPrimary
+              order="skip-first"
+              skipLabel="Import more data"
+              primaryLabel="Go to dashboard"
+              skipIcon={Upload}
+              primaryIcon={ArrowRight}
+              onSkip={() => goToStep('upload')}
+              onPrimary={() => { window.location.href = '/'; }}
+              skipTooltip="Return to the upload step to bring in another file (prototype)."
+              primaryTooltip="Exit the wizard and open the main dashboard."
+            />
           </div>
         </>
       )}

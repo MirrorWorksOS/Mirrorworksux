@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
 import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -220,19 +221,16 @@ export function StepTeamSetup() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          I'll do this later
-        </button>
-        <Button
-          onClick={handleFinish}
-          className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-        >
-          Confirm & finish
-        </Button>
+      <div className="flex justify-end pt-2">
+        <BridgeSegmentedSkipPrimary
+          order="skip-first"
+          skipLabel="I'll do this later"
+          primaryLabel="Confirm & finish"
+          onSkip={() => { window.location.href = '/'; }}
+          onPrimary={handleFinish}
+          skipTooltip="Exit to the dashboard and finish team setup later from Control."
+          primaryTooltip="Save suggested assignments and return to the dashboard."
+        />
       </div>
     </div>
   );

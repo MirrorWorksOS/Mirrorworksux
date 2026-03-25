@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
 import { Button } from '@/components/ui/button';
+import { BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle, AlertTriangle, MinusCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 
 export function StepReviewConfirm() {
   const { files, mappings, previewRecords, setPreviewRecords, toggleRecordExclusion, goToNextStep, goToPreviousStep, sessionId, setSessionStatus } = useBridge();
@@ -140,19 +141,15 @@ export function StepReviewConfirm() {
       )}
 
       <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          onClick={goToPreviousStep}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
+        <Button variant="ghost" className="h-12 min-h-[48px]" onClick={goToPreviousStep}>
           Go back to fix issues
-        </button>
-        <Button
-          onClick={handleImport}
-          className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-        >
-          Import {totalRecords} records
         </Button>
+        <BridgePrimaryWithTooltip
+          label={`Import ${totalRecords} records`}
+          onClick={handleImport}
+          tooltip="Run the import with the rows and mappings shown above."
+          icon={ArrowRight}
+        />
       </div>
     </div>
   );

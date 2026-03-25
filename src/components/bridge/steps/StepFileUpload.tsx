@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import { FileUploadZone } from '@/components/bridge/FileUploadZone';
 import { ImportProgressBar } from '@/components/bridge/ImportProgressBar';
 import { bridgeService } from '@/services/bridgeService';
@@ -101,14 +102,25 @@ export function StepFileUpload() {
       )}
 
       <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" onClick={goToPreviousStep}>Back</Button>
-        <Button
-          onClick={goToNextStep}
-          disabled={!hasAnalysedFiles || isProcessing}
-          className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-        >
-          Continue
+        <Button variant="ghost" className="h-12 min-h-[48px]" onClick={goToPreviousStep}>
+          Back
         </Button>
+        <BridgeSegmentedSkipPrimary
+          order="primary-first"
+          skipLabel="Skip"
+          primaryLabel="Continue"
+          onSkip={goToNextStep}
+          onPrimary={goToNextStep}
+          primaryDisabled={!hasAnalysedFiles || isProcessing}
+          isLoading={false}
+          skipTooltip="Continue without files and enter data manually instead."
+          primaryTooltip="Continue to map columns or enter data."
+          primaryDisabledTooltip={
+            isProcessing
+              ? 'Wait for file analysis to finish.'
+              : 'Upload and analyse at least one spreadsheet first.'
+          }
+        />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { cn } from '@/components/ui/utils';
-import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import {
   Table2,
   Database,
@@ -76,13 +76,12 @@ const SOURCE_OPTIONS: SourceOption[] = [
 ];
 
 export function StepSourceSelect() {
-  const { sourceSystem, selectSource, goToNextStep } = useBridge();
+  const { sourceSystem, selectSource } = useBridge();
   const [selected, setSelected] = useState<SourceSystem | null>(sourceSystem);
 
   const handleContinue = () => {
     if (!selected) return;
     selectSource(selected);
-    goToNextStep();
   };
 
   return (
@@ -139,21 +138,18 @@ export function StepSourceSelect() {
         })}
       </div>
 
-      <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Skip for now
-        </button>
-
-        <Button
-          onClick={handleContinue}
-          disabled={!selected}
-          className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-        >
-          Continue
-        </Button>
+      <div className="flex justify-end pt-2">
+        <BridgeSegmentedSkipPrimary
+          order="skip-first"
+          skipLabel="Skip for now"
+          primaryLabel="Continue"
+          onSkip={() => selectSource('spreadsheets')}
+          onPrimary={handleContinue}
+          primaryDisabled={!selected}
+          skipTooltip="Start with spreadsheets as your source. You can change this later."
+          primaryTooltip="Confirm your data source and continue the import wizard."
+          primaryDisabledTooltip="Select where your data is coming from to continue."
+        />
       </div>
     </div>
   );

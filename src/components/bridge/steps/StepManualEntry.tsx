@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { Button } from '@/components/ui/button';
+import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
@@ -217,24 +218,32 @@ export function StepManualEntry() {
       </div>
 
       <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" onClick={currentEntityIndex > 0 ? () => { setCurrentEntityIndex((i) => i - 1); setFormData({}); } : goToPreviousStep}>
+        <Button
+          variant="ghost"
+          className="h-12 min-h-[48px]"
+          onClick={currentEntityIndex > 0 ? () => { setCurrentEntityIndex((i) => i - 1); setFormData({}); } : goToPreviousStep}
+        >
           Back
         </Button>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            onClick={handleNext}
-          >
-            Skip for now
-          </button>
-          <Button
-            onClick={handleNext}
-            className="bg-[#FFCF4B] text-[#191406] hover:bg-[#FFCF4B]/90 font-medium px-8"
-          >
-            {isLastEntity ? 'Review' : `Next: ${ENTITY_FORMS[currentEntityIndex + 1].label}`}
-          </Button>
-        </div>
+        <BridgeSegmentedSkipPrimary
+          order="skip-first"
+          skipLabel="Skip for now"
+          primaryLabel={
+            isLastEntity ? 'Review' : `Next: ${ENTITY_FORMS[currentEntityIndex + 1].label}`
+          }
+          onSkip={handleNext}
+          onPrimary={handleNext}
+          skipTooltip={
+            isLastEntity
+              ? 'Open the review step without adding more rows for this section.'
+              : `Move on to ${ENTITY_FORMS[currentEntityIndex + 1].label.toLowerCase()} without saving this form.`
+          }
+          primaryTooltip={
+            isLastEntity
+              ? 'Open the review step for everything you entered so far.'
+              : `Continue to ${ENTITY_FORMS[currentEntityIndex + 1].label.toLowerCase()}.`
+          }
+        />
       </div>
     </div>
   );
