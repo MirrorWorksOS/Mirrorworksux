@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -8,8 +8,169 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
 import { AIInsightMessage } from '../shared/ai/AIInsightCard';
+import { MwDataTable, type MwColumnDef } from '../shared/data/MwDataTable';
+import { StatusBadge, type StatusKey } from '../shared/data/StatusBadge';
+import { ProgressBar } from '../shared/data/ProgressBar';
+
+type ProductRow = {
+  id: string;
+  part: string;
+  route: string;
+  toProduce: string;
+  inventory: string;
+  uom: string;
+  status: StatusKey;
+  avatarSrc: string;
+  avatarFallback: string;
+};
+
+const PRODUCT_DATA: ProductRow[] = [
+  {
+    id: '1',
+    part: 'Manifold Bracket',
+    route: 'CNC → Bend → Weld',
+    toProduce: '800',
+    inventory: '0',
+    uom: 'pcs',
+    status: 'produced',
+    avatarSrc: 'https://i.pravatar.cc/150?img=12',
+    avatarFallback: 'DM',
+  },
+  {
+    id: '2',
+    part: 'Angle B',
+    route: 'CNC → Bend',
+    toProduce: '5,000',
+    inventory: '2,550',
+    uom: 'pcs',
+    status: 'inProgress',
+    avatarSrc: 'https://i.pravatar.cc/150?img=5',
+    avatarFallback: 'SC',
+  },
+  {
+    id: '3',
+    part: 'Sliding Brace',
+    route: 'Shear → Weld → Coat',
+    toProduce: '10,000',
+    inventory: '500',
+    uom: 'meters',
+    status: 'scheduled',
+    avatarSrc: 'https://i.pravatar.cc/150?img=8',
+    avatarFallback: 'MJ',
+  },
+];
 
 export function PlanOverviewTab() {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const allSelected = selectedIds.size === PRODUCT_DATA.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+  const selectAllRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
+
+  const toggleAll = () => {
+    setSelectedIds(allSelected ? new Set() : new Set(PRODUCT_DATA.map((r) => r.id)));
+  };
+
+  const toggleRow = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const productColumns: MwColumnDef<ProductRow>[] = [
+    {
+      key: 'select',
+      header: (
+        <input
+          ref={selectAllRef}
+          type="checkbox"
+          checked={allSelected}
+          onChange={toggleAll}
+          className="h-3.5 w-3.5 cursor-pointer accent-[var(--mw-yellow-400)]"
+        />
+      ),
+      cell: (row) => (
+        <input
+          type="checkbox"
+          checked={selectedIds.has(row.id)}
+          onChange={() => toggleRow(row.id)}
+          onClick={(e) => e.stopPropagation()}
+          className="h-3.5 w-3.5 cursor-pointer accent-[var(--mw-yellow-400)]"
+        />
+      ),
+      className: 'w-10',
+      headerClassName: 'w-10',
+    },
+    {
+      key: 'part',
+      header: 'Part',
+      cell: (row) => (
+        <span className="text-xs font-medium text-[var(--mw-mirage)]">{row.part}</span>
+      ),
+    },
+    {
+      key: 'route',
+      header: 'Route',
+      cell: (row) => (
+        <span className="text-xs text-[var(--neutral-500)]">{row.route}</span>
+      ),
+    },
+    {
+      key: 'toProduce',
+      header: 'To Produce',
+      cell: (row) => (
+        <span className="text-xs tabular-nums text-[var(--mw-mirage)]">{row.toProduce}</span>
+      ),
+    },
+    {
+      key: 'inventory',
+      header: 'Inventory',
+      cell: (row) => (
+        <span className="text-xs tabular-nums text-[var(--neutral-500)]">{row.inventory}</span>
+      ),
+    },
+    {
+      key: 'uom',
+      header: 'UoM',
+      cell: (row) => (
+        <span className="text-xs text-[var(--neutral-500)]">{row.uom}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (row) => <StatusBadge status={row.status} />,
+    },
+    {
+      key: 'responsible',
+      header: 'Responsible',
+      cell: (row) => (
+        <Avatar className="w-6 h-6 border border-[var(--border)]">
+          <AvatarImage src={row.avatarSrc} />
+          <AvatarFallback className="text-xs">{row.avatarFallback}</AvatarFallback>
+        </Avatar>
+      ),
+    },
+    {
+      key: 'cad',
+      header: 'CAD',
+      headerClassName: 'text-center',
+      className: 'text-center',
+      cell: () => (
+        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+          📐
+        </Button>
+      ),
+    },
+  ];
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
       {/* Left Column - 2/3 width */}
@@ -183,83 +344,12 @@ export function PlanOverviewTab() {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-[var(--border)]">
-                <tr>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Part</th>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">To Produce</th>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Inventory</th>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">UoM</th>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Status</th>
-                  <th className="text-left pb-3  text-xs font-medium text-[var(--mw-mirage)]">Responsible</th>
-                  <th className="text-center pb-3  text-xs font-medium text-[var(--mw-mirage)]">CAD</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-[var(--border)]">
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Manifold Bracket</td>
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">800</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">0</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
-                  <td className="py-3">
-                    <Badge className="bg-[var(--mw-yellow-400)] text-white text-xs">Produced</Badge>
-                  </td>
-                  <td className="py-3">
-                    <Avatar className="w-6 h-6 border border-[var(--border)]">
-                      <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-                      <AvatarFallback className="text-xs">DM</AvatarFallback>
-                    </Avatar>
-                  </td>
-                  <td className="py-3 text-center">
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      📐
-                    </Button>
-                  </td>
-                </tr>
-                <tr className="border-b border-[var(--border)]">
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Angle B</td>
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">5,000</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">2,550</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
-                  <td className="py-3">
-                    <Badge className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] text-xs">In Progress</Badge>
-                  </td>
-                  <td className="py-3">
-                    <Avatar className="w-6 h-6 border border-[var(--border)]">
-                      <AvatarImage src="https://i.pravatar.cc/150?img=5" />
-                      <AvatarFallback className="text-xs">SC</AvatarFallback>
-                    </Avatar>
-                  </td>
-                  <td className="py-3 text-center">
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      📐
-                    </Button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">Sliding Brace</td>
-                  <td className="py-3  text-xs text-[var(--mw-mirage)]">10,000</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">500</td>
-                  <td className="py-3  text-xs text-[var(--neutral-500)]">Units</td>
-                  <td className="py-3">
-                    <Badge className="bg-[var(--mw-blue)] text-white text-xs">Scheduled</Badge>
-                  </td>
-                  <td className="py-3">
-                    <Avatar className="w-6 h-6 border border-[var(--border)]">
-                      <AvatarImage src="https://i.pravatar.cc/150?img=8" />
-                      <AvatarFallback className="text-xs">MJ</AvatarFallback>
-                    </Avatar>
-                  </td>
-                  <td className="py-3 text-center">
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      📐
-                    </Button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <MwDataTable
+            columns={productColumns}
+            data={PRODUCT_DATA}
+            keyExtractor={(row) => row.id}
+            selectedKeys={selectedIds}
+          />
 
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[var(--border)]">
             <Button variant="outline" className="border-[var(--border)]">
@@ -302,9 +392,7 @@ export function PlanOverviewTab() {
               <div className=" text-xs text-[var(--mw-mirage)]">
                 $19,500
               </div>
-              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[var(--mw-yellow-400)]" style={{ width: '2.5%' }} />
-              </div>
+              <ProgressBar value={500} max={20000} size="sm" />
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
@@ -320,9 +408,7 @@ export function PlanOverviewTab() {
               <div className=" text-xs text-[var(--mw-amber)]">
                 $10,000
               </div>
-              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[var(--mw-amber)]" style={{ width: '50%' }} />
-              </div>
+              <ProgressBar value={10000} max={20000} size="sm" />
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
@@ -338,9 +424,7 @@ export function PlanOverviewTab() {
               <div className=" text-xs text-[var(--mw-mirage)]">
                 $7,000
               </div>
-              <div className="relative h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-[var(--mw-yellow-400)]" style={{ width: '30%' }} />
-              </div>
+              <ProgressBar value={3000} max={10000} size="sm" />
             </div>
           </div>
 
