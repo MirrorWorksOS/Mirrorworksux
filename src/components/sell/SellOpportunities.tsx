@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, Filter, DollarSign, Calendar, Flag } from 'lucide-react';
 import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
@@ -16,7 +17,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
-import { SellOpportunityDetail, type Opportunity } from './SellOpportunityDetail';
+import type { Opportunity } from './SellOpportunityDetail';
 
 const KANBAN_ITEM_TYPE = 'sell-opportunity';
 
@@ -51,8 +52,8 @@ const getPriorityBadge = (priority: Priority) => {
 };
 
 export function SellOpportunities() {
+  const navigate = useNavigate();
   const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
-  const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
 
   const getOpportunitiesByStage = (stage: OpportunityStage) => {
     return opportunities.filter(opp => opp.stage === stage);
@@ -60,7 +61,6 @@ export function SellOpportunities() {
 
   const handleStageChange = (id: string, stage: OpportunityStage) => {
     setOpportunities(prev => prev.map(o => o.id === id ? { ...o, stage } : o));
-    setSelectedOpp(prev => prev?.id === id ? { ...prev, stage } : prev);
   };
 
   const handleKanbanDrop = (item: KanbanDragItem, columnId: string) => {
@@ -122,11 +122,11 @@ export function SellOpportunities() {
                         role="button"
                         tabIndex={0}
                         className="p-4 cursor-pointer group"
-                        onClick={() => setSelectedOpp(opp)}
+                        onClick={() => navigate(`/sell/opportunities/${opp.id}`)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            setSelectedOpp(opp);
+                            navigate(`/sell/opportunities/${opp.id}`);
                           }
                         }}
                       >
@@ -172,13 +172,6 @@ export function SellOpportunities() {
         </KanbanBoard>
       </motion.div>
 
-      {/* Opportunity Detail Sheet */}
-      <SellOpportunityDetail
-        opportunity={selectedOpp}
-        open={!!selectedOpp}
-        onClose={() => setSelectedOpp(null)}
-        onStageChange={handleStageChange}
-      />
     </motion.div>
   );
 }

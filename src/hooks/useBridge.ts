@@ -1,31 +1,42 @@
+import { useMemo } from 'react';
 import { useBridgeStore } from '@/store/bridgeStore';
-import type { BridgeStep, ImportPath, SourceSystem } from '@/types/bridge';
+import type { BridgeStep, SourceSystem } from '@/types/bridge';
 
-/** Map source system to import path */
-function deriveImportPath(system: SourceSystem): ImportPath {
-  return system === 'pen_paper' ? 'manual_entry' : 'file_upload';
+/** Sources other than pen & paper imply file upload / API connection paths. */
+function needsUploadStep(sources: SourceSystem[]): boolean {
+  return sources.some((s) => s !== 'pen_paper');
 }
 
-/** Get ordered steps for the current import path */
-function getStepsForPath(
-  importPath: ImportPath | null,
+function needsScopeStep(sources: SourceSystem[]): boolean {
+  return sources.includes('pen_paper');
+}
+
+/** Ordered wizard steps from confirmed source selection and upload state. */
+export function getActiveSteps(
+  sourceSystems: SourceSystem[],
   hasEmployees: boolean,
   hasUploadedFiles: boolean
 ): BridgeStep[] {
-  if (!importPath) return ['source'];
+  if (sourceSystems.length === 0) {
+    return ['source'];
+  }
 
   const steps: BridgeStep[] = ['source'];
 
-  if (importPath === 'manual_entry') {
+  if (needsScopeStep(sourceSystems)) {
     steps.push('scope');
   }
 
-  // All paths get the upload step — pen & paper users can skip it
-  steps.push('upload');
+  if (needsUploadStep(sourceSystems)) {
+    steps.push('upload');
+  }
 
-  // If files were uploaded, show mapping; otherwise show manual entry for all paths
-  if (hasUploadedFiles) {
-    steps.push('mapping');
+  if (needsUploadStep(sourceSystems)) {
+    if (hasUploadedFiles) {
+      steps.push('mapping');
+    } else {
+      steps.push('manual_entry');
+    }
   } else {
     steps.push('manual_entry');
   }
@@ -35,6 +46,7 @@ function getStepsForPath(
   if (hasEmployees) {
     steps.push('team_setup');
   }
+
   return steps;
 }
 
@@ -42,25 +54,31 @@ export function useBridge() {
   const store = useBridgeStore();
 
   const hasUploadedFiles = store.files.length > 0;
-  const activeSteps = getStepsForPath(
-    store.importPath,
+  const hasEmployees =
     store.teamSuggestions.length > 0 ||
-      store.files.some((f) => f.detectedEntityType === 'employees'),
-    hasUploadedFiles
+    store.files.some((f) => f.detectedEntityType === 'employees');
+
+  const activeSteps = useMemo(
+    () => getActiveSteps(store.sourceSystems, hasEmployees, hasUploadedFiles),
+    [store.sourceSystems, hasEmployees, hasUploadedFiles]
   );
 
   const currentStepIndex = activeSteps.indexOf(store.currentStep);
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === activeSteps.length - 1;
 
-  function selectSource(system: SourceSystem) {
-    const path = deriveImportPath(system);
-    store.setSourceSystem(system);
-    store.setImportPath(path);
-    // Advance to the second step of the new path
-    const newSteps = getStepsForPath(path, false, false);
-    if (newSteps.length > 1) {
-      store.setCurrentStep(newSteps[1]);
+  /** Commit source step selections and advance (Continue / Skip — same bar). */
+  function confirmSourcesAndAdvance(systems: SourceSystem[]) {
+    if (systems.length === 0) return;
+    store.setSourceSystems(systems);
+    const steps = getActiveSteps(
+      systems,
+      store.teamSuggestions.length > 0 ||
+        store.files.some((f) => f.detectedEntityType === 'employees'),
+      store.files.length > 0
+    );
+    if (steps.length > 1) {
+      store.setCurrentStep(steps[1]);
     }
   }
 
@@ -86,7 +104,7 @@ export function useBridge() {
     currentStepIndex,
     isFirstStep,
     isLastStep,
-    selectSource,
+    confirmSourcesAndAdvance,
     goToNextStep,
     goToPreviousStep,
     goToStep,

@@ -1,5 +1,5 @@
 /**
- * Step 5 (Path C) — Guided manual data entry for pen & paper users.
+ * Guided manual data entry (PLAT 01). Machines include optional connectivity for shop-floor / networking setup.
  */
 import { useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
@@ -7,11 +7,46 @@ import { Button } from '@/components/ui/button';
 import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { cn } from '@/components/ui/utils';
-import { Plus, Pencil, Trash2, CheckCircle } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, CheckCircle } from 'lucide-react';
+
+type EntityFormDef = {
+  key: string;
+  label: string;
+  fields: { name: string; label: string; required?: boolean; placeholder?: string }[];
+};
+
+/** Optional fields aligned with shop-floor connectivity (see Confluence machine networking spec). */
+const MACHINE_CONNECTIVITY_FIELDS: {
+  name: string;
+  label: string;
+  placeholder?: string;
+}[] = [
+  {
+    name: 'integration_context',
+    label: 'Integration or protocol',
+    placeholder: 'e.g. OPC-UA, OEM cloud API, edge gateway',
+  },
+  {
+    name: 'network_identifier',
+    label: 'Network identifier',
+    placeholder: 'e.g. Hostname, IP, or device ID',
+  },
+  {
+    name: 'connectivity_notes',
+    label: 'Connectivity notes',
+    placeholder: 'e.g. Static IP, VLAN, firewall rules pending',
+  },
+];
 
 // Guided entry order per PLAT 01 §3.4.2
-const ENTITY_FORMS: { key: string; label: string; fields: { name: string; label: string; required?: boolean; placeholder?: string }[] }[] = [
+const ENTITY_FORMS: EntityFormDef[] = [
   {
     key: 'machines',
     label: 'Machines & work centres',
@@ -84,15 +119,29 @@ const ENTITY_FORMS: { key: string; label: string; fields: { name: string; label:
   },
 ];
 
+function getDisplayedFields(entity: EntityFormDef) {
+  if (entity.key === 'machines') {
+    return [
+      ...entity.fields,
+      { name: 'network_planned', label: 'Live data planned' },
+      ...MACHINE_CONNECTIVITY_FIELDS,
+    ];
+  }
+  return entity.fields;
+}
+
 export function StepManualEntry() {
   const { goToNextStep, goToPreviousStep } = useBridge();
   const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
   const [records, setRecords] = useState<Record<string, Record<string, string>[]>>({});
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [connectivityOpen, setConnectivityOpen] = useState(false);
 
   const entity = ENTITY_FORMS[currentEntityIndex];
+  const displayedFields = getDisplayedFields(entity);
   const entityRecords = records[entity.key] || [];
   const isLastEntity = currentEntityIndex === ENTITY_FORMS.length - 1;
+  const isMachines = entity.key === 'machines';
 
   const handleAdd = () => {
     const hasRequired = entity.fields
@@ -123,8 +172,6 @@ export function StepManualEntry() {
     }
   };
 
-  const totalEntered = Object.values(records).reduce((acc, r) => acc + r.length, 0);
-
   return (
     <div className="space-y-6">
       <div>
@@ -135,7 +182,6 @@ export function StepManualEntry() {
       </div>
 
       <div className="flex gap-6">
-        {/* Sidebar progress */}
         <div className="hidden sm:block w-48 shrink-0 space-y-2">
           {ENTITY_FORMS.map((e, i) => {
             const count = (records[e.key] || []).length;
@@ -145,7 +191,10 @@ export function StepManualEntry() {
               <button
                 key={e.key}
                 type="button"
-                onClick={() => { setCurrentEntityIndex(i); setFormData({}); }}
+                onClick={() => {
+                  setCurrentEntityIndex(i);
+                  setFormData({});
+                }}
                 className={cn(
                   'w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-left transition-colors',
                   isCurrent && 'bg-[#FFCF4B]/10 font-medium text-foreground',
@@ -161,7 +210,6 @@ export function StepManualEntry() {
           })}
         </div>
 
-        {/* Form */}
         <div className="flex-1 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             {entity.fields.map((field) => (
@@ -180,19 +228,69 @@ export function StepManualEntry() {
             ))}
           </div>
 
+          {isMachines && (
+            <Collapsible open={connectivityOpen} onOpenChange={setConnectivityOpen}>
+              <CollapsibleTrigger
+                type="button"
+                className="flex w-full items-center justify-between rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-4 py-3 text-left text-sm font-medium text-foreground hover:bg-[var(--neutral-100)] transition-colors"
+              >
+                <span>Connectivity (optional)</span>
+                <ChevronDown
+                  className={cn('h-4 w-4 shrink-0 transition-transform', connectivityOpen && 'rotate-180')}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-4 space-y-4">
+                <p className="text-xs text-muted-foreground">
+                  If this machine will send data to MirrorWorks (network, OEM cloud, or shop-floor device), capture
+                  details now or add them later in Control → Machines.
+                </p>
+                <div className="flex items-start gap-3 rounded-lg border border-[var(--neutral-200)] bg-white p-4">
+                  <Checkbox
+                    id="network_planned"
+                    checked={formData.network_planned === 'yes'}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        network_planned: checked === true ? 'yes' : '',
+                      }))
+                    }
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="network_planned" className="text-sm font-normal leading-snug cursor-pointer">
+                    Plan to connect this machine for live data (networked device, cloud API, or edge gateway)
+                  </Label>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {MACHINE_CONNECTIVITY_FIELDS.map((field) => (
+                    <div key={field.name} className="space-y-1.5 sm:col-span-2">
+                      <Label className="text-sm">{field.label}</Label>
+                      <Input
+                        value={formData[field.name] || ''}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                        placeholder={field.placeholder}
+                        className="h-10"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          )}
+
           <Button variant="outline" size="sm" onClick={handleAdd} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" />
             Add {entity.label.slice(0, -1).toLowerCase()}
           </Button>
 
-          {/* Records table */}
           {entityRecords.length > 0 && (
-            <div className="rounded-lg border overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="rounded-lg border overflow-hidden overflow-x-auto">
+              <table className="w-full text-sm min-w-[32rem]">
                 <thead className="bg-muted/50">
                   <tr>
-                    {entity.fields.map((f) => (
-                      <th key={f.name} className="px-3 py-2 text-left font-medium text-muted-foreground">{f.label}</th>
+                    {displayedFields.map((f) => (
+                      <th key={f.name} className="px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">
+                        {f.label}
+                      </th>
                     ))}
                     <th className="w-10" />
                   </tr>
@@ -200,11 +298,21 @@ export function StepManualEntry() {
                 <tbody>
                   {entityRecords.map((record, idx) => (
                     <tr key={idx} className="border-t">
-                      {entity.fields.map((f) => (
-                        <td key={f.name} className="px-3 py-2">{record[f.name] || '—'}</td>
+                      {displayedFields.map((f) => (
+                        <td key={f.name} className="px-3 py-2 whitespace-nowrap max-w-[12rem] truncate">
+                          {f.name === 'network_planned'
+                            ? record.network_planned === 'yes'
+                              ? 'Yes'
+                              : '—'
+                            : record[f.name] || '—'}
+                        </td>
                       ))}
                       <td className="px-2 py-2">
-                        <button type="button" onClick={() => handleRemove(idx)} className="text-muted-foreground hover:text-red-600">
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(idx)}
+                          className="text-muted-foreground hover:text-red-600"
+                        >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </td>
@@ -221,7 +329,14 @@ export function StepManualEntry() {
         <Button
           variant="ghost"
           className="h-12 min-h-[48px]"
-          onClick={currentEntityIndex > 0 ? () => { setCurrentEntityIndex((i) => i - 1); setFormData({}); } : goToPreviousStep}
+          onClick={
+            currentEntityIndex > 0
+              ? () => {
+                  setCurrentEntityIndex((i) => i - 1);
+                  setFormData({});
+                }
+              : goToPreviousStep
+          }
         >
           Back
         </Button>

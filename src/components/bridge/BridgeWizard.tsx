@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { BridgeStepper } from '@/components/bridge/BridgeStepper';
 import { StepSourceSelect } from '@/components/bridge/steps/StepSourceSelect';
@@ -10,7 +11,22 @@ import { StepImportResults } from '@/components/bridge/steps/StepImportResults';
 import { StepTeamSetup } from '@/components/bridge/steps/StepTeamSetup';
 
 export function BridgeWizard() {
-  const { currentStep } = useBridge();
+  const { currentStep, activeSteps, setCurrentStep, files } = useBridge();
+  const hasUploadedFiles = files.length > 0;
+
+  useEffect(() => {
+    if (activeSteps.includes(currentStep)) return;
+
+    if (hasUploadedFiles && activeSteps.includes('mapping')) {
+      setCurrentStep('mapping');
+    } else if (activeSteps.includes('manual_entry')) {
+      setCurrentStep('manual_entry');
+    } else if (activeSteps.includes('upload')) {
+      setCurrentStep('upload');
+    } else {
+      setCurrentStep(activeSteps[0] ?? 'source');
+    }
+  }, [activeSteps, currentStep, hasUploadedFiles, setCurrentStep]);
 
   const renderStep = () => {
     switch (currentStep) {

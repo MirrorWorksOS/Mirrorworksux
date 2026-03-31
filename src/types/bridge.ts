@@ -11,6 +11,7 @@ export type SourceSystem =
   | 'other_erp'
   | 'pen_paper';
 
+/** @deprecated Use sourceSystems-derived routing in useBridge; kept for spec cross-refs */
 export type ImportPath = 'file_upload' | 'manual_entry';
 
 export type BridgeStep =
@@ -146,8 +147,8 @@ export interface TeamSuggestion {
 
 export interface BridgeState {
   sessionId: string | null;
-  sourceSystem: SourceSystem | null;
-  importPath: ImportPath | null;
+  /** Confirmed data channels (multi-select). Empty until user completes the source step. */
+  sourceSystems: SourceSystem[];
   currentStep: BridgeStep;
   sessionStatus: SessionStatus;
   scopeAnswers: ScopeAnswers;
@@ -160,8 +161,8 @@ export interface BridgeState {
   teamSuggestions: TeamSuggestion[];
 
   // Actions
-  setSourceSystem: (system: SourceSystem) => void;
-  setImportPath: (path: ImportPath) => void;
+  setSourceSystems: (systems: SourceSystem[]) => void;
+  toggleSourceSystem: (system: SourceSystem) => void;
   setCurrentStep: (step: BridgeStep) => void;
   setSessionStatus: (status: SessionStatus) => void;
   addFile: (file: BridgeFile) => void;

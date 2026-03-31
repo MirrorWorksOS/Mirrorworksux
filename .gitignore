@@ -30,3 +30,16 @@ fix-*.sh
 # Logs
 *.log
 npm-debug.log*
+src/guidelines/MirrorWorksBridge.md
+src/guidelines/access/AccessRightsAndPermissions.md
+src/guidelines/book/Book-04-Screen-by-Screen.md
+src/guidelines/book/BudgetFunctionalityReview.md
+src/guidelines/make/Make-04-Screen-by-Screen.md
+src/guidelines/sell/Sell-04-Screen-by-Screen.md
+src/guidelines/sell/Sell-Figma-UX-Gap-Audit.md
+src/guidelines/modules/book/Book-04-Screen-by-Screen.md
+src/guidelines/modules/book/BudgetFunctionalityReview.md
+src/guidelines/modules/bridge/MirrorWorksBridge.md
+src/guidelines/modules/make/Make-04-Screen-by-Screen.md
+src/guidelines/modules/sell/Sell-04-Screen-by-Screen.md
+src/guidelines/modules/sell/Sell-Figma-UX-Gap-Audit.md

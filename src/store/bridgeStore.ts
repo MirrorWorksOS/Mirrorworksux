@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 import type {
   BridgeState,
   BridgeStep,
-  ImportPath,
   ImportProgress,
   ImportSummary,
   SessionStatus,
@@ -29,8 +28,7 @@ const initialScopeAnswers: ScopeAnswers = {
 
 const initialState = {
   sessionId: null as string | null,
-  sourceSystem: null as SourceSystem | null,
-  importPath: null as ImportPath | null,
+  sourceSystems: [] as SourceSystem[],
   currentStep: 'source' as BridgeStep,
   sessionStatus: 'in_progress' as SessionStatus,
   scopeAnswers: initialScopeAnswers,
@@ -48,8 +46,16 @@ export const useBridgeStore = create<BridgeState>()(
     (set) => ({
       ...initialState,
 
-      setSourceSystem: (system: SourceSystem) => set({ sourceSystem: system }),
-      setImportPath: (path: ImportPath) => set({ importPath: path }),
+      setSourceSystems: (systems: SourceSystem[]) => set({ sourceSystems: systems }),
+
+      toggleSourceSystem: (system: SourceSystem) =>
+        set((state) => {
+          const has = state.sourceSystems.includes(system);
+          const sourceSystems = has
+            ? state.sourceSystems.filter((s) => s !== system)
+            : [...state.sourceSystems, system];
+          return { sourceSystems };
+        }),
       setCurrentStep: (step: BridgeStep) => set({ currentStep: step }),
       setSessionStatus: (status: SessionStatus) => set({ sessionStatus: status }),
 
@@ -123,11 +129,10 @@ export const useBridgeStore = create<BridgeState>()(
       reset: () => set(initialState),
     }),
     {
-      name: 'mirrorworks-bridge',
+      name: 'mirrorworks-bridge-v2',
       partialize: (state) => ({
         sessionId: state.sessionId,
-        sourceSystem: state.sourceSystem,
-        importPath: state.importPath,
+        sourceSystems: state.sourceSystems,
         currentStep: state.currentStep,
         scopeAnswers: state.scopeAnswers,
       }),

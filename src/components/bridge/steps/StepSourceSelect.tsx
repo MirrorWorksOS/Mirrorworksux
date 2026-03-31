@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { cn } from '@/components/ui/utils';
 import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
@@ -8,6 +8,7 @@ import {
   Calculator,
   Server,
   PenLine,
+  Check,
 } from 'lucide-react';
 import type { SourceSystem } from '@/types/bridge';
 
@@ -70,19 +71,46 @@ const SOURCE_OPTIONS: SourceOption[] = [
   {
     id: 'pen_paper',
     label: 'Pen & paper',
-    description: "We'll help you enter everything from scratch",
+    description: 'Whiteboard, paper job cards, or manual scheduling — we will help you enter data',
     icon: <PenLine className="w-5 h-5" />,
   },
 ];
 
-export function StepSourceSelect() {
-  const { sourceSystem, selectSource } = useBridge();
-  const [selected, setSelected] = useState<SourceSystem | null>(sourceSystem);
+function setsEqual(a: Set<SourceSystem>, b: Set<SourceSystem>): boolean {
+  if (a.size !== b.size) return false;
+  for (const x of a) {
+    if (!b.has(x)) return false;
+  }
+  return true;
+}
 
-  const handleContinue = () => {
-    if (!selected) return;
-    selectSource(selected);
+export function StepSourceSelect() {
+  const { sourceSystems, currentStep, confirmSourcesAndAdvance } = useBridge();
+  const [selected, setSelected] = useState<Set<SourceSystem>>(() => new Set(sourceSystems));
+
+  useEffect(() => {
+    if (currentStep !== 'source') return;
+    const next = new Set(sourceSystems);
+    setSelected((prev) => (setsEqual(prev, next) ? prev : next));
+  }, [currentStep, sourceSystems]);
+
+  const toggle = (id: SourceSystem) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
+
+  const hasSelection = selected.size > 0;
+
+  const handleConfirm = () => {
+    if (!hasSelection) return;
+    confirmSourcesAndAdvance([...selected]);
+  };
+
+  const disabledHint = 'Select at least one data source to continue.';
 
   return (
     <div className="space-y-6">
@@ -91,18 +119,19 @@ export function StepSourceSelect() {
           Where is your data coming from?
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          We'll guide you through bringing your data into MirrorWorks.
+          Select everything that applies — for example, spreadsheets for parts and quotes, and pen &amp; paper or a
+          whiteboard for scheduling. We will combine those paths in one import journey.
         </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {SOURCE_OPTIONS.map((option) => {
-          const isSelected = selected === option.id;
+          const isSelected = selected.has(option.id);
           return (
             <button
               key={option.id}
               type="button"
-              onClick={() => setSelected(option.id)}
+              onClick={() => toggle(option.id)}
               className={cn(
                 'relative flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all',
                 'hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -113,15 +142,12 @@ export function StepSourceSelect() {
             >
               <span
                 className={cn(
-                  'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-                  isSelected
-                    ? 'border-foreground'
-                    : 'border-muted-foreground/40'
+                  'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors',
+                  isSelected ? 'border-foreground bg-foreground text-background' : 'border-muted-foreground/40'
                 )}
+                aria-hidden
               >
-                {isSelected && (
-                  <span className="h-2 w-2 rounded-full bg-foreground" />
-                )}
+                {isSelected && <Check className="h-3 w-3" strokeWidth={3} />}
               </span>
 
               <div className="flex-1 min-w-0">
@@ -129,9 +155,7 @@ export function StepSourceSelect() {
                   <span className="text-muted-foreground">{option.icon}</span>
                   <span className="font-medium text-sm">{option.label}</span>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {option.description}
-                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{option.description}</p>
               </div>
             </button>
           );
@@ -143,12 +167,13 @@ export function StepSourceSelect() {
           order="skip-first"
           skipLabel="Skip for now"
           primaryLabel="Continue"
-          onSkip={() => selectSource('spreadsheets')}
-          onPrimary={handleContinue}
-          primaryDisabled={!selected}
-          skipTooltip="Start with spreadsheets as your source. You can change this later."
-          primaryTooltip="Confirm your data source and continue the import wizard."
-          primaryDisabledTooltip="Select where your data is coming from to continue."
+          onSkip={handleConfirm}
+          onPrimary={handleConfirm}
+          primaryDisabled={!hasSelection}
+          skipDisabled={!hasSelection}
+          skipTooltip={!hasSelection ? disabledHint : 'Continue with your selected sources (same as Continue).'}
+          primaryTooltip="Confirm your data sources and continue the import wizard."
+          primaryDisabledTooltip={disabledHint}
         />
       </div>
     </div>

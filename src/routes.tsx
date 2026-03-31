@@ -10,6 +10,7 @@ import { WelcomeDashboard } from './components/WelcomeDashboard';
 import { SellDashboard } from './components/sell/SellDashboard';
 import { SellCRM } from './components/sell/SellCRM';
 import { SellOpportunities } from './components/sell/SellOpportunities';
+import { SellOpportunityPage } from './components/sell/SellOpportunityPage';
 import { SellOrders } from './components/sell/SellOrders';
 import { SellInvoices } from './components/sell/SellInvoices';
 import { SellProducts } from './components/sell/SellProducts';
@@ -110,6 +111,7 @@ export const router = createBrowserRouter([
           { path: 'crm', element: <SellCRM /> },
           { path: 'crm/:id', element: <SellCustomerDetail /> },
           { path: 'opportunities', element: <SellOpportunities /> },
+          { path: 'opportunities/:id', element: <SellOpportunityPage /> },
           { path: 'orders', element: <SellOrders /> },
           { path: 'invoices', element: <SellInvoices /> },
           { path: 'products', element: <SellProducts /> },
