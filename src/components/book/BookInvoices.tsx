@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 import { 
   AnimatedSearch, 
   AnimatedFilter, 
@@ -143,14 +144,14 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                 className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]">
+            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]" onClick={() => toast('Filter panel coming soon')}>
               <AnimatedFilter className="w-4 h-4 mr-2" />
               Filter
             </Button>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Exporting invoices…')}>
               <AnimatedDownload className="w-4 h-4 mr-2" />
               Export
             </Button>

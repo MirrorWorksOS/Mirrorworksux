@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Search, Filter, List, Calendar, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   addDays,
@@ -337,7 +338,7 @@ export function SellActivities() {
             className="h-9 w-full rounded-[var(--shape-md)] border border-[var(--border)] bg-white pl-9 pr-3 text-sm outline-none transition-colors focus:border-[var(--mw-yellow-400)] focus:ring-2 focus:ring-[var(--mw-yellow-400)]/20"
           />
         </div>
-        <Button variant="outline" size="sm" className="border-[var(--border)]">
+        <Button variant="outline" size="sm" className="border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}>
           <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
           Filter
         </Button>

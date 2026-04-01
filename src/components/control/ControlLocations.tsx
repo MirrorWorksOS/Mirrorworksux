@@ -10,6 +10,7 @@ import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 const LOCATIONS = [
@@ -90,7 +91,7 @@ export function ControlLocations() {
           <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Locations</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">{LOCATIONS.filter(l => l.status === 'active').length} active sites</p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New location coming soon')}>
           <Plus className="w-4 h-4" /> New location
         </Button>
       </div>

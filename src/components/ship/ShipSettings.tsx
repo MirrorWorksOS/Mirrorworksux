@@ -21,6 +21,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { toast } from 'sonner';
 
 // ── Permission keys for Ship module (from ARCH 00 §4.6) ──
 const shipPermissionKeys: PermissionKey[] = [
@@ -194,6 +195,7 @@ function CarriersPanel() {
                       ? 'border-[var(--border)] text-[var(--neutral-500)]'
                       : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] border-0'
                   )}
+                  onClick={() => toast(c.connected ? `${c.name} configuration coming soon` : `Connecting ${c.name}…`)}
                 >
                   {c.connected ? 'Configure' : 'Connect'}
                 </Button>
@@ -265,8 +267,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export dispatch log CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export returns CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting dispatch log CSV…')}>Export dispatch log CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting returns CSV…')}>Export returns CSV</Button>
         </div>
       </div>
     </div>

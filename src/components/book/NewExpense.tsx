@@ -9,6 +9,7 @@ import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
+import { toast } from 'sonner';
 
 export function NewExpense({ onBack }: { onBack: () => void }) {
   const [amount, setAmount] = useState('2450.00');
@@ -139,8 +140,8 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-[var(--mw-mirage)] rounded">Save as Draft</Button>
-            <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded">Submit for Approval</Button>
+            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-[var(--mw-mirage)] rounded" onClick={() => toast.success('Expense saved as draft')}>Save as Draft</Button>
+            <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded" onClick={() => toast.success('Expense submitted for approval')}>Submit for Approval</Button>
           </div>
         </Card>
 

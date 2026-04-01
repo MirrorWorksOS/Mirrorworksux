@@ -3,6 +3,7 @@
  * Panels: General, Leads & Pipeline, Quoting, Payments, Activities, Analytics, Integrations, Access & Permissions
  */
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Settings, Target, FileText, CreditCard, Calendar, BarChart3, Plug, Lock, Plus, Trash2, Mail, Phone } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -175,12 +176,12 @@ function PipelinePanel() {
           {sources.map(s => (
             <div key={s} className="flex items-center gap-1.5 bg-white border border-[var(--border)] rounded-full px-3 py-1.5">
               <span className="text-sm text-[var(--neutral-900)]">{s}</span>
-              <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
+              <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors" onClick={() => toast('Lead source removed')}>
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
-          <button className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
+          <button className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors" onClick={() => toast('Add lead source coming soon')}>
             <Plus className="w-4 h-4" /> Add source
           </button>
         </div>
@@ -329,6 +330,7 @@ function PaymentsPanel() {
                     ? 'border-[var(--border)] text-[var(--neutral-500)]'
                     : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
                 )}
+                onClick={() => toast(integ.connected ? `Opening ${integ.name} configuration\u2026` : `Connecting to ${integ.name}\u2026`)}
               >
                 {integ.connected ? 'Configure' : 'Connect'}
               </Button>
@@ -349,7 +351,7 @@ function PaymentsPanel() {
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] rounded-[var(--shape-md)]">Save bank details</Button>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] rounded-[var(--shape-md)]" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -385,7 +387,7 @@ function ActivitiesPanel() {
               </div>
             );
           })}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
+          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors" onClick={() => toast('Add activity type coming soon')}>
             <Plus className="w-4 h-4" /> Add activity type
           </button>
         </div>
@@ -455,8 +457,8 @@ function AnalyticsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]">Export pipeline CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]">Export activities CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]" onClick={() => toast.success('Pipeline CSV exported')}>Export pipeline CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]" onClick={() => toast.success('Activities CSV exported')}>Export activities CSV</Button>
         </div>
       </div>
     </div>
@@ -500,6 +502,7 @@ function IntegrationsPanel() {
                   ? 'border-[var(--border)] text-[var(--neutral-500)]'
                   : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
               )}
+              onClick={() => toast(integ.connected ? `Opening ${integ.name} configuration\u2026` : `Connecting to ${integ.name}\u2026`)}
             >
               {integ.connected ? 'Configure' : 'Connect'}
             </Button>

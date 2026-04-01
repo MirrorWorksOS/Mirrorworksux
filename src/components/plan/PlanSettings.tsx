@@ -11,6 +11,7 @@ import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
+import { toast } from 'sonner';
 import {
   ModuleSettingsLayout,
   SectionLabel,
@@ -236,8 +237,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export schedule CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export BOM report CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export schedule CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export BOM report CSV</Button>
         </div>
       </div>
     </div>

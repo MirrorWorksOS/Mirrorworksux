@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 interface Bill {
@@ -81,7 +82,7 @@ export function BuyBills() {
             {totals.issues > 0 && <span className="text-[var(--mw-error)] ml-2">· {totals.issues} require attention</span>}
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New bill coming soon')}>
           <Plus className="w-4 h-4" /> New bill
         </Button>
       </div>
@@ -207,14 +208,14 @@ export function BuyBills() {
               </div>
 
               {selected.status === 'matched' && (
-                <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] h-11">
+                <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] h-11" onClick={() => toast.success('Bill approved for payment')}>
                   Approve for payment
                 </Button>
               )}
               {selected.status === 'mismatch' && (
                 <div className="flex gap-3">
-                  <Button className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white h-11 text-sm">Reject</Button>
-                  <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm">Query supplier</Button>
+                  <Button className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white h-11 text-sm" onClick={() => toast.success('Bill rejected')}>Reject</Button>
+                  <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm" onClick={() => toast('Supplier query coming soon')}>Query supplier</Button>
                 </div>
               )}
             </div>

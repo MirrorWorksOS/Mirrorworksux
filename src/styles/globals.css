@@ -470,6 +470,61 @@
 .slide-out-to-left { --tw-exit-translate-x: -100%; }
 .slide-out-to-right { --tw-exit-translate-x: 100%; }
 
+/* ─── MW Shine / Skeleton loading effect ─── */
+/* Subtle gradient sweep for loading states on cards and bento grids.
+   Inspired by animate-ui.com shine primitive. Apply class "mw-shine" to any element. */
+
+@keyframes mw-shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.mw-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.mw-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.08) 37%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 63%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: mw-shine 3s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Darker variant for cards on white backgrounds — uses border shadow instead of white */
+.mw-shine-subtle::after {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(0, 0, 0, 0.015) 42%,
+    rgba(0, 0, 0, 0.03) 50%,
+    rgba(0, 0, 0, 0.015) 58%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: mw-shine 4s ease-in-out infinite;
+}
+
+/* Entry shimmer — plays once on mount then stops */
+.mw-shine-once::after {
+  animation: mw-shine 1.5s ease-in-out 1 forwards;
+}
+
 /* ─── MW transition utility ─── */
 @utility transition-mw {
   transition-property: color, background-color, border-color, box-shadow, opacity, transform;

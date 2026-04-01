@@ -7,6 +7,7 @@ import { Truck, Download, Printer, Sparkles } from 'lucide-react';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
+import { toast } from 'sonner';
 
 const CARRIERS = [
   { name: 'Australia Post', ships: 12, avg: 3.2, onTime: 97, ok: true },
@@ -141,7 +142,7 @@ export function ShipShipping() {
       {tab === 'manifests' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
+            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium" onClick={() => toast.success('Shipping manifest generated')}>
               Generate manifest
             </button>
           </div>
@@ -168,10 +169,10 @@ export function ShipShipping() {
                       </div>
                     </td>
                     <td className="px-4 py-3 flex gap-1">
-                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors">
+                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast.success('Downloading shipping document…')}>
                         <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
                       </button>
-                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors">
+                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Printing label…')}>
                         <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
                       </button>
                     </td>

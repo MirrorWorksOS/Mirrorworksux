@@ -13,6 +13,7 @@ import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 type Panel = 'general' | 'approval' | 'suppliers' | 'notifications';
@@ -36,8 +37,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
-      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10">Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl">Save changes</Button>
+      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10" onClick={() => toast('Changes discarded')}>Discard</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }

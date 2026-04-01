@@ -114,7 +114,7 @@ export function KpiStatCard({
       <Card
         variant="flat"
         className={cn(
-          "border border-[var(--border)] p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
+          "mw-shine mw-shine-once border border-[var(--border)] p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
           className,
         )}
       >
@@ -137,7 +137,7 @@ export function KpiStatCard({
     <Card
       variant="flat"
       className={cn(
-        "p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
+        "mw-shine mw-shine-once p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
         className,
       )}
     >

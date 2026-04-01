@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Search, Filter, Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -116,7 +117,7 @@ export function SellCRM() {
         title="Customers"
         subtitle={`${filteredCustomers.length} total customers`}
         actions={
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New customer form coming soon')}>
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Customer
           </Button>
@@ -135,7 +136,7 @@ export function SellCRM() {
           />
         </div>
 
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
@@ -233,7 +234,7 @@ export function SellCRM() {
             icon={Briefcase}
             title="No customers found"
             description="Try adjusting your search or create a new customer to get started"
-            action={{ label: "Create Customer", onClick: () => {}, icon: Plus }}
+            action={{ label: "Create Customer", onClick: () => toast('New customer form coming soon'), icon: Plus }}
           />
         </Card>
       )}

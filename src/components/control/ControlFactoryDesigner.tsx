@@ -7,13 +7,14 @@ import { Layout } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
+import { toast } from 'sonner';
 
 export function ControlFactoryDesigner() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Factory designer</h1>
-        <Button className="h-12 min-h-[48px] rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]">
+        <Button className="h-12 min-h-[48px] rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Factory layout designer coming soon')}>
           <Layout className="mr-2 h-4 w-4" />
           New layout
         </Button>

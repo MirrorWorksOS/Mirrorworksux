@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useParams, useNavigate, Link } from "react-router";
 import {
   ArrowLeft,
@@ -457,7 +458,7 @@ export function SellInvoiceDetail() {
               <h2 className="text-base font-medium text-[var(--neutral-900)]">
                 Line items
               </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12">
+              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Line Item
               </Button>
@@ -521,7 +522,7 @@ export function SellInvoiceDetail() {
                   <h2 className="text-base font-medium text-[var(--neutral-900)]">Payment history</h2>
                   <p className="text-xs text-[var(--neutral-500)]">Timeline of invoice events and payments</p>
                 </div>
-                <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12">
+                <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Record payment coming soon')}>
                   <DollarSign className="mr-2 h-4 w-4" />
                   Record Payment
                 </Button>
@@ -600,15 +601,15 @@ export function SellInvoiceDetail() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]">
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Invoice sent')}>
             <Mail className="mr-2 h-4 w-4" />
             Send Invoice
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]">
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Downloading PDF\u2026')}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Record payment coming soon')}>
             <DollarSign className="mr-2 h-4 w-4" />
             Record Payment
           </Button>

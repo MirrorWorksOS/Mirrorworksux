@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 const INVENTORY = [
@@ -68,10 +69,10 @@ export function ControlInventory() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast.success('Exporting inventory...')}>
             <Download className="w-4 h-4" /> Export
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New inventory item coming soon')}>
             <Plus className="w-4 h-4" /> New item
           </Button>
         </div>

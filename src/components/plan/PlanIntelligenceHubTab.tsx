@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sparkles, Save, Send, Share2, Upload, Download, Camera, Paperclip, FileText, Clock, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -8,8 +8,25 @@ import { cn } from '../ui/utils';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { AIInsightCard, AIInsightMessage } from '@/components/shared/ai/AIInsightCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
+import { toast } from 'sonner';
 
 export function PlanIntelligenceHubTab() {
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+
+  const handleChatSubmit = () => {
+    const msg = chatInput.trim();
+    if (!msg) return;
+    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
+    setChatInput('');
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'ai', text: "I've analyzed the job data. The current schedule looks on track with 67% completion. Would you like me to suggest optimizations?" },
+      ]);
+    }, 800);
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* AI Suggestions */}
@@ -399,16 +416,43 @@ export function PlanIntelligenceHubTab() {
           </div>
         </div>
 
+        {/* Chat Messages */}
+        {chatMessages.length > 0 && (
+          <div className="space-y-2 mb-4">
+            {chatMessages.map((m, i) => (
+              <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
+                {m.role === 'ai' && (
+                  <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center text-[10px] font-bold shrink-0">AI</div>
+                )}
+                <div className={cn(
+                  'rounded-lg px-3 py-2 text-xs max-w-[85%]',
+                  m.role === 'user'
+                    ? 'bg-[var(--mw-mirage)] text-white'
+                    : 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+                )}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Input Bar */}
         <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
           <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
             <Paperclip className="w-5 h-5 text-[var(--neutral-500)]" />
           </Button>
-          <Input placeholder="Type a message..." className="flex-1" />
+          <Input
+            placeholder="Type a message..."
+            className="flex-1"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
+          />
           <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
             <Camera className="w-5 h-5 text-[var(--neutral-500)]" />
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]" onClick={handleChatSubmit}>
             Send
           </Button>
         </div>

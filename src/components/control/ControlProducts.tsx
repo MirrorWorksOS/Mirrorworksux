@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 const PRODUCTS = [
@@ -57,7 +58,7 @@ export function ControlProducts() {
             {PRODUCTS.filter(p => p.status === 'active').length} active products
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New product coming soon')}>
           <Plus className="w-4 h-4" /> New product
         </Button>
       </div>

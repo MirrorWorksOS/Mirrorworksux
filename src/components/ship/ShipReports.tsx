@@ -21,6 +21,7 @@ import {
 } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 const LINE_STROKE = 'var(--chart-scale-mid)';
 
@@ -72,7 +73,7 @@ export function ShipReports() {
             <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
               <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
             </button>
-            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
+            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
               <Download className="h-4 w-4" strokeWidth={1.5} /> Export
             </button>
           </>

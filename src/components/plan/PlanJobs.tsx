@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { toast } from 'sonner';
 
 // remove unused PlanJobsProps interface
 type ViewMode = 'kanban' | 'list' | 'card';
@@ -201,7 +202,7 @@ export function PlanJobs() {
         <PageHeader
           title="Jobs"
           actions={
-            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
+            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => toast('New job form coming soon')}>
               <Plus className="w-4 h-4 mr-2" />
               Create Job
             </Button>
@@ -218,7 +219,7 @@ export function PlanJobs() {
                 className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]">
+            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]" onClick={() => toast('Filter panel coming soon')}>
               <Filter className="w-4 h-4 mr-2" />
               Filter
             </Button>

@@ -3,6 +3,7 @@
  * Customer selection, dates, terms, BOM-linked line items, margin calculation, totals
  */
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Plus, Trash2, ChevronDown, FileText, X, Sparkles, ArrowLeft } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Button } from '../ui/button';
@@ -150,10 +151,10 @@ export function SellNewQuote() {
             variant="warning"
             onConfirm={() => navigate(-1)}
           />
-          <Button variant="outline" className="border-[var(--border)] h-10">
+          <Button variant="outline" className="border-[var(--border)] h-10" onClick={() => toast.success('Quote saved as draft')}>
             Save draft
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-10 gap-2">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-10 gap-2" onClick={() => toast.success('Quote sent successfully')}>
             <FileText className="w-4 h-4" /> Send quote
           </Button>
         </div>
@@ -421,10 +422,10 @@ export function SellNewQuote() {
                 </div>
               </Card>
 
-              <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-12 gap-2">
+              <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-12 gap-2" onClick={() => toast.success('Quote sent successfully')}>
                 <FileText className="w-4 h-4" /> Send quote
               </Button>
-              <Button variant="outline" className="w-full border-[var(--border)] h-10">
+              <Button variant="outline" className="w-full border-[var(--border)] h-10" onClick={() => toast('Generating PDF preview\u2026')}>
                 Preview PDF
               </Button>
             </div>

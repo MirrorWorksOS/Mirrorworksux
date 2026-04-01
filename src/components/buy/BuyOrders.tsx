@@ -14,6 +14,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 
 type POStatus = 'draft' | 'sent' | 'acknowledged' | 'partial' | 'received' | 'cancelled';
@@ -73,15 +74,15 @@ export function BuyOrders() {
         subtitle={`${filteredPOs.length} orders • $${totalValue.toLocaleString()} total value`}
         actions={
           <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Exporting purchase orders...')}>
               <AnimatedDownload className="w-4 h-4" />
               Export
             </Button>
-            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
+            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={() => toast('New purchase order coming soon')}>
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New PO
             </Button>
@@ -155,7 +156,7 @@ export function BuyOrders() {
                         </div>
                       </td>
                       <td className="px-4">
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast('PO actions coming soon')}>
                           <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                         </button>
                       </td>

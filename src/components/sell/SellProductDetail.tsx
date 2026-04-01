@@ -4,7 +4,9 @@
  * Figma nodes: 484:251921 through 519:332160
  */
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { ArrowLeft, Edit, MoreVertical, Package, TrendingUp, AlertTriangle, FileText, Download, CheckCircle } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -147,7 +149,7 @@ function ManufacturingTab() {
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-medium text-[var(--neutral-900)]">Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time</h4>
-          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit routing</Button>
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit routing coming soon')}>Edit routing</Button>
         </div>
         <table className="w-full">
           <thead>
@@ -175,7 +177,7 @@ function ManufacturingTab() {
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h4 className="text-sm font-medium text-[var(--neutral-900)]">Bill of Materials · v1.2</h4>
-          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs">Edit BOM</Button>
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit BOM coming soon')}>Edit BOM</Button>
         </div>
         <table className="w-full">
           <thead>
@@ -336,7 +338,7 @@ function DocumentsTab() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] gap-2" onClick={() => toast('Upload document coming soon')}>
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
@@ -372,7 +374,7 @@ function DocumentsTab() {
                   }
                 </td>
                 <td className="px-4">
-                  <button className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                  <button className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast.success('Downloading\u2026')}>
                     <Download className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </td>
@@ -417,12 +419,21 @@ export function SellProductDetail() {
           </div>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+          <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast('Edit product coming soon')}>
             <Edit className="w-4 h-4" /> Edit
           </Button>
-          <Button variant="ghost" className="h-10 px-2">
-            <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-10 px-2">
+                <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => toast.success('Product duplicated')}>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast('Archive product coming soon')}>Archive</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast('Product deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

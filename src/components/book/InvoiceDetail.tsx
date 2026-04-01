@@ -5,6 +5,7 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
+import { toast } from 'sonner';
 
 const lineItems = [
   { num: 1, product: '10mm MS Plate', desc: 'AS/NZS 3678-250', qty: '50', unit: '$85.00', disc: '5%', tax: 'GST 10%', total: '$4,037.50' },
@@ -28,7 +29,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
           <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
-          <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]"><DollarSign className="w-4 h-4" /> Record Payment</Button>
+          <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]" onClick={() => toast('Payment recording form coming soon')}><DollarSign className="w-4 h-4" /> Record Payment</Button>
           <Button variant="ghost" size="icon" className="w-11 h-11"><MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" /></Button>
         </div>
       </div>
@@ -127,7 +128,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               <span className="text-sm text-[var(--mw-mirage)] font-medium">Payments</span>
             </div>
             <p className="text-sm text-muted-foreground text-center py-4">No payments recorded yet</p>
-            <Button variant="ghost" className="w-full text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-600)]">Record Payment</Button>
+            <Button variant="ghost" className="w-full text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-600)]" onClick={() => toast('Payment recording form coming soon')}>Record Payment</Button>
           </Card>
 
           {/* Email History */}

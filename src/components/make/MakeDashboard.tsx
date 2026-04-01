@@ -17,6 +17,7 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { toast } from 'sonner';
 
 
 type MachineStatus = 'running' | 'idle' | 'down' | 'maintenance' | 'setup';
@@ -303,7 +304,7 @@ export function MakeDashboard() {
                 { label: 'Print Traveler', icon: Printer },
                 { label: 'Log Downtime', icon: TimerOff },
               ]).map((action) => (
-                <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4 text-xs font-medium">
+                <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4 text-xs font-medium" onClick={() => toast(`${action.label} coming soon`)}>
                   <action.icon className="w-5 h-5 text-[var(--mw-mirage)]" />
                   {action.label}
                 </Button>

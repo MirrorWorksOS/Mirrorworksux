@@ -1,69 +1,81 @@
 /**
- * MakeShopFloor - Shop floor overview with standardized shadcn Tabs.
+ * MakeShopFloor — Shop floor overview using shared JobWorkspaceLayout.
  *
  * Tabs: Overview, Kanban, Work Orders
- * (Time Clock, Quality, and Intelligence Hub promoted to standalone routes)
+ * Standardised to match MakeManufacturingOrderDetail pattern.
  */
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { ArrowLeft, Monitor } from 'lucide-react';
+import {
+  JobWorkspaceLayout,
+  type JobWorkspaceTabConfig,
+} from '@/components/shared/layout/JobWorkspaceLayout';
+import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { PageShell } from '@/components/shared/layout/PageShell';
-import { PageHeader } from '@/components/shared/layout/PageHeader';
 
-import { OverviewTab }        from '../shop-floor/OverviewTab';
+import { OverviewTab } from '../shop-floor/OverviewTab';
 import { MakeShopFloorKanban } from './MakeShopFloorKanban';
-import { WorkTab }            from '../shop-floor/WorkTab';
+import { WorkTab } from '../shop-floor/WorkTab';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
+import { useNavigate } from 'react-router';
+
+const TABS: JobWorkspaceTabConfig[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'kanban', label: 'Kanban' },
+  { id: 'work', label: 'Work Orders', count: 4 },
+];
 
 export function MakeShopFloor() {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
+  const navigate = useNavigate();
 
   return (
-    <PageShell className="space-y-0">
-      <PageHeader
+    <>
+      <JobWorkspaceLayout
+        breadcrumbs={[
+          { label: 'Make', href: '/make' },
+          { label: 'Shop Floor' },
+        ]}
         title="Shop Floor"
         subtitle="Real-time production overview and work order management"
-      />
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex w-full flex-col gap-0">
-        <TabsList className="h-auto w-full min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 sm:w-fit mx-6">
-          <TabsTrigger value="overview" className="gap-2 px-3 sm:px-4">
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="kanban" className="gap-2 px-3 sm:px-4">
-            Kanban
-          </TabsTrigger>
-          <TabsTrigger value="work" className="gap-2 px-3 sm:px-4">
-            <span>Work Orders</span>
-            <Badge
-              variant="secondary"
-              className="border-0 bg-[var(--neutral-200)] px-1.5 py-0 text-xs font-medium text-[var(--neutral-800)] tabular-nums"
+        headerActions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="border-[var(--border)]"
+              onClick={() => navigate('/make')}
             >
-              4
-            </Badge>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="mt-0 focus-visible:outline-none">
-          <div className="h-[calc(100vh-180px)] overflow-hidden">
-            <OverviewTab />
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           </div>
-        </TabsContent>
-
-        <TabsContent value="kanban" className="mt-0 focus-visible:outline-none">
-          <div className="h-[calc(100vh-180px)] overflow-hidden">
-            <MakeShopFloorKanban />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="work" className="mt-0 focus-visible:outline-none">
-          <div className="flex flex-col h-[calc(100vh-180px)] overflow-hidden">
-            <WorkTab onSelectWorkOrder={setSelectedWorkOrder} />
-          </div>
-        </TabsContent>
-      </Tabs>
+        }
+        tabs={TABS}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        renderTabPanel={(tabId) => {
+          switch (tabId) {
+            case 'overview':
+              return <OverviewTab />;
+            case 'kanban':
+              return (
+                <div className="h-[calc(100vh-280px)] overflow-hidden">
+                  <MakeShopFloorKanban />
+                </div>
+              );
+            case 'work':
+              return (
+                <div className="flex flex-col h-[calc(100vh-280px)] overflow-hidden">
+                  <WorkTab onSelectWorkOrder={setSelectedWorkOrder} />
+                </div>
+              );
+            default:
+              return null;
+          }
+        }}
+      />
 
       {/* WorkOrderFullScreen overlay */}
       {selectedWorkOrder && (
@@ -72,6 +84,6 @@ export function MakeShopFloor() {
           onClose={() => setSelectedWorkOrder(null)}
         />
       )}
-    </PageShell>
+    </>
   );
 }

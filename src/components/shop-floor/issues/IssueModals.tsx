@@ -13,6 +13,7 @@ import { Checkbox } from '../../ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Separator } from '../../ui/separator';
 import { cn } from '../../ui/utils';
+import { toast } from 'sonner';
 
 // --- Shared Components ---
 
@@ -119,7 +120,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-black text-white hover:bg-[var(--neutral-800)]">Submit Issue</Button>
+         <Button className="flex-1 bg-black text-white hover:bg-[var(--neutral-800)]" onClick={() => { toast.success('Issue submitted successfully'); onClose(); }}>Submit Issue</Button>
       </div>
     </div>
   );
@@ -206,7 +207,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-red-600 text-white hover:bg-red-700">Stop & Submit</Button>
+         <Button className="flex-1 bg-red-600 text-white hover:bg-red-700" onClick={() => { toast.success('Machine issue reported — maintenance notified'); onClose(); }}>Stop & Submit</Button>
       </div>
     </div>
   );
@@ -280,7 +281,7 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-purple-600 text-white hover:bg-purple-700">Submit & Quarantine</Button>
+         <Button className="flex-1 bg-purple-600 text-white hover:bg-purple-700" onClick={() => { toast.success('NCR submitted and part quarantined'); onClose(); }}>Submit & Quarantine</Button>
       </div>
     </div>
   );
@@ -338,7 +339,7 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--neutral-900)] text-white hover:bg-[var(--neutral-800)]">Log Scrap</Button>
+         <Button className="flex-1 bg-[var(--neutral-900)] text-white hover:bg-[var(--neutral-800)]" onClick={() => { toast.success('Scrap logged successfully'); onClose(); }}>Log Scrap</Button>
       </div>
     </div>
   );

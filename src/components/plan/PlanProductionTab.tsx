@@ -15,6 +15,7 @@ import {
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
+import { toast } from 'sonner';
 
 /* ------------------------------------------------------------------ */
 /*  Types & data                                                       */
@@ -248,13 +249,13 @@ export function PlanProductionTab() {
         <div className="p-6">
           {/* Toolbar (§4.6.2) */}
           <div className="flex items-center gap-1 mb-3 bg-[var(--neutral-100)] rounded-[var(--shape-sm)] p-1 w-fit">
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Home className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Layers className="w-3.5 h-3.5 mr-1" /> Model</Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Settings className="w-3.5 h-3.5 mr-1" /> Properties</Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Home className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Layers className="w-3.5 h-3.5 mr-1" /> Model</Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Settings className="w-3.5 h-3.5 mr-1" /> Properties</Button>
             <div className="w-px h-4 bg-[var(--border)]" />
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Printer className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Camera className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs"><Share2 className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Printer className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Camera className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
           </div>
 
           {/* 3D Viewport placeholder — would embed Autodesk APS Viewer SDK */}
@@ -286,10 +287,10 @@ export function PlanProductionTab() {
 
           {/* Footer actions */}
           <div className="flex items-center gap-2 mt-3">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]" onClick={() => toast('Markup view coming soon')}>
               <FileText className="w-4 h-4 mr-1.5" /> BOM
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]" onClick={() => toast('Downloading CAD file...')}>
               <Download className="w-4 h-4 mr-1.5" /> CAD File
             </Button>
             <span className="text-xs text-[var(--neutral-500)] ml-auto">Next: {products.find(p => p.id !== activeProduct)?.name ?? '—'}</span>

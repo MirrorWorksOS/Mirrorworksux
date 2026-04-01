@@ -13,6 +13,7 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { toast } from 'sonner';
 
 interface Product {
   id: string;
@@ -49,7 +50,7 @@ export function MakeProducts() {
       <PageHeader
         title="Products"
         subtitle={`${PRODUCTS.length} products with manufacturing data`}
-        actions={<ToolbarPrimaryButton label="New Product" onClick={() => {}} />}
+        actions={<ToolbarPrimaryButton label="New Product" onClick={() => toast('New product form coming soon')} />}
       />
 
       <div className="flex items-center gap-3 px-6 pb-4">
@@ -62,7 +63,7 @@ export function MakeProducts() {
             className="pl-9 h-10 border-[var(--border)]"
           />
         </div>
-        <ToolbarFilterButton />
+        <ToolbarFilterButton onClick={() => toast('Filter panel coming soon')} />
       </div>
 
       <div className="px-6">

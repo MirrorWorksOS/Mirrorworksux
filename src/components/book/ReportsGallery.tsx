@@ -7,6 +7,7 @@ import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 const xeroReports = [
   { icon: BarChart3, title: 'Profit & Loss', desc: 'Income statement with job-level tracking via Xero' },
@@ -41,7 +42,7 @@ const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) =>
     </div>
     <p className="text-xs text-[var(--neutral-500)] mb-4">{desc}</p>
     <div className="flex items-center justify-between">
-      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-[var(--mw-mirage)] rounded">Generate</Button>
+      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-[var(--mw-mirage)] rounded" onClick={() => toast('Generating report…')}>Generate</Button>
       {badge && <span className="text-xs text-[var(--neutral-400)]">{badge}</span>}
     </div>
   </Card>

@@ -9,6 +9,7 @@ import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { toast } from 'sonner';
 
 type Stage = 'Pick' | 'Pack' | 'Ship' | 'Transit' | 'Delivered';
 
@@ -186,10 +187,10 @@ export function ShipOrders() {
                   <DetailTimeline current={selected.stage} />
                 </div>
                 <div className="flex gap-4">
-                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors">
+                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
                     Advance stage
                   </button>
-                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors">
+                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
                     Flag issue
                   </button>
                 </div>

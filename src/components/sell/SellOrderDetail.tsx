@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useParams, Link } from "react-router";
 import {
   ArrowLeft,
@@ -468,7 +469,7 @@ export function SellOrderDetail() {
               <h2 className="text-base font-medium text-[var(--neutral-900)]">
                 Line items
               </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12">
+              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
                 <Package className="mr-2 h-4 w-4" />
                 Add item
               </Button>
@@ -588,7 +589,7 @@ export function SellOrderDetail() {
           <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-base font-medium text-[var(--neutral-900)]">Documents</h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12">
+              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Upload document coming soon')}>
                 <FileText className="mr-2 h-4 w-4" />
                 Upload
               </Button>
@@ -605,7 +606,7 @@ export function SellOrderDetail() {
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="h-9 border-[var(--border)]">
+                  <Button variant="outline" size="sm" className="h-9 border-[var(--border)]" onClick={() => toast.success('Downloading\u2026')}>
                     <Download className="mr-2 h-3.5 w-3.5" />
                     Download
                   </Button>
@@ -649,11 +650,11 @@ export function SellOrderDetail() {
               Back
             </Link>
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]">
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Email sent to customer')}>
             <Mail className="mr-2 h-4 w-4" />
             Email Customer
           </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Printing\u2026'); window.print(); }}>
             <Printer className="mr-2 h-4 w-4" />
             Print Order
           </Button>

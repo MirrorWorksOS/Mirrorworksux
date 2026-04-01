@@ -12,6 +12,7 @@ import { MwDataTable, type MwColumnDef } from '../shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '../shared/data/StatusBadge';
 import { ProgressBar } from '../shared/data/ProgressBar';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 type ProductRow = {
   id: string;
@@ -64,6 +65,21 @@ const PRODUCT_DATA: ProductRow[] = [
 export function PlanOverviewTab() {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+
+  const handleChatSubmit = () => {
+    const msg = chatInput.trim();
+    if (!msg) return;
+    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
+    setChatInput('');
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'ai', text: "I've analyzed the job data. The current schedule looks on track with 67% completion. Would you like me to suggest optimizations?" },
+      ]);
+    }, 800);
+  };
   const allSelected = selectedIds.size === PRODUCT_DATA.length;
   const someSelected = selectedIds.size > 0 && !allSelected;
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -633,15 +649,41 @@ export function PlanOverviewTab() {
             </div>
           </div>
 
+          {chatMessages.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {chatMessages.map((m, i) => (
+                <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
+                  {m.role === 'ai' && (
+                    <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center text-[10px] font-bold shrink-0">AI</div>
+                  )}
+                  <div className={cn(
+                    'rounded-lg px-3 py-2 text-xs max-w-[85%]',
+                    m.role === 'user'
+                      ? 'bg-[var(--mw-mirage)] text-white'
+                      : 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+                  )}>
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Input placeholder="Type a message..." className="flex-1 h-8 text-xs" />
+            <Input
+              placeholder="Type a message..."
+              className="flex-1 h-8 text-xs"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
+            />
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3">
+            <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3" onClick={handleChatSubmit}>
               Send
             </Button>
           </div>

@@ -46,3 +46,4 @@ src/guidelines/modules/sell/Sell-Figma-UX-Gap-Audit.md
 src/guidelines/modules/make/gap-analysis.md
 src/guidelines/modules/plan/gap-analysis.md
 .gitignore
+src/guidelines/modules/placeholder-audit.md

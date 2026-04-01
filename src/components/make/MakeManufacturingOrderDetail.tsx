@@ -24,6 +24,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
+import { toast } from 'sonner';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -96,6 +97,21 @@ export function MakeManufacturingOrderDetail() {
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
   const [showChat, setShowChat] = useState(false);
   const [summaryFilter, setSummaryFilter] = useState<SummaryFilterKey | null>(null);
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+
+  const handleChatSubmit = () => {
+    const msg = chatInput.trim();
+    if (!msg) return;
+    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
+    setChatInput('');
+    setTimeout(() => {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: 'ai', text: 'Based on the current production data, WO-001 is progressing well. Material availability is confirmed for remaining operations.' },
+      ]);
+    }, 800);
+  };
 
   const mo = id ? MO_BY_ID[id] : undefined;
 
@@ -691,13 +707,40 @@ export function MakeManufacturingOrderDetail() {
         </div>
       </div>
 
+      {/* Chat Messages */}
+      {chatMessages.length > 0 && (
+        <div className="px-3 space-y-2 mb-2">
+          {chatMessages.map((m, i) => (
+            <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
+              {m.role === 'ai' && (
+                <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center text-[10px] font-bold shrink-0">AI</div>
+              )}
+              <div className={cn(
+                'rounded-lg px-3 py-2 text-xs max-w-[85%]',
+                m.role === 'user'
+                  ? 'bg-[var(--mw-mirage)] text-white'
+                  : 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
+              )}>
+                {m.text}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Input Bar */}
       <div className="p-3 border-t border-[var(--border)] flex items-center gap-2">
         <Button variant="ghost" size="sm" className="h-9 w-9 p-0 shrink-0">
           <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
         </Button>
-        <Input placeholder="Type a message..." className="flex-1 h-9 text-xs" />
-        <Button size="sm" className="h-9 px-3 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] shrink-0">
+        <Input
+          placeholder="Type a message..."
+          className="flex-1 h-9 text-xs"
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
+        />
+        <Button size="sm" className="h-9 px-3 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
           <Send className="w-4 h-4" />
         </Button>
       </div>

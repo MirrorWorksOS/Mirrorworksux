@@ -25,6 +25,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { toast } from 'sonner';
 
 // ── Permission keys for Book module (from ARCH 00 §4.7) ──
 const bookPermissionKeys: PermissionKey[] = [
@@ -206,7 +207,7 @@ function InvoicingPanel() {
               </div>
               <div className="flex items-center gap-3">
                 <Switch defaultChecked={t.active} />
-                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-[var(--shape-lg)]">Edit</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-[var(--shape-lg)]" onClick={() => toast('Edit account form coming soon')}>Edit</Button>
               </div>
             </div>
           ))}
@@ -325,7 +326,7 @@ function XeroPanel() {
             <h4 className="text-sm font-medium text-[var(--mw-mirage)]">Account mapping</h4>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
-          <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm">Configure mapping</Button>
+          <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm" onClick={() => toast('Xero mapping configuration coming soon')}>Configure mapping</Button>
         </div>
       </Card>
     </div>
@@ -380,8 +381,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export invoices CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Export expenses CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting invoices CSV…')}>Export invoices CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting expenses CSV…')}>Export expenses CSV</Button>
         </div>
       </div>
     </div>

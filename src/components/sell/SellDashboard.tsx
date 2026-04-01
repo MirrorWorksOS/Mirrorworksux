@@ -3,6 +3,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, LineChart, BarChart2, Users, Target, Trophy, Download, Sparkles, PieChart as PieChartIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
@@ -371,7 +372,7 @@ export function SellDashboard() {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="mt-4 w-full border-[var(--border)]">
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)]" onClick={() => toast('Opening approvals\u2026')}>
               <FileText className="mr-2 h-4 w-4" strokeWidth={1.5} />
               View All Approvals
             </Button>
@@ -412,7 +413,7 @@ export function SellDashboard() {
                 </Badge>
               </div>
             </div>
-            <Button className="group w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="group w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Syncing with Xero\u2026'); setTimeout(() => toast.success('Xero sync complete'), 1500); }}>
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{
@@ -462,7 +463,7 @@ export function SellDashboard() {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="mt-4 w-full border-[var(--border)] text-[var(--neutral-900)]">
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)] text-[var(--neutral-900)]" onClick={() => toast.success('Follow-up emails queued for 3 contacts')}>
               <AlertTriangle className="mr-2 h-4 w-4" strokeWidth={1.5} />
               Follow Up All
             </Button>
@@ -630,15 +631,15 @@ export function SellDashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-medium text-[var(--neutral-900)]">Report Templates</h3>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs">
+                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs" onClick={() => toast.success('Exporting as PDF\u2026')}>
                   <Download className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
                   PDF
                 </Button>
-                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs">
+                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs" onClick={() => toast.success('Exporting as CSV\u2026')}>
                   <Download className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
                   CSV
                 </Button>
-                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs">
+                <Button variant="outline" size="sm" className="border-[var(--border)] text-xs" onClick={() => toast.success('Exporting as Excel\u2026')}>
                   <Download className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
                   Excel
                 </Button>
@@ -658,7 +659,7 @@ export function SellDashboard() {
                     </div>
                     <h4 className="mb-1 text-sm font-medium text-[var(--neutral-900)]">{report.title}</h4>
                     <p className="mb-4 flex-1 text-xs leading-relaxed text-[var(--neutral-500)]">{report.description}</p>
-                    <Button className="w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" size="sm">
+                    <Button className="w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" size="sm" onClick={() => toast('Generating report\u2026')}>
                       Generate
                     </Button>
                   </Card>

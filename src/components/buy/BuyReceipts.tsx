@@ -14,6 +14,7 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 
 interface POForReceipt {
@@ -51,6 +52,7 @@ export function BuyReceipts() {
   const [quantities, setQuantities] = useState<Record<number, number>>({});
 
   const handleReceive = () => {
+    toast.success('Goods receipt confirmed');
     setSelectedPO(null);
     setQuantities({});
   };
@@ -105,11 +107,11 @@ export function BuyReceipts() {
 
           {/* Barcode Scanner (placeholder) */}
           <div className="flex gap-3 mb-6">
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]">
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => toast('Barcode scanner coming soon')}>
               <Scan className="w-6 h-6 mr-3" />
               Scan Barcode
             </Button>
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]">
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => toast('Camera capture coming soon')}>
               <Camera className="w-6 h-6 mr-3" />
               Take Photo
             </Button>

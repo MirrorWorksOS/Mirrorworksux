@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Search, 
   Filter, 
@@ -32,7 +32,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import {
   Tooltip,
@@ -40,6 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { toast } from 'sonner';
 
 // --- Mock Data ---
 
@@ -156,15 +156,35 @@ export function OverviewTab() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
   const [floorMode, setFloorMode] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<{ from: 'user' | 'ai'; text: string }[]>([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleChatSubmit = () => {
+    const msg = chatInput.trim();
+    if (!msg) return;
+    setChatMessages(prev => [...prev, { from: 'user', text: msg }]);
+    setChatInput('');
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, {
+        from: 'ai',
+        text: 'Based on current shop floor data, all workstations are operating within normal parameters. Machine M-102 shows slightly elevated cycle times — I recommend checking tool wear.'
+      }]);
+    }, 1200);
+  };
 
   const toggleRow = (id: string) => {
     setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[var(--neutral-100)]">
+    <div className="flex flex-col overflow-hidden">
       {/* Floor Mode Toggle */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--border)]">
+      <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-[var(--neutral-900)]">
           {floorMode ? 'Factory Floor View' : 'Office View'}
         </span>
@@ -183,7 +203,7 @@ export function OverviewTab() {
       </div>
 
       {floorMode ? (
-        <div className="p-6 space-y-6 bg-[var(--neutral-900)] min-h-full flex-1 overflow-auto">
+        <div className="p-6 space-y-6 bg-[var(--neutral-900)] rounded-[var(--shape-lg)] flex-1 overflow-auto">
           {/* Large KPI tiles - 2x2 grid */}
           <div className="grid grid-cols-2 gap-6">
             <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
@@ -244,15 +264,14 @@ export function OverviewTab() {
           </div>
         </div>
       ) : (
-      <div className="flex gap-6 flex-1 overflow-hidden">
+      <div className="flex gap-6 flex-1">
       {/* Main Content Area */}
-      <ScrollArea className="flex-1 h-full">
-      <div className="flex-1 flex flex-col space-y-6 min-w-0 pr-4 pb-8 pt-1">
+      <div className="flex-1 flex flex-col space-y-6 min-w-0">
         
         {/* Intelligence Hub Banner */}
-        <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] overflow-hidden border border-[var(--neutral-200)] mx-1 mt-1">
+        <div className="bg-white rounded-[var(--shape-lg)] overflow-hidden border border-[var(--border)]">
            <div 
-             className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[#E5E4E0]/50 transition-colors"
+             className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[var(--accent)] transition-colors"
              onClick={() => setIsInsightsOpen(!isInsightsOpen)}
            >
               <div className="flex items-center gap-2 font-medium text-[var(--neutral-800)]">
@@ -274,20 +293,20 @@ export function OverviewTab() {
                  transition={{ duration: 0.5, ease: [0.2, 0.0, 0, 1.0] }}
                  className="overflow-hidden"
                >
-                 <div className="bg-[var(--neutral-100)] border-t border-[var(--neutral-200)] p-2 space-y-2">
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                 <div className="border-t border-[var(--border)] p-2 space-y-2">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <AlertCircle className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <Zap className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--neutral-200)]">
+                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <Info className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-semibold">Efficiency:</span> Shop running 8% above target efficiency today
@@ -327,16 +346,16 @@ export function OverviewTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Card A: Active Jobs */}
-              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Active Job Focus</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <a href="#" className="text-lg font-medium text-[var(--neutral-800)] hover:underline hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <span className="text-lg font-medium text-[var(--neutral-800)] hover:underline hover:text-[var(--mw-yellow-400)] transition-colors cursor-pointer" onClick={() => toast('Customer detail coming soon')}>
                         {ACTIVE_JOBS_SUMMARY.customer}
-                      </a>
+                      </span>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="font-normal text-sm text-[var(--neutral-500)]">
                           {ACTIVE_JOBS_SUMMARY.moNumber}
@@ -360,7 +379,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card B: Time Tracking */}
-              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Shift Performance</CardTitle>
                 </CardHeader>
@@ -387,7 +406,7 @@ export function OverviewTab() {
                     <div className="flex -space-x-2">
                       {[1,2,3,4].map(i => (
                         <Avatar key={i} className="w-8 h-8 border-2 border-white">
-                          <AvatarFallback className="bg-[#E5E4E0] text-[var(--neutral-500)] text-[10px]">OP</AvatarFallback>
+                          <AvatarFallback className="bg-[var(--border)] text-[var(--neutral-500)] text-[10px]">OP</AvatarFallback>
                         </Avatar>
                       ))}
                       <div className="w-8 h-8 rounded-full bg-[var(--neutral-100)] border-2 border-white flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)]">
@@ -403,7 +422,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card C: Andon Alerts */}
-              <Card className="border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-[var(--shape-lg)] bg-white relative overflow-hidden">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
                   <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-[20px] px-3">
                     {ANDON_ALERTS.length} Active
@@ -415,7 +434,7 @@ export function OverviewTab() {
                 <CardContent>
                   <div className="space-y-3">
                     {ANDON_ALERTS.slice(0, 2).map(alert => (
-                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-[8px] bg-[var(--neutral-100)] border border-transparent hover:border-[var(--neutral-200)] transition-colors">
+                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-[8px] bg-[var(--neutral-100)] border border-transparent hover:border-[var(--border)] transition-colors">
                         <div className="w-5 h-5 rounded-full bg-[var(--mw-error)] flex items-center justify-center shrink-0 mt-0.5">
                            <span className="text-white text-xs font-bold">!</span>
                         </div>
@@ -435,8 +454,8 @@ export function OverviewTab() {
             </div>
 
             {/* Manufacturing Orders List */}
-            <div className="bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)]/50 text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wide">
+            <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--border)] bg-[var(--neutral-100)] text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wide">
                 <div className="col-span-2">MO #</div>
                 <div className="col-span-3">Customer & Part</div>
                 <div className="col-span-2">Due Date</div>
@@ -445,7 +464,7 @@ export function OverviewTab() {
                 <div className="col-span-1 text-right">Actions</div>
               </div>
 
-              <div className="divide-y divide-[#E5E4E0]">
+              <div className="divide-y divide-[var(--border)]">
                 {MANUFACTURING_ORDERS.map((mo) => (
                   <div key={mo.id} className="group transition-colors bg-white hover:bg-[var(--neutral-100)]">
                     {/* Parent Row */}
@@ -469,7 +488,7 @@ export function OverviewTab() {
                       </div>
                       <div className="col-span-2 pr-4">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 bg-[#E5E4E0] rounded-full overflow-hidden">
+                          <div className="flex-1 h-2 bg-[var(--border)] rounded-full overflow-hidden">
                             <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${mo.progress}%` }} />
                           </div>
                           <span className="text-xs font-medium text-[var(--neutral-500)]">{mo.progress}%</span>
@@ -490,7 +509,7 @@ export function OverviewTab() {
                         </div>
                         {mo.workOrders.length > 0 ? (
                           mo.workOrders.map((wo) => (
-                            <div key={wo.id} className="grid grid-cols-12 gap-4 px-4 py-3 items-center hover:bg-[#E5E4E0]/50 transition-colors pl-12 border-b border-[var(--neutral-200)]/50 last:border-0">
+                            <div key={wo.id} className="grid grid-cols-12 gap-4 px-4 py-3 items-center hover:bg-[var(--border)]/50 transition-colors pl-12 border-b border-[var(--neutral-200)]/50 last:border-0">
                               <div className="col-span-2 flex items-center gap-2">
                                 <span className="font-medium text-[var(--neutral-800)] text-sm">{wo.id}</span>
                               </div>
@@ -506,7 +525,7 @@ export function OverviewTab() {
                                 <StatusBadge status={wo.status} />
                               </div>
                               <div className="col-span-2 pr-4">
-                                <div className="h-1.5 bg-[#E5E4E0] rounded-full overflow-hidden w-24">
+                                <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden w-24">
                                    <div className={`h-full rounded-full ${wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--mw-yellow-400)]'}`} style={{ width: `${wo.progress}%` }} />
                                 </div>
                               </div>
@@ -527,11 +546,10 @@ export function OverviewTab() {
 
           </div>
       </div>
-      </ScrollArea>
 
       {/* Right Sidebar */}
       {isSidebarOpen && (
-        <div className="w-[320px] shrink-0 bg-white flex flex-col h-full rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden py-4">
+        <div className="w-[320px] shrink-0 bg-white flex flex-col rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden py-4">
           <div className="flex items-center justify-between px-4 mb-4">
             <h3 className="font-semibold text-[var(--neutral-800)]">Communication</h3>
             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
@@ -555,7 +573,7 @@ export function OverviewTab() {
                          <span className="text-xs text-[var(--neutral-500)]">2m</span>
                        </div>
                        <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
-                         Material for <span className="text-[#F4C542] font-semibold">@MO-26-401</span> is arrived.
+                         Material for <span className="text-[var(--mw-yellow-400)] font-semibold">@MO-26-401</span> is arrived.
                        </p>
                      </div>
                    </div>
@@ -586,7 +604,7 @@ export function OverviewTab() {
                          <span className="text-sm font-medium text-[var(--neutral-800)]">System</span>
                          <span className="text-xs text-[var(--neutral-500)]">1m</span>
                        </div>
-                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[#F4C542]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[#F4C542]/30">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--mw-yellow-400)]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[var(--mw-yellow-400)]/30">
                          Production speed increased by 15% after material arrival.
                        </p>
                      </div>
@@ -594,23 +612,53 @@ export function OverviewTab() {
                  </div>
                </div>
                
+               {/* User / AI Messages */}
+               {chatMessages.length > 0 && (
+                 <div className="px-4 pb-2 overflow-y-auto max-h-[200px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                   <div className="space-y-3 py-2">
+                     {chatMessages.map((m, i) => (
+                       <div key={i} className="flex gap-3">
+                         <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
+                           <AvatarFallback className={m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)] text-xs' : 'bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs'}>
+                             {m.from === 'ai' ? <Bot className="w-4 h-4" /> : 'You'}
+                           </AvatarFallback>
+                         </Avatar>
+                         <div className="flex-1">
+                           <span className="text-sm font-medium text-[var(--neutral-800)]">{m.from === 'ai' ? 'AI Assistant' : 'You'}</span>
+                           <p className={cn('text-sm text-[var(--neutral-800)] mt-0.5 p-3 rounded-[var(--shape-lg)] rounded-tl-none', m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 border border-[var(--mw-yellow-400)]/30' : 'bg-[var(--neutral-100)]')}>
+                             {m.text}
+                           </p>
+                         </div>
+                       </div>
+                     ))}
+                     <div ref={chatEndRef} />
+                   </div>
+                 </div>
+               )}
+
                {/* Input Area */}
                <div className="p-4 border-t border-[var(--neutral-200)] bg-white">
                  <div className="relative">
-                   <Input placeholder="Type a message..." className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-[8px]" />
-                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent">
+                   <Input
+                     placeholder="Type a message..."
+                     className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-[8px]"
+                     value={chatInput}
+                     onChange={e => setChatInput(e.target.value)}
+                     onKeyDown={e => { if (e.key === 'Enter') handleChatSubmit(); }}
+                   />
+                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent" onClick={handleChatSubmit}>
                      <Send className="w-4 h-4" />
                    </Button>
                  </div>
                  <div className="flex items-center gap-2 mt-2">
-                   <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]">
+                   <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]" onClick={() => toast('File attachment coming soon')}>
                      <Paperclip className="w-4 h-4 mr-1" /> Attach
                    </Button>
                  </div>
                </div>
              </div>
 
-             <Separator className="my-2 bg-[#E5E4E0]" />
+             <Separator className="my-2 bg-[var(--border)]" />
 
              {/* Work Standards / Instructions */}
              <div className="px-4 py-2">

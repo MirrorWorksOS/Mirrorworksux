@@ -10,6 +10,7 @@ import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { toast } from 'sonner';
 
 
 const MACHINES = [
@@ -54,7 +55,7 @@ export function ControlMachines() {
             {MACHINES.filter(m => m.status === 'active').length} active · {MACHINES.filter(m => m.status === 'maintenance').length} in maintenance
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New machine coming soon')}>
           <Plus className="w-4 h-4" /> New machine
         </Button>
       </div>

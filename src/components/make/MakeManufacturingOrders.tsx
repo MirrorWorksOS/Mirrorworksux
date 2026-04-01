@@ -16,6 +16,7 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { toast } from 'sonner';
 
 interface ManufacturingOrder {
   id: string;
@@ -63,7 +64,7 @@ export function MakeManufacturingOrders() {
         title="Manufacturing Orders"
         subtitle={`${MO_DATA.length} manufacturing orders`}
         actions={
-          <ToolbarPrimaryButton label="New MO" onClick={() => {}} />
+          <ToolbarPrimaryButton label="New MO" onClick={() => toast('New manufacturing order form coming soon')} />
         }
       />
 
@@ -78,7 +79,7 @@ export function MakeManufacturingOrders() {
             className="pl-9 h-10 border-[var(--border)]"
           />
         </div>
-        <ToolbarFilterButton />
+        <ToolbarFilterButton onClick={() => toast('Filter panel coming soon')} />
       </div>
 
       {/* Table */}

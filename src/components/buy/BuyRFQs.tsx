@@ -13,6 +13,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus } from '../ui/animated-icons';
+import { toast } from 'sonner';
 
 
 interface SupplierQuote {
@@ -129,7 +130,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                       <Button size="sm" className={cn('w-full mt-3 h-9 text-xs gap-1', q.aiPick
                         ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
                         : 'bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white'
-                      )}>
+                      )} onClick={() => toast.success(`Awarded to ${q.supplier}`)}>
                         <Check className="w-4 h-4" /> Award to {q.supplier.split(' ')[0]}
                       </Button>
                     )}
@@ -162,7 +163,7 @@ export function BuyRFQs() {
             {RFQS.filter(r => r.status === 'open').length} open · {RFQS.filter(r => r.status === 'awarded').length} awarded
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
           <AnimatedPlus className="w-4 h-4" /> New RFQ
         </Button>
       </div>

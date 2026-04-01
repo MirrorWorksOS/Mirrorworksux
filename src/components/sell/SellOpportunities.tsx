@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Filter, DollarSign, Calendar, Flag } from 'lucide-react';
 import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
@@ -78,11 +79,11 @@ export function SellOpportunities() {
           </p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New opportunity form coming soon')}>
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Opportunity
           </Button>
@@ -109,7 +110,7 @@ export function SellOpportunities() {
               >
                 <div className="flex items-center justify-between px-0.5 pb-1 text-xs text-[var(--neutral-500)]">
                   <span className="tabular-nums">${stageValue.toLocaleString()}</span>
-                  <button type="button" className="p-1 hover:bg-[var(--border)] rounded transition-colors" aria-label="Add opportunity">
+                  <button type="button" className="p-1 hover:bg-[var(--border)] rounded transition-colors" aria-label="Add opportunity" onClick={() => toast('New opportunity form coming soon')}>
                     <Plus className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </div>

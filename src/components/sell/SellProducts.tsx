@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Plus, Search, Filter, Grid3x3, List, Package, DollarSign } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -61,7 +62,7 @@ export function SellProducts() {
         title="Products"
         subtitle={`${filteredProducts.length} total products`}
         actions={
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New product form coming soon')}>
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Product
           </Button>
@@ -80,7 +81,7 @@ export function SellProducts() {
           />
         </div>
 
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
           <AnimatedFilter className="w-4 h-4" />
           Filter
         </Button>
@@ -195,7 +196,7 @@ export function SellProducts() {
             icon={Package}
             title="No products found"
             description="Try adjusting your search or create a new product"
-            action={{ label: "Create Product", onClick: () => {}, icon: Plus }}
+            action={{ label: "Create Product", onClick: () => toast('New product form coming soon'), icon: Plus }}
           />
         </Card>
       )}

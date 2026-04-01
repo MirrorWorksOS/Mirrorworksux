@@ -4,8 +4,10 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -61,15 +63,15 @@ export function SellOrders() {
         subtitle={`${mockOrders.length} orders • $${totalValue.toLocaleString()} total value`}
         actions={
           <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Orders exported')}>
               <AnimatedDownload className="w-4 h-4" />
               Export
             </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New order form coming soon')}>
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Order
             </Button>
@@ -85,7 +87,7 @@ export function SellOrders() {
               <thead>
                 <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12">
-                    <input type="checkbox" className="rounded border-[var(--border)]" />
+                    <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === mockOrders.length && mockOrders.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(mockOrders.map(o => o.id))); } else { setSelectedRows(new Set()); } }} />
                   </th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">ORDER #</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
@@ -101,8 +103,8 @@ export function SellOrders() {
                   const sp = ORDER_STATUS_MAP[order.status];
                   return (
                     <tr key={order.id} onClick={() => navigate(`/sell/orders/${order.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4">
-                        <input type="checkbox" className="rounded border-[var(--border)]" />
+                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(order.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(order.id)) next.delete(order.id); else next.add(order.id); return next; }); }} />
                       </td>
                       <td className="px-4">
                         <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
@@ -129,10 +131,20 @@ export function SellOrders() {
                           <span className="text-xs text-[var(--neutral-400)]">—</span>
                         )}
                       </td>
-                      <td className="px-4">
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                        </button>
+                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                              <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/sell/orders/${order.id}`)}>View details</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast('Edit order coming soon')}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast.success('Order duplicated')}>Duplicate</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast('Order deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   );
@@ -158,7 +170,7 @@ export function SellOrders() {
             icon={Plus}
             title="No orders yet"
             description="Create your first sales order to get started"
-            action={{ label: "Create Order", onClick: () => {}, icon: Plus }}
+            action={{ label: "Create Order", onClick: () => toast('New order form coming soon'), icon: Plus }}
           />
         </Card>
       )}

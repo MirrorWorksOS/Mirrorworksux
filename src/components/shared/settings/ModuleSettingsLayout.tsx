@@ -10,6 +10,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Shield, ChevronDown, ChevronRight, Plus, Trash2, Users, GripVertical } from 'lucide-react';
 import { ConfirmDialog } from '../feedback/ConfirmDialog';
 import { Card } from '../../ui/card';
@@ -84,8 +85,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
-      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10 rounded-xl">Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl">Save changes</Button>
+      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10 rounded-xl" onClick={() => toast('Changes discarded')}>Discard</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }

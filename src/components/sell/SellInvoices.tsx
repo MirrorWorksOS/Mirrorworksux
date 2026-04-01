@@ -4,8 +4,10 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -45,6 +47,7 @@ const mockInvoices: Invoice[] = [
 export function SellInvoices() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const filteredInvoices = activeTab === 'all'
     ? mockInvoices
@@ -68,11 +71,11 @@ export function SellInvoices() {
         subtitle={`${filteredInvoices.length} invoices • $${totalValue.toLocaleString()} total • $${totalOutstanding.toLocaleString()} outstanding`}
         actions={
           <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group">
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Invoices exported')}>
               <AnimatedDownload className="w-4 h-4" />
               Export
             </Button>
@@ -114,7 +117,7 @@ export function SellInvoices() {
               <thead>
                 <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
                   <th className="px-4 py-3 w-12">
-                    <input type="checkbox" className="rounded border-[var(--border)]" />
+                    <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === filteredInvoices.length && filteredInvoices.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(filteredInvoices.map(i => i.id))); } else { setSelectedRows(new Set()); } }} />
                   </th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">INVOICE #</th>
                   <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
@@ -135,7 +138,7 @@ export function SellInvoices() {
                   return (
                     <tr key={invoice.id} onClick={() => navigate(`/sell/invoices/${invoice.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" className="rounded border-[var(--border)]" />
+                        <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(invoice.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(invoice.id)) next.delete(invoice.id); else next.add(invoice.id); return next; }); }} />
                       </td>
                       <td className="px-4">
                         <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
@@ -162,10 +165,20 @@ export function SellInvoices() {
                       <td className="px-4 text-right text-sm font-medium tabular-nums" style={{ color: invoice.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
                         ${invoice.balanceDue.toLocaleString()}
                       </td>
-                      <td className="px-4">
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                        </button>
+                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                              <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/sell/invoices/${invoice.id}`)}>View details</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast('Edit invoice coming soon')}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast.success('Invoice duplicated')}>Duplicate</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast('Invoice deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   );

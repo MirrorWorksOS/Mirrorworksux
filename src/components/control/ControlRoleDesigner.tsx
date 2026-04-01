@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { cn } from '@/components/ui/utils';
+import { toast } from 'sonner';
 
 const roles = [
   {
@@ -72,7 +73,7 @@ export function ControlRoleDesigner() {
                 <p className="text-xs text-muted-foreground">{role.description}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="h-10 w-full rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
+            <Button variant="outline" size="sm" className="h-10 w-full rounded-[var(--shape-lg)] border-[var(--neutral-200)]" onClick={() => toast('Role configuration coming soon')}>
               Configure
             </Button>
           </Card>

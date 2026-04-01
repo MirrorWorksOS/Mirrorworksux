@@ -12,6 +12,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import { toast } from 'sonner';
 
 
 type ReqStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'converted';
@@ -58,11 +59,11 @@ export function BuyRequisitions() {
           <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredReqs.length} requisitions</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group">
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
             <AnimatedFilter className="w-4 h-4" />
             Filter
           </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group">
+          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group" onClick={() => toast('New requisition coming soon')}>
             <AnimatedPlus className="w-4 h-4 mr-2" />
             New Requisition
           </Button>
@@ -123,16 +124,16 @@ export function BuyRequisitions() {
                     <td className="px-4">
                       {req.status === 'submitted' && (
                         <div className="flex items-center gap-1">
-                          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" title="Approve">
+                          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" title="Approve" onClick={() => toast.success(`Requisition ${req.reqNumber} approved`)}>
                             <CheckCircle2 className="w-4 h-4 text-[var(--mw-mirage)]" />
                           </button>
-                          <button className="p-1 hover:bg-[var(--mw-error-100)] rounded transition-colors" title="Reject">
+                          <button className="p-1 hover:bg-[var(--mw-error-100)] rounded transition-colors" title="Reject" onClick={() => toast.success(`Requisition ${req.reqNumber} rejected`)}>
                             <XCircle className="w-4 h-4 text-[var(--mw-error)]" />
                           </button>
                         </div>
                       )}
                       {req.status !== 'submitted' && (
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast('Requisition actions coming soon')}>
                           <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
                         </button>
                       )}
