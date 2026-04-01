@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
+import { CommandPalette } from './shared/command/CommandPalette';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -153,6 +154,8 @@ const menuConfig: MenuItem[] = [
       { label: 'BOMs', path: '/control/boms' },
       { label: 'Role designer', path: '/control/role-designer' },
       { label: 'Workflow designer', path: '/control/workflow-designer' },
+      { label: 'Gamification', path: '/control/gamification' },
+      { label: 'Empty states', path: '/control/empty-states' },
     ],
   },
 ];
@@ -258,6 +261,8 @@ function ModuleIcon({
 export function Sidebar() {
   const location = useLocation();
 
+  const [commandOpen, setCommandOpen] = useState(false);
+
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
@@ -304,6 +309,7 @@ export function Sidebar() {
         </button>
         <button
           type="button"
+          onClick={() => setCommandOpen(true)}
           className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-[var(--shape-md)] border border-[var(--border)] bg-white px-3 transition-colors duration-200 hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
@@ -406,6 +412,8 @@ export function Sidebar() {
           </span>
         </button>
       </div>
+
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
     </div>
   );
 }

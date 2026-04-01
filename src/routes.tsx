@@ -82,8 +82,10 @@ import { ControlProducts } from './components/control/ControlProducts';
 import { ControlBOMs } from './components/control/ControlBOMs';
 import { ControlWorkflowDesigner } from './components/control/ControlWorkflowDesigner';
 import { ControlFactoryDesigner } from './components/control/ControlFactoryDesigner';
+import { ControlEmptyStates } from './components/control/ControlEmptyStates';
 import { ControlProcessBuilder } from './components/control/ControlProcessBuilder';
 import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
+import { ControlGamification } from './components/control/ControlGamification';
 import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
 import { BridgeWizard } from './components/bridge/BridgeWizard';
 
@@ -237,6 +239,8 @@ export const router = createBrowserRouter([
           { path: 'boms', element: <ControlBOMs /> },
           { path: 'role-designer', element: <ControlRoleDesigner /> },
           { path: 'workflow-designer', element: <ControlWorkflowDesigner /> },
+          { path: 'gamification', element: <ControlGamification /> },
+          { path: 'empty-states', element: <ControlEmptyStates /> },
         ],
       },
 

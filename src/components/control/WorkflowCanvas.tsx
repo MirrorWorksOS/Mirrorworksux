@@ -1,12 +1,14 @@
 /**
  * WorkflowCanvas — Visual node-based canvas for AI Agent Workflow Designer.
  * Renders nodes as absolute-positioned cards with SVG bezier connections.
+ * v2: Enhanced node types, visual canvas with branching, add-step buttons.
  */
 
 import React, { useState } from 'react';
 import {
   Zap, Sparkles, RefreshCw, Bell, GitBranch,
   ShoppingCart, Calendar, Settings2, Mail, Pause,
+  Plus, Clock, Timer,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '../ui/utils';
@@ -17,7 +19,9 @@ const CANVAS_H = 1260;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type NodeKind = 'trigger' | 'ai' | 'action' | 'notification' | 'condition' | 'hold';
+export type NodeKind =
+  | 'trigger' | 'ai' | 'action' | 'notification' | 'condition'
+  | 'hold' | 'email' | 'purchase' | 'schedule' | 'machine' | 'delay';
 
 export interface WFNode {
   id: string;
@@ -38,21 +42,17 @@ interface WFEdge {
   labelBg?: string;
 }
 
-// ─── Visual styles per kind ───────────────────────────────────────────────────
+// ─── Workflow data sets ──────────────────────────────────────────────────────
 
-const kindStyle: Record<NodeKind, { card: string; iconBg: string }> = {
-  trigger:      { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-amber)]' },
-  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',   iconBg: 'bg-[var(--mw-purple)]' },
-  action:       { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-mirage)]' },
-  notification: { card: 'bg-white border-[var(--border)]',          iconBg: 'bg-[var(--mw-blue)]' },
-  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',      iconBg: 'bg-white/25'  },
-  hold:         { card: 'bg-white border-[var(--mw-error)]/30',       iconBg: 'bg-[var(--mw-error)]' },
-};
+interface WorkflowData {
+  nodes: WFNode[];
+  edges: WFEdge[];
+  branchLabels: { text: string; x: number; y: number; color: string; bg: string }[];
+  canvasH: number;
+}
 
-// ─── Workflow data ────────────────────────────────────────────────────────────
-
-const NODES: WFNode[] = [
-  // ── Center column ─────────────────────────────────────────────────────────
+// -- Default: Job arrival automation --
+const JOB_ARRIVAL_NODES: WFNode[] = [
   {
     id: 'trigger', kind: 'trigger', title: 'Trigger', icon: Zap,
     x: 360, y: 0, h: 100,
@@ -83,27 +83,23 @@ const NODES: WFNode[] = [
     x: 360, y: 648, h: 72,
     props: [['Object', 'Supplier']],
   },
-
-  // ── Left branch: Stock available ──────────────────────────────────────────
   {
-    id: 'schedule-job', kind: 'action', title: 'Schedule production', icon: Calendar,
+    id: 'schedule-job', kind: 'schedule', title: 'Schedule production', icon: Calendar,
     x: 60, y: 810, h: 88,
     props: [['Run as', 'David Miller'], ['Object', 'Job schedule']],
   },
   {
-    id: 'assign-machine', kind: 'action', title: 'Assign to machine', icon: Settings2,
+    id: 'assign-machine', kind: 'machine', title: 'Assign to machine', icon: Settings2,
     x: 60, y: 938, h: 88,
     props: [['Run as', 'David Miller'], ['Object', 'Machine']],
   },
   {
-    id: 'notify-operator', kind: 'notification', title: 'Send email', icon: Mail,
+    id: 'notify-operator', kind: 'email', title: 'Send email', icon: Mail,
     x: 60, y: 1066, h: 88,
     props: [['Run as', 'Send as Alliance'], ['Column', 'operator_email']],
   },
-
-  // ── Right branch: Stock insufficient ──────────────────────────────────────
   {
-    id: 'create-po', kind: 'action', title: 'Create purchase order', icon: ShoppingCart,
+    id: 'create-po', kind: 'purchase', title: 'Create purchase order', icon: ShoppingCart,
     x: 660, y: 810, h: 88,
     props: [['Run as', 'David Miller'], ['Object', 'PO']],
   },
@@ -119,7 +115,7 @@ const NODES: WFNode[] = [
   },
 ];
 
-const EDGES: WFEdge[] = [
+const JOB_ARRIVAL_EDGES: WFEdge[] = [
   { from: 'trigger',       to: 'ai-analyse'    },
   { from: 'ai-analyse',    to: 'update-status' },
   { from: 'update-status', to: 'notify-manager' },
@@ -139,18 +135,204 @@ const EDGES: WFEdge[] = [
   { from: 'alert-buyer',   to: 'hold-job'         },
 ];
 
+const JOB_ARRIVAL_LABELS = [
+  { text: 'Stock available',    x: 170, y: 762, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
+  { text: 'Stock insufficient', x: 770, y: 762, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
+];
+
+// -- Purchase Order Approval workflow --
+const PO_APPROVAL_NODES: WFNode[] = [
+  {
+    id: 'po-trigger', kind: 'trigger', title: 'PO submitted', icon: Zap,
+    x: 360, y: 0, h: 80,
+    props: [['Event', 'PO.submitted'], ['Schedule', 'Real-time']],
+  },
+  {
+    id: 'po-ai-review', kind: 'ai', title: 'AI: Review PO details', icon: Sparkles,
+    x: 360, y: 120, h: 72,
+    props: [['Model', 'Claude Sonnet'], ['Prompt', 'Check pricing & terms']],
+  },
+  {
+    id: 'po-value-check', kind: 'condition', title: 'PO value > $5,000?', icon: GitBranch,
+    x: 360, y: 232, h: 80,
+    props: [['Field', 'total_value'], ['Operator', '>'], ['Value', '$5,000']],
+  },
+  // Left branch: High value
+  {
+    id: 'po-notify-mgr', kind: 'notification', title: 'Notify finance manager', icon: Bell,
+    x: 60, y: 400, h: 80,
+    props: [['Channel', '#finance-approvals'], ['Priority', 'High']],
+  },
+  {
+    id: 'po-delay-mgr', kind: 'delay', title: 'Wait 24h for approval', icon: Timer,
+    x: 60, y: 520, h: 72,
+    props: [['Duration', '24 hours'], ['Timeout action', 'Escalate']],
+  },
+  {
+    id: 'po-approved-check', kind: 'condition', title: 'Manager approved?', icon: GitBranch,
+    x: 60, y: 632, h: 80,
+    props: [['Field', 'approval_status'], ['Operator', '='], ['Value', 'Approved']],
+  },
+  {
+    id: 'po-send-supplier', kind: 'email', title: 'Send PO to supplier', icon: Mail,
+    x: 60, y: 790, h: 80,
+    props: [['To', 'supplier.contact'], ['Template', 'PO Confirmation']],
+  },
+  {
+    id: 'po-escalate', kind: 'notification', title: 'Escalate to director', icon: Bell,
+    x: 310, y: 790, h: 80,
+    props: [['Channel', '#exec-approvals'], ['Priority', 'Urgent']],
+  },
+  // Right branch: Low value
+  {
+    id: 'po-auto-approve', kind: 'action', title: 'Auto-approve PO', icon: RefreshCw,
+    x: 660, y: 400, h: 80,
+    props: [['Object', 'PO'], ['Set', 'status = Approved']],
+  },
+  {
+    id: 'po-auto-email', kind: 'email', title: 'Send PO to supplier', icon: Mail,
+    x: 660, y: 520, h: 80,
+    props: [['To', 'supplier.contact'], ['Template', 'PO Auto-Confirmed']],
+  },
+  {
+    id: 'po-update-inv', kind: 'action', title: 'Update expected inventory', icon: RefreshCw,
+    x: 660, y: 640, h: 80,
+    props: [['Object', 'Inventory'], ['Set', 'expected_qty += order_qty']],
+  },
+];
+
+const PO_APPROVAL_EDGES: WFEdge[] = [
+  { from: 'po-trigger', to: 'po-ai-review' },
+  { from: 'po-ai-review', to: 'po-value-check' },
+  { from: 'po-value-check', to: 'po-notify-mgr', label: 'Yes (>$5k)', labelColor: 'var(--mw-error)', labelBg: 'var(--mw-error-100)' },
+  { from: 'po-value-check', to: 'po-auto-approve', label: 'No (<=$5k)', labelColor: 'var(--mw-success)', labelBg: 'var(--mw-success-light)' },
+  { from: 'po-notify-mgr', to: 'po-delay-mgr' },
+  { from: 'po-delay-mgr', to: 'po-approved-check' },
+  { from: 'po-approved-check', to: 'po-send-supplier', label: 'Yes', labelColor: 'var(--mw-success)', labelBg: 'var(--mw-success-light)' },
+  { from: 'po-approved-check', to: 'po-escalate', label: 'No', labelColor: 'var(--mw-error)', labelBg: 'var(--mw-error-100)' },
+  { from: 'po-auto-approve', to: 'po-auto-email' },
+  { from: 'po-auto-email', to: 'po-update-inv' },
+];
+
+const PO_APPROVAL_LABELS = [
+  { text: 'High value (>$5k)', x: 170, y: 352, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
+  { text: 'Low value (<=$5k)', x: 770, y: 352, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
+  { text: 'Approved', x: 60, y: 755, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
+  { text: 'Rejected / Timeout', x: 340, y: 755, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
+];
+
+// -- Quality Alert Escalation workflow --
+const QC_ALERT_NODES: WFNode[] = [
+  {
+    id: 'qc-trigger', kind: 'trigger', title: 'QC check failed', icon: Zap,
+    x: 360, y: 0, h: 80,
+    props: [['Event', 'QC.failed'], ['Schedule', 'Real-time']],
+  },
+  {
+    id: 'qc-ai-classify', kind: 'ai', title: 'AI: Classify defect severity', icon: Sparkles,
+    x: 360, y: 120, h: 80,
+    props: [['Model', 'Claude Haiku'], ['Input', 'Defect images + measurements']],
+  },
+  {
+    id: 'qc-severity-check', kind: 'condition', title: 'Severity = Critical?', icon: GitBranch,
+    x: 360, y: 240, h: 80,
+    props: [['Field', 'severity'], ['Operator', '='], ['Value', 'Critical']],
+  },
+  // Left: Critical path
+  {
+    id: 'qc-hold-job', kind: 'hold', title: 'Hold production line', icon: Pause,
+    x: 60, y: 400, h: 80,
+    props: [['Object', 'Production line'], ['Action', 'Immediate stop']],
+  },
+  {
+    id: 'qc-notify-all', kind: 'notification', title: 'Alert all stakeholders', icon: Bell,
+    x: 60, y: 520, h: 80,
+    props: [['Channel', '#quality-critical'], ['SMS', 'QC Manager, Plant Manager']],
+  },
+  {
+    id: 'qc-create-ncr', kind: 'action', title: 'Create NCR record', icon: RefreshCw,
+    x: 60, y: 640, h: 80,
+    props: [['Object', 'NCR'], ['Priority', 'P1 - Critical']],
+  },
+  {
+    id: 'qc-schedule-review', kind: 'schedule', title: 'Schedule review meeting', icon: Calendar,
+    x: 60, y: 760, h: 80,
+    props: [['When', 'Within 2 hours'], ['Invitees', 'QC team + Engineering']],
+  },
+  // Right: Non-critical path
+  {
+    id: 'qc-log-defect', kind: 'action', title: 'Log defect in system', icon: RefreshCw,
+    x: 660, y: 400, h: 80,
+    props: [['Object', 'Defect log'], ['Auto-classify', 'Yes']],
+  },
+  {
+    id: 'qc-notify-lead', kind: 'email', title: 'Email shift lead', icon: Mail,
+    x: 660, y: 520, h: 80,
+    props: [['To', 'shift.lead'], ['Template', 'QC Minor Defect']],
+  },
+  {
+    id: 'qc-delay-rework', kind: 'delay', title: 'Wait for rework completion', icon: Timer,
+    x: 660, y: 640, h: 72,
+    props: [['Duration', 'Until status = Reworked'], ['Timeout', '48h']],
+  },
+  {
+    id: 'qc-update-record', kind: 'action', title: 'Update QC record', icon: RefreshCw,
+    x: 660, y: 752, h: 80,
+    props: [['Object', 'QC Record'], ['Set', 'status = Resolved']],
+  },
+];
+
+const QC_ALERT_EDGES: WFEdge[] = [
+  { from: 'qc-trigger', to: 'qc-ai-classify' },
+  { from: 'qc-ai-classify', to: 'qc-severity-check' },
+  { from: 'qc-severity-check', to: 'qc-hold-job', label: 'Critical', labelColor: 'var(--mw-error)', labelBg: 'var(--mw-error-100)' },
+  { from: 'qc-severity-check', to: 'qc-log-defect', label: 'Non-critical', labelColor: 'var(--mw-success)', labelBg: 'var(--mw-success-light)' },
+  { from: 'qc-hold-job', to: 'qc-notify-all' },
+  { from: 'qc-notify-all', to: 'qc-create-ncr' },
+  { from: 'qc-create-ncr', to: 'qc-schedule-review' },
+  { from: 'qc-log-defect', to: 'qc-notify-lead' },
+  { from: 'qc-notify-lead', to: 'qc-delay-rework' },
+  { from: 'qc-delay-rework', to: 'qc-update-record' },
+];
+
+const QC_ALERT_LABELS = [
+  { text: 'Critical', x: 170, y: 352, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
+  { text: 'Non-critical', x: 770, y: 352, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
+];
+
+// -- Map workflow IDs to data sets --
+export const WORKFLOW_DATA: Record<string, WorkflowData> = {
+  'job-arrival': { nodes: JOB_ARRIVAL_NODES, edges: JOB_ARRIVAL_EDGES, branchLabels: JOB_ARRIVAL_LABELS, canvasH: 1260 },
+  'po-approval': { nodes: PO_APPROVAL_NODES, edges: PO_APPROVAL_EDGES, branchLabels: PO_APPROVAL_LABELS, canvasH: 940 },
+  'qc-fail':     { nodes: QC_ALERT_NODES, edges: QC_ALERT_EDGES, branchLabels: QC_ALERT_LABELS, canvasH: 920 },
+};
+
+// ─── Visual styles per kind ───────────────────────────────────────────────────
+
+const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: string }> = {
+  trigger:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-emerald-500',          borderLeft: 'border-l-emerald-500' },
+  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-gradient-to-br from-[var(--mw-purple)] to-pink-500', borderLeft: 'border-l-[var(--mw-purple)]' },
+  action:       { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-blue-500',             borderLeft: 'border-l-blue-500' },
+  notification: { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
+  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',                iconBg: 'bg-orange-500',           borderLeft: 'border-l-orange-500' },
+  hold:         { card: 'bg-white border-[var(--mw-error)]/30',                         iconBg: 'bg-amber-500',            borderLeft: 'border-l-amber-500' },
+  email:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
+  purchase:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-red-500',              borderLeft: 'border-l-red-500' },
+  schedule:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-indigo-500',           borderLeft: 'border-l-indigo-500' },
+  machine:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
+  delay:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-slate-500',            borderLeft: 'border-l-slate-500' },
+};
+
 // ─── SVG Connection layer ────────────────────────────────────────────────────
 
-function nodeById(id: string) {
-  return NODES.find(n => n.id === id)!;
-}
+function Connections({ edges, nodes, canvasW, canvasH }: { edges: WFEdge[]; nodes: WFNode[]; canvasW: number; canvasH: number }) {
+  const nodeById = (id: string) => nodes.find(n => n.id === id);
 
-function Connections() {
   return (
     <svg
       className="absolute inset-0 pointer-events-none"
-      width={CANVAS_W}
-      height={CANVAS_H}
+      width={canvasW}
+      height={canvasH}
       overflow="visible"
     >
       <defs>
@@ -159,7 +341,7 @@ function Connections() {
         </marker>
       </defs>
 
-      {EDGES.map(edge => {
+      {edges.map(edge => {
         const from = nodeById(edge.from);
         const to   = nodeById(edge.to);
         if (!from || !to) return null;
@@ -189,12 +371,19 @@ function Connections() {
   );
 }
 
-// ─── Branch labels ────────────────────────────────────────────────────────────
+// ─── Add Step Button ─────────────────────────────────────────────────────────
 
-const BRANCH_LABELS = [
-  { text: 'Stock available',    x: 170, y: 762, color: 'var(--mw-success)', bg: 'var(--mw-success-light)' },
-  { text: 'Stock insufficient', x: 770, y: 762, color: 'var(--mw-error)', bg: 'var(--mw-error-100)' },
-];
+function AddStepButton({ x, y }: { x: number; y: number }) {
+  return (
+    <button
+      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-white text-[var(--neutral-400)] transition-all hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)]"
+      style={{ left: x - 12, top: y - 12 }}
+      title="Add step"
+    >
+      <Plus className="w-3.5 h-3.5" />
+    </button>
+  );
+}
 
 // ─── Node card ────────────────────────────────────────────────────────────────
 
@@ -214,14 +403,18 @@ function NodeCard({
   return (
     <div
       className={cn(
-        'absolute border rounded-[var(--shape-lg)] p-3 cursor-pointer shadow-sm select-none',
+        'absolute border border-l-[3px] rounded-[var(--shape-lg)] p-3 cursor-pointer shadow-sm select-none',
         'transition-all duration-[var(--duration-short2)]',
         s.card,
+        s.borderLeft,
         selected ? 'ring-2 ring-[var(--mw-yellow-400)] shadow-md' : 'hover:shadow-md',
       )}
       style={{ left: node.x, top: node.y, width: NODE_W, minHeight: node.h }}
       onClick={onClick}
     >
+      {/* Connection dot top */}
+      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-white" />
+
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0', s.iconBg)}>
@@ -245,6 +438,17 @@ function NodeCard({
           </div>
         ))}
       </div>
+
+      {/* Connection dot bottom */}
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-white" />
+
+      {/* Condition branch indicators */}
+      {node.kind === 'condition' && (
+        <div className="absolute -bottom-0.5 left-0 right-0 flex justify-between px-6">
+          <span className="text-[9px] font-semibold text-emerald-400 bg-[var(--mw-mirage)] px-1 rounded">Yes</span>
+          <span className="text-[9px] font-semibold text-red-400 bg-[var(--mw-mirage)] px-1 rounded">No</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -253,16 +457,40 @@ function NodeCard({
 
 export function WorkflowCanvas({
   onSelectNode,
+  workflowId = 'job-arrival',
 }: {
   onSelectNode: (node: WFNode | null) => void;
+  workflowId?: string;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const data = WORKFLOW_DATA[workflowId] ?? WORKFLOW_DATA['job-arrival'];
+  const { nodes, edges, branchLabels, canvasH } = data;
 
   const handleClick = (node: WFNode) => {
     const next = selectedId === node.id ? null : node;
     setSelectedId(next?.id ?? null);
     onSelectNode(next);
   };
+
+  // Compute add-step button positions (midpoints of edges between vertically-aligned nodes)
+  const addStepPositions = edges
+    .filter(e => {
+      const from = nodes.find(n => n.id === e.from);
+      const to = nodes.find(n => n.id === e.to);
+      if (!from || !to) return false;
+      // Only show between same-column nodes (within 50px x delta)
+      return Math.abs(from.x - to.x) < 50;
+    })
+    .map(e => {
+      const from = nodes.find(n => n.id === e.from)!;
+      const to = nodes.find(n => n.id === e.to)!;
+      return {
+        key: `${e.from}-${e.to}`,
+        x: from.x + NODE_W / 2,
+        y: from.y + from.h + (to.y - from.y - from.h) / 2,
+      };
+    });
 
   return (
     <div
@@ -273,15 +501,15 @@ export function WorkflowCanvas({
         backgroundSize: '24px 24px',
       }}
     >
-      {/* Inner canvas — extra padding so nodes aren't clipped */}
-      <div style={{ minWidth: CANVAS_W + 48, minHeight: CANVAS_H + 48, padding: 24 }}>
-        <div className="relative mx-auto" style={{ width: CANVAS_W, height: CANVAS_H }}>
+      {/* Inner canvas */}
+      <div style={{ minWidth: CANVAS_W + 48, minHeight: canvasH + 48, padding: 24 }}>
+        <div className="relative mx-auto" style={{ width: CANVAS_W, height: canvasH }}>
 
           {/* SVG connection layer */}
-          <Connections />
+          <Connections edges={edges} nodes={nodes} canvasW={CANVAS_W} canvasH={canvasH} />
 
           {/* Branch labels */}
-          {BRANCH_LABELS.map(bl => (
+          {branchLabels.map(bl => (
             <div
               key={bl.text}
               className="absolute text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"
@@ -297,8 +525,13 @@ export function WorkflowCanvas({
             </div>
           ))}
 
+          {/* Add-step buttons */}
+          {addStepPositions.map(pos => (
+            <AddStepButton key={pos.key} x={pos.x} y={pos.y} />
+          ))}
+
           {/* Nodes */}
-          {NODES.map(node => (
+          {nodes.map(node => (
             <NodeCard
               key={node.id}
               node={node}

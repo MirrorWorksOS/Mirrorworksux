@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Search, Filter, List, Calendar, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
 import {
   addDays,
   addWeeks,
@@ -220,6 +221,68 @@ const emptyForm: NewActivityForm = {
 };
 
 /* ------------------------------------------------------------------ */
+/*  Mock attendees for event detail sheet                              */
+/* ------------------------------------------------------------------ */
+const MOCK_ATTENDEES: Record<string, { name: string; email: string }[]> = {
+  '1': [
+    { name: 'Sarah Chen', email: 'sarah.chen@mirrorworks.com' },
+    { name: 'Tom Williams', email: 'tom.w@techcorp.com' },
+  ],
+  '2': [
+    { name: 'James Miller', email: 'james.miller@mirrorworks.com' },
+    { name: 'Karen Rhodes', email: 'karen.r@bhp.com.au' },
+  ],
+  '3': [
+    { name: 'Sarah Chen', email: 'sarah.chen@mirrorworks.com' },
+    { name: 'Michael Torres', email: 'm.torres@specreview.com' },
+    { name: 'Lisa Park', email: 'lisa.park@mirrorworks.com' },
+  ],
+  '6': [
+    { name: 'Sarah Chen', email: 'sarah.chen@mirrorworks.com' },
+  ],
+  '7': [
+    { name: 'David Park', email: 'david.park@mirrorworks.com' },
+    { name: 'Janet Liu', email: 'j.liu@sydneyrail.com.au' },
+    { name: 'Peter Ng', email: 'peter.ng@sydneyrail.com.au' },
+  ],
+};
+
+const MOCK_DESCRIPTIONS: Record<string, string> = {
+  '1': 'Send the revised pricing proposal including updated lead times and shipping terms. Include the new volume discount schedule discussed last week.',
+  '2': 'Follow up on the pricing negotiation from the last meeting. Key points: bulk discount threshold, payment terms, delivery schedule for Q3.',
+  '3': 'On-site visit to review fabrication specifications for the custom enclosure project. Bring sample materials and updated drawings.',
+  '7': 'Quarterly business review covering order volume, delivery performance, and upcoming project pipeline. Prepare slides with KPI dashboard.',
+};
+
+const MOCK_LOCATIONS: Record<string, string> = {
+  '3': 'TechCorp HQ, Level 12, 200 George St, Sydney',
+  '7': 'Sydney Rail Corp, Boardroom 3A, Central Station Complex',
+};
+
+function activityToEventDetail(activity: Activity): CalendarEventDetail {
+  const startDate = new Date(`${activity.dueDate}T09:00:00`);
+  const endDate = new Date(`${activity.dueDate}T10:00:00`);
+  const opp = OPPORTUNITIES.find((o) => o.id === activity.opportunity);
+
+  return {
+    id: activity.id,
+    title: activity.description,
+    start: startDate,
+    end: endDate,
+    type: activity.type as CalendarEventDetail['type'],
+    description: MOCK_DESCRIPTIONS[activity.id],
+    attendees: MOCK_ATTENDEES[activity.id],
+    location: MOCK_LOCATIONS[activity.id],
+    relatedTo: activity.opportunity
+      ? { type: 'Opportunity', label: opp?.label ?? activity.opportunity, path: activity.opportunityPath }
+      : undefined,
+    status: activity.status === 'in_progress' ? 'scheduled' : (activity.status as 'scheduled' | 'completed' | 'cancelled'),
+    priority: activity.status === 'overdue' ? 'high' : activity.status === 'in_progress' ? 'medium' : 'low',
+    notes: '',
+  };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Helper: convert activities to ScheduleCalendar events              */
 /* ------------------------------------------------------------------ */
 function toCalendarEvents(activities: Activity[]): CalendarEvent[] {
@@ -250,6 +313,7 @@ export function SellActivities() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showNewActivity, setShowNewActivity] = useState(false);
   const [form, setForm] = useState<NewActivityForm>(emptyForm);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
   // Filtered activities for the list view
   const filtered = activities.filter(
@@ -391,7 +455,8 @@ export function SellActivities() {
                     return (
                       <tr
                         key={activity.id}
-                        className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--neutral-50)]"
+                        className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--neutral-50)] cursor-pointer"
+                        onClick={() => setSelectedEvent(activityToEventDetail(activity))}
                       >
                         <td className="px-4 py-3">
                           <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
@@ -577,7 +642,7 @@ export function SellActivities() {
                     const typeBadge = TYPE_BADGE[activity.type];
                     const statusBadge = STATUS_BADGE[activity.status];
                     return (
-                      <div key={activity.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                      <div key={activity.id} className="flex flex-wrap items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
                         <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
                         <span className="flex-1 min-w-[120px] text-sm font-medium text-[var(--neutral-900)]">
                           {activity.description}
@@ -630,7 +695,7 @@ export function SellActivities() {
                     const typeBadge = TYPE_BADGE[activity.type];
                     const statusBadge = STATUS_BADGE[activity.status];
                     return (
-                      <div key={activity.id} className="flex items-center gap-4 px-4 py-3">
+                      <div key={activity.id} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
                         <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
                         <span className="flex-1 text-sm font-medium text-[var(--neutral-900)]">
                           {activity.description}
@@ -654,6 +719,13 @@ export function SellActivities() {
           )}
         </div>
       )}
+
+      {/* ---- EVENT DETAIL SHEET ---- */}
+      <EventDetailSheet
+        event={selectedEvent}
+        open={!!selectedEvent}
+        onOpenChange={(open) => !open && setSelectedEvent(null)}
+      />
 
       {/* ---- NEW ACTIVITY DIALOG ---- */}
       <Dialog open={showNewActivity} onOpenChange={setShowNewActivity}>

@@ -1,7 +1,8 @@
 /**
  * EmptyState — Standardised zero-data states
  *
- * Three tiers:
+ * Four tiers:
+ *  - Illustrated: large SVG artwork + title + description + actions (Figma empty-state pattern)
  *  - Full: icon-in-circle + title + description + optional CTA (page/card level)
  *  - Compact: icon + text (inside table/list areas)
  *  - Inline: plain text (kanban columns, filter results)
@@ -16,22 +17,29 @@ interface EmptyStateAction {
   label: string;
   onClick: () => void;
   icon?: LucideIcon;
+  variant?: "primary" | "outline";
 }
 
 interface EmptyStateProps {
   icon?: LucideIcon;
+  /** SVG artwork source path for illustrated variant */
+  illustration?: string;
   title: string;
   description?: string;
   action?: EmptyStateAction;
-  variant?: "full" | "compact" | "inline";
+  /** Additional actions rendered alongside the primary action */
+  actions?: EmptyStateAction[];
+  variant?: "illustrated" | "full" | "compact" | "inline";
   className?: string;
 }
 
 function EmptyState({
   icon: Icon,
+  illustration,
   title,
   description,
   action,
+  actions,
   variant = "full",
   className,
 }: EmptyStateProps) {
@@ -53,6 +61,54 @@ function EmptyState({
         {description && (
           <p className="text-xs text-muted-foreground mt-1">{description}</p>
         )}
+      </div>
+    );
+  }
+
+  if (variant === "illustrated") {
+    const allActions = action ? [action, ...(actions ?? [])] : (actions ?? []);
+
+    return (
+      <div className={cn("flex flex-col items-center justify-center flex-1 p-10", className)}>
+        <div className="border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] flex flex-col items-center gap-6 p-10 w-full max-w-2xl">
+          {illustration && (
+            <img
+              src={illustration}
+              alt=""
+              className="w-[265px] h-auto"
+              aria-hidden
+            />
+          )}
+          <div className="flex flex-col items-center gap-2 text-center w-full">
+            <h2 className="text-4xl tracking-tight text-[var(--mw-mirage)]">
+              {title}
+            </h2>
+            {description && (
+              <p className="text-sm text-[var(--neutral-500)]">
+                {description}
+              </p>
+            )}
+          </div>
+          {allActions.length > 0 && (
+            <div className="flex items-center gap-3">
+              {allActions.map((act, i) => (
+                <Button
+                  key={act.label}
+                  onClick={act.onClick}
+                  variant={act.variant === "outline" ? "outline" : undefined}
+                  className={cn(
+                    act.variant === "outline"
+                      ? "border-[var(--border)] text-[var(--mw-mirage)]"
+                      : "bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90",
+                  )}
+                >
+                  {act.icon && <act.icon className="w-4 h-4 mr-2" />}
+                  {act.label}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   }

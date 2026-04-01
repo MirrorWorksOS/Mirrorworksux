@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { Calendar as CalendarIcon, List, Plus } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
 import { Badge } from '../ui/badge';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
@@ -55,9 +56,30 @@ function toCalendarEvents(events: PlanEvent[]): CalendarEvent[] {
   }));
 }
 
+function planEventToDetail(ev: PlanEvent): CalendarEventDetail {
+  const start = parseISO(`${ev.date}T${ev.time}:00`);
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const typeMap: Record<EventType, CalendarEventDetail['type']> = {
+    job: 'task',
+    maintenance: 'follow-up',
+    qc: 'meeting',
+  };
+  return {
+    id: ev.id,
+    title: ev.title,
+    start,
+    end,
+    type: typeMap[ev.type],
+    description: ev.type === 'job' ? 'Production job scheduled for the shop floor.' : ev.type === 'maintenance' ? 'Scheduled maintenance window for equipment.' : 'Quality control checkpoint.',
+    status: 'scheduled',
+    priority: ev.type === 'qc' ? 'high' : 'medium',
+  };
+}
+
 export function PlanActivities() {
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
   const [month, setMonth] = useState(() => new Date(2026, 2, 1));
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
   const calendarEvents = useMemo(() => toCalendarEvents(mockEvents), []);
 
@@ -147,9 +169,15 @@ export function PlanActivities() {
             columns={listColumns}
             data={mockEvents}
             keyExtractor={(row) => row.id}
+            onRowClick={(row) => setSelectedEvent(planEventToDetail(row))}
           />
         </motion.div>
       )}
+      <EventDetailSheet
+        event={selectedEvent}
+        open={!!selectedEvent}
+        onOpenChange={(open) => !open && setSelectedEvent(null)}
+      />
     </PageShell>
   );
 }

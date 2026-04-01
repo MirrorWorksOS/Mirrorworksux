@@ -9,6 +9,10 @@ import {
   AiCommandBar,
   type AiCommandScope,
 } from "@/components/shared/ai/AiCommandBar";
+import { DashboardCustomizeButton } from "./DashboardCustomizeButton";
+import { WidgetDrawer } from "./WidgetDrawer";
+import { DashboardWidgetGrid } from "./DashboardWidgetGrid";
+import { getDefaultWidgets, type WidgetConfig } from "./WidgetRegistry";
 
 export interface DashboardTab {
   key: string;
@@ -27,6 +31,10 @@ export interface ModuleDashboardProps {
   className?: string;
   /** When set, renders the AI command bar below the tab strip (prototype). */
   aiScope?: AiCommandScope;
+  /** Module identifier used for widget filtering and localStorage key. */
+  module?: string;
+  /** When true, renders the customisable widget grid above the children. */
+  showWidgetGrid?: boolean;
 }
 
 export function ModuleDashboard({
@@ -39,7 +47,36 @@ export function ModuleDashboard({
   children,
   className,
   aiScope,
+  module = "all",
+  showWidgetGrid = false,
 }: ModuleDashboardProps) {
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  // Load widgets from localStorage or use defaults
+  const storageKey = `mw-dashboard-${module}-widgets`;
+  const [widgets, setWidgets] = React.useState<WidgetConfig[]>(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) return JSON.parse(stored) as WidgetConfig[];
+    } catch {
+      // fall through to defaults
+    }
+    return getDefaultWidgets(module);
+  });
+
+  // Persist to localStorage on change
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(widgets));
+    } catch {
+      // silently ignore quota errors
+    }
+  }, [storageKey, widgets]);
+
+  const handleAddWidget = (widget: WidgetConfig) => {
+    setWidgets((prev) => [...prev, widget]);
+  };
+
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)}>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -51,10 +88,20 @@ export function ModuleDashboard({
             <p className="text-sm text-muted-foreground">{subtitle}</p>
           ) : null}
         </div>
-        {actions ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
-        ) : null}
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {actions}
+          <DashboardCustomizeButton onClick={() => setDrawerOpen(true)} />
+        </div>
       </header>
+
+      {/* Widget drawer */}
+      <WidgetDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        module={module}
+        currentWidgets={widgets}
+        onAddWidget={handleAddWidget}
+      />
 
       <Tabs
         value={activeTab}
@@ -97,6 +144,12 @@ export function ModuleDashboard({
       >
         {aiScope !== undefined ? (
           <AiCommandBar scope={aiScope} aria-label={`Ask MirrorWorks AI, ${aiScope} module`} />
+        ) : null}
+        {showWidgetGrid && widgets.length > 0 ? (
+          <DashboardWidgetGrid
+            widgets={widgets}
+            onWidgetsChange={setWidgets}
+          />
         ) : null}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
