@@ -1,129 +1,77 @@
 /**
- * MakeShopFloor - Full tabbed shop floor screen
+ * MakeShopFloor - Shop floor overview with standardized shadcn Tabs.
  *
- * Tabs:
- *   Overview        → OverviewTab      (Active Job Focus, Shift Performance, Andon Alerts, MO table, AI Insights, Comms)
- *   Kanban          → MakeShopFloorKanban (Kanban board — click card → WorkOrderFullScreen)
- *   Work            → WorkTab          (MO list with collapsible WOs — click row → WorkOrderFullScreen)
- *   Issues          → IssuesTab        (Report issue, Call Supervisor, Voice Note, Active Alerts)
- *   Quality         → QualityTab       (Quality holds, inspections, reports)
- *   Time Clock      → TimeClockTab     (Operator clock-in / PIN / break)
- *   Intelligence    → IntelligenceHubTab (AI insights, voice assistant)
+ * Tabs: Overview, Kanban, Work Orders
+ * (Time Clock, Quality, and Intelligence Hub promoted to standalone routes)
  */
 
 import React, { useState } from 'react';
-import { cn } from '../ui/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Badge } from '../ui/badge';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 import { OverviewTab }        from '../shop-floor/OverviewTab';
 import { MakeShopFloorKanban } from './MakeShopFloorKanban';
 import { WorkTab }            from '../shop-floor/WorkTab';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
-import { IssuesTab }          from '../shop-floor/IssuesTab';
-import { QualityTab }         from '../shop-floor/QualityTab';
-import { TimeClockTab }       from '../shop-floor/TimeClockTab';
-import { IntelligenceHubTab } from '../shop-floor/IntelligenceHubTab';
-
-type Tab =
-  | 'overview'
-  | 'kanban'
-  | 'work'
-  | 'issues'
-  | 'quality'
-  | 'time-clock'
-  | 'intelligence';
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'overview',     label: 'Overview' },
-  { id: 'kanban',       label: 'Kanban' },
-  { id: 'work',         label: 'Work Orders' },
-  { id: 'issues',       label: 'Issues' },
-  { id: 'quality',      label: 'Quality' },
-  { id: 'time-clock',   label: 'Time Clock' },
-  { id: 'intelligence', label: 'Intelligence Hub' },
-];
 
 export function MakeShopFloor() {
-  const [activeTab, setActiveTab]           = useState<Tab>('overview');
+  const [activeTab, setActiveTab] = useState('overview');
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
 
   return (
-    <div className="flex flex-col" style={{ height: '100vh' }}>
+    <PageShell className="space-y-0">
+      <PageHeader
+        title="Shop Floor"
+        subtitle="Real-time production overview and work order management"
+      />
 
-      {/* ── Tab Bar ── */}
-      <div className="shrink-0 flex items-end gap-0 border-b border-[var(--border)] bg-white px-6 overflow-x-auto">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'relative h-14 px-6 text-sm font-medium whitespace-nowrap transition-colors duration-[var(--duration-short2)]',
-              activeTab === tab.id
-                ? 'text-[var(--mw-mirage)]'
-                : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]'
-            )}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--mw-yellow-400)] rounded-t-sm" />
-            )}
-          </button>
-        ))}
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex w-full flex-col gap-0">
+        <TabsList className="h-auto w-full min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 sm:w-fit mx-6">
+          <TabsTrigger value="overview" className="gap-2 px-3 sm:px-4">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="kanban" className="gap-2 px-3 sm:px-4">
+            Kanban
+          </TabsTrigger>
+          <TabsTrigger value="work" className="gap-2 px-3 sm:px-4">
+            <span>Work Orders</span>
+            <Badge
+              variant="secondary"
+              className="border-0 bg-[var(--neutral-200)] px-1.5 py-0 text-xs font-medium text-[var(--neutral-800)] tabular-nums"
+            >
+              4
+            </Badge>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* ── Tab Content ── */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-
-        {activeTab === 'overview' && (
-          <div className="h-full overflow-hidden">
+        <TabsContent value="overview" className="mt-0 focus-visible:outline-none">
+          <div className="h-[calc(100vh-180px)] overflow-hidden">
             <OverviewTab />
           </div>
-        )}
+        </TabsContent>
 
-        {activeTab === 'kanban' && (
-          <div className="h-full overflow-hidden">
+        <TabsContent value="kanban" className="mt-0 focus-visible:outline-none">
+          <div className="h-[calc(100vh-180px)] overflow-hidden">
             <MakeShopFloorKanban />
           </div>
-        )}
+        </TabsContent>
 
-        {activeTab === 'work' && (
-          <div className="flex flex-col h-full overflow-hidden">
+        <TabsContent value="work" className="mt-0 focus-visible:outline-none">
+          <div className="flex flex-col h-[calc(100vh-180px)] overflow-hidden">
             <WorkTab onSelectWorkOrder={setSelectedWorkOrder} />
           </div>
-        )}
+        </TabsContent>
+      </Tabs>
 
-        {activeTab === 'issues' && (
-          <div className="h-full overflow-hidden">
-            <IssuesTab />
-          </div>
-        )}
-
-        {activeTab === 'quality' && (
-          <div className="h-full overflow-hidden">
-            <QualityTab />
-          </div>
-        )}
-
-        {activeTab === 'time-clock' && (
-          <div className="h-full overflow-hidden">
-            <TimeClockTab />
-          </div>
-        )}
-
-        {activeTab === 'intelligence' && (
-          <div className="h-full overflow-hidden">
-            <IntelligenceHubTab />
-          </div>
-        )}
-
-      </div>
-
-      {/* ── WorkOrderFullScreen overlay (Work & Kanban tabs) ── */}
+      {/* WorkOrderFullScreen overlay */}
       {selectedWorkOrder && (
         <WorkOrderFullScreen
           workOrder={selectedWorkOrder}
           onClose={() => setSelectedWorkOrder(null)}
         />
       )}
-    </div>
+    </PageShell>
   );
 }

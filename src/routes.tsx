@@ -15,9 +15,14 @@ import { SellOrders } from './components/sell/SellOrders';
 import { SellInvoices } from './components/sell/SellInvoices';
 import { SellProducts } from './components/sell/SellProducts';
 import { SellSettings } from './components/sell/SellSettings';
+import { SellQuotes } from './components/sell/SellQuotes';
+import { SellActivities } from './components/sell/SellActivities';
 import { SellNewQuote } from './components/sell/SellNewQuote';
 import { SellProductDetail } from './components/sell/SellProductDetail';
 import { SellCustomerDetail } from './components/sell/SellCustomerDetail';
+import { SellOrderDetail } from './components/sell/SellOrderDetail';
+import { SellInvoiceDetail } from './components/sell/SellInvoiceDetail';
+import { SellNewInvoice } from './components/sell/SellNewInvoice';
 
 // Buy Module
 import { BuyDashboard } from './components/buy/BuyDashboard';
@@ -35,19 +40,25 @@ import { BuySettings } from './components/buy/BuySettings';
 // Plan Module
 import { PlanDashboard } from './components/plan/PlanDashboard';
 import { PlanJobs } from './components/plan/PlanJobs';
+import { PlanJobDetail } from './components/plan/PlanJobDetail';
 import { PlanActivities } from './components/plan/PlanActivities';
+import { PlanSchedule } from './components/plan/PlanSchedule';
 import { PlanPurchase } from './components/plan/PlanPurchase';
 import { PlanQCPlanning } from './components/plan/PlanQCPlanning';
 import { PlanProducts } from './components/plan/PlanProducts';
 import { PlanSettings } from './components/plan/PlanSettings';
+import { PlanNCConnect } from './components/plan/PlanNCConnect';
 
 // Make Module
 import { MakeDashboard } from './components/make/MakeDashboard';
 import { MakeSchedule } from './components/make/MakeSchedule';
-import { MakeShopFloor } from './components/make/MakeShopFloor';
-import { MakeWork } from './components/make/MakeWork';
-import { MakeIssues } from './components/make/MakeIssues';
+import { MakeManufacturingOrders } from './components/make/MakeManufacturingOrders';
+import { MakeManufacturingOrderDetail } from './components/make/MakeManufacturingOrderDetail';
+import { MakeTimeClock } from './components/make/MakeTimeClock';
+import { MakeQuality } from './components/make/MakeQuality';
+import { MakeProducts } from './components/make/MakeProducts';
 import { MakeSettings } from './components/make/MakeSettings';
+import { MakeShopFloor } from './components/make/MakeShopFloor';
 
 // Ship Module
 import { ShipDashboard } from './components/ship/ShipDashboard';
@@ -86,6 +97,8 @@ import { JobProfitability } from './components/book/JobProfitability';
 import { StockValuation } from './components/book/StockValuation';
 import { ReportsGallery } from './components/book/ReportsGallery';
 import { BookSettings } from './components/book/BookSettings';
+import { InvoiceDetail } from './components/book/InvoiceDetail';
+import { JobCostDetail } from './components/book/JobCostDetail';
 
 export const router = createBrowserRouter([
   {
@@ -113,9 +126,14 @@ export const router = createBrowserRouter([
           { path: 'opportunities', element: <SellOpportunities /> },
           { path: 'opportunities/:id', element: <SellOpportunityPage /> },
           { path: 'orders', element: <SellOrders /> },
+          { path: 'orders/:id', element: <SellOrderDetail /> },
+          { path: 'activities', element: <SellActivities /> },
           { path: 'invoices', element: <SellInvoices /> },
+          { path: 'invoices/new', element: <SellNewInvoice /> },
+          { path: 'invoices/:id', element: <SellInvoiceDetail /> },
           { path: 'products', element: <SellProducts /> },
           { path: 'products/:id', element: <SellProductDetail /> },
+          { path: 'quotes', element: <SellQuotes /> },
           { path: 'quotes/new', element: <SellNewQuote /> },
           { path: 'settings', element: <SellSettings /> },
         ],
@@ -145,7 +163,10 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <PlanDashboard /> },
           { path: 'jobs', element: <PlanJobs /> },
+          { path: 'jobs/:id', element: <PlanJobDetail /> },
           { path: 'activities', element: <PlanActivities /> },
+          { path: 'schedule', element: <PlanSchedule /> },
+          { path: 'nc-connect', element: <PlanNCConnect /> },
           { path: 'purchase', element: <PlanPurchase /> },
           { path: 'qc-planning', element: <PlanQCPlanning /> },
           { path: 'products', element: <PlanProducts /> },
@@ -160,8 +181,11 @@ export const router = createBrowserRouter([
           { index: true, element: <MakeDashboard /> },
           { path: 'schedule', element: <MakeSchedule /> },
           { path: 'shop-floor', element: <MakeShopFloor /> },
-          { path: 'work', element: <MakeWork /> },
-          { path: 'issues', element: <MakeIssues /> },
+          { path: 'manufacturing-orders', element: <MakeManufacturingOrders /> },
+          { path: 'manufacturing-orders/:id', element: <MakeManufacturingOrderDetail /> },
+          { path: 'time-clock', element: <MakeTimeClock /> },
+          { path: 'quality', element: <MakeQuality /> },
+          { path: 'products', element: <MakeProducts /> },
           { path: 'settings', element: <MakeSettings /> },
         ],
       },
@@ -234,9 +258,11 @@ export const router = createBrowserRouter([
           { index: true, element: <BookDashboard /> },
           { path: 'budget', element: <BudgetOverview /> },
           { path: 'invoices', element: <BookInvoices /> },
+          { path: 'invoices/:id', element: <InvoiceDetail onBack={() => window.history.back()} /> },
           { path: 'expenses', element: <ExpenseKanban /> },
           { path: 'purchases', element: <PurchaseOrders /> },
           { path: 'job-costs', element: <JobProfitability /> },
+          { path: 'job-costs/:id', element: <JobCostDetail onBack={() => window.history.back()} /> },
           { path: 'stock-valuation', element: <StockValuation /> },
           { path: 'reports', element: <ReportsGallery /> },
           { path: 'settings', element: <BookSettings /> },

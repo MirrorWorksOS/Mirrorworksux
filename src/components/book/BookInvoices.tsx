@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { MoreVertical, FileText } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
@@ -106,6 +107,7 @@ interface BookInvoicesProps {
 }
 
 export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | InvoiceStatus>('all');
@@ -233,7 +235,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                   key={invoice.id}
                   variants={staggerItem}
                   custom={index}
-                  onClick={() => onSelectInvoice?.(invoice.id)}
+                  onClick={() => onSelectInvoice ? onSelectInvoice(invoice.id) : navigate(`/book/invoices/${invoice.id}`)}
                   className="border-b border-[var(--border)] hover:bg-[var(--neutral-100)] cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3">

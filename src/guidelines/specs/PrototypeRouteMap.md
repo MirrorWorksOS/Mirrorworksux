@@ -2,6 +2,8 @@
 
 Authoritative routing is defined in [`src/routes.tsx`](../../routes.tsx). This document lists **path → React component** for the UX prototype so §4 specs can be reconciled with the codebase.
 
+**Last updated:** 1 April 2026
+
 ---
 
 ## App shell
@@ -19,16 +21,22 @@ Base path: `/sell`
 
 | Route | Component | Notes |
 | --- | --- | --- |
-| `/sell` | `SellDashboard` | Index |
-| `/sell/crm` | `SellCRM` | |
+| `/sell` | `SellDashboard` | Index (4 sub-tabs: Overview, Analysis, Reports, Forecasts) |
+| `/sell/crm` | `SellCRM` | Card/List toggle |
 | `/sell/crm/:id` | `SellCustomerDetail` | Dynamic `id` |
-| `/sell/opportunities` | `SellOpportunities` | |
+| `/sell/opportunities` | `SellOpportunities` | Kanban board |
+| `/sell/opportunities/:id` | `SellOpportunityPage` | 4-tab JobWorkspaceLayout (Overview, Quotes, Activities, Intelligence Hub) |
 | `/sell/orders` | `SellOrders` | |
+| `/sell/orders/:id` | `SellOrderDetail` | 4-tab JobWorkspaceLayout (Overview, Line Items, Fulfilment, Documents) |
+| `/sell/activities` | `SellActivities` | List + calendar (month / week / day) + New Activity dialog |
 | `/sell/invoices` | `SellInvoices` | |
+| `/sell/invoices/new` | `SellNewInvoice` | New invoice wizard (draft → detail id 8, issue → id 9) |
+| `/sell/invoices/:id` | `SellInvoiceDetail` | Invoice workspace |
 | `/sell/products` | `SellProducts` | |
-| `/sell/products/:id` | `SellProductDetail` | Dynamic `id` |
-| `/sell/quotes/new` | `SellNewQuote` | |
-| `/sell/settings` | `SellSettings` | |
+| `/sell/products/:id` | `SellProductDetail` | 5-tab detail (Overview, Manufacturing, Inventory, Accounting, Documents) |
+| `/sell/quotes` | `SellQuotes` | Quotes list |
+| `/sell/quotes/new` | `SellNewQuote` | Quote builder |
+| `/sell/settings` | `SellSettings` | 8 panels |
 
 There is **no** `/sell/pipeline` route; pipeline-style work is covered by **Opportunities** and **CRM** in the prototype.
 
@@ -41,10 +49,13 @@ Base path: `/plan`
 | Route | Component | Notes |
 | --- | --- | --- |
 | `/plan` | `PlanDashboard` | Index |
-| `/plan/jobs` | `PlanJobs` | |
+| `/plan/jobs` | `PlanJobs` | Kanban/List/Card toggle |
+| `/plan/jobs/:id` | `PlanJobDetail` | 5-tab JobWorkspaceLayout (Overview, Production, Schedule, Intelligence Hub, Budget) |
 | `/plan/activities` | `PlanActivities` | |
+| `/plan/schedule` | `PlanSchedule` | Cross-job schedule (Gantt/Calendar/List) |
+| `/plan/nc-connect` | `PlanNCConnect` | NC file management, G-code viewer, machine status |
 | `/plan/purchase` | `PlanPurchase` | |
-| `/plan/qc-planning` | `PlanQCPlanning` | |
+| `/plan/qc-planning` | `PlanQCPlanning` | Sidebar label: "Quality" |
 | `/plan/products` | `PlanProducts` | |
 | `/plan/settings` | `PlanSettings` | |
 
@@ -56,12 +67,17 @@ Base path: `/make`
 
 | Route | Component | Notes |
 | --- | --- | --- |
-| `/make` | `MakeDashboard` | Index (Andon / dashboard) |
-| `/make/schedule` | `MakeSchedule` | |
-| `/make/shop-floor` | `MakeShopFloor` | |
-| `/make/work` | `MakeWork` | |
-| `/make/issues` | `MakeIssues` | |
+| `/make` | `MakeDashboard` | Andon dashboard (5 KPIs, machine grid, quality alerts, schedule strip, quick actions) |
+| `/make/schedule` | `MakeSchedule` | Gantt/Calendar/List views |
+| `/make/shop-floor` | `MakeShopFloor` | 3 tabs (Overview with Floor Mode, Kanban, Work Orders) |
+| `/make/manufacturing-orders` | `MakeManufacturingOrders` | MO list table |
+| `/make/manufacturing-orders/:id` | `MakeManufacturingOrderDetail` | 5-tab JobWorkspaceLayout (Overview, Work, Issues, Intelligence Hub, Documents) |
+| `/make/time-clock` | `MakeTimeClock` | Time tracking |
+| `/make/quality` | `MakeQuality` | Quality checks |
+| `/make/products` | `MakeProducts` | Product list |
 | `/make/settings` | `MakeSettings` | |
+
+The **Operator Execution View** (`WorkOrderFullScreen`) is a full-screen overlay accessed by clicking a work order row in MO Detail or Shop Floor — it is not a standalone route.
 
 ---
 
@@ -92,9 +108,11 @@ Base path: `/book`
 | `/book` | `BookDashboard` | Index |
 | `/book/budget` | `BudgetOverview` | |
 | `/book/invoices` | `BookInvoices` | |
+| `/book/invoices/:id` | `InvoiceDetail` | Invoice detail view |
 | `/book/expenses` | `ExpenseKanban` | |
 | `/book/purchases` | `PurchaseOrders` | |
 | `/book/job-costs` | `JobProfitability` | |
+| `/book/job-costs/:id` | `JobCostDetail` | Job cost detail view |
 | `/book/stock-valuation` | `StockValuation` | |
 | `/book/reports` | `ReportsGallery` | |
 | `/book/settings` | `BookSettings` | |
@@ -128,7 +146,7 @@ Base path: `/control`
 | Route | Component | Notes |
 | --- | --- | --- |
 | `/control` | `ControlDashboard` | Index |
-| `/control/mirrorworks-bridge` | `MirrorWorksBridge` | Data import wizard (PLAT 01) |
+| `/control/mirrorworks-bridge` | `BridgeWizard` | Data import wizard (PLAT 01) |
 | `/control/factory-layout` | `ControlFactoryDesigner` | |
 | `/control/process-builder` | `ControlProcessBuilder` | |
 | `/control/locations` | `ControlLocations` | |
@@ -140,6 +158,16 @@ Base path: `/control`
 | `/control/boms` | `ControlBOMs` | |
 | `/control/role-designer` | `ControlRoleDesigner` | |
 | `/control/workflow-designer` | `ControlWorkflowDesigner` | |
+
+Control is inherently a settings/configuration module — no separate `/control/settings` route needed.
+
+---
+
+## Bridge (standalone)
+
+| Route | Component | Notes |
+| --- | --- | --- |
+| `/bridge` | `BridgeWizard` | Standalone entry point for onboarding wizard |
 
 ---
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { PlusCircle, Search, Calendar, Tag, User, LayoutGrid, List, GripVertical, Paperclip } from 'lucide-react';
+import { PlusCircle, Search, Calendar, Tag, User, LayoutGrid, List, GripVertical, Paperclip, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
@@ -9,6 +9,7 @@ import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
 import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { DRAG_HANDLE_STYLE } from '@/components/shared/kanban/drag-styles';
+import { NewExpense } from './NewExpense';
 
 const KANBAN_ITEM_TYPE = 'book-expense';
 
@@ -135,6 +136,7 @@ const ExpenseCardBody = ({ expense }: { expense: Expense }) => (
 
 export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
   const [columnState, setColumnState] = useState<ExpenseColumn[]>(INITIAL_COLUMNS);
+  const [showNewExpense, setShowNewExpense] = useState(false);
 
   const handleDrop = useCallback((item: KanbanDragItem, targetColumnId: string) => {
     setColumnState((prev) => {
@@ -156,8 +158,16 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
     });
   }, []);
 
+  const handleNewExpenseClick = () => {
+    if (onNewExpense) {
+      onNewExpense();
+    } else {
+      setShowNewExpense(true);
+    }
+  };
+
   return (
-    <div className="p-6 flex flex-col h-full overflow-hidden">
+    <div className="relative p-6 flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-5 shrink-0">
         <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Expenses</h1>
@@ -166,7 +176,7 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
             <button type="button" className="p-2 bg-[var(--mw-yellow-400)]"><LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" /></button>
             <button type="button" className="p-2 hover:bg-[var(--neutral-100)]"><List className="w-4 h-4 text-[var(--neutral-500)]" /></button>
           </div>
-          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={onNewExpense}>
+          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={handleNewExpenseClick}>
             <PlusCircle className="w-5 h-5" /> New Expense
           </Button>
         </div>
@@ -211,6 +221,30 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
           ))}
         </KanbanBoard>
       </div>
+
+      {/* NewExpense slide-over panel */}
+      {showNewExpense && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/20 z-40"
+            onClick={() => setShowNewExpense(false)}
+          />
+          {/* Panel */}
+          <div className="absolute top-0 right-0 bottom-0 w-1/2 bg-white border-l border-[var(--border)] shadow-xl z-50 overflow-y-auto animate-in slide-in-from-right duration-200">
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                type="button"
+                onClick={() => setShowNewExpense(false)}
+                className="p-2 hover:bg-[var(--neutral-100)] rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-[var(--neutral-500)]" />
+              </button>
+            </div>
+            <NewExpense onBack={() => setShowNewExpense(false)} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

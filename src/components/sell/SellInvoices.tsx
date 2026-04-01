@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -42,6 +43,7 @@ const mockInvoices: Invoice[] = [
 ];
 
 export function SellInvoices() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
 
   const filteredInvoices = activeTab === 'all'
@@ -74,7 +76,10 @@ export function SellInvoices() {
               <AnimatedDownload className="w-4 h-4" />
               Export
             </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group">
+            <Button
+              className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group"
+              onClick={() => navigate('/sell/invoices/new')}
+            >
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Invoice
             </Button>
@@ -128,15 +133,15 @@ export function SellInvoices() {
                     : 0;
 
                   return (
-                    <tr key={invoice.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4">
+                    <tr key={invoice.id} onClick={() => navigate(`/sell/invoices/${invoice.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
+                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>
                       <td className="px-4">
-                        <a href={`/sell/invoices/${invoice.id}`} className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
+                        <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
                           {invoice.invoiceNumber}
                           <ExternalLink className="w-4 h-4" />
-                        </a>
+                        </span>
                       </td>
                       <td className="px-4 text-sm text-[var(--neutral-900)]">{invoice.customer}</td>
                       <td className="px-4 text-sm text-[var(--neutral-600)]">

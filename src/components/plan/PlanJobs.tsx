@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Search, Plus, LayoutGrid, List, KanbanSquare, Filter } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
-import { PlanJobDetail } from './PlanJobDetail';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -152,18 +152,13 @@ const STAGES = [
 
 
 export function PlanJobs() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode]         = useState<ViewMode>('kanban');
   const [searchQuery, setSearchQuery]   = useState('');
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-
-  // Show job detail when a job is selected
-  if (selectedJobId) {
-    return <PlanJobDetail onBack={() => setSelectedJobId(null)} />;
-  }
 
   const JobCard = ({ job }: { job: Job }) => (
     <div
-      onClick={() => setSelectedJobId(job.id)}
+      onClick={() => navigate(`/plan/jobs/${job.id}`)}
       className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
@@ -300,7 +295,7 @@ export function PlanJobs() {
                     return (
                       <tr
                         key={job.id}
-                        onClick={() => setSelectedJobId(job.id)}
+                        onClick={() => navigate(`/plan/jobs/${job.id}`)}
                         className="border-b border-[var(--border)] hover:bg-[var(--accent)] cursor-pointer transition-colors"
                       >
                         <td className="px-4 py-3 tabular-nums text-xs font-medium text-[var(--mw-mirage)]">

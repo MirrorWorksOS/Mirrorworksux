@@ -7,12 +7,18 @@ import React, { useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
 import {
   ArrowLeft,
+  ArrowRight,
+  Calendar,
+  CheckCircle2,
   FileText,
   Mail,
   MessageSquare,
+  Phone,
   Save,
+  TrendingUp,
   User,
   Users,
+  XCircle,
 } from "lucide-react";
 import {
   JobWorkspaceLayout,
@@ -36,9 +42,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/components/ui/utils";
-import type { Opportunity } from "./SellOpportunityDetail";
+import type { Opportunity } from "./sell-opportunity-types";
 
 type Stage = Opportunity["stage"];
+
+const TAG_OPTIONS = [
+  "Urgent",
+  "Strategic",
+  "Repeat customer",
+  "Design assist",
+  "Export",
+] as const;
 
 const MOCK_BY_ID: Record<string, Opportunity> = {
   "1": {
@@ -50,6 +64,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "SC",
     priority: "high",
     stage: "proposal",
+    probabilityPercent: 68,
+    tags: ["Strategic", "Urgent"],
   },
   "2": {
     id: "2",
@@ -60,6 +76,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "MT",
     priority: "urgent",
     stage: "negotiation",
+    probabilityPercent: 55,
+    tags: ["Export"],
   },
   "3": {
     id: "3",
@@ -70,6 +88,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "EW",
     priority: "medium",
     stage: "qualified",
+    probabilityPercent: 40,
+    tags: ["Repeat customer"],
   },
   "4": {
     id: "4",
@@ -80,6 +100,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "DL",
     priority: "high",
     stage: "proposal",
+    probabilityPercent: 62,
+    tags: ["Strategic"],
   },
   "5": {
     id: "5",
@@ -90,6 +112,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "SC",
     priority: "low",
     stage: "new",
+    probabilityPercent: 25,
+    tags: [],
   },
   "6": {
     id: "6",
@@ -100,6 +124,8 @@ const MOCK_BY_ID: Record<string, Opportunity> = {
     assignedTo: "MT",
     priority: "medium",
     stage: "new",
+    probabilityPercent: 30,
+    tags: ["Design assist"],
   },
 };
 
@@ -280,6 +306,16 @@ export function SellOpportunityPage() {
     setOpp((o) => (o ? { ...o, stage } : o));
   };
 
+  const toggleTag = (tag: string) => {
+    setOpp((o) => {
+      if (!o) return o;
+      const current = new Set(o.tags ?? []);
+      if (current.has(tag)) current.delete(tag);
+      else current.add(tag);
+      return { ...o, tags: [...current] };
+    });
+  };
+
   const renderTabPanel = (tab: string) => {
     switch (tab) {
       case "overview":
@@ -351,12 +387,27 @@ export function SellOpportunityPage() {
                   </div>
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">
-                      Probability
+                      Probability (%)
                     </Label>
                     <Input
-                      readOnly
+                      type="number"
+                      min={0}
+                      max={100}
                       className="mt-1 h-12 border-[var(--border)] tabular-nums"
-                      defaultValue="50%"
+                      value={opp.probabilityPercent ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setOpp((o) =>
+                          o
+                            ? {
+                                ...o,
+                                probabilityPercent:
+                                  v === "" ? undefined : Math.min(100, Math.max(0, Number(v))),
+                              }
+                            : o,
+                        );
+                      }}
+                      placeholder="0–100"
                     />
                   </div>
                   <div>
@@ -374,12 +425,14 @@ export function SellOpportunityPage() {
                       Expected close
                     </Label>
                     <Input
-                      readOnly
-                      className="mt-1 h-12 border-[var(--border)]"
-                      value={new Date(opp.expectedClose).toLocaleDateString(
-                        "en-AU",
-                        { day: "numeric", month: "short", year: "numeric" },
-                      )}
+                      type="date"
+                      className="mt-1 h-12 border-[var(--border)] tabular-nums"
+                      value={opp.expectedClose}
+                      onChange={(e) =>
+                        setOpp((o) =>
+                          o ? { ...o, expectedClose: e.target.value } : o,
+                        )
+                      }
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -401,6 +454,35 @@ export function SellOpportunityPage() {
                       className="mt-1 h-12 border-[var(--border)]"
                       value={customer.address}
                     />
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <Label className="text-xs text-[var(--neutral-500)] mb-2 block">
+                    Tags
+                  </Label>
+                  <p className="text-xs text-[var(--neutral-500)] mb-3">
+                    Multi-select — used for filtering and reporting.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {TAG_OPTIONS.map((tag) => {
+                      const on = (opp.tags ?? []).includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          className={cn(
+                            "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                            on
+                              ? "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-[var(--neutral-900)]"
+                              : "border-[var(--border)] bg-white text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]",
+                          )}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -651,41 +733,232 @@ export function SellOpportunityPage() {
       case "intelligence":
         return (
           <div className="space-y-6">
-            <AIInsightCard title="Win probability">
-              Based on similar fabrication jobs:{" "}
-              <strong className="text-[var(--neutral-900)]">68%</strong>. Next
-              best action: confirm delivery window with the customer.
+            {/* AI top-line signal */}
+            <AIInsightCard title="Intelligence Hub">
+              Win probability is <strong className="text-[var(--neutral-900)]">68%</strong> based on 142 similar fabrication opportunities. Next best action: call {customer.contact.split(" ")[0]} — quote engagement is high.
             </AIInsightCard>
+
+            {/* 1. Win Probability Card */}
             <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">
-                Engagement
-              </h3>
-              <ul className="space-y-3 text-sm text-[var(--neutral-700)]">
-                <li className="flex gap-2">
-                  <MessageSquare className="h-4 w-4 shrink-0 text-[var(--neutral-500)]" />
-                  Quote MW-Q-0055 opened — 2h ago
-                </li>
-                <li className="flex gap-2">
-                  <Mail className="h-4 w-4 shrink-0 text-[var(--neutral-500)]" />
-                  Follow-up email sent — 1d ago
-                </li>
-              </ul>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-[var(--neutral-900)]">Win Probability</h3>
+                <Badge className="border-0 bg-[var(--mw-green)]/15 text-[var(--mw-green)] text-xs">AI-powered</Badge>
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold tabular-nums text-[var(--neutral-900)]">68%</div>
+                  <p className="text-xs text-[var(--neutral-500)] mt-1">Win likelihood</p>
+                </div>
+                <div className="flex-1 space-y-2">
+                  {[
+                    { label: "Customer engagement", pct: 82, color: "var(--mw-green)" },
+                    { label: "Quote competitiveness", pct: 71, color: "var(--mw-green)" },
+                    { label: "Decision timeline", pct: 55, color: "var(--mw-yellow-400)" },
+                    { label: "Competitor activity", pct: 40, color: "var(--mw-error)" },
+                  ].map((f) => (
+                    <div key={f.label} className="flex items-center gap-3 text-xs">
+                      <span className="w-[140px] shrink-0 text-[var(--neutral-700)]">{f.label}</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-[var(--neutral-100)]">
+                        <div className="h-full rounded-full" style={{ width: `${f.pct}%`, backgroundColor: f.color }} />
+                      </div>
+                      <span className="w-8 text-right tabular-nums text-[var(--neutral-700)]">{f.pct}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <p className="mt-4 text-xs text-[var(--neutral-500)]">Updated 2 hours ago · Based on 142 similar fabrication opportunities</p>
             </Card>
+
+            {/* 2. Two-column: Recommended Actions + Deal Velocity */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Recommended Next Actions */}
+              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Recommended Next Actions</h3>
+                <div className="space-y-4">
+                  {[
+                    {
+                      icon: <Phone className="h-4 w-4 text-[var(--mw-green)]" />,
+                      title: `Call ${customer.contact.split(" ")[0]}`,
+                      desc: "Quote opened twice — high engagement signal",
+                      btn: "Schedule call",
+                    },
+                    {
+                      icon: <FileText className="h-4 w-4 text-[var(--mw-blue)]" />,
+                      title: "Send revised quote",
+                      desc: "Material costs updated since last quote — $2,100 variance",
+                      btn: "Open builder",
+                    },
+                    {
+                      icon: <Calendar className="h-4 w-4 text-[var(--mw-blue)]" />,
+                      title: "Book site visit",
+                      desc: "Customer requested dimensional verification before sign-off",
+                      btn: "Schedule",
+                    },
+                  ].map((a) => (
+                    <div key={a.title} className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-50)]">
+                        {a.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[var(--neutral-900)]">{a.title}</p>
+                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">{a.desc}</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="shrink-0 text-xs">
+                        {a.btn}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Deal Velocity */}
+              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Deal Velocity</h3>
+                <div className="space-y-4">
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <p className="text-2xl font-bold tabular-nums text-[var(--neutral-900)]">8 days</p>
+                      <p className="text-xs text-[var(--neutral-500)]">In current stage</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm tabular-nums text-[var(--neutral-700)]">12 days</p>
+                      <p className="text-xs text-[var(--neutral-500)]">Avg. for this stage</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-[var(--mw-green)]" />
+                    <span className="text-xs font-medium text-[var(--mw-green)]">Faster than average</span>
+                  </div>
+                  {/* Stage progression */}
+                  <div className="pt-2 border-t border-[var(--neutral-100)]">
+                    <p className="text-xs text-[var(--neutral-500)] mb-3">Stage progression</p>
+                    <div className="flex items-center gap-1">
+                      {[
+                        { label: "New", days: "2d", done: true },
+                        { label: "Qualified", days: "3d", done: true },
+                        { label: "Proposal", days: "8d", current: true },
+                      ].map((s, i) => (
+                        <React.Fragment key={s.label}>
+                          {i > 0 && <div className="h-px w-4 bg-[var(--neutral-300)]" />}
+                          <div
+                            className={cn(
+                              "flex flex-col items-center gap-1 px-3 py-2 rounded-[var(--shape-md)] text-xs",
+                              s.current
+                                ? "bg-[var(--mw-blue)]/10 text-[var(--mw-blue)] font-medium"
+                                : s.done
+                                  ? "bg-[var(--neutral-50)] text-[var(--neutral-700)]"
+                                  : "text-[var(--neutral-400)]"
+                            )}
+                          >
+                            <span>{s.label}</span>
+                            <span className="tabular-nums">{s.days}</span>
+                          </div>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* 3. Customer Engagement Score */}
             <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">
-                Files
-              </h3>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-50)] px-3 py-2">
-                  <span className="flex items-center gap-2 text-[var(--neutral-900)]">
-                    <FileText className="h-4 w-4 text-[var(--neutral-500)]" />
-                    Drawing_Rev_C.dxf
-                  </span>
-                  <span className="text-xs text-[var(--neutral-500)] tabular-nums">
-                    1.2 MB
-                  </span>
-                </li>
-              </ul>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-[var(--neutral-900)]">Customer Engagement Score</h3>
+                <span className="text-xs font-medium text-[var(--mw-green)] flex items-center gap-1">
+                  <TrendingUp className="h-3.5 w-3.5" /> 15% vs last month
+                </span>
+              </div>
+              <div className="flex items-center gap-4 mb-5">
+                <div className="text-3xl font-bold tabular-nums text-[var(--neutral-900)]">8.4<span className="text-lg text-[var(--neutral-400)]"> / 10</span></div>
+                <div className="flex-1 h-2 rounded-full bg-[var(--neutral-100)]">
+                  <div className="h-full rounded-full bg-[var(--mw-green)]" style={{ width: "84%" }} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { label: "Email opens", value: "12", icon: <Mail className="h-4 w-4 text-[var(--neutral-500)]" /> },
+                  { label: "Avg. response time", value: "2.4h", icon: <MessageSquare className="h-4 w-4 text-[var(--neutral-500)]" /> },
+                  { label: "Meetings", value: "3", icon: <Users className="h-4 w-4 text-[var(--neutral-500)]" /> },
+                  { label: "Documents viewed", value: "7", icon: <FileText className="h-4 w-4 text-[var(--neutral-500)]" /> },
+                ].map((m) => (
+                  <div key={m.label} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-50)] px-4 py-3">
+                    {m.icon}
+                    <div>
+                      <p className="text-lg font-semibold tabular-nums text-[var(--neutral-900)]">{m.value}</p>
+                      <p className="text-xs text-[var(--neutral-500)]">{m.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* 4. Competitor Intelligence */}
+            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="mb-1 text-sm font-medium text-[var(--neutral-900)]">Competitor Intelligence</h3>
+              <p className="mb-4 text-xs text-[var(--neutral-500)]">Based on customer communication patterns and market data</p>
+              <div className="space-y-3">
+                {[
+                  {
+                    name: "Competitor A",
+                    likelihood: "likely",
+                    color: "var(--mw-error)",
+                    detail: "Similar quote timeline detected. Customer may be comparing sheet metal pricing.",
+                  },
+                  {
+                    name: "Competitor B",
+                    likelihood: "possible",
+                    color: "var(--mw-yellow-400)",
+                    detail: "Customer contacted alternative supplier for powder coating — may affect scope.",
+                  },
+                ].map((c) => (
+                  <div key={c.name} className="rounded-[var(--shape-md)] border border-[var(--neutral-100)] p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-medium text-[var(--neutral-900)]">{c.name}</span>
+                      <Badge variant="outline" className="text-[10px]" style={{ borderColor: c.color, color: c.color }}>
+                        {c.likelihood}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-[var(--neutral-600)]">{c.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* 5. Similar Deals */}
+            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Similar Deals</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Title</TableHead>
+                    <TableHead className="text-xs">Customer</TableHead>
+                    <TableHead className="text-xs text-right">Value</TableHead>
+                    <TableHead className="text-xs">Result</TableHead>
+                    <TableHead className="text-xs text-right">Similarity</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { title: "Server Rack Assembly", cust: "TechCorp", value: "$38,000", result: "Won", sim: "92%", won: true },
+                    { title: "Data Centre Panels", cust: "Telstra", value: "$55,000", result: "Won", sim: "85%", won: true },
+                    { title: "Equipment Enclosures", cust: "BlueScope", value: "$42,000", result: "Lost", sim: "78%", won: false },
+                  ].map((d) => (
+                    <TableRow key={d.title}>
+                      <TableCell className="text-sm font-medium text-[var(--neutral-900)]">{d.title}</TableCell>
+                      <TableCell className="text-sm text-[var(--neutral-700)]">{d.cust}</TableCell>
+                      <TableCell className="text-sm tabular-nums text-right text-[var(--neutral-700)]">{d.value}</TableCell>
+                      <TableCell>
+                        <span className={cn("inline-flex items-center gap-1 text-xs font-medium", d.won ? "text-[var(--mw-green)]" : "text-[var(--mw-error)]")}>
+                          {d.won ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                          {d.result}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-sm tabular-nums text-right text-[var(--neutral-700)]">{d.sim}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </Card>
           </div>
         );
@@ -740,6 +1013,13 @@ export function SellOpportunityPage() {
           >
             <FileText className="mr-2 h-4 w-4" />
             New quote
+          </Button>
+          <Button
+            className="h-12 bg-[var(--mw-green)] text-white hover:bg-[var(--mw-green)]/90"
+            onClick={() => navigate("/sell/orders")}
+          >
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Convert to Order
           </Button>
         </>
       }

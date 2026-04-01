@@ -1,134 +1,141 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Calendar, Sparkles, Bell, Settings, MoreVertical, DollarSign } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { useNavigate, useParams, Link } from 'react-router';
+import { ArrowLeft, DollarSign, Plus, Save } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { cn } from '../ui/utils';
+import {
+  JobWorkspaceLayout,
+  type JobWorkspaceTabConfig,
+} from '@/components/shared/layout/JobWorkspaceLayout';
+import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PlanOverviewTab } from './PlanOverviewTab';
 import { PlanProductionTab } from './PlanProductionTab';
 import { PlanScheduleTab } from './PlanScheduleTab';
 import { PlanIntelligenceHubTab } from './PlanIntelligenceHubTab';
 import { PlanBudgetTab } from './PlanBudgetTab';
 
-interface PlanJobDetailProps {
-  onBack: () => void;
-  userRole?: 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
+const STAGES = [
+  { id: 'backlog', label: 'Backlog' },
+  { id: 'planning', label: 'Planning' },
+  { id: 'materials', label: 'Materials' },
+  { id: 'scheduled', label: 'Scheduled' },
+  { id: 'in-production', label: 'In Production' },
+  { id: 'review-close', label: 'Review & Close' },
+] as const;
+
+type StageId = (typeof STAGES)[number]['id'];
+
+function stageProgress(stage: StageId): number {
+  const idx = STAGES.findIndex((s) => s.id === stage);
+  return Math.round(((idx + 1) / STAGES.length) * 100);
 }
 
-export function PlanJobDetail({ onBack, userRole = 'Manager' }: PlanJobDetailProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'production' | 'schedule' | 'intelligence' | 'budget'>('overview');
+export function PlanJobDetail() {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const userRole = 'Manager' as 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
+  const [activeTab, setActiveTab] = useState('overview');
+  const [currentStage, setCurrentStage] = useState<StageId>('planning');
 
-  // Mock job data - replace with actual props
   const jobId = 'JOB-2026-0012';
   const quoteId = 'MW-Q-0042';
-
-  // Check if user has budget access
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
 
+  const tabs = useMemo<JobWorkspaceTabConfig[]>(() => {
+    const base: JobWorkspaceTabConfig[] = [
+      { id: 'overview', label: 'Overview' },
+      { id: 'production', label: 'Production', count: 4 },
+      { id: 'schedule', label: 'Schedule', count: 9 },
+      { id: 'intelligence', label: 'Intelligence Hub' },
+    ];
+    if (hasBudgetAccess) {
+      base.push({ id: 'budget', label: 'Budget' });
+    }
+    return base;
+  }, [hasBudgetAccess]);
+
+  const renderTabPanel = (tab: string) => {
+    switch (tab) {
+      case 'overview':
+        return <PlanOverviewTab />;
+      case 'production':
+        return <PlanProductionTab />;
+      case 'schedule':
+        return <PlanScheduleTab />;
+      case 'intelligence':
+        return <PlanIntelligenceHubTab />;
+      case 'budget':
+        return <PlanBudgetTab jobId={jobId} userRole={userRole} quoteId={quoteId} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--neutral-100)] flex flex-col">
-      {/* Job Header */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
-        <div className="flex items-center gap-3 mb-4">
-          <button 
-            onClick={onBack}
-            className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-[var(--mw-mirage)]" />
-          </button>
-          <div className="flex items-center gap-3">
-            <h1 className=" text-[20px] font-semibold text-[var(--mw-mirage)]">
-              Server Rack Chassis
-            </h1>
-            <Badge className="bg-[var(--mw-green)] text-white px-2 py-0.5 text-xs font-medium rounded">
-              New
-            </Badge>
-            <span className=" text-sm text-[var(--neutral-500)]">
-              $20,000
-            </span>
+    <JobWorkspaceLayout
+      breadcrumbs={[
+        { label: 'Plan', href: '/plan' },
+        { label: 'Jobs', href: '/plan/jobs' },
+        { label: 'Server Rack Chassis' },
+      ]}
+      title="Server Rack Chassis"
+      subtitle={`${jobId} · TechCorp Industries · $20,000`}
+      metaRow={
+        <div className="flex flex-col gap-3 w-full">
+          {/* Progress bar */}
+          <ProgressBar value={stageProgress(currentStage)} showLabel size="sm" />
+
+          {/* Stage button group */}
+          <div className="flex items-center gap-0 border border-[var(--border)] rounded-lg overflow-hidden w-fit">
+            {STAGES.map((stage) => (
+              <button
+                key={stage.id}
+                type="button"
+                onClick={() => setCurrentStage(stage.id)}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
+                  currentStage === stage.id
+                    ? 'bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
+                    : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
+                }`}
+              >
+                {stage.label}
+              </button>
+            ))}
           </div>
-          <button className="ml-auto p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-            <MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" />
-          </button>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={cn(
-              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors",
-              activeTab === 'overview' 
-                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
-                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-            )}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab('production')}
-            className={cn(
-              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
-              activeTab === 'production' 
-                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
-                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-            )}
-          >
-            Production
-            <span className="flex items-center justify-center w-5 h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium">
-              4
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('schedule')}
-            className={cn(
-              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
-              activeTab === 'schedule' 
-                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
-                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-            )}
-          >
-            Schedule
-            <span className="flex items-center justify-center w-5 h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium">
-              9
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('intelligence')}
-            className={cn(
-              "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
-              activeTab === 'intelligence' 
-                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
-                : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-            )}
-          >
-            Intelligence Hub
-            <Sparkles className="w-4 h-4" />
-          </button>
-          {hasBudgetAccess && (
-            <button
-              onClick={() => setActiveTab('budget')}
-              className={cn(
-                "px-4 py-2  text-sm rounded-[var(--shape-lg)] transition-colors flex items-center gap-2",
-                activeTab === 'budget' 
-                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium' 
-                  : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-              )}
+          {/* Quote badge — Sell quotes list */}
+          <div className="flex items-center gap-2">
+            <Link
+              to="/sell/quotes"
+              className="inline-flex items-center rounded-full border border-[var(--border)] text-xs tabular-nums px-2.5 py-0.5 font-medium text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)] transition-colors"
             >
-              Budget
-              <DollarSign className="w-4 h-4" />
-            </button>
-          )}
+              {quoteId}
+            </Link>
+          </div>
         </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto">
-        {activeTab === 'overview' && <PlanOverviewTab />}
-        {activeTab === 'production' && <PlanProductionTab />}
-        {activeTab === 'schedule' && <PlanScheduleTab />}
-        {activeTab === 'intelligence' && <PlanIntelligenceHubTab />}
-        {activeTab === 'budget' && <PlanBudgetTab jobId={jobId} userRole={userRole} quoteId={quoteId} />}
-      </div>
-    </div>
+      }
+      headerActions={
+        <>
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => navigate('/plan/jobs')}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <Button variant="outline" className="h-12 border-[var(--border)]">
+            <Save className="mr-2 h-4 w-4" />
+            Save
+          </Button>
+          <Button
+            className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+            onClick={() => navigate('/make/manufacturing-orders')}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create MO
+          </Button>
+        </>
+      }
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      renderTabPanel={renderTabPanel}
+    />
   );
 }

@@ -22,10 +22,12 @@ import {
   MoreHorizontal,
   Bot,
   Zap,
-  Info
+  Info,
+  Monitor
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../ui/button';
+import { cn } from '../ui/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
@@ -153,13 +155,96 @@ export function OverviewTab() {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isInsightsOpen, setIsInsightsOpen] = useState(true);
+  const [floorMode, setFloorMode] = useState(false);
 
   const toggleRow = (id: string) => {
     setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
-    <div className="flex gap-6 h-full overflow-hidden bg-[var(--neutral-100)]">
+    <div className="flex flex-col h-full overflow-hidden bg-[var(--neutral-100)]">
+      {/* Floor Mode Toggle */}
+      <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--border)]">
+        <span className="text-sm font-medium text-[var(--neutral-900)]">
+          {floorMode ? 'Factory Floor View' : 'Office View'}
+        </span>
+        <Button
+          variant={floorMode ? "default" : "outline"}
+          size="sm"
+          className={cn(
+            "h-10 gap-2",
+            floorMode ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" : "border-[var(--border)]"
+          )}
+          onClick={() => setFloorMode(!floorMode)}
+        >
+          <Monitor className="h-4 w-4" />
+          {floorMode ? 'Exit Floor Mode' : 'Floor Mode'}
+        </Button>
+      </div>
+
+      {floorMode ? (
+        <div className="p-6 space-y-6 bg-[var(--neutral-900)] min-h-full flex-1 overflow-auto">
+          {/* Large KPI tiles - 2x2 grid */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-2">ACTIVE JOBS</p>
+              <p className="text-7xl font-bold tabular-nums text-white">4</p>
+              <p className="text-lg text-[var(--mw-green)] font-medium mt-2">All on schedule</p>
+            </div>
+            <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-2">WORK ORDERS</p>
+              <p className="text-7xl font-bold tabular-nums text-white">12</p>
+              <p className="text-lg text-[var(--mw-yellow-400)] font-medium mt-2">3 in progress</p>
+            </div>
+            <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-2">OEE</p>
+              <p className="text-7xl font-bold tabular-nums text-[var(--mw-green)]">87%</p>
+              <p className="text-lg text-[var(--neutral-400)] font-medium mt-2">Target: 85%</p>
+            </div>
+            <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-2">QUALITY</p>
+              <p className="text-7xl font-bold tabular-nums text-[var(--mw-green)]">99.2%</p>
+              <p className="text-lg text-[var(--neutral-400)] font-medium mt-2">First pass yield</p>
+            </div>
+          </div>
+
+          {/* Machine status - large cards */}
+          <div>
+            <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-4">MACHINES</p>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { name: 'Laser-01', status: 'Running', job: 'WO-001', color: 'var(--mw-green)' },
+                { name: 'CNC-01', status: 'Running', job: 'WO-002', color: 'var(--mw-green)' },
+                { name: 'CNC-02', status: 'Idle', job: '—', color: 'var(--mw-yellow-400)' },
+                { name: 'Press-01', status: 'Running', job: 'WO-005', color: 'var(--mw-green)' },
+                { name: 'Weld-01', status: 'Maintenance', job: '—', color: 'var(--mw-error)' },
+                { name: 'Pack-01', status: 'Idle', job: '—', color: 'var(--mw-yellow-400)' },
+              ].map((m) => (
+                <div key={m.name} className="bg-[var(--neutral-800)] rounded-xl p-6 flex items-center gap-4">
+                  <div className="w-4 h-4 rounded-full animate-pulse" style={{ backgroundColor: m.color }} />
+                  <div>
+                    <p className="text-lg font-bold text-white">{m.name}</p>
+                    <p className="text-sm text-[var(--neutral-400)]">{m.status} {m.job !== '—' ? `· ${m.job}` : ''}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Shift info */}
+          <div className="bg-[var(--neutral-800)] rounded-2xl p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest">CURRENT SHIFT</p>
+              <p className="text-2xl font-bold text-white mt-1">Day Shift · 06:00 – 14:00</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold text-[var(--neutral-500)] uppercase tracking-widest">OPERATORS</p>
+              <p className="text-2xl font-bold text-white mt-1">6 / 8 active</p>
+            </div>
+          </div>
+        </div>
+      ) : (
+      <div className="flex gap-6 flex-1 overflow-hidden">
       {/* Main Content Area */}
       <ScrollArea className="flex-1 h-full">
       <div className="flex-1 flex flex-col space-y-6 min-w-0 pr-4 pb-8 pt-1">
@@ -556,6 +641,8 @@ export function OverviewTab() {
              <ChevronDown className="w-4 h-4 rotate-90 text-[var(--neutral-500)]" />
            </Button>
         </div>
+      )}
+      </div>
       )}
     </div>
   );

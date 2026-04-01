@@ -17,7 +17,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
-import type { Opportunity } from './SellOpportunityDetail';
+import type { Opportunity } from './sell-opportunity-types';
 
 const KANBAN_ITEM_TYPE = 'sell-opportunity';
 

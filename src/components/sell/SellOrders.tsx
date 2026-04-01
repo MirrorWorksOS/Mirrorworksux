@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
@@ -48,6 +49,7 @@ const ORDER_STATUS_MAP: Record<OrderStatus, { status: StatusKey; label?: string 
 };
 
 export function SellOrders() {
+  const navigate = useNavigate();
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
@@ -98,7 +100,7 @@ export function SellOrders() {
                 {mockOrders.map((order, idx) => {
                   const sp = ORDER_STATUS_MAP[order.status];
                   return (
-                    <tr key={order.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
+                    <tr key={order.id} onClick={() => navigate(`/sell/orders/${order.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
                       <td className="px-4">
                         <input type="checkbox" className="rounded border-[var(--border)]" />
                       </td>

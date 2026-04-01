@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip } from 'lucide-react';
+import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -11,6 +11,7 @@ import { AIInsightMessage } from '../shared/ai/AIInsightCard';
 import { MwDataTable, type MwColumnDef } from '../shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '../shared/data/StatusBadge';
 import { ProgressBar } from '../shared/data/ProgressBar';
+import { useNavigate } from 'react-router';
 
 type ProductRow = {
   id: string;
@@ -61,6 +62,7 @@ const PRODUCT_DATA: ProductRow[] = [
 ];
 
 export function PlanOverviewTab() {
+  const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const allSelected = selectedIds.size === PRODUCT_DATA.length;
   const someSelected = selectedIds.size > 0 && !allSelected;
@@ -255,19 +257,37 @@ export function PlanOverviewTab() {
               </div>
             </div>
 
-            {/* Sales Order and Opportunity */}
+            {/* Sales Order and Opportunity — linked entities (§4.5); IDs match Sell mocks */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Sales Order
                 </label>
-                <Input placeholder="e.g., GGPC-001" />
+                <button
+                  type="button"
+                  onClick={() => navigate('/sell/orders/1')}
+                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
+                >
+                  <span className="text-xs font-medium text-[var(--mw-blue)] tabular-nums">
+                    SO-2026-0089 · TechCorp
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[var(--neutral-400)] shrink-0" />
+                </button>
               </div>
               <div>
                 <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
                   Opportunity
                 </label>
-                <Input placeholder="Linked opportunity" />
+                <button
+                  type="button"
+                  onClick={() => navigate('/sell/opportunities/1')}
+                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
+                >
+                  <span className="text-xs font-medium text-[var(--mw-blue)] line-clamp-2">
+                    Server Rack Fabrication
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[var(--neutral-400)] shrink-0" />
+                </button>
               </div>
             </div>
 

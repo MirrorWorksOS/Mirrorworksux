@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Calendar, ChevronDown, ChevronUp, Filter, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -70,6 +71,7 @@ const marginBadgeClass = 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
 const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
+  const navigate = useNavigate();
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
@@ -156,7 +158,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
               {JOBS.map((job, i) => (
                 <React.Fragment key={job.id}>
                   <tr className={cn("border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", expandedRow === job.id && "border-l-4 border-l-[var(--mw-yellow-400)]", i % 2 === 1 && "bg-[var(--neutral-100)]")}
-                    onClick={() => onSelectJob ? onSelectJob(job.id) : setExpandedRow(expandedRow === job.id ? null : job.id)}>
+                    onClick={() => onSelectJob ? onSelectJob(job.id) : navigate(`/book/job-costs/${job.id}`)}>
                     <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
                     <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{job.id}</td>
                     <td className="px-4 text-sm text-[var(--mw-mirage)]">{job.customer}</td>

@@ -43,3 +43,6 @@ src/guidelines/modules/bridge/MirrorWorksBridge.md
 src/guidelines/modules/make/Make-04-Screen-by-Screen.md
 src/guidelines/modules/sell/Sell-04-Screen-by-Screen.md
 src/guidelines/modules/sell/Sell-Figma-UX-Gap-Audit.md
+src/guidelines/modules/make/gap-analysis.md
+src/guidelines/modules/plan/gap-analysis.md
+.gitignore
