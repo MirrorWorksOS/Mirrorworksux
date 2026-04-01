@@ -18,6 +18,7 @@ import {
 import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
 import { CommandPalette } from './shared/command/CommandPalette';
+import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -262,6 +263,7 @@ export function Sidebar() {
   const location = useLocation();
 
   const [commandOpen, setCommandOpen] = useState(false);
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
 
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
@@ -298,19 +300,21 @@ export function Sidebar() {
 
       {/* Quick Actions */}
       <div className="px-3 space-y-2">
-        <button
-          type="button"
-          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-200 hover:bg-[var(--mw-yellow-500)]"
-        >
-          <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
-          <span className="text-sm font-medium text-[var(--neutral-900)]">
-            Quick Create
-          </span>
-        </button>
+        <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
+          <button
+            type="button"
+            className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-200 hover:bg-[var(--mw-yellow-500)]"
+          >
+            <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
+            <span className="text-sm font-medium text-[var(--neutral-900)]">
+              Quick Create
+            </span>
+          </button>
+        </QuickCreatePanel>
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-[var(--shape-md)] border border-[var(--border)] bg-white px-3 transition-colors duration-200 hover:bg-[var(--neutral-100)]"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-200 hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
           <span className="text-sm text-muted-foreground">
