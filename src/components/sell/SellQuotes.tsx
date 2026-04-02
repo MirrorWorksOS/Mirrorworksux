@@ -2,14 +2,19 @@
  * Sell Quotes - Manage and track all quotes
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { cn } from '../ui/utils';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'expired';
 
@@ -94,84 +99,139 @@ const STATUS_BADGE: Record<QuoteStatus, { label: string; className: string }> = 
   },
   sent: {
     label: 'Sent',
-    className: 'border-0 bg-blue-50 text-blue-700',
+    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
   },
   accepted: {
     label: 'Accepted',
-    className: 'border-0 bg-green-50 text-green-700',
+    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
   },
   expired: {
     label: 'Expired',
-    className: 'border-0 bg-red-50 text-red-700',
+    className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
   },
+};
+
+const TABS = [
+  { label: 'All', count: 6 },
+  { label: 'Draft', count: 2 },
+  { label: 'Sent', count: 2 },
+  { label: 'Accepted', count: 1 },
+  { label: 'Expired', count: 1 },
+];
+
+const STATUS_MAP: Record<string, QuoteStatus> = {
+  Draft: 'draft',
+  Sent: 'sent',
+  Accepted: 'accepted',
+  Expired: 'expired',
 };
 
 export function SellQuotes() {
   const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState('All');
+
+  const totalValue = mockQuotes.reduce((sum, q) => sum + q.value, 0);
+
+  const filtered = mockQuotes
+    .filter((q) => activeTab === 'All' || q.status === STATUS_MAP[activeTab])
+    .filter(
+      (q) =>
+        !search ||
+        q.quoteNumber.toLowerCase().includes(search.toLowerCase()) ||
+        q.customer.toLowerCase().includes(search.toLowerCase()),
+    );
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Quotes"
-        subtitle="Manage and track all quotes"
-        actions={
-          <Button
-            className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
-            onClick={() => navigate('/sell/quotes/new')}
-          >
-            <Plus className="mr-2 h-4 w-4" strokeWidth={1.5} />
-            New Quote
-          </Button>
-        }
+        subtitle={`${mockQuotes.length} quotes • $${totalValue.toLocaleString()} total value`}
       />
 
-      <div className="px-6 pb-6">
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Quote #</th>
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Opportunity</th>
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Customer</th>
-                  <th className="px-4 py-3 text-right font-medium text-[var(--neutral-600)]">Value</th>
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Status</th>
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Created</th>
-                  <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Valid Until</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockQuotes.map((quote) => {
-                  const statusBadge = STATUS_BADGE[quote.status];
-                  return (
-                    <tr
-                      key={quote.id}
-                      onClick={() => navigate('/sell/quotes/new')}
-                      className="cursor-pointer border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--neutral-50)]"
-                    >
-                      <td className="px-4 py-3 font-medium tabular-nums text-[var(--neutral-900)]">
-                        {quote.quoteNumber}
-                      </td>
-                      <td className="px-4 py-3 tabular-nums text-[var(--neutral-600)]">
-                        {quote.opportunity}
-                      </td>
-                      <td className="px-4 py-3 text-[var(--neutral-900)]">{quote.customer}</td>
-                      <td className="px-4 py-3 text-right tabular-nums font-medium text-[var(--neutral-900)]">
-                        ${quote.value.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
-                      </td>
-                      <td className="px-4 py-3 tabular-nums text-[var(--neutral-600)]">{quote.created}</td>
-                      <td className="px-4 py-3 tabular-nums text-[var(--neutral-600)]">{quote.validUntil}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search quotes…" />
+        <ToolbarFilterPills
+          value={activeTab}
+          onChange={setActiveTab}
+          options={TABS.map((t) => ({ key: t.label, label: t.label, count: t.count }))}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button
+          variant="outline"
+          className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5 group"
+          onClick={() => toast.success('Quotes exported')}
+        >
+          <Download className="w-4 h-4" /> Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/quotes/new')}>
+          New Quote
+        </ToolbarPrimaryButton>
+      </PageToolbar>
+
+      {/* Table */}
+      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">QUOTE #</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">OPPORTUNITY</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
+                <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">VALUE</th>
+                <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CREATED</th>
+                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">VALID UNTIL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((quote, idx) => {
+                const statusBadge = STATUS_BADGE[quote.status];
+                return (
+                  <tr
+                    key={quote.id}
+                    onClick={() => navigate('/sell/quotes/new')}
+                    className={cn(
+                      'border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors',
+                      idx % 2 === 1 && 'bg-[var(--neutral-100)]',
+                    )}
+                  >
+                    <td className="px-4 text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                      {quote.quoteNumber}
+                    </td>
+                    <td className="px-4 text-sm tabular-nums text-[var(--neutral-600)]">
+                      {quote.opportunity}
+                    </td>
+                    <td className="px-4 text-sm text-[var(--neutral-900)]">{quote.customer}</td>
+                    <td className="px-4 text-right text-sm tabular-nums font-medium text-[var(--neutral-900)]">
+                      ${quote.value.toLocaleString()}
+                    </td>
+                    <td className="px-4">
+                      <div className="flex items-center justify-center">
+                        <Badge className={cn('rounded-full text-xs px-2 py-0.5', statusBadge.className)}>
+                          {statusBadge.label}
+                        </Badge>
+                      </div>
+                    </td>
+                    <td className="px-4 text-sm tabular-nums text-[var(--neutral-600)]">{quote.created}</td>
+                    <td className="px-4 text-sm tabular-nums text-[var(--neutral-600)]">{quote.validUntil}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
+          <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filtered.length} of {filtered.length}</p>
+          <div className="flex gap-2">
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:opacity-40" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:opacity-40" disabled>Next</button>
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </PageShell>
   );
 }

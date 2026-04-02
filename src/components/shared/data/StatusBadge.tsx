@@ -97,10 +97,10 @@ const STATUS_VARIANT_MAP: Record<StatusKey, VariantProps<typeof statusBadgeVaria
 
 const PRIORITY_VARIANT_MAP: Record<PriorityKey, VariantProps<typeof statusBadgeVariants>["status"]> = {
   low: "neutral",
-  medium: "accent",
-  high: "warning",
-  urgent: "error",
-  critical: "error",
+  medium: "neutral",
+  high: "accent",
+  urgent: "dark",
+  critical: "dark",
 };
 
 const DOT_COLOUR_MAP: Record<NonNullable<VariantProps<typeof statusBadgeVariants>["status"]>, string> = {

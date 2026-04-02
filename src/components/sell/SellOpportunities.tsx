@@ -38,17 +38,17 @@ const mockOpportunities: Opportunity[] = [
 ];
 
 const stages: { key: OpportunityStage; label: string; summaryColor: string }[] = [
-  { key: 'new', label: 'New', summaryColor: 'var(--neutral-500)' },
-  { key: 'qualified', label: 'Qualified', summaryColor: 'var(--mw-info)' },
-  { key: 'proposal', label: 'Proposal', summaryColor: 'var(--mw-info)' },
-  { key: 'negotiation', label: 'Negotiation', summaryColor: 'var(--mw-warning)' },
-  { key: 'won', label: 'Won', summaryColor: 'var(--mw-success)' },
-  { key: 'lost', label: 'Lost', summaryColor: 'var(--mw-error)' },
+  { key: 'new', label: 'New', summaryColor: 'var(--neutral-300)' },
+  { key: 'qualified', label: 'Qualified', summaryColor: 'var(--neutral-500)' },
+  { key: 'proposal', label: 'Proposal', summaryColor: 'var(--mw-yellow-400)' },
+  { key: 'negotiation', label: 'Negotiation', summaryColor: 'var(--mw-yellow-600)' },
+  { key: 'won', label: 'Won', summaryColor: 'var(--mw-mirage)' },
+  { key: 'lost', label: 'Lost', summaryColor: 'var(--neutral-200)' },
 ];
 
 const getPriorityBadge = (priority: Priority) => {
   switch (priority) {
-    case 'urgent': return { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Urgent' };
+    case 'urgent': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', label: 'Urgent' };
     case 'high': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'High' };
     case 'medium': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Medium' };
     case 'low': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Low' };
@@ -58,6 +58,7 @@ const getPriorityBadge = (priority: Priority) => {
 export function SellOpportunities() {
   const navigate = useNavigate();
   const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
+  const [search, setSearch] = useState('');
 
   const getOpportunitiesByStage = (stage: OpportunityStage) => {
     return opportunities.filter(opp => opp.stage === stage);
@@ -90,6 +91,7 @@ export function SellOpportunities() {
       />
 
       <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search opportunities…" />
         <ToolbarSpacer />
         <ToolbarFilterButton />
         <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New opportunity form coming soon')}>

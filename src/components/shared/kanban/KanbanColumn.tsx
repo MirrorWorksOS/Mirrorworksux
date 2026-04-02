@@ -14,6 +14,7 @@ export interface KanbanDragItem {
 export interface KanbanColumnProps {
   id: string;
   title: string;
+  description?: string;
   count?: number;
   accept: string | string[];
   onDrop: (item: KanbanDragItem, columnId: string) => void;
@@ -24,6 +25,7 @@ export interface KanbanColumnProps {
 export function KanbanColumn({
   id,
   title,
+  description,
   count,
   accept,
   onDrop,
@@ -64,6 +66,9 @@ export function KanbanColumn({
             </span>
           )}
         </div>
+        {description && (
+          <p className="mt-1 text-xs text-[var(--neutral-500)] line-clamp-1">{description}</p>
+        )}
       </div>
       <div
         ref={drop}

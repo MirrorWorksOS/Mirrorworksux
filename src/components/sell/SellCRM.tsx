@@ -5,20 +5,20 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Search, Filter, Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
+import { Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { useNavigate } from 'react-router';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Card } from '../ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { useNavigate } from 'react-router';
+import { Card } from '../ui/card';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedSearch, AnimatedFilter, AnimatedPlus } from '../ui/animated-icons';
 
 
 interface Customer {
@@ -112,35 +112,16 @@ export function SellCRM() {
   );
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Customers"
         subtitle={`${filteredCustomers.length} total customers`}
-        actions={
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New customer form coming soon')}>
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Customer
-          </Button>
-        }
       />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
-          <Input
-            placeholder="Search customers..."
-            className="h-10 rounded-full border-[var(--border)] pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
-          <AnimatedFilter className="w-4 h-4" />
-          Filter
-        </Button>
-
+      <PageToolbar>
+        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search customers…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
         <IconViewToggle
           value={viewMode}
           onChange={(k) => setViewMode(k as 'card' | 'list')}
@@ -149,7 +130,10 @@ export function SellCRM() {
             { key: 'list', icon: List, label: 'List view' },
           ]}
         />
-      </div>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New customer form coming soon')}>
+          New Customer
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Customer Cards Grid */}
       {viewMode === 'card' && (

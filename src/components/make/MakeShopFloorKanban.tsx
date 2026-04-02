@@ -46,10 +46,10 @@ const columns: { key: MOStatus; label: string; color: string; icon: typeof Clock
 
 const getPriorityStyle = (priority: string) => {
   switch (priority) {
-    case 'urgent': return 'bg-[var(--mw-error-100)] text-[var(--mw-error)]';
-    case 'high':   return 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]';
-    case 'medium': return 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]';
-    case 'low':    return 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
+    case 'urgent': return 'bg-[var(--mw-mirage)] text-white';
+    case 'high':   return 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]';
+    case 'medium': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'low':    return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
     default:       return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };

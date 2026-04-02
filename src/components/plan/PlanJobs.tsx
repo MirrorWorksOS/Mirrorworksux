@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, LayoutGrid, List, KanbanSquare } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
+import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
+import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
@@ -13,7 +16,8 @@ import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryB
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { toast } from 'sonner';
 
-// remove unused PlanJobsProps interface
+const KANBAN_ITEM_TYPE = 'plan-job';
+
 type ViewMode = 'kanban' | 'list' | 'card';
 
 interface Job {
@@ -157,11 +161,27 @@ export function PlanJobs() {
   const navigate = useNavigate();
   const [viewMode, setViewMode]         = useState<ViewMode>('kanban');
   const [searchQuery, setSearchQuery]   = useState('');
+  const [jobsByStage, setJobsByStage]   = useState<Record<string, Job[]>>(MOCK_JOBS);
+
+  const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
+    setJobsByStage(prev => {
+      let moved: Job | undefined;
+      const without: Record<string, Job[]> = {};
+      for (const [key, jobs] of Object.entries(prev)) {
+        without[key] = jobs.filter(j => {
+          if (j.id === item.id) { moved = j; return false; }
+          return true;
+        });
+      }
+      if (!moved) return prev;
+      return { ...without, [columnId]: [...(without[columnId] || []), moved] };
+    });
+  }, []);
 
   const JobCard = ({ job }: { job: Job }) => (
     <div
       onClick={() => navigate(`/plan/jobs/${job.id}`)}
-      className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4 cursor-pointer hover:shadow-md transition-shadow"
+      className="p-4 cursor-pointer group"
     >
       <div className="flex items-start justify-between mb-2">
         <span className="tabular-nums text-sm font-medium text-[var(--mw-mirage)]">
@@ -172,24 +192,24 @@ export function PlanJobs() {
           <AvatarFallback>{job.assignedUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
         </Avatar>
       </div>
-      
-      <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-1">
+
+      <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-1">
         {job.name}
       </h3>
-      
-      <p className=" text-xs text-[var(--neutral-500)] mb-3 line-clamp-2">
+
+      <p className="text-xs text-[var(--neutral-500)] mb-3 line-clamp-2">
         {job.description}
       </p>
-      
+
       {job.priority && (
         <StatusBadge priority={job.priority} className="mb-2" />
       )}
-      
+
       <div className="flex items-center justify-between text-xs">
-        <span className=" text-[var(--neutral-500)]">
+        <span className="text-[var(--neutral-500)]">
           {job.quoteCount} {job.quoteCount === 1 ? 'Quote' : 'Quotes'}
         </span>
-        <span className=" font-medium tabular-nums text-[var(--mw-mirage)]">
+        <span className="font-medium tabular-nums text-[var(--mw-mirage)]">
           ${job.value.toLocaleString()}
         </span>
       </div>
@@ -222,35 +242,30 @@ export function PlanJobs() {
 
       {/* Kanban View */}
       {viewMode === 'kanban' && (
-        <div className="flex-1 overflow-x-auto overflow-y-hidden p-6">
-          <div className="flex gap-4 h-full min-w-max">
+        <div className="flex-1 overflow-hidden p-6">
+          <KanbanBoard className="h-full">
             {STAGES.map((stage) => {
-              const jobs = MOCK_JOBS[stage.id] || [];
+              const jobs = jobsByStage[stage.id] || [];
               return (
-                <div key={stage.id} className="flex flex-col w-[320px] flex-shrink-0">
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
-                        {stage.label}
-                      </h3>
-                      <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
-                        {jobs.length} {jobs.length === 1 ? 'Job' : 'Jobs'}
-                      </Badge>
-                    </div>
-                    <p className=" text-xs text-[var(--neutral-500)]">
-                      {stage.description}
-                    </p>
-                  </div>
-                  
-                  <div className="flex-1 space-y-4 overflow-y-auto pb-4">
-                    {jobs.map((job) => (
-                      <JobCard key={job.id} job={job} />
-                    ))}
-                  </div>
-                </div>
+                <KanbanColumn
+                  key={stage.id}
+                  id={stage.id}
+                  title={stage.label}
+                  description={stage.description}
+                  count={jobs.length}
+                  accept={KANBAN_ITEM_TYPE}
+                  onDrop={handleKanbanDrop}
+                  className="min-w-[320px] w-[320px] flex-shrink-0"
+                >
+                  {jobs.map((job) => (
+                    <KanbanCard key={job.id} id={job.id} type={KANBAN_ITEM_TYPE} className="p-0">
+                      <JobCard job={job} />
+                    </KanbanCard>
+                  ))}
+                </KanbanColumn>
               );
             })}
-          </div>
+          </KanbanBoard>
         </div>
       )}
 
@@ -273,7 +288,7 @@ export function PlanJobs() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(MOCK_JOBS).flatMap(([stageId, jobs]) =>
+                {Object.entries(jobsByStage).flatMap(([stageId, jobs]) =>
                   jobs.map((job) => {
                     const stage = STAGES.find(s => s.id === stageId);
                     return (
@@ -342,7 +357,7 @@ export function PlanJobs() {
       {viewMode === 'card' && (
         <div className="flex-1 overflow-auto p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.values(MOCK_JOBS).flat().map((job) => (
+            {Object.values(jobsByStage).flat().map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
           </div>
