@@ -5,7 +5,7 @@
  * Lucide icons for utility elements (Search, Plus, ChevronRight).
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
@@ -445,20 +445,15 @@ export function Sidebar() {
                   <CollapsibleSubMenu isOpen={isExpanded}>
                     {item.subItems!.map((subItem) => {
                       const isSubActive = isActiveRoute(subItem.path);
-                      const isSubHovered = hoveredSubPath === subItem.path;
                       return (
                         <Link key={subItem.path} to={subItem.path}>
                           <div
-                            onPointerMove={() => handleSubItemPointerMove(subItem.path)}
-                            onPointerLeave={handleSubItemPointerLeave}
                             className={cn(
                               'h-12 flex items-center px-4 rounded-full',
-                              'transition-[background-color,opacity,transform] duration-[var(--duration-short2)] ease-out will-change-[background-color,opacity,transform]',
+                              'transition-colors duration-[var(--duration-short1)] ease-out',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
-                                : isSubHovered
-                                  ? 'bg-[color-mix(in_srgb,var(--neutral-200)_78%,transparent)] text-foreground opacity-100 scale-[1.005]'
-                                  : 'text-foreground opacity-95'
+                                : 'text-foreground hover:bg-[var(--neutral-200)]'
                             )}
                           >
                             <span className="text-sm">
