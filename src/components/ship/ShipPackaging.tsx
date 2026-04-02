@@ -9,6 +9,8 @@ import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
 import { Checklist } from '@/components/shared/checklist/Checklist';
 import { ChecklistItem } from '@/components/shared/checklist/ChecklistItem';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const ITEMS = [
   { sku: 'AL-5052-BP',  name: 'Base Plate Assembly',      qty: 2, bin: 'A-01-03' },
@@ -50,25 +52,19 @@ export function ShipPackaging() {
   const allPacked = checked.size === ITEMS.length;
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--neutral-50)]">
-      {/* Station bar — pack-station context */}
-      <div className="flex shrink-0 items-center justify-between bg-[var(--mw-mirage)] px-6 py-4 text-white">
-        <div className="flex items-center gap-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-xs font-medium text-[var(--mw-mirage)]">
-            MQ
+    <PageShell>
+      <PageHeader
+        title="Packaging"
+        subtitle="Pack Station 1 · Matt Quigley"
+        actions={
+          <div className="flex items-center gap-6 text-sm text-[var(--neutral-500)]">
+            <span>Packed: <span className="font-medium text-foreground tabular-nums">34</span></span>
+            <span>Orders: <span className="font-medium text-foreground tabular-nums">8</span></span>
           </div>
-          <div>
-            <p className="text-sm font-medium">Pack Station 1</p>
-            <p className="text-xs text-[var(--neutral-400)]">Matt Quigley</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-6 text-xs text-[var(--neutral-400)]">
-          <span>Packed: <span className="text-white tabular-nums">34</span></span>
-          <span>Orders: <span className="text-white tabular-nums">8</span></span>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-5 lg:gap-6 lg:p-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Items column */}
         <div className="flex min-h-0 flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs lg:col-span-3">
           <div className="mb-6 flex items-center justify-between">
@@ -172,7 +168,7 @@ export function ShipPackaging() {
       </div>
 
       {/* Bottom action bar */}
-      <div className="flex shrink-0 items-center justify-between border-t border-[var(--border)] bg-white px-6 py-4">
+      <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs">
         <div className="mr-6 h-1.5 max-w-xs flex-1 overflow-hidden rounded-full bg-[var(--neutral-200)]">
           <div
             className="h-full rounded-full transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
@@ -204,6 +200,6 @@ export function ShipPackaging() {
           </Button>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

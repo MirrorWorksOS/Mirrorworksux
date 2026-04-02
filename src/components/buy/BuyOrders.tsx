@@ -54,6 +54,34 @@ const getStatusBadge = (status: POStatus) => {
   }
 };
 
+const poColumns: MwColumnDef<PurchaseOrder>[] = [
+  { key: 'poNumber', header: 'PO #', cell: (row) => <span className="font-medium text-[var(--mw-mirage)]">{row.poNumber}</span> },
+  { key: 'supplier', header: 'Supplier', cell: (row) => <span className="text-[var(--mw-mirage)]">{row.supplier}</span> },
+  { key: 'date', header: 'Date', cell: (row) => {
+    const d = new Date(row.date);
+    return <span className="text-[var(--neutral-500)]">{d.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</span>;
+  }},
+  { key: 'deliveryDate', header: 'Delivery', cell: (row) => {
+    const d = new Date(row.deliveryDate);
+    return <span className="text-[var(--neutral-500)]">{d.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</span>;
+  }},
+  { key: 'status', header: 'Status', cell: (row) => {
+    const s = getStatusBadge(row.status);
+    return (
+      <Badge className={cn('border-0 text-xs rounded-full px-2.5 py-0.5 gap-1.5', s.bg, s.text)}>
+        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.dot }} />
+        {s.label}
+      </Badge>
+    );
+  }},
+  { key: 'total', header: 'Total', headerClassName: 'text-right', className: 'text-right', cell: (row) => (
+    <span className="font-medium tabular-nums">${row.total.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
+  )},
+  { key: 'received', header: 'Received', headerClassName: 'text-right', className: 'text-right', cell: (row) => (
+    <span className="tabular-nums text-[var(--neutral-500)]">${row.received.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
+  )},
+];
+
 export function BuyOrders() {
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [search, setSearch] = useState('');

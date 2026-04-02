@@ -181,8 +181,6 @@ const menuConfig: MenuItem[] = [
 
 const EXPAND_DURATION = 'var(--duration-medium2)';
 const EXPAND_EASING = 'var(--ease-standard)';
-const SUBMENU_HOVER_OPEN_DELAY = 60;
-const SUBMENU_HOVER_CLOSE_DELAY = 175;
 
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
@@ -317,9 +315,6 @@ export function Sidebar() {
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
-  const [hoveredSubPath, setHoveredSubPath] = useState<string | null>(null);
-  const hoverOpenTimeoutRef = useRef<number | null>(null);
-  const hoverCloseTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const active = getActiveModule(location.pathname);
@@ -328,12 +323,6 @@ export function Sidebar() {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    return () => {
-      if (hoverOpenTimeoutRef.current) window.clearTimeout(hoverOpenTimeoutRef.current);
-      if (hoverCloseTimeoutRef.current) window.clearTimeout(hoverCloseTimeoutRef.current);
-    };
-  }, []);
 
   const toggleModule = (label: string) => {
     setExpandedModule(prev => (prev === label ? null : label));
@@ -343,31 +332,6 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
-  const handleSubItemPointerMove = (path: string) => {
-    if (hoverCloseTimeoutRef.current) {
-      window.clearTimeout(hoverCloseTimeoutRef.current);
-      hoverCloseTimeoutRef.current = null;
-    }
-    if (hoveredSubPath === path) return;
-
-    if (hoverOpenTimeoutRef.current) window.clearTimeout(hoverOpenTimeoutRef.current);
-    hoverOpenTimeoutRef.current = window.setTimeout(() => {
-      setHoveredSubPath(path);
-      hoverOpenTimeoutRef.current = null;
-    }, SUBMENU_HOVER_OPEN_DELAY);
-  };
-
-  const handleSubItemPointerLeave = () => {
-    if (hoverOpenTimeoutRef.current) {
-      window.clearTimeout(hoverOpenTimeoutRef.current);
-      hoverOpenTimeoutRef.current = null;
-    }
-    if (hoverCloseTimeoutRef.current) window.clearTimeout(hoverCloseTimeoutRef.current);
-    hoverCloseTimeoutRef.current = window.setTimeout(() => {
-      setHoveredSubPath(null);
-      hoverCloseTimeoutRef.current = null;
-    }, SUBMENU_HOVER_CLOSE_DELAY);
-  };
 
   return (
     <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-64 border-r border-[var(--neutral-200)]">
