@@ -1,18 +1,26 @@
 /**
  * MakeProducts — Products page for the Make module at /make/products.
- * Shows products relevant to manufacturing with BOM and routing info.
+ * Card/List toggle with manufacturing-specific data (BOM, routing, work centres).
+ * Each card has a prominent "Make" CTA to start a Manufacturing Order.
  */
 
 import React, { useState } from 'react';
-import { Search, Plus, Filter } from 'lucide-react';
+import { Plus, Grid3x3, List, Package, Play } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { motion } from 'motion/react';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 interface Product {
@@ -35,6 +43,12 @@ const PRODUCTS: Product[] = [
   { id: '6', sku: 'PROD-RP-006', name: 'Rail Platform Component', category: 'Structural', bomStatus: 'complete', routingSteps: 7, defaultWorkCentre: 'Cut → Drill → Weld → Blast → Coat → QC → Pack', unitCost: 1750 },
 ];
 
+const getBomBadgeProps = (status: Product['bomStatus']) => {
+  if (status === 'complete') return { variant: 'success' as const, label: 'Completed' };
+  if (status === 'draft') return { variant: 'warning' as const, label: 'Draft' };
+  return { variant: 'error' as const, label: 'Missing' };
+};
+
 const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'sku',
@@ -54,9 +68,10 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'bom',
     header: 'BOM',
-    cell: (p) => (
-      <StatusBadge status={p.bomStatus === 'complete' ? 'completed' : p.bomStatus === 'draft' ? 'draft' : 'overdue'} />
-    ),
+    cell: (p) => {
+      const badge = getBomBadgeProps(p.bomStatus);
+      return <StatusBadge variant={badge.variant}>{badge.label}</StatusBadge>;
+    },
   },
   {
     key: 'routing',
@@ -78,6 +93,8 @@ const productColumns: MwColumnDef<Product>[] = [
 ];
 
 export function MakeProducts() {
+  const navigate = useNavigate();
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [search, setSearch] = useState('');
 
   const filtered = PRODUCTS.filter(
@@ -87,34 +104,112 @@ export function MakeProducts() {
       p.category.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const handleMake = (product: Product) => {
+    toast.success(`Manufacturing order started for ${product.name}`);
+    navigate('/make/manufacturing-orders/new');
+  };
+
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Products"
-        subtitle={`${PRODUCTS.length} products with manufacturing data`}
-        actions={<ToolbarPrimaryButton label="New Product" onClick={() => toast('New product form coming soon')} />}
+        subtitle={`${filtered.length} products with manufacturing data`}
       />
 
-      <div className="flex items-center gap-3 px-6 pb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--neutral-400)]" />
-          <Input
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-10 border-[var(--border)]"
-          />
-        </div>
-        <ToolbarFilterButton onClick={() => toast('Filter panel coming soon')} />
-      </div>
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search products…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <IconViewToggle
+          value={viewMode}
+          onChange={(k) => setViewMode(k as 'card' | 'list')}
+          options={[
+            { key: 'card', icon: Grid3x3, label: 'Card view' },
+            { key: 'list', icon: List, label: 'List view' },
+          ]}
+        />
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New product form coming soon')}>
+          New Product
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
-      <div className="px-6">
-        <MwDataTable
+      {viewMode === 'card' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((product, idx) => {
+            const bomBadge = getBomBadgeProps(product.bomStatus);
+            const canMake = product.bomStatus === 'complete';
+            return (
+              <motion.div key={product.id} variants={staggerItem} custom={idx}>
+                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 group">
+                  <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
+                    <Package className="w-16 h-16 text-[var(--neutral-400)]" />
+                  </div>
+
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
+                          {product.name}
+                        </h3>
+                        <p className="text-xs text-[var(--neutral-500)] tabular-nums">{product.sku}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-4">
+                      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{product.category}</Badge>
+                      <StatusBadge variant={bomBadge.variant}>{bomBadge.label}</StatusBadge>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)] mb-1">Routing</p>
+                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                          {product.routingSteps > 0 ? `${product.routingSteps} steps` : '—'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-[var(--neutral-500)] mb-1">Unit Cost</p>
+                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                          {product.unitCost > 0 ? `$${product.unitCost.toLocaleString()}` : '—'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={() => handleMake(product)}
+                      disabled={!canMake}
+                      className="w-full mt-4 h-14 min-h-[56px] gap-2 text-base font-medium bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Play className="w-5 h-5" />
+                      Make
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {viewMode === 'list' && (
+        <MwDataTable<Product>
           columns={productColumns}
           data={filtered}
           keyExtractor={(p) => p.id}
+          striped
         />
-      </div>
+      )}
+
+      {filtered.length === 0 && (
+        <Card variant="flat" className="p-0">
+          <EmptyState
+            icon={Package}
+            title="No products found"
+            description="Try adjusting your search or create a new product"
+            action={{ label: "Create Product", onClick: () => toast('New product form coming soon'), icon: Plus }}
+          />
+        </Card>
+      )}
     </PageShell>
   );
 }

@@ -55,7 +55,15 @@ export function ShipPackaging() {
     <PageShell>
       <PageHeader
         title="Packaging"
-        subtitle="Pack Station 1 · Matt Quigley"
+        subtitle={
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white">Pack Station 1</span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-[var(--mw-mirage)]">MQ</span>
+              Matt Quigley
+            </span>
+          </>
+        }
         actions={
           <div className="flex items-center gap-6 text-sm text-[var(--neutral-500)]">
             <span>Packed: <span className="font-medium text-foreground tabular-nums">34</span></span>

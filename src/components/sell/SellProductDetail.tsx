@@ -447,7 +447,12 @@ export function SellProductDetail() {
     <PageShell>
       <PageHeader
         title={PRODUCT.name}
-        subtitle={`${PRODUCT.sku} · ${PRODUCT.category}`}
+        subtitle={
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{PRODUCT.sku}</span>
+            <span>{PRODUCT.category}</span>
+          </>
+        }
         actions={
           <div className="flex gap-4">
             <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast('Edit product coming soon')}>

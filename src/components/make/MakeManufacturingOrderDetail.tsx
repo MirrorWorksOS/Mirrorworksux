@@ -148,7 +148,7 @@ export function MakeManufacturingOrderDetail() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
             <div className="space-y-6">
               {/* Shop floor summary cards (§4.3 — filter-style quick context) */}
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
                 {(
                   [
                     {
@@ -361,7 +361,7 @@ export function MakeManufacturingOrderDetail() {
                 <h2 className="text-base font-medium text-[var(--neutral-900)] mb-2">Invoicing</h2>
                 <p className="text-xs text-[var(--neutral-500)] mb-4">Create an invoice in the Book module for this manufacturing order.</p>
                 <Button
-                  className="w-full h-10 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+                  className="w-full h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
                   onClick={() => navigate('/book/invoices')}
                 >
                   <Receipt className="h-4 w-4 mr-2" />
@@ -383,10 +383,10 @@ export function MakeManufacturingOrderDetail() {
                   placeholder="Search work orders..."
                   value={woSearch}
                   onChange={(e) => setWoSearch(e.target.value)}
-                  className="pl-9 h-10 border-[var(--border)]"
+                  className="pl-9 h-14 border-[var(--border)]"
                 />
               </div>
-              <Button variant="outline" size="sm" className="h-10 border-[var(--border)]">
+              <Button variant="outline" size="sm" className="h-14 border-[var(--border)]">
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
               </Button>
@@ -446,7 +446,7 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-[var(--neutral-500)]">Issues reported against this manufacturing order</p>
-              <Button className="h-10 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              <Button className="h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
                 <Plus className="h-4 w-4 mr-2" />
                 Report Issue
               </Button>
@@ -547,7 +547,7 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-[var(--neutral-500)]">Drawings, BOMs, and traveller documents for this manufacturing order</p>
-              <Button className="h-10 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              <Button className="h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Document
               </Button>
@@ -757,7 +757,17 @@ export function MakeManufacturingOrderDetail() {
           { label: mo.moNumber },
         ]}
         title={mo.product}
-        subtitle={`${mo.moNumber} · ${mo.customer} · Started by ${mo.operator} on ${mo.startDate}`}
+        subtitle={
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{mo.moNumber}</span>
+            <span>{mo.customer}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-[var(--mw-mirage)]">{mo.operator.split(' ').map(n => n[0]).join('')}</span>
+              {mo.operator}
+            </span>
+            <span>{mo.startDate}</span>
+          </>
+        }
         metaRow={
           <>
             <Badge className="bg-[var(--mw-green)] text-white rounded-full px-2 py-0.5 text-xs">{mo.status}</Badge>

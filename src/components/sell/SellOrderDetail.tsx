@@ -629,7 +629,13 @@ export function SellOrderDetail() {
         { label: order.soNumber },
       ]}
       title={order.title}
-      subtitle={`${order.soNumber} \u00b7 ${order.customer} \u00b7 $${order.value.toLocaleString()}`}
+      subtitle={
+        <>
+          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{order.soNumber}</span>
+          <span>{order.customer}</span>
+          <span className="tabular-nums">${order.value.toLocaleString()}</span>
+        </>
+      }
       metaRow={
         <>
           <Badge className={cn("rounded-full px-2.5 py-0.5 text-xs", STATUS_BADGE[order.status])}>

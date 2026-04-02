@@ -7,7 +7,7 @@ import { cn } from "@/components/ui/utils";
 
 export interface PageHeaderProps {
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   breadcrumbs?: { label: string; href?: string }[];
   actions?: ReactNode;
   className?: string;
@@ -66,7 +66,7 @@ export function PageHeader({
           {title}
         </h1>
         {subtitle ? (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">{subtitle}</div>
         ) : null}
       </div>
       {actions ? (

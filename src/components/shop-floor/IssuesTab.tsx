@@ -165,7 +165,7 @@ export function IssuesTab() {
         <button
           onClick={handleCallSupervisor}
           className={cn(
-            "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-300 shadow-md active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
+            "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-300 shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
             isSupervisorCalled 
               ? "bg-[var(--mw-error-600)]" 
               : "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]"
@@ -191,7 +191,7 @@ export function IssuesTab() {
         <div 
            onClick={() => !isRecording && setIsRecording(true)}
            className={cn(
-             "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-md transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden cursor-pointer",
+             "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-xs transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden cursor-pointer",
              isRecording 
                ? "w-[480px] cursor-default bg-white border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
                : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-lg active:scale-95 border border-[var(--mw-yellow-400)]"

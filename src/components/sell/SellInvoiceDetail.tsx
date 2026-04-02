@@ -584,7 +584,13 @@ export function SellInvoiceDetail() {
         { label: invoice.invoiceNumber },
       ]}
       title={`Invoice ${invoice.invoiceNumber}`}
-      subtitle={`${invoice.customer} \u00b7 ${fmt(invoice.total)} \u00b7 Due ${new Date(invoice.dueDate).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}`}
+      subtitle={
+        <>
+          <span>{invoice.customer}</span>
+          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{fmt(invoice.total)}</span>
+          <span>Due {new Date(invoice.dueDate).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}</span>
+        </>
+      }
       metaRow={
         <>
           <Badge className={cn("rounded-full px-2.5 py-0.5 text-xs", STATUS_BADGE[invoice.status])}>

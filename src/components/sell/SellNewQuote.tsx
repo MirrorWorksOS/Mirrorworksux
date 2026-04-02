@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Trash2, ChevronDown, FileText, X, Sparkles, ArrowLeft } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -121,6 +122,130 @@ export function SellNewQuote() {
 
   const removeLine = (id: string) => setLines(prev => prev.filter(l => l.id !== id));
 
+  const lineItemColumns: MwColumnDef<LineItem>[] = [
+    {
+      key: 'description',
+      header: 'Description',
+      className: 'w-[28%] px-4 py-2',
+      cell: (row) => (
+        <Input
+          value={row.description}
+          onChange={e => updateLine(row.id, { description: e.target.value })}
+          placeholder="Item description"
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm"
+        />
+      ),
+    },
+    {
+      key: 'sku',
+      header: 'SKU',
+      className: 'w-[12%] px-3 py-2',
+      cell: (row) => (
+        <Input
+          value={row.sku}
+          onChange={e => updateLine(row.id, { sku: e.target.value })}
+          placeholder="SKU"
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-xs"
+        />
+      ),
+    },
+    {
+      key: 'qty',
+      header: 'Qty',
+      headerClassName: 'text-right',
+      className: 'w-[8%] px-3 py-2',
+      cell: (row) => (
+        <Input
+          type="number"
+          value={row.qty}
+          onChange={e => updateLine(row.id, { qty: parseFloat(e.target.value) || 1 })}
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right"
+        />
+      ),
+    },
+    {
+      key: 'unit',
+      header: 'Unit',
+      className: 'w-[6%] px-3 py-2',
+      cell: (row) => (
+        <Input
+          value={row.unit}
+          onChange={e => updateLine(row.id, { unit: e.target.value })}
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm"
+        />
+      ),
+    },
+    {
+      key: 'unitCost',
+      header: 'Cost',
+      headerClassName: 'text-right',
+      className: 'w-[12%] px-3 py-2',
+      cell: (row) => (
+        <Input
+          type="number"
+          value={row.unitCost}
+          onChange={e => updateLine(row.id, { unitCost: parseFloat(e.target.value) || 0 })}
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right text-[var(--neutral-500)]"
+        />
+      ),
+    },
+    {
+      key: 'margin',
+      header: 'Margin %',
+      headerClassName: 'text-right',
+      className: 'w-[10%] px-3 py-2',
+      cell: (row) => (
+        <div className="relative">
+          <Input
+            type="number"
+            value={row.margin}
+            onChange={e => updateLine(row.id, { margin: parseFloat(e.target.value) || 0 })}
+            className={cn(
+              'h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right pr-5',
+              row.margin < 15 && 'text-[var(--mw-error)]',
+              row.margin >= 25 && 'text-[var(--neutral-900)]',
+            )}
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">%</span>
+        </div>
+      ),
+    },
+    {
+      key: 'unitPrice',
+      header: 'Unit price',
+      headerClassName: 'text-right',
+      className: 'w-[12%] px-3 py-2',
+      cell: (row) => (
+        <Input
+          type="number"
+          value={row.unitPrice}
+          onChange={e => updateLine(row.id, { unitPrice: parseFloat(e.target.value) || 0 })}
+          className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right font-medium"
+        />
+      ),
+    },
+    {
+      key: 'total',
+      header: 'Total',
+      headerClassName: 'text-right',
+      className: 'w-[10%] px-3 py-2 text-right font-medium tabular-nums text-[var(--neutral-900)] whitespace-nowrap',
+      cell: (row) => `$${fmtCurrency(row.qty * row.unitPrice)}`,
+    },
+    {
+      key: 'actions',
+      header: '',
+      className: 'w-8 px-2 py-2',
+      cell: (row) => (
+        <button
+          onClick={() => removeLine(row.id)}
+          className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[var(--neutral-100)] rounded transition-all"
+        >
+          <Trash2 className="w-4 h-4 text-[var(--mw-error)]" />
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="h-full flex flex-col overflow-hidden bg-[var(--neutral-100)]">
       {/* Top bar */}
@@ -231,100 +356,12 @@ export function SellNewQuote() {
                   </Select>
                 </div>
 
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                      <th className="px-4 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[28%]">Description</th>
-                      <th className="px-3 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">SKU</th>
-                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[8%]">Qty</th>
-                      <th className="px-3 py-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[6%]">Unit</th>
-                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Cost</th>
-                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Margin %</th>
-                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[12%]">Unit price</th>
-                      <th className="px-3 py-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-[10%]">Total</th>
-                      <th className="px-2 py-2 w-8" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lines.map((line, i) => (
-                      <tr key={line.id} className="border-b border-[var(--border)] hover:bg-[var(--neutral-100)] group">
-                        <td className="px-4 py-2">
-                          <Input
-                            value={line.description}
-                            onChange={e => updateLine(line.id, { description: e.target.value })}
-                            placeholder="Item description"
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <Input
-                            value={line.sku}
-                            onChange={e => updateLine(line.id, { sku: e.target.value })}
-                            placeholder="SKU"
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-xs "
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <Input
-                            type="number"
-                            value={line.qty}
-                            onChange={e => updateLine(line.id, { qty: parseFloat(e.target.value) || 1 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right "
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <Input
-                            value={line.unit}
-                            onChange={e => updateLine(line.id, { unit: e.target.value })}
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <Input
-                            type="number"
-                            value={line.unitCost}
-                            onChange={e => updateLine(line.id, { unitCost: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right  text-[var(--neutral-500)]"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <div className="relative">
-                            <Input
-                              type="number"
-                              value={line.margin}
-                              onChange={e => updateLine(line.id, { margin: parseFloat(e.target.value) || 0 })}
-                              className={cn(
-                                'h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right  pr-5',
-                                line.margin < 15 && 'text-[var(--mw-error)]',
-                                line.margin >= 25 && 'text-[var(--neutral-900)]',
-                              )}
-                            />
-                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">%</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-2">
-                          <Input
-                            type="number"
-                            value={line.unitPrice}
-                            onChange={e => updateLine(line.id, { unitPrice: parseFloat(e.target.value) || 0 })}
-                            className="h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right  font-medium"
-                          />
-                        </td>
-                        <td className="px-3 py-2 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)] whitespace-nowrap">
-                          ${fmtCurrency(line.qty * line.unitPrice)}
-                        </td>
-                        <td className="px-2 py-2">
-                          <button
-                            onClick={() => removeLine(line.id)}
-                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-[var(--neutral-100)] rounded transition-all"
-                          >
-                            <Trash2 className="w-4 h-4 text-[var(--mw-error)]" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <MwDataTable<LineItem>
+                  columns={lineItemColumns}
+                  data={lines}
+                  keyExtractor={(row) => row.id}
+                  className="rounded-none border-0 shadow-none"
+                />
 
                 <div className="p-4 border-t border-[var(--border)]">
                   <button

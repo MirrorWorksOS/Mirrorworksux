@@ -344,7 +344,7 @@ export function IntelligenceHubTab() {
              </div>
              <Button 
                 size="lg" 
-                className="rounded-full h-12 px-8 shadow-md bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white gap-2 border-0 font-medium transition-transform active:scale-95"
+                className="rounded-full h-12 px-8 shadow-md bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] gap-2 border-0 font-medium transition-transform active:scale-95"
                 onClick={() => setIsVoiceActive(true)}
              >
                 <Sparkles className="w-5 h-5 fill-white/20" /> Ask AI Assistant
@@ -373,7 +373,7 @@ export function IntelligenceHubTab() {
           <DialogPortal>
              <DialogOverlay className="bg-black/30 backdrop-blur-sm" />
              <DialogPrimitive.Content 
-                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[var(--neutral-900)] border border-[var(--neutral-800)] text-white rounded-[24px] shadow-2xl focus:outline-none"
+                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[var(--neutral-900)] border border-[var(--neutral-800)] text-white rounded-[24px] shadow-xs focus:outline-none"
              >
                 <DialogTitle className="sr-only">Voice Interface</DialogTitle>
                 <DialogDescription className="sr-only">Voice command interface for shop floor</DialogDescription>
@@ -432,7 +432,7 @@ export function IntelligenceHubTab() {
                             CANCEL
                          </Button>
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white rounded-[12px]"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] rounded-[12px]"
                             onClick={() => setIsRecording(false)}
                          >
                             DONE

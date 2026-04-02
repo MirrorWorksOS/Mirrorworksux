@@ -104,7 +104,13 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
     <PageShell className="max-w-[1200px] mx-auto overflow-y-auto">
       <PageHeader
         title="JOB-2026-0012"
-        subtitle="Con-form Group -- Custom Handrail Assembly -- Level 4"
+        subtitle={
+          <>
+            <span>Con-form Group</span>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white">Custom Handrail Assembly</span>
+            <span>Level 4</span>
+          </>
+        }
         breadcrumbs={[
           { label: 'Book', href: '/book' },
           { label: 'Job Costs', href: '/book/job-costs' },

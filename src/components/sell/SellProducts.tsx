@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Grid3x3, List, Package } from 'lucide-react';
+import { Plus, Grid3x3, List, Package, ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -16,6 +17,7 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
@@ -48,6 +50,7 @@ const getStockBadgeProps = (stockLevel: number, reorderPoint: number) => {
 };
 
 export function SellProducts() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -151,6 +154,18 @@ export function SellProducts() {
                         </p>
                       </div>
                     </div>
+
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toast.success(`Sales order started for ${product.name}`);
+                        navigate('/sell/orders/new');
+                      }}
+                      className="w-full mt-4 h-10 gap-2 text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C]"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Sell
+                    </Button>
                   </div>
                 </Card>
               </motion.div>

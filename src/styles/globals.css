@@ -82,6 +82,19 @@
   --mw-amber-50: #FFF4CC;
   --mw-amber-100: #FFEDD5;
 
+  /* AI Purple — semantic colour for AI features (IntelligenceHub, CommandPalette, voice) */
+  /* TODO: Audit purple references — consider migrating to --mw-mirage or dedicated --mw-ai token */
+  --mw-purple: #7C3AED;
+  --mw-purple-50: #F5F3FF;
+  --mw-purple-100: #EDE9FE;
+  --mw-purple-light: #A78BFA;
+  --mw-purple-600: #6D28D9;
+
+  /* Legacy Green — alias to --mw-success. Use --mw-success for new code. */
+  --mw-green: #36B37E;
+  --mw-green-50: #E3FCEF;
+  --mw-green-100: #C3F4DB;
+
   /* Extended Error Scale */
   --mw-error-50: #FEF2F2;
   --mw-error-100: #FEE2E2;

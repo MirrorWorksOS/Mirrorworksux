@@ -78,7 +78,13 @@ export function PlanJobDetail() {
         { label: 'Server Rack Chassis' },
       ]}
       title="Server Rack Chassis"
-      subtitle={`${jobId} · TechCorp Industries · $20,000`}
+      subtitle={
+        <>
+          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{jobId}</span>
+          <span>TechCorp Industries</span>
+          <span className="tabular-nums">$20,000</span>
+        </>
+      }
       metaRow={
         <div className="flex flex-col gap-3 w-full">
           {/* Progress bar */}

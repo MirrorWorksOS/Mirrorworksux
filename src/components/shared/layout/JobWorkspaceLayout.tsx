@@ -20,7 +20,7 @@ export interface JobWorkspaceLayoutProps {
   /** Primary title (job / opportunity / order name). */
   title: string;
   /** Secondary line (e.g. code · customer · value). */
-  subtitle?: string;
+  subtitle?: ReactNode;
   /** Row below subtitle: badges, status chips, etc. */
   metaRow?: ReactNode;
   headerActions?: ReactNode;

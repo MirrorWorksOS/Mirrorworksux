@@ -435,7 +435,7 @@ export function QualityTab() {
                       <Avatar className="w-6 h-6 border border-[var(--neutral-200)]"><AvatarFallback className="text-[10px]">ER</AvatarFallback></Avatar>
                       <span className="text-xs font-medium text-[var(--neutral-800)]">{issue.assignee}</span>
                    </div>
-                   <Button variant="ghost" className="h-8 text-[var(--neutral-800)] hover:text-black p-0 hover:bg-transparent font-medium">
+                   <Button variant="ghost" className="h-14 text-[var(--neutral-800)] hover:text-black p-0 hover:bg-transparent font-medium">
                      View Details <ChevronRight className="w-4 h-4 ml-1" />
                    </Button>
                 </div>
@@ -484,7 +484,7 @@ export function QualityTab() {
                      <div className="w-10 h-10 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] flex items-center justify-center">
                         <BarChart3 className="w-5 h-5 text-[var(--neutral-500)]" />
                      </div>
-                     <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--neutral-500)]"><MoreHorizontal className="w-4 h-4"/></Button>
+                     <Button variant="ghost" size="icon" className="h-14 w-14 text-[var(--neutral-500)]"><MoreHorizontal className="w-4 h-4"/></Button>
                   </div>
                   <h3 className="text-lg font-medium text-[var(--neutral-800)] mb-1">{report.title}</h3>
                   <p className="text-sm text-[var(--neutral-500)] mb-4">{report.desc}</p>
@@ -500,7 +500,7 @@ export function QualityTab() {
       {/* Log Issue Modal Overlay */}
       {showLogModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-[var(--shape-lg)] shadow-md w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
+           <div className="bg-white rounded-[var(--shape-lg)] shadow-xs w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="p-6 border-b border-[var(--neutral-200)] flex items-center justify-between bg-white">
                  <h2 className="text-xl font-medium text-[var(--neutral-800)]">Log Quality Issue</h2>
                  <Button variant="ghost" size="icon" onClick={() => setShowLogModal(false)} className="rounded-full text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]">

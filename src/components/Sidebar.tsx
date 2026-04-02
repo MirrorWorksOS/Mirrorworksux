@@ -5,7 +5,7 @@
  * Lucide icons for utility elements (Search, Plus, ChevronRight).
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
@@ -220,7 +220,7 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1.5 space-y-1"
+          className="ml-6 mt-1.5 flex flex-col gap-[5px]"
           style={{
             opacity: isOpen ? 1 : 0,
             transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
@@ -240,8 +240,10 @@ function CollapsibleSubMenu({
 
 function ModuleIcon({
   item,
+  isHovered,
 }: {
   item: MenuItem;
+  isHovered: boolean;
 }) {
   const AnimatedIcon = item.animatedIcon;
   const StaticIcon = item.icon;
@@ -253,7 +255,7 @@ function ModuleIcon({
       {AnimatedIcon ? (
         <AnimatedIcon
           size={ICON_SIZES.sidebar}
-          animateOnHover
+          animate={isHovered}
           strokeWidth={1.5}
           className="text-white"
         />
@@ -261,6 +263,119 @@ function ModuleIcon({
         <StaticIcon className="w-5 h-5 text-white" strokeWidth={1.5} />
       ) : null}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Menu item row — tracks hover to drive icon animation
+// ---------------------------------------------------------------------------
+
+function MenuItemRow({
+  item,
+  hasSubItems,
+  isActive,
+  isExpanded,
+  onToggle,
+  children,
+}: {
+  item: MenuItem;
+  hasSubItems: boolean;
+  isActive: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children?: React.ReactNode;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      className="w-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {item.path && !hasSubItems ? (
+        <Link to={item.path} className="w-full group">
+          <div
+            className={cn(
+              'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
+              'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+              isActive
+                ? 'bg-[var(--mw-mirage)] text-white'
+                : 'hover:bg-[var(--neutral-200)]'
+            )}
+          >
+            <ModuleIcon item={item} isHovered={isHovered} />
+            <span className="flex-1 text-sm text-current">
+              {item.label}
+            </span>
+            <ChevronRight className={cn(
+              "w-4 h-4",
+              isActive ? "text-white/50" : "text-[var(--neutral-400)]"
+            )} />
+          </div>
+        </Link>
+      ) : (
+        <button
+          onClick={onToggle}
+          className={cn(
+            'w-full flex items-center gap-2.5 p-2 rounded-full group',
+            'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+            isExpanded
+              ? 'bg-[var(--neutral-100)]'
+              : 'hover:bg-[var(--neutral-200)]'
+          )}
+        >
+          <ModuleIcon item={item} isHovered={isHovered} />
+
+          <span className="flex-1 text-sm text-foreground text-left">
+            {item.label}
+          </span>
+
+          {hasSubItems && (
+            <ChevronRight
+              className="w-4 h-4 text-[var(--neutral-400)]"
+              style={{
+                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
+              }}
+            />
+          )}
+        </button>
+      )}
+
+      {children}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard shortcut pill badge
+// ---------------------------------------------------------------------------
+
+function KbdPill({
+  keys,
+  variant = 'default',
+}: {
+  keys: string[];
+  variant?: 'default' | 'on-yellow';
+}) {
+  const isYellow = variant === 'on-yellow';
+  return (
+    <span className="inline-flex items-center gap-0.5 shrink-0" aria-hidden>
+      {keys.map((key, i) => (
+        <kbd
+          key={i}
+          className={cn(
+            'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-[11px] font-medium leading-none select-none',
+            isYellow
+              ? 'bg-[#E6A600]/20 text-[#2C2C2C]/60 border border-[#E6A600]/30'
+              : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] border border-[var(--neutral-200)]'
+          )}
+        >
+          {key}
+        </kbd>
+      ))}
+    </span>
   );
 }
 
@@ -315,6 +430,7 @@ export function Sidebar() {
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
+  const [hoveredSubPath, setHoveredSubPath] = useState<string | null>(null);
 
   useEffect(() => {
     const active = getActiveModule(location.pathname);
@@ -322,7 +438,6 @@ export function Sidebar() {
       setExpandedModule(active);
     }
   }, [location.pathname]);
-
 
   const toggleModule = (label: string) => {
     setExpandedModule(prev => (prev === label ? null : label));
@@ -332,6 +447,24 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
+  const handleSubItemPointerMove = useCallback((path: string) => {
+    setHoveredSubPath(prev => prev === path ? prev : path);
+  }, []);
+
+  const handleSubItemPointerLeave = useCallback(() => {
+    setHoveredSubPath(null);
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault();
+        setQuickCreateOpen(prev => !prev);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-64 border-r border-[var(--neutral-200)]">
@@ -355,9 +488,10 @@ export function Sidebar() {
             className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-yellow-500)]"
           >
             <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
-            <span className="text-sm font-medium text-[var(--neutral-900)]">
+            <span className="flex-1 text-left text-sm font-medium text-[var(--neutral-900)]">
               Quick Create
             </span>
+            <KbdPill keys={['⌘', 'N']} variant="on-yellow" />
           </button>
         </QuickCreatePanel>
         <button
@@ -366,14 +500,15 @@ export function Sidebar() {
           className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
-          <span className="text-sm text-muted-foreground">
-            Search (Cmd + K)
+          <span className="flex-1 text-left text-sm text-muted-foreground">
+            Search
           </span>
+          <KbdPill keys={['⌘', 'K']} />
         </button>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5" style={{ scrollbarWidth: 'none' }}>
         {menuConfig.map((item) => {
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isExpanded = expandedModule === item.label;
@@ -390,73 +525,43 @@ export function Sidebar() {
                 </div>
               )}
 
-              <div className="w-full">
-                {item.path && !hasSubItems ? (
-                  <Link to={item.path} className="w-full group">
-                    <div
-                      className={cn(
-                        'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
-                        'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-                        isActive
-                          ? 'bg-[var(--mw-mirage)] text-white'
-                          : 'hover:bg-[var(--neutral-200)]'
-                      )}
-                    >
-                      <ModuleIcon item={item} />
-                      <span className="flex-1 text-sm text-current">
-                        {item.label}
-                      </span>
-                      <ChevronRight className={cn(
-                        "w-4 h-4",
-                        isActive ? "text-white/50" : "text-[var(--neutral-400)]"
-                      )} />
-                    </div>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => hasSubItems && toggleModule(item.label)}
-                    className={cn(
-                      'w-full flex items-center gap-2.5 p-2 rounded-full group',
-                      'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-                      isExpanded
-                        ? 'bg-[var(--neutral-100)]'
-                        : 'hover:bg-[var(--neutral-200)]'
-                    )}
-                  >
-                    <ModuleIcon item={item} />
-
-                    <span className="flex-1 text-sm text-foreground text-left">
-                      {item.label}
-                    </span>
-
-                    {hasSubItems && (
-                      <ChevronRight
-                        className="w-4 h-4 text-[var(--neutral-400)]"
-                        style={{
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                          transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
-                        }}
-                      />
-                    )}
-                  </button>
-                )}
+              <MenuItemRow
+                item={item}
+                hasSubItems={hasSubItems}
+                isActive={isActive}
+                isExpanded={isExpanded}
+                onToggle={() => hasSubItems && toggleModule(item.label)}
+              >
 
                 {hasSubItems && (
                   <CollapsibleSubMenu isOpen={isExpanded}>
                     {item.subItems!.map((subItem) => {
                       const isSubActive = isActiveRoute(subItem.path);
+                      const isSubHovered = hoveredSubPath === subItem.path;
                       return (
                         <Link key={subItem.path} to={subItem.path}>
                           <div
+                            onPointerMove={() => handleSubItemPointerMove(subItem.path)}
+                            onPointerLeave={handleSubItemPointerLeave}
                             className={cn(
-                              'h-12 flex items-center px-4 rounded-full',
-                              'transition-colors duration-[var(--duration-short1)] ease-out',
+                              'relative h-12 flex items-center px-4 rounded-full',
+                              'transition-[background-color,color] duration-200 ease-out',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
-                                : 'text-foreground hover:bg-[var(--neutral-200)]'
+                                : 'bg-transparent text-foreground'
                             )}
                           >
-                            <span className="text-sm">
+                            {!isSubActive && (
+                              <span
+                                className={cn(
+                                  'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset] duration-200',
+                                  isSubHovered
+                                    ? 'opacity-100 -inset-y-[2px] ease-in'
+                                    : 'opacity-0 inset-y-0 ease-out'
+                                )}
+                              />
+                            )}
+                            <span className="relative text-sm">
                               {subItem.label}
                             </span>
                           </div>
@@ -465,7 +570,7 @@ export function Sidebar() {
                     })}
                   </CollapsibleSubMenu>
                 )}
-              </div>
+              </MenuItemRow>
             </React.Fragment>
           );
         })}

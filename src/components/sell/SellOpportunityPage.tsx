@@ -976,7 +976,13 @@ export function SellOpportunityPage() {
         { label: opp.title },
       ]}
       title={opp.title}
-      subtitle={`OPP-${opp.id.padStart(4, "0")} · ${opp.customer} · $${opp.value.toLocaleString()}`}
+      subtitle={
+        <>
+          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">OPP-{opp.id.padStart(4, "0")}</span>
+          <span>{opp.customer}</span>
+          <span className="tabular-nums">${opp.value.toLocaleString()}</span>
+        </>
+      }
       metaRow={
         <>
           <Badge

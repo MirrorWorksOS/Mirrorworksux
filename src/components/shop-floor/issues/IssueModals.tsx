@@ -275,7 +275,7 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
            <p className="text-sm text-[var(--neutral-700)] mb-2">
               ⚠️ <strong>Alert:</strong> Last 5 parts trending toward upper limit. Likely cause: Tool wear.
            </p>
-           <Button size="sm" variant="outline" className="bg-white text-[var(--neutral-700)] border-[var(--neutral-200)] h-8">View Quality Chart</Button>
+           <Button size="sm" variant="outline" className="bg-white text-[var(--neutral-700)] border-[var(--neutral-200)] h-14">View Quality Chart</Button>
         </div>
       </div>
 
