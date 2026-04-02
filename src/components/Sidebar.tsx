@@ -5,7 +5,7 @@
  * Lucide icons for utility elements (Search, Plus, ChevronRight).
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
@@ -179,8 +179,10 @@ const menuConfig: MenuItem[] = [
 // Animation constants — silky smooth, slower durations
 // ---------------------------------------------------------------------------
 
-const EXPAND_DURATION = 'var(--duration-medium2)';
+const EXPAND_DURATION = 'var(--duration-long2)';
 const EXPAND_EASING = 'var(--ease-standard)';
+const SUBMENU_HOVER_OPEN_DELAY = 90;
+const SUBMENU_HOVER_CLOSE_DELAY = 220;
 
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
@@ -220,21 +222,13 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1 space-y-0.5 relative"
+          className="ml-6 mt-1.5 space-y-1"
           style={{
             opacity: isOpen ? 1 : 0,
             transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
-            transitionDelay: isOpen ? '100ms' : '0ms',
+            transitionDelay: isOpen ? '140ms' : '0ms',
           }}
         >
-          <div
-            className="absolute left-0 top-0 bottom-0 w-px bg-[var(--neutral-200)]"
-            style={{
-              transform: isOpen ? 'scaleY(1)' : 'scaleY(0)',
-              transformOrigin: 'top',
-              transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
-            }}
-          />
           {children}
         </div>
       </div>
@@ -323,6 +317,9 @@ export function Sidebar() {
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
+  const [hoveredSubPath, setHoveredSubPath] = useState<string | null>(null);
+  const hoverOpenTimeoutRef = useRef<number | null>(null);
+  const hoverCloseTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const active = getActiveModule(location.pathname);
@@ -331,12 +328,45 @@ export function Sidebar() {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    return () => {
+      if (hoverOpenTimeoutRef.current) window.clearTimeout(hoverOpenTimeoutRef.current);
+      if (hoverCloseTimeoutRef.current) window.clearTimeout(hoverCloseTimeoutRef.current);
+    };
+  }, []);
+
   const toggleModule = (label: string) => {
     setExpandedModule(prev => (prev === label ? null : label));
   };
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleSubItemPointerMove = (path: string) => {
+    if (hoverCloseTimeoutRef.current) {
+      window.clearTimeout(hoverCloseTimeoutRef.current);
+      hoverCloseTimeoutRef.current = null;
+    }
+    if (hoveredSubPath === path) return;
+
+    if (hoverOpenTimeoutRef.current) window.clearTimeout(hoverOpenTimeoutRef.current);
+    hoverOpenTimeoutRef.current = window.setTimeout(() => {
+      setHoveredSubPath(path);
+      hoverOpenTimeoutRef.current = null;
+    }, SUBMENU_HOVER_OPEN_DELAY);
+  };
+
+  const handleSubItemPointerLeave = () => {
+    if (hoverOpenTimeoutRef.current) {
+      window.clearTimeout(hoverOpenTimeoutRef.current);
+      hoverOpenTimeoutRef.current = null;
+    }
+    if (hoverCloseTimeoutRef.current) window.clearTimeout(hoverCloseTimeoutRef.current);
+    hoverCloseTimeoutRef.current = window.setTimeout(() => {
+      setHoveredSubPath(null);
+      hoverCloseTimeoutRef.current = null;
+    }, SUBMENU_HOVER_CLOSE_DELAY);
   };
 
   return (
@@ -451,15 +481,20 @@ export function Sidebar() {
                   <CollapsibleSubMenu isOpen={isExpanded}>
                     {item.subItems!.map((subItem) => {
                       const isSubActive = isActiveRoute(subItem.path);
+                      const isSubHovered = hoveredSubPath === subItem.path;
                       return (
                         <Link key={subItem.path} to={subItem.path}>
                           <div
+                            onPointerMove={() => handleSubItemPointerMove(subItem.path)}
+                            onPointerLeave={handleSubItemPointerLeave}
                             className={cn(
-                              'h-12 flex items-center px-3 rounded-full',
-                              'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+                              'h-12 flex items-center px-4 rounded-full',
+                              'transition-[background-color,opacity,transform] duration-[var(--duration-medium2)] ease-[var(--ease-standard)] will-change-[background-color,opacity,transform]',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
-                                : 'hover:bg-[var(--neutral-200)] text-foreground'
+                                : isSubHovered
+                                  ? 'bg-[color-mix(in_srgb,var(--neutral-200)_78%,transparent)] text-foreground opacity-100 scale-[1.01]'
+                                  : 'text-foreground opacity-95'
                             )}
                           >
                             <span className="text-sm">
