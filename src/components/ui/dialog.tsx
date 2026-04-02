@@ -46,26 +46,56 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+// ---------------------------------------------------------------------------
+// Notch close button
+// A circle button that sits at the top-right corner of the dialog with a
+// concave "cutout" effect created via inverted border-radius box-shadows.
+// ---------------------------------------------------------------------------
+
+function DialogNotchClose() {
+  return (
+    <DialogPrimitive.Close
+      className={cn(
+        // Float at top-right corner, overlapping the dialog edge
+        "absolute -top-4 -right-4 z-10",
+        "flex items-center justify-center",
+        "w-10 h-10 rounded-full",
+        "bg-[var(--neutral-100)] border border-[var(--neutral-200)]",
+        "text-[var(--neutral-500)]",
+        "shadow-sm",
+        "transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+        "hover:bg-[var(--mw-mirage)] hover:text-white hover:border-[var(--mw-mirage)] hover:shadow-md",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2",
+      )}
+    >
+      <XIcon className="h-4 w-4" strokeWidth={1.5} />
+      <span className="sr-only">Close</span>
+    </DialogPrimitive.Close>
+  );
+}
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    /** Show the notch close button. Defaults to true. Set to false for custom close UI. */
+    showCloseButton?: boolean;
+  }
+>(({ className, children, showCloseButton = true, ...props }, ref) => (
   <DialogPortal data-slot="dialog-portal">
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       data-slot="dialog-content"
       className={cn(
-        "bg-white/95 backdrop-blur-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-[1050] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-[#E5E5E5] p-6 shadow-lg duration-200 sm:max-w-lg",
+        "bg-white data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-[1050] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-[var(--shape-xl)] border border-[var(--neutral-200)] p-6 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] duration-[250ms] ease-[cubic-bezier(0.05,0.7,0.1,1.0)] sm:max-w-lg",
+        // Allow the notch button to overflow the dialog bounds
+        showCloseButton ? "overflow-visible" : "overflow-hidden",
         className
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
-        <XIcon />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
+      {showCloseButton && <DialogNotchClose />}
     </DialogPrimitive.Content>
   </DialogPortal>
 ));

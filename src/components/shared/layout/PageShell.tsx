@@ -9,11 +9,11 @@ export interface PageShellProps {
   className?: string;
 }
 
-/** Default padding/spacing matches module page pattern (`p-6 space-y-6`). Override `className` for full-bleed (e.g. `p-0`) or denser shells. */
+/** Default padding/spacing per design system: `p-8 space-y-8` (32px page margins, 32px section spacing). Override `className` for full-bleed (e.g. `p-0`) or denser shells. */
 export function PageShell({ children, className }: PageShellProps) {
   return (
     <motion.div
-      className={cn("p-6 space-y-6", className)}
+      className={cn("p-8 space-y-8", className)}
       variants={staggerContainer}
       initial="initial"
       animate="animate"

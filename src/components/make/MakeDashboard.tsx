@@ -127,7 +127,7 @@ export function MakeDashboard() {
           return (
             <motion.div key={machine.id} variants={staggerItem}>
               <Card className={cn(
-                "rounded-[var(--shape-lg)] p-8 cursor-pointer transition-all duration-[var(--duration-medium1)] border-4",
+                "rounded-[var(--shape-lg)] p-6 cursor-pointer transition-all duration-[var(--duration-medium1)] border-4",
                 statusConfig.bg,
                 statusConfig.text
               )}>

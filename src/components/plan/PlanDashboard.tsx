@@ -215,7 +215,7 @@ export function PlanDashboard() {
 
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
-          <Card className="p-5">
+          <Card className="p-6">
             <h3 className="text-sm font-semibold text-[var(--mw-mirage)] mb-1">Quick Actions</h3>
             <p className="text-xs text-[var(--neutral-500)] mb-4">Common workflows</p>
             <div className="space-y-2">

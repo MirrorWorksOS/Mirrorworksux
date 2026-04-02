@@ -12,11 +12,11 @@ Single source of truth for Smart FactoryOS. Built on Material Design 3 (M3) prin
 When building or refactoring screens:
 
 1. **Colours**: Use CSS variables (`var(--neutral-*)`, `var(--mw-*)`, `var(--border)`, `var(--chart-scale-*)`). No arbitrary `#RRGGBB` in feature code except documented exceptions (brand SVGs, carrier swatches in data with a comment).
-2. **Layout**: Routed pages use **`PageShell`** (`p-6 space-y-6` default) + **`PageHeader`** (title, subtitle, actions, breadcrumbs). Full-bleed views override with `className` (e.g. `p-0`, kanban).
+2. **Layout**: Routed pages use **`PageShell`** (`p-8 space-y-8` default — 32px page margins, 32px section spacing) + **`PageHeader`** (title, subtitle, actions, breadcrumbs). Module dashboards use **`ModuleDashboard`** (`p-8 gap-8`). Full-bleed views override with `className` (e.g. `p-0`, kanban). Card interior padding is `p-6` (24px). Card-to-card grid gaps are `gap-6` (24px).
 3. **Tables**: Prefer **`MwDataTable`** (or **`FinancialTable`** for money-heavy grids) over raw `<table>`.
 4. **Charts**: **`getChartScaleColour`**, **`MW_RECHARTS_ANIMATION`** (areas/lines) / **`MW_RECHARTS_ANIMATION_BAR`** (bars), **`MW_BAR_TOOLTIP_CURSOR`** on bar `Tooltip`, optional **`ChartCard`**; no orphan hex fills.
 5. **KPI / icons**: **`KpiStatCard`** / **`StatCard`** + **`IconWell`** (`iconSurface`); Lucide **`strokeWidth={1.5}`** on chrome.
-6. **Spacing**: Section stacks `space-y-6`; primary grids **`gap-6`** (8px grid elsewhere).
+6. **Spacing**: Page-level section stacks `space-y-8` (32px); card-to-card grids **`gap-6`** (24px); within-card stacks `space-y-6` or tighter; 8px base grid for small gaps.
 7. **Source of truth**: **`src/styles/globals.css`** for tokens; **`src/lib/design-system.ts`** — use **`fonts`**, **`motion`**, **`radius`**; **`colors` object is legacy** — prefer CSS vars in new UI.
 
 Run **`npm run build`** after each batch.
@@ -259,16 +259,21 @@ Six levels mapped to M3 dp scale.
 
 | Token | Value | Use |
 |---|---|---|
-| `p-8` (32px) | Page padding | Outer page margins |
-| `p-6` (24px) | Card padding | Card internal padding |
-| `gap-6` (24px) | Row gap | Between cards in a grid |
-| `space-y-8` (32px) | Section spacing | Between page sections |
-| `gap-2` (8px) | Base grid | Minimum gap unit |
+| `p-8` (32px) | Page padding | `PageShell` + `ModuleDashboard` outer margins |
+| `space-y-8` (32px) | Section spacing | Between top-level page sections (`PageShell`) |
+| `gap-8` (32px) | Module gap | `ModuleDashboard` internal gap (header → tabs → content) |
+| `p-6` (24px) | Card padding | Card internal padding (standard) |
+| `gap-6` (24px) | Card grid gap | Between cards in a grid row/column |
+| `space-y-6` (24px) | Content stacking | Between card groups within tab panels / detail views |
+| `gap-4` (16px) | Form / filter gap | Between form fields, filter bar elements |
+| `gap-2` (8px) | Base grid | Minimum gap unit, icon + label gaps |
 
 ### Density Rules
 
 - 8px base grid — all spacing multiples of 8px
-- Cards: `p-6` internal padding
+- Page margins: `p-8` (32px) — generous breathing room at page level
+- Cards: `p-6` (24px) internal padding — never `p-5` or `p-8`
+- Card grids: `gap-6` (24px) between cards
 - Forms: `gap-4` between fields, `gap-6` between field groups
 - Tables: `px-4 py-3` cell padding
 

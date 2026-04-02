@@ -78,7 +78,7 @@ export function ModuleDashboard({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 p-6", className)}>
+    <div className={cn("flex flex-col gap-8 p-8", className)}>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-[length:var(--font-headline-medium)] font-bold leading-[var(--line-headline-medium)] tracking-tight text-[var(--neutral-900)]">
@@ -140,7 +140,7 @@ export function ModuleDashboard({
         role="tabpanel"
         id={`dashboard-panel-${activeTab}`}
         aria-labelledby={`dashboard-tab-${activeTab}`}
-        className="flex min-h-0 flex-1 flex-col gap-6"
+        className="flex min-h-0 flex-1 flex-col gap-8"
       >
         {aiScope !== undefined ? (
           <AiCommandBar scope={aiScope} aria-label={`Ask MirrorWorks AI, ${aiScope} module`} />
