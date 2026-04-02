@@ -2,12 +2,12 @@
  * Ship Orders — token-aligned to standard design system
  */
 import React, { useState } from 'react';
-import { Search, LayoutGrid, List, ArrowRight } from 'lucide-react';
-import { Input } from '../ui/input';
+import { LayoutGrid, List } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { toast } from 'sonner';
 
@@ -82,29 +82,25 @@ const DetailTimeline = ({ current }: { current: Stage }) => {
 
 export function ShipOrders() {
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
+  const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Order | null>(null);
 
   return (
-    <PageShell className="flex flex-col h-full overflow-hidden">
-      <PageHeader
-        title="Orders"
-        actions={
-          <div className="flex items-center gap-4">
-            <div className="relative w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
-              <Input placeholder="Search orders..." className="pl-10 h-12 min-h-[48px] bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
-            </div>
-            <IconViewToggle
-              value={view}
-              onChange={(k) => setView(k as 'kanban' | 'list')}
-              options={[
-                { key: 'kanban', icon: LayoutGrid, label: 'Kanban view' },
-                { key: 'list', icon: List, label: 'List view' },
-              ]}
-            />
-          </div>
-        }
-      />
+    <PageShell className="p-6 space-y-6 flex flex-col h-full overflow-hidden">
+      <PageHeader title="Orders" />
+
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search orders…" />
+        <ToolbarSpacer />
+        <IconViewToggle
+          value={view}
+          onChange={(k) => setView(k as 'kanban' | 'list')}
+          options={[
+            { key: 'kanban', icon: LayoutGrid, label: 'Kanban view' },
+            { key: 'list', icon: List, label: 'List view' },
+          ]}
+        />
+      </PageToolbar>
 
       {/* Kanban */}
       {view === 'kanban' && (

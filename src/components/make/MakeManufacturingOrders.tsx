@@ -5,15 +5,14 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
@@ -59,32 +58,23 @@ export function MakeManufacturingOrders() {
   );
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Manufacturing Orders"
         subtitle={`${MO_DATA.length} manufacturing orders`}
-        actions={
-          <ToolbarPrimaryButton label="New MO" onClick={() => toast('New manufacturing order form coming soon')} />
-        }
       />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 px-6 pb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--neutral-400)]" />
-          <Input
-            placeholder="Search manufacturing orders..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-10 border-[var(--border)]"
-          />
-        </div>
-        <ToolbarFilterButton onClick={() => toast('Filter panel coming soon')} />
-      </div>
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search manufacturing orders…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New manufacturing order form coming soon')}>
+          New MO
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
-      <div className="px-6">
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
@@ -130,7 +120,6 @@ export function MakeManufacturingOrders() {
             </tbody>
           </table>
         </div>
-      </div>
     </PageShell>
   );
 }

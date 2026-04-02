@@ -6,7 +6,7 @@ export const DRAG_CARD_STYLE = {
 
 export const DROP_ZONE_STYLE = {
   active: "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)]",
-  inactive: "border-[var(--neutral-200)] bg-transparent",
+  inactive: "border-transparent bg-transparent",
 } as const;
 
 export const DRAG_HANDLE_STYLE =

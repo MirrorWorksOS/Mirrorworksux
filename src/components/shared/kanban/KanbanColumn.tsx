@@ -17,7 +17,6 @@ export interface KanbanColumnProps {
   count?: number;
   accept: string | string[];
   onDrop: (item: KanbanDragItem, columnId: string) => void;
-  headerColor?: string;
   children: React.ReactNode;
   className?: string;
 }
@@ -28,7 +27,6 @@ export function KanbanColumn({
   count,
   accept,
   onDrop,
-  headerColor = "var(--mw-yellow-400)",
   children,
   className,
 }: KanbanColumnProps) {
@@ -53,18 +51,15 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        "flex min-w-[280px] w-[280px] flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card",
+        "flex min-w-[280px] w-[280px] flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)]",
         className,
       )}
     >
-      <div
-        className="border-b border-[var(--neutral-200)] border-t-[3px] px-3 py-2"
-        style={{ borderTopColor: headerColor }}
-      >
+      <div className="px-3 py-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-medium text-[var(--neutral-900)]">{title}</h3>
+          <h3 className="text-sm font-semibold text-[var(--neutral-900)]">{title}</h3>
           {count !== undefined && (
-            <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-[var(--neutral-100)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--neutral-600)]">
+            <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-[var(--neutral-200)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--neutral-600)]">
               {count}
             </span>
           )}

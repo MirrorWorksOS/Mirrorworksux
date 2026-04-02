@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { PlusCircle, Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { Plus, Download, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 
 type InvoiceStatus = 'Draft' | 'Sent' | 'Viewed' | 'Partially Paid' | 'Paid' | 'Overdue' | 'Cancelled';
 
@@ -53,56 +55,50 @@ const TABS = [
 
 export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string) => void }) {
   const [activeTab, setActiveTab] = useState('All');
+  const [search, setSearch] = useState('');
 
-  const filtered = activeTab === 'All' ? INVOICES : INVOICES.filter(inv => inv.status === activeTab || (activeTab === 'Partially Paid' && inv.status === 'Partially Paid'));
+  const filtered = (activeTab === 'All' ? INVOICES : INVOICES.filter(inv => inv.status === activeTab || (activeTab === 'Partially Paid' && inv.status === 'Partially Paid')))
+    .filter(inv => !search || inv.id.toLowerCase().includes(search.toLowerCase()) || inv.customer.toLowerCase().includes(search.toLowerCase()));
+
+  const summaryByStatus = {
+    paid: INVOICES.filter(i => i.status === 'Paid').reduce((s, i) => s + i.total, 0),
+    sent: INVOICES.filter(i => i.status === 'Sent').reduce((s, i) => s + i.total, 0),
+    overdue: INVOICES.filter(i => i.status === 'Overdue').reduce((s, i) => s + i.total, 0),
+    draft: INVOICES.filter(i => i.status === 'Draft').reduce((s, i) => s + i.total, 0),
+  };
 
   return (
-    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
       <PageHeader
         title="Invoices"
         subtitle="Manage customer invoices and track payments"
-        actions={
-          <Button className="h-12 gap-2 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] px-6 text-[var(--neutral-900)] shadow-sm hover:bg-[var(--mw-yellow-500)]">
-            <PlusCircle className="h-5 w-5" /> New invoice
-          </Button>
-        }
       />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input placeholder="Search invoices..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
-        </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[var(--mw-mirage)]">
-          <SlidersHorizontal className="w-4 h-4" /> Filter
-        </Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] text-[var(--mw-mirage)]">
-          Export <ChevronDown className="w-4 h-4" />
-        </Button>
-        <span className="ml-auto text-xs text-[var(--neutral-500)]">1-25 of 147</span>
-      </div>
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'paid', label: 'Paid', value: summaryByStatus.paid, color: 'var(--mw-yellow-400)' },
+          { key: 'sent', label: 'Sent', value: summaryByStatus.sent, color: 'var(--mw-mirage)' },
+          { key: 'overdue', label: 'Overdue', value: summaryByStatus.overdue, color: 'var(--neutral-300)' },
+          { key: 'draft', label: 'Draft', value: summaryByStatus.draft, color: 'var(--neutral-200)' },
+        ]}
+      />
 
-      {/* Tabs */}
-      <div className="flex gap-0 border-b border-[var(--border)]">
-        {TABS.map(tab => (
-          <button
-            key={tab.label}
-            onClick={() => setActiveTab(tab.label)}
-            className={cn(
-              "px-4 py-3 text-sm transition-colors relative",
-              activeTab === tab.label
-                ? "text-[var(--mw-mirage)] font-medium"
-                : "text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]"
-            )}
-          >
-            {tab.label} <span className="text-xs">({tab.count})</span>
-            {activeTab === tab.label && (
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />
-            )}
-          </button>
-        ))}
-      </div>
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search invoices…" />
+        <ToolbarFilterPills
+          value={activeTab}
+          onChange={setActiveTab}
+          options={TABS.map(t => ({ key: t.label, label: t.label, count: t.count }))}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5" onClick={() => {}}>
+          <Download className="w-4 h-4" /> Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus}>
+          New Invoice
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
       <Card className="bg-white shadow-xs border border-[var(--border)] overflow-hidden">

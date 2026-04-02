@@ -5,20 +5,20 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Search, Filter, Grid3x3, List, Package, DollarSign } from 'lucide-react';
+import { Plus, Grid3x3, List, Package } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { Button } from '../ui/button';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
-import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter, AnimatedSearch } from '../ui/animated-icons';
 
 
 interface Product {
@@ -57,35 +57,16 @@ export function SellProducts() {
   );
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Products"
         subtitle={`${filteredProducts.length} total products`}
-        actions={
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New product form coming soon')}>
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Product
-          </Button>
-        }
       />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <AnimatedSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
-          <Input
-            placeholder="Search products..."
-            className="h-10 rounded-full border-[var(--border)] pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
-          <AnimatedFilter className="w-4 h-4" />
-          Filter
-        </Button>
-
+      <PageToolbar>
+        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search products…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
         <IconViewToggle
           value={viewMode}
           onChange={(k) => setViewMode(k as 'card' | 'list')}
@@ -94,7 +75,10 @@ export function SellProducts() {
             { key: 'list', icon: List, label: 'List view' },
           ]}
         />
-      </div>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New product form coming soon')}>
+          New Product
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Product Cards Grid */}
       {viewMode === 'card' && (

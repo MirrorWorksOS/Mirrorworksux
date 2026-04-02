@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, Plus, LayoutGrid, List, KanbanSquare, Filter } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { Plus, LayoutGrid, List, KanbanSquare } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { toast } from 'sonner';
 
@@ -199,32 +200,11 @@ export function PlanJobs() {
     <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
       <div className="bg-white border-b border-[var(--border)] px-6 py-4 space-y-4">
-        <PageHeader
-          title="Jobs"
-          actions={
-            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => toast('New job form coming soon')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Job
-            </Button>
-          }
-        />
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search jobs by ID, name, customer..."
-                className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
-              />
-            </div>
-            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]" onClick={() => toast('Filter panel coming soon')}>
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-          </div>
-          
+        <PageHeader title="Jobs" />
+        <PageToolbar>
+          <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search jobs…" />
+          <ToolbarSpacer />
+          <ToolbarFilterButton />
           <IconViewToggle
             value={viewMode}
             onChange={(k) => setViewMode(k as ViewMode)}
@@ -234,7 +214,10 @@ export function PlanJobs() {
               { key: 'card', icon: LayoutGrid, label: 'Card view' },
             ]}
           />
-        </div>
+          <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New job form coming soon')}>
+            Create Job
+          </ToolbarPrimaryButton>
+        </PageToolbar>
       </div>
 
       {/* Kanban View */}

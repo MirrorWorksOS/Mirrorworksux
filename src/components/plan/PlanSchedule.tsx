@@ -6,14 +6,14 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { Calendar as CalendarIcon, ChartGantt, Filter } from 'lucide-react';
+import { Calendar as CalendarIcon, ChartGantt } from 'lucide-react';
 import { addDays } from 'date-fns';
-import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
@@ -88,61 +88,45 @@ export function PlanSchedule() {
   const ganttEnd = addDays(MONTH_BASE, 30);
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Schedule"
         subtitle="Cross-job production schedule overview"
-        actions={
-          <div className="flex items-center gap-2">
-            <ToolbarFilterButton />
-            <IconViewToggle
-              value={viewMode}
-              onChange={(k) => setViewMode(k as ViewMode)}
-              options={[
-                { key: 'gantt', icon: ChartGantt, label: 'Gantt chart' },
-                { key: 'calendar', icon: CalendarIcon, label: 'Calendar' },
-              ]}
-            />
-          </div>
-        }
       />
 
-      {/* Filter pills */}
-      <div className="flex items-center gap-2 px-6 pb-2">
-        {(['all', 'active', 'scheduled', 'completed'] as FilterMode[]).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilterMode(f)}
-            className={cn(
-              'h-8 px-3 text-xs font-medium rounded-full transition-colors',
-              filterMode === f
-                ? 'bg-[var(--neutral-900)] text-white'
-                : 'bg-[var(--neutral-100)] text-[var(--neutral-600)] hover:bg-[var(--neutral-200)]',
-            )}
-          >
-            {f === 'all' ? 'All Jobs' : STATUS_LABELS[f]}
-            {f !== 'all' && (
-              <Badge
-                variant="secondary"
-                className="ml-1.5 border-0 bg-white/20 px-1 py-0 text-xs tabular-nums"
-              >
-                {JOBS.filter((j) => j.status === f).length}
-              </Badge>
-            )}
-          </button>
-        ))}
-      </div>
+      <PageToolbar>
+        <ToolbarFilterPills
+          value={filterMode}
+          onChange={(k) => setFilterMode(k as FilterMode)}
+          options={[
+            { key: 'all', label: 'All Jobs', count: JOBS.length },
+            { key: 'active', label: 'Active', count: JOBS.filter((j) => j.status === 'active').length },
+            { key: 'scheduled', label: 'Scheduled', count: JOBS.filter((j) => j.status === 'scheduled').length },
+            { key: 'completed', label: 'Completed', count: JOBS.filter((j) => j.status === 'completed').length },
+          ]}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <IconViewToggle
+          value={viewMode}
+          onChange={(k) => setViewMode(k as ViewMode)}
+          options={[
+            { key: 'gantt', icon: ChartGantt, label: 'Gantt chart' },
+            { key: 'calendar', icon: CalendarIcon, label: 'Calendar' },
+          ]}
+        />
+      </PageToolbar>
 
       {/* Gantt View */}
       {viewMode === 'gantt' && (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto p-6 pt-2">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto">
           <GanttChart tasks={ganttTasks} startDate={ganttStart} endDate={ganttEnd} />
         </div>
       )}
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="flex-1 overflow-auto p-6 pt-2">
+        <div className="flex-1 overflow-auto">
           <ScheduleCalendar
             events={calendarEvents}
             month={calendarMonth}

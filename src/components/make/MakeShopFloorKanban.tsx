@@ -97,7 +97,6 @@ export function MakeShopFloorKanban() {
                 count={columnMOs.length}
                 accept={KANBAN_ITEM_TYPE}
                 onDrop={handleKanbanDrop}
-                headerColor={column.color}
                 className="min-w-[380px] w-[380px] flex-shrink-0"
               >
                 <div className="flex items-center gap-2 px-0.5 pb-2">
@@ -127,7 +126,7 @@ export function MakeShopFloorKanban() {
                             {mo.jobNumber}
                           </p>
                         </div>
-                        <span className={cn('text-xs font-medium px-2 py-0.5 rounded capitalize', getPriorityStyle(mo.priority))}>
+                        <span className={cn('text-xs font-medium px-2.5 py-0.5 rounded-full capitalize', getPriorityStyle(mo.priority))}>
                           {mo.priority}
                         </span>
                       </div>

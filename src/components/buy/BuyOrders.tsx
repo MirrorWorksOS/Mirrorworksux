@@ -4,16 +4,19 @@
  */
 
 import React, { useState } from 'react';
-import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
+import { AnimatedDownload } from '../ui/animated-icons';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
 
 
@@ -52,8 +55,10 @@ const getStatusBadge = (status: POStatus) => {
 
 export function BuyOrders() {
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [search, setSearch] = useState('');
 
-  const filteredPOs = activeTab === 'all' ? mockPOs : mockPOs.filter(po => po.status === activeTab);
+  const filteredPOs = (activeTab === 'all' ? mockPOs : mockPOs.filter(po => po.status === activeTab))
+    .filter(po => !search || po.poNumber.toLowerCase().includes(search.toLowerCase()) || po.supplier.toLowerCase().includes(search.toLowerCase()));
   const totalValue = filteredPOs.reduce((sum, po) => sum + po.total, 0);
 
   const tabCounts = {
@@ -66,41 +71,55 @@ export function BuyOrders() {
     cancelled: mockPOs.filter(p => p.status === 'cancelled').length,
   };
 
+  const summaryByStatus = {
+    received: mockPOs.filter(p => p.status === 'received').reduce((s, p) => s + p.total, 0),
+    partial: mockPOs.filter(p => p.status === 'partial').reduce((s, p) => s + p.total, 0),
+    sent: mockPOs.filter(p => p.status === 'sent').reduce((s, p) => s + p.total, 0),
+    draft: mockPOs.filter(p => p.status === 'draft').reduce((s, p) => s + p.total, 0),
+  };
+
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
     <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
       <PageHeader
         title="Purchase Orders"
         subtitle={`${filteredPOs.length} orders • $${totalValue.toLocaleString()} total value`}
-        actions={
-          <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
-              <AnimatedFilter className="w-4 h-4" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Exporting purchase orders...')}>
-              <AnimatedDownload className="w-4 h-4" />
-              Export
-            </Button>
-            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={() => toast('New purchase order coming soon')}>
-              <AnimatedPlus className="mr-2 h-4 w-4" />
-              New PO
-            </Button>
-          </>
-        }
       />
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[var(--border)] overflow-x-auto">
-        {(['all', 'draft', 'sent', 'acknowledged', 'partial', 'received', 'cancelled'] as TabFilter[]).map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={cn("px-4 py-2 text-sm border-b-2 transition-colors whitespace-nowrap",
-              activeTab === tab ? 'border-[var(--mw-yellow-400)] text-[var(--mw-mirage)] font-medium' : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]')}>
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs">{tabCounts[tab]}</Badge>
-          </button>
-        ))}
-      </div>
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'received', label: 'Received', value: summaryByStatus.received, color: 'var(--mw-yellow-400)' },
+          { key: 'partial', label: 'Partial', value: summaryByStatus.partial, color: 'var(--mw-mirage)' },
+          { key: 'sent', label: 'Sent', value: summaryByStatus.sent, color: 'var(--neutral-400)' },
+          { key: 'draft', label: 'Draft', value: summaryByStatus.draft, color: 'var(--neutral-200)' },
+        ]}
+      />
+
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search orders…" />
+        <ToolbarFilterPills
+          value={activeTab}
+          onChange={(k) => setActiveTab(k as TabFilter)}
+          options={[
+            { key: 'all', label: 'All', count: tabCounts.all },
+            { key: 'draft', label: 'Draft', count: tabCounts.draft },
+            { key: 'sent', label: 'Sent', count: tabCounts.sent },
+            { key: 'acknowledged', label: 'Acknowledged', count: tabCounts.acknowledged },
+            { key: 'partial', label: 'Partial', count: tabCounts.partial },
+            { key: 'received', label: 'Received', count: tabCounts.received },
+            { key: 'cancelled', label: 'Cancelled', count: tabCounts.cancelled },
+          ]}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting purchase orders...')}>
+          <AnimatedDownload className="w-4 h-4" />
+          Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New purchase order coming soon')}>
+          New PO
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
       <motion.div variants={staggerItem}>

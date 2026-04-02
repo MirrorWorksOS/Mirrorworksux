@@ -2,23 +2,34 @@
  * Sidebar - Main navigation sidebar with all modules
  *
  * Uses Animate UI icons for module identifiers (animateOnHover),
- * Lucide icons for utility elements (Search, Plus, ChevronRight, Settings).
+ * Lucide icons for utility elements (Search, Plus, ChevronRight).
  */
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
-  Settings as SettingsIcon,
   Search,
   Plus,
   ChevronRight,
+  Moon,
+  Sun,
+  LogOut,
+  Bell,
+  User,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
 import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,6 +46,7 @@ interface MenuItem {
   animatedIcon?: React.ComponentType<{ size?: number; animateOnHover?: boolean; className?: string }>;
   path?: string;
   subItems?: SubMenuItem[];
+  section?: string; // section heading rendered before this item
 }
 
 // ---------------------------------------------------------------------------
@@ -50,6 +62,7 @@ const menuConfig: MenuItem[] = [
   {
     label: 'Sell',
     animatedIcon: MODULE_ICONS.sell,
+    section: 'Operations',
     subItems: [
       { label: 'Dashboard', path: '/sell' },
       { label: 'CRM', path: '/sell/crm' },
@@ -141,6 +154,7 @@ const menuConfig: MenuItem[] = [
   {
     label: 'Control',
     animatedIcon: MODULE_ICONS.control,
+    section: 'Settings',
     subItems: [
       { label: 'Dashboard', path: '/control' },
       { label: 'MirrorWorks Bridge', path: '/control/mirrorworks-bridge' },
@@ -162,11 +176,11 @@ const menuConfig: MenuItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Animation constants (M3 motion)
+// Animation constants — silky smooth, slower durations
 // ---------------------------------------------------------------------------
 
-const EXPAND_DURATION = '500ms';
-const EXPAND_EASING = 'cubic-bezier(0.2, 0.0, 0, 1.0)';
+const EXPAND_DURATION = '600ms';
+const EXPAND_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
@@ -206,13 +220,21 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1 space-y-1 relative"
+          className="ml-6 mt-1 space-y-0.5 relative"
           style={{
             opacity: isOpen ? 1 : 0,
-            transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
+            transition: `opacity 500ms ${EXPAND_EASING}`,
+            transitionDelay: isOpen ? '100ms' : '0ms',
           }}
         >
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-[var(--border)]" />
+          <div
+            className="absolute left-0 top-0 bottom-0 w-px bg-[var(--neutral-200)]"
+            style={{
+              transform: isOpen ? 'scaleY(1)' : 'scaleY(0)',
+              transformOrigin: 'top',
+              transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
+            }}
+          />
           {children}
         </div>
       </div>
@@ -226,32 +248,65 @@ function CollapsibleSubMenu({
 
 function ModuleIcon({
   item,
-  isActive,
 }: {
   item: MenuItem;
-  isActive: boolean;
 }) {
   const AnimatedIcon = item.animatedIcon;
   const StaticIcon = item.icon;
 
   return (
     <div
-      className={cn(
-        "bg-[var(--mw-mirage)] p-2 rounded-[var(--shape-md)] transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-        "group-hover:scale-110",
-        isActive && "ring-2 ring-[var(--mw-yellow-400)]/30",
-      )}
+      className="bg-[var(--mw-mirage)] p-2 rounded-[var(--shape-md)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
     >
       {AnimatedIcon ? (
         <AnimatedIcon
           size={ICON_SIZES.sidebar}
           animateOnHover
+          strokeWidth={1.5}
           className="text-white"
         />
       ) : StaticIcon ? (
-        <StaticIcon className="w-5 h-5 text-white" />
+        <StaticIcon className="w-5 h-5 text-white" strokeWidth={1.5} />
       ) : null}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Dark mode toggle
+// ---------------------------------------------------------------------------
+
+function ThemeToggle() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    document.documentElement.classList.toggle('dark');
+    setIsDark(!isDark);
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      className="relative flex items-center w-11 h-6 rounded-full bg-[var(--neutral-200)] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--neutral-300)]"
+      aria-label="Toggle dark mode"
+    >
+      <div
+        className="absolute w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        style={{ transform: isDark ? 'translateX(22px)' : 'translateX(2px)' }}
+      >
+        {isDark ? (
+          <Moon className="w-3 h-3 text-[var(--neutral-600)]" />
+        ) : (
+          <Sun className="w-3 h-3 text-[var(--neutral-600)]" />
+        )}
+      </div>
+    </button>
   );
 }
 
@@ -303,7 +358,7 @@ export function Sidebar() {
         <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
           <button
             type="button"
-            className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-200 hover:bg-[var(--mw-yellow-500)]"
+            className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--mw-yellow-500)]"
           >
             <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
             <span className="text-sm font-medium text-[var(--neutral-900)]">
@@ -314,7 +369,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-200 hover:bg-[var(--neutral-100)]"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
           <span className="text-sm text-muted-foreground">
@@ -324,97 +379,143 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
         {menuConfig.map((item) => {
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isExpanded = expandedModule === item.label;
           const isActive = item.path ? isActiveRoute(item.path) : isExpanded;
 
           return (
-            <div key={item.label} className="w-full">
-              {item.path && !hasSubItems ? (
-                <Link to={item.path} className="w-full group">
-                  <div
+            <React.Fragment key={item.label}>
+              {/* Section heading */}
+              {item.section && (
+                <div className="pt-4 pb-1.5 px-2 first:pt-0">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--neutral-400)]">
+                    {item.section}
+                  </span>
+                </div>
+              )}
+
+              <div className="w-full">
+                {item.path && !hasSubItems ? (
+                  <Link to={item.path} className="w-full group">
+                    <div
+                      className={cn(
+                        'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
+                        'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                        isActive
+                          ? 'bg-[var(--mw-mirage)] text-white'
+                          : 'hover:bg-[var(--neutral-200)]'
+                      )}
+                    >
+                      <ModuleIcon item={item} />
+                      <span className="flex-1 text-sm text-current">
+                        {item.label}
+                      </span>
+                      <ChevronRight className={cn(
+                        "w-4 h-4",
+                        isActive ? "text-white/50" : "text-[var(--neutral-400)]"
+                      )} />
+                    </div>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => hasSubItems && toggleModule(item.label)}
                     className={cn(
-                      'flex items-center gap-2.5 p-2 rounded-[var(--shape-md)] cursor-pointer',
-                      'transition-colors duration-200',
-                      isActive ? 'bg-[var(--mw-yellow-50)]' : 'hover:bg-[var(--neutral-100)]'
+                      'w-full flex items-center gap-2.5 p-2 rounded-full group',
+                      'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                      isExpanded
+                        ? 'bg-[var(--neutral-100)]'
+                        : 'hover:bg-[var(--neutral-200)]'
                     )}
                   >
-                    <ModuleIcon item={item} isActive={isActive} />
-                    <span className="flex-1 font-medium text-sm text-foreground">
+                    <ModuleIcon item={item} />
+
+                    <span className="flex-1 text-sm text-foreground text-left">
                       {item.label}
                     </span>
-                    <ChevronRight className="w-4 h-4 text-[var(--neutral-400)]" />
-                  </div>
-                </Link>
-              ) : (
-                <button
-                  onClick={() => hasSubItems && toggleModule(item.label)}
-                  className={cn(
-                    'w-full flex items-center gap-2.5 p-2 rounded-[var(--shape-md)] group',
-                    'transition-colors duration-200',
-                    isExpanded ? 'bg-[var(--neutral-100)]' : 'hover:bg-[var(--neutral-100)]'
-                  )}
-                >
-                  <ModuleIcon item={item} isActive={isExpanded} />
 
-                  <span className="flex-1 font-medium text-sm text-foreground text-left">
-                    {item.label}
-                  </span>
+                    {hasSubItems && (
+                      <ChevronRight
+                        className="w-4 h-4 text-[var(--neutral-400)]"
+                        style={{
+                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                          transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
+                        }}
+                      />
+                    )}
+                  </button>
+                )}
 
-                  {hasSubItems && (
-                    <ChevronRight
-                      className="w-4 h-4 text-[var(--neutral-400)]"
-                      style={{
-                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                        transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
-                      }}
-                    />
-                  )}
-                </button>
-              )}
-
-              {hasSubItems && (
-                <CollapsibleSubMenu isOpen={isExpanded}>
-                  {item.subItems!.map((subItem) => {
-                    const isSubActive = isActiveRoute(subItem.path);
-                    return (
-                      <Link key={subItem.path} to={subItem.path}>
-                        <div
-                          className={cn(
-                            'h-[34px] flex items-center px-3 rounded-[var(--shape-sm)]',
-                            'transition-all duration-200',
-                            isSubActive
-                              ? 'bg-[var(--mw-yellow-50)] font-semibold'
-                              : 'hover:bg-[var(--neutral-100)] font-normal'
-                          )}
-                        >
-                          {isSubActive && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--mw-yellow-400)] mr-2 flex-shrink-0" />
-                          )}
-                          <span className="text-sm text-foreground">
-                            {subItem.label}
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </CollapsibleSubMenu>
-              )}
-            </div>
+                {hasSubItems && (
+                  <CollapsibleSubMenu isOpen={isExpanded}>
+                    {item.subItems!.map((subItem) => {
+                      const isSubActive = isActiveRoute(subItem.path);
+                      return (
+                        <Link key={subItem.path} to={subItem.path}>
+                          <div
+                            className={cn(
+                              'h-[34px] flex items-center px-3 rounded-full',
+                              'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                              isSubActive
+                                ? 'bg-[var(--mw-mirage)] text-white'
+                                : 'hover:bg-[var(--neutral-200)] text-foreground'
+                            )}
+                          >
+                            <span className="text-sm">
+                              {subItem.label}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </CollapsibleSubMenu>
+                )}
+              </div>
+            </React.Fragment>
           );
         })}
       </div>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-[var(--neutral-200)] space-y-1">
-        <button className="w-full flex items-center gap-2 px-2 h-[34px] rounded-[var(--shape-md)] hover:bg-[var(--neutral-100)] transition-colors duration-200 group">
-          <SettingsIcon className="w-4 h-4 text-muted-foreground transition-transform duration-300 group-hover:rotate-45" />
-          <span className="text-sm text-muted-foreground">
-            Settings
-          </span>
-        </button>
+      {/* User Profile Footer */}
+      <div className="p-3 border-t border-[var(--neutral-200)]">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center gap-2.5 p-2 rounded-full hover:bg-[var(--neutral-200)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+              <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs font-medium">MQ</span>
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm text-foreground truncate">Matt Quigley</p>
+                <p className="text-[11px] text-muted-foreground truncate">Admin</p>
+              </div>
+              <ThemeToggle />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="top"
+            align="start"
+            className="w-56 mb-1"
+          >
+            <DropdownMenuItem asChild>
+              <Link to="/control/people" className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>Account Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/notifications" className="flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                <span>Notifications</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center gap-2 text-[var(--error)]">
+              <LogOut className="w-4 h-4" />
+              <span>Log Out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />

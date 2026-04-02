@@ -2,16 +2,17 @@
  * Control Inventory — stock master data with search, filter, status
  */
 import React, { useState } from 'react';
-import { Search, Plus, Download, Filter } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
 
 
@@ -53,51 +54,27 @@ export function ControlInventory() {
   };
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={staggerContainer}
-      className="p-6 space-y-6"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Inventory</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {totals.items} SKUs
-            {totals.low > 0 && <span className="text-[var(--mw-amber)] ml-2">· {totals.low} low stock</span>}
-            {totals.out > 0 && <span className="text-[var(--mw-error)] ml-2">· {totals.out} out of stock</span>}
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast.success('Exporting inventory...')}>
-            <Download className="w-4 h-4" /> Export
-          </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New inventory item coming soon')}>
-            <Plus className="w-4 h-4" /> New item
-          </Button>
-        </div>
-      </div>
+    <PageShell className="p-6 space-y-6">
+      <PageHeader
+        title="Inventory"
+        subtitle={`${totals.items} SKUs${totals.low > 0 ? ` · ${totals.low} low stock` : ''}${totals.out > 0 ? ` · ${totals.out} out of stock` : ''}`}
+      />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input
-            placeholder="Search by name or SKU..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm"
-          />
-        </div>
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="h-10 border-[var(--border)] w-48 rounded-xl">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search by name or SKU…" />
+        <ToolbarFilterPills
+          value={category}
+          onChange={setCategory}
+          options={CATEGORIES.map(c => ({ key: c, label: c }))}
+        />
+        <ToolbarSpacer />
+        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5" onClick={() => toast.success('Exporting inventory...')}>
+          <Download className="w-4 h-4" /> Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New inventory item coming soon')}>
+          New item
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
@@ -147,6 +124,6 @@ export function ControlInventory() {
           <EmptyState variant="inline" title="No items match your search." />
         )}
       </Card>
-    </motion.div>
+    </PageShell>
   );
 }

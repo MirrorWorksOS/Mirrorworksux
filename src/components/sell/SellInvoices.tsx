@@ -1,23 +1,25 @@
 /**
  * Sell Invoices - Invoices DataTable with status tabs
- * Matches BookInvoices pattern
+ * Uses shared PageToolbar pattern
  */
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
+import { AnimatedDownload } from '../ui/animated-icons';
 
 
 type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
@@ -47,11 +49,15 @@ const mockInvoices: Invoice[] = [
 export function SellInvoices() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
+  const [search, setSearch] = useState('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
-  const filteredInvoices = activeTab === 'all'
+  const filteredInvoices = (activeTab === 'all'
     ? mockInvoices
-    : mockInvoices.filter(inv => inv.status === activeTab);
+    : mockInvoices.filter(inv => inv.status === activeTab)
+  ).filter(inv =>
+    !search || inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) || inv.customer.toLowerCase().includes(search.toLowerCase())
+  );
 
   const totalValue = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
   const totalOutstanding = filteredInvoices.reduce((sum, inv) => sum + inv.balanceDue, 0);
@@ -64,50 +70,52 @@ export function SellInvoices() {
     overdue: mockInvoices.filter(i => i.status === 'overdue').length,
   };
 
+  const summaryByStatus = {
+    paid: mockInvoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0),
+    sent: mockInvoices.filter(i => i.status === 'sent').reduce((s, i) => s + i.total, 0),
+    overdue: mockInvoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0),
+    draft: mockInvoices.filter(i => i.status === 'draft').reduce((s, i) => s + i.total, 0),
+  };
+
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Invoices"
         subtitle={`${filteredInvoices.length} invoices • $${totalValue.toLocaleString()} total • $${totalOutstanding.toLocaleString()} outstanding`}
-        actions={
-          <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
-              <AnimatedFilter className="w-4 h-4" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Invoices exported')}>
-              <AnimatedDownload className="w-4 h-4" />
-              Export
-            </Button>
-            <Button
-              className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group"
-              onClick={() => navigate('/sell/invoices/new')}
-            >
-              <AnimatedPlus className="w-4 h-4 mr-2" />
-              New Invoice
-            </Button>
-          </>
-        }
       />
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[var(--border)]">
-        {(['all', 'draft', 'sent', 'paid', 'overdue'] as TabFilter[]).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={cn(
-              "px-4 py-2 text-sm border-b-2 transition-colors relative",
-              activeTab === tab
-                ? 'border-[var(--mw-yellow-400)] text-[var(--neutral-900)] font-medium'
-                : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-900)]'
-            )}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            <Badge className="ml-2 bg-[var(--neutral-100)] text-[var(--neutral-600)] border-0 text-xs tabular-nums">{tabCounts[tab]}</Badge>
-          </button>
-        ))}
-      </div>
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'paid', label: 'Paid', value: summaryByStatus.paid, color: 'var(--mw-yellow-400)' },
+          { key: 'sent', label: 'Sent', value: summaryByStatus.sent, color: 'var(--mw-mirage)' },
+          { key: 'overdue', label: 'Overdue', value: summaryByStatus.overdue, color: 'var(--neutral-300)' },
+          { key: 'draft', label: 'Draft', value: summaryByStatus.draft, color: 'var(--neutral-200)' },
+        ]}
+      />
+
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search invoices…" />
+        <ToolbarFilterPills
+          value={activeTab}
+          onChange={(k) => setActiveTab(k as TabFilter)}
+          options={[
+            { key: 'all', label: 'All', count: tabCounts.all },
+            { key: 'draft', label: 'Draft', count: tabCounts.draft },
+            { key: 'sent', label: 'Sent', count: tabCounts.sent },
+            { key: 'paid', label: 'Paid', count: tabCounts.paid },
+            { key: 'overdue', label: 'Overdue', count: tabCounts.overdue },
+          ]}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Invoices exported')}>
+          <AnimatedDownload className="w-4 h-4" />
+          Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/invoices/new')}>
+          New Invoice
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
       <motion.div variants={staggerItem}>

@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { PlusCircle, Search, Calendar, Tag, User, LayoutGrid, List, GripVertical, Paperclip, X } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Plus, LayoutGrid, List, GripVertical, Paperclip } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
@@ -10,6 +8,12 @@ import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/Ka
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { DRAG_HANDLE_STYLE } from '@/components/shared/kanban/drag-styles';
 import { NewExpense } from './NewExpense';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
 const KANBAN_ITEM_TYPE = 'book-expense';
 
@@ -40,7 +44,6 @@ type ExpenseColumnId = 'draft' | 'submitted' | 'approved' | 'paid';
 interface ExpenseColumn {
   id: ExpenseColumnId;
   title: string;
-  headerColor: string;
   cards: Expense[];
 }
 
@@ -53,7 +56,6 @@ const INITIAL_COLUMNS: ExpenseColumn[] = [
   {
     id: 'draft',
     title: 'Draft',
-    headerColor: 'var(--neutral-500)',
     cards: [
       { id: 'E1', vendor: 'BOC Gas', amount: 340, category: 'Consumables', date: '25 Feb', employee: 'David M.', initials: 'DM' },
       { id: 'E2', vendor: 'Workshop Supplies', amount: 450, category: 'Materials', date: '24 Feb', employee: 'Elena R.', initials: 'ER', receipt: true },
@@ -63,7 +65,6 @@ const INITIAL_COLUMNS: ExpenseColumn[] = [
   {
     id: 'submitted',
     title: 'Submitted',
-    headerColor: 'var(--mw-info)',
     cards: [
       { id: 'E4', vendor: 'Blackwoods Steel', amount: 2450, category: 'Materials', date: '23 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0012', receipt: true },
       { id: 'E5', vendor: 'AGL Energy', amount: 890, category: 'Utilities', date: '22 Feb', employee: 'Office', initials: 'OF' },
@@ -74,7 +75,6 @@ const INITIAL_COLUMNS: ExpenseColumn[] = [
   {
     id: 'approved',
     title: 'Approved',
-    headerColor: 'var(--mw-success)',
     cards: [
       { id: 'E8', vendor: 'OneSteel', amount: 4200, category: 'Materials', date: '19 Feb', employee: 'Matt Q.', initials: 'MQ', jobRef: 'JOB-2026-0010' },
       { id: 'E9', vendor: 'Dulux Powder Coats', amount: 1890, category: 'Subcontractor', date: '18 Feb', employee: 'David M.', initials: 'DM' },
@@ -87,7 +87,6 @@ const INITIAL_COLUMNS: ExpenseColumn[] = [
   {
     id: 'paid',
     title: 'Paid',
-    headerColor: 'var(--mw-mirage)',
     cards: [
       { id: 'E14', vendor: 'Steel & Tube', amount: 8500, category: 'Materials', date: '13 Feb', employee: 'Matt Q.', initials: 'MQ', receipt: true },
       { id: 'E15', vendor: 'BOC Gas', amount: 560, category: 'Consumables', date: '12 Feb', employee: 'David M.', initials: 'DM' },
@@ -166,32 +165,28 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
     }
   };
 
-  return (
-    <div className="relative p-6 flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5 shrink-0">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Expenses</h1>
-        <div className="flex items-center gap-3">
-          <div className="flex border border-[var(--border)] rounded overflow-hidden">
-            <button type="button" className="p-2 bg-[var(--mw-yellow-400)]"><LayoutGrid className="w-4 h-4 text-[var(--mw-mirage)]" /></button>
-            <button type="button" className="p-2 hover:bg-[var(--neutral-100)]"><List className="w-4 h-4 text-[var(--neutral-500)]" /></button>
-          </div>
-          <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" onClick={handleNewExpenseClick}>
-            <PlusCircle className="w-5 h-5" /> New Expense
-          </Button>
-        </div>
-      </div>
+  const [search, setSearch] = useState('');
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-5 shrink-0">
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input placeholder="Search expenses..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
-        </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Calendar className="w-4 h-4" /> Date Range</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Tag className="w-4 h-4" /> Category</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><User className="w-4 h-4" /> Employee</Button>
-      </div>
+  return (
+    <PageShell className="p-6 space-y-6 flex flex-col h-full overflow-hidden">
+      <PageHeader title="Expenses" />
+
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search expenses…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <IconViewToggle
+          value="kanban"
+          onChange={() => {}}
+          options={[
+            { key: 'kanban', icon: LayoutGrid, label: 'Board view' },
+            { key: 'list', icon: List, label: 'List view' },
+          ]}
+        />
+        <ToolbarPrimaryButton icon={Plus} onClick={handleNewExpenseClick}>
+          New Expense
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Kanban Board */}
       <div className="flex-1 flex flex-col min-h-0">
@@ -204,7 +199,6 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
               count={col.cards.length}
               accept={KANBAN_ITEM_TYPE}
               onDrop={handleDrop}
-              headerColor={col.headerColor}
               className="min-w-[280px] max-w-[360px] w-[320px] flex-shrink-0"
             >
               <div className="flex items-center justify-end px-0.5 pb-2 shrink-0">
@@ -245,6 +239,6 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
           </div>
         </>
       )}
-    </div>
+    </PageShell>
   );
 }

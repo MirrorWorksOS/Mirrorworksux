@@ -6,18 +6,21 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { Plus, Download, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter, AnimatedDownload } from '../ui/animated-icons';
+import { AnimatedDownload } from '../ui/animated-icons';
 
 
 type OrderStatus = 'draft' | 'confirmed' | 'in_production' | 'shipped' | 'invoiced' | 'complete';
@@ -52,32 +55,30 @@ const ORDER_STATUS_MAP: Record<OrderStatus, { status: StatusKey; label?: string 
 
 export function SellOrders() {
   const navigate = useNavigate();
+  const [search, setSearch] = useState('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Sales Orders"
         subtitle={`${mockOrders.length} orders • $${totalValue.toLocaleString()} total value`}
-        actions={
-          <>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
-              <AnimatedFilter className="w-4 h-4" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast.success('Orders exported')}>
-              <AnimatedDownload className="w-4 h-4" />
-              Export
-            </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New order form coming soon')}>
-              <AnimatedPlus className="w-4 h-4 mr-2" />
-              New Order
-            </Button>
-          </>
-        }
       />
+
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search orders…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Orders exported')}>
+          <AnimatedDownload className="w-4 h-4" />
+          Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New order form coming soon')}>
+          New Order
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Table */}
       <motion.div variants={staggerItem}>

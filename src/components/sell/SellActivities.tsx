@@ -4,7 +4,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Search, Filter, List, Calendar, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { List, Calendar, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
 import {
   addDays,
@@ -19,6 +19,10 @@ import {
 } from 'date-fns';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -375,66 +379,32 @@ export function SellActivities() {
   };
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Activities"
         subtitle="Track sales activities across all opportunities"
-        actions={
-          <Button
-            className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
-            onClick={() => setShowNewActivity(true)}
-          >
-            <Plus className="mr-2 h-4 w-4" strokeWidth={1.5} />
-            New Activity
-          </Button>
-        }
       />
 
-      {/* Filter row */}
-      <div className="flex flex-wrap items-center gap-3 px-6 pb-4">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={1.5} />
-          <input
-            type="text"
-            placeholder="Search activities..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 w-full rounded-[var(--shape-md)] border border-[var(--border)] bg-white pl-9 pr-3 text-sm outline-none transition-colors focus:border-[var(--mw-yellow-400)] focus:ring-2 focus:ring-[var(--mw-yellow-400)]/20"
-          />
-        </div>
-        <Button variant="outline" size="sm" className="border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}>
-          <Filter className="mr-2 h-4 w-4" strokeWidth={1.5} />
-          Filter
-        </Button>
-        <div className="flex items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-white p-0.5">
-          <button
-            onClick={() => setViewMode('list')}
-            className={cn(
-              'rounded-[var(--shape-sm)] p-1.5 transition-colors',
-              viewMode === 'list'
-                ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]'
-                : 'text-[var(--neutral-400)] hover:text-[var(--neutral-600)]',
-            )}
-          >
-            <List className="h-4 w-4" strokeWidth={1.5} />
-          </button>
-          <button
-            onClick={() => setViewMode('calendar')}
-            className={cn(
-              'rounded-[var(--shape-sm)] p-1.5 transition-colors',
-              viewMode === 'calendar'
-                ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]'
-                : 'text-[var(--neutral-400)] hover:text-[var(--neutral-600)]',
-            )}
-          >
-            <Calendar className="h-4 w-4" strokeWidth={1.5} />
-          </button>
-        </div>
-      </div>
+      <PageToolbar>
+        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search activities…" />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <IconViewToggle
+          value={viewMode}
+          onChange={(k) => setViewMode(k as 'list' | 'calendar')}
+          options={[
+            { key: 'list', icon: List, label: 'List view' },
+            { key: 'calendar', icon: Calendar, label: 'Calendar view' },
+          ]}
+        />
+        <ToolbarPrimaryButton icon={Plus} onClick={() => setShowNewActivity(true)}>
+          New Activity
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* ---- LIST VIEW ---- */}
       {viewMode === 'list' && (
-        <div className="px-6 pb-6">
+        <div>
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

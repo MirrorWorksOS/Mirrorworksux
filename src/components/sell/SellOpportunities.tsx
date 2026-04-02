@@ -6,18 +6,21 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { Plus, Filter, DollarSign, Calendar, Flag } from 'lucide-react';
+import { Plus, DollarSign, Calendar, Flag } from 'lucide-react';
 import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
 import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
-import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import type { Opportunity } from './sell-opportunity-types';
 
 const KANBAN_ITEM_TYPE = 'sell-opportunity';
@@ -34,13 +37,13 @@ const mockOpportunities: Opportunity[] = [
   { id: '6', title: 'Aluminium Enclosures', customer: 'Hunter Steel Co', value: 22000, expectedClose: '2026-04-05', assignedTo: 'MT', priority: 'medium', stage: 'new' },
 ];
 
-const stages: { key: OpportunityStage; label: string; color: string }[] = [
-  { key: 'new', label: 'New', color: 'var(--neutral-500)' },
-  { key: 'qualified', label: 'Qualified', color: 'var(--mw-info)' },
-  { key: 'proposal', label: 'Proposal', color: 'var(--mw-info)' },
-  { key: 'negotiation', label: 'Negotiation', color: 'var(--mw-warning)' },
-  { key: 'won', label: 'Won', color: 'var(--mw-success)' },
-  { key: 'lost', label: 'Lost', color: 'var(--mw-error)' },
+const stages: { key: OpportunityStage; label: string; summaryColor: string }[] = [
+  { key: 'new', label: 'New', summaryColor: 'var(--neutral-500)' },
+  { key: 'qualified', label: 'Qualified', summaryColor: 'var(--mw-info)' },
+  { key: 'proposal', label: 'Proposal', summaryColor: 'var(--mw-info)' },
+  { key: 'negotiation', label: 'Negotiation', summaryColor: 'var(--mw-warning)' },
+  { key: 'won', label: 'Won', summaryColor: 'var(--mw-success)' },
+  { key: 'lost', label: 'Lost', summaryColor: 'var(--mw-error)' },
 ];
 
 const getPriorityBadge = (priority: Priority) => {
@@ -68,27 +71,31 @@ export function SellOpportunities() {
     handleStageChange(item.id, columnId as OpportunityStage);
   };
 
+  const pipelineValue = opportunities.reduce((sum, o) => sum + o.value, 0);
+
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--neutral-900)]">Opportunities</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            <span className="tabular-nums">{opportunities.length}</span> total • <span className="tabular-nums">${opportunities.reduce((sum, o) => sum + o.value, 0).toLocaleString()}</span> pipeline value
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)] group" onClick={() => toast('Filter panel coming soon')}>
-            <AnimatedFilter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--neutral-900)] rounded-full group" onClick={() => toast('New opportunity form coming soon')}>
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Opportunity
-          </Button>
-        </div>
-      </div>
+    <PageShell className="p-6 space-y-6">
+      <PageHeader
+        title="Opportunities"
+        subtitle={`${opportunities.length} total • $${pipelineValue.toLocaleString()} pipeline value`}
+      />
+
+      <ToolbarSummaryBar
+        segments={stages.filter(s => s.key !== 'lost').map(s => ({
+          key: s.key,
+          label: s.label,
+          value: getOpportunitiesByStage(s.key).reduce((sum, o) => sum + o.value, 0),
+          color: s.summaryColor,
+        }))}
+      />
+
+      <PageToolbar>
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New opportunity form coming soon')}>
+          New Opportunity
+        </ToolbarPrimaryButton>
+      </PageToolbar>
 
       {/* Kanban Board */}
       <motion.div variants={staggerItem}>
@@ -105,7 +112,6 @@ export function SellOpportunities() {
                 count={stageOpps.length}
                 accept={KANBAN_ITEM_TYPE}
                 onDrop={handleKanbanDrop}
-                headerColor={stage.color}
                 className="min-w-[320px] w-[320px] flex-shrink-0"
               >
                 <div className="flex items-center justify-between px-0.5 pb-1 text-xs text-[var(--neutral-500)]">
@@ -132,10 +138,10 @@ export function SellOpportunities() {
                         }}
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <h4 className="text-xs font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
+                          <h4 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
                             {opp.title}
                           </h4>
-                          <Badge className={cn("rounded text-xs px-1.5 py-0.5 border-0 flex-shrink-0 ml-2", priorityBadge.bg, priorityBadge.text)}>
+                          <Badge className={cn("rounded-full text-xs px-2.5 py-0.5 border-0 flex-shrink-0 ml-2", priorityBadge.bg, priorityBadge.text)}>
                             {priorityBadge.label}
                           </Badge>
                         </div>
@@ -173,6 +179,6 @@ export function SellOpportunities() {
         </KanbanBoard>
       </motion.div>
 
-    </motion.div>
+    </PageShell>
   );
 }
