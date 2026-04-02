@@ -179,10 +179,10 @@ const menuConfig: MenuItem[] = [
 // Animation constants — silky smooth, slower durations
 // ---------------------------------------------------------------------------
 
-const EXPAND_DURATION = 'var(--duration-long2)';
+const EXPAND_DURATION = 'var(--duration-medium2)';
 const EXPAND_EASING = 'var(--ease-standard)';
-const SUBMENU_HOVER_OPEN_DELAY = 90;
-const SUBMENU_HOVER_CLOSE_DELAY = 220;
+const SUBMENU_HOVER_OPEN_DELAY = 60;
+const SUBMENU_HOVER_CLOSE_DELAY = 175;
 
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
@@ -489,11 +489,11 @@ export function Sidebar() {
                             onPointerLeave={handleSubItemPointerLeave}
                             className={cn(
                               'h-12 flex items-center px-4 rounded-full',
-                              'transition-[background-color,opacity,transform] duration-[var(--duration-medium2)] ease-[var(--ease-standard)] will-change-[background-color,opacity,transform]',
+                              'transition-[background-color,opacity,transform] duration-[var(--duration-short2)] ease-out will-change-[background-color,opacity,transform]',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
                                 : isSubHovered
-                                  ? 'bg-[color-mix(in_srgb,var(--neutral-200)_78%,transparent)] text-foreground opacity-100 scale-[1.01]'
+                                  ? 'bg-[color-mix(in_srgb,var(--neutral-200)_78%,transparent)] text-foreground opacity-100 scale-[1.005]'
                                   : 'text-foreground opacity-95'
                             )}
                           >
