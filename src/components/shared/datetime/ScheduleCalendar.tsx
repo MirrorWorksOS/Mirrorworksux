@@ -128,7 +128,7 @@ export function ScheduleCalendar({
                   "mb-1 flex h-7 w-7 items-center justify-center rounded-[var(--shape-md)] text-xs tabular-nums transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                   inMonth && "text-[var(--neutral-900)] hover:bg-[var(--neutral-100)]",
                 !inMonth && "text-muted-foreground",
-                  today && "font-semibold ring-1 ring-[var(--mw-yellow-400)]",
+                  today && "font-medium ring-1 ring-[var(--mw-yellow-400)]",
                 )}
               >
                 {format(day, "d")}

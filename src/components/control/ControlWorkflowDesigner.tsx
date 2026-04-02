@@ -27,6 +27,7 @@ import {
 import { cn } from '../ui/utils';
 import { WorkflowCanvas, WORKFLOW_DATA, type WFNode } from './WorkflowCanvas';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
+import { IconWell } from '@/components/shared/icons/IconWell';
 
 // ─── Workflow list data ───────────────────────────────────────────────────────
 
@@ -51,14 +52,14 @@ const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
 const NODE_PALETTE = [
   { kind: 'trigger',      label: 'Trigger',        bg: 'bg-emerald-500',          icon: Zap         },
   { kind: 'ai',           label: 'AI action',      bg: 'bg-[var(--mw-purple)]',   icon: Sparkles    },
-  { kind: 'action',       label: 'Update record',  bg: 'bg-blue-500',             icon: RefreshCw   },
+  { kind: 'action',       label: 'Update record',  bg: 'bg-[var(--mw-info)]',     icon: RefreshCw   },
   { kind: 'notification', label: 'Notification',   bg: 'bg-[var(--mw-yellow-400)]', icon: Bell      },
-  { kind: 'condition',    label: 'Condition',       bg: 'bg-orange-500',           icon: GitBranch   },
+  { kind: 'condition',    label: 'Condition',       bg: 'bg-[var(--mw-warning)]',  icon: GitBranch   },
   { kind: 'email',        label: 'Send email',     bg: 'bg-[var(--mw-purple)]',   icon: Mail        },
-  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-red-500',              icon: ShoppingCart },
+  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[var(--mw-error)]',    icon: ShoppingCart },
   { kind: 'schedule',     label: 'Schedule',       bg: 'bg-indigo-500',            icon: Calendar    },
   { kind: 'machine',      label: 'Assign machine', bg: 'bg-[var(--neutral-600)]', icon: Settings2   },
-  { kind: 'hold',         label: 'Hold job',       bg: 'bg-amber-500',            icon: Pause       },
+  { kind: 'hold',         label: 'Hold job',       bg: 'bg-[var(--mw-warning)]',  icon: Pause       },
   { kind: 'delay',        label: 'Delay / Wait',   bg: 'bg-slate-500',            icon: Timer       },
 ];
 
@@ -255,7 +256,7 @@ function NodeDetailPanel({
     <div className="w-[300px] flex-shrink-0 border-l border-[var(--border)] bg-white flex flex-col overflow-hidden">
       {/* Header */}
       <div className="h-14 border-b border-[var(--border)] px-4 flex items-center justify-between flex-shrink-0">
-        <span className="text-sm font-semibold text-[var(--mw-mirage)]">
+        <span className="text-sm font-medium text-[var(--mw-mirage)]">
           Node properties
         </span>
         <button
@@ -406,10 +407,10 @@ export function ControlWorkflowDesigner() {
         {/* Panel header */}
         <div className="p-4 border-b border-[var(--border)] space-y-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[var(--mw-mirage)]">
+            <h2 className="text-sm font-medium text-[var(--mw-mirage)]">
               Workflows
             </h2>
-            <Button size="sm" className="h-7 w-7 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
+            <Button size="sm" className="h-10 w-10 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
               <Plus className="w-4 h-4" />
             </Button>
           </div>
@@ -418,7 +419,7 @@ export function ControlWorkflowDesigner() {
           <div className="bg-[var(--mw-purple-50)] border border-[var(--mw-purple)]/25 rounded-[var(--shape-lg)] p-3">
             <div className="flex items-center gap-1.5 mb-2">
               <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
-              <span className="text-xs font-semibold text-[var(--mw-purple)]">Generate with AI</span>
+              <span className="text-xs font-medium text-[var(--mw-purple)]">Generate with AI</span>
             </div>
             <textarea
               className="w-full bg-white border border-[var(--border)] rounded-md text-xs px-2.5 py-2 text-[var(--mw-mirage)] resize-none focus:outline-none focus:border-[var(--mw-purple)] transition-colors leading-relaxed"
@@ -431,7 +432,7 @@ export function ControlWorkflowDesigner() {
             <Button
               size="sm"
               className={cn(
-                'w-full h-7 mt-2 text-xs font-medium gap-1.5',
+                'w-full h-10 mt-2 text-xs font-medium gap-1.5',
                 isGenerating || !aiPrompt.trim()
                   ? 'bg-[var(--mw-purple)]/50 text-white cursor-not-allowed'
                   : 'bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white',
@@ -504,11 +505,9 @@ export function ControlWorkflowDesigner() {
         {/* Toolbar */}
         <div className="h-14 border-b border-[var(--border)] bg-white flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
-          <div className="w-8 h-8 bg-[var(--mw-purple)] rounded-[var(--shape-md)] flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
+          <IconWell icon={Sparkles} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-[var(--mw-mirage)] truncate leading-tight">
+            <p className="text-sm font-medium text-[var(--mw-mirage)] truncate leading-tight">
               {selectedWF.name}
             </p>
             <p className="text-xs text-[var(--neutral-500)]">Trigger: {selectedWF.trigger}</p>
@@ -521,19 +520,19 @@ export function ControlWorkflowDesigner() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden sm:flex"
+            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden sm:flex"
               onClick={() => toast('Edit mode coming soon')}>
               <Edit2 className="w-4 h-4" /> Edit
             </Button>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden md:flex"
+            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden md:flex"
               onClick={() => toast.success('Workflow duplicated')}>
               <Copy className="w-4 h-4" /> Duplicate
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[var(--mw-success)] text-white text-xs"
+            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[var(--mw-success)] text-white text-xs"
               onClick={() => toast.success('Workflow run started')}>
               <Play className="w-4 h-4" /> Run
             </Button>
-            <Button size="sm" className="h-8 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
+            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
               onClick={() => toast.success('Workflow saved')}>
               <Save className="w-4 h-4" /> Save
             </Button>

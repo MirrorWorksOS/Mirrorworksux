@@ -27,9 +27,9 @@ import {
 } from 'lucide-react';
 
 const MODULE_META: Record<string, { icon: React.ReactNode; color: string }> = {
-  sell: { icon: <BarChart3 className="w-4 h-4" />, color: 'text-blue-600' },
-  plan: { icon: <ClipboardList className="w-4 h-4" />, color: 'text-purple-600' },
-  make: { icon: <Wrench className="w-4 h-4" />, color: 'text-orange-600' },
+  sell: { icon: <BarChart3 className="w-4 h-4" />, color: 'text-[var(--mw-info)]' },
+  plan: { icon: <ClipboardList className="w-4 h-4" />, color: 'text-[var(--mw-mirage)]' },
+  make: { icon: <Wrench className="w-4 h-4" />, color: 'text-[var(--mw-warning)]' },
   ship: { icon: <Truck className="w-4 h-4" />, color: 'text-[var(--mw-success)]' },
   book: { icon: <Calculator className="w-4 h-4" />, color: 'text-[var(--mw-error)]' },
   buy: { icon: <ShoppingCart className="w-4 h-4" />, color: 'text-teal-600' },
@@ -67,7 +67,7 @@ export function StepTeamSetup() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Setting up your team...</h2>
+        <h2 className="text-2xl font-medium tracking-tight">Setting up your team...</h2>
         <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">AI is analysing roles and suggesting assignments...</span>
@@ -86,7 +86,7 @@ export function StepTeamSetup() {
       {/* Section A: Team groups */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Your team groups</h2>
+          <h2 className="text-2xl font-medium tracking-tight">Your team groups</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Review the default groups for each module. You can rename or add groups.
           </p>
@@ -121,7 +121,7 @@ export function StepTeamSetup() {
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold tracking-tight">Assign your team</h3>
+            <h3 className="text-lg font-medium tracking-tight">Assign your team</h3>
             <p className="text-sm text-muted-foreground mt-0.5">
               AI has suggested module assignments based on imported job titles.
             </p>
@@ -199,7 +199,7 @@ export function StepTeamSetup() {
 
       {/* Section C: Summary */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold tracking-tight">Team setup summary</h3>
+        <h3 className="text-lg font-medium tracking-tight">Team setup summary</h3>
         <div className="grid gap-3 sm:grid-cols-3">
           {Object.entries(moduleGroups).map(([module, groups]) => {
             const meta = MODULE_META[module] || MODULE_META.control;
@@ -207,7 +207,7 @@ export function StepTeamSetup() {
               (s) => accepted.has(s.employeeId) && s.suggestions.some((sg) => sg.module === module)
             ).length;
             return (
-              <Card key={module} className="p-4">
+              <Card key={module} className="p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className={meta.color}>{meta.icon}</span>
                   <span className="font-medium text-sm capitalize">{module}</span>

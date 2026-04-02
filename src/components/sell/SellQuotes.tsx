@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';

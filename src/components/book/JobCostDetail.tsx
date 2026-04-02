@@ -6,9 +6,13 @@ import { AIInsightCard } from '../shared/ai/AIInsightCard';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import {
-  PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart, ReferenceLine
+  PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart
 } from 'recharts';
-import { MW_CHART_COLOURS } from '@/components/shared/charts/chart-theme';
+import { MW_CHART_COLOURS, MW_RECHARTS_ANIMATION, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
+import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const costBreakdown = [
   { type: 'Materials', budgeted: 8200, actual: 7450, variance: -750, pct: 52, color: MW_CHART_COLOURS[0] },
@@ -42,34 +46,81 @@ const labourData = [
   { date: '18 Feb', operator: 'Elena R.', operation: 'Assembly', hours: '6.0', rate: '$105.00', total: '$630.00', status: 'Auto-captured' },
 ];
 
+type CostBreakdownRow = typeof costBreakdown[number];
+
+const costBreakdownColumns: FinancialColumn<CostBreakdownRow>[] = [
+  { key: 'type', header: 'Cost Type', accessor: (r) => r.type, format: 'text', align: 'left' },
+  { key: 'budgeted', header: 'Budgeted', accessor: (r) => r.budgeted, format: 'currency' },
+  { key: 'actual', header: 'Actual', accessor: (r) => r.actual, format: 'currency' },
+  {
+    key: 'variance',
+    header: 'Variance',
+    accessor: (r) => r.variance,
+    format: 'currency',
+  },
+  {
+    key: 'pct',
+    header: '% of Total',
+    accessor: (r) => r.pct,
+    format: 'percentage',
+  },
+];
+
+type MaterialRow = typeof materialsData[number];
+
+const materialColumns: FinancialColumn<MaterialRow>[] = [
+  { key: 'date', header: 'Date', accessor: (r) => r.date, format: 'text', align: 'left' },
+  { key: 'item', header: 'Item', accessor: (r) => r.item, format: 'text', align: 'left' },
+  { key: 'qty', header: 'Qty', accessor: (r) => r.qty, format: 'text', align: 'right' },
+  { key: 'unitCost', header: 'Unit Cost', accessor: (r) => r.unitCost, format: 'text', align: 'right' },
+  { key: 'total', header: 'Total', accessor: (r) => r.total, format: 'text', align: 'right' },
+  { key: 'po', header: 'PO Ref', accessor: (r) => r.po, format: 'text', align: 'left' },
+  { key: 'source', header: 'Source', accessor: (r) => r.source, format: 'text', align: 'left' },
+];
+
+type LabourRow = typeof labourData[number];
+
+const labourColumns: FinancialColumn<LabourRow>[] = [
+  { key: 'date', header: 'Date', accessor: (r) => r.date, format: 'text', align: 'left' },
+  { key: 'operator', header: 'Operator', accessor: (r) => r.operator, format: 'text', align: 'left' },
+  { key: 'operation', header: 'Operation', accessor: (r) => r.operation, format: 'text', align: 'left' },
+  { key: 'hours', header: 'Hours', accessor: (r) => r.hours, format: 'text', align: 'right' },
+  { key: 'rate', header: 'Rate', accessor: (r) => r.rate, format: 'text', align: 'right' },
+  { key: 'total', header: 'Total', accessor: (r) => r.total, format: 'text', align: 'right' },
+  {
+    key: 'status',
+    header: 'Status',
+    accessor: (r) => r.status,
+    format: 'text',
+    align: 'left',
+  },
+];
+
 export function JobCostDetail({ onBack }: { onBack: () => void }) {
   const [activeTab, setActiveTab] = useState('Materials');
   const detailTabs = ['Materials', 'Labour', 'Overhead', 'Subcontract'];
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-1">
-          <button onClick={onBack} className="p-2 hover:bg-[var(--neutral-100)] rounded-[var(--shape-lg)] transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[var(--mw-mirage)]" />
-          </button>
-          <h1 className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums">JOB-2026-0012</h1>
-        </div>
-        <div className="flex items-center gap-2 ml-11">
-          <span className="text-[var(--neutral-600)]">Con-form Group</span>
-          <span className="text-[var(--neutral-300)]">&#8226;</span>
-          <span className="text-[var(--neutral-600)]">Custom Handrail Assembly — Level 4</span>
+    <PageShell className="max-w-[1200px] mx-auto overflow-y-auto">
+      <PageHeader
+        title="JOB-2026-0012"
+        subtitle="Con-form Group -- Custom Handrail Assembly -- Level 4"
+        breadcrumbs={[
+          { label: 'Book', href: '/book' },
+          { label: 'Job Costs', href: '/book/job-costs' },
+          { label: 'JOB-2026-0012' },
+        ]}
+        actions={
           <Badge className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]">In Production</Badge>
-        </div>
-      </div>
+        }
+      />
 
       {/* Hero Metrics */}
-      <Card className="bg-white rounded-xl shadow-xs border border-[var(--border)] p-8">
+      <Card className="bg-white rounded-xl border border-[var(--border)] p-8">
         <div className="grid grid-cols-3 items-center">
           <div className="text-center">
             <div className="text-sm text-[var(--neutral-500)] mb-2 font-medium">Quoted</div>
-            <div className="text-[36px] tracking-tight text-[var(--mw-mirage)] tabular-nums">$18,500</div>
+            <div className="text-4xl tracking-tight text-[var(--mw-mirage)] tabular-nums">$18,500</div>
           </div>
           <div className="text-center">
             <div className="relative w-[120px] h-[120px] mx-auto mb-2">
@@ -78,7 +129,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
                 <circle cx="60" cy="60" r="52" fill="none" stroke="var(--chart-scale-high)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52 * 0.231} ${2 * Math.PI * 52}`} strokeLinecap="round" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl tabular-nums font-bold">23.1%</span>
+                <span className="text-xl tabular-nums font-medium">23.1%</span>
               </div>
             </div>
             <div className="text-xs text-[var(--neutral-500)] font-medium">Profit Margin</div>
@@ -86,56 +137,24 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           </div>
           <div className="text-center">
             <div className="text-sm text-[var(--neutral-500)] mb-2 font-medium">Actual to Date</div>
-            <div className="text-[36px] tracking-tight text-[var(--mw-mirage)] tabular-nums">$14,230</div>
+            <div className="text-4xl tracking-tight text-[var(--mw-mirage)] tabular-nums">$14,230</div>
           </div>
         </div>
       </Card>
 
       {/* Cost Breakdown Table */}
-      <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
+      <div>
         <div className="flex items-center gap-2 mb-4">
           <h3 className="text-[var(--mw-mirage)] font-medium">Cost Breakdown</h3>
           <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)]">
-              {['Cost Type', 'Budgeted', 'Actual', 'Variance', '% of Total'].map(h => (
-                <th key={h} className={cn("px-4 py-2 text-xs tracking-wider text-[var(--neutral-500)] font-medium", ['Budgeted', 'Actual', 'Variance', '% of Total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {costBreakdown.map(row => (
-              <tr key={row.type} className="border-b border-[var(--neutral-100)] h-14">
-                <td className="px-4 text-sm text-[var(--mw-mirage)]">{row.type}</td>
-                <td className="px-4 text-sm text-right tabular-nums font-medium">${row.budgeted.toLocaleString()}</td>
-                <td className="px-4 text-sm text-right tabular-nums font-medium">${row.actual.toLocaleString()}</td>
-                <td className="px-4 text-sm font-medium tabular-nums text-[var(--neutral-900)]">
-                  <span className="flex items-center justify-end gap-1">
-                    <ArrowDown className="w-4 h-4" />-${Math.abs(row.variance).toLocaleString()}
-                  </span>
-                </td>
-                <td className="px-4">
-                  <div className="flex items-center gap-2 justify-end">
-                    <div className="w-24 h-1 bg-[var(--neutral-200)] rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${row.pct}%`, backgroundColor: row.color }} />
-                    </div>
-                    <span className="text-xs text-[var(--neutral-500)] w-8 text-right">{row.pct}%</span>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            <tr className="border-t-2 border-[var(--mw-mirage)] h-14">
-              <td className="px-4 text-sm font-bold">TOTAL</td>
-              <td className="px-4 text-sm text-right tabular-nums font-bold">$18,500</td>
-              <td className="px-4 text-sm text-right tabular-nums font-bold">$14,230</td>
-              <td className="px-4 text-sm text-right text-[var(--mw-mirage)] tabular-nums font-bold">-$4,270</td>
-              <td className="px-4 text-sm text-right text-[var(--neutral-500)]">100%</td>
-            </tr>
-          </tbody>
-        </table>
-      </Card>
+        <FinancialTable
+          columns={costBreakdownColumns}
+          data={costBreakdown}
+          keyExtractor={(r) => r.type}
+          totals={{ type: 'TOTAL' as any, budgeted: 18500, actual: 14230, variance: -4270, pct: 100 }}
+        />
+      </div>
 
       {/* AI Insight */}
       <AIInsightCard
@@ -148,16 +167,15 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       </AIInsightCard>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <h3 className="text-sm text-[var(--mw-mirage)] mb-4 font-medium">Cost Breakdown</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ChartCard title="Cost Breakdown">
           <div className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
-                <Pie data={donutData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="value">
+                <Pie data={donutData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="value" {...MW_RECHARTS_ANIMATION}>
                   {donutData.map((e, i) => <Cell key={`donut-${e.name}-${i}`} fill={e.color} />)}
                 </Pie>
-                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
               </PieChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
@@ -170,25 +188,24 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
               ))}
             </div>
           </div>
-        </Card>
+        </ChartCard>
 
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <h3 className="text-sm text-[var(--mw-mirage)] mb-4 font-medium">Cost Over Time</h3>
+        <ChartCard title="Cost Over Time">
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={costOverTime}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
               <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="budget" stroke="var(--neutral-400)" strokeWidth={2} strokeDasharray="6 4" fill="none" />
-              <Area type="monotone" dataKey="actual" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="var(--mw-yellow-400)" fillOpacity={0.15} />
+              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
+              <Area type="monotone" dataKey="budget" stroke="var(--neutral-400)" strokeWidth={2} strokeDasharray="6 4" fill="none" {...MW_RECHARTS_ANIMATION} />
+              <Area type="monotone" dataKey="actual" stroke="var(--mw-yellow-400)" strokeWidth={2} fill="var(--mw-yellow-400)" fillOpacity={0.15} {...MW_RECHARTS_ANIMATION} />
             </AreaChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
       </div>
 
       {/* Detail Tabs */}
-      <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
+      <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
         <div className="flex border-b border-[var(--border)]">
           {detailTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
@@ -204,54 +221,24 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
 
         <div className="overflow-x-auto">
           {activeTab === 'Materials' && (
-            <table className="w-full">
-              <thead><tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                {['Date', 'Item', 'Qty', 'Unit Cost', 'Total', 'PO Ref', 'Source'].map(h => (
-                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium", ['Qty', 'Unit Cost', 'Total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-                ))}
-              </tr></thead>
-              <tbody>
-                {materialsData.map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)]">
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.date}</td>
-                    <td className="px-4 text-sm text-[var(--mw-mirage)]">{r.item}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.qty}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.unitCost}</td>
-                    <td className="px-4 text-sm text-right tabular-nums font-medium">{r.total}</td>
-                    <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{r.po}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.source}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FinancialTable
+              columns={materialColumns}
+              data={materialsData}
+              keyExtractor={(_, i) => i}
+            />
           )}
           {activeTab === 'Labour' && (
-            <table className="w-full">
-              <thead><tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                {['Date', 'Operator', 'Operation', 'Hours', 'Rate', 'Total', 'Status'].map(h => (
-                  <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium", ['Hours', 'Rate', 'Total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-                ))}
-              </tr></thead>
-              <tbody>
-                {labourData.map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)]">
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.date}</td>
-                    <td className="px-4 text-sm text-[var(--mw-mirage)]">{r.operator}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.operation}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.hours}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.rate}</td>
-                    <td className="px-4 text-sm text-right tabular-nums font-medium">{r.total}</td>
-                    <td className="px-4"><Badge className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]">{r.status}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FinancialTable
+              columns={labourColumns}
+              data={labourData}
+              keyExtractor={(_, i) => i}
+            />
           )}
           {(activeTab === 'Overhead' || activeTab === 'Subcontract') && (
             <div className="p-8 text-center text-sm text-muted-foreground">No detailed {activeTab.toLowerCase()} records to display.</div>
           )}
         </div>
       </Card>
-    </div>
+    </PageShell>
   );
 }

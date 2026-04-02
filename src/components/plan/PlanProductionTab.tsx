@@ -119,16 +119,16 @@ export function PlanProductionTab() {
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)] mb-1">Products</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)] mb-1">Products</h2>
             <p className="text-sm text-[var(--neutral-500)]">
               {products.length} Products · {products.reduce((s, p) => s + p.toProduce, 0).toLocaleString()} units total
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <Eye className="w-4 h-4 mr-1.5" /> Filter
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <Download className="w-4 h-4 mr-1.5" /> Export
             </Button>
           </div>
@@ -202,7 +202,7 @@ export function PlanProductionTab() {
                   </div>
                 </div>
                 <div className="col-span-1 text-right">
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">📐</Button>
+                  <Button variant="ghost" size="sm" className="h-10 w-10 p-0">📐</Button>
                 </div>
               </div>
             </div>
@@ -214,11 +214,11 @@ export function PlanProductionTab() {
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">MirrorView</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">MirrorView</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">3D part visualisation</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <Maximize2 className="w-4 h-4 mr-1.5" /> Fullscreen
             </Button>
           </div>
@@ -249,13 +249,13 @@ export function PlanProductionTab() {
         <div className="p-6">
           {/* Toolbar (§4.6.2) */}
           <div className="flex items-center gap-1 mb-3 bg-[var(--neutral-100)] rounded-[var(--shape-sm)] p-1 w-fit">
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Home className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Layers className="w-3.5 h-3.5 mr-1" /> Model</Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Settings className="w-3.5 h-3.5 mr-1" /> Properties</Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Home className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Layers className="w-3.5 h-3.5 mr-1" /> Model</Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Settings className="w-3.5 h-3.5 mr-1" /> Properties</Button>
             <div className="w-px h-4 bg-[var(--border)]" />
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Printer className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Camera className="w-3.5 h-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Printer className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Camera className="w-3.5 h-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
           </div>
 
           {/* 3D Viewport placeholder — would embed Autodesk APS Viewer SDK */}
@@ -287,10 +287,10 @@ export function PlanProductionTab() {
 
           {/* Footer actions */}
           <div className="flex items-center gap-2 mt-3">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]" onClick={() => toast('Markup view coming soon')}>
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]" onClick={() => toast('Markup view coming soon')}>
               <FileText className="w-4 h-4 mr-1.5" /> BOM
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]" onClick={() => toast('Downloading CAD file...')}>
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]" onClick={() => toast('Downloading CAD file...')}>
               <Download className="w-4 h-4 mr-1.5" /> CAD File
             </Button>
             <span className="text-xs text-[var(--neutral-500)] ml-auto">Next: {products.find(p => p.id !== activeProduct)?.name ?? '—'}</span>
@@ -302,16 +302,16 @@ export function PlanProductionTab() {
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">Instructions & Activities</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Instructions & Activities</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">
               Manufacturing instructions · {instructions.length} operations
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <ChevronDown className="w-4 h-4 mr-1.5" /> Outline
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <ChevronDown className="w-4 h-4 mr-1.5" /> Columns
             </Button>
           </div>
@@ -391,7 +391,7 @@ export function PlanProductionTab() {
                       <span className="text-[10px] truncate max-w-[80px]">{row.instructions}</span>
                     </button>
                   ) : (
-                    <Button variant="ghost" size="sm" className="h-6 text-[10px] text-[var(--neutral-400)] px-1.5">
+                    <Button variant="ghost" size="sm" className="h-10 text-[10px] text-[var(--neutral-400)] px-1.5">
                       <Upload className="w-3 h-3 mr-1" /> Add
                     </Button>
                   )}
@@ -412,7 +412,7 @@ export function PlanProductionTab() {
           <p className="text-xs text-[var(--neutral-500)]">
             {instructions.length} operations · Total: {instructions.reduce((s, r) => s + r.minutes, 0)} min
           </p>
-          <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs">
+          <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs">
             + Add Operation
           </Button>
         </div>
@@ -422,14 +422,14 @@ export function PlanProductionTab() {
       <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">2D Drawing</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">2D Drawing</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">Manufacturing drawing for operator reference</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <Maximize2 className="w-4 h-4 mr-1.5" /> Fullscreen
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
               <Printer className="w-4 h-4 mr-1.5" /> Print
             </Button>
           </div>

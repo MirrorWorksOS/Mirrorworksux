@@ -25,7 +25,12 @@ import {
 } from 'recharts';
 import { AnimatedRefresh, AnimatedTrendingUp, AnimatedTrendingDown, AnimatedSparkles } from '../ui/animated-icons';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
+import { ProgressBar } from '@/components/shared/data/ProgressBar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { IconWell } from '@/components/shared/icons/IconWell';
 
 
 interface PlanBudgetTabProps {
@@ -159,14 +164,12 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-blue-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-[var(--mw-blue)]" />
-              </div>
+              <IconWell icon={DollarSign} surface="onLight" />
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Budget
             </h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.totalBudget.toLocaleString()}
             </p>
             <p className=" text-xs text-[var(--neutral-500)] mt-2">
@@ -182,9 +185,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200 relative group">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--mw-amber-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <Receipt className="w-5 h-5 text-[var(--mw-amber)]" />
-              </div>
+              <IconWell icon={Receipt} surface="onLight" />
               <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2 py-0.5 text-xs text-[var(--mw-mirage)]">
                 <span className="tabular-nums">{utilizationPercent.toFixed(0)}% used</span>
               </Badge>
@@ -192,19 +193,11 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Spent
             </h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.totalSpent.toLocaleString()}
             </p>
             <div className="mt-3">
-              <div className="h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{
-                    width: `${Math.min(utilizationPercent, 100)}%`,
-                    backgroundColor: getProgressColor(utilizationPercent)
-                  }}
-                />
-              </div>
+              <ProgressBar value={utilizationPercent} />
             </div>
 
             {/* Hover tooltip — total budget */}
@@ -239,14 +232,12 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[var(--mw-mirage)]" />
-              </div>
+              <IconWell icon={Clock} surface="onLight" />
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Remaining
             </h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
               ${mockBudgetData.remaining.toLocaleString()}
             </p>
             <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
@@ -259,9 +250,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-[var(--mw-mirage)]" />
-              </div>
+              <IconWell icon={BarChart3} surface="onLight" />
               <div className="flex items-center gap-1">
                 {mockBudgetData.currentMargin > mockBudgetData.targetMargin ? (
                   <>
@@ -283,7 +272,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Margin
             </h3>
-            <p className=" text-2xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
               {mockBudgetData.currentMargin.toFixed(1)}%
             </p>
             <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
@@ -295,110 +284,23 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
       {/* Category Breakdown Table */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <div className="p-6 border-b border-[var(--border)]">
-            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
-              Category Breakdown
-            </h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th className="px-6 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    CATEGORY
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    BUDGET
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    ACTUAL
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    VARIANCE
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    % USED
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">
-                    STATUS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockCategories.map((row, idx) => {
-                  const statusColors = getStatusColor(row.status);
-                  return (
-                    <tr key={row.category} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] transition-colors">
-                      <td className="px-6 text-sm text-[var(--mw-mirage)] font-medium">
-                        {row.displayName}
-                      </td>
-                      <td className="px-6 text-right text-sm tabular-nums font-medium">
-                        ${row.budget.toLocaleString()}
-                      </td>
-                      <td className="px-6 text-right text-sm tabular-nums font-medium">
-                        ${row.actual.toLocaleString()}
-                      </td>
-                      <td className="px-6 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
-                        {row.variance < 0 ? '-' : '+'}${Math.abs(row.variance).toLocaleString()}
-                      </td>
-                      <td className="px-6">
-                        <div className="flex flex-col items-center gap-1">
-                          <div className="w-full h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-300"
-                              style={{
-                                width: `${Math.min(row.percentUsed, 100)}%`,
-                                backgroundColor: getProgressColor(row.percentUsed)
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs tabular-nums text-[var(--neutral-500)]">
-                            {row.percentUsed}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6">
-                        <div className="flex items-center justify-center">
-                          <Badge className={cn(
-                            "rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5",
-                            statusColors.bg,
-                            statusColors.text
-                          )}>
-                            <span className="inline-block w-1.5 h-1.5 rounded-full"
-                              style={{ backgroundColor: statusColors.dot }} />
-                            {row.status === 'on_track' ? 'On track' :
-                             row.status === 'monitor' ? 'Monitor' :
-                             'Over budget'}
-                          </Badge>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {/* Total Row */}
-                <tr className="border-t-2 border-[var(--mw-mirage)] h-14 bg-[var(--neutral-100)]">
-                  <td className="px-6 text-sm font-medium text-[var(--mw-mirage)]">
-                    TOTAL
-                  </td>
-                  <td className="px-6 text-right text-sm tabular-nums font-medium">
-                    ${totalBudgeted.toLocaleString()}
-                  </td>
-                  <td className="px-6 text-right text-sm tabular-nums font-medium">
-                    ${totalActual.toLocaleString()}
-                  </td>
-                  <td className="px-6 text-right text-sm tabular-nums font-medium text-[var(--mw-mirage)]">
-                    -${(totalBudgeted - totalActual).toLocaleString()}
-                  </td>
-                  <td className="px-6 text-center text-sm tabular-nums text-[var(--neutral-500)]">
-                    {((totalActual / totalBudgeted) * 100).toFixed(0)}%
-                  </td>
-                  <td className="px-6"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <FinancialTable
+          columns={[
+            { key: 'category', header: 'Category', accessor: (r) => r.displayName, format: 'text', align: 'left' },
+            { key: 'budget', header: 'Budget', accessor: (r) => r.budget, format: 'currency' },
+            { key: 'actual', header: 'Actual', accessor: (r) => r.actual, format: 'currency' },
+            { key: 'variance', header: 'Variance', accessor: (r) => r.variance, format: 'currency' },
+            { key: 'percentUsed', header: '% Used', accessor: (r) => r.percentUsed, format: 'percentage' },
+            { key: 'status', header: 'Status', accessor: (r) => r.status === 'on_track' ? 'On track' : r.status === 'monitor' ? 'Monitor' : 'Over budget', format: 'text', align: 'left' },
+          ] satisfies FinancialColumn<typeof mockCategories[number]>[]}
+          data={mockCategories}
+          keyExtractor={(r) => r.category}
+          totals={{
+            budget: totalBudgeted,
+            actual: totalActual,
+            variance: -(totalBudgeted - totalActual),
+          }}
+        />
       </motion.div>
 
       {/* Spend vs Plan Chart */}

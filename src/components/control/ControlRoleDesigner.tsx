@@ -53,7 +53,7 @@ export function ControlRoleDesigner() {
         description="Define organisation-wide role templates. Granular module permissions are managed per module under Settings → Access & permissions, and for users under Control → People."
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {roles.map(role => (
           <Card
             key={role.name}
@@ -69,7 +69,7 @@ export function ControlRoleDesigner() {
                 <Shield className={cn('h-5 w-5', role.iconClass)} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{role.name}</h3>
+                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{role.name}</h3>
                 <p className="text-xs text-muted-foreground">{role.description}</p>
               </div>
             </div>

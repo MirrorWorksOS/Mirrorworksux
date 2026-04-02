@@ -17,6 +17,7 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { toast } from 'sonner';
 
 
@@ -112,7 +113,7 @@ export function BuyOrders() {
         />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting purchase orders...')}>
+        <Button variant="outline" className="h-12 gap-2 rounded-md border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting purchase orders...')}>
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
@@ -123,76 +124,19 @@ export function BuyOrders() {
 
       {/* Table */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th className="px-4 py-3 w-12"><input type="checkbox" className="rounded border-[var(--border)]" /></th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">PO #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">SUPPLIER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DATE</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DELIVERY DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">RECEIVED</th>
-                  <th className="px-4 py-3 w-12"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPOs.map((po, idx) => {
-                  const statusBadge = getStatusBadge(po.status);
-                  const receivedPct = (po.received / po.total) * 100;
-                  return (
-                    <tr key={po.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4"><input type="checkbox" className="rounded border-[var(--border)]" /></td>
-                      <td className="px-4">
-                        <a href={`/buy/orders/${po.id}`} className="text-[var(--mw-mirage)]  text-sm font-medium hover:underline flex items-center gap-1">
-                          {po.poNumber}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </td>
-                      <td className="px-4 text-sm text-[var(--mw-mirage)]">{po.supplier}</td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">{new Date(po.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">{new Date(po.deliveryDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                      <td className="px-4">
-                        <div className="flex items-center justify-center">
-                          <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5", statusBadge.bg, statusBadge.text)}>
-                            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusBadge.dot }} />
-                            {statusBadge.label}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td className="px-4 text-right text-sm  font-medium">${po.total.toLocaleString()}</td>
-                      <td className="px-4">
-                        <div className="flex flex-col items-end gap-1">
-                          <span className="text-sm  font-medium">${po.received.toLocaleString()}</span>
-                          {po.received > 0 && (
-                            <div className="w-16 h-1 bg-[var(--border)] rounded-full overflow-hidden">
-                              <div className="h-full bg-[var(--mw-yellow-400)]" style={{ width: `${receivedPct}%` }} />
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4">
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast('PO actions coming soon')}>
-                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <MwDataTable<PurchaseOrder>
+          columns={poColumns}
+          data={filteredPOs}
+          keyExtractor={(row) => row.id}
+          striped
+        />
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--neutral-100)]">
+          <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
+          <div className="flex gap-2">
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
-            <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
-            </div>
-          </div>
-        </Card>
+        </div>
       </motion.div>
     </motion.div>
     </PageShell>

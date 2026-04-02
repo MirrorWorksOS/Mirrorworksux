@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Upload, CheckCircle, AlertTriangle, Search, Calendar, Trash2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
+import { Upload, CheckCircle, AlertTriangle, Search, Calendar, Trash2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { cn } from '../ui/utils';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 export function NewExpense({ onBack }: { onBack: () => void }) {
   const [amount, setAmount] = useState('2450.00');
@@ -24,14 +26,11 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
   const total = taxMode === 'exclusive' ? amtNum + gst : amtNum;
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={onBack} className="p-2 hover:bg-[var(--neutral-100)] rounded-[var(--shape-lg)] transition-colors">
-          <ArrowLeft className="w-5 h-5 text-[var(--mw-mirage)]" />
-        </button>
-        <h1 className="text-2xl tracking-tight text-[var(--mw-mirage)]">New Expense</h1>
-      </div>
+    <PageShell className="overflow-y-auto max-w-[1200px] mx-auto">
+      <PageHeader
+        title="New expense"
+        breadcrumbs={[{ label: 'Book', href: '/book' }, { label: 'New expense' }]}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-11 gap-4">
         {/* Left - Form */}
@@ -216,6 +215,6 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

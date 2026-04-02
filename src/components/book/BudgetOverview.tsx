@@ -23,11 +23,13 @@ import {
   MW_CARTESIAN_GRID,
   MW_CHART_COLOURS,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 
@@ -468,12 +470,7 @@ export function BudgetOverview() {
             icon={CreditCard}
             footer={
               <div className="mt-3">
-                <div className="h-2 overflow-hidden rounded-full bg-[var(--neutral-200)]">
-                  <div
-                    className="h-full rounded-full bg-[var(--mw-yellow-400)] transition-all duration-[var(--duration-medium1)]"
-                    style={{ width: `${utilisationPct.toFixed(0)}%` }}
-                  />
-                </div>
+                <ProgressBar value={utilisationPct} />
                 <p className="mt-1 text-xs text-[var(--neutral-500)]">{utilisationPct.toFixed(0)}% utilised</p>
               </div>
             }
@@ -606,7 +603,7 @@ export function BudgetOverview() {
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="month" tick={MW_AXIS_TICK} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
-              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
+              <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
               <Bar
                 dataKey="budget"
                 fill="none"

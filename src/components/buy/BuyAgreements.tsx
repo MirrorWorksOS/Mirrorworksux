@@ -10,6 +10,8 @@ import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 const AGREEMENTS = [
@@ -64,21 +66,16 @@ export function BuyAgreements() {
   const totalSpent     = AGREEMENTS.reduce((s, a) => s + a.used, 0);
 
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Blanket agreements</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {AGREEMENTS.filter(a => a.status === 'active').length} active
-            {AGREEMENTS.filter(a => a.status === 'near-limit').length > 0 && (
-              <span className="text-[var(--mw-amber)] ml-2">· {AGREEMENTS.filter(a => a.status === 'near-limit').length} near limit</span>
-            )}
-          </p>
-        </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
-          <Plus className="w-4 h-4" /> New agreement
-        </Button>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Blanket agreements"
+        subtitle={`${AGREEMENTS.filter(a => a.status === 'active').length} active${AGREEMENTS.filter(a => a.status === 'near-limit').length > 0 ? ` · ${AGREEMENTS.filter(a => a.status === 'near-limit').length} near limit` : ''}`}
+        actions={
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
+            <Plus className="w-4 h-4" /> New agreement
+          </Button>
+        }
+      />
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
@@ -87,9 +84,9 @@ export function BuyAgreements() {
           { label: 'Total spent YTD',  value: `$${totalSpent.toLocaleString()}`,     sub: `${((totalSpent / totalCommitted) * 100).toFixed(0)}% utilised` },
           { label: 'Remaining',        value: `$${(totalCommitted - totalSpent).toLocaleString()}`, sub: 'Available to spend' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className="text-xl font-semibold tabular-nums text-[var(--mw-mirage)]">{s.value}</p>
+            <p className="text-xl font-medium tabular-nums text-[var(--mw-mirage)]">{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
           </Card>
         ))}
@@ -110,7 +107,7 @@ export function BuyAgreements() {
 
           return (
             <motion.div key={agr.id} variants={staggerItem}>
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
@@ -123,7 +120,7 @@ export function BuyAgreements() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-[var(--neutral-500)]">Contract value</p>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-mirage)]">${agr.value.toLocaleString()}</p>
+                    <p className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">${agr.value.toLocaleString()}</p>
                   </div>
                 </div>
 
@@ -146,11 +143,11 @@ export function BuyAgreements() {
                 <div className="grid grid-cols-3 gap-4 text-sm pt-3 border-t border-[var(--border)]">
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Spent</p>
-                    <p className=" font-medium">${agr.used.toLocaleString()}</p>
+                    <p className="font-medium tabular-nums">${agr.used.toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Committed</p>
-                    <p className=" font-medium text-[var(--mw-amber)]">${agr.committed.toLocaleString()}</p>
+                    <p className="font-medium tabular-nums text-[var(--mw-amber)]">${agr.committed.toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Remaining</p>
@@ -164,6 +161,6 @@ export function BuyAgreements() {
           );
         })}
       </div>
-    </motion.div>
+    </PageShell>
   );
 }

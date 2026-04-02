@@ -115,7 +115,7 @@ export function StepSourceSelect() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">
+        <h2 className="text-2xl font-medium tracking-tight">
           Where is your data coming from?
         </h2>
         <p className="text-sm text-muted-foreground mt-1">

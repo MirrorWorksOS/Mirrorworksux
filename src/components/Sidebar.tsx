@@ -179,8 +179,8 @@ const menuConfig: MenuItem[] = [
 // Animation constants — silky smooth, slower durations
 // ---------------------------------------------------------------------------
 
-const EXPAND_DURATION = '600ms';
-const EXPAND_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+const EXPAND_DURATION = 'var(--duration-medium2)';
+const EXPAND_EASING = 'var(--ease-standard)';
 
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
@@ -223,7 +223,7 @@ function CollapsibleSubMenu({
           className="ml-6 mt-1 space-y-0.5 relative"
           style={{
             opacity: isOpen ? 1 : 0,
-            transition: `opacity 500ms ${EXPAND_EASING}`,
+            transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
             transitionDelay: isOpen ? '100ms' : '0ms',
           }}
         >
@@ -256,7 +256,7 @@ function ModuleIcon({
 
   return (
     <div
-      className="bg-[var(--mw-mirage)] p-2 rounded-[var(--shape-md)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+      className="bg-[var(--mw-mirage)] p-2 rounded-[var(--shape-md)] transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:scale-105"
     >
       {AnimatedIcon ? (
         <AnimatedIcon
@@ -293,11 +293,11 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center w-11 h-6 rounded-full bg-[var(--neutral-200)] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--neutral-300)]"
+      className="relative flex items-center w-11 h-6 rounded-full bg-[var(--neutral-200)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-300)]"
       aria-label="Toggle dark mode"
     >
       <div
-        className="absolute w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="absolute w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
         style={{ transform: isDark ? 'translateX(22px)' : 'translateX(2px)' }}
       >
         {isDark ? (
@@ -347,7 +347,7 @@ export function Sidebar() {
           <div className="w-8 h-8 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
             <span className="text-white font-bold text-sm">MW</span>
           </div>
-          <p className="font-semibold text-base text-foreground">
+          <p className="font-medium text-base text-foreground">
             Alliance Metal
           </p>
         </div>
@@ -358,7 +358,7 @@ export function Sidebar() {
         <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
           <button
             type="button"
-            className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--mw-yellow-500)]"
+            className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-yellow-500)]"
           >
             <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
             <span className="text-sm font-medium text-[var(--neutral-900)]">
@@ -369,7 +369,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[var(--neutral-100)]"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
           <span className="text-sm text-muted-foreground">
@@ -402,7 +402,7 @@ export function Sidebar() {
                     <div
                       className={cn(
                         'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
-                        'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                        'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
                         isActive
                           ? 'bg-[var(--mw-mirage)] text-white'
                           : 'hover:bg-[var(--neutral-200)]'
@@ -423,7 +423,7 @@ export function Sidebar() {
                     onClick={() => hasSubItems && toggleModule(item.label)}
                     className={cn(
                       'w-full flex items-center gap-2.5 p-2 rounded-full group',
-                      'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                      'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
                       isExpanded
                         ? 'bg-[var(--neutral-100)]'
                         : 'hover:bg-[var(--neutral-200)]'
@@ -455,8 +455,8 @@ export function Sidebar() {
                         <Link key={subItem.path} to={subItem.path}>
                           <div
                             className={cn(
-                              'h-[34px] flex items-center px-3 rounded-full',
-                              'transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                              'h-12 flex items-center px-3 rounded-full',
+                              'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
                                 : 'hover:bg-[var(--neutral-200)] text-foreground'
@@ -481,7 +481,7 @@ export function Sidebar() {
       <div className="p-3 border-t border-[var(--neutral-200)]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-2.5 p-2 rounded-full hover:bg-[var(--neutral-200)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+            <button className="w-full flex items-center gap-2.5 p-2 rounded-full hover:bg-[var(--neutral-200)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
               <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-xs font-medium">MQ</span>
               </div>

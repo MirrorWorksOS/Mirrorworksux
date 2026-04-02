@@ -21,13 +21,13 @@ interface DefectReportModalProps {
 export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectReportModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white">
+      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white/95 backdrop-blur-xl">
         <DialogDescription className="sr-only">
           Form to report a defect for the current part.
         </DialogDescription>
         <div className="p-6">
           <DialogHeader className="mb-4">
-            <DialogTitle className="text-[20px] font-bold text-[var(--mw-mirage)]">
+            <DialogTitle className="text-xl font-bold text-[var(--mw-mirage)]">
               Report Defect - Part {partNumber}
             </DialogTitle>
           </DialogHeader>

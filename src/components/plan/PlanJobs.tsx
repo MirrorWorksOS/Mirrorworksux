@@ -4,6 +4,7 @@ import { Plus, LayoutGrid, List, KanbanSquare } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
 import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
@@ -270,88 +271,59 @@ export function PlanJobs() {
       )}
 
       {/* List View */}
-      {viewMode === 'list' && (
-        <div className="flex-1 overflow-auto p-6">
-          <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                <tr>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Job ID</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Job Name</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Customer</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Stage</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Priority</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Value</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Due Date</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Assigned</th>
-                  <th className="text-left px-4 py-3  text-xs font-medium text-[var(--mw-mirage)]">Progress</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(jobsByStage).flatMap(([stageId, jobs]) =>
-                  jobs.map((job) => {
-                    const stage = STAGES.find(s => s.id === stageId);
-                    return (
-                      <tr
-                        key={job.id}
-                        onClick={() => navigate(`/plan/jobs/${job.id}`)}
-                        className="border-b border-[var(--border)] hover:bg-[var(--accent)] cursor-pointer transition-colors"
-                      >
-                        <td className="px-4 py-3 tabular-nums text-xs font-medium text-[var(--mw-mirage)]">
-                          {job.id}
-                        </td>
-                        <td className="px-4 py-3  text-xs text-[var(--mw-mirage)]">
-                          {job.name}
-                        </td>
-                        <td className="px-4 py-3  text-xs text-[var(--neutral-500)]">
-                          {job.customer}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--mw-mirage)] text-xs">
-                            {stage?.label}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          {job.priority && (
-                            <StatusBadge priority={job.priority} />
-                          )}
-                        </td>
-                        <td className="px-4 py-3 tabular-nums text-xs text-[var(--mw-mirage)]">
-                          ${job.value.toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3  text-xs text-[var(--neutral-500)]">
-                          {job.dueDate}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Avatar className="w-6 h-6 border border-[var(--border)]">
-                            <AvatarImage src={job.assignedUser.avatar} />
-                            <AvatarFallback className="text-xs">
-                              {job.assignedUser.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-[var(--mw-yellow-400)] transition-all"
-                                style={{ width: `${job.progress}%` }}
-                              />
-                            </div>
-                            <span className=" text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">
-                              {job.progress}%
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+      {viewMode === 'list' && (() => {
+        const flatJobs = Object.entries(jobsByStage).flatMap(([stageId, jobs]) =>
+          jobs.map((job) => ({ ...job, _stageId: stageId })),
+        );
+        const listColumns: MwColumnDef<Job & { _stageId: string }>[] = [
+          { key: 'id', header: 'Job ID', className: 'tabular-nums text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.id },
+          { key: 'name', header: 'Job Name', className: 'text-xs text-[var(--mw-mirage)]', cell: (job) => job.name },
+          { key: 'customer', header: 'Customer', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.customer },
+          {
+            key: 'stage',
+            header: 'Stage',
+            cell: (job) => {
+              const stage = STAGES.find(s => s.id === job._stageId);
+              return <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--mw-mirage)] text-xs">{stage?.label}</Badge>;
+            },
+          },
+          { key: 'priority', header: 'Priority', cell: (job) => job.priority ? <StatusBadge priority={job.priority} /> : null },
+          { key: 'value', header: 'Value', className: 'tabular-nums text-xs text-[var(--mw-mirage)]', cell: (job) => `$${job.value.toLocaleString()}` },
+          { key: 'dueDate', header: 'Due Date', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.dueDate },
+          {
+            key: 'assigned',
+            header: 'Assigned',
+            cell: (job) => (
+              <Avatar className="w-6 h-6 border border-[var(--border)]">
+                <AvatarImage src={job.assignedUser.avatar} />
+                <AvatarFallback className="text-xs">{job.assignedUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+            ),
+          },
+          {
+            key: 'progress',
+            header: 'Progress',
+            cell: (job) => (
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--mw-yellow-400)] transition-all" style={{ width: `${job.progress}%` }} />
+                </div>
+                <span className="text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">{job.progress}%</span>
+              </div>
+            ),
+          },
+        ];
+        return (
+          <div className="flex-1 overflow-auto p-6">
+            <MwDataTable
+              columns={listColumns}
+              data={flatJobs}
+              keyExtractor={(job) => job.id}
+              onRowClick={(job) => navigate(`/plan/jobs/${job.id}`)}
+            />
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Card View */}
       {viewMode === 'card' && (

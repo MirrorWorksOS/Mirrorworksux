@@ -14,6 +14,9 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus } from '../ui/animated-icons';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 
 
 interface SupplierQuote {
@@ -116,13 +119,13 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                           <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
                         )}
                       </div>
-                      <span className="text-xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+                      <span className="text-xl font-medium tabular-nums text-[var(--mw-mirage)]">
                         ${q.unitPrice.toFixed(2)}<span className="text-xs text-[var(--neutral-500)] font-normal">/{rfq.unit.replace(/s$/, '')}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-6 text-xs text-[var(--neutral-500)]">
                       <span>Lead: <strong className="text-[var(--mw-mirage)]">{q.leadTime}d</strong></span>
-                      <span>Total: <strong className="text-[var(--mw-mirage)] ">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
+                      <span>Total: <strong className="text-[var(--mw-mirage)] tabular-nums">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
                       <span>Valid to: {q.validUntil}</span>
                     </div>
                     {q.notes && <p className="text-xs text-[var(--mw-amber)] mt-1">⚠ {q.notes}</p>}
@@ -154,19 +157,42 @@ export function BuyRFQs() {
     r.rfqNumber.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">RFQs</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {RFQS.filter(r => r.status === 'open').length} open · {RFQS.filter(r => r.status === 'awarded').length} awarded
-          </p>
+  const columns: MwColumnDef<RFQ>[] = [
+    { key: 'rfqNumber', header: 'RFQ #', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span> },
+    { key: 'title', header: 'Title', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.title}</span> },
+    { key: 'sku', header: 'SKU', cell: (rfq) => <span className="text-xs text-[var(--neutral-500)]">{rfq.sku}</span> },
+    { key: 'qty', header: 'Qty', cell: (rfq) => <span className="tabular-nums">{rfq.qty}</span> },
+    { key: 'suppliers', header: 'Suppliers', cell: (rfq) => <span className="tabular-nums">{rfq.suppliers}</span> },
+    { key: 'responses', header: 'Responses', cell: (rfq) => {
+      const responseRate = rfq.suppliers > 0 ? (rfq.responses / rfq.suppliers) * 100 : 0;
+      return (
+        <div className="flex items-center gap-2">
+          <div className="w-16 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+            <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${responseRate}%` }} />
+          </div>
+          <span className="text-xs text-[var(--neutral-500)] tabular-nums">{rfq.responses}/{rfq.suppliers}</span>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
-          <AnimatedPlus className="w-4 h-4" /> New RFQ
-        </Button>
-      </div>
+      );
+    }},
+    { key: 'dueDate', header: 'Due', cell: (rfq) => <span className="text-[var(--neutral-500)]">{rfq.dueDate}</span> },
+    { key: 'status', header: 'Status', cell: (rfq) => {
+      const cfg = STATUS_CONFIG[rfq.status];
+      return <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>;
+    }},
+    { key: 'arrow', header: '', cell: () => <ChevronRight className="w-4 h-4 text-[var(--neutral-400)]" /> },
+  ];
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="RFQs"
+        subtitle={`${RFQS.filter(r => r.status === 'open').length} open · ${RFQS.filter(r => r.status === 'awarded').length} awarded`}
+        actions={
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
+            <AnimatedPlus className="w-4 h-4" /> New RFQ
+          </Button>
+        }
+      />
 
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
@@ -174,50 +200,14 @@ export function BuyRFQs() {
           className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['RFQ #', 'Title', 'SKU', 'Qty', 'Suppliers', 'Responses', 'Due', 'Status', ''].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(rfq => {
-              const cfg = STATUS_CONFIG[rfq.status];
-              const responseRate = rfq.suppliers > 0 ? (rfq.responses / rfq.suppliers) * 100 : 0;
-              return (
-                <tr key={rfq.id} onClick={() => setSelectedRFQ(rfq)}
-                  className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
-                  <td className="px-4 text-sm  font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</td>
-                  <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{rfq.title}</td>
-                  <td className="px-4 text-xs  text-[var(--neutral-500)]">{rfq.sku}</td>
-                  <td className="px-4 text-sm ">{rfq.qty}</td>
-                  <td className="px-4 text-sm ">{rfq.suppliers}</td>
-                  <td className="px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${responseRate}%` }} />
-                      </div>
-                      <span className="text-xs  text-[var(--neutral-500)]">{rfq.responses}/{rfq.suppliers}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 text-sm text-[var(--neutral-500)]">{rfq.dueDate}</td>
-                  <td className="px-4">
-                    <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
-                  </td>
-                  <td className="px-4">
-                    <ChevronRight className="w-4 h-4 text-[var(--neutral-400)]" />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+      <MwDataTable
+        columns={columns}
+        data={filtered}
+        keyExtractor={(rfq) => rfq.id}
+        onRowClick={(rfq) => setSelectedRFQ(rfq)}
+      />
 
       {selectedRFQ && <RFQDetail rfq={selectedRFQ} onClose={() => setSelectedRFQ(null)} />}
-    </motion.div>
+    </PageShell>
   );
 }

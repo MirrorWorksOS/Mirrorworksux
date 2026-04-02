@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { Plus } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -74,52 +75,22 @@ export function MakeManufacturingOrders() {
       </PageToolbar>
 
       {/* Table */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">MO #</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Product</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Job</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Customer</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Status</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Priority</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Due</th>
-                <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)] w-32">Progress</th>
-                <th className="text-center px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">WOs</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((mo) => (
-                <tr
-                  key={mo.id}
-                  onClick={() => navigate(`/make/manufacturing-orders/${mo.id}`)}
-                  className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] cursor-pointer transition-colors"
-                >
-                  <td className="px-4 py-3 text-sm font-medium text-[var(--mw-mirage)] tabular-nums">{mo.moNumber}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-700)]">{mo.product}</td>
-                  <td className="px-4 py-3">
-                    <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">{mo.jobNumber}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-600)]">{mo.customer}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={mo.status === 'in_progress' ? 'progress' : mo.status === 'done' ? 'completed' : mo.status} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge priority={mo.priority} />
-                  </td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-600)] tabular-nums">{mo.dueDate}</td>
-                  <td className="px-4 py-3">
-                    <ProgressBar value={mo.progress} size="sm" showLabel />
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{mo.workOrders}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <MwDataTable<ManufacturingOrder>
+        columns={[
+          { key: 'moNumber', header: 'MO #', cell: (mo) => <span className="font-medium text-[var(--mw-mirage)] tabular-nums">{mo.moNumber}</span> },
+          { key: 'product', header: 'Product', cell: (mo) => <span className="text-[var(--neutral-700)]">{mo.product}</span> },
+          { key: 'job', header: 'Job', cell: (mo) => <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">{mo.jobNumber}</Badge> },
+          { key: 'customer', header: 'Customer', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.customer}</span> },
+          { key: 'status', header: 'Status', cell: (mo) => <StatusBadge status={mo.status === 'in_progress' ? 'progress' : mo.status === 'done' ? 'completed' : mo.status} /> },
+          { key: 'priority', header: 'Priority', cell: (mo) => <StatusBadge priority={mo.priority} /> },
+          { key: 'due', header: 'Due', cell: (mo) => <span className="text-[var(--neutral-600)] tabular-nums">{mo.dueDate}</span> },
+          { key: 'progress', header: 'Progress', headerClassName: 'w-32', cell: (mo) => <ProgressBar value={mo.progress} size="sm" showLabel /> },
+          { key: 'wos', header: 'WOs', headerClassName: 'text-center', cell: (mo) => <div className="text-center"><Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{mo.workOrders}</Badge></div> },
+        ]}
+        data={filtered}
+        keyExtractor={(mo) => mo.id}
+        onRowClick={(mo) => navigate(`/make/manufacturing-orders/${mo.id}`)}
+      />
     </PageShell>
   );
 }

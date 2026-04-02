@@ -146,7 +146,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            
            {/* Operator Card */}
            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-white rounded-[var(--shape-lg)]">
-             <CardContent className="p-5 flex items-center gap-4">
+             <CardContent className="p-6 flex items-center gap-4">
                <Avatar className="w-16 h-16 border-2 border-[var(--neutral-200)]">
                   <AvatarImage src={operatorAvatar} className="object-cover" />
                   <AvatarFallback className="bg-[var(--neutral-800)] text-white font-bold">DM</AvatarFallback>
@@ -163,7 +163,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <button 
                 onClick={() => setIsRunning(!isRunning)}
                 className={cn(
-                  "w-[160px] h-[160px] rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xl active:scale-95 group relative overflow-hidden mb-8",
+                  "w-[160px] h-[160px] rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xs active:scale-95 group relative overflow-hidden mb-8",
                   isRunning 
                     ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:scale-105 hover:bg-[var(--mw-yellow-500)]" 
                     : "bg-[var(--neutral-800)] text-white hover:scale-105 hover:bg-[var(--neutral-900)]"
@@ -184,7 +184,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
               <div className="text-center w-full">
                  <div className="text-xs font-bold text-[var(--neutral-500)] uppercase tracking-widest mb-2">WORK ORDER TIME</div>
-                 <div className="text-[56px]  font-bold tracking-tighter text-[var(--neutral-800)] leading-none mb-2 tabular-nums">{formatTime(elapsedSeconds)}</div>
+                 <div className="text-6xl  font-bold tracking-tighter text-[var(--neutral-800)] leading-none mb-2 tabular-nums">{formatTime(elapsedSeconds)}</div>
                  <div className="text-base text-[var(--neutral-500)] font-medium bg-[var(--neutral-100)] inline-block px-3 py-1 rounded-full">Est. finish: 2:45 PM</div>
               </div>
            </Card>
@@ -231,7 +231,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
                        {/* Centered Large Number */}
                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none flex-col">
-                          <span key={completedParts} className="text-[48px] font-bold text-[var(--neutral-800)] leading-none number-change tabular-nums">
+                          <span key={completedParts} className="text-5xl font-bold text-[var(--neutral-800)] leading-none number-change tabular-nums">
                              {completedParts}
                           </span>
                           <span className="text-xs font-bold text-[var(--neutral-500)] uppercase tracking-wide mt-1">/ 100</span>
@@ -255,7 +255,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            </Card>
 
            {/* Emergency Stop Button (56px) */}
-           <button className="w-full h-[56px] bg-[var(--mw-error)] text-white text-base font-bold uppercase tracking-wider rounded-[8px] border-2 border-[var(--mw-error-600)] hover:bg-[var(--mw-error-600)] transition-colors shadow-md emergency-stop mt-auto">
+           <button className="w-full h-[56px] bg-[var(--mw-error)] text-white text-base font-bold uppercase tracking-wider rounded-sm border-2 border-[var(--mw-error-600)] hover:bg-[var(--mw-error-600)] transition-colors shadow-md emergency-stop mt-auto">
               EMERGENCY STOP
            </button>
 
@@ -275,7 +275,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                     <div className="text-sm font-medium opacity-80 mt-1">Cycle Time: 3:45 (Target: 3:20)</div>
                  </div>
               </div>
-              <div className="flex items-center gap-3 bg-white/20 px-4 py-2 rounded-[var(--shape-lg)] backdrop-blur-sm border border-black/5">
+              <div className="flex items-center gap-3 bg-white/20 px-4 py-2 rounded-[var(--shape-lg)] border border-black/5">
                  <AlertTriangle className="w-5 h-5 text-[var(--neutral-800)]" />
                  <span className="font-bold text-sm uppercase">13% Slower than Target</span>
               </div>
@@ -285,7 +285,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            <div className="flex-1 relative bg-black rounded-[var(--shape-lg)] overflow-hidden shadow-sm border border-[var(--neutral-200)]">
               
               {/* Toggle Controls */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-white/90 backdrop-blur rounded-full p-1 shadow-sm border border-[var(--neutral-200)] flex">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-white/90 rounded-full p-1 shadow-sm border border-[var(--neutral-200)] flex">
                  <button 
                    onClick={() => setViewMode('camera')}
                    className={cn(
@@ -318,7 +318,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                          frameBorder="0"
                        />
                        <div className="absolute bottom-6 left-6 z-10">
-                          <div className="bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 border border-white/10">
+                          <div className="bg-black/60 text-white px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 border border-white/10">
                              <span className="w-2 h-2 rounded-full bg-[var(--mw-green)] animate-[pulse_2s_ease-in-out_infinite]" />
                              Live Feed
                           </div>
@@ -349,7 +349,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <Button 
                 onClick={() => setActiveModal('materials')}
                 variant="outline"
-                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-[8px] gap-2 font-medium"
+                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-sm gap-2 font-medium"
               >
                  <Box className="w-5 h-5 text-[var(--neutral-500)]" />
                  Bill of Materials
@@ -357,7 +357,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <Button 
                 onClick={() => setActiveModal('cad')}
                 variant="outline"
-                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-[8px] gap-2 font-medium"
+                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-sm gap-2 font-medium"
               >
                  <FileText className="w-5 h-5 text-[var(--neutral-500)]" />
                  CAD File
@@ -383,7 +383,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            {/* Steps Scroll Area */}
            <div className="flex-1 overflow-y-auto p-0 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
               {/* Completed Step */}
-              <div className="p-5 border-b border-[var(--neutral-200)] flex gap-4 opacity-50 bg-[var(--neutral-100)]">
+              <div className="p-6 border-b border-[var(--neutral-200)] flex gap-4 opacity-[0.38] bg-[var(--neutral-100)]">
                  <div className="w-6 h-6 rounded-full bg-[var(--mw-green)] flex items-center justify-center shrink-0">
                     <Check className="w-4 h-4 text-white" />
                  </div>
@@ -395,7 +395,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               {/* Active Step */}
               <div className="relative border-b border-[var(--neutral-200)]">
                  <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[var(--mw-yellow-400)]" />
-                 <div className="p-5 bg-white">
+                 <div className="p-6 bg-white">
                     <div className="flex gap-3 mb-4 items-start">
                        <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 text-[var(--neutral-800)] font-bold text-xs mt-0.5">
                           2
@@ -420,9 +420,9 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                        </div>
                        <div className="p-4">
                           {/* Instruction Image */}
-                          <div className="bg-white rounded-[8px] h-[160px] w-full mb-4 border border-[var(--neutral-200)] overflow-hidden cursor-pointer hover:border-[var(--mw-yellow-400)] transition-colors group relative flex items-center justify-center">
+                          <div className="bg-white rounded-sm h-[160px] w-full mb-4 border border-[var(--neutral-200)] overflow-hidden cursor-pointer hover:border-[var(--mw-yellow-400)] transition-colors group relative flex items-center justify-center">
                              <img src={instructionImage} alt="Instruction" className="h-full object-contain" />
-                             <div className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-[4px] shadow-sm">
+                             <div className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-xs shadow-sm">
                                 <Maximize2 className="w-4 h-4 text-[var(--neutral-800)]" />
                              </div>
                           </div>
@@ -437,7 +437,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                           <div className="space-y-3">
                              <Button 
                                className={cn(
-                                 "w-full bg-[var(--mw-green)] hover:bg-[var(--mw-success)] text-white font-bold h-[56px] text-base rounded-[8px] shadow-sm transition-transform border-b-4 border-[var(--mw-success)] active:border-b-0 active:translate-y-1",
+                                 "w-full bg-[var(--mw-green)] hover:bg-[var(--mw-success)] text-white font-bold h-[56px] text-base rounded-sm shadow-sm transition-transform border-b-4 border-[var(--mw-success)] active:border-b-0 active:translate-y-1",
                                  isAnimatingButton && "scale-95"
                                )}
                                onClick={handlePartsIncrement}
@@ -447,13 +447,13 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                              
                              <div className="flex gap-3">
                                <Button 
-                                 className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-bold h-[48px] text-sm rounded-[8px] shadow-sm border-b-4 border-[var(--mw-error-600)] active:border-b-0 active:translate-y-1"
+                                 className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-bold h-[48px] text-sm rounded-sm shadow-sm border-b-4 border-[var(--mw-error-600)] active:border-b-0 active:translate-y-1"
                                  onClick={() => setActiveModal('defect')}
                                >
                                   <X className="w-4 h-4 mr-2" /> FAIL
                                </Button>
                                <Button 
-                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-bold h-[48px] text-sm rounded-[8px] shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
+                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-bold h-[48px] text-sm rounded-sm shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
                                >
                                   <Pause className="w-4 h-4 mr-2" /> HOLD
                                </Button>
@@ -472,7 +472,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               </div>
 
               {/* Step 3 */}
-              <div className="p-5 flex gap-4 opacity-40 hover:bg-[var(--neutral-100)] transition-colors cursor-not-allowed">
+              <div className="p-6 flex gap-4 opacity-40 hover:bg-[var(--neutral-100)] transition-colors cursor-not-allowed">
                  <div className="w-6 h-6 rounded-full border-2 border-[var(--neutral-200)] flex items-center justify-center shrink-0 text-[var(--neutral-500)] font-bold text-xs">
                     3
                  </div>

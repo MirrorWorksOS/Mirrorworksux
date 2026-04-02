@@ -125,19 +125,19 @@ export function BuyReceipts() {
                 <div className="flex items-center gap-4 mb-4">
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Ordered</p>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-mirage)]">
+                    <p className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">
                       {item.ordered} {item.unit}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Already Received</p>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--neutral-500)]">
+                    <p className="text-lg font-medium tabular-nums text-[var(--neutral-500)]">
                       {item.received} {item.unit}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Outstanding</p>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-yellow-400)]">
+                    <p className="text-lg font-medium tabular-nums text-[var(--mw-yellow-400)]">
                       {item.ordered - item.received} {item.unit}
                     </p>
                   </div>
@@ -152,7 +152,7 @@ export function BuyReceipts() {
                     max={item.ordered - item.received}
                     value={quantities[idx] || ''}
                     onChange={(e) => setQuantities({ ...quantities, [idx]: parseInt(e.target.value) || 0 })}
-                    className="h-16 text-2xl  font-semibold text-center border-[var(--border)] w-32"
+                    className="h-16 text-2xl  font-medium text-center border-[var(--border)] w-32"
                     placeholder="0"
                   />
                   <span className="text-sm text-[var(--neutral-500)]">{item.unit}</span>

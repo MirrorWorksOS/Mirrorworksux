@@ -199,7 +199,7 @@ export function MakeDashboard() {
       <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[var(--mw-mirage)]">Quality Alerts</h3>
+            <h3 className="text-base font-medium text-[var(--mw-mirage)]">Quality Alerts</h3>
             <Badge className="bg-[var(--mw-warning)]/10 text-[var(--mw-warning)] border-0">3 Active</Badge>
           </div>
           <div className="space-y-3">
@@ -219,7 +219,7 @@ export function MakeDashboard() {
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-[var(--border)]">
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full h-14">
               <ShieldAlert className="w-4 h-4" />
               Report Issue
             </Button>
@@ -230,7 +230,7 @@ export function MakeDashboard() {
       {/* §4.1.6 Today's Schedule Gantt Strip */}
       <motion.div variants={staggerItem}>
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Today's Schedule</h3>
+          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Today's Schedule</h3>
           <div className="overflow-x-auto">
             {/* Time header */}
             <div className="flex items-end mb-2 ml-[100px]">
@@ -295,7 +295,7 @@ export function MakeDashboard() {
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Quick Actions</h3>
+            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-3">
               {([
                 { label: 'Start New Job', icon: Play },
@@ -304,7 +304,7 @@ export function MakeDashboard() {
                 { label: 'Print Traveler', icon: Printer },
                 { label: 'Log Downtime', icon: TimerOff },
               ]).map((action) => (
-                <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4 text-xs font-medium" onClick={() => toast(`${action.label} coming soon`)}>
+                <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto min-h-14 py-4 text-xs font-medium" onClick={() => toast(`${action.label} coming soon`)}>
                   <action.icon className="w-5 h-5 text-[var(--mw-mirage)]" />
                   {action.label}
                 </Button>
@@ -316,11 +316,11 @@ export function MakeDashboard() {
         {/* Real-time OEE Trend */}
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Real-time OEE Trend</h3>
+            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Real-time OEE Trend</h3>
             <div className="flex items-end gap-1 h-[140px]">
               {[62, 68, 71, 65, 74, 78, 72, 80, 76, 82, 79, 85].map((val, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
-                  <span className="text-[9px] text-[var(--neutral-500)]">{val}%</span>
+                  <span className="text-xs text-[var(--neutral-500)]">{val}%</span>
                   <div
                     className="w-full rounded-t"
                     style={{
@@ -354,7 +354,7 @@ export function MakeDashboard() {
         {/* Throughput vs Target */}
         <motion.div variants={staggerItem}>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-4">Throughput vs Target</h3>
+            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Throughput vs Target</h3>
             <div className="space-y-3">
               {([
                 { label: 'Cutting', actual: 42, target: 50 },

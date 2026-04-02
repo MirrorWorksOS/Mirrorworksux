@@ -97,6 +97,8 @@ export const radius = {
 export const shadows = {
   none: 'none',
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+  '2': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+  base: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
   md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
   lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
@@ -169,24 +171,24 @@ export const componentClasses = {
 
   badge: {
     base: `inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-medium text-xs`,
-    success: `bg-[#E3FCEF] text-[#36B37E]`,
-    warning: `bg-[#FFF9C4] text-[#A67300]`,
-    error: `bg-[#FFEBE6] text-[#DE350B]`,
-    info: `bg-[#F5F5F5] text-[#0A0A0A]`,
-    neutral: `bg-[#F5F5F5] text-[#525252]`,
+    success: `bg-[var(--mw-success-light)] text-[var(--mw-success)]`,
+    warning: `bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)]`,
+    error: `bg-[var(--mw-error-light)] text-[var(--mw-error)]`,
+    info: `bg-[var(--neutral-100)] text-[var(--neutral-900)]`,
+    neutral: `bg-[var(--neutral-100)] text-[var(--neutral-600)]`,
   },
 
   button: {
-    primary: `bg-[#FFCF4B] hover:bg-[#F2BF30] active:bg-[#E6A600] text-[#2C2C2C] font-medium rounded-xl`,
-    outline: `border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] rounded-xl`,
-    ghost: `hover:bg-[#F5F5F5] active:bg-[#E5E5E5] rounded-xl`,
-    dark: `bg-[#1A2732] text-white hover:bg-[#1A2732]/90 rounded-xl`,
-    destructive: `bg-[#DE350B] text-white hover:bg-[#DE350B]/90 rounded-xl`,
+    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium rounded-md`,
+    outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)] rounded-md`,
+    ghost: `hover:bg-[var(--neutral-100)] active:bg-[var(--neutral-200)] rounded-md`,
+    dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-md`,
+    destructive: `bg-[var(--mw-error)] text-white hover:bg-[var(--mw-error)]/90 rounded-md`,
   },
 
   input: {
-    base: `bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-[14px]`,
-    focus: `focus:border-[#0A0A0A] focus:ring-1 focus:ring-[#0A0A0A]`,
+    base: `bg-[var(--neutral-100)] border border-[var(--neutral-200)] rounded-xl px-3 py-2 text-[14px]`,
+    focus: `focus:border-[var(--neutral-900)] focus:ring-1 focus:ring-[var(--neutral-900)]`,
   },
 } as const;
 

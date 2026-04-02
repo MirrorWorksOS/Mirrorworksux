@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -82,87 +83,105 @@ export function SellOrders() {
 
       {/* Table */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th className="px-4 py-3 w-12">
-                    <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === mockOrders.length && mockOrders.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(mockOrders.map(o => o.id))); } else { setSelectedRows(new Set()); } }} />
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">ORDER #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">JOB REF</th>
-                  <th className="px-4 py-3 w-12"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockOrders.map((order, idx) => {
-                  const sp = ORDER_STATUS_MAP[order.status];
-                  return (
-                    <tr key={order.id} onClick={() => navigate(`/sell/orders/${order.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(order.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(order.id)) next.delete(order.id); else next.add(order.id); return next; }); }} />
-                      </td>
-                      <td className="px-4">
-                        <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
-                          {order.orderNumber}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </td>
-                      <td className="px-4 text-sm text-[var(--neutral-900)]">{order.customer}</td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">
-                        {new Date(order.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </td>
-                      <td className="px-4">
-                        <div className="flex items-center justify-center">
-                          <StatusBadge status={sp.status} withDot>{sp.label}</StatusBadge>
-                        </div>
-                      </td>
-                      <td className="px-4 text-right text-sm font-medium tabular-nums">${order.total.toLocaleString()}</td>
-                      <td className="px-4">
-                        {order.jobReference ? (
-                          <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)] text-xs tabular-nums hover:underline">
-                            {order.jobReference}
-                          </a>
-                        ) : (
-                          <span className="text-xs text-[var(--neutral-400)]">—</span>
-                        )}
-                      </td>
-                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-                              <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/sell/orders/${order.id}`)}>View details</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast('Edit order coming soon')}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast.success('Order duplicated')}>Duplicate</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast('Order deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{mockOrders.length} of {mockOrders.length}</p>
-            <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
-            </div>
-          </div>
-        </Card>
+        <MwDataTable<Order>
+          columns={[
+            {
+              key: 'checkbox',
+              header: (
+                <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === mockOrders.length && mockOrders.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(mockOrders.map(o => o.id))); } else { setSelectedRows(new Set()); } }} />
+              ),
+              cell: (order) => (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(order.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(order.id)) next.delete(order.id); else next.add(order.id); return next; }); }} />
+                </div>
+              ),
+              className: 'w-12',
+            },
+            {
+              key: 'orderNumber',
+              header: 'ORDER #',
+              cell: (order) => (
+                <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] font-medium tabular-nums hover:underline flex items-center gap-1">
+                  {order.orderNumber}
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              ),
+            },
+            {
+              key: 'customer',
+              header: 'CUSTOMER',
+              cell: (order) => <span className="text-[var(--neutral-900)]">{order.customer}</span>,
+            },
+            {
+              key: 'date',
+              header: 'DATE',
+              cell: (order) => (
+                <span className="text-[var(--neutral-600)]">
+                  {new Date(order.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </span>
+              ),
+            },
+            {
+              key: 'status',
+              header: 'STATUS',
+              headerClassName: 'text-center',
+              cell: (order) => {
+                const sp = ORDER_STATUS_MAP[order.status];
+                return (
+                  <div className="flex items-center justify-center">
+                    <StatusBadge status={sp.status} withDot>{sp.label}</StatusBadge>
+                  </div>
+                );
+              },
+              className: 'text-center',
+            },
+            {
+              key: 'total',
+              header: 'TOTAL',
+              headerClassName: 'text-right',
+              cell: (order) => <span className="font-medium tabular-nums">${order.total.toLocaleString()}</span>,
+              className: 'text-right',
+            },
+            {
+              key: 'jobReference',
+              header: 'JOB REF',
+              cell: (order) => order.jobReference ? (
+                <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)] text-xs tabular-nums hover:underline">
+                  {order.jobReference}
+                </a>
+              ) : (
+                <span className="text-xs text-[var(--neutral-400)]">{'\u2014'}</span>
+              ),
+            },
+            {
+              key: 'actions',
+              header: '',
+              cell: (order) => (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                        <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/sell/orders/${order.id}`)}>View details</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => toast('Edit order coming soon')}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => toast.success('Order duplicated')}>Duplicate</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => toast('Order deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ),
+              className: 'w-12',
+            },
+          ]}
+          data={mockOrders}
+          keyExtractor={(order) => order.id}
+          onRowClick={(order) => navigate(`/sell/orders/${order.id}`)}
+          selectedKeys={selectedRows}
+          striped
+        />
       </motion.div>
 
       {mockOrders.length === 0 && (

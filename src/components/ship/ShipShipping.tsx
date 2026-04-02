@@ -6,8 +6,11 @@ import React, { useState } from 'react';
 import { Truck, Download, Printer, Sparkles } from 'lucide-react';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const CARRIERS = [
   { name: 'Australia Post', ships: 12, avg: 3.2, onTime: 97, ok: true },
@@ -35,6 +38,39 @@ const MANIFESTS = [
   { date: '28 Feb', carrier: 'DHL',       count: 3,  weight: '22.1 kg',  open: false },
 ];
 
+type Manifest = (typeof MANIFESTS)[number];
+
+const manifestColumns: MwColumnDef<Manifest>[] = [
+  { key: 'date', header: 'Date', cell: (m) => <span className="text-[var(--mw-mirage)]">{m.date}</span> },
+  { key: 'carrier', header: 'Carrier', cell: (m) => <span className="text-[var(--neutral-500)]">{m.carrier}</span> },
+  { key: 'count', header: 'Shipments', cell: (m) => <span className="font-medium tabular-nums">{m.count}</span> },
+  { key: 'weight', header: 'Weight', cell: (m) => <span className="tabular-nums">{m.weight}</span> },
+  {
+    key: 'status',
+    header: 'Status',
+    cell: (m) => (
+      <div className="flex items-center gap-2">
+        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[var(--mw-yellow-400)]' : 'bg-[var(--mw-mirage)]')} />
+        <span className="text-xs text-[var(--neutral-500)]">{m.open ? 'Open' : 'Closed'}</span>
+      </div>
+    ),
+  },
+  {
+    key: 'actions',
+    header: '',
+    cell: () => (
+      <div className="flex gap-1">
+        <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast.success('Downloading shipping document…'); }}>
+          <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
+        </button>
+        <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast('Printing label…'); }}>
+          <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
+        </button>
+      </div>
+    ),
+  },
+];
+
 export function ShipShipping() {
   const [tab, setTab] = useState('carriers');
   const tabs = [
@@ -44,8 +80,8 @@ export function ShipShipping() {
   ];
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto">
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Shipping</h1>
+    <PageShell className="overflow-y-auto">
+      <PageHeader title="Shipping" />
 
       <TextSegmentedControl
         ariaLabel="Shipping sections"
@@ -124,7 +160,7 @@ export function ShipShipping() {
                 <span className="text-xl text-[var(--mw-mirage)] font-medium tabular-nums">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
-                    'h-10 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
+                    'h-14 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
                     i === 0 || r.ai
                       ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
                       : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
@@ -146,43 +182,13 @@ export function ShipShipping() {
               Generate manifest
             </button>
           </div>
-          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  {['DATE', 'CARRIER', 'SHIPMENTS', 'WEIGHT', 'STATUS', ''].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {MANIFESTS.map((m, i) => (
-                  <tr key={i} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
-                    <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{m.date}</td>
-                    <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{m.carrier}</td>
-                    <td className="px-4 py-3 text-sm font-medium tabular-nums">{m.count}</td>
-                    <td className="px-4 py-3 text-sm tabular-nums">{m.weight}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[var(--mw-yellow-400)]' : 'bg-[var(--mw-mirage)]')} />
-                        <span className="text-xs text-[var(--neutral-500)]">{m.open ? 'Open' : 'Closed'}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 flex gap-1">
-                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast.success('Downloading shipping document…')}>
-                        <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
-                      </button>
-                      <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Printing label…')}>
-                        <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <MwDataTable
+            columns={manifestColumns}
+            data={MANIFESTS}
+            keyExtractor={(_m, i) => String(i)}
+          />
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

@@ -78,14 +78,14 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
-                  className="mb-4 flex h-20 w-20 items-center justify-center rounded-[24px] bg-[var(--mw-mirage)] shadow-lg"
+                  className="mb-4 flex h-20 w-20 items-center justify-center rounded-[24px] bg-[var(--mw-mirage)]"
                 >
                   <Sparkles className="w-10 h-10 text-white" />
                 </motion.div>
                 
                 <div className="space-y-2 max-w-[280px]">
                   <h2 className="text-3xl font-light tracking-tight text-white">
-                    Hello, <span className="font-semibold">Operator</span>
+                    Hello, <span className="font-medium">Operator</span>
                   </h2>
                   <p className="text-white/60 text-lg">
                     I'm listening for your commands
@@ -133,7 +133,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                 {[...Array(20)].map((_, i) => (
                    <motion.div 
                       key={i} 
-                      className="w-1.5 bg-gradient-to-t from-[var(--mw-purple)] to-[var(--mw-purple-light)] rounded-full"
+                      className="w-1.5 bg-[var(--mw-mirage)] rounded-full"
                       animate={{ 
                         height: [
                           10 + Math.random() * 10, 
@@ -190,7 +190,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                onClick={() => setIsRecording(!isRecording)}
             >
                {isRecording ? (
-                  <div className="w-8 h-8 rounded-[4px] bg-white" />
+                  <div className="w-8 h-8 rounded-xs bg-white" />
                ) : (
                   <Mic className="w-8 h-8" />
                )}

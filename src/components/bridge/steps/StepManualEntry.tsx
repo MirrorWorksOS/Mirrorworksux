@@ -14,6 +14,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/components/ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { ChevronDown, Plus, Trash2, CheckCircle } from 'lucide-react';
 
 type EntityFormDef = {
@@ -175,7 +176,7 @@ export function StepManualEntry() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Set up your {entity.label.toLowerCase()}</h2>
+        <h2 className="text-2xl font-medium tracking-tight">Set up your {entity.label.toLowerCase()}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Enter your {entity.label.toLowerCase()} one at a time, or skip to add later.
         </p>
@@ -216,7 +217,7 @@ export function StepManualEntry() {
               <div key={field.name} className="space-y-1.5">
                 <Label className="text-sm">
                   {field.label}
-                  {field.required && <span className="text-red-500 ml-0.5">*</span>}
+                  {field.required && <span className="text-[var(--mw-error)] ml-0.5">*</span>}
                 </Label>
                 <Input
                   value={formData[field.name] || ''}
@@ -282,46 +283,40 @@ export function StepManualEntry() {
             Add {entity.label.slice(0, -1).toLowerCase()}
           </Button>
 
-          {entityRecords.length > 0 && (
-            <div className="rounded-lg border overflow-hidden overflow-x-auto">
-              <table className="w-full text-sm min-w-[32rem]">
-                <thead className="bg-muted/50">
-                  <tr>
-                    {displayedFields.map((f) => (
-                      <th key={f.name} className="px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">
-                        {f.label}
-                      </th>
-                    ))}
-                    <th className="w-10" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {entityRecords.map((record, idx) => (
-                    <tr key={idx} className="border-t">
-                      {displayedFields.map((f) => (
-                        <td key={f.name} className="px-3 py-2 whitespace-nowrap max-w-[12rem] truncate">
-                          {f.name === 'network_planned'
-                            ? record.network_planned === 'yes'
-                              ? 'Yes'
-                              : '—'
-                            : record[f.name] || '—'}
-                        </td>
-                      ))}
-                      <td className="px-2 py-2">
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(idx)}
-                          className="text-muted-foreground hover:text-red-600"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {entityRecords.length > 0 && (() => {
+            const recordColumns: MwColumnDef<Record<string, string>>[] = [
+              ...displayedFields.map((f) => ({
+                key: f.name,
+                header: f.label,
+                className: 'whitespace-nowrap max-w-[12rem] truncate',
+                cell: (record: Record<string, string>) =>
+                  f.name === 'network_planned'
+                    ? record.network_planned === 'yes' ? 'Yes' : '—'
+                    : record[f.name] || '—',
+              })),
+              {
+                key: '_delete',
+                header: '',
+                headerClassName: 'w-10',
+                cell: (_record: Record<string, string>, idx: number) => (
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(idx)}
+                    className="text-muted-foreground hover:text-[var(--mw-error)]"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                ),
+              },
+            ];
+            return (
+              <MwDataTable
+                columns={recordColumns}
+                data={entityRecords}
+                keyExtractor={(_r, i) => String(i)}
+              />
+            );
+          })()}
         </div>
       </div>
 

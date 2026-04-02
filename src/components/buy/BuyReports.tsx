@@ -9,11 +9,13 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
 import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_CARTESIAN_GRID,
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
 
@@ -55,8 +57,7 @@ export function BuyReports() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <motion.div variants={staggerItem}>
-            <Card className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6">
-              <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Spend by Supplier</h3>
+            <ChartCard title="Spend by Supplier">
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -73,21 +74,20 @@ export function BuyReports() {
                       <Cell key={`cell-${i}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                  <Tooltip contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `$${v.toLocaleString()}`} />
                 </PieChart>
               </ResponsiveContainer>
-            </Card>
+            </ChartCard>
           </motion.div>
 
           <motion.div variants={staggerItem}>
-            <Card className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6">
-              <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Monthly Spend Trend</h3>
+            <ChartCard title="Monthly Spend Trend">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={monthlySpend}>
                   <CartesianGrid {...MW_CARTESIAN_GRID} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                   <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
-                  <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
+                  <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
                   <Bar
                     dataKey="spend"
                     fill="var(--mw-yellow-400)"
@@ -96,7 +96,7 @@ export function BuyReports() {
                   />
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
+            </ChartCard>
           </motion.div>
         </div>
       </motion.div>

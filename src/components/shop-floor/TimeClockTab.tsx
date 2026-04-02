@@ -114,8 +114,8 @@ export function TimeClockTab() {
   };
 
   const getStatusColor = () => {
-    if (isOnBreak) return 'text-orange-600';
-    if (isClockedIn) return 'text-green-700';
+    if (isOnBreak) return 'text-[var(--mw-warning)]';
+    if (isClockedIn) return 'text-[var(--mw-success)]';
     return 'text-[var(--neutral-800)]';
   };
 
@@ -128,7 +128,7 @@ export function TimeClockTab() {
       >
         {/* Header */}
         <div className="mb-8 text-center pt-8 flex-shrink-0">
-          <h2 className="text-3xl font-semibold tracking-tight text-[var(--neutral-800)] mb-1">Time Clock</h2>
+          <h2 className="text-3xl font-medium tracking-tight text-[var(--neutral-800)] mb-1">Time Clock</h2>
           <p className="text-[var(--neutral-500)] text-sm font-medium">Track your work hours</p>
         </div>
 
@@ -140,7 +140,7 @@ export function TimeClockTab() {
             {/* PIN Entry Overlay */}
             {showPinDialog && (
               <div className="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 animate-in fade-in slide-in-from-bottom-4 duration-200">
-                <h3 className="text-xl font-semibold text-[var(--neutral-800)] mb-2">Enter PIN</h3>
+                <h3 className="text-xl font-medium text-[var(--neutral-800)] mb-2">Enter PIN</h3>
                 <p className="text-[var(--neutral-500)] text-sm mb-8">Enter your 4-digit PIN to clock in</p>
                 
                 <div className="mb-8">
@@ -193,25 +193,25 @@ export function TimeClockTab() {
 
             {/* Status */}
             <div className="flex flex-col items-center justify-center gap-3 mb-6">
-               <span className={cn("text-2xl font-semibold transition-colors", getStatusColor())}>
+               <span className={cn("text-2xl font-medium transition-colors", getStatusColor())}>
                   {getStatusText()}
                </span>
                {isClockedIn && !isOnBreak && (
-                  <div className="flex items-center gap-2 text-green-700  font-medium bg-green-50 px-3 py-1 rounded-full border border-green-100">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <div className="flex items-center gap-2 text-[var(--mw-success)]  font-medium bg-[var(--mw-success-light)] px-3 py-1 rounded-full border border-[var(--mw-success)]">
+                    <div className="w-2 h-2 rounded-full bg-[var(--mw-success)] animate-pulse" />
                     {elapsedTime}
                   </div>
                )}
                {isOnBreak && (
-                  <div className="flex items-center gap-2 text-orange-700  font-medium bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
-                    <div className="w-2 h-2 rounded-full bg-orange-500" />
+                  <div className="flex items-center gap-2 text-[var(--mw-warning)]  font-medium bg-[var(--mw-warning)]/10 px-3 py-1 rounded-full border border-[var(--mw-warning)]">
+                    <div className="w-2 h-2 rounded-full bg-[var(--mw-warning)]" />
                     Paused
                   </div>
                )}
             </div>
 
             {/* Time Display */}
-            <div className=" text-[56px] font-medium text-[var(--neutral-900)] leading-none mb-2 tracking-tight">
+            <div className=" text-6xl font-medium text-[var(--neutral-900)] leading-none mb-2 tracking-tight">
               {formatTime(currentTime)}
             </div>
             <div className="text-[var(--neutral-600)] text-base font-medium mb-10">
@@ -226,7 +226,7 @@ export function TimeClockTab() {
                   "w-full h-16 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
                     ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-md" 
-                    : "bg-white border-2 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200"
+                    : "bg-white border-2 border-[var(--mw-error-light)] text-[var(--mw-error)] hover:bg-[var(--mw-error)]/10 hover:border-[var(--mw-error)]"
                 )}
               >
                 {!isClockedIn && <Clock className="w-5 h-5" />}
@@ -239,9 +239,9 @@ export function TimeClockTab() {
                 className={cn(
                   "w-full h-14 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2",
                   isOnBreak
-                    ? "bg-blue-50 text-blue-700 border-2 border-blue-200 hover:bg-blue-100"
+                    ? "bg-[var(--mw-info-light)] text-[var(--mw-info)] border-2 border-[var(--mw-info)] hover:bg-[var(--mw-info-light)]"
                     : "bg-white border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-100)]",
-                  !isClockedIn && "opacity-50 cursor-not-allowed hover:bg-white"
+                  !isClockedIn && "opacity-[0.38] cursor-not-allowed hover:bg-white"
                 )}
               >
                 <Coffee className="w-5 h-5" />
@@ -252,7 +252,7 @@ export function TimeClockTab() {
             {/* Today's Summary */}
             <div className="w-full bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
                <div className="flex flex-col gap-1">
-                  <div className="text-sm font-semibold text-[var(--neutral-900)]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
+                  <div className="text-sm font-medium text-[var(--neutral-900)]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
                   {isClockedIn && startTime && (
                      <div className="text-xs text-[var(--neutral-600)]">Started at {formatTime(startTime)}</div>
                   )}
@@ -265,7 +265,7 @@ export function TimeClockTab() {
 
           {/* Recent Entries */}
           <div className="w-full">
-             <h3 className="text-xl font-semibold text-[var(--neutral-800)] mb-4 pl-1">This Week</h3>
+             <h3 className="text-xl font-medium text-[var(--neutral-800)] mb-4 pl-1">This Week</h3>
              <div className="bg-white rounded-xl shadow-sm border border-[var(--neutral-200)] overflow-hidden">
                 {history.map((entry, i) => (
                    <div key={i} className={cn(

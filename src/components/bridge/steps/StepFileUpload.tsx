@@ -65,19 +65,19 @@ export function StepFileUpload() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Upload your data files</h2>
+        <h2 className="text-2xl font-medium tracking-tight">Upload your data files</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Upload spreadsheets exported from your current system. We'll analyse them and match the fields.
         </p>
       </div>
 
       {/* Info card for ERP users */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+      <div className="rounded-xl border border-[var(--mw-info)]/20 bg-[var(--mw-info-light)] p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-[var(--mw-info)] shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-blue-900">Exporting from your system?</p>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm font-medium text-[var(--mw-info)]">Exporting from your system?</p>
+            <p className="text-sm text-[var(--mw-info)]">
               Most systems let you export customer, product, and job lists as CSV or Excel. Check your system's "Export" or "Reports" menu.
             </p>
           </div>

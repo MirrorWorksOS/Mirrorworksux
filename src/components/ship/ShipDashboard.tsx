@@ -15,8 +15,10 @@ import {
   MW_AXIS_TICK,
   MW_BAR_TOOLTIP_CURSOR,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
 
 const KPI: {
@@ -117,8 +119,7 @@ export function ShipDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Carrier Performance */}
         <motion.div variants={staggerItem} className="lg:col-span-3">
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-            <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Carrier performance</p>
+          <ChartCard title="Carrier performance">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={CARRIER_DATA} layout="vertical" margin={{ left: 20 }}>
                 <XAxis
@@ -137,7 +138,7 @@ export function ShipDashboard() {
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
                 <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
                   {CARRIER_DATA.map((e, i) => (
                     <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={getChartScaleColour(e.onTime)} />
@@ -145,7 +146,7 @@ export function ShipDashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </Card>
+          </ChartCard>
         </motion.div>
 
         {/* Exceptions */}

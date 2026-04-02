@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/components/ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { moduleColors, moduleLabels, mockUsers } from './mock-data';
 import type { ModuleKey, User, UserRole, UserStatus } from './types';
 
@@ -112,121 +113,124 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--border)] bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-[var(--neutral-100)]">
-            <tr className="text-left text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">
-              <th className="w-10 px-4 py-3 text-center">
+      <div className="relative">
+        <MwDataTable<User>
+          columns={[
+            {
+              key: 'select',
+              header: (
                 <Checkbox
                   className="h-5 w-5"
-                  checked={
-                    filteredUsers.length > 0 && selectedIds.length === filteredUsers.length
-                  }
+                  checked={filteredUsers.length > 0 && selectedIds.length === filteredUsers.length}
                   onCheckedChange={value => toggleAll(value === true)}
                 />
-              </th>
-              <th className="px-4 py-3">User</th>
-              <th className="px-4 py-3">Modules</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Groups</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map(user => {
-              const selected = selectedIds.includes(user.id);
-              const moduleItems = user.modules.map(item => item.module);
-              return (
-                <tr
-                  key={user.id}
-                  onClick={() => onOpenUserDetail(user)}
-                  className={cn(
-                    'group cursor-pointer border-b border-[var(--neutral-100)] transition-colors',
-                    selected ? 'bg-[var(--accent)]' : 'hover:bg-[var(--accent)]',
-                  )}
+              ),
+              headerClassName: 'w-10 text-center',
+              className: 'text-center align-middle',
+              cell: (user) => (
+                <Checkbox
+                  className="h-5 w-5"
+                  checked={selectedIds.includes(user.id)}
+                  onClick={event => event.stopPropagation()}
+                  onCheckedChange={value => toggleRow(user.id, value === true)}
+                />
+              ),
+            },
+            {
+              key: 'user',
+              header: 'User',
+              cell: (user) => (
+                <div className="flex min-h-[72px] items-center gap-3">
+                  <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                    <AvatarFallback className="bg-[var(--neutral-100)] text-sm font-medium text-[var(--neutral-800)]">
+                      {initials(user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium text-[var(--mw-mirage)]">{user.name}</p>
+                    <p className="text-xs text-[var(--neutral-500)]">{user.email}</p>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: 'modules',
+              header: 'Modules',
+              cell: (user) => {
+                const moduleItems = user.modules.map(item => item.module);
+                return (
+                  <div className="flex flex-wrap gap-1.5">
+                    {moduleItems.slice(0, 3).map(moduleKey => (
+                      <Badge
+                        key={moduleKey}
+                        className="rounded-full border-0 px-2.5 py-0.5 text-xs font-medium"
+                        style={{
+                          backgroundColor: moduleColors[moduleKey].bg,
+                          color: moduleColors[moduleKey].text,
+                        }}
+                      >
+                        {moduleLabels[moduleKey]}
+                      </Badge>
+                    ))}
+                    {moduleItems.length > 3 ? (
+                      <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2.5 py-0.5 text-xs text-[var(--neutral-500)]">
+                        +{moduleItems.length - 3}
+                      </Badge>
+                    ) : null}
+                  </div>
+                );
+              },
+            },
+            {
+              key: 'role',
+              header: 'Role',
+              cell: (user) => (
+                <Badge
+                  className={
+                    user.role === 'lead'
+                      ? 'rounded-full border-0 bg-[var(--mw-yellow-400)] px-3 py-1 text-[var(--neutral-800)]'
+                      : 'rounded-full border-0 bg-[var(--neutral-100)] px-3 py-1 text-[var(--neutral-600)]'
+                  }
                 >
-                  <td
-                    className={cn(
-                      'px-4 py-3 text-center align-middle',
-                      selected ? 'border-l-[3px] border-[var(--mw-yellow-400)]' : 'group-hover:border-l-[3px] group-hover:border-[var(--mw-yellow-400)]',
-                    )}
-                  >
-                    <Checkbox
-                      className="h-5 w-5"
-                      checked={selected}
-                      onClick={event => event.stopPropagation()}
-                      onCheckedChange={value => toggleRow(user.id, value === true)}
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex min-h-[72px] items-center gap-3">
-                      <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
-                        <AvatarFallback className="bg-[var(--neutral-100)] text-sm font-medium text-[var(--neutral-800)]">
-                          {initials(user.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium text-[var(--mw-mirage)]">{user.name}</p>
-                        <p className="text-xs text-[var(--neutral-500)]">{user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {moduleItems.slice(0, 3).map(moduleKey => (
-                        <Badge
-                          key={moduleKey}
-                          className="rounded-full border-0 px-2.5 py-0.5 text-xs font-medium"
-                          style={{
-                            backgroundColor: moduleColors[moduleKey].bg,
-                            color: moduleColors[moduleKey].text,
-                          }}
-                        >
-                          {moduleLabels[moduleKey]}
-                        </Badge>
-                      ))}
-                      {moduleItems.length > 3 ? (
-                        <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2.5 py-0.5 text-xs text-[var(--neutral-500)]">
-                          +{moduleItems.length - 3}
-                        </Badge>
-                      ) : null}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      className={
-                        user.role === 'lead'
-                          ? 'rounded-full border-0 bg-[var(--mw-yellow-400)] px-3 py-1 text-[var(--neutral-800)]'
-                          : 'rounded-full border-0 bg-[var(--neutral-100)] px-3 py-1 text-[var(--neutral-600)]'
-                      }
-                    >
-                      {user.role === 'lead' && user.leadModule
-                        ? `Lead — ${moduleLabels[user.leadModule]}`
-                        : 'Team'}
-                    </Badge>
-                  </td>
-                  <td className="max-w-[280px] px-4 py-3 align-middle">
-                    <p className="line-clamp-2 text-xs text-[var(--neutral-600)]">
-                      {user.modules
-                        .map(item =>
-                          item.groups.length > 0
-                            ? `${moduleLabels[item.module]}: ${item.groups.join(', ')}`
-                            : `${moduleLabels[item.module]}: Full access`,
-                        )
-                        .join(' · ')}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 align-middle">
-                    <div className="flex items-center gap-2 text-sm text-[var(--neutral-600)]">
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: statusMeta[user.status].colour }} />
-                      <span>{statusMeta[user.status].label}</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  {user.role === 'lead' && user.leadModule
+                    ? `Lead — ${moduleLabels[user.leadModule]}`
+                    : 'Team'}
+                </Badge>
+              ),
+            },
+            {
+              key: 'groups',
+              header: 'Groups',
+              className: 'max-w-[280px] align-middle',
+              cell: (user) => (
+                <p className="line-clamp-2 text-xs text-[var(--neutral-600)]">
+                  {user.modules
+                    .map(item =>
+                      item.groups.length > 0
+                        ? `${moduleLabels[item.module]}: ${item.groups.join(', ')}`
+                        : `${moduleLabels[item.module]}: Full access`,
+                    )
+                    .join(' · ')}
+                </p>
+              ),
+            },
+            {
+              key: 'status',
+              header: 'Status',
+              className: 'align-middle',
+              cell: (user) => (
+                <div className="flex items-center gap-2 text-sm text-[var(--neutral-600)]">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: statusMeta[user.status].colour }} />
+                  <span>{statusMeta[user.status].label}</span>
+                </div>
+              ),
+            },
+          ]}
+          data={filteredUsers}
+          keyExtractor={(user) => user.id}
+          onRowClick={(user) => onOpenUserDetail(user)}
+          selectedKeys={new Set(selectedIds)}
+        />
         {selectedIds.length > 0 ? (
           <motion.div
             initial={{ y: 12, opacity: 0 }}

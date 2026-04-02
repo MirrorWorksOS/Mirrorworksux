@@ -198,7 +198,7 @@ function PipelinePanel() {
           ].map(r => (
             <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
               <span className="text-sm text-[var(--neutral-900)]">{r.rule}</span>
-              <span className={cn('text-sm  font-semibold', r.points.startsWith('+') ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
+              <span className={cn('text-sm  font-medium', r.points.startsWith('+') ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
                 {r.points}
               </span>
             </div>
@@ -302,7 +302,7 @@ function PaymentsPanel() {
     <div className="space-y-6 max-w-[640px]">
       <div className="space-y-4">
         {integrations.map(integ => (
-          <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+          <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-11 h-11 rounded-[var(--shape-md)] flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
@@ -310,7 +310,7 @@ function PaymentsPanel() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-[var(--neutral-900)]">{integ.name}</h3>
+                    <h3 className="text-sm font-medium text-[var(--neutral-900)]">{integ.name}</h3>
                     {integ.connected && (
                       <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                     )}
@@ -338,8 +338,8 @@ function PaymentsPanel() {
           </Card>
         ))}
       </div>
-      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
-        <h4 className="text-sm font-semibold text-[var(--neutral-900)] mb-3">Bank account (EFT)</h4>
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
@@ -477,7 +477,7 @@ function IntegrationsPanel() {
         { name: 'Google Cal', description: 'Sync activities to Google Calendar', connected: false, colour: '#4285F4' },
         { name: 'Slack', description: 'Post won/lost deal notifications to Slack', connected: false, colour: '#4A154B' },
       ].map(integ => (
-        <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+        <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
@@ -485,7 +485,7 @@ function IntegrationsPanel() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-[var(--neutral-900)]">{integ.name}</h3>
+                  <h3 className="text-sm font-medium text-[var(--neutral-900)]">{integ.name}</h3>
                   {integ.connected && (
                     <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                   )}

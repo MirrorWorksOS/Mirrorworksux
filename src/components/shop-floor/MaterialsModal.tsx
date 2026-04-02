@@ -7,11 +7,11 @@ function Icon() {
     <div className="relative shrink-0 size-[24px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
         <g id="Icon">
-          <path d={svgPaths.pb007f00} id="Vector" stroke="var(--stroke-0, #0F172B)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-          <path d={svgPaths.p1b58ab00} id="Vector_2" stroke="var(--stroke-0, #0F172B)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-          <path d="M10 9H8" id="Vector_3" stroke="var(--stroke-0, #0F172B)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-          <path d="M16 13H8" id="Vector_4" stroke="var(--stroke-0, #0F172B)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-          <path d="M16 17H8" id="Vector_5" stroke="var(--stroke-0, #0F172B)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          <path d={svgPaths.pb007f00} id="Vector" stroke="var(--stroke-0, #1A2732)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          <path d={svgPaths.p1b58ab00} id="Vector_2" stroke="var(--stroke-0, #1A2732)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          <path d="M10 9H8" id="Vector_3" stroke="var(--stroke-0, #1A2732)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          <path d="M16 13H8" id="Vector_4" stroke="var(--stroke-0, #1A2732)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          <path d="M16 17H8" id="Vector_5" stroke="var(--stroke-0, #1A2732)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
         </g>
       </svg>
     </div>
@@ -64,10 +64,10 @@ function Icon1() {
     <div className="absolute left-[13px] size-[16px] top-[12px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.pff0fc00} id="Vector" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1d76d410} id="Vector_2" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2f091200} id="Vector_3" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p39897300} id="Vector_4" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pff0fc00} id="Vector" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1d76d410} id="Vector_2" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2f091200} id="Vector_3" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p39897300} id="Vector_4" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -79,7 +79,7 @@ function Icon2() {
     <div className="absolute left-[118.98px] size-[16px] top-[12px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon" opacity="0.5">
-          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -88,8 +88,8 @@ function Icon2() {
 
 function Button() {
   return (
-    <div className="basis-0 bg-white grow h-[40px] min-h-px min-w-px relative rounded-[8px] shrink-0" data-name="Button">
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[8px]" />
+    <div className="basis-0 bg-white grow h-[40px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[40px] relative w-full">
         <Icon1 />
         <p className="absolute font-medium leading-[20px] left-[74px] not-italic text-[var(--neutral-600)] text-sm text-center text-nowrap top-[10.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Columns</p>
@@ -104,8 +104,8 @@ function Icon3() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #314158)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #404040)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -114,8 +114,8 @@ function Icon3() {
 
 function Button1() {
   return (
-    <div className="bg-white relative rounded-[8px] shrink-0 size-[40px]" data-name="Button">
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[8px]" />
+    <div className="bg-white relative rounded-sm shrink-0 size-[40px]" data-name="Button">
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[40px]">
         <Icon3 />
       </div>
@@ -176,13 +176,13 @@ function Container5() {
 }
 
 function PrimitiveButton() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[13.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[13.5px]" data-name="Primitive.button" />;
 }
 
 function Container6() {
   return (
     <div className="absolute h-[19.5px] left-[80px] top-[11.75px] w-[200px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function Container6() {
 function Container7() {
   return (
     <div className="absolute h-[19.5px] left-[280px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
     </div>
   );
 }
@@ -198,7 +198,7 @@ function Container7() {
 function Container8() {
   return (
     <div className="absolute h-[19.5px] left-[400px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[49.81px] not-italic text-[var(--neutral-900)] text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
+      <p className="absolute font-medium leading-[19.5px] left-[49.81px] not-italic text-[var(--neutral-900)] text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
     </div>
   );
 }
@@ -206,7 +206,7 @@ function Container8() {
 function Container9() {
   return (
     <div className="absolute h-[19.5px] left-[500px] top-[11.75px] w-[80px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -214,7 +214,7 @@ function Container9() {
 function Container10() {
   return (
     <div className="absolute h-[19.5px] left-[580px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[88.03px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
+      <p className="absolute font-medium leading-[19.5px] left-[88.03px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
     </div>
   );
 }
@@ -222,7 +222,7 @@ function Container10() {
 function Container11() {
   return (
     <div className="absolute h-[19.5px] left-[680px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[88.09px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
+      <p className="absolute font-medium leading-[19.5px] left-[88.09px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
     </div>
   );
 }
@@ -230,7 +230,7 @@ function Container11() {
 function Container12() {
   return (
     <div className="absolute h-[19.5px] left-[780px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
     </div>
   );
 }
@@ -238,7 +238,7 @@ function Container12() {
 function Container13() {
   return (
     <div className="absolute h-[19.5px] left-[880px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
     </div>
   );
 }
@@ -246,7 +246,7 @@ function Container13() {
 function Container14() {
   return (
     <div className="absolute h-[19.5px] left-[1000px] top-[11.75px] w-[140px]" data-name="Container">
-      <p className="absolute font-semibold leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
     </div>
   );
 }
@@ -280,12 +280,12 @@ function Icon4() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -301,7 +301,7 @@ function Container17() {
 }
 
 function PrimitiveButton1() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container18() {
@@ -314,7 +314,7 @@ function Icon5() {
       <div className="absolute bottom-[37.5%] left-1/4 right-1/4 top-[37.5%]" data-name="Vector">
         <div className="absolute inset-[-16.67%_-8.33%]">
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 7 4">
-            <path d="M0.5 0.5L3.5 3.5L6.5 0.5" id="Vector" stroke="var(--stroke-0, #62748E)" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M0.5 0.5L3.5 3.5L6.5 0.5" id="Vector" stroke="var(--stroke-0, #737373)" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
       </div>
@@ -324,7 +324,7 @@ function Icon5() {
 
 function Button4() {
   return (
-    <div className="absolute content-stretch flex flex-col items-start left-[8px] pb-0 pt-[4px] px-[4px] rounded-[4px] size-[20px] top-[2px]" data-name="Button">
+    <div className="absolute content-stretch flex flex-col items-start left-[8px] pb-0 pt-[4px] px-[4px] rounded-xs size-[20px] top-[2px]" data-name="Button">
       <Icon5 />
     </div>
   );
@@ -343,8 +343,8 @@ function Icon6() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -353,7 +353,7 @@ function Icon6() {
 
 function Button5() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[164px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[164px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon6 />
     </div>
   );
@@ -373,7 +373,7 @@ function Container19() {
 function Container20() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[17.5px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">SS12002400</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">SS12002400</p>
     </div>
   );
 }
@@ -407,7 +407,7 @@ function Container21() {
 function Container22() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[17.5px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -415,7 +415,7 @@ function Container22() {
 function Container23() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px]">$45.07</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px] tabular-nums">$45.07</p>
     </div>
   );
 }
@@ -423,14 +423,14 @@ function Container23() {
 function Container24() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px]">$2704.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px] tabular-nums">$2704.20</p>
     </div>
   );
 }
 
 function Badge() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
@@ -438,8 +438,8 @@ function Badge() {
 
 function Badge1() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[16.5px] w-[85.203px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Turret Punch</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[16.5px] w-[85.203px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Turret Punch</p>
     </div>
   );
 }
@@ -449,9 +449,9 @@ function Icon7() {
     <div className="absolute left-[10px] size-[16px] top-[5px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g clipPath="url(#clip0_39_536)" id="Icon">
-          <path d={svgPaths.p18ae4a80} id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3dd52f00} id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2d792300} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p18ae4a80} id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3dd52f00} id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2d792300} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
         <defs>
           <clipPath id="clip0_39_536">
@@ -465,7 +465,7 @@ function Icon7() {
 
 function Button6() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon7 />
       <p className="absolute font-medium leading-[16px] left-[66.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Assembly</p>
     </div>
@@ -477,11 +477,11 @@ function Icon8() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -490,7 +490,7 @@ function Icon8() {
 
 function Button7() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[11.5px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[11.5px]" data-name="Button">
       <Icon8 />
     </div>
   );
@@ -521,12 +521,12 @@ function Icon9() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -542,7 +542,7 @@ function Container26() {
 }
 
 function PrimitiveButton2() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container27() {
@@ -554,8 +554,8 @@ function Icon10() {
     <div className="absolute left-[36px] size-[12px] top-[6px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 12">
         <g id="Icon">
-          <path d="M7.5 5L10 7.5L7.5 10" id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={svgPaths.pf1de000} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7.5 5L10 7.5L7.5 10" id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={svgPaths.pf1de000} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" />
         </g>
       </svg>
     </div>
@@ -579,8 +579,8 @@ function Icon11() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -589,7 +589,7 @@ function Icon11() {
 
 function Button8() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[164px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[164px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon11 />
     </div>
   );
@@ -610,7 +610,7 @@ function Container28() {
 function Container29() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[17.5px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm top-[0.5px] tracking-[-0.1504px] w-[99px]">MTL-SHEET-01</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm top-[0.5px] tracking-[-0.1504px] w-[99px]">MTL-SHEET-01</p>
     </div>
   );
 }
@@ -644,7 +644,7 @@ function Container30() {
 function Container31() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[17.5px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sheet</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sheet</p>
     </div>
   );
 }
@@ -652,7 +652,7 @@ function Container31() {
 function Container32() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
     </div>
   );
 }
@@ -660,14 +660,14 @@ function Container32() {
 function Container33() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
     </div>
   );
 }
 
 function Badge2() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -675,8 +675,8 @@ function Badge2() {
 
 function Badge3() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[16.5px] w-[48.32px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Stock</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[16.5px] w-[48.32px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Stock</p>
     </div>
   );
 }
@@ -690,11 +690,11 @@ function Icon12() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -703,7 +703,7 @@ function Icon12() {
 
 function Button9() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[11.5px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[11.5px]" data-name="Button">
       <Icon12 />
     </div>
   );
@@ -734,12 +734,12 @@ function Icon13() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -755,7 +755,7 @@ function Container36() {
 }
 
 function PrimitiveButton3() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container37() {
@@ -779,8 +779,8 @@ function Icon14() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -789,7 +789,7 @@ function Icon14() {
 
 function Button10() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[141.13px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[141.13px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon14 />
     </div>
   );
@@ -809,7 +809,7 @@ function Container38() {
 function Container39() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[17.5px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">AB12002400</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">AB12002400</p>
     </div>
   );
 }
@@ -843,7 +843,7 @@ function Container40() {
 function Container41() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[17.5px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -851,7 +851,7 @@ function Container41() {
 function Container42() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px]">$22.56</p>
+      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$22.56</p>
     </div>
   );
 }
@@ -859,14 +859,14 @@ function Container42() {
 function Container43() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px]">$451.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px] tabular-nums">$451.20</p>
     </div>
   );
 }
 
 function Badge4() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
@@ -874,8 +874,8 @@ function Badge4() {
 
 function Badge5() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[16.5px] w-[57.094px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Table C</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[16.5px] w-[57.094px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Table C</p>
     </div>
   );
 }
@@ -885,9 +885,9 @@ function Icon15() {
     <div className="absolute left-[10px] size-[16px] top-[5px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -896,7 +896,7 @@ function Icon15() {
 
 function Button11() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon15 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -908,11 +908,11 @@ function Icon16() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -921,7 +921,7 @@ function Icon16() {
 
 function Button12() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[11.5px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[11.5px]" data-name="Button">
       <Icon16 />
     </div>
   );
@@ -952,12 +952,12 @@ function Icon17() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -973,7 +973,7 @@ function Container45() {
 }
 
 function PrimitiveButton4() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container46() {
@@ -997,8 +997,8 @@ function Icon18() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1007,7 +1007,7 @@ function Icon18() {
 
 function Button13() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[126.76px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[126.76px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon18 />
     </div>
   );
@@ -1027,7 +1027,7 @@ function Container47() {
 function Container48() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[17.5px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">SB12002400</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">SB12002400</p>
     </div>
   );
 }
@@ -1061,7 +1061,7 @@ function Container49() {
 function Container50() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[17.5px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -1069,7 +1069,7 @@ function Container50() {
 function Container51() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px]">$13.67</p>
+      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px] tabular-nums">$13.67</p>
     </div>
   );
 }
@@ -1077,14 +1077,14 @@ function Container51() {
 function Container52() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px]">$615.15</p>
+      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px] tabular-nums">$615.15</p>
     </div>
   );
 }
 
 function Badge6() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
@@ -1092,8 +1092,8 @@ function Badge6() {
 
 function Badge7() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[16.5px] w-[79.953px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Press Brake</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[16.5px] w-[79.953px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Press Brake</p>
     </div>
   );
 }
@@ -1103,9 +1103,9 @@ function Icon19() {
     <div className="absolute left-[10px] size-[16px] top-[5px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1114,7 +1114,7 @@ function Icon19() {
 
 function Button14() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon19 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1126,11 +1126,11 @@ function Icon20() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1139,7 +1139,7 @@ function Icon20() {
 
 function Button15() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[11.5px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[11.5px]" data-name="Button">
       <Icon20 />
     </div>
   );
@@ -1170,12 +1170,12 @@ function Icon21() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1191,7 +1191,7 @@ function Container54() {
 }
 
 function PrimitiveButton5() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[19.5px]" data-name="Primitive.button" />;
 }
 
 function Container55() {
@@ -1215,8 +1215,8 @@ function Icon22() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1225,7 +1225,7 @@ function Icon22() {
 
 function Button16() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[153.21px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[153.21px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon22 />
     </div>
   );
@@ -1245,7 +1245,7 @@ function Container56() {
 function Container57() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[17.5px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">EA50502</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">EA50502</p>
     </div>
   );
 }
@@ -1279,7 +1279,7 @@ function Container58() {
 function Container59() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[17.5px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -1287,7 +1287,7 @@ function Container59() {
 function Container60() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px]">$12.74</p>
+      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px] tabular-nums">$12.74</p>
     </div>
   );
 }
@@ -1295,14 +1295,14 @@ function Container60() {
 function Container61() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px]">$764.40</p>
+      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px] tabular-nums">$764.40</p>
     </div>
   );
 }
 
 function Badge8() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -1310,8 +1310,8 @@ function Badge8() {
 
 function Badge9() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[16.5px] w-[56.625px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Table A</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[16.5px] w-[56.625px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Table A</p>
     </div>
   );
 }
@@ -1321,9 +1321,9 @@ function Icon23() {
     <div className="absolute left-[10px] size-[16px] top-[5px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1332,7 +1332,7 @@ function Icon23() {
 
 function Button17() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon23 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1344,11 +1344,11 @@ function Icon24() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1357,7 +1357,7 @@ function Icon24() {
 
 function Button18() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[11.5px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[11.5px]" data-name="Button">
       <Icon24 />
     </div>
   );
@@ -1388,12 +1388,12 @@ function Icon25() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #CAD5E2)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1c949200} id="Vector" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.pd12ce00} id="Vector_2" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p226ad00} id="Vector_3" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p1e9aa900} id="Vector_4" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p12fdd280} id="Vector_5" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p3be7b040} id="Vector_6" stroke="var(--stroke-0, #D4D4D4)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1409,7 +1409,7 @@ function Container63() {
 }
 
 function PrimitiveButton6() {
-  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-[4px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[20px]" data-name="Primitive.button" />;
+  return <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-300)] border-solid left-[52px] rounded-xs shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[16px] top-[20px]" data-name="Primitive.button" />;
 }
 
 function Container64() {
@@ -1433,8 +1433,8 @@ function Icon26() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M3.33333 8H12.6667" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 3.33333V12.6667" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1443,7 +1443,7 @@ function Icon26() {
 
 function Button19() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[114.35px] opacity-0 rounded-[8px] size-[24px] top-0" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[114.35px] opacity-0 rounded-sm size-[24px] top-0" data-name="Button">
       <Icon26 />
     </div>
   );
@@ -1463,7 +1463,7 @@ function Container65() {
 function Container66() {
   return (
     <div className="absolute h-[20px] left-[280px] overflow-clip top-[18px] w-[120px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">FIXTB01</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">FIXTB01</p>
     </div>
   );
 }
@@ -1497,7 +1497,7 @@ function Container67() {
 function Container68() {
   return (
     <div className="absolute h-[20px] left-[500px] top-[18px] w-[80px]" data-name="Container">
-      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[#45556c] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
+      <p className="absolute font-normal leading-[20px] left-[12px] not-italic text-[var(--neutral-600)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -1505,7 +1505,7 @@ function Container68() {
 function Container69() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px]">$8.06</p>
+      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px] tabular-nums">$8.06</p>
     </div>
   );
 }
@@ -1513,14 +1513,14 @@ function Container69() {
 function Container70() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px]">$362.70</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px] tabular-nums">$362.70</p>
     </div>
   );
 }
 
 function Badge10() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-[8px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[17px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[17px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -1528,8 +1528,8 @@ function Badge10() {
 
 function Badge11() {
   return (
-    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-[8px] top-[17px] w-[57.094px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[#45556c] text-xs text-nowrap top-[3px] whitespace-pre">Table C</p>
+    <div className="absolute bg-[var(--neutral-100)] border border-[var(--neutral-200)] border-solid h-[22px] left-[892px] overflow-clip rounded-sm top-[17px] w-[57.094px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[8px] not-italic text-[var(--neutral-600)] text-xs text-nowrap top-[3px] whitespace-pre">Table C</p>
     </div>
   );
 }
@@ -1539,9 +1539,9 @@ function Icon27() {
     <div className="absolute left-[10px] size-[16px] top-[5px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M8 2V10" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p26e09a00} id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p23ad1400} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1550,7 +1550,7 @@ function Icon27() {
 
 function Button20() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-[8px] top-[14px] w-[116px]" data-name="Button">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[14px] w-[116px]" data-name="Button">
       <Icon27 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1562,11 +1562,11 @@ function Icon28() {
     <div className="relative shrink-0 size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M6.66667 7.33333V11.3333" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M9.33333 7.33333V11.3333" id="Vector_2" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p37e28100} id="Vector_3" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M2 4H14" id="Vector_4" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d={svgPaths.p2ffbeb80} id="Vector_5" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1575,7 +1575,7 @@ function Icon28() {
 
 function Button21() {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-[8px] size-[32px] top-[12px]" data-name="Button">
+    <div className="absolute content-stretch flex items-center justify-center left-[1149px] rounded-sm size-[32px] top-[12px]" data-name="Button">
       <Icon28 />
     </div>
   );
@@ -1642,7 +1642,7 @@ function Icon29() {
     <div className="relative size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #90A1B9)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #A3A3A3)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1651,8 +1651,8 @@ function Icon29() {
 
 function Button22() {
   return (
-    <div className="bg-white opacity-50 relative rounded-[8px] shrink-0 size-[36px]" data-name="Button">
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[8px]" />
+    <div className="bg-white opacity-[0.38] relative rounded-sm shrink-0 size-[36px]" data-name="Button">
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[36px]">
         <div className="flex items-center justify-center relative shrink-0 size-[16px]" style={{ "--transform-inner-width": "16", "--transform-inner-height": "16" } as React.CSSProperties}>
           <div className="flex-none rotate-[90deg]">
@@ -1669,7 +1669,7 @@ function Icon30() {
     <div className="relative size-[16px]" data-name="Icon">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
         <g id="Icon">
-          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #45556C)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+          <path d="M4 6L8 10L12 6" id="Vector" stroke="var(--stroke-0, #525252)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
         </g>
       </svg>
     </div>
@@ -1678,8 +1678,8 @@ function Icon30() {
 
 function Button23() {
   return (
-    <div className="basis-0 bg-white grow h-[36px] min-h-px min-w-px relative rounded-[8px] shrink-0" data-name="Button">
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[8px]" />
+    <div className="basis-0 bg-white grow h-[36px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex h-[36px] items-center justify-center p-px relative w-full">
         <div className="flex items-center justify-center relative shrink-0 size-[16px]" style={{ "--transform-inner-width": "16", "--transform-inner-height": "16" } as React.CSSProperties}>
           <div className="flex-none rotate-[270deg]">
@@ -1742,7 +1742,7 @@ interface MaterialsModalProps {
 export function MaterialsModal({ isOpen, onClose }: MaterialsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[1350px] w-full p-0 overflow-hidden bg-[var(--neutral-50)] border-none">
+      <DialogContent className="sm:max-w-[1350px] w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-none">
         <DialogTitle className="sr-only">Materials</DialogTitle>
         <DialogDescription className="sr-only">Bill of materials table</DialogDescription>
         <div className="content-stretch flex flex-col items-start relative w-full max-h-[90vh] overflow-auto" data-name="Container">

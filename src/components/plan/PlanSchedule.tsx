@@ -34,13 +34,19 @@ interface ScheduleJob {
 
 const MONTH_BASE = new Date(2026, 3, 1); // April 2026
 
+const STATUS_COLORS: Record<string, string> = {
+  active: 'var(--mw-mirage)',
+  scheduled: 'var(--neutral-300)',
+  completed: 'var(--mw-yellow-400)',
+};
+
 const JOBS: ScheduleJob[] = [
-  { id: '1', jobNumber: 'JOB-2026-0012', name: 'Server Rack Chassis', customer: 'TechCorp Industries', startDay: 0, durationDays: 14, status: 'active', color: 'var(--mw-yellow-400)', progress: 35 },
-  { id: '2', jobNumber: 'JOB-2026-0013', name: 'Structural Steel Package', customer: 'BHP Contractors', startDay: 3, durationDays: 20, status: 'active', color: 'var(--mw-mirage)', progress: 15 },
-  { id: '3', jobNumber: 'JOB-2026-0014', name: 'Custom Brackets (50 units)', customer: 'Pacific Fab', startDay: 7, durationDays: 5, status: 'scheduled', color: 'var(--mw-blue)', progress: 0 },
-  { id: '4', jobNumber: 'JOB-2026-0015', name: 'Rail Platform Components', customer: 'Sydney Rail Corp', startDay: 10, durationDays: 18, status: 'scheduled', color: 'var(--mw-blue)', progress: 0 },
-  { id: '5', jobNumber: 'JOB-2026-0011', name: 'Machine Guards', customer: 'Kemppi Australia', startDay: -5, durationDays: 8, status: 'completed', color: 'var(--mw-green)', progress: 100 },
-  { id: '6', jobNumber: 'JOB-2026-0016', name: 'Aluminium Enclosures', customer: 'Hunter Steel Co', startDay: 15, durationDays: 10, status: 'scheduled', color: 'var(--mw-blue)', progress: 0 },
+  { id: '1', jobNumber: 'JOB-2026-0012', name: 'Server Rack Chassis', customer: 'TechCorp Industries', startDay: 0, durationDays: 14, status: 'active', color: STATUS_COLORS.active, progress: 35 },
+  { id: '2', jobNumber: 'JOB-2026-0013', name: 'Structural Steel Package', customer: 'BHP Contractors', startDay: 3, durationDays: 20, status: 'active', color: STATUS_COLORS.active, progress: 15 },
+  { id: '3', jobNumber: 'JOB-2026-0014', name: 'Custom Brackets (50 units)', customer: 'Pacific Fab', startDay: 7, durationDays: 5, status: 'scheduled', color: STATUS_COLORS.scheduled, progress: 0 },
+  { id: '4', jobNumber: 'JOB-2026-0015', name: 'Rail Platform Components', customer: 'Sydney Rail Corp', startDay: 10, durationDays: 18, status: 'scheduled', color: STATUS_COLORS.scheduled, progress: 0 },
+  { id: '5', jobNumber: 'JOB-2026-0011', name: 'Machine Guards', customer: 'Kemppi Australia', startDay: -5, durationDays: 8, status: 'completed', color: STATUS_COLORS.completed, progress: 100 },
+  { id: '6', jobNumber: 'JOB-2026-0016', name: 'Aluminium Enclosures', customer: 'Hunter Steel Co', startDay: 15, durationDays: 10, status: 'scheduled', color: STATUS_COLORS.scheduled, progress: 0 },
 ];
 
 const STATUS_LABELS: Record<string, string> = {

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Plus, Download, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -10,6 +9,8 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 
 type InvoiceStatus = 'Draft' | 'Sent' | 'Viewed' | 'Partially Paid' | 'Paid' | 'Overdue' | 'Cancelled';
 
@@ -34,14 +35,14 @@ const INVOICES: Invoice[] = [
   { id: 'INV-2026-0038', customer: 'Oberon Engineering', issueDate: '08 Feb 2026', dueDate: '10 Mar 2026', status: 'Cancelled', total: 1200, balanceDue: 0 },
 ];
 
-const statusStyles: Record<InvoiceStatus, string> = {
-  Draft: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
-  Sent: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  Viewed: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  'Partially Paid': 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
-  Paid: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  Overdue: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
-  Cancelled: 'bg-[var(--neutral-100)] text-[var(--neutral-400)]',
+const STATUS_KEY_MAP: Record<InvoiceStatus, StatusKey> = {
+  Draft: 'draft',
+  Sent: 'sent',
+  Viewed: 'viewed',
+  'Partially Paid': 'partiallyPaid',
+  Paid: 'paid',
+  Overdue: 'overdue',
+  Cancelled: 'cancelled',
 };
 
 const TABS = [
@@ -66,6 +67,80 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
     overdue: INVOICES.filter(i => i.status === 'Overdue').reduce((s, i) => s + i.total, 0),
     draft: INVOICES.filter(i => i.status === 'Draft').reduce((s, i) => s + i.total, 0),
   };
+
+  const columns: MwColumnDef<Invoice>[] = [
+    {
+      key: 'checkbox',
+      header: <Checkbox className="w-[18px] h-[18px]" />,
+      cell: () => (
+        <span onClick={e => e.stopPropagation()}>
+          <Checkbox className="w-[18px] h-[18px]" />
+        </span>
+      ),
+      className: 'w-12',
+    },
+    {
+      key: 'id',
+      header: 'INVOICE #',
+      cell: (inv) => <span className="text-xs text-[var(--mw-mirage)] tabular-nums">{inv.id}</span>,
+    },
+    {
+      key: 'customer',
+      header: 'CUSTOMER',
+      cell: (inv) => <span className="text-sm text-[var(--mw-mirage)]">{inv.customer}</span>,
+    },
+    {
+      key: 'issueDate',
+      header: 'ISSUE DATE',
+      cell: (inv) => <span className="text-sm text-[var(--neutral-600)]">{inv.issueDate}</span>,
+    },
+    {
+      key: 'dueDate',
+      header: 'DUE DATE',
+      cell: (inv) => <span className="text-sm text-[var(--neutral-600)]">{inv.dueDate}</span>,
+    },
+    {
+      key: 'status',
+      header: 'STATUS',
+      cell: (inv) => (
+        <StatusBadge status={STATUS_KEY_MAP[inv.status]}>
+          {inv.status}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'total',
+      header: 'TOTAL',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      cell: (inv) => (
+        <span className="text-sm tabular-nums font-medium">
+          ${inv.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </span>
+      ),
+    },
+    {
+      key: 'balanceDue',
+      header: 'BALANCE DUE',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      cell: (inv) => (
+        <span className="text-sm tabular-nums font-medium">
+          ${inv.balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      className: 'w-12',
+      cell: () => (
+        <span onClick={e => e.stopPropagation()}>
+          <Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" /></Button>
+        </span>
+      ),
+    },
+  ];
 
   return (
     <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
@@ -101,71 +176,27 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       </PageToolbar>
 
       {/* Table */}
-      <Card className="bg-white shadow-xs border border-[var(--border)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                <th className="w-12 px-4 py-3"><Checkbox className="w-[18px] h-[18px]" /></th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">INVOICE #</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">ISSUE DATE</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">DUE DATE</th>
-                <th className="text-left px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                <th className="text-right px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
-                <th className="text-right px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium">BALANCE DUE</th>
-                <th className="w-12 px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((inv, i) => (
-                <tr
-                  key={inv.id}
-                  className={cn(
-                    "border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors",
-                    i % 2 === 1 ? "bg-[var(--neutral-100)]" : "bg-white"
-                  )}
-                  onClick={() => onSelectInvoice?.(inv.id)}
-                >
-                  <td className="px-4" onClick={e => e.stopPropagation()}><Checkbox className="w-[18px] h-[18px]" /></td>
-                  <td className="px-4 text-xs text-[var(--mw-mirage)] tabular-nums">{inv.id}</td>
-                  <td className="px-4 text-sm text-[var(--mw-mirage)]">{inv.customer}</td>
-                  <td className="px-4 text-sm text-[var(--neutral-600)]">{inv.issueDate}</td>
-                  <td className="px-4 text-sm text-[var(--neutral-600)]">{inv.dueDate}</td>
-                  <td className="px-4">
-                    <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", statusStyles[inv.status])}>
-                      {inv.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 text-right text-sm tabular-nums font-medium">
-                    ${inv.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-4 text-right text-sm tabular-nums font-medium">
-                    ${inv.balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </td>
-                  <td className="px-4" onClick={e => e.stopPropagation()}>
-                    <Button variant="ghost" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" /></Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <MwDataTable
+        columns={columns}
+        data={filtered}
+        keyExtractor={(inv) => inv.id}
+        striped
+        onRowClick={(inv) => onSelectInvoice?.(inv.id)}
+      />
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-          <span className="text-xs text-[var(--neutral-500)]">Showing 1-8 of 147 invoices</span>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
-            {[1, 2, 3, 4, 5].map(p => (
-              <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-                className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}
-              >{p}</Button>
-            ))}
-            <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>
-          </div>
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <span className="text-xs text-[var(--neutral-500)]">Showing 1-8 of 147 invoices</span>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
+          {[1, 2, 3, 4, 5].map(p => (
+            <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
+              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}
+            >{p}</Button>
+          ))}
+          <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>
         </div>
-      </Card>
+      </div>
     </PageShell>
   );
 }

@@ -13,6 +13,9 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 
 
 type ReqStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'converted';
@@ -51,24 +54,66 @@ export function BuyRequisitions() {
 
   const filteredReqs = activeTab === 'all' ? mockRequisitions : mockRequisitions.filter(r => r.status === activeTab);
 
+  const columns: MwColumnDef<Requisition>[] = [
+    { key: 'reqNumber', header: 'REQ #', cell: (req) => (
+      <a href={`/buy/requisitions/${req.id}`} className="text-[var(--mw-mirage)] text-sm font-medium hover:underline flex items-center gap-1">
+        {req.reqNumber}
+        <ExternalLink className="w-4 h-4" />
+      </a>
+    )},
+    { key: 'requestor', header: 'Requestor', cell: (req) => <span className="text-[var(--mw-mirage)]">{req.requestor}</span> },
+    { key: 'department', header: 'Department', cell: (req) => <span className="text-[var(--neutral-600)]">{req.department}</span> },
+    { key: 'date', header: 'Date', cell: (req) => <span className="text-[var(--neutral-600)]">{new Date(req.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</span> },
+    { key: 'status', header: 'Status', headerClassName: 'text-center', className: 'text-center', cell: (req) => {
+      const statusBadge = getStatusBadge(req.status);
+      return (
+        <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5 w-fit mx-auto", statusBadge.bg, statusBadge.text)}>
+          <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusBadge.dot }} />
+          {statusBadge.label}
+        </Badge>
+      );
+    }},
+    { key: 'items', header: 'Items', headerClassName: 'text-right', className: 'text-right', cell: (req) => <span className="tabular-nums">{req.items}</span> },
+    { key: 'total', header: 'Total', headerClassName: 'text-right', className: 'text-right', cell: (req) => <span className="font-medium tabular-nums">${req.total.toLocaleString()}</span> },
+    { key: 'actions', header: '', cell: (req) => (
+      <>
+        {req.status === 'submitted' && (
+          <div className="flex items-center gap-1">
+            <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" title="Approve" onClick={(e) => { e.stopPropagation(); toast.success(`Requisition ${req.reqNumber} approved`); }}>
+              <CheckCircle2 className="w-4 h-4 text-[var(--mw-mirage)]" />
+            </button>
+            <button className="p-1 hover:bg-[var(--mw-error-100)] rounded transition-colors" title="Reject" onClick={(e) => { e.stopPropagation(); toast.success(`Requisition ${req.reqNumber} rejected`); }}>
+              <XCircle className="w-4 h-4 text-[var(--mw-error)]" />
+            </button>
+          </div>
+        )}
+        {req.status !== 'submitted' && (
+          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={(e) => { e.stopPropagation(); toast('Requisition actions coming soon'); }}>
+            <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+          </button>
+        )}
+      </>
+    )},
+  ];
+
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Purchase Requisitions</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{filteredReqs.length} requisitions</p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
-            <AnimatedFilter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group" onClick={() => toast('New requisition coming soon')}>
-            <AnimatedPlus className="w-4 h-4 mr-2" />
-            New Requisition
-          </Button>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Purchase Requisitions"
+        subtitle={`${filteredReqs.length} requisitions`}
+        actions={
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
+              <AnimatedFilter className="w-4 h-4" />
+              Filter
+            </Button>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group" onClick={() => toast('New requisition coming soon')}>
+              <AnimatedPlus className="w-4 h-4 mr-2" />
+              New Requisition
+            </Button>
+          </div>
+        }
+      />
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-[var(--border)]">
@@ -82,69 +127,12 @@ export function BuyRequisitions() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">REQ #</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">REQUESTOR</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DEPARTMENT</th>
-                <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DATE</th>
-                <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">ITEMS</th>
-                <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
-                <th className="px-4 py-3 w-12"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReqs.map((req, idx) => {
-                const statusBadge = getStatusBadge(req.status);
-                return (
-                  <tr key={req.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                    <td className="px-4">
-                      <a href={`/buy/requisitions/${req.id}`} className="text-[var(--mw-mirage)]  text-sm font-medium hover:underline flex items-center gap-1">
-                        {req.reqNumber}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </td>
-                    <td className="px-4 text-sm text-[var(--mw-mirage)]">{req.requestor}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{req.department}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{new Date(req.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                    <td className="px-4">
-                      <div className="flex items-center justify-center">
-                        <Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0 flex items-center gap-1.5", statusBadge.bg, statusBadge.text)}>
-                          <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusBadge.dot }} />
-                          {statusBadge.label}
-                        </Badge>
-                      </div>
-                    </td>
-                    <td className="px-4 text-right text-sm ">{req.items}</td>
-                    <td className="px-4 text-right text-sm  font-medium">${req.total.toLocaleString()}</td>
-                    <td className="px-4">
-                      {req.status === 'submitted' && (
-                        <div className="flex items-center gap-1">
-                          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" title="Approve" onClick={() => toast.success(`Requisition ${req.reqNumber} approved`)}>
-                            <CheckCircle2 className="w-4 h-4 text-[var(--mw-mirage)]" />
-                          </button>
-                          <button className="p-1 hover:bg-[var(--mw-error-100)] rounded transition-colors" title="Reject" onClick={() => toast.success(`Requisition ${req.reqNumber} rejected`)}>
-                            <XCircle className="w-4 h-4 text-[var(--mw-error)]" />
-                          </button>
-                        </div>
-                      )}
-                      {req.status !== 'submitted' && (
-                        <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast('Requisition actions coming soon')}>
-                          <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    </motion.div>
+      <MwDataTable
+        columns={columns}
+        data={filteredReqs}
+        keyExtractor={(req) => req.id}
+        striped
+      />
+    </PageShell>
   );
 }

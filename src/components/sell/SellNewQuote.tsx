@@ -363,7 +363,7 @@ export function SellNewQuote() {
                     <span className="font-medium tabular-nums">${fmtCurrency(tax)}</span>
                   </div>
                   <Separator />
-                  <div className="flex justify-between text-base font-semibold">
+                  <div className="flex justify-between text-base font-medium">
                     <span className="text-[var(--neutral-900)]">Total (inc. GST)</span>
                     <span className="tabular-nums text-[var(--neutral-900)]">${fmtCurrency(total)}</span>
                   </div>
@@ -383,7 +383,7 @@ export function SellNewQuote() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Margin</span>
-                    <span className={cn('font-semibold tabular-nums text-base',
+                    <span className={cn('font-medium tabular-nums text-base',
                       margin < 15 ? 'text-[var(--mw-error)]' : margin >= 25 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-yellow-400)]'
                     )}>
                       {margin.toFixed(1)}%

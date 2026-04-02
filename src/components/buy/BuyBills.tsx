@@ -13,6 +13,9 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 
 
 interface Bill {
@@ -72,20 +75,43 @@ export function BuyBills() {
     issues:   BILLS.filter(b => ['mismatch', 'overdue'].includes(b.status)).length,
   };
 
-  return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Bills</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            ${totals.matched.toLocaleString()} matched
-            {totals.issues > 0 && <span className="text-[var(--mw-error)] ml-2">· {totals.issues} require attention</span>}
-          </p>
+  const columns: MwColumnDef<Bill>[] = [
+    { key: 'billNumber', header: 'Bill #', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.billNumber}</span> },
+    { key: 'supplier', header: 'Supplier', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.supplier}</span> },
+    { key: 'invoiceDate', header: 'Invoice date', cell: (bill) => <span className="text-[var(--neutral-500)]">{bill.invoiceDate}</span> },
+    { key: 'dueDate', header: 'Due', cell: (bill) => (
+      <span className={cn(bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
+        {bill.dueDate}
+      </span>
+    )},
+    { key: 'poNumber', header: 'PO #', cell: (bill) => <span className="text-[var(--mw-mirage)]">{bill.poNumber}</span> },
+    { key: 'matchStatus', header: '3-way match', cell: (bill) => <MatchDots ms={bill.matchStatus} /> },
+    { key: 'amount', header: 'Amount', headerClassName: 'text-right', className: 'text-right', cell: (bill) => (
+      <span className="font-medium tabular-nums">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
+    )},
+    { key: 'status', header: 'Status', cell: (bill) => {
+      const cfg = STATUS_CONFIG[bill.status];
+      const Icon = cfg.icon;
+      return (
+        <div className="flex items-center gap-1.5">
+          <Icon className={cn('w-4 h-4', cfg.text)} />
+          <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New bill coming soon')}>
-          <Plus className="w-4 h-4" /> New bill
-        </Button>
-      </div>
+      );
+    }},
+  ];
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="Bills"
+        subtitle={`$${totals.matched.toLocaleString()} matched${totals.issues > 0 ? ` · ${totals.issues} require attention` : ''}`}
+        actions={
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New bill coming soon')}>
+            <Plus className="w-4 h-4" /> New bill
+          </Button>
+        }
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-4">
@@ -95,9 +121,9 @@ export function BuyBills() {
           { label: 'Amount mismatch', value: BILLS.filter(b => b.status === 'mismatch').length, sub: 'Needs review',                        bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
           { label: 'Overdue',         value: BILLS.filter(b => b.status === 'overdue').length,  sub: 'Past due date',                       bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-5">
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className={cn('text-2xl tabular-nums font-semibold', s.text)}>{s.value}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
           </Card>
         ))}
@@ -109,48 +135,12 @@ export function BuyBills() {
           className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['Bill #', 'Supplier', 'Invoice date', 'Due', 'PO #', '3-way match', 'Amount', 'Status'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', h === 'Amount' ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(bill => {
-              const cfg = STATUS_CONFIG[bill.status];
-              const Icon = cfg.icon;
-              return (
-                <tr key={bill.id} onClick={() => setSelected(bill)}
-                  className={cn('border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors',
-                    bill.status === 'overdue' && 'bg-[var(--mw-error-50)]',
-                    bill.status === 'mismatch' && 'bg-[var(--mw-error-50)]'
-                  )}>
-                  <td className="px-4 text-sm  font-medium text-[var(--mw-mirage)]">{bill.billNumber}</td>
-                  <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{bill.supplier}</td>
-                  <td className="px-4 text-sm text-[var(--neutral-500)]">{bill.invoiceDate}</td>
-                  <td className={cn('px-4 text-sm', bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
-                    {bill.dueDate}
-                  </td>
-                  <td className="px-4 text-sm  text-[var(--mw-mirage)]">{bill.poNumber}</td>
-                  <td className="px-4">
-                    <MatchDots ms={bill.matchStatus} />
-                  </td>
-                  <td className="px-4 text-right text-sm font-medium tabular-nums">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-4">
-                    <div className="flex items-center gap-1.5">
-                      <Icon className={cn('w-4 h-4', cfg.text)} />
-                      <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+      <MwDataTable
+        columns={columns}
+        data={filtered}
+        keyExtractor={(bill) => bill.id}
+        onRowClick={(bill) => setSelected(bill)}
+      />
 
       {/* Detail Sheet */}
       {selected && (
@@ -222,6 +212,6 @@ export function BuyBills() {
           </SheetContent>
         </Sheet>
       )}
-    </motion.div>
+    </PageShell>
   );
 }

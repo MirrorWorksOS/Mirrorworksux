@@ -161,18 +161,18 @@ export function StepScopeQuestions() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Tell us about your shop</h2>
+        <h2 className="text-2xl font-medium tracking-tight">Tell us about your shop</h2>
         <p className="text-sm text-muted-foreground mt-1">
           This helps us set up only what you need — you can always add more later.
         </p>
       </div>
 
       {showTemplateBanner && (
-        <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-xl border border-[var(--mw-info)]/20 bg-[var(--mw-info-light)] p-4">
+          <AlertCircle className="w-5 h-5 text-[var(--mw-info)] shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-blue-900">Got a lot?</p>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm font-medium text-[var(--mw-info)]">Got a lot?</p>
+            <p className="text-sm text-[var(--mw-info)]">
               Download our template and upload it instead — it's faster for large lists.
             </p>
           </div>

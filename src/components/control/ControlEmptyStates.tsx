@@ -167,7 +167,7 @@ export function ControlEmptyStates() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left: state selector */}
           <div className="col-span-4">
-            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-3">Available Empty States</h3>
               <div className="space-y-1">
                 {EMPTY_STATES.map((es, i) => (
@@ -248,7 +248,7 @@ export function ControlEmptyStates() {
             </Card>
 
             {/* Usage snippet */}
-            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-4 mt-4">
+            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 mt-4">
               <h4 className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2">Usage</h4>
               <pre className="text-xs bg-[var(--neutral-50)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-[var(--mw-mirage)]">
 {`<EmptyState

@@ -397,7 +397,7 @@ export function SellInvoiceDetail() {
                   </div>
                   <div className="flex justify-between border-t border-[var(--border)] pt-3">
                     <dt className="font-medium text-[var(--neutral-900)]">Total</dt>
-                    <dd className="font-semibold tabular-nums text-[var(--neutral-900)]">{fmt(invoice.total)}</dd>
+                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(invoice.total)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Amount paid</dt>
@@ -562,7 +562,7 @@ export function SellInvoiceDetail() {
                 </div>
                 <div className="flex justify-between border-t border-[var(--border)] pt-3">
                   <dt className="font-medium text-[var(--neutral-900)]">Outstanding</dt>
-                  <dd className={cn("font-semibold tabular-nums", invoice.balanceDue > 0 ? "text-[var(--mw-error)]" : "text-[var(--mw-success)]")}>
+                  <dd className={cn("font-medium tabular-nums", invoice.balanceDue > 0 ? "text-[var(--mw-error)]" : "text-[var(--mw-success)]")}>
                     {fmt(invoice.balanceDue)}
                   </dd>
                 </div>

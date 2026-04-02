@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
@@ -84,6 +85,65 @@ const GROUPS: GroupConfig[] = [
 
 const TIME_RANGES = ['Week', 'Month', 'Quarter', 'Year'];
 
+const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRow>[] => [
+  {
+    key: 'target',
+    header: 'Target',
+    cell: (t) => <span className="font-medium text-[var(--mw-mirage)]">{t.target}</span>,
+  },
+  {
+    key: 'metric',
+    header: 'Metric',
+    cell: (t) => <span className="text-[var(--neutral-600)]">{t.metric}</span>,
+  },
+  {
+    key: 'period',
+    header: 'Period',
+    cell: (t) => <span className="text-[var(--neutral-600)]">{t.period}</span>,
+  },
+  {
+    key: 'value',
+    header: 'Value',
+    cell: (t) => <span className="font-medium text-[var(--mw-mirage)]">{t.value}</span>,
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    cell: (t) => (
+      <Badge
+        className={
+          t.status === 'Active'
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            : 'bg-[var(--neutral-100)] text-[var(--neutral-500)] border-[var(--neutral-200)]'
+        }
+      >
+        {t.status}
+      </Badge>
+    ),
+  },
+  {
+    key: 'actions',
+    header: 'Actions',
+    headerClassName: 'text-right',
+    cell: (t) => (
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={(e) => { e.stopPropagation(); toast(`Edit "${t.target}" — coming soon`); }}
+        >
+          <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
+        </Button>
+        <Switch
+          checked={t.enabled}
+          onCheckedChange={() => toggleTarget(t.id)}
+        />
+      </div>
+    ),
+  },
+];
+
 const LEADERBOARD_METRICS = [
   { key: 'revenue', label: 'Revenue' },
   { key: 'deals', label: 'Deals closed' },
@@ -132,7 +192,7 @@ export function ControlGamification() {
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">Team Targets</h2>
+              <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Team Targets</h2>
               <p className="text-sm text-[var(--neutral-500)]">Set measurable goals for your team to track and achieve</p>
             </div>
             <Button
@@ -145,70 +205,18 @@ export function ControlGamification() {
             </Button>
           </div>
 
-          <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                    <th className="text-left px-4 py-3 font-medium text-[var(--neutral-500)]">Target</th>
-                    <th className="text-left px-4 py-3 font-medium text-[var(--neutral-500)]">Metric</th>
-                    <th className="text-left px-4 py-3 font-medium text-[var(--neutral-500)]">Period</th>
-                    <th className="text-left px-4 py-3 font-medium text-[var(--neutral-500)]">Value</th>
-                    <th className="text-left px-4 py-3 font-medium text-[var(--neutral-500)]">Status</th>
-                    <th className="text-right px-4 py-3 font-medium text-[var(--neutral-500)]">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {targets.map(t => (
-                    <motion.tr
-                      key={t.id}
-                      variants={staggerItem}
-                      className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--neutral-50)] transition-colors"
-                    >
-                      <td className="px-4 py-3 font-medium text-[var(--mw-mirage)]">{t.target}</td>
-                      <td className="px-4 py-3 text-[var(--neutral-600)]">{t.metric}</td>
-                      <td className="px-4 py-3 text-[var(--neutral-600)]">{t.period}</td>
-                      <td className="px-4 py-3 text-[var(--mw-mirage)] font-medium">{t.value}</td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          className={
-                            t.status === 'Active'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                              : 'bg-[var(--neutral-100)] text-[var(--neutral-500)] border-[var(--neutral-200)]'
-                          }
-                        >
-                          {t.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => toast(`Edit "${t.target}" — coming soon`)}
-                          >
-                            <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                          </Button>
-                          <Switch
-                            checked={t.enabled}
-                            onCheckedChange={() => toggleTarget(t.id)}
-                          />
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+          <MwDataTable
+            columns={targetColumns(toggleTarget)}
+            data={targets}
+            keyExtractor={(t) => t.id}
+          />
         </motion.section>
 
         {/* ── Section 2: Achievement Badges ───────────────────────────── */}
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">Achievement Badges</h2>
+              <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Achievement Badges</h2>
               <p className="text-sm text-[var(--neutral-500)]">Reward milestones and outstanding performance</p>
             </div>
             <Button
@@ -221,16 +229,16 @@ export function ControlGamification() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {BADGES.map(badge => (
               <motion.div key={badge.id} variants={staggerItem}>
-                <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-5 hover:shadow-md transition-shadow">
+                <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-3 mb-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)] text-xl shrink-0">
                       {badge.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{badge.name}</h3>
+                      <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{badge.name}</h3>
                       <p className="text-xs text-[var(--neutral-500)] mt-0.5">{badge.description}</p>
                     </div>
                   </div>
@@ -266,7 +274,7 @@ export function ControlGamification() {
         {/* ── Section 3: Leaderboard Settings ─────────────────────────── */}
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">Leaderboard Settings</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Leaderboard Settings</h2>
             <p className="text-sm text-[var(--neutral-500)]">Control how leaderboards appear across the platform</p>
           </div>
 
@@ -355,7 +363,7 @@ export function ControlGamification() {
         {/* ── Section 4: Group Targets ─────────────────────────────────── */}
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-[var(--mw-mirage)]">Group Targets</h2>
+            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Group Targets</h2>
             <p className="text-sm text-[var(--neutral-500)]">Configure specific targets per team or department</p>
           </div>
 
@@ -374,7 +382,7 @@ export function ControlGamification() {
                           <Target className="w-4 h-4 text-[var(--mw-mirage)]" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{group.name}</h3>
+                          <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{group.name}</h3>
                           <p className="text-xs text-[var(--neutral-500)]">{group.targetCount} targets configured</p>
                         </div>
                       </div>

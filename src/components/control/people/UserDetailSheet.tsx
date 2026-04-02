@@ -45,7 +45,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
         <div className="space-y-6">
           <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16 ring-2 ring-white shadow-md">
-              <AvatarFallback className="bg-[var(--neutral-100)] text-base font-semibold text-[var(--neutral-800)]">
+              <AvatarFallback className="bg-[var(--neutral-100)] text-base font-medium text-[var(--neutral-800)]">
                 {initials(user.name)}
               </AvatarFallback>
             </Avatar>

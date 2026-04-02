@@ -28,7 +28,7 @@ export function ControlFactoryDesigner() {
       <Card className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-12 shadow-xs">
         <div className="text-center">
           <Layout className="mx-auto mb-4 h-16 w-16 text-[var(--neutral-500)]" />
-          <h3 className="mb-2 text-xl font-semibold text-[var(--mw-mirage)]">Factory designer</h3>
+          <h3 className="mb-2 text-xl font-medium text-[var(--mw-mirage)]">Factory designer</h3>
           <p className="text-sm text-[var(--neutral-500)]">Placeholder canvas — connect routing and data when backend is available.</p>
         </div>
       </Card>

@@ -98,7 +98,7 @@ export function FinancialTable<T>({
         >
           <Table>
             <TableBody>
-              <TableRow className="hover:bg-transparent border-b-0 font-semibold">
+              <TableRow className="hover:bg-transparent border-b-0 font-medium">
                 {columns.map((col, index) => {
                   const alignRight =
                     col.align === "right" ||
@@ -128,7 +128,7 @@ export function FinancialTable<T>({
                   return (
                     <TableCell
                       key={col.key}
-                      className={cn("px-4 py-3 text-sm", col.className)}
+                      className={cn("px-4 py-3 text-sm tabular-nums", col.className)}
                     >
                       —
                     </TableCell>

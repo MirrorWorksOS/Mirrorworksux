@@ -398,7 +398,7 @@ export function SellOrderDetail() {
                   </div>
                   <div className="flex justify-between border-t border-[var(--border)] pt-3">
                     <dt className="font-medium text-[var(--neutral-900)]">Total</dt>
-                    <dd className="font-semibold tabular-nums text-[var(--neutral-900)]">{fmt(order.total)}</dd>
+                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(order.total)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Paid</dt>

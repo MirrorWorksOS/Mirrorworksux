@@ -6,33 +6,61 @@ import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import { toast } from 'sonner';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
-const lineItems = [
-  { num: 1, product: '10mm MS Plate', desc: 'AS/NZS 3678-250', qty: '50', unit: '$85.00', disc: '5%', tax: 'GST 10%', total: '$4,037.50' },
-  { num: 2, product: 'Laser Cutting', desc: 'Profile cutting per metre', qty: '120m', unit: '$12.50', disc: '—', tax: 'GST 10%', total: '$1,650.00' },
-  { num: 3, product: 'Assembly Labour', desc: 'Fabrication and welding', qty: '16hr', unit: '$95.00', disc: '—', tax: 'GST 10%', total: '$1,672.00' },
-  { num: 4, product: 'Paint Finish', desc: 'Dulux powder coat, custom RAL', qty: '1', unit: '$890.00', disc: '—', tax: 'GST 10%', total: '$979.00' },
+interface LineItem {
+  num: number;
+  product: string;
+  desc: string;
+  qty: string;
+  unit: number;
+  disc: number;
+  tax: string;
+  total: number;
+}
+
+const lineItems: LineItem[] = [
+  { num: 1, product: '10mm MS Plate', desc: 'AS/NZS 3678-250', qty: '50', unit: 85.00, disc: 5, tax: 'GST 10%', total: 4037.50 },
+  { num: 2, product: 'Laser Cutting', desc: 'Profile cutting per metre', qty: '120m', unit: 12.50, disc: 0, tax: 'GST 10%', total: 1650.00 },
+  { num: 3, product: 'Assembly Labour', desc: 'Fabrication and welding', qty: '16hr', unit: 95.00, disc: 0, tax: 'GST 10%', total: 1672.00 },
+  { num: 4, product: 'Paint Finish', desc: 'Dulux powder coat, custom RAL', qty: '1', unit: 890.00, disc: 0, tax: 'GST 10%', total: 979.00 },
+];
+
+const financialColumns: FinancialColumn<LineItem>[] = [
+  { key: 'num', header: '#', accessor: (row) => row.num, format: 'number', align: 'left' },
+  { key: 'product', header: 'Product', accessor: (row) => row.product, format: 'text', align: 'left' },
+  { key: 'desc', header: 'Description', accessor: (row) => row.desc, format: 'text', align: 'left' },
+  { key: 'qty', header: 'Qty', accessor: (row) => row.qty, format: 'text', align: 'right' },
+  { key: 'unit', header: 'Unit Price', accessor: (row) => row.unit, format: 'currency', align: 'right' },
+  { key: 'disc', header: 'Disc', accessor: (row) => row.disc === 0 ? '\u2014' : `${row.disc}%`, format: 'text', align: 'right' },
+  { key: 'tax', header: 'Tax', accessor: (row) => row.tax, format: 'text', align: 'left' },
+  { key: 'total', header: 'Total', accessor: (row) => row.total, format: 'currency', align: 'right' },
 ];
 
 export function InvoiceDetail({ onBack }: { onBack: () => void }) {
   return (
-    <div className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
+    <PageShell className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 hover:bg-[var(--neutral-100)] rounded-[var(--shape-lg)] transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[var(--mw-mirage)]" />
-          </button>
-          <h1 className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums">INV-2026-0045</h1>
-          <Badge className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]">Sent</Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
-          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
-          <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]" onClick={() => toast('Payment recording form coming soon')}><DollarSign className="w-4 h-4" /> Record Payment</Button>
-          <Button variant="ghost" size="icon" className="w-11 h-11"><MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" /></Button>
-        </div>
-      </div>
+      <PageHeader
+        title="INV-2026-0045"
+        breadcrumbs={[
+          { label: 'Book', href: '/book' },
+          { label: 'Invoices', href: '/book/invoices' },
+          { label: 'INV-2026-0045' },
+        ]}
+        actions={
+          <div className="flex items-center gap-3">
+            <StatusBadge status="sent">Sent</StatusBadge>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
+            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
+            <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)]" onClick={() => toast('Payment recording form coming soon')}><DollarSign className="w-4 h-4" /> Record Payment</Button>
+            <Button variant="ghost" size="icon" className="w-11 h-11"><MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" /></Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Left - Invoice Preview */}
@@ -45,7 +73,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               <div className="text-xs text-[var(--neutral-500)]">123 Factory Road, Oberon NSW 2787</div>
               <div className="text-xs text-[var(--neutral-500)] mt-0.5 tabular-nums">ABN: 12 345 678 901</div>
             </div>
-            <div className="text-[36px] tracking-tight text-[var(--mw-mirage)] font-normal">INVOICE</div>
+            <div className="text-4xl tracking-tight text-[var(--mw-mirage)] font-normal">INVOICE</div>
           </div>
 
           <Separator className="bg-[var(--neutral-200)]" />
@@ -77,29 +105,13 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Line Items */}
-          <table className="w-full mt-4">
-            <thead>
-              <tr className="bg-[var(--neutral-100)]">
-                {['#', 'Product', 'Description', 'Qty', 'Unit Price', 'Disc', 'Tax', 'Total'].map(h => (
-                  <th key={h} className={`px-3 py-2 text-xs tracking-wider text-[var(--neutral-500)] font-medium ${['Qty', 'Unit Price', 'Disc', 'Total'].includes(h) ? 'text-right' : 'text-left'}`}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {lineItems.map(item => (
-                <tr key={item.num} className="border-b border-[var(--border)]">
-                  <td className="px-3 py-3 text-sm text-[var(--neutral-600)]">{item.num}</td>
-                  <td className="px-3 py-3 text-sm text-[var(--mw-mirage)] font-medium">{item.product}</td>
-                  <td className="px-3 py-3 text-xs text-[var(--neutral-500)]">{item.desc}</td>
-                  <td className="px-3 py-3 text-sm text-right tabular-nums">{item.qty}</td>
-                  <td className="px-3 py-3 text-sm text-right tabular-nums">{item.unit}</td>
-                  <td className="px-3 py-3 text-sm text-right tabular-nums">{item.disc}</td>
-                  <td className="px-3 py-3 text-xs text-[var(--neutral-500)]">{item.tax}</td>
-                  <td className="px-3 py-3 text-sm text-right tabular-nums font-medium">{item.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <FinancialTable
+            columns={financialColumns}
+            data={lineItems}
+            keyExtractor={(item) => item.num}
+            totals={{ total: 8338.50 }}
+            className="mt-4"
+          />
 
           {/* Totals */}
           <div className="flex justify-end mt-6">
@@ -122,7 +134,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
         {/* Right Panel */}
         <div className="lg:col-span-2 space-y-4">
           {/* Payments */}
-          <Card className="bg-white shadow-xs border border-[var(--border)] p-4">
+          <Card className="bg-white shadow-xs border border-[var(--border)] p-6">
             <div className="flex items-center gap-2 mb-3">
               <DollarSign className="w-4 h-4 text-[var(--neutral-500)]" />
               <span className="text-sm text-[var(--mw-mirage)] font-medium">Payments</span>
@@ -132,7 +144,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Email History */}
-          <Card className="bg-white shadow-xs border border-[var(--border)] p-4">
+          <Card className="bg-white shadow-xs border border-[var(--border)] p-6">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="w-4 h-4 text-[var(--neutral-500)]" />
               <span className="text-sm text-[var(--mw-mirage)] font-medium">Email History</span>
@@ -156,7 +168,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Activity */}
-          <Card className="bg-white shadow-xs border border-[var(--border)] p-4">
+          <Card className="bg-white shadow-xs border border-[var(--border)] p-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-[var(--neutral-500)]" />
               <span className="text-sm text-[var(--mw-mirage)] font-medium">Activity</span>
@@ -181,7 +193,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
 
           {/* Xero */}
-          <Card className="bg-white shadow-xs border border-[var(--border)] p-4">
+          <Card className="bg-white shadow-xs border border-[var(--border)] p-6">
             <Button variant="ghost" className="text-[var(--mw-mirage)] p-0 h-auto gap-1 text-sm">
               View in Xero <ExternalLink className="w-4 h-4" />
             </Button>
@@ -193,6 +205,6 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           </Card>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

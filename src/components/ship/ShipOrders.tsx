@@ -1,10 +1,15 @@
 /**
  * Ship Orders — token-aligned to standard design system
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { LayoutGrid, List } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
+import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
+import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/KanbanColumn';
+import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
@@ -31,26 +36,23 @@ const ORDERS: Order[] = [
   { id: 'SH-009', customer: 'Kemppi Welding',   items: 2, weight: '6.3 kg',  carrier: 'Sendle',    due: '5d',    stage: 'Pick',      progress: 0 },
 ];
 
+const KANBAN_ITEM_TYPE = 'ship-order';
 const STAGES: Stage[] = ['Pick', 'Pack', 'Ship', 'Transit', 'Delivered'];
 
-const OrderCard = ({ order, onClick }: { order: Order; onClick: () => void }) => (
-  <div
-    onClick={onClick}
-    className={cn(
-      'bg-white rounded-[var(--shape-lg)] p-4 cursor-pointer transition-all duration-[var(--duration-short2)] border hover:shadow-md',
-      order.urgent ? 'border-[var(--mw-yellow-400)]' : 'border-[var(--border)] hover:border-[var(--neutral-300)]'
-    )}
-  >
+const OrderCardContent = ({ order, onClick }: { order: Order; onClick: () => void }) => (
+  <div onClick={onClick} className="p-4 cursor-pointer">
     <div className="flex items-center justify-between mb-2">
       <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{order.id}</span>
-      {order.urgent && <div className="w-2 h-2 rounded-full bg-[var(--mw-error)]" />}
+      {order.urgent && (
+        <StatusBadge priority="urgent">Urgent</StatusBadge>
+      )}
     </div>
     <p className="text-sm text-[var(--mw-mirage)] mb-0.5 font-medium">{order.customer}</p>
     <p className="text-xs text-[var(--neutral-500)] tabular-nums mb-4">{order.items} items · {order.weight}</p>
     <div className="h-1 bg-[var(--neutral-200)] rounded-full overflow-hidden mb-4">
       <div
         className="h-full rounded-full transition-all"
-        style={{ width: `${order.progress}%`, backgroundColor: order.progress === 100 ? 'var(--mw-success)' : 'var(--mw-yellow-400)' }}
+        style={{ width: `${order.progress}%`, backgroundColor: order.progress === 100 ? 'var(--mw-mirage)' : 'var(--mw-yellow-400)' }}
       />
     </div>
     <div className="flex items-center justify-between text-xs">
@@ -84,6 +86,11 @@ export function ShipOrders() {
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>(ORDERS);
+
+  const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
+    setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
+  }, []);
 
   return (
     <PageShell className="p-6 space-y-6 flex flex-col h-full overflow-hidden">
@@ -104,52 +111,41 @@ export function ShipOrders() {
 
       {/* Kanban */}
       {view === 'kanban' && (
-        <div className="flex-1 flex gap-4 overflow-x-auto overflow-y-hidden min-h-0 pb-4">
-          {STAGES.map(stage => {
-            const stageOrders = ORDERS.filter(o => o.stage === stage);
-            return (
-              <div key={stage} className="min-w-[260px] max-w-[320px] flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-4 px-1">
-                  <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">{stage}</span>
-                  <span className="text-xs text-[var(--neutral-400)] ">{stageOrders.length}</span>
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="flex-1 min-h-0">
+          <KanbanBoard className="h-full">
+            {STAGES.map(stage => {
+              const stageOrders = orders.filter(o => o.stage === stage);
+              return (
+                <KanbanColumn
+                  key={stage}
+                  id={stage}
+                  title={stage}
+                  count={stageOrders.length}
+                  accept={KANBAN_ITEM_TYPE}
+                  onDrop={handleKanbanDrop}
+                  className="min-w-[280px] w-[300px] flex-shrink-0"
+                >
                   {stageOrders.map(order => (
-                    <OrderCard key={order.id} order={order} onClick={() => setSelected(order)} />
+                    <KanbanCard key={order.id} id={order.id} type={KANBAN_ITEM_TYPE} className="p-0">
+                      <OrderCardContent order={order} onClick={() => setSelected(order)} />
+                    </KanbanCard>
                   ))}
-                </div>
-              </div>
-            );
-          })}
+                </KanbanColumn>
+              );
+            })}
+          </KanbanBoard>
         </div>
       )}
 
       {/* List */}
       {view === 'list' && (
-        <div className="flex-1 overflow-auto bg-white rounded-[var(--shape-lg)] border border-[var(--border)]">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                {['ORDER', 'CUSTOMER', 'ITEMS', 'CARRIER', 'DUE', 'STAGE'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {ORDERS.map((o) => (
-                <tr key={o.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors" onClick={() => setSelected(o)}>
-                  <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{o.id}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{o.customer}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)] tabular-nums">{o.items}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{o.carrier}</td>
-                  <td className={cn('px-4 py-3 text-sm text-[var(--neutral-500)]', o.due === 'Today' ? 'font-medium' : 'font-normal')}>{o.due}</td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs tracking-widest uppercase text-[var(--neutral-500)] font-medium">{o.stage}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex-1 overflow-auto">
+          <MwDataTable<Order>
+            columns={orderColumns}
+            data={orders}
+            keyExtractor={(o) => o.id}
+            onRowClick={(o) => setSelected(o)}
+          />
         </div>
       )}
 
@@ -183,10 +179,10 @@ export function ShipOrders() {
                   <DetailTimeline current={selected.stage} />
                 </div>
                 <div className="flex gap-4">
-                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
                     Advance stage
                   </button>
-                  <button className="flex-1 h-12 min-h-[48px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
                     Flag issue
                   </button>
                 </div>

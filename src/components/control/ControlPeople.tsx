@@ -53,7 +53,7 @@ export function ControlPeople() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         <DarkAccentCard icon={Users} label="Total users" value={String(stats.activeUsers)} subtext="Active" />
         <DarkAccentCard icon={Layers3} label="Leads assigned" value={`${stats.leads} / ${stats.totalModules}`} subtext="Module leads" />
         <DarkAccentCard

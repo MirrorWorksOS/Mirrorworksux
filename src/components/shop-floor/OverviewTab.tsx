@@ -192,7 +192,7 @@ export function OverviewTab() {
           variant={floorMode ? "default" : "outline"}
           size="sm"
           className={cn(
-            "h-10 gap-2",
+            "h-14 gap-2",
             floorMode ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" : "border-[var(--border)]"
           )}
           onClick={() => setFloorMode(!floorMode)}
@@ -294,22 +294,22 @@ export function OverviewTab() {
                  className="overflow-hidden"
                >
                  <div className="border-t border-[var(--border)] p-2 space-y-2">
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <AlertCircle className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
-                          <span className="font-semibold">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
+                          <span className="font-medium">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <Zap className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
-                          <span className="font-semibold">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
+                          <span className="font-medium">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-[8px] hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
                        <Info className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
-                          <span className="font-semibold">Efficiency:</span> Shop running 8% above target efficiency today
+                          <span className="font-medium">Efficiency:</span> Shop running 8% above target efficiency today
                        </div>
                     </div>
                  </div>
@@ -324,17 +324,17 @@ export function OverviewTab() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
             <Input 
               placeholder="Search work orders" 
-              className="pl-10 h-12 w-full bg-white text-base shadow-sm border-[var(--neutral-200)] rounded-[8px] focus-visible:ring-[var(--mw-yellow-400)]"
+              className="pl-10 h-12 w-full bg-white text-base shadow-sm border-[var(--neutral-200)] rounded-sm focus-visible:ring-[var(--mw-yellow-400)]"
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Status <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Priority <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-12 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-[8px]">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Machine <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
           </div>
@@ -367,7 +367,7 @@ export function OverviewTab() {
                     <div className="flex items-center justify-between p-4 bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
                       <div className="space-y-1">
                         <div className="text-xs text-[var(--neutral-500)] font-medium">DUE IN</div>
-                        <div className="text-2xl font-semibold text-[var(--neutral-800)] tabular-nums">4d 12h</div>
+                        <div className="text-2xl font-medium text-[var(--neutral-800)] tabular-nums">4d 12h</div>
                       </div>
                       <div className="space-y-1 text-right">
                         <div className="text-xs text-[var(--neutral-500)] font-medium">PRIORITY</div>
@@ -386,7 +386,7 @@ export function OverviewTab() {
                 <CardContent>
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <div className="text-4xl font-semibold text-[var(--neutral-800)] tabular-nums tracking-tight leading-none">
+                      <div className="text-4xl font-medium text-[var(--neutral-800)] tabular-nums tracking-tight leading-none">
                         {TIME_TRACKING_SUMMARY.totalShiftTime}
                       </div>
                       <div className="text-sm text-[var(--neutral-500)] mt-2">Total Shift Time</div>
@@ -434,7 +434,7 @@ export function OverviewTab() {
                 <CardContent>
                   <div className="space-y-3">
                     {ANDON_ALERTS.slice(0, 2).map(alert => (
-                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-[8px] bg-[var(--neutral-100)] border border-transparent hover:border-[var(--border)] transition-colors">
+                      <div key={alert.id} className="flex items-start gap-3 p-3 rounded-sm bg-[var(--neutral-100)] border border-transparent hover:border-[var(--border)] transition-colors">
                         <div className="w-5 h-5 rounded-full bg-[var(--mw-error)] flex items-center justify-center shrink-0 mt-0.5">
                            <span className="text-white text-xs font-bold">!</span>
                         </div>
@@ -444,7 +444,7 @@ export function OverviewTab() {
                         </div>
                       </div>
                     ))}
-                    <Button variant="ghost" size="sm" className="w-full text-xs font-medium text-[var(--neutral-500)] hover:text-[var(--neutral-800)] h-8">
+                    <Button variant="ghost" size="sm" className="w-full text-xs font-medium text-[var(--neutral-500)] hover:text-[var(--neutral-800)] h-14">
                       View All Issues <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
@@ -455,7 +455,7 @@ export function OverviewTab() {
 
             {/* Manufacturing Orders List */}
             <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--border)] bg-[var(--neutral-100)] text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wide">
+              <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--border)] bg-[var(--neutral-100)] text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wide">
                 <div className="col-span-2">MO #</div>
                 <div className="col-span-3">Customer & Part</div>
                 <div className="col-span-2">Due Date</div>
@@ -495,7 +495,7 @@ export function OverviewTab() {
                         </div>
                       </div>
                       <div className="col-span-1 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-14 w-14">
                           <MoreHorizontal className="w-4 h-4 text-[var(--neutral-500)]" />
                         </Button>
                       </div>
@@ -504,7 +504,7 @@ export function OverviewTab() {
                     {/* Expanded Child Rows (Work Orders) */}
                     {expandedRows[mo.id] && (
                       <div className="bg-[var(--neutral-100)]/30 border-t border-[var(--neutral-200)] shadow-inner">
-                        <div className="px-4 py-2 text-xs font-semibold text-[var(--neutral-500)] uppercase tracking-wider pl-12">
+                        <div className="px-4 py-2 text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider pl-12">
                           Work Orders
                         </div>
                         {mo.workOrders.length > 0 ? (
@@ -530,7 +530,7 @@ export function OverviewTab() {
                                 </div>
                               </div>
                               <div className="col-span-1 text-right">
-                                <Button variant="ghost" size="sm" className="h-7 text-xs text-[var(--neutral-500)]">View</Button>
+                                <Button variant="ghost" size="sm" className="h-14 text-xs text-[var(--neutral-500)]">View</Button>
                               </div>
                             </div>
                           ))
@@ -551,8 +551,8 @@ export function OverviewTab() {
       {isSidebarOpen && (
         <div className="w-[320px] shrink-0 bg-white flex flex-col rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden py-4">
           <div className="flex items-center justify-between px-4 mb-4">
-            <h3 className="font-semibold text-[var(--neutral-800)]">Communication</h3>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
+            <h3 className="font-medium text-[var(--neutral-800)]">Communication</h3>
+            <Button variant="ghost" size="icon" className="h-14 w-14 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
                <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
           </div>
@@ -573,7 +573,7 @@ export function OverviewTab() {
                          <span className="text-xs text-[var(--neutral-500)]">2m</span>
                        </div>
                        <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
-                         Material for <span className="text-[var(--mw-yellow-400)] font-semibold">@MO-26-401</span> is arrived.
+                         Material for <span className="text-[var(--mw-yellow-400)] font-medium">@MO-26-401</span> is arrived.
                        </p>
                      </div>
                    </div>
@@ -641,17 +641,17 @@ export function OverviewTab() {
                  <div className="relative">
                    <Input
                      placeholder="Type a message..."
-                     className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-[8px]"
+                     className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-sm"
                      value={chatInput}
                      onChange={e => setChatInput(e.target.value)}
                      onKeyDown={e => { if (e.key === 'Enter') handleChatSubmit(); }}
                    />
-                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-8 w-8 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent" onClick={handleChatSubmit}>
+                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-14 w-14 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent" onClick={handleChatSubmit}>
                      <Send className="w-4 h-4" />
                    </Button>
                  </div>
                  <div className="flex items-center gap-2 mt-2">
-                   <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]" onClick={() => toast('File attachment coming soon')}>
+                   <Button variant="ghost" size="sm" className="h-14 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]" onClick={() => toast('File attachment coming soon')}>
                      <Paperclip className="w-4 h-4 mr-1" /> Attach
                    </Button>
                  </div>
@@ -662,16 +662,16 @@ export function OverviewTab() {
 
              {/* Work Standards / Instructions */}
              <div className="px-4 py-2">
-               <h3 className="font-semibold text-[var(--neutral-800)] mb-3 text-sm">Quick Access</h3>
+               <h3 className="font-medium text-[var(--neutral-800)] mb-3 text-sm">Quick Access</h3>
                <div className="space-y-2">
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-[8px]">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-sm">
                    <FileText className="w-4 h-4 mr-3 text-[var(--mw-yellow-400)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">SOP-001 Assembly</div>
                      <div className="text-xs text-[var(--neutral-500)]">Updated 2 days ago</div>
                    </div>
                  </Button>
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-[8px]">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-sm">
                    <ShieldAlert className="w-4 h-4 mr-3 text-[var(--mw-error)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">Safety Protocol</div>
@@ -685,7 +685,7 @@ export function OverviewTab() {
       )}
       {!isSidebarOpen && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-           <Button variant="secondary" size="icon" className="h-12 w-8 rounded-l-lg rounded-r-none shadow-md border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
+           <Button variant="secondary" size="icon" className="h-14 w-14 rounded-l-lg rounded-r-none shadow-md border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
              <ChevronDown className="w-4 h-4 rotate-90 text-[var(--neutral-500)]" />
            </Button>
         </div>

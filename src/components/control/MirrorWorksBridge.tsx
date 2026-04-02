@@ -32,7 +32,7 @@ export function MirrorWorksBridge() {
         description="Import your existing data from CSV, Excel, or connect to external systems. MirrorWorks Bridge is the first step after onboarding (PLAT 01)."
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {dataTypes.map(type => {
           const Icon = type.icon;
           const progress = type.total > 0 ? (type.imported / type.total) * 100 : 0;
@@ -48,7 +48,7 @@ export function MirrorWorksBridge() {
                     <Icon className="h-5 w-5 text-[var(--mw-blue)]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">{type.label}</h3>
+                    <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{type.label}</h3>
                     <p className="mt-1 text-xs text-[var(--neutral-500)]">
                       <span className="tabular-nums">
                         {type.imported} / {type.total}

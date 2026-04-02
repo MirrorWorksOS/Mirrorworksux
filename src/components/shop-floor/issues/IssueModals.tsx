@@ -25,7 +25,7 @@ const VoiceNoteButton = () => {
       size="icon"
       className={cn(
         "shrink-0 transition-all duration-300", 
-        isRecording ? "bg-red-100 text-destructive border-red-200 animate-pulse" : "text-muted-foreground"
+        isRecording ? "bg-[var(--mw-error-light)] text-destructive border-[var(--mw-error)]/20 animate-pulse" : "text-muted-foreground"
       )}
       onClick={() => setIsRecording(!isRecording)}
     >
@@ -35,7 +35,7 @@ const VoiceNoteButton = () => {
 };
 
 const SectionHeader = ({ title }: { title: string }) => (
-  <h3 className="font-semibold text-[var(--neutral-900)] mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
+  <h3 className="font-medium text-[var(--neutral-900)] mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
 );
 
 // --- Forms ---
@@ -82,8 +82,8 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
            <SectionHeader title="Impact" />
            <RadioGroup defaultValue="blocking" className="space-y-2">
               <div className="flex items-center space-x-2">
-                 <RadioGroupItem value="blocking" id="blocking" className="text-destructive border-red-600" />
-                 <Label htmlFor="blocking" className="text-red-700 font-bold">Blocking production now - URGENT</Label>
+                 <RadioGroupItem value="blocking" id="blocking" className="text-destructive border-[var(--mw-error)]" />
+                 <Label htmlFor="blocking" className="text-[var(--mw-error)] font-bold">Blocking production now - URGENT</Label>
               </div>
               <div className="flex items-center space-x-2">
                  <RadioGroupItem value="2hours" id="2hours" />
@@ -106,11 +106,11 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
            </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-           <div className="flex items-center gap-2 mb-2 text-blue-800 font-bold text-sm">
+        <div className="bg-[var(--neutral-50)] border border-[var(--neutral-200)] rounded-xl p-4">
+           <div className="flex items-center gap-2 mb-2 text-[var(--mw-info)] font-bold text-sm">
               <Info className="w-4 h-4" /> Intelligence Hub Detected
            </div>
-           <ul className="space-y-1 text-sm text-blue-700">
+           <ul className="space-y-1 text-sm text-[var(--mw-info)]">
               <li>• 5052 Aluminum sheets inventory: <strong>6 remaining</strong></li>
               <li>• Current job needs: <strong>8 sheets</strong> (2 short)</li>
               <li>• Supplier lead time: <strong>4 hours</strong> (Central Steel)</li>
@@ -120,7 +120,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-black text-white hover:bg-[var(--neutral-800)]" onClick={() => { toast.success('Issue submitted successfully'); onClose(); }}>Submit Issue</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Issue submitted successfully'); onClose(); }}>Submit Issue</Button>
       </div>
     </div>
   );
@@ -193,11 +193,11 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
            </div>
         </div>
 
-        <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
-           <div className="flex items-center gap-2 mb-2 text-orange-800 font-bold text-sm">
+        <div className="bg-[var(--neutral-50)] border border-[var(--neutral-200)] rounded-xl p-4">
+           <div className="flex items-center gap-2 mb-2 text-[var(--mw-warning)] font-bold text-sm">
               <History className="w-4 h-4" /> Machine History
            </div>
-           <ul className="space-y-1 text-sm text-orange-800">
+           <ul className="space-y-1 text-sm text-[var(--mw-warning)]">
               <li>• Last maintenance: <strong>5 days ago</strong></li>
               <li>• Similar issue: <strong>3 weeks ago</strong> (resolved: tool change)</li>
               <li>• Uptime this week: <strong>94%</strong> (above target)</li>
@@ -207,7 +207,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-red-600 text-white hover:bg-red-700" onClick={() => { toast.success('Machine issue reported — maintenance notified'); onClose(); }}>Stop & Submit</Button>
+         <Button className="flex-1 bg-[var(--mw-error)] text-white hover:bg-[var(--mw-error)]/90" onClick={() => { toast.success('Machine issue reported — maintenance notified'); onClose(); }}>Stop & Submit</Button>
       </div>
     </div>
   );
@@ -268,20 +268,20 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
            </div>
         </div>
 
-        <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
-           <div className="flex items-center gap-2 mb-2 text-purple-800 font-bold text-sm">
+        <div className="bg-[var(--neutral-50)] border border-[var(--neutral-200)] rounded-xl p-4">
+           <div className="flex items-center gap-2 mb-2 text-[var(--neutral-800)] font-bold text-sm">
               <AlertOctagon className="w-4 h-4" /> Quality Pattern Detection
            </div>
-           <p className="text-sm text-purple-700 mb-2">
+           <p className="text-sm text-[var(--neutral-700)] mb-2">
               ⚠️ <strong>Alert:</strong> Last 5 parts trending toward upper limit. Likely cause: Tool wear.
            </p>
-           <Button size="sm" variant="outline" className="bg-white text-purple-700 border-purple-200 h-8">View Quality Chart</Button>
+           <Button size="sm" variant="outline" className="bg-white text-[var(--neutral-700)] border-[var(--neutral-200)] h-8">View Quality Chart</Button>
         </div>
       </div>
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-purple-600 text-white hover:bg-purple-700" onClick={() => { toast.success('NCR submitted and part quarantined'); onClose(); }}>Submit & Quarantine</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('NCR submitted and part quarantined'); onClose(); }}>Submit & Quarantine</Button>
       </div>
     </div>
   );
@@ -339,7 +339,7 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--neutral-900)] text-white hover:bg-[var(--neutral-800)]" onClick={() => { toast.success('Scrap logged successfully'); onClose(); }}>Log Scrap</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Scrap logged successfully'); onClose(); }}>Log Scrap</Button>
       </div>
     </div>
   );

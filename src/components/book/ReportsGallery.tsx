@@ -5,6 +5,7 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -31,6 +32,31 @@ const scheduled = [
   { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
   { name: 'Expense Report', schedule: 'Monthly', scheduleBg: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]', recipients: ['cormac@mirrorworks.io', 'matt@mirrorworks.io'], lastRun: '01 Feb', nextRun: '01 Mar', active: true },
   { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
+];
+
+type ScheduledReport = (typeof scheduled)[number];
+
+const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
+  { key: 'name', header: 'Report Name', cell: (s) => <span className="font-medium text-[var(--mw-mirage)]">{s.name}</span> },
+  {
+    key: 'schedule',
+    header: 'Schedule',
+    cell: (s) => <Badge className={cn('rounded-full text-xs px-2 py-0.5 border-0', s.scheduleBg)}>{s.schedule}</Badge>,
+  },
+  {
+    key: 'recipients',
+    header: 'Recipients',
+    cell: (s) => (
+      <div className="flex gap-1 flex-wrap">
+        {s.recipients.map(r => (
+          <Badge key={r} className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--neutral-500)]">{r}</Badge>
+        ))}
+      </div>
+    ),
+  },
+  { key: 'lastRun', header: 'Last Run', className: 'text-[var(--neutral-600)]', cell: (s) => s.lastRun },
+  { key: 'nextRun', header: 'Next Run', className: 'text-[var(--neutral-600)]', cell: (s) => s.nextRun },
+  { key: 'active', header: 'Active', cell: (s) => <Switch defaultChecked={s.active} /> },
 ];
 
 const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) => (
@@ -92,37 +118,11 @@ export function ReportsGallery() {
       {/* Scheduled */}
       <div className="space-y-4">
         <h2 className="font-medium text-[var(--mw-mirage)]">Scheduled reports</h2>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  {['REPORT NAME', 'SCHEDULE', 'RECIPIENTS', 'LAST RUN', 'NEXT RUN', 'ACTIVE'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {scheduled.map(s => (
-                  <tr key={s.name} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)]">
-                    <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{s.name}</td>
-                    <td className="px-4"><Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", s.scheduleBg)}>{s.schedule}</Badge></td>
-                    <td className="px-4">
-                      <div className="flex gap-1 flex-wrap">
-                        {s.recipients.map(r => (
-                          <Badge key={r} className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--neutral-500)]">{r}</Badge>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{s.lastRun}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{s.nextRun}</td>
-                    <td className="px-4"><Switch defaultChecked={s.active} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <MwDataTable
+          columns={scheduledColumns}
+          data={scheduled}
+          keyExtractor={(s) => s.name}
+        />
       </div>
     </PageShell>
   );

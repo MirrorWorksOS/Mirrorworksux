@@ -88,18 +88,6 @@
   --mw-error-200: #FECACA;
   --mw-error-600: #DC2626;
 
-  /* Operational Green (shop floor running/pass) */
-  --mw-green: #4CAF50;
-  --mw-green-50: #F0FDF4;
-  --mw-green-100: #DCFCE7;
-
-  /* AI Purple */
-  --mw-purple: #7C3AED;
-  --mw-purple-50: #F5F3FF;
-  --mw-purple-100: #F3E8FF;
-  --mw-purple-light: #A78BFA;
-  --mw-purple-600: #6D28D9;
-
   /* M3 Shape Scale */
   --shape-none: 0px;
   --shape-xs: 4px;

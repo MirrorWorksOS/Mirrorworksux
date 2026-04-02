@@ -16,8 +16,8 @@ function IconFileCog() {
 
 function IconWrapper() {
   return (
-    <div className="bg-white content-stretch flex items-center justify-center p-[8px] relative rounded-[8px] shrink-0 size-[48px]" data-name="Icon Wrapper">
-      <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
+    <div className="bg-white content-stretch flex items-center justify-center p-[8px] relative rounded-sm shrink-0 size-[48px]" data-name="Icon Wrapper">
+      <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
       <IconFileCog />
     </div>
   );
@@ -26,7 +26,7 @@ function IconWrapper() {
 function FlexVertical() {
   return (
     <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0 text-center w-full" data-name="Flex Vertical">
-      <p className="font-semibold leading-[28px] relative shrink-0 text-[20px] text-neutral-950 w-full">
+      <p className="font-medium leading-[28px] relative shrink-0 text-xl text-neutral-950 w-full">
         No CAD Model Found
       </p>
       <p className="font-normal leading-[20px] relative shrink-0 text-sm text-neutral-500 w-full">
@@ -55,7 +55,7 @@ function IconCloudUpload() {
 
 function Button() {
   return (
-    <div className="absolute bg-neutral-900 content-stretch flex gap-[8px] h-[36px] items-center justify-center left-[158px] px-[16px] py-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] top-[46px]" data-name="Button">
+    <div className="absolute bg-neutral-900 content-stretch flex gap-[8px] h-[36px] items-center justify-center left-[158px] px-[16px] py-[8px] rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] top-[46px]" data-name="Button">
       <IconCloudUpload />
       <div className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-sm text-neutral-50 text-nowrap">
         <p className="leading-[20px] whitespace-pre">Upload</p>
@@ -80,7 +80,7 @@ function DropZone() {
 
 function Button1() {
   return (
-    <div className="bg-neutral-900 content-stretch flex gap-[8px] h-[36px] items-center justify-center px-[16px] py-[8px] relative rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] shrink-0" data-name="Button">
+    <div className="bg-neutral-900 content-stretch flex gap-[8px] h-[36px] items-center justify-center px-[16px] py-[8px] relative rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] shrink-0" data-name="Button">
       <div className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-sm text-neutral-50 text-nowrap">
         <p className="leading-[20px] whitespace-pre">Create new</p>
       </div>
@@ -90,8 +90,8 @@ function Button1() {
 
 function Button2() {
   return (
-    <div className="bg-white content-stretch flex gap-[8px] h-[36px] items-center justify-center px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-      <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
+    <div className="bg-white content-stretch flex gap-[8px] h-[36px] items-center justify-center px-[16px] py-[8px] relative rounded-sm shrink-0" data-name="Button">
+      <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
       <div className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-sm text-neutral-950 text-nowrap">
         <p className="leading-[20px] whitespace-pre">Learn more</p>
       </div>
@@ -144,7 +144,7 @@ interface CadFileModalProps {
 export function CadFileModal({ isOpen, onClose }: CadFileModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[600px] w-full p-0 overflow-hidden bg-white border-none rounded-[20px]">
+      <DialogContent className="max-w-[600px] w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-none rounded-[20px]">
         <DialogTitle className="sr-only">CAD File</DialogTitle>
         <DialogDescription className="sr-only">Upload or view CAD files</DialogDescription>
         <div className="bg-white content-stretch flex flex-col items-start relative size-full" data-name="Bill of materials empty state">

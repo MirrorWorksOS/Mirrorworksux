@@ -15,8 +15,10 @@ import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
 const kpiData = {
@@ -174,8 +176,7 @@ export function BuyDashboard() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Spend by Category</h3>
+          <ChartCard title="Spend by Category">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -192,7 +193,7 @@ export function BuyDashboard() {
                     <Cell key={`cat-${i}`} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `$${v.toLocaleString()}`} />
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -209,18 +210,17 @@ export function BuyDashboard() {
                 </div>
               ))}
             </div>
-          </Card>
+          </ChartCard>
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Supplier Performance (On-Time %)</h3>
+          <ChartCard title="Supplier Performance (On-Time %)">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={supplierPerformance} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" vertical={false} />
                 <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                 <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={120} />
-                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
                 <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION_BAR}>
                   {supplierPerformance.map((entry, i) => (
                     <Cell key={`perf-${i}`} fill={getChartScaleColour(entry.onTime)} />
@@ -228,7 +228,7 @@ export function BuyDashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </Card>
+          </ChartCard>
         </motion.div>
       </div>
 

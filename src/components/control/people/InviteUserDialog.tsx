@@ -64,9 +64,9 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white p-6">
+      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 backdrop-blur-xl p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[var(--mw-mirage)]">Invite team member</DialogTitle>
+          <DialogTitle className="text-xl font-medium text-[var(--mw-mirage)]">Invite team member</DialogTitle>
           <DialogDescription className="text-xs text-[var(--neutral-500)]">
             They&apos;ll receive an email to join your organisation.
           </DialogDescription>

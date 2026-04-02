@@ -3,15 +3,15 @@
  * Full list with expandable BOM lines
  */
 import React, { useState } from 'react';
-import { Plus, Search, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { FilterBar } from '@/components/shared/layout/FilterBar';
 
 
 interface BOMLine {
@@ -83,6 +83,25 @@ const LINE_TYPE_CONFIG: Record<string, { bg: string; text: string }> = {
   labour:    { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
 };
 
+/* Column definitions for the nested BOM-lines sub-table */
+const bomLineColumns: MwColumnDef<BOMLine>[] = [
+  { key: 'sku',         header: 'SKU',         cell: (line) => <span className="text-xs text-[var(--neutral-500)]">{line.sku}</span> },
+  { key: 'description', header: 'Description', cell: (line) => <span className="text-sm text-[var(--mw-mirage)]">{line.description}</span> },
+  { key: 'qty',         header: 'Qty',         cell: (line) => <span className="text-sm font-medium">{line.qty}</span>, className: 'text-right', headerClassName: 'text-right' },
+  { key: 'unit',        header: 'Unit',        cell: (line) => <span className="text-sm text-[var(--neutral-500)]">{line.unit}</span> },
+  {
+    key: 'type', header: 'Type',
+    cell: (line) => {
+      const ltcfg = LINE_TYPE_CONFIG[line.type];
+      return (
+        <Badge className={cn('border-0 text-[10px] rounded-full px-1.5 py-0.5 capitalize', ltcfg.bg, ltcfg.text)}>
+          {line.type}
+        </Badge>
+      );
+    },
+  },
+];
+
 export function ControlBOMs() {
   const [search,    setSearch]   = useState('');
   const [expanded,  setExpanded] = useState<Set<string>>(new Set());
@@ -99,6 +118,75 @@ export function ControlBOMs() {
       return next;
     });
   };
+
+  /* Column definitions for the outer BOM table */
+  const bomColumns: MwColumnDef<BOM>[] = [
+    {
+      key: 'expand', header: '', headerClassName: 'w-8',
+      cell: (bom) => expanded.has(bom.id)
+        ? <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />
+        : <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />,
+    },
+    { key: 'product',   header: 'Product',    cell: (bom) => <span className="text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</span> },
+    { key: 'sku',       header: 'SKU',        cell: (bom) => <span className="text-xs text-[var(--neutral-500)]">{bom.sku}</span> },
+    { key: 'version',   header: 'Version',    cell: (bom) => <span className="text-sm text-[var(--neutral-500)]">{bom.version}</span> },
+    { key: 'components',header: 'Components', cell: (bom) => <span className="text-sm font-medium">{bom.componentCount}</span>, className: 'text-right', headerClassName: 'text-right' },
+    { key: 'updated',   header: 'Updated',    cell: (bom) => <span className="text-sm text-[var(--neutral-500)]">{bom.updatedAt}</span> },
+    {
+      key: 'status', header: 'Status', headerClassName: 'text-center',
+      cell: (bom) => {
+        const cfg = STATUS_CONFIG[bom.status];
+        return (
+          <div className="flex justify-center">
+            <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5 capitalize', cfg.bg, cfg.text)}>
+              {bom.status}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'actions', header: 'Actions', headerClassName: 'text-right',
+      cell: (_bom) => (
+        <div className="text-right" onClick={e => e.stopPropagation()}>
+          <Button variant="ghost" size="sm" className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]" onClick={() => toast('Edit BOM coming soon')}>
+            Edit
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  /**
+   * We wrap MwDataTable rows and expansion panels together using a custom
+   * data mapping: each BOM becomes 1-2 visual rows (the main row + optional
+   * expanded detail). Because MwDataTable renders one <TableRow> per data
+   * item, we handle the expansion inside the cell renderer of a special
+   * "full-row" approach by placing the sub-table immediately after the parent
+   * via React.Fragment and an extra data entry.
+   *
+   * For cleaner integration we flatten the data array so that expanded BOMs
+   * inject a "detail" pseudo-row.
+   */
+  type FlatRow = { kind: 'bom'; bom: BOM } | { kind: 'detail'; bom: BOM };
+
+  const flatData: FlatRow[] = [];
+  for (const bom of filtered) {
+    flatData.push({ kind: 'bom', bom });
+    if (expanded.has(bom.id)) {
+      flatData.push({ kind: 'detail', bom });
+    }
+  }
+
+  const flatColumns: MwColumnDef<FlatRow>[] = bomColumns.map((col) => ({
+    ...col,
+    cell: (row: FlatRow, index: number) => {
+      if (row.kind === 'detail') return null;            // detail rows rendered via colSpan below
+      return col.cell(row.bom, index);
+    },
+    headerClassName: col.headerClassName,
+    className: col.className,
+  }));
 
   return (
     <motion.div
@@ -117,109 +205,36 @@ export function ControlBOMs() {
         </Button>
       </div>
 
-      <div className="relative w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-        <Input
-          placeholder="Search BOMs..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm"
-        />
-      </div>
+      <MwDataTable<BOM>
+        columns={bomColumns}
+        data={filtered}
+        keyExtractor={(bom) => bom.id}
+        onRowClick={(bom) => toggle(bom.id)}
+        filterBar={
+          <FilterBar
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search BOMs..."
+          />
+        }
+        emptyState={<p className="text-sm text-muted-foreground">No BOMs match your search.</p>}
+      />
 
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium w-8" />
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Product</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Version</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Components</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Updated</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Status</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(bom => {
-              const isOpen = expanded.has(bom.id);
-              const cfg    = STATUS_CONFIG[bom.status];
-              return (
-                <React.Fragment key={bom.id}>
-                  <tr
-                    className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
-                    onClick={() => toggle(bom.id)}
-                  >
-                    <td className="px-4">
-                      {isOpen
-                        ? <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />
-                        : <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />
-                      }
-                    </td>
-                    <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</td>
-                    <td className="px-4 text-xs  text-[var(--neutral-500)]">{bom.sku}</td>
-                    <td className="px-4 text-sm  text-[var(--neutral-500)]">{bom.version}</td>
-                    <td className="px-4 text-right text-sm  font-medium">{bom.componentCount}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-500)]">{bom.updatedAt}</td>
-                    <td className="px-4">
-                      <div className="flex justify-center">
-                        <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5 capitalize', cfg.bg, cfg.text)}>
-                          {bom.status}
-                        </Badge>
-                      </div>
-                    </td>
-                    <td className="px-4 text-right" onClick={e => e.stopPropagation()}>
-                      <Button variant="ghost" size="sm" className="h-8 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]" onClick={() => toast('Edit BOM coming soon')}>
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-
-                  {/* Expanded BOM lines */}
-                  {isOpen && (
-                    <tr>
-                      <td colSpan={8} className="bg-[var(--neutral-100)] border-b border-[var(--border)] p-0">
-                        <div className="px-8 py-4">
-                          <table className="w-full">
-                            <thead>
-                              <tr>
-                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
-                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Description</th>
-                                <th className="pb-2 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Qty</th>
-                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Unit</th>
-                                <th className="pb-2 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Type</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {bom.lines.map((line, i) => {
-                                const ltcfg = LINE_TYPE_CONFIG[line.type];
-                                return (
-                                  <tr key={i} className="border-t border-[var(--border)] h-10">
-                                    <td className="py-2 text-xs  text-[var(--neutral-500)] pr-6">{line.sku}</td>
-                                    <td className="py-2 text-sm text-[var(--mw-mirage)] pr-6">{line.description}</td>
-                                    <td className="py-2 text-right text-sm  font-medium pr-4">{line.qty}</td>
-                                    <td className="py-2 text-sm text-[var(--neutral-500)] pr-6">{line.unit}</td>
-                                    <td className="py-2">
-                                      <Badge className={cn('border-0 text-[10px] rounded-full px-1.5 py-0.5 capitalize', ltcfg.bg, ltcfg.text)}>
-                                        {line.type}
-                                      </Badge>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+      {/* Expanded BOM-line sub-tables rendered outside the parent MwDataTable */}
+      {filtered.map(bom => {
+        if (!expanded.has(bom.id)) return null;
+        return (
+          <div key={`detail-${bom.id}`} className="-mt-6 px-4">
+            <div className="bg-[var(--neutral-100)] rounded-b-lg px-4 py-4 border border-t-0 border-[var(--neutral-100)]">
+              <MwDataTable<BOMLine>
+                columns={bomLineColumns}
+                data={bom.lines}
+                keyExtractor={(_line, i) => i}
+              />
+            </div>
+          </div>
+        );
+      })}
     </motion.div>
   );
 }

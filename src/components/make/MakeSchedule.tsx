@@ -6,8 +6,8 @@ import React, { useMemo, useState } from 'react';
 import { Calendar as CalendarIcon, ChartGantt, List, Plus } from 'lucide-react';
 import { addDays } from 'date-fns';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
@@ -97,57 +97,61 @@ function useCalendarEvents(): CalendarEvent[] {
   );
 }
 
+const fmtDate = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+
+const listColumns: MwColumnDef<MO>[] = [
+  { key: 'moNumber', header: 'MO #', cell: (mo) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.moNumber}</span> },
+  { key: 'job', header: 'Job', cell: (mo) => <span className="tabular-nums text-[var(--mw-mirage)]">{mo.job}</span> },
+  { key: 'product', header: 'Product', cell: (mo) => <span className="text-[var(--mw-mirage)]">{mo.product}</span> },
+  { key: 'workCenter', header: 'Work Centre', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.workCenter}</span> },
+  {
+    key: 'operator',
+    header: 'Operator',
+    cell: (mo) => (
+      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[10px] font-medium text-white">
+        {mo.operator}
+      </div>
+    ),
+  },
+  {
+    key: 'start',
+    header: 'Start',
+    cell: (mo) => {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + mo.startDay);
+      return <span className="text-[var(--neutral-600)]">{fmtDate(d)}</span>;
+    },
+  },
+  {
+    key: 'end',
+    header: 'End',
+    cell: (mo) => {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + mo.startDay + mo.durationDays - 1);
+      return <span className="text-[var(--neutral-600)]">{fmtDate(d)}</span>;
+    },
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    cell: (mo) => {
+      const cfg = STATUS_CONFIG[mo.status];
+      return (
+        <Badge className={cn('rounded-full border-0 px-2 py-0.5 text-xs', cfg.badge, cfg.text)}>
+          {cfg.label}
+        </Badge>
+      );
+    },
+  },
+];
+
 function ListView() {
   return (
-    <Card className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white shadow-xs">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-[var(--neutral-100)] bg-[var(--neutral-100)]">
-            {['MO #', 'JOB', 'PRODUCT', 'WORK CENTRE', 'OPERATOR', 'START', 'END', 'STATUS'].map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {MOs.map((mo) => {
-            const cfg = STATUS_CONFIG[mo.status];
-            const start = new Date(START_DATE);
-            start.setDate(start.getDate() + mo.startDay);
-            const end = new Date(START_DATE);
-            end.setDate(end.getDate() + mo.startDay + mo.durationDays - 1);
-            const fmt = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-            return (
-              <tr
-                key={mo.id}
-                className="h-14 border-b border-[var(--neutral-100)] transition-colors hover:bg-[#0A0A0A]/[0.04]"
-              >
-                <td className="px-4 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{mo.moNumber}</td>
-                <td className="px-4 text-sm tabular-nums text-[var(--mw-mirage)]">{mo.job}</td>
-                <td className="px-4 text-sm text-[var(--mw-mirage)]">{mo.product}</td>
-                <td className="px-4 text-sm text-[var(--neutral-600)]">{mo.workCenter}</td>
-                <td className="px-4">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[10px] font-medium text-white">
-                    {mo.operator}
-                  </div>
-                </td>
-                <td className="px-4 text-sm text-[var(--neutral-600)]">{fmt(start)}</td>
-                <td className="px-4 text-sm text-[var(--neutral-600)]">{fmt(end)}</td>
-                <td className="px-4">
-                  <Badge className={cn('rounded-full border-0 px-2 py-0.5 text-xs', cfg.badge, cfg.text)}>
-                    {cfg.label}
-                  </Badge>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </Card>
+    <MwDataTable
+      columns={listColumns}
+      data={MOs}
+      keyExtractor={(mo) => mo.id}
+    />
   );
 }
 

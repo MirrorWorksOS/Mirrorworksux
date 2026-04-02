@@ -30,6 +30,7 @@ import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { IconWell } from '@/components/shared/icons/IconWell';
 
 /* ------------------------------------------------------------------ */
 /* Mock G-code                                                        */
@@ -171,12 +172,10 @@ export function PlanNCConnect() {
 
           {/* Uploaded file */}
           {selectedFile && (
-            <Card className="border border-[var(--neutral-200)] bg-white p-4 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-                    <FileCode2 className="h-5 w-5 text-white" />
-                  </div>
+                  <IconWell icon={FileCode2} />
                   <div>
                     <p className="text-sm font-medium text-[var(--neutral-900)]">{selectedFile}</p>
                     <p className="text-xs text-[var(--neutral-500)]">12.4 KB · Uploaded 2 min ago</p>
@@ -201,7 +200,7 @@ export function PlanNCConnect() {
               <Badge variant="outline" className="border-[var(--border)] text-xs">Fanuc G-code</Badge>
             </div>
             <div className="overflow-auto max-h-[420px] bg-[var(--neutral-900)] p-4">
-              <pre className="text-xs leading-relaxed font-mono">
+              <pre className="text-xs leading-relaxed tabular-nums">
                 {GCODE_LINES.map((line, i) => (
                   <div key={i} className="flex">
                     <span className="w-8 shrink-0 text-right text-[var(--neutral-600)] select-none tabular-nums mr-4">

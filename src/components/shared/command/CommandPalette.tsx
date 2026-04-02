@@ -596,7 +596,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search or type a command..."
-              className="flex-1 h-full bg-transparent text-[15px] text-foreground placeholder:text-[var(--neutral-400)] outline-none"
+              className="flex-1 h-full bg-transparent text-base text-foreground placeholder:text-[var(--neutral-400)] outline-none"
             />
             <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded-[var(--shape-sm)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--neutral-400)]">
               ⌘K
@@ -640,7 +640,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {groupedItems.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-14 text-[var(--neutral-400)]">
                   <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] flex items-center justify-center mb-3">
-                    <Search className="h-5 w-5 opacity-50" strokeWidth={1.5} />
+                    <Search className="h-5 w-5 opacity-[0.38]" strokeWidth={1.5} />
                   </div>
                   <p className="text-sm font-medium text-[var(--neutral-500)]">No results found</p>
                   <p className="text-xs text-[var(--neutral-400)] mt-1">

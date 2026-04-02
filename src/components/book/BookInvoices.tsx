@@ -4,16 +4,17 @@ import { MoreVertical, FileText } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
-import { 
-  AnimatedSearch, 
-  AnimatedFilter, 
-  AnimatedDownload, 
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
+import {
+  AnimatedSearch,
+  AnimatedFilter,
+  AnimatedDownload,
   AnimatedPlus,
   AnimatedSend,
   AnimatedEye
@@ -93,14 +94,14 @@ const MOCK_INVOICES: Invoice[] = [
   },
 ];
 
-const statusConfig: Record<InvoiceStatus, { label: string; className: string }> = {
-  draft: { label: 'Draft', className: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]' },
-  sent: { label: 'Sent', className: 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]' },
-  viewed: { label: 'Viewed', className: 'bg-[var(--mw-blue-100)] text-[var(--mw-blue)]' },
-  partiallyPaid: { label: 'Partially Paid', className: 'bg-[var(--mw-amber-100)] text-[var(--mw-amber)]' },
-  paid: { label: 'Paid', className: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' },
-  overdue: { label: 'Overdue', className: 'bg-[var(--mw-error-100)] text-[var(--mw-error)]' },
-  cancelled: { label: 'Cancelled', className: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]' },
+const STATUS_LABEL_MAP: Record<InvoiceStatus, string> = {
+  draft: 'Draft',
+  sent: 'Sent',
+  viewed: 'Viewed',
+  partiallyPaid: 'Partially Paid',
+  paid: 'Paid',
+  overdue: 'Overdue',
+  cancelled: 'Cancelled',
 };
 
 interface BookInvoicesProps {
@@ -129,6 +130,145 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     return acc;
   }, {} as Record<InvoiceStatus, number>);
 
+  const columns: MwColumnDef<Invoice>[] = [
+    {
+      key: 'id',
+      header: 'Invoice #',
+      cell: (invoice) => (
+        <div className="flex flex-col">
+          <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
+            {invoice.id}
+          </span>
+          {invoice.jobReference && (
+            <span className="font-normal text-xs text-[var(--neutral-500)]">
+              Job: {invoice.jobReference}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'customer',
+      header: 'Customer',
+      cell: (invoice) => (
+        <div className="flex items-center gap-2">
+          <Avatar className="w-6 h-6 border border-[var(--border)]">
+            <AvatarImage src={invoice.customerLogo} />
+            <AvatarFallback className="text-xs">
+              {invoice.customer.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="font-normal text-xs text-[var(--mw-mirage)]">
+            {invoice.customer}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'issueDate',
+      header: 'Issue Date',
+      cell: (invoice) => (
+        <span className="font-normal text-xs text-[var(--neutral-500)]">
+          {new Date(invoice.issueDate).toLocaleDateString('en-AU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          })}
+        </span>
+      ),
+    },
+    {
+      key: 'dueDate',
+      header: 'Due Date',
+      cell: (invoice) => (
+        <span
+          className={cn(
+            'text-xs',
+            invoice.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)]'
+          )}
+        >
+          {new Date(invoice.dueDate).toLocaleDateString('en-AU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          })}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (invoice) => (
+        <StatusBadge status={invoice.status as StatusKey}>
+          {STATUS_LABEL_MAP[invoice.status]}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'total',
+      header: 'Total',
+      cell: (invoice) => (
+        <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
+          ${invoice.total.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'balanceDue',
+      header: 'Balance Due',
+      cell: (invoice) => (
+        <span
+          className={cn(
+            'tabular-nums text-xs font-medium',
+            invoice.balanceDue === 0 ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]'
+          )}
+        >
+          {invoice.balanceDue === 0 ? 'Paid' : `$${invoice.balanceDue.toLocaleString()}`}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerClassName: 'text-center',
+      className: 'text-center',
+      cell: (invoice) => (
+        <div className="flex items-center justify-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <AnimatedSend className="w-4 h-4 text-[var(--neutral-500)]" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <AnimatedDownload className="w-4 h-4 text-[var(--neutral-500)]" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
@@ -149,7 +289,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               Filter
             </Button>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Exporting invoices…')}>
               <AnimatedDownload className="w-4 h-4 mr-2" />
@@ -186,7 +326,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                   : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >
-              {statusConfig[status].label}
+              {STATUS_LABEL_MAP[status]}
               {statusCounts[status] && <span className="ml-1">({statusCounts[status]})</span>}
             </button>
           ))}
@@ -200,160 +340,20 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
         variants={staggerContainer}
         className="flex-1 overflow-auto p-6"
       >
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Invoice #
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Customer
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Issue Date
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Due Date
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Status
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Total
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Balance Due
-                </th>
-                <th className="text-center px-4 py-3 font-medium text-xs font-medium text-[var(--mw-mirage)]">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInvoices.map((invoice, index) => (
-                <motion.tr
-                  key={invoice.id}
-                  variants={staggerItem}
-                  custom={index}
-                  onClick={() => onSelectInvoice ? onSelectInvoice(invoice.id) : navigate(`/book/invoices/${invoice.id}`)}
-                  className="border-b border-[var(--border)] hover:bg-[var(--neutral-100)] cursor-pointer transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
-                        {invoice.id}
-                      </span>
-                      {invoice.jobReference && (
-                        <span className="font-normal text-xs text-[var(--neutral-500)]">
-                          Job: {invoice.jobReference}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="w-6 h-6 border border-[var(--border)]">
-                        <AvatarImage src={invoice.customerLogo} />
-                        <AvatarFallback className="text-xs">
-                          {invoice.customer.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-normal text-xs text-[var(--mw-mirage)]">
-                        {invoice.customer}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-normal text-xs text-[var(--neutral-500)]">
-                    {new Date(invoice.issueDate).toLocaleDateString('en-AU', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={cn(
-                        'text-xs',
-                        invoice.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)]'
-                      )}
-                    >
-                      {new Date(invoice.dueDate).toLocaleDateString('en-AU', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge className={cn('text-xs rounded px-2 py-0.5 border-transparent', statusConfig[invoice.status].className)}>
-                      {statusConfig[invoice.status].label}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
-                    ${invoice.total.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={cn(
-                        'tabular-nums text-xs font-medium',
-                        invoice.balanceDue === 0 ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]'
-                      )}
-                    >
-                      {invoice.balanceDue === 0 ? 'Paid' : `$${invoice.balanceDue.toLocaleString()}`}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Send action
-                        }}
-                      >
-                        <AnimatedSend className="w-4 h-4 text-[var(--neutral-500)]" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Download action
-                        }}
-                      >
-                        <AnimatedDownload className="w-4 h-4 text-[var(--neutral-500)]" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // More actions
-                        }}
-                      >
-                        <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                      </Button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-
-          {filteredInvoices.length === 0 && (
+        <MwDataTable
+          columns={columns}
+          data={filteredInvoices}
+          keyExtractor={(invoice) => invoice.id}
+          onRowClick={(invoice) => onSelectInvoice ? onSelectInvoice(invoice.id) : navigate(`/book/invoices/${invoice.id}`)}
+          emptyState={
             <EmptyState
               variant="compact"
               icon={FileText}
               title="No invoices found"
               description="Try adjusting your search or filter criteria"
             />
-          )}
-        </div>
+          }
+        />
 
         {/* Pagination */}
         {filteredInvoices.length > 0 && (

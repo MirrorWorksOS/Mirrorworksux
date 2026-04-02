@@ -16,8 +16,10 @@ import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_CARTESIAN_GRID,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { useNavigate } from 'react-router';
 
@@ -142,7 +144,7 @@ export function PlanDashboard() {
           <Card className="p-0 overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">Upcoming Tasks</h3>
+                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Upcoming Tasks</h3>
                 <p className="text-xs text-[var(--neutral-500)]">Today's priority items</p>
               </div>
               <Button
@@ -174,7 +176,7 @@ export function PlanDashboard() {
           <Card className="p-0 overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">Priority Jobs</h3>
+                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Priority Jobs</h3>
                 <p className="text-xs text-[var(--neutral-500)]">Requires attention</p>
               </div>
               <Button
@@ -196,7 +198,7 @@ export function PlanDashboard() {
                 >
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-semibold text-[var(--mw-mirage)]">{job.id}</span>
+                      <span className="text-xs tabular-nums font-medium text-[var(--mw-mirage)]">{job.id}</span>
                       <Badge className={`text-[10px] px-1.5 py-0 ${priorityColors[job.priority]}`}>
                         {job.priority.toUpperCase()}
                       </Badge>
@@ -216,7 +218,7 @@ export function PlanDashboard() {
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-sm font-semibold text-[var(--mw-mirage)] mb-1">Quick Actions</h3>
+            <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-1">Quick Actions</h3>
             <p className="text-xs text-[var(--neutral-500)] mb-4">Common workflows</p>
             <div className="space-y-2">
               <Button
@@ -265,19 +267,13 @@ export function PlanDashboard() {
 
       {/* Production Schedule Chart — §4.1 */}
       <motion.div variants={staggerItem}>
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">Weekly Capacity (% Utilisation)</h3>
-              <p className="text-xs text-[var(--neutral-500)]">Planned vs actual output</p>
-            </div>
-          </div>
+        <ChartCard title="Weekly Capacity (% Utilisation)" subtitle="Planned vs actual output">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={weeklyCapacity} barGap={4}>
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="week" tick={MW_AXIS_TICK} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
-              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
+              <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
               <Legend />
               <Bar key="planned" dataKey="planned" radius={[4, 4, 0, 0]} name="Planned" fill="var(--mw-yellow-400)" {...MW_RECHARTS_ANIMATION_BAR} />
               <Bar key="actual" dataKey="actual" radius={[4, 4, 0, 0]} name="Actual" {...MW_RECHARTS_ANIMATION_BAR}>
@@ -287,7 +283,7 @@ export function PlanDashboard() {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
       </motion.div>
       </motion.div>
     </ModuleDashboard>

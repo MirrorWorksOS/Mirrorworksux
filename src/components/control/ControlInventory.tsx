@@ -6,9 +6,8 @@ import { Plus, Download } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
@@ -36,6 +35,82 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; d
 };
 
 const CATEGORIES = ['All', 'Raw Materials', 'Consumables', 'Finished Goods'];
+
+type InventoryItem = (typeof INVENTORY)[number];
+
+const inventoryColumns: MwColumnDef<InventoryItem>[] = [
+  {
+    key: 'sku',
+    header: 'SKU',
+    cell: (item) => item.sku,
+    className: 'text-xs font-medium text-[var(--neutral-500)]',
+  },
+  {
+    key: 'name',
+    header: 'Name',
+    cell: (item) => item.name,
+    className: 'font-medium text-[var(--mw-mirage)]',
+  },
+  {
+    key: 'category',
+    header: 'Category',
+    cell: (item) => (
+      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">
+        {item.category}
+      </Badge>
+    ),
+  },
+  {
+    key: 'onHand',
+    header: 'On Hand',
+    headerClassName: 'text-right',
+    className: 'text-right font-medium',
+    cell: (item) => (
+      <span
+        style={{
+          color: item.status === 'out' ? 'var(--mw-error)' : item.status === 'low' ? 'var(--mw-amber)' : 'var(--mw-mirage)',
+        }}
+      >
+        {item.onHand} {item.unit}
+      </span>
+    ),
+  },
+  {
+    key: 'minStock',
+    header: 'Min Stock',
+    headerClassName: 'text-right',
+    className: 'text-right text-[var(--neutral-500)]',
+    cell: (item) => item.minStock,
+  },
+  {
+    key: 'cost',
+    header: 'Cost',
+    headerClassName: 'text-right',
+    className: 'text-right tabular-nums',
+    cell: (item) => `$${item.costPrice.toFixed(2)}`,
+  },
+  {
+    key: 'location',
+    header: 'Location',
+    className: 'text-xs text-[var(--neutral-500)]',
+    cell: (item) => item.location,
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    headerClassName: 'text-center',
+    cell: (item) => {
+      const cfg = STATUS_CONFIG[item.status];
+      return (
+        <div className="flex justify-center">
+          <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>
+            {cfg.label}
+          </Badge>
+        </div>
+      );
+    },
+  },
+];
 
 export function ControlInventory() {
   const [search,   setSearch]   = useState('');
@@ -68,7 +143,7 @@ export function ControlInventory() {
           options={CATEGORIES.map(c => ({ key: c, label: c }))}
         />
         <ToolbarSpacer />
-        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5" onClick={() => toast.success('Exporting inventory...')}>
+        <Button variant="outline" className="h-12 gap-2 rounded-md border-[var(--neutral-200)] px-5" onClick={() => toast.success('Exporting inventory...')}>
           <Download className="w-4 h-4" /> Export
         </Button>
         <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New inventory item coming soon')}>
@@ -76,54 +151,12 @@ export function ControlInventory() {
         </ToolbarPrimaryButton>
       </PageToolbar>
 
-      {/* Table */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Name</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Category</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">On Hand</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Min Stock</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Cost</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Location</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((item) => {
-              const cfg = STATUS_CONFIG[item.status];
-              return (
-                <tr key={item.id} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
-                  <td className="px-4 text-xs  font-medium text-[var(--neutral-500)]">{item.sku}</td>
-                  <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{item.name}</td>
-                  <td className="px-4">
-                    <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{item.category}</Badge>
-                  </td>
-                  <td className="px-4 text-right  text-sm font-medium"
-                    style={{ color: item.status === 'out' ? 'var(--mw-error)' : item.status === 'low' ? 'var(--mw-amber)' : 'var(--mw-mirage)' }}>
-                    {item.onHand} {item.unit}
-                  </td>
-                  <td className="px-4 text-right  text-sm text-[var(--neutral-500)]">{item.minStock}</td>
-                  <td className="px-4 text-right  text-sm">${item.costPrice.toFixed(2)}</td>
-                  <td className="px-4 text-xs  text-[var(--neutral-500)]">{item.location}</td>
-                  <td className="px-4">
-                    <div className="flex justify-center">
-                      <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>
-                        {cfg.label}
-                      </Badge>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {filtered.length === 0 && (
-          <EmptyState variant="inline" title="No items match your search." />
-        )}
-      </Card>
+      <MwDataTable
+        columns={inventoryColumns}
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        emptyState={<EmptyState variant="inline" title="No items match your search." />}
+      />
     </PageShell>
   );
 }

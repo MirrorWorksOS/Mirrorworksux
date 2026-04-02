@@ -24,6 +24,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
+import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
 
 /* ------------------------------------------------------------------ */
@@ -185,7 +186,7 @@ export function MakeManufacturingOrderDetail() {
                         setSummaryFilter((f) => (f === card.key ? null : card.key))
                       }
                       className={cn(
-                        'rounded-[var(--shape-lg)] border p-4 text-left transition-colors',
+                        'rounded-[var(--shape-lg)] border p-6 text-left transition-colors',
                         active
                           ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 shadow-xs'
                           : 'border-[var(--neutral-200)] bg-white shadow-xs hover:bg-[var(--neutral-50)]',
@@ -194,7 +195,7 @@ export function MakeManufacturingOrderDetail() {
                       <p className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">
                         {card.label}
                       </p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--neutral-900)] tabular-nums">
+                      <p className="mt-2 text-lg font-medium text-[var(--neutral-900)] tabular-nums">
                         {card.value}
                       </p>
                       <p className="mt-1 text-xs text-[var(--neutral-500)]">{card.hint}</p>
@@ -302,20 +303,20 @@ export function MakeManufacturingOrderDetail() {
               <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <h2 className="text-base font-medium text-[var(--neutral-900)] mb-4">Overall Progress</h2>
                 <div className="text-center mb-4">
-                  <span className="text-3xl font-semibold tabular-nums text-[var(--neutral-900)]">{overallProgress}%</span>
+                  <span className="text-3xl font-medium tabular-nums text-[var(--neutral-900)]">{overallProgress}%</span>
                 </div>
                 <ProgressBar value={overallProgress} />
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--neutral-900)]">{WORK_ORDERS.filter((w) => w.status === 'complete').length}</p>
+                    <p className="text-lg font-medium tabular-nums text-[var(--neutral-900)]">{WORK_ORDERS.filter((w) => w.status === 'complete').length}</p>
                     <p className="text-xs text-[var(--neutral-500)]">Complete</p>
                   </div>
                   <div>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--mw-yellow-500)]">{WORK_ORDERS.filter((w) => w.status === 'in_progress').length}</p>
+                    <p className="text-lg font-medium tabular-nums text-[var(--mw-yellow-500)]">{WORK_ORDERS.filter((w) => w.status === 'in_progress').length}</p>
                     <p className="text-xs text-[var(--neutral-500)]">In Progress</p>
                   </div>
                   <div>
-                    <p className="text-lg font-semibold tabular-nums text-[var(--neutral-400)]">{WORK_ORDERS.filter((w) => w.status === 'pending').length}</p>
+                    <p className="text-lg font-medium tabular-nums text-[var(--neutral-400)]">{WORK_ORDERS.filter((w) => w.status === 'pending').length}</p>
                     <p className="text-xs text-[var(--neutral-500)]">Pending</p>
                   </div>
                 </div>
@@ -452,7 +453,7 @@ export function MakeManufacturingOrderDetail() {
             </div>
             <div className="space-y-3">
               {ISSUES.map((issue) => (
-                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-white p-4 shadow-xs rounded-[var(--shape-lg)]">
+                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-medium text-[var(--neutral-900)]">{issue.title}</p>
@@ -561,9 +562,7 @@ export function MakeManufacturingOrderDetail() {
                 { name: 'Material-Cert-304SS.pdf', type: 'Certificate', size: '1.1 MB', date: 'Dec 4, 2025', icon: Shield },
               ].map((doc) => (
                 <div key={doc.name} className="flex items-center gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] transition-colors">
-                  <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center">
-                    <doc.icon className="h-5 w-5 text-[var(--neutral-500)]" />
-                  </div>
+                  <IconWell icon={doc.icon} surface="onDark" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[var(--neutral-900)] truncate">{doc.name}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{doc.type} · {doc.size} · {doc.date}</p>

@@ -6,11 +6,15 @@ import { Card } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
 import {
-  AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+  AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_CHART_COLOURS } from '@/components/shared/charts/chart-theme';
+import { MW_AXIS_TICK, MW_CARTESIAN_GRID, MW_CHART_COLOURS, MW_RECHARTS_ANIMATION, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 
 const trendData = [
   { month: 'Mar', raw: 120000, wip: 65000, finished: 45000 },
@@ -52,6 +56,19 @@ const rawMaterials = [
   { item: '6mm MS Plate', sku: 'MS-06-3678', qty: 45, unit: '$65.00', total: 2925, location: 'Bay A1', lastMove: '12 Feb', age: 'Active' as AgeCategory },
 ];
 
+type RawMaterialRow = typeof rawMaterials[number];
+
+const stockColumns: FinancialColumn<RawMaterialRow>[] = [
+  { key: 'item', header: 'ITEM', accessor: (r) => r.item, format: 'text', align: 'left' },
+  { key: 'sku', header: 'SKU', accessor: (r) => r.sku, format: 'text', align: 'left' },
+  { key: 'qty', header: 'QTY', accessor: (r) => r.qty, format: 'number' },
+  { key: 'unit', header: 'UNIT COST', accessor: (r) => r.unit, format: 'text', align: 'right' },
+  { key: 'total', header: 'TOTAL VALUE', accessor: (r) => r.total, format: 'currency' },
+  { key: 'location', header: 'LOCATION', accessor: (r) => r.location, format: 'text', align: 'left' },
+  { key: 'lastMove', header: 'LAST MOVEMENT', accessor: (r) => r.lastMove, format: 'text', align: 'left' },
+  { key: 'age', header: 'AGE', accessor: (r) => r.age, format: 'text', align: 'left' },
+];
+
 const TABS = ['Raw Materials', 'Work in Progress', 'Finished Goods', 'Adjustments'];
 
 export function StockValuation() {
@@ -85,52 +102,56 @@ export function StockValuation() {
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <div className="flex items-center gap-2 mb-2"><Package className="w-6 h-6 text-[var(--mw-yellow-400)]" /><span className="text-xs tracking-wider text-[var(--neutral-500)] font-medium">RAW MATERIALS</span></div>
-          <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">$145,600</div>
-          <p className="text-xs text-[var(--neutral-500)] mt-1">342 items</p>
-        </Card>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <div className="flex items-center gap-2 mb-2"><Wrench className="w-6 h-6 text-[var(--mw-yellow-400)]" /><span className="text-xs tracking-wider text-[var(--neutral-500)] font-medium">WORK IN PROGRESS</span></div>
-          <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">$89,200</div>
-          <p className="text-xs text-[var(--neutral-500)] mt-1">12 jobs</p>
-        </Card>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <div className="flex items-center gap-2 mb-2"><CheckCircle className="w-6 h-6 text-[var(--mw-yellow-400)]" /><span className="text-xs tracking-wider text-[var(--neutral-500)] font-medium">FINISHED GOODS</span></div>
-          <div className="text-2xl tracking-tight text-[var(--mw-mirage)] tabular-nums font-medium">$67,800</div>
-          <p className="text-xs text-[var(--neutral-500)] mt-1">45 items</p>
-        </Card>
-        <Card className="bg-[var(--mw-mirage)] rounded-[var(--shape-lg)] shadow-xs border border-[var(--mw-mirage)] p-6">
-          <div className="text-xs tracking-wider text-white/70 mb-2 font-medium">TOTAL INVENTORY VALUE</div>
-          <div className="text-2xl tracking-tight text-white tabular-nums font-medium">$302,600</div>
-        </Card>
+        <KpiStatCard
+          label="RAW MATERIALS"
+          value="$145,600"
+          icon={Package}
+          iconSurface="key"
+          hint="342 items"
+        />
+        <KpiStatCard
+          label="WORK IN PROGRESS"
+          value="$89,200"
+          icon={Wrench}
+          iconSurface="key"
+          hint="12 jobs"
+        />
+        <KpiStatCard
+          label="FINISHED GOODS"
+          value="$67,800"
+          icon={CheckCircle}
+          iconSurface="key"
+          hint="45 items"
+        />
+        <DarkAccentCard
+          label="TOTAL INVENTORY VALUE"
+          value="$302,600"
+        />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Valuation Trend</h3>
+        <ChartCard title="Valuation Trend">
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={trendData}>
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="month" tick={MW_AXIS_TICK} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
-              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-              <Area type="monotone" dataKey="finished" stackId="1" stroke={MW_CHART_COLOURS[0]} fill={MW_CHART_COLOURS[0]} fillOpacity={0.2} />
-              <Area type="monotone" dataKey="wip" stackId="1" stroke={MW_CHART_COLOURS[1]} fill={MW_CHART_COLOURS[1]} fillOpacity={0.2} />
-              <Area type="monotone" dataKey="raw" stackId="1" stroke={MW_CHART_COLOURS[2]} fill={MW_CHART_COLOURS[2]} fillOpacity={0.2} />
+              <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
+              <Area type="monotone" dataKey="finished" stackId="1" stroke={MW_CHART_COLOURS[0]} fill={MW_CHART_COLOURS[0]} fillOpacity={0.2} {...MW_RECHARTS_ANIMATION} />
+              <Area type="monotone" dataKey="wip" stackId="1" stroke={MW_CHART_COLOURS[1]} fill={MW_CHART_COLOURS[1]} fillOpacity={0.2} {...MW_RECHARTS_ANIMATION} />
+              <Area type="monotone" dataKey="raw" stackId="1" stroke={MW_CHART_COLOURS[2]} fill={MW_CHART_COLOURS[2]} fillOpacity={0.2} {...MW_RECHARTS_ANIMATION} />
             </AreaChart>
           </ResponsiveContainer>
-        </Card>
-        <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6">
-          <h3 className="text-[var(--mw-mirage)] mb-4 font-medium">Current Split</h3>
+        </ChartCard>
+        <ChartCard title="Current Split">
           <div className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={donutData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value">
+                <Pie data={donutData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value" {...MW_RECHARTS_ANIMATION}>
                   {donutData.map((e, i) => <Cell key={`stock-${e.name}-${i}`} fill={e.color} />)}
                 </Pie>
-                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
               </PieChart>
             </ResponsiveContainer>
             <div className="flex gap-6 mt-2">
@@ -142,11 +163,11 @@ export function StockValuation() {
               ))}
             </div>
           </div>
-        </Card>
+        </ChartCard>
       </div>
 
       {/* Tabs + Table */}
-      <Card className="bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] overflow-hidden">
+      <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
         <div className="flex border-b border-[var(--border)]">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
@@ -161,31 +182,11 @@ export function StockValuation() {
         </div>
 
         {activeTab === 'Raw Materials' && (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  {['ITEM', 'SKU', 'QTY', 'UNIT COST', 'TOTAL VALUE', 'LOCATION', 'LAST MOVEMENT', 'AGE'].map(h => (
-                    <th key={h} className={cn("px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] font-medium", ['QTY', 'UNIT COST', 'TOTAL VALUE'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rawMaterials.map((r, i) => (
-                  <tr key={r.sku} className={cn("border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)]", i % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                    <td className="px-4 text-sm text-[var(--mw-mirage)]">{r.item}</td>
-                    <td className="px-4 text-xs text-[var(--neutral-500)] tabular-nums">{r.sku}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.qty}</td>
-                    <td className="px-4 text-sm text-right tabular-nums">{r.unit}</td>
-                    <td className="px-4 text-sm text-right tabular-nums font-medium">${r.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.location}</td>
-                    <td className="px-4 text-sm text-[var(--neutral-600)]">{r.lastMove}</td>
-                    <td className="px-4"><Badge className={cn("rounded-full text-xs px-2 py-0.5 border-0", ageStyles[r.age])}>{r.age}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <FinancialTable
+            columns={stockColumns}
+            data={rawMaterials}
+            keyExtractor={(r) => r.sku}
+          />
         )}
         {activeTab !== 'Raw Materials' && (
           <div className="p-8 text-center text-sm text-[var(--neutral-400)]">No {activeTab.toLowerCase()} data to display.</div>

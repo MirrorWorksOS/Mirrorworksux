@@ -885,7 +885,7 @@ export function SellOpportunityPage() {
                   <div key={m.label} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-50)] px-4 py-3">
                     {m.icon}
                     <div>
-                      <p className="text-lg font-semibold tabular-nums text-[var(--neutral-900)]">{m.value}</p>
+                      <p className="text-lg font-medium tabular-nums text-[var(--neutral-900)]">{m.value}</p>
                       <p className="text-xs text-[var(--neutral-500)]">{m.label}</p>
                     </div>
                   </div>

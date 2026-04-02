@@ -35,6 +35,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, MW_RECHARTS_ANIMATION_BAR } from "@/components/shared/charts/chart-theme";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
@@ -221,7 +222,7 @@ function ChartWidgetContent({ type }: { type: string }) {
           <AreaChart data={REVENUE_DATA}>
             <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
-            <Tooltip />
+            <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
             <Area
               type="monotone"
               dataKey="actual"
@@ -229,6 +230,7 @@ function ChartWidgetContent({ type }: { type: string }) {
               fill="var(--mw-mirage)"
               fillOpacity={0.1}
               strokeWidth={2}
+              {...MW_RECHARTS_ANIMATION}
             />
             <Area
               type="monotone"
@@ -238,6 +240,7 @@ function ChartWidgetContent({ type }: { type: string }) {
               fillOpacity={0.05}
               strokeWidth={2}
               strokeDasharray="4 4"
+              {...MW_RECHARTS_ANIMATION}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -249,8 +252,8 @@ function ChartWidgetContent({ type }: { type: string }) {
           <BarChart data={FUNNEL_DATA} layout="vertical">
             <XAxis type="number" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis dataKey="stage" type="category" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" width={80} />
-            <Tooltip />
-            <Bar dataKey="value" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} />
+            <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
+            <Bar dataKey="value" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -261,9 +264,9 @@ function ChartWidgetContent({ type }: { type: string }) {
           <BarChart data={BAR_DATA}>
             <XAxis dataKey="reason" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
-            <Tooltip />
-            <Bar dataKey="won" fill="var(--mw-mirage)" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="lost" fill="var(--neutral-300)" radius={[4, 4, 0, 0]} />
+            <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
+            <Bar dataKey="won" fill="var(--mw-mirage)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="lost" fill="var(--neutral-300)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -280,12 +283,13 @@ function ChartWidgetContent({ type }: { type: string }) {
               outerRadius={70}
               dataKey="value"
               paddingAngle={2}
+              {...MW_RECHARTS_ANIMATION}
             >
               {PIE_DATA.map((_, i) => (
                 <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
           </RechartsPie>
         </ResponsiveContainer>
       );
@@ -296,8 +300,8 @@ function ChartWidgetContent({ type }: { type: string }) {
           <BarChart data={QUOTE_CASH_DATA}>
             <XAxis dataKey="step" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" label={{ value: "Days", angle: -90, position: "insideLeft", style: { fontSize: 11 } }} />
-            <Tooltip />
-            <Bar dataKey="days" fill="var(--mw-yellow-400)" radius={[4, 4, 0, 0]} />
+            <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
+            <Bar dataKey="days" fill="var(--mw-yellow-400)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -482,7 +486,7 @@ export function DashboardWidgetGrid({
             className={cn(
               "p-4 transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
               SIZE_SPAN[widget.size],
-              dragIdx === index && "opacity-50",
+              dragIdx === index && "opacity-[0.38]",
               overIdx === index && dragIdx !== index && "ring-2 ring-[var(--mw-yellow-400)]/50",
             )}
           >

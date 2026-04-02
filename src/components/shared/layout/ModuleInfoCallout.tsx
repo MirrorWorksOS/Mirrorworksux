@@ -46,7 +46,7 @@ export function ModuleInfoCallout({
             {iconNode}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-2">{title}</h3>
+            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{title}</h3>
             <div
               className={cn(
                 'text-sm leading-relaxed text-muted-foreground',
@@ -59,7 +59,7 @@ export function ModuleInfoCallout({
         </div>
       ) : (
         <div>
-          <h3 className="text-base font-semibold text-[var(--mw-mirage)] mb-2">{title}</h3>
+          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{title}</h3>
           <div
             className={cn(
               'text-sm leading-relaxed text-muted-foreground',

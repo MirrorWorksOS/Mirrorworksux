@@ -57,17 +57,17 @@ const INSIGHTS: Insight[] = [
         <div>
           <div className="font-medium text-lg text-[var(--neutral-800)]">MO-26-401: Server Rack Chassis - 16ga (Amada Ensis Laser)</div>
           <div className="text-[var(--neutral-500)] mt-1 text-sm">
-            <p>Cycle time: <span className="font-semibold text-[var(--neutral-800)]">3:45</span> vs Target: <span className="font-semibold text-[var(--neutral-800)]">3:20</span></p>
+            <p>Cycle time: <span className="font-medium text-[var(--neutral-800)]">3:45</span> vs Target: <span className="font-medium text-[var(--neutral-800)]">3:20</span></p>
             <p className="text-[var(--mw-error)] font-medium mt-1">Variance: +25s (12% slower)</p>
           </div>
         </div>
         
         {/* Analysis Section (Blue) */}
-        <div className="bg-[var(--mw-blue-50)] p-4 rounded-[8px] text-sm border border-[var(--mw-blue-100)]">
-          <div className="font-bold text-[#1E3A8A] flex items-center gap-2 mb-2 uppercase text-xs tracking-wide">
+        <div className="bg-[var(--mw-blue-50)] p-4 rounded-sm text-sm border border-[var(--mw-blue-100)]">
+          <div className="font-bold text-[var(--mw-info)] flex items-center gap-2 mb-2 uppercase text-xs tracking-wide">
             <Info className="w-4 h-4" /> Analysis
           </div>
-          <ul className="space-y-1 text-[#1E40AF] list-disc list-inside">
+          <ul className="space-y-1 text-[var(--mw-info)] list-disc list-inside">
             <li>Similar parts by Elena: 3:10 avg (optimized nesting)</li>
             <li>Historical data: This part type averages 3:15</li>
           </ul>
@@ -101,7 +101,7 @@ const INSIGHTS: Insight[] = [
             <p className="font-medium text-[var(--neutral-800)] mb-2">Last 10 measurements:</p>
             <div className="h-24 flex items-end gap-1 pb-4 border-b border-[var(--neutral-200)] relative">
                {[0.2, 0.21, 0.22, 0.24, 0.25, 0.28, 0.32, 0.35, 0.38].map((h, i) => (
-                 <div key={i} className="flex-1 bg-[#FCA5A5] rounded-t-sm relative group hover:bg-[var(--mw-error)] transition-colors" style={{ height: `${((h - 0.2) / 0.2) * 100}%` }}>
+                 <div key={i} className="flex-1 bg-[var(--mw-error-light)] rounded-t-sm relative group hover:bg-[var(--mw-error)] transition-colors" style={{ height: `${((h - 0.2) / 0.2) * 100}%` }}>
                     <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-[var(--neutral-800)] text-white px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap z-10">{h}mm</div>
                  </div>
                ))}
@@ -111,11 +111,11 @@ const INSIGHTS: Insight[] = [
         </div>
         
         {/* Pattern Detection (Red) */}
-        <div className="bg-[var(--mw-error-50)] p-4 rounded-[8px] text-sm border border-[var(--mw-error-100)]">
-          <div className="font-bold text-[#991B1B] flex items-center gap-2 mb-1 uppercase text-xs tracking-wide">
+        <div className="bg-[var(--mw-error-50)] p-4 rounded-sm text-sm border border-[var(--mw-error-100)]">
+          <div className="font-bold text-[var(--mw-error)] flex items-center gap-2 mb-1 uppercase text-xs tracking-wide">
             <AlertTriangle className="w-4 h-4" /> Pattern Detected
           </div>
-          <p className="text-[#7F1D1D]">Consistent widening of cut kerf. Lens contamination suspected.</p>
+          <p className="text-[var(--mw-error)]">Consistent widening of cut kerf. Lens contamination suspected.</p>
         </div>
 
         <div className="text-sm text-[var(--neutral-800)]">
@@ -152,28 +152,28 @@ const INSIGHTS: Insight[] = [
               <span>MO-26-402 Progress</span>
               <span className="text-[var(--neutral-800)]">94%</span>
            </div>
-           <div className="h-2 bg-[#E5E4E0] rounded-full overflow-hidden">
+           <div className="h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
               <div className="h-full bg-[var(--neutral-800)] w-[94%]" />
            </div>
         </div>
         
         {/* Smart Suggestion (Green) */}
-        <div className="bg-[var(--mw-green-50)] p-4 rounded-[8px] text-sm border border-[var(--mw-green-100)]">
-          <div className="font-bold text-[#166534] flex items-center gap-2 mb-2 uppercase text-xs tracking-wide">
+        <div className="bg-[var(--mw-green-50)] p-4 rounded-sm text-sm border border-[var(--mw-green-100)]">
+          <div className="font-bold text-[var(--mw-success)] flex items-center gap-2 mb-2 uppercase text-xs tracking-wide">
             <Sparkles className="w-4 h-4" /> Smart Suggestion
           </div>
-          <p className="text-[#15803D] font-medium">Start MO-26-403 setup NOW for seamless transition</p>
+          <p className="text-[var(--mw-success)] font-medium">Start MO-26-403 setup NOW for seamless transition</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-           <div className="bg-[var(--neutral-100)] p-3 rounded-[8px] border border-[var(--neutral-200)]">
+           <div className="bg-[var(--neutral-100)] p-3 rounded-sm border border-[var(--neutral-200)]">
               <div className="text-[10px] font-bold text-[var(--neutral-500)] uppercase mb-2">Benefits</div>
               <ul className="text-sm space-y-1 text-[var(--neutral-800)]">
                  <li>• Zero idle time</li>
                  <li>• Save 2h total</li>
               </ul>
            </div>
-           <div className="bg-[var(--neutral-100)] p-3 rounded-[8px] border border-[var(--neutral-200)]">
+           <div className="bg-[var(--neutral-100)] p-3 rounded-sm border border-[var(--neutral-200)]">
               <div className="text-[10px] font-bold text-[var(--neutral-500)] uppercase mb-2">Requirements</div>
               <ul className="text-sm space-y-1 text-[var(--neutral-800)]">
                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[var(--mw-success)]"/> 5052 Alum ready</li>
@@ -203,7 +203,7 @@ const INSIGHTS: Insight[] = [
                    <span>Overall Efficiency</span>
                    <span className="text-[var(--neutral-800)]">87%</span>
                 </div>
-                <div className="h-3 w-full bg-[#E5E4E0] rounded-full overflow-hidden">
+                <div className="h-3 w-full bg-[var(--neutral-200)] rounded-full overflow-hidden">
                    <div className="h-full bg-[var(--neutral-800)] w-[87%]" />
                 </div>
                 <div className="text-xs text-[var(--neutral-500)] mt-1 text-right">Target: 85%</div>
@@ -211,7 +211,7 @@ const INSIGHTS: Insight[] = [
           </div>
 
           <div className="space-y-3">
-             <div className="p-3 bg-[var(--neutral-100)] rounded-[8px] border border-[var(--neutral-200)]">
+             <div className="p-3 bg-[var(--neutral-100)] rounded-sm border border-[var(--neutral-200)]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[var(--neutral-800)]">David Miller (Amada Ensis) 
                      <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[var(--mw-yellow-400)]/10 text-[var(--neutral-800)] border-transparent font-medium rounded-full">Below Target</Badge>
@@ -220,7 +220,7 @@ const INSIGHTS: Insight[] = [
                 </div>
                 <div className="text-xs text-[var(--neutral-500)]">MO-26-401: Slower than historical average</div>
              </div>
-             <div className="p-3 bg-[var(--neutral-100)] rounded-[8px] border border-[var(--neutral-200)]">
+             <div className="p-3 bg-[var(--neutral-100)] rounded-sm border border-[var(--neutral-200)]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[var(--neutral-800)]">Elena Rodriguez (TruBend) 
                      <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[var(--mw-green)]/10 text-[var(--neutral-800)] border-transparent font-medium rounded-full">Exceeding Target</Badge>
@@ -261,7 +261,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
       critical: "text-[var(--mw-error)]",
       warning: "text-[var(--mw-yellow-400)]",
       success: "text-[var(--mw-success)]",
-      info: "text-[#3B82F6]"
+      info: "text-[var(--mw-info)]"
    };
 
    return (
@@ -290,11 +290,11 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
                   variant={action.variant as any || 'default'} 
                   size="sm"
                   className={cn(
-                    "h-9 font-medium rounded-[8px]", 
+                    "h-9 font-medium rounded-sm", 
                     action.variant === 'destructive' ? "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]" :
                     action.variant === 'outline' ? "border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)]" :
                     action.variant === 'ghost' ? "text-[var(--neutral-500)] hover:text-[var(--neutral-800)] ml-auto" :
-                    "bg-[var(--mw-yellow-400)] hover:bg-[#FFC107] text-[var(--neutral-800)]"
+                    "bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
                   )}
                   onClick={action.onClick}
                >
@@ -339,7 +339,7 @@ export function IntelligenceHubTab() {
        <div className="shrink-0 flex flex-col gap-6">
           <div className="flex items-center justify-between">
              <div>
-                <h2 className="text-3xl font-semibold tracking-tight text-[var(--neutral-800)]">Intelligence Hub</h2>
+                <h2 className="text-3xl font-medium tracking-tight text-[var(--neutral-800)]">Intelligence Hub</h2>
                 <p className="text-[var(--neutral-500)] text-lg">AI insights & predictive analysis</p>
              </div>
              <Button 
@@ -373,25 +373,25 @@ export function IntelligenceHubTab() {
           <DialogPortal>
              <DialogOverlay className="bg-black/30 backdrop-blur-sm" />
              <DialogPrimitive.Content 
-                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[#1A1A1A] border border-[#333] text-white rounded-[24px] shadow-2xl focus:outline-none"
+                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[var(--neutral-900)] border border-[var(--neutral-800)] text-white rounded-[24px] shadow-2xl focus:outline-none"
              >
                 <DialogTitle className="sr-only">Voice Interface</DialogTitle>
                 <DialogDescription className="sr-only">Voice command interface for shop floor</DialogDescription>
                 
                 {/* Close Button */}
-                <DialogPrimitive.Close className="absolute top-6 left-6 z-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1A1A1A] disabled:pointer-events-none">
+                <DialogPrimitive.Close className="absolute top-6 left-6 z-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[var(--neutral-900)] disabled:pointer-events-none">
                    <X className="h-5 w-5 text-white" />
                    <span className="sr-only">Close</span>
                 </DialogPrimitive.Close>
                 
                 {/* Settings Button (placeholder for the icon in top-right) */}
-                <button className="absolute top-6 right-6 z-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1A1A1A]">
+                <button className="absolute top-6 right-6 z-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[var(--neutral-900)]">
                    <MoreHorizontal className="h-5 w-5 text-white" />
                    <span className="sr-only">Settings</span>
                 </button>
                 
                 {/* Header */}
-                <div className="text-center pt-8 pb-4 border-b border-[#333]">
+                <div className="text-center pt-8 pb-4 border-b border-[var(--neutral-800)]">
                    <h3 className="text-sm font-bold uppercase tracking-wider text-white">Intelligence Hub</h3>
                    <div className="flex items-center justify-center gap-2 mt-1">
                       <div className="w-2 h-2 rounded-full bg-[var(--mw-purple)] animate-pulse" />
@@ -426,7 +426,7 @@ export function IntelligenceHubTab() {
                       </div>
                       <div className="flex gap-4 w-full">
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[#333] hover:bg-[#444] text-white rounded-[12px]"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--neutral-800)] hover:bg-[var(--neutral-700)] text-white rounded-[12px]"
                             onClick={() => setIsRecording(false)}
                          >
                             CANCEL
@@ -443,20 +443,20 @@ export function IntelligenceHubTab() {
                    <>
                       <div className="text-center space-y-3 mb-12">
                          <h3 className="text-2xl font-bold">How can I help?</h3>
-                         <div className="bg-[#333] p-4 rounded-[var(--shape-lg)] text-left max-w-xs mx-auto">
+                         <div className="bg-[var(--neutral-800)] p-4 rounded-[var(--shape-lg)] text-left max-w-xs mx-auto">
                             <p className="text-xs text-[var(--neutral-400)] mb-2 uppercase tracking-wide font-bold">Suggestions</p>
                             <div className="text-sm text-white space-y-2">
                                <p className="cursor-pointer hover:text-[var(--mw-purple-light)]">"Show me efficiency for Amada Ensis Laser"</p>
-                               <Separator className="bg-[#444]" />
+                               <Separator className="bg-[var(--neutral-700)]" />
                                <p className="cursor-pointer hover:text-[var(--mw-purple-light)]">"Why is MO-26-402 delayed?"</p>
-                               <Separator className="bg-[#444]" />
+                               <Separator className="bg-[var(--neutral-700)]" />
                                <p className="cursor-pointer hover:text-[var(--mw-purple-light)]">"Check 5052 Aluminum inventory"</p>
                             </div>
                          </div>
                       </div>
                       
                       <Button 
-                         className="w-20 h-20 rounded-full bg-white text-black hover:bg-[var(--neutral-100)] transition-all shadow-xl flex flex-col items-center justify-center gap-1 animate-pulse hover:animate-none"
+                         className="w-20 h-20 rounded-full bg-white text-black hover:bg-[var(--neutral-100)] transition-all shadow-xs flex flex-col items-center justify-center gap-1 animate-pulse hover:animate-none"
                          onClick={() => setIsRecording(true)}
                       >
                          <Mic className="w-8 h-8" />

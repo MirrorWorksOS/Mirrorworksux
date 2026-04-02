@@ -50,7 +50,7 @@ export function FileUploadZone({ onFilesSelected, disabled }: FileUploadZoneProp
         isDragOver
           ? 'border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)]'
           : 'border-muted-foreground/25 hover:border-muted-foreground/40',
-        disabled && 'opacity-50 cursor-not-allowed'
+        disabled && 'opacity-[0.38] cursor-not-allowed'
       )}
     >
       <Upload className="w-8 h-8 text-muted-foreground mb-3" />

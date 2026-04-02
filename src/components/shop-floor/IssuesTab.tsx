@@ -132,14 +132,14 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
            <div className="flex items-center gap-2">
               <span className="font-bold text-[var(--neutral-800)] text-sm uppercase tracking-wide">{alert.type}</span>
               <span className="text-[var(--neutral-500)]">•</span>
-              <span className="font-semibold text-[var(--neutral-800)]">{alert.title}</span>
+              <span className="font-medium text-[var(--neutral-800)]">{alert.title}</span>
            </div>
            <div className="text-sm text-[var(--neutral-500)] mt-0.5 font-medium">
               {alert.statusText} • <span className="opacity-80">{alert.time}</span>
            </div>
         </div>
       </div>
-      <Button variant="outline" size="sm" className="bg-white border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-[8px] h-9">
+      <Button variant="outline" size="sm" className="bg-white border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-9">
          View Details
       </Button>
     </div>
@@ -180,7 +180,7 @@ export function IssuesTab() {
             </div>
             <div className="text-left text-white">
                <div className="text-xl font-bold tracking-tight">CALL SUPERVISOR</div>
-               <div className="text-red-100 text-sm font-medium opacity-90">Emergency Assistance</div>
+               <div className="text-[var(--mw-error-light)] text-sm font-medium opacity-90">Emergency Assistance</div>
             </div>
           </div>
           
@@ -194,7 +194,7 @@ export function IssuesTab() {
              "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-md transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden cursor-pointer",
              isRecording 
                ? "w-[480px] cursor-default bg-white border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
-               : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[#FFD66B] justify-center hover:shadow-lg active:scale-95 border border-[#F4C542]"
+               : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-lg active:scale-95 border border-[var(--mw-yellow-400)]"
            )}
         >
            {isRecording ? (
@@ -204,7 +204,7 @@ export function IssuesTab() {
                    {/* Play Button */}
                    <button 
                      onClick={(e) => { e.stopPropagation(); setIsRecording(false); }}
-                     className="w-12 h-12 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center shrink-0 hover:scale-110 transition-transform shadow-md group"
+                     className="w-12 h-12 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center shrink-0 hover:scale-110 transition-transform group"
                    >
                       <Play className="w-5 h-5 text-white fill-white ml-0.5 group-hover:scale-110 transition-transform" />
                    </button>
@@ -252,7 +252,7 @@ export function IssuesTab() {
                  icon={Settings} label="MACHINE" sublabel="Breakdown / Error" 
                  onClick={() => setActiveModal('machine')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--mw-warning)]", circle: "bg-[#FFFBEB]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-white", text: "text-[var(--mw-warning)]", circle: "bg-[var(--mw-yellow-50)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
                <IssueCard 
@@ -266,20 +266,20 @@ export function IssuesTab() {
                  icon={Recycle} label="SCRAP" sublabel="Report Waste" 
                  onClick={() => setActiveModal('scrap')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--neutral-600)]", circle: "bg-[#F3F4F6]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-white", text: "text-[var(--neutral-600)]", circle: "bg-[var(--neutral-100)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
             </div>
 
             {/* Active Issues Panel */}
             <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
-               <div className="p-5 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)] flex items-center justify-between">
+               <div className="p-6 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)] flex items-center justify-between">
                   <h3 className="font-bold text-[var(--neutral-800)] text-lg flex items-center gap-2">
                      <AlertTriangle className="w-5 h-5 text-[var(--neutral-500)]" /> ACTIVE ISSUES
                   </h3>
                   <Badge variant="secondary" className="bg-white border border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium rounded-[6px]">3 Open</Badge>
                </div>
-               <div className="p-5 bg-white max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+               <div className="p-6 bg-white max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
                   {MOCK_ALERTS.map(alert => (
                      <ActiveAlertRow key={alert.id} alert={alert} />
                   ))}
@@ -296,21 +296,21 @@ export function IssuesTab() {
                   Machine Status
                </div>
                <div className="p-4 space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-[8px] bg-[var(--mw-error-50)] border border-[var(--mw-error-100)]">
+                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-error-50)] border border-[var(--mw-error-100)]">
                      <span className="font-bold text-[var(--neutral-800)]">Amada Ensis</span>
-                     <Badge className="bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] border-0 rounded-[4px] font-bold">STOPPED</Badge>
+                     <Badge className="bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] border-0 rounded-xs font-bold">STOPPED</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 rounded-[8px] bg-[var(--mw-green-50)] border border-[var(--mw-green-100)]">
+                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-green-50)] border border-[var(--mw-green-100)]">
                      <span className="font-bold text-[var(--neutral-800)]">Trumpf TruBend</span>
-                     <Badge className="bg-[var(--mw-green)] hover:bg-[#166534] border-0 rounded-[4px] font-bold">RUNNING</Badge>
+                     <Badge className="bg-[var(--mw-green)] hover:bg-[var(--mw-success)] border-0 rounded-xs font-bold">RUNNING</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 rounded-[8px] bg-[var(--mw-green-50)] border border-[var(--mw-green-100)]">
+                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-green-50)] border border-[var(--mw-green-100)]">
                      <span className="font-bold text-[var(--neutral-800)]">Mitsubishi 3015</span>
-                     <Badge className="bg-[var(--mw-green)] hover:bg-[#166534] border-0 rounded-[4px] font-bold">RUNNING</Badge>
+                     <Badge className="bg-[var(--mw-green)] hover:bg-[var(--mw-success)] border-0 rounded-xs font-bold">RUNNING</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 rounded-[8px] bg-[#FFFBEB] border border-[#FEF3C7]">
+                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-yellow-50)] border border-[#FEF3C7]">
                      <span className="font-bold text-[var(--neutral-800)]">Haeger Press</span>
-                     <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-black border-0 rounded-[4px] font-bold">ATTENTION</Badge>
+                     <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-black border-0 rounded-xs font-bold">ATTENTION</Badge>
                   </div>
                </div>
                <div className="bg-[var(--neutral-100)] p-3 text-center border-t border-[var(--neutral-200)]">
@@ -319,17 +319,17 @@ export function IssuesTab() {
             </Card>
 
             {/* Intelligence Hub Integration */}
-            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-[var(--mw-purple-50)] rounded-[var(--shape-lg)]">
-               <div className="p-5">
+            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-white rounded-[var(--shape-lg)]">
+               <div className="p-6">
                   <div className="flex items-center gap-2 mb-4 text-[var(--neutral-500)] font-bold text-lg">
                      <Bot className="w-5 h-5" /> AI Troubleshoot
                   </div>
                   
-                  <Button className="w-full bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white shadow-md h-12 mb-4 justify-between group rounded-[8px] font-bold">
+                  <Button className="w-full bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group rounded-sm font-bold">
                      Ask Intelligence Hub <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   
-                  <div className="flex items-center gap-2 text-sm text-[#5B21B6] bg-white/60 p-3 rounded-[8px] border border-[var(--mw-purple)]/20">
+                  <div className="flex items-center gap-2 text-sm text-[var(--mw-mirage)] bg-white/60 p-3 rounded-sm border border-[var(--mw-purple)]/20">
                      <Mic className="w-4 h-4" /> 
                      <span className="italic font-medium">"Why is Amada Ensis stopped?"</span>
                   </div>
@@ -341,7 +341,7 @@ export function IssuesTab() {
 
       {/* Modals */}
       <Dialog open={!!activeModal} onOpenChange={(open) => !open && setActiveModal(null)}>
-         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white sm:rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
+         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white/95 backdrop-blur-xl sm:rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
             <DialogTitle className="sr-only">Issue Reporting</DialogTitle>
             <DialogDescription className="sr-only">
                Form to report an issue on the shop floor.

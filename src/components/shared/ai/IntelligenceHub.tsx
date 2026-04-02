@@ -5,6 +5,7 @@
  */
 import React, { useState } from 'react';
 import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Info, ChevronRight, Brain } from 'lucide-react';
+import { IconWell } from "@/components/shared/icons/IconWell";
 import { EmptyState } from '../feedback/EmptyState';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -54,11 +55,9 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[var(--mw-yellow-400)] rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-[var(--mw-mirage)]" />
-          </div>
+          <IconWell icon={Sparkles} surface="key" shape="squircle" size="sm" />
           <div>
-            <h3 className="text-sm font-semibold text-[var(--mw-mirage)]">AI insights</h3>
+            <h3 className="text-sm font-medium text-[var(--mw-mirage)]">AI insights</h3>
             {context && <p className="text-xs text-[var(--neutral-500)]">{context}</p>}
           </div>
         </div>
@@ -103,7 +102,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-[var(--mw-mirage)]">{insight.title}</span>
+                        <span className="text-xs font-medium text-[var(--mw-mirage)]">{insight.title}</span>
                         {insight.confidence !== undefined && (
                           <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence

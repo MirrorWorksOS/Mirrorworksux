@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -15,8 +16,6 @@ import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, Tool
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Button } from '../ui/button';
-import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedDownload } from '../ui/animated-icons';
@@ -70,6 +69,129 @@ export function SellInvoices() {
     overdue: mockInvoices.filter(i => i.status === 'overdue').length,
   };
 
+  const invoiceColumns: MwColumnDef<Invoice>[] = [
+    {
+      key: 'checkbox',
+      header: (
+        <input
+          type="checkbox"
+          className="rounded border-[var(--border)]"
+          checked={selectedRows.size === filteredInvoices.length && filteredInvoices.length > 0}
+          onChange={(e) => {
+            if (e.target.checked) setSelectedRows(new Set(filteredInvoices.map(i => i.id)));
+            else setSelectedRows(new Set());
+          }}
+        />
+      ),
+      headerClassName: 'w-12',
+      className: 'w-12',
+      cell: (inv) => (
+        <div onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            className="rounded border-[var(--border)]"
+            checked={selectedRows.has(inv.id)}
+            onChange={() => setSelectedRows(prev => {
+              const next = new Set(prev);
+              if (next.has(inv.id)) next.delete(inv.id);
+              else next.add(inv.id);
+              return next;
+            })}
+          />
+        </div>
+      ),
+    },
+    {
+      key: 'invoiceNumber',
+      header: 'Invoice #',
+      cell: (inv) => (
+        <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
+          {inv.invoiceNumber}
+          <ExternalLink className="w-4 h-4" />
+        </span>
+      ),
+    },
+    { key: 'customer', header: 'Customer', cell: (inv) => inv.customer },
+    {
+      key: 'issueDate',
+      header: 'Issue date',
+      cell: (inv) => (
+        <span className="text-[var(--neutral-600)]">
+          {new Date(inv.issueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
+        </span>
+      ),
+    },
+    {
+      key: 'dueDate',
+      header: 'Due date',
+      cell: (inv) => {
+        const daysOverdue = inv.status === 'overdue'
+          ? Math.floor((new Date().getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24))
+          : 0;
+        return (
+          <span className="text-[var(--neutral-600)]">
+            {new Date(inv.dueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
+            {inv.status === 'overdue' && (
+              <span className="ml-2 text-xs text-[var(--mw-error)] tabular-nums">({daysOverdue}d overdue)</span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      headerClassName: 'text-center',
+      className: 'text-center',
+      cell: (inv) => (
+        <div className="flex items-center justify-center">
+          <StatusBadge status={inv.status} withDot />
+        </div>
+      ),
+    },
+    {
+      key: 'total',
+      header: 'Total',
+      headerClassName: 'text-right',
+      className: 'text-right font-medium tabular-nums',
+      cell: (inv) => `$${inv.total.toLocaleString()}`,
+    },
+    {
+      key: 'balanceDue',
+      header: 'Balance due',
+      headerClassName: 'text-right',
+      className: 'text-right font-medium tabular-nums',
+      cell: (inv) => (
+        <span style={{ color: inv.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
+          ${inv.balanceDue.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      headerClassName: 'w-12',
+      className: 'w-12',
+      cell: (inv) => (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
+                <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate(`/sell/invoices/${inv.id}`)}>View details</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast('Edit invoice coming soon')}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.success('Invoice duplicated')}>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast('Invoice deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+    },
+  ];
+
   const summaryByStatus = {
     paid: mockInvoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0),
     sent: mockInvoices.filter(i => i.status === 'sent').reduce((s, i) => s + i.total, 0),
@@ -119,91 +241,20 @@ export function SellInvoices() {
 
       {/* Table */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th className="px-4 py-3 w-12">
-                    <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === filteredInvoices.length && filteredInvoices.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(filteredInvoices.map(i => i.id))); } else { setSelectedRows(new Set()); } }} />
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">INVOICE #</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CUSTOMER</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">ISSUE DATE</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">DUE DATE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">TOTAL</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">BALANCE DUE</th>
-                  <th className="px-4 py-3 w-12"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInvoices.map((invoice, idx) => {
-                  const daysOverdue = invoice.status === 'overdue'
-                    ? Math.floor((new Date().getTime() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24))
-                    : 0;
-
-                  return (
-                    <tr key={invoice.id} onClick={() => navigate(`/sell/invoices/${invoice.id}`)} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(invoice.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(invoice.id)) next.delete(invoice.id); else next.add(invoice.id); return next; }); }} />
-                      </td>
-                      <td className="px-4">
-                        <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
-                          {invoice.invoiceNumber}
-                          <ExternalLink className="w-4 h-4" />
-                        </span>
-                      </td>
-                      <td className="px-4 text-sm text-[var(--neutral-900)]">{invoice.customer}</td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">
-                        {new Date(invoice.issueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
-                      </td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">
-                        {new Date(invoice.dueDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
-                        {invoice.status === 'overdue' && (
-                          <span className="ml-2 text-xs text-[var(--mw-error)] tabular-nums">({daysOverdue}d overdue)</span>
-                        )}
-                      </td>
-                      <td className="px-4">
-                        <div className="flex items-center justify-center">
-                          <StatusBadge status={invoice.status} withDot />
-                        </div>
-                      </td>
-                      <td className="px-4 text-right text-sm font-medium tabular-nums">${invoice.total.toLocaleString()}</td>
-                      <td className="px-4 text-right text-sm font-medium tabular-nums" style={{ color: invoice.balanceDue > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
-                        ${invoice.balanceDue.toLocaleString()}
-                      </td>
-                      <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-                              <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/sell/invoices/${invoice.id}`)}>View details</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast('Edit invoice coming soon')}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast.success('Invoice duplicated')}>Duplicate</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast('Invoice deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <MwDataTable<Invoice>
+          columns={invoiceColumns}
+          data={filteredInvoices}
+          keyExtractor={(inv) => inv.id}
+          onRowClick={(inv) => navigate(`/sell/invoices/${inv.id}`)}
+          striped
+        />
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-white rounded-b-[var(--shape-lg)]">
+          <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
+          <div className="flex gap-2">
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
           </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)]">
-            <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
-            <div className="flex gap-2">
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
-              <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
-            </div>
-          </div>
-        </Card>
+        </div>
       </motion.div>
     </PageShell>
   );

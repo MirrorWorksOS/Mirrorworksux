@@ -120,7 +120,7 @@ function EmptyState({
           <Icon className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
         </div>
       )}
-      <h3 className="text-base font-semibold text-foreground mb-2">{title}</h3>
+      <h3 className="text-base font-medium text-foreground mb-2">{title}</h3>
       {description && (
         <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
           {description}

@@ -183,7 +183,7 @@ export function PlanOverviewTab() {
       headerClassName: 'text-center',
       className: 'text-center',
       cell: () => (
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+        <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
           📐
         </Button>
       ),
@@ -196,7 +196,7 @@ export function PlanOverviewTab() {
         {/* Job Metadata Section */}
         <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className=" text-lg font-semibold text-[var(--mw-mirage)]">
+            <h2 className=" text-lg font-medium text-[var(--mw-mirage)]">
               Job Details
             </h2>
             <Button variant="outline" className="border-[var(--border)]">
@@ -372,7 +372,7 @@ export function PlanOverviewTab() {
         {/* Products Table */}
         <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="mb-4">
-            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Products
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -406,7 +406,7 @@ export function PlanOverviewTab() {
         {/* Budget Section */}
         <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="mb-4">
-            <h3 className=" text-base font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Budget
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -419,13 +419,13 @@ export function PlanOverviewTab() {
               <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Materials
               </div>
-              <div className=" text-xs text-[var(--neutral-500)]">
+              <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-xs text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
                 $500
               </div>
-              <div className=" text-xs text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
                 $19,500
               </div>
               <ProgressBar value={500} max={20000} size="sm" />
@@ -435,13 +435,13 @@ export function PlanOverviewTab() {
               <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Labour
               </div>
-              <div className=" text-xs text-[var(--neutral-500)]">
+              <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-xs text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
                 $10,000
               </div>
-              <div className=" text-xs text-[var(--mw-amber)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-amber)]">
                 $10,000
               </div>
               <ProgressBar value={10000} max={20000} size="sm" />
@@ -451,13 +451,13 @@ export function PlanOverviewTab() {
               <div className=" text-xs font-medium text-[var(--mw-mirage)]">
                 Purchase
               </div>
-              <div className=" text-xs text-[var(--neutral-500)]">
+              <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $10,000
               </div>
-              <div className=" text-xs text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
                 $3,000
               </div>
-              <div className=" text-xs text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
                 $7,000
               </div>
               <ProgressBar value={3000} max={10000} size="sm" />
@@ -484,9 +484,9 @@ export function PlanOverviewTab() {
       {/* Right Column - 1/3 width */}
       <div className="space-y-6">
         {/* Schedule Mini-Calendar */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className=" text-sm font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
               Schedule
             </h3>
             <Calendar className="w-4 h-4 text-[var(--neutral-500)]" />
@@ -546,12 +546,12 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Intelligence Hub Preview */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className=" text-sm font-semibold text-[var(--mw-mirage)]">
+            <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
               Intelligence Hub
             </h3>
-            <Button variant="ghost" size="sm" className="text-xs h-7">
+            <Button variant="ghost" size="sm" className="text-xs h-10">
               <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
@@ -584,8 +584,8 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Files Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
-          <h3 className=" text-sm font-semibold text-[var(--mw-mirage)] mb-3">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
             Files
           </h3>
           
@@ -618,8 +618,8 @@ export function PlanOverviewTab() {
         </div>
 
         {/* Chatter Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
-          <h3 className=" text-sm font-semibold text-[var(--mw-mirage)] mb-3">
+        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
             Chatter
           </h3>
           
@@ -670,20 +670,20 @@ export function PlanOverviewTab() {
           )}
 
           <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
               <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
             <Input
               placeholder="Type a message..."
-              className="flex-1 h-8 text-xs"
+              className="flex-1 h-10 text-xs"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
             />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
               <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Button size="sm" className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3" onClick={handleChatSubmit}>
+            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3" onClick={handleChatSubmit}>
               Send
             </Button>
           </div>

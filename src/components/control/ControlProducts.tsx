@@ -2,17 +2,17 @@
  * Control Products — product master data catalogue
  */
 import React, { useState } from 'react';
-import { Plus, Search, Package } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { FilterBar } from '@/components/shared/layout/FilterBar';
 
 
 const PRODUCTS = [
@@ -29,8 +29,55 @@ const PRODUCTS = [
   { id: '11', name: 'Machine Guard — Discontinued',  sku: 'PROD-MG-OLD', category: 'Finished Goods', type: 'Manufactured', sellPrice: 480.00,  costPrice: 310.00, hasBOM: false, status: 'inactive' },
 ];
 
+type Product = (typeof PRODUCTS)[number];
+
 const CATEGORIES = ['All', 'Finished Goods', 'Raw Materials', 'Consumables'];
 const TYPES      = ['All', 'Manufactured', 'Purchased'];
+
+const productColumns: MwColumnDef<Product>[] = [
+  {
+    key: 'product', header: 'Product',
+    cell: (p) => (
+      <div className="flex items-center gap-2">
+        <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
+        <span className="text-sm text-[var(--mw-mirage)] font-medium">{p.name}</span>
+      </div>
+    ),
+  },
+  { key: 'sku',      header: 'SKU',      cell: (p) => <span className="text-xs text-[var(--neutral-500)]">{p.sku}</span> },
+  { key: 'category', header: 'Category', cell: (p) => <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{p.category}</Badge> },
+  {
+    key: 'type', header: 'Type', headerClassName: 'text-center',
+    cell: (p) => (
+      <div className="flex justify-center">
+        <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
+          'bg-[var(--neutral-100)] text-[var(--mw-mirage)]'
+        )}>
+          {p.type}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    key: 'cost', header: 'Cost', headerClassName: 'text-right', className: 'text-right',
+    cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '\u2014'}</span>,
+  },
+  {
+    key: 'sell', header: 'Sell', headerClassName: 'text-right', className: 'text-right',
+    cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '\u2014'}</span>,
+  },
+  {
+    key: 'bom', header: 'BOM', headerClassName: 'text-center',
+    cell: (p) => (
+      <div className="flex justify-center">
+        {p.hasBOM
+          ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
+          : <span className="text-xs text-[var(--neutral-400)]">{'\u2014'}</span>
+        }
+      </div>
+    ),
+  },
+];
 
 export function ControlProducts() {
   const [search,   setSearch]   = useState('');
@@ -63,88 +110,35 @@ export function ControlProducts() {
         </Button>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input
-            placeholder="Search by name or SKU..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm"
+      <MwDataTable<Product>
+        columns={productColumns}
+        data={filtered}
+        keyExtractor={(p) => p.id}
+        filterBar={
+          <FilterBar
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by name or SKU..."
+            filters={
+              <>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="h-12 min-h-[48px] border-[var(--border)] w-44 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className="h-12 min-h-[48px] border-[var(--border)] w-40 rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </>
+            }
           />
-        </div>
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="h-10 border-[var(--border)] w-44 rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={type} onValueChange={setType}>
-          <SelectTrigger className="h-10 border-[var(--border)] w-40 rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Product</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">SKU</th>
-              <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Category</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Type</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Cost</th>
-              <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">Sell</th>
-              <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">BOM</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(p => (
-              <tr key={p.id} className={cn('border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', p.status === 'inactive' && 'opacity-60')}>
-                <td className="px-4">
-                  <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-                    <span className="text-sm text-[var(--mw-mirage)] font-medium">{p.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 text-xs  text-[var(--neutral-500)]">{p.sku}</td>
-                <td className="px-4">
-                  <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{p.category}</Badge>
-                </td>
-                <td className="px-4">
-                  <div className="flex justify-center">
-                    <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                      p.type === 'Manufactured' ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' : 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]'
-                    )}>
-                      {p.type}
-                    </Badge>
-                  </div>
-                </td>
-                <td className="px-4 text-right text-sm  font-medium text-[var(--mw-mirage)]">
-                  {p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '—'}
-                </td>
-                <td className="px-4 text-right text-sm  font-medium text-[var(--mw-mirage)]">
-                  {p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '—'}
-                </td>
-                <td className="px-4">
-                  <div className="flex justify-center">
-                    {p.hasBOM
-                      ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
-                      : <span className="text-xs text-[var(--neutral-400)]">—</span>
-                    }
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filtered.length === 0 && (
-          <EmptyState variant="inline" title="No products match your filters." />
-        )}
-      </Card>
+        }
+        emptyState={<EmptyState variant="inline" title="No products match your filters." />}
+      />
     </motion.div>
   );
 }

@@ -9,6 +9,9 @@ import { Badge } from '../ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { TimelineView, type TimelineEvent } from '@/components/shared/schedule/TimelineView';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 type Status = 'shipped' | 'transit' | 'delivering' | 'delivered' | 'exception';
 
@@ -45,70 +48,70 @@ const TIMELINE = [
   { step: 'Delivered',        time: '',             done: false },
 ];
 
+const trackingColumns: MwColumnDef<Shipment>[] = [
+  { key: 'tracking', header: 'Tracking', cell: (row) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{row.tracking}</span> },
+  { key: 'customer', header: 'Customer', cell: (row) => <span className="text-[var(--mw-mirage)]">{row.customer}</span> },
+  { key: 'carrier', header: 'Carrier', cell: (row) => <span className="text-[var(--neutral-500)]">{row.carrier}</span> },
+  {
+    key: 'status',
+    header: 'Status',
+    cell: (row) => {
+      const cfg = statusConfig[row.status];
+      return (
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cfg.dot }} />
+          <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.badge, cfg.text)}>{cfg.label}</Badge>
+        </div>
+      );
+    },
+  },
+  {
+    key: 'eta',
+    header: 'ETA',
+    cell: (row) => (
+      <span className={cn('text-sm', row.eta === 'Today' ? 'font-medium' : 'font-normal', row.status === 'exception' ? 'text-[var(--mw-error)]' : 'text-[var(--neutral-500)]')}>
+        {row.eta}
+      </span>
+    ),
+  },
+  { key: 'updated', header: 'Updated', cell: (row) => <span className="text-xs text-[var(--neutral-500)]">{row.updated}</span> },
+];
+
 export function ShipTracking() {
   const [selected, setSelected]               = useState<Shipment | null>(null);
   const [exceptionsOnly, setExceptionsOnly]   = useState(false);
   const filtered = exceptionsOnly ? SHIPMENTS.filter(s => s.status === 'exception') : SHIPMENTS;
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Tracking</h1>
-        <button
-          onClick={() => setExceptionsOnly(!exceptionsOnly)}
-          className={cn(
-            'h-10 px-4 rounded-[var(--shape-lg)] text-sm flex items-center gap-2 transition-colors font-medium',
-            exceptionsOnly
-              ? 'bg-[var(--mw-error-100)] text-[var(--mw-error)]'
-              : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
-          )}
-        >
-          <AlertTriangle className="w-4 h-4" /> Exceptions
-        </button>
-      </div>
+    <PageShell className="overflow-y-auto">
+      <PageHeader
+        title="Tracking"
+        actions={
+          <button
+            onClick={() => setExceptionsOnly(!exceptionsOnly)}
+            className={cn(
+              'h-14 px-4 rounded-[var(--shape-lg)] text-sm flex items-center gap-2 transition-colors font-medium',
+              exceptionsOnly
+                ? 'bg-[var(--mw-error-100)] text-[var(--mw-error)]'
+                : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
+            )}
+          >
+            <AlertTriangle className="w-4 h-4" /> Exceptions
+          </button>
+        }
+      />
 
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
         <Input placeholder="Search tracking..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
       </div>
 
-      <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['TRACKING', 'CUSTOMER', 'CARRIER', 'STATUS', 'ETA', 'UPDATED'].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(s => {
-              const cfg = statusConfig[s.status];
-              return (
-                <tr
-                  key={s.tracking}
-                  className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors"
-                  onClick={() => setSelected(s)}
-                >
-                  <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{s.tracking}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{s.customer}</td>
-                  <td className="px-4 py-3 text-sm text-[var(--neutral-500)]">{s.carrier}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cfg.dot }} />
-                      <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.badge, cfg.text)}>{cfg.label}</Badge>
-                    </div>
-                  </td>
-                  <td className={cn('px-4 py-3 text-sm', s.eta === 'Today' ? 'font-medium' : 'font-normal', s.status === 'exception' ? 'text-[var(--mw-error)]' : 'text-[var(--neutral-500)]')}>
-                    {s.eta}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-[var(--neutral-500)]">{s.updated}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <MwDataTable
+        columns={trackingColumns}
+        data={filtered}
+        keyExtractor={(row) => row.tracking}
+        onRowClick={(row) => setSelected(row)}
+      />
 
       {/* Detail Sheet */}
       <Sheet open={!!selected} onOpenChange={() => setSelected(null)}>
@@ -151,10 +154,10 @@ export function ShipTracking() {
                   </div>
 
                   <div className="space-y-2">
-                    <button className="w-full h-11 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium flex items-center justify-center gap-2">
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
-                    <button className="w-full h-11 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
                       <ExternalLink className="w-4 h-4" /> Carrier portal
                     </button>
                   </div>
@@ -164,6 +167,6 @@ export function ShipTracking() {
           })()}
         </SheetContent>
       </Sheet>
-    </div>
+    </PageShell>
   );
 }

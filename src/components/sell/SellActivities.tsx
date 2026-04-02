@@ -24,6 +24,7 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -148,28 +149,28 @@ const initialActivities: Activity[] = [
 const TYPE_BADGE: Record<ActivityType, { label: string; className: string }> = {
   email: {
     label: 'Email',
-    className: 'border-0 bg-blue-100 text-blue-800',
+    className: 'border-0 bg-[var(--mw-info-light)] text-[var(--mw-info)]',
   },
   call: {
     label: 'Call',
-    className: 'border-0 bg-green-100 text-green-800',
+    className: 'border-0 bg-[var(--mw-success-light)] text-[var(--mw-success)]',
   },
   meeting: {
     label: 'Meeting',
-    className: 'border-0 bg-purple-100 text-purple-800',
+    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
   },
   task: {
     label: 'Task',
-    className: 'border-0 bg-amber-100 text-amber-800',
+    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)]',
   },
 };
 
 /** Calendar event colours keyed by activity type */
 const TYPE_CALENDAR_COLOR: Record<ActivityType, string> = {
-  email: '#3b82f6',   // blue-500
-  call: '#22c55e',    // green-500
-  meeting: '#eab308', // yellow-500
-  task: '#737373',    // neutral-500
+  email: 'var(--mw-info)',
+  call: 'var(--mw-success)',
+  meeting: 'var(--mw-warning)',
+  task: '#737373',
 };
 
 const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }> = {
@@ -179,15 +180,15 @@ const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }>
   },
   scheduled: {
     label: 'Scheduled',
-    className: 'border-0 bg-blue-50 text-blue-700',
+    className: 'border-0 bg-[var(--mw-info-light)] text-[var(--mw-info)]',
   },
   overdue: {
     label: 'Overdue',
-    className: 'border-0 bg-red-50 text-red-700',
+    className: 'border-0 bg-[var(--mw-error-light)] text-[var(--mw-error)]',
   },
   in_progress: {
     label: 'In Progress',
-    className: 'border-0 bg-amber-50 text-amber-700',
+    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)]',
   },
 };
 
@@ -319,6 +320,15 @@ export function SellActivities() {
   const [form, setForm] = useState<NewActivityForm>(emptyForm);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
+  const activityColumns: MwColumnDef<Activity>[] = [
+    { key: 'type', header: 'Type', cell: (a) => <Badge className={TYPE_BADGE[a.type].className}>{TYPE_BADGE[a.type].label}</Badge> },
+    { key: 'description', header: 'Description', cell: (a) => <span className="font-medium text-[var(--neutral-900)]">{a.description}</span> },
+    { key: 'opportunity', header: 'Opportunity', cell: (a) => <a href={a.opportunityPath} className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline">{a.opportunity}</a> },
+    { key: 'assignedTo', header: 'Assigned To', cell: (a) => <span className="text-[var(--neutral-600)]">{a.assignedTo}</span> },
+    { key: 'dueDate', header: 'Due Date', className: 'tabular-nums', cell: (a) => <span className="text-[var(--neutral-600)]">{a.dueDate}</span> },
+    { key: 'status', header: 'Status', cell: (a) => <Badge className={STATUS_BADGE[a.status].className}>{STATUS_BADGE[a.status].label}</Badge> },
+  ];
+
   // Filtered activities for the list view
   const filtered = activities.filter(
     (a) =>
@@ -404,57 +414,12 @@ export function SellActivities() {
 
       {/* ---- LIST VIEW ---- */}
       {viewMode === 'list' && (
-        <div>
-          <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Type</th>
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Description</th>
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Opportunity</th>
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Assigned To</th>
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Due Date</th>
-                    <th className="px-4 py-3 text-left font-medium text-[var(--neutral-600)]">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((activity) => {
-                    const typeBadge = TYPE_BADGE[activity.type];
-                    const statusBadge = STATUS_BADGE[activity.status];
-                    return (
-                      <tr
-                        key={activity.id}
-                        className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--neutral-50)] cursor-pointer"
-                        onClick={() => setSelectedEvent(activityToEventDetail(activity))}
-                      >
-                        <td className="px-4 py-3">
-                          <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
-                        </td>
-                        <td className="px-4 py-3 font-medium text-[var(--neutral-900)]">
-                          {activity.description}
-                        </td>
-                        <td className="px-4 py-3">
-                          <a
-                            href={activity.opportunityPath}
-                            className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline"
-                          >
-                            {activity.opportunity}
-                          </a>
-                        </td>
-                        <td className="px-4 py-3 text-[var(--neutral-600)]">{activity.assignedTo}</td>
-                        <td className="px-4 py-3 tabular-nums text-[var(--neutral-600)]">{activity.dueDate}</td>
-                        <td className="px-4 py-3">
-                          <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </div>
+        <MwDataTable<Activity>
+          columns={activityColumns}
+          data={filtered}
+          keyExtractor={(a) => a.id}
+          onRowClick={(a) => setSelectedEvent(activityToEventDetail(a))}
+        />
       )}
 
       {/* ---- CALENDAR VIEW ---- */}
@@ -542,7 +507,7 @@ export function SellActivities() {
                         onClick={() => setSelectedDate(day)}
                         className="mb-2 w-full text-left"
                       >
-                        <span className="text-xs font-semibold text-[var(--neutral-900)]">
+                        <span className="text-xs font-medium text-[var(--neutral-900)]">
                           {format(day, 'EEE')}
                         </span>
                         <span className="ml-1 text-xs tabular-nums text-[var(--neutral-500)]">
@@ -711,7 +676,7 @@ export function SellActivities() {
             {/* Title */}
             <div className="grid gap-1.5">
               <label className="text-sm font-medium text-[var(--neutral-700)]">
-                Title <span className="text-red-500">*</span>
+                Title <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Input
                 placeholder="Activity title"
@@ -723,7 +688,7 @@ export function SellActivities() {
             {/* Type */}
             <div className="grid gap-1.5">
               <label className="text-sm font-medium text-[var(--neutral-700)]">
-                Type <span className="text-red-500">*</span>
+                Type <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Select
                 value={form.type}
@@ -764,7 +729,7 @@ export function SellActivities() {
             {/* Due Date */}
             <div className="grid gap-1.5">
               <label className="text-sm font-medium text-[var(--neutral-700)]">
-                Due Date <span className="text-red-500">*</span>
+                Due Date <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Input
                 type="date"

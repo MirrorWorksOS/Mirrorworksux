@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Grid3x3, List, Package } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -16,7 +17,6 @@ import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryB
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 
@@ -56,6 +56,36 @@ export function SellProducts() {
     product.sku.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const productColumns: MwColumnDef<Product>[] = [
+    {
+      key: 'name',
+      header: 'Product',
+      cell: (p) => (
+        <a href={`/sell/products/${p.id}`} className="text-sm font-medium text-[var(--neutral-900)] hover:underline">
+          {p.name}
+        </a>
+      ),
+    },
+    { key: 'sku', header: 'SKU', className: 'tabular-nums text-[var(--neutral-600)]', cell: (p) => p.sku },
+    { key: 'category', header: 'Category', cell: (p) => <span className="text-[var(--neutral-600)]">{p.category}</span> },
+    { key: 'stock', header: 'Stock', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => p.stockLevel },
+    { key: 'unitPrice', header: 'Unit price', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => `$${p.unitPrice.toFixed(2)}` },
+    {
+      key: 'status',
+      header: 'Status',
+      headerClassName: 'text-center',
+      className: 'text-center',
+      cell: (p) => {
+        const stockBadge = getStockBadgeProps(p.stockLevel, p.reorderPoint);
+        return (
+          <div className="flex items-center justify-center">
+            <StatusBadge variant={stockBadge.variant}>{stockBadge.label}</StatusBadge>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <PageShell className="p-6 space-y-6">
       <PageHeader
@@ -88,7 +118,7 @@ export function SellProducts() {
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
                 <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
-                  <div className="h-40 bg-gradient-to-br from-[var(--neutral-100)] to-[var(--border)] flex items-center justify-center">
+                  <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
 
@@ -131,47 +161,12 @@ export function SellProducts() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">PRODUCT</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">SKU</th>
-                  <th className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] font-medium">CATEGORY</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">STOCK</th>
-                  <th className="px-4 py-3 text-right text-xs tracking-wider text-[var(--neutral-500)] font-medium">UNIT PRICE</th>
-                  <th className="px-4 py-3 text-center text-xs tracking-wider text-[var(--neutral-500)] font-medium">STATUS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product, idx) => {
-                  const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
-                  return (
-                    <tr key={product.id} className={cn("border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)] cursor-pointer transition-colors", idx % 2 === 1 && "bg-[var(--neutral-100)]")}>
-                      <td className="px-4">
-                        <a href={`/sell/products/${product.id}`} className="text-sm font-medium text-[var(--neutral-900)] hover:underline">
-                          {product.name}
-                        </a>
-                      </td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)] tabular-nums">{product.sku}</td>
-                      <td className="px-4 text-sm text-[var(--neutral-600)]">{product.category}</td>
-                      <td className="px-4 text-right text-sm font-medium tabular-nums">{product.stockLevel}</td>
-                      <td className="px-4 text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
-                        ${product.unitPrice.toFixed(2)}
-                      </td>
-                      <td className="px-4">
-                        <div className="flex items-center justify-center">
-                          <StatusBadge variant={stockBadge.variant}>{stockBadge.label}</StatusBadge>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <MwDataTable<Product>
+          columns={productColumns}
+          data={filteredProducts}
+          keyExtractor={(p) => p.id}
+          striped
+        />
       )}
 
       {filteredProducts.length === 0 && (

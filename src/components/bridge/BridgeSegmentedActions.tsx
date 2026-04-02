@@ -87,7 +87,7 @@ export function BridgeSegmentedSkipPrimary({
       type="button"
       onClick={onSkip}
       disabled={skipDisabled || isLoading}
-      className={cn(segmentBase, secondarySegment, (skipDisabled || isLoading) && 'opacity-50 pointer-events-none')}
+      className={cn(segmentBase, secondarySegment, (skipDisabled || isLoading) && 'opacity-[0.38] pointer-events-none')}
     >
       <SkipIcon className="w-4 h-4 shrink-0" aria-hidden />
       {skipLabel}

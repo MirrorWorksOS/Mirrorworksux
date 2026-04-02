@@ -53,24 +53,24 @@ interface EventDetailSheetProps {
 // ─── Config maps ─────────────────────────────────────────────────────────────
 
 const TYPE_CONFIG: Record<EventType, { icon: LucideIcon; label: string; border: string; bg: string; text: string }> = {
-  call:       { icon: Phone,      label: 'Call',      border: 'border-t-blue-500',   bg: 'bg-blue-50',   text: 'text-blue-700' },
-  email:      { icon: Mail,       label: 'Email',     border: 'border-t-green-500',  bg: 'bg-green-50',  text: 'text-green-700' },
-  meeting:    { icon: Users,      label: 'Meeting',   border: 'border-t-purple-500', bg: 'bg-purple-50', text: 'text-purple-700' },
-  task:       { icon: CheckSquare, label: 'Task',     border: 'border-t-yellow-500', bg: 'bg-amber-50',  text: 'text-amber-700' },
-  'follow-up': { icon: RotateCcw, label: 'Follow-up', border: 'border-t-orange-500', bg: 'bg-orange-50', text: 'text-orange-700' },
-  demo:       { icon: Monitor,    label: 'Demo',      border: 'border-t-pink-500',   bg: 'bg-pink-50',   text: 'text-pink-700' },
+  call:       { icon: Phone,      label: 'Call',      border: 'border-t-[var(--mw-info)]',    bg: 'bg-[var(--mw-info)]/10',    text: 'text-[var(--mw-info)]' },
+  email:      { icon: Mail,       label: 'Email',     border: 'border-t-[var(--mw-success)]', bg: 'bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]' },
+  meeting:    { icon: Users,      label: 'Meeting',   border: 'border-t-[var(--neutral-500)]', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-700)]' },
+  task:       { icon: CheckSquare, label: 'Task',     border: 'border-t-[var(--mw-warning)]', bg: 'bg-[var(--mw-warning)]/10', text: 'text-[var(--mw-warning)]' },
+  'follow-up': { icon: RotateCcw, label: 'Follow-up', border: 'border-t-[var(--mw-warning)]', bg: 'bg-[var(--mw-warning)]/10', text: 'text-[var(--mw-warning)]' },
+  demo:       { icon: Monitor,    label: 'Demo',      border: 'border-t-[var(--neutral-500)]', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-700)]' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  scheduled: { label: 'Scheduled', className: 'border-0 bg-blue-50 text-blue-700' },
+  scheduled: { label: 'Scheduled', className: 'border-0 bg-[var(--mw-info)]/10 text-[var(--mw-info)]' },
   completed: { label: 'Completed', className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]' },
-  cancelled: { label: 'Cancelled', className: 'border-0 bg-red-50 text-red-700' },
+  cancelled: { label: 'Cancelled', className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
   low:    { label: 'Low',    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]' },
-  medium: { label: 'Medium', className: 'border-0 bg-amber-50 text-amber-700' },
-  high:   { label: 'High',   className: 'border-0 bg-red-50 text-red-700' },
+  medium: { label: 'Medium', className: 'border-0 bg-[var(--mw-warning)]/10 text-[var(--mw-warning)]' },
+  high:   { label: 'High',   className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]' },
 };
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
@@ -117,7 +117,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
               <Icon className={cn('w-5 h-5', cfg.text)} strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-base font-semibold text-[var(--mw-mirage)] leading-tight">
+              <SheetTitle className="text-base font-medium text-[var(--mw-mirage)] leading-tight">
                 {event.title}
               </SheetTitle>
               <SheetDescription className="mt-1 flex items-center gap-2 text-sm">
@@ -266,7 +266,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
             <Button
               size="sm"
               variant="outline"
-              className="border-destructive text-destructive hover:bg-red-50 text-xs gap-1.5 ml-auto"
+              className="border-destructive text-destructive hover:bg-[var(--mw-error)]/10 text-xs gap-1.5 ml-auto"
               onClick={() => { toast.success('Event deleted'); onOpenChange(false); }}
             >
               <Trash2 className="w-4 h-4" /> Delete

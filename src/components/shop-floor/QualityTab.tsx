@@ -159,9 +159,9 @@ const StatusBadge = ({ status }: { status: string }) => {
   return (
     <div className={cn(
       "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
-      isPassed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+      isPassed ? "bg-[var(--mw-success-light)] text-[var(--mw-success)]" : "bg-[var(--mw-error-light)] text-[var(--mw-error)]"
     )}>
-      <div className={cn("w-1.5 h-1.5 rounded-full", isPassed ? "bg-green-600" : "bg-red-600")} />
+      <div className={cn("w-1.5 h-1.5 rounded-full", isPassed ? "bg-[var(--mw-success)]" : "bg-[var(--mw-error)]")} />
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </div>
   );
@@ -169,9 +169,9 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 const PriorityBadge = ({ priority }: { priority: string }) => {
   const styles = {
-    critical: "bg-red-100 text-red-700 border-red-200",
-    high: "bg-amber-100 text-amber-800 border-amber-200",
-    medium: "bg-orange-50 text-orange-700 border-orange-200",
+    critical: "bg-[var(--mw-error-light)] text-[var(--mw-error)] border-[var(--mw-error)]/20",
+    high: "bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)] border-[var(--mw-warning)]/20",
+    medium: "bg-[var(--mw-warning-light)] text-[var(--mw-warning)] border-[var(--mw-warning)]/20",
     minor: "bg-[var(--neutral-100)] text-[var(--neutral-700)] border-[var(--neutral-200)]"
   };
   
@@ -194,12 +194,12 @@ export function QualityTab() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 flex-shrink-0">
         <div>
-          <h1 className="text-3xl font-semibold text-[var(--neutral-800)] tracking-tight">Quality</h1>
+          <h1 className="text-3xl font-medium text-[var(--neutral-800)] tracking-tight">Quality</h1>
           <p className="text-[var(--neutral-500)] mt-1 text-sm">Track inspections, defects, and quality metrics</p>
         </div>
         <Button 
           onClick={() => setShowLogModal(true)}
-          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-semibold rounded-xl px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
+          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded-xl px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
         >
           <Plus className="w-5 h-5 mr-2" /> Log Issue
         </Button>
@@ -238,10 +238,10 @@ export function QualityTab() {
           {/* KPI Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 */}
-            <Card className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+            <Card className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
               <div className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-3">Quality Score</div>
               <div className="flex items-baseline gap-3">
-                <span className="text-[48px] font-bold text-[var(--neutral-800)] tracking-tight">98.2%</span>
+                <span className="text-5xl font-bold text-[var(--neutral-800)] tracking-tight">98.2%</span>
               </div>
               <div className="flex items-center gap-2 mt-2 text-sm font-medium text-[var(--mw-success)]">
                 <ArrowUpRight className="w-4 h-4" />
@@ -250,24 +250,24 @@ export function QualityTab() {
             </Card>
 
             {/* Card 2 */}
-            <Card className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+            <Card className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
               <div className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-3">Active Issues</div>
               <div className="flex items-baseline gap-3">
-                <span className="text-[48px] font-bold text-[var(--neutral-800)] tracking-tight">7</span>
+                <span className="text-5xl font-bold text-[var(--neutral-800)] tracking-tight">7</span>
               </div>
               <div className="flex items-center gap-4 mt-2 text-sm">
-                <span className="text-[var(--mw-error)] font-semibold">3 Critical</span>
+                <span className="text-[var(--mw-error)] font-medium">3 Critical</span>
                 <span className="text-[var(--neutral-500)]">4 Minor</span>
               </div>
             </Card>
 
             {/* Card 3 */}
-            <Card className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+            <Card className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
               <div className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-3">This Week</div>
               <div className="space-y-1">
-                <div className="text-base font-semibold text-[var(--neutral-800)]">156 Inspections Passed</div>
+                <div className="text-base font-medium text-[var(--neutral-800)]">156 Inspections Passed</div>
                 <div className="text-sm text-[var(--neutral-500)]">4 Failed</div>
-                <div className="text-sm font-semibold text-[var(--mw-success)] mt-1">97.5% Pass Rate</div>
+                <div className="text-sm font-medium text-[var(--mw-success)] mt-1">97.5% Pass Rate</div>
               </div>
             </Card>
           </div>
@@ -275,11 +275,11 @@ export function QualityTab() {
           {/* Quality Holds */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-[var(--neutral-800)]">Quality Holds</h3>
+              <h3 className="text-xl font-medium text-[var(--neutral-800)]">Quality Holds</h3>
             </div>
             <div className="flex overflow-x-auto gap-4 pb-4 -mx-1 px-1 hide-scrollbar">
               {QUALITY_HOLDS.map((hold) => (
-                <div key={hold.id} className="flex-shrink-0 w-[320px] bg-white rounded-[var(--shape-lg)] shadow-md border border-[var(--neutral-200)] p-5">
+                <div key={hold.id} className="flex-shrink-0 w-[320px] bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--neutral-200)] p-6">
                    <div className="flex justify-between items-start mb-2">
                      <span className="text-base font-bold text-[var(--neutral-800)]">{hold.wo}</span>
                      <span className="text-xs text-[var(--neutral-500)]">{hold.time}</span>
@@ -302,8 +302,8 @@ export function QualityTab() {
             {/* Recent Inspections */}
             <div className="xl:col-span-2">
                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-[var(--neutral-800)]">Recent Inspections</h3>
-                  <div className="flex bg-[#E5E4E0]/30 p-1 rounded-[var(--shape-lg)]">
+                  <h3 className="text-xl font-medium text-[var(--neutral-800)]">Recent Inspections</h3>
+                  <div className="flex bg-[var(--neutral-200)]/30 p-1 rounded-[var(--shape-lg)]">
                     {['Today', 'This Week', 'Month'].map((filter, i) => (
                       <button key={filter} className={cn(
                         "px-3 py-1 text-xs font-medium rounded-md transition-colors",
@@ -320,12 +320,12 @@ export function QualityTab() {
                    )}>
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[var(--neutral-800)]">{insp.wo}</span>
+                          <span className="text-sm font-medium text-[var(--neutral-800)]">{insp.wo}</span>
                           <span className="text-sm text-[var(--neutral-500)]">• {insp.part}</span>
                         </div>
                         <div className="text-xs text-[var(--neutral-500)] flex items-center gap-1">
                           <span className="font-medium">{insp.inspector}</span>
-                          <span className="text-[#E5E4E0]">|</span>
+                          <span className="text-[var(--neutral-200)]">|</span>
                           <span>{insp.machine}</span>
                         </div>
                       </div>
@@ -341,12 +341,12 @@ export function QualityTab() {
             {/* Scrap & Rework */}
             <div className="space-y-6">
                {/* Scrap */}
-               <Card className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+               <Card className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
                  <div className="flex justify-between items-start mb-4">
-                   <h4 className="text-base font-semibold text-[var(--neutral-800)]">Scrap</h4>
-                   <Badge variant="outline" className="border-red-200 text-red-600 bg-red-50 text-xs">High</Badge>
+                   <h4 className="text-base font-medium text-[var(--neutral-800)]">Scrap</h4>
+                   <Badge variant="outline" className="border-[var(--mw-error)]/20 text-[var(--mw-error)] bg-[var(--mw-error-light)] text-xs">High</Badge>
                  </div>
-                 <div className="text-3xl font-bold text-[var(--neutral-800)] mb-1">$1,240</div>
+                 <div className="text-3xl font-bold text-[var(--neutral-800)] tabular-nums mb-1">$1,240</div>
                  <div className="text-sm text-[var(--neutral-500)] mb-3">18 parts scrapped</div>
                  <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--mw-error)] mb-6">
                     <ArrowUpRight className="w-4 h-4" />
@@ -355,8 +355,8 @@ export function QualityTab() {
                  {/* Simple Bar Chart */}
                  <div className="flex h-3 w-full rounded-full overflow-hidden gap-0.5">
                    <div className="h-full bg-[var(--neutral-800)] w-[60%]" />
-                   <div className="h-full bg-[#9CA3AF] w-[25%]" />
-                   <div className="h-full bg-[#E5E7EB] w-[15%]" />
+                   <div className="h-full bg-[var(--neutral-400)] w-[25%]" />
+                   <div className="h-full bg-[var(--neutral-200)] w-[15%]" />
                  </div>
                  <div className="flex justify-between mt-2 text-[10px] text-[var(--neutral-500)]">
                     <span>Material</span>
@@ -366,11 +366,11 @@ export function QualityTab() {
                </Card>
 
                {/* Rework */}
-               <Card className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+               <Card className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
                  <div className="flex justify-between items-start mb-4">
-                   <h4 className="text-base font-semibold text-[var(--neutral-800)]">Rework</h4>
+                   <h4 className="text-base font-medium text-[var(--neutral-800)]">Rework</h4>
                  </div>
-                 <div className="text-3xl font-bold text-[var(--neutral-800)] mb-1">$620</div>
+                 <div className="text-3xl font-bold text-[var(--neutral-800)] tabular-nums mb-1">$620</div>
                  <div className="text-sm text-[var(--neutral-500)] mb-3">9 parts reworked</div>
                  <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--mw-success)] mb-6">
                     <ArrowDownRight className="w-4 h-4" />
@@ -378,8 +378,8 @@ export function QualityTab() {
                  </div>
                  <div className="flex h-3 w-full rounded-full overflow-hidden gap-0.5">
                    <div className="h-full bg-[var(--neutral-800)] w-[40%]" />
-                   <div className="h-full bg-[#9CA3AF] w-[40%]" />
-                   <div className="h-full bg-[#E5E7EB] w-[20%]" />
+                   <div className="h-full bg-[var(--neutral-400)] w-[40%]" />
+                   <div className="h-full bg-[var(--neutral-200)] w-[20%]" />
                  </div>
                </Card>
             </div>
@@ -410,7 +410,7 @@ export function QualityTab() {
               )}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                    <div className="flex items-center gap-3">
-                      <span className="font-semibold text-sm text-[var(--neutral-800)]">{issue.id}</span>
+                      <span className="font-medium text-sm text-[var(--neutral-800)]">{issue.id}</span>
                       <PriorityBadge priority={issue.priority} />
                       <span className="text-xs text-[var(--neutral-500)] flex items-center gap-1"><Clock className="w-4 h-4"/> {issue.time}</span>
                    </div>
@@ -421,13 +421,13 @@ export function QualityTab() {
                    </div>
                 </div>
                 
-                <h3 className="text-lg font-semibold text-[var(--neutral-800)] mb-3">{issue.title}</h3>
+                <h3 className="text-lg font-medium text-[var(--neutral-800)] mb-3">{issue.title}</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-[var(--neutral-500)] mb-6">
-                   <div><span className="text-[#9CA3AF] text-xs uppercase tracking-wider block mb-1">Work Order</span>{issue.wo}</div>
-                   <div><span className="text-[#9CA3AF] text-xs uppercase tracking-wider block mb-1">Part</span>{issue.part}</div>
-                   <div><span className="text-[#9CA3AF] text-xs uppercase tracking-wider block mb-1">Machine</span>{issue.machine}</div>
-                   <div><span className="text-[#9CA3AF] text-xs uppercase tracking-wider block mb-1">Reported By</span>{issue.reporter}</div>
+                   <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Work Order</span>{issue.wo}</div>
+                   <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Part</span>{issue.part}</div>
+                   <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Machine</span>{issue.machine}</div>
+                   <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Reported By</span>{issue.reporter}</div>
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-[var(--neutral-200)]">
@@ -462,11 +462,11 @@ export function QualityTab() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {INSPECTION_TEMPLATES.map((tpl, i) => (
-               <Card key={i} className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)] hover:shadow-lg transition-shadow cursor-pointer group">
+               <Card key={i} className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] hover:shadow-lg transition-shadow cursor-pointer group">
                   <div className="w-12 h-12 rounded-xl bg-[var(--neutral-100)] flex items-center justify-center mb-4 group-hover:bg-[var(--mw-yellow-400)]/20 transition-colors">
                      <tpl.icon className="w-6 h-6 text-[var(--neutral-800)]" />
                   </div>
-                  <h3 className="text-lg font-semibold text-[var(--neutral-800)] mb-2">{tpl.title}</h3>
+                  <h3 className="text-lg font-medium text-[var(--neutral-800)] mb-2">{tpl.title}</h3>
                   <p className="text-sm text-[var(--neutral-500)] mb-6 min-h-[40px]">{tpl.desc}</p>
                   <Button variant="outline" className="w-full border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium h-11 hover:bg-[var(--neutral-100)]">Start Inspection</Button>
                </Card>
@@ -479,17 +479,17 @@ export function QualityTab() {
       {activeTab === 'reports' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50 duration-300 pb-12">
            {REPORTS.map((report, i) => (
-              <Card key={i} className="p-6 border-[var(--neutral-200)] shadow-md rounded-[var(--shape-lg)]">
+              <Card key={i} className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
                   <div className="flex items-start justify-between mb-4">
                      <div className="w-10 h-10 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] flex items-center justify-center">
                         <BarChart3 className="w-5 h-5 text-[var(--neutral-500)]" />
                      </div>
                      <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--neutral-500)]"><MoreHorizontal className="w-4 h-4"/></Button>
                   </div>
-                  <h3 className="text-lg font-semibold text-[var(--neutral-800)] mb-1">{report.title}</h3>
+                  <h3 className="text-lg font-medium text-[var(--neutral-800)] mb-1">{report.title}</h3>
                   <p className="text-sm text-[var(--neutral-500)] mb-4">{report.desc}</p>
                   <div className="flex items-center justify-between pt-4 border-t border-[var(--neutral-200)]">
-                     <span className="text-xs text-[#9CA3AF]">{report.updated}</span>
+                     <span className="text-xs text-[var(--neutral-400)]">{report.updated}</span>
                      <Button variant="outline" size="sm" className="h-9 border-[var(--neutral-200)] text-[var(--neutral-800)]">View Report</Button>
                   </div>
               </Card>
@@ -499,10 +499,10 @@ export function QualityTab() {
 
       {/* Log Issue Modal Overlay */}
       {showLogModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-[var(--shape-lg)] shadow-2xl w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-white rounded-[var(--shape-lg)] shadow-md w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="p-6 border-b border-[var(--neutral-200)] flex items-center justify-between bg-white">
-                 <h2 className="text-xl font-semibold text-[var(--neutral-800)]">Log Quality Issue</h2>
+                 <h2 className="text-xl font-medium text-[var(--neutral-800)]">Log Quality Issue</h2>
                  <Button variant="ghost" size="icon" onClick={() => setShowLogModal(false)} className="rounded-full text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]">
                     <X className="w-5 h-5" />
                  </Button>
@@ -511,7 +511,7 @@ export function QualityTab() {
               <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
                  {/* Issue Type */}
                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-[var(--neutral-800)]">Issue Type <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-medium text-[var(--neutral-800)]">Issue Type <span className="text-[var(--mw-error)]">*</span></label>
                     <div className="grid grid-cols-2 gap-3">
                        {['Material Defect', 'Dimensional', 'Surface Finish', 'Equipment Failure'].map(type => (
                           <button key={type} className="h-12 border border-[var(--neutral-200)] rounded-[var(--shape-lg)] text-sm font-medium text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] hover:border-[var(--neutral-800)] transition-colors focus:ring-2 focus:ring-[var(--mw-yellow-400)] focus:border-transparent outline-none">
@@ -523,15 +523,15 @@ export function QualityTab() {
 
                  {/* Priority */}
                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-[var(--neutral-800)]">Priority <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-medium text-[var(--neutral-800)]">Priority <span className="text-[var(--mw-error)]">*</span></label>
                     <div className="flex gap-4">
                        {[
-                         { label: 'Critical', desc: 'Stop Production', color: 'border-red-200 bg-red-50 text-red-700' },
-                         { label: 'High', desc: 'Affects Delivery', color: 'border-amber-200 bg-amber-50 text-amber-700' },
+                         { label: 'Critical', desc: 'Stop Production', color: 'border-[var(--mw-error)]/20 bg-[var(--mw-error-light)] text-[var(--mw-error)]' },
+                         { label: 'High', desc: 'Affects Delivery', color: 'border-[var(--mw-warning)]/20 bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)]' },
                          { label: 'Minor', desc: 'Continue w/ Caution', color: 'border-[var(--neutral-200)] bg-[var(--neutral-50)] text-[var(--neutral-700)]' }
                        ].map(p => (
                           <div key={p.label} className={cn("flex-1 p-3 rounded-[var(--shape-lg)] border cursor-pointer hover:opacity-80 transition-opacity", p.color)}>
-                             <div className="font-semibold text-sm">{p.label}</div>
+                             <div className="font-medium text-sm">{p.label}</div>
                              <div className="text-[10px] opacity-80">{p.desc}</div>
                           </div>
                        ))}
@@ -540,7 +540,7 @@ export function QualityTab() {
 
                  {/* Work Order */}
                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-[var(--neutral-800)]">Work Order / Asset</label>
+                    <label className="text-sm font-medium text-[var(--neutral-800)]">Work Order / Asset</label>
                     <div className="flex gap-2">
                        <div className="relative flex-1">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
@@ -554,7 +554,7 @@ export function QualityTab() {
 
                  {/* Description */}
                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-[var(--neutral-800)]">Description <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-medium text-[var(--neutral-800)]">Description <span className="text-[var(--mw-error)]">*</span></label>
                     <textarea 
                       className="w-full min-h-[100px] p-3 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--mw-yellow-400)] resize-none"
                       placeholder="Describe what happened..."
@@ -563,7 +563,7 @@ export function QualityTab() {
 
                  {/* Photo Evidence */}
                  <div className="space-y-3">
-                    <label className="text-sm font-semibold text-[var(--neutral-800)]">Photo Evidence</label>
+                    <label className="text-sm font-medium text-[var(--neutral-800)]">Photo Evidence</label>
                     <div className="flex gap-3">
                        <Button variant="outline" className="h-20 w-20 flex flex-col items-center justify-center gap-2 border-dashed border-2">
                           <Camera className="w-6 h-6 text-[var(--neutral-500)]" />
@@ -577,10 +577,10 @@ export function QualityTab() {
                  <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1 h-12 bg-white border-[var(--neutral-200)] text-[var(--neutral-500)] font-medium hover:text-[var(--neutral-800)]">
                     Cancel
                  </Button>
-                 <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-semibold border border-[var(--mw-yellow-400)]/20">
+                 <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">
                     Log Issue Only
                  </Button>
-                 <Button className="flex-1 h-12 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-semibold shadow-sm">
+                 <Button className="flex-1 h-12 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-medium shadow-sm">
                     Create Hold
                  </Button>
               </div>

@@ -50,7 +50,7 @@ export function EntityCard({
     >
       <div className="flex items-start gap-4">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-medium text-white"
           style={{ backgroundColor: avatarColor ?? "var(--mw-mirage)" }}
         >
           {avatarInitials}
@@ -58,7 +58,7 @@ export function EntityCard({
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--neutral-900)]">{name}</p>
+              <p className="text-sm font-medium text-[var(--neutral-900)]">{name}</p>
               {subtitle !== undefined && (
                 <p className="text-xs text-muted-foreground">{subtitle}</p>
               )}

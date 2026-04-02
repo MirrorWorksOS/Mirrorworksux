@@ -14,6 +14,14 @@ import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
+import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, MW_AXIS_TICK, MW_CARTESIAN_GRID } from '@/components/shared/charts/chart-theme';
+
 // ── Mock product data ─────────────────────────────────────
 const PRODUCT = {
   id: '1',
@@ -85,22 +93,26 @@ function OverviewTab() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Sell price',  value: `$${PRODUCT.sellPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`, mono: true },
-          { label: 'Cost price',  value: `$${PRODUCT.costPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`, mono: true },
-          { label: 'Margin',      value: `${margin.toFixed(1)}%`, mono: true, highlight: margin >= 25 ? 'green' : 'yellow' },
-          { label: 'Lead time',   value: `${PRODUCT.lead_time} days`, mono: false },
-        ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-            <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
-            <p className={cn(
-              'text-xl font-semibold tabular-nums',
-              kpi.highlight === 'green' ? 'text-[var(--neutral-900)]' : kpi.highlight === 'yellow' ? 'text-[var(--neutral-900)]' : 'text-[var(--neutral-900)]'
-            )}>
-              {kpi.value}
-            </p>
-          </Card>
-        ))}
+        <KpiStatCard
+          label="Sell price"
+          value={`$${PRODUCT.sellPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`}
+          layout="compact"
+        />
+        <KpiStatCard
+          label="Cost price"
+          value={`$${PRODUCT.costPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`}
+          layout="compact"
+        />
+        <KpiStatCard
+          label="Margin"
+          value={`${margin.toFixed(1)}%`}
+          layout="compact"
+        />
+        <KpiStatCard
+          label="Lead time"
+          value={`${PRODUCT.lead_time} days`}
+          layout="compact"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -127,12 +139,12 @@ function OverviewTab() {
         <div className="space-y-4">
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Stock on hand</h4>
-            <p className="text-3xl font-semibold tabular-nums text-[var(--neutral-900)]">8</p>
+            <p className="text-3xl font-medium tabular-nums text-[var(--neutral-900)]">8</p>
             <p className="text-xs text-[var(--neutral-500)]">units · Min reorder: 0</p>
           </Card>
           <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">This month</h4>
-            <p className="text-2xl font-semibold tabular-nums text-[var(--neutral-900)]">18 units</p>
+            <p className="text-2xl font-medium tabular-nums text-[var(--neutral-900)]">18 units</p>
             <p className="text-xs text-[var(--neutral-900)] mt-0.5">▲ 29% vs last month</p>
           </Card>
         </div>
@@ -143,127 +155,144 @@ function OverviewTab() {
 
 function ManufacturingTab() {
   const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
+
+  const routingColumns: MwColumnDef<typeof ROUTING[number]>[] = [
+    {
+      key: 'step',
+      header: 'Step',
+      cell: (row) => <span className="font-medium tabular-nums text-[var(--neutral-500)]">{String(row.step).padStart(2, '0')}</span>,
+    },
+    {
+      key: 'operation',
+      header: 'Operation',
+      cell: (row) => <span className="font-medium text-[var(--neutral-900)]">{row.name}</span>,
+    },
+    {
+      key: 'workCenter',
+      header: 'Work Centre',
+      cell: (row) => <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{row.workCenter}</Badge>,
+    },
+    {
+      key: 'cycle',
+      header: 'Cycle (hrs)',
+      cell: (row) => <span className="tabular-nums">{row.duration}</span>,
+    },
+    {
+      key: 'setup',
+      header: 'Setup (min)',
+      cell: (row) => <span className="tabular-nums text-[var(--neutral-500)]">{row.setup > 0 ? row.setup : '—'}</span>,
+    },
+  ];
+
+  const bomColumns: FinancialColumn<typeof BOM_LINES[number]>[] = [
+    { key: 'sku', header: 'SKU', accessor: (row) => row.sku, format: 'text', align: 'left', className: 'text-xs text-[var(--neutral-500)]' },
+    { key: 'description', header: 'Description', accessor: (row) => row.description, format: 'text', align: 'left' },
+    { key: 'qty', header: 'Qty', accessor: (row) => row.qty, format: 'number', align: 'right' },
+    { key: 'unit', header: 'Unit', accessor: (row) => row.unit, format: 'text', align: 'left', className: 'text-[var(--neutral-500)]' },
+    { key: 'unitCost', header: 'Unit cost', accessor: (row) => row.cost, format: 'currency', align: 'right' },
+    { key: 'lineTotal', header: 'Line total', accessor: (row) => row.qty * row.cost, format: 'currency', align: 'right' },
+  ];
+
+  const bomTotals: Record<string, number> = {
+    lineTotal: BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0),
+  };
+
   return (
     <div className="space-y-6">
       {/* Routing */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-medium text-[var(--neutral-900)]">Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit routing coming soon')}>Edit routing</Button>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['Step', 'Operation', 'Work Centre', 'Cycle (hrs)', 'Setup (min)'].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ROUTING.map(r => (
-              <tr key={r.step} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4 text-sm font-medium tabular-nums text-[var(--neutral-500)]">{String(r.step).padStart(2, '0')}</td>
-                <td className="px-4 text-sm text-[var(--neutral-900)] font-medium">{r.name}</td>
-                <td className="px-4"><Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{r.workCenter}</Badge></td>
-                <td className="px-4 text-sm tabular-nums">{r.duration}</td>
-                <td className="px-4 text-sm tabular-nums text-[var(--neutral-500)]">{r.setup > 0 ? r.setup : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+        <MwDataTable
+          columns={routingColumns}
+          data={ROUTING}
+          keyExtractor={(row) => row.step}
+        />
+      </div>
 
       {/* BOM */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-medium text-[var(--neutral-900)]">Bill of Materials · v1.2</h4>
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit BOM coming soon')}>Edit BOM</Button>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['SKU', 'Description', 'Qty', 'Unit', 'Unit cost', 'Line total'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Qty', 'Unit cost', 'Line total'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {BOM_LINES.map(line => (
-              <tr key={line.sku} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4 text-xs tabular-nums text-[var(--neutral-500)]">{line.sku}</td>
-                <td className="px-4 text-sm text-[var(--neutral-900)]">{line.description}</td>
-                <td className="px-4 text-right text-sm tabular-nums">{line.qty}</td>
-                <td className="px-4 text-sm text-[var(--neutral-500)]">{line.unit}</td>
-                <td className="px-4 text-right text-sm tabular-nums">${line.cost.toFixed(2)}</td>
-                <td className="px-4 text-right text-sm font-medium tabular-nums">${(line.qty * line.cost).toFixed(2)}</td>
-              </tr>
-            ))}
-            <tr className="bg-[var(--neutral-100)] border-t border-[var(--border)]">
-              <td colSpan={5} className="px-4 py-3 text-sm font-medium text-right text-[var(--neutral-900)]">Total BOM cost</td>
-              <td className="px-4 py-3 text-right text-sm font-semibold tabular-nums text-[var(--neutral-900)]">
-                ${BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0).toFixed(2)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </Card>
+        <FinancialTable
+          columns={bomColumns}
+          data={BOM_LINES}
+          keyExtractor={(row) => row.sku}
+          totals={bomTotals}
+        />
+      </div>
     </div>
   );
 }
 
 function InventoryTab() {
+  const movementColumns: MwColumnDef<typeof INVENTORY_MOVEMENTS[number]>[] = [
+    {
+      key: 'date',
+      header: 'Date',
+      cell: (row) => <span className="text-[var(--neutral-500)]">{row.date}</span>,
+    },
+    {
+      key: 'type',
+      header: 'Type',
+      cell: (row) => (
+        <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
+          row.type === 'Production' ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
+          row.type === 'Shipment'   ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
+          'bg-[var(--neutral-100)] text-[var(--neutral-500)]'
+        )}>
+          {row.type}
+        </Badge>
+      ),
+    },
+    {
+      key: 'ref',
+      header: 'Reference',
+      cell: (row) => <span className="tabular-nums text-[var(--neutral-500)]">{row.ref}</span>,
+    },
+    {
+      key: 'qty',
+      header: 'Qty',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      cell: (row) => (
+        <span className={cn('font-medium tabular-nums', row.qty > 0 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
+          {row.qty > 0 ? `+${row.qty}` : row.qty}
+        </span>
+      ),
+    },
+    {
+      key: 'balance',
+      header: 'Balance',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      cell: (row) => <span className="font-medium tabular-nums">{row.balance}</span>,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'On hand',   value: '8',  sub: 'units available' },
-          { label: 'Reserved',  value: '5',  sub: 'units allocated to jobs' },
-          { label: 'On order',  value: '0',  sub: 'units in production' },
-          { label: 'Avg cost',  value: '$820.00', sub: 'per unit (FIFO)' },
-        ].map(kpi => (
-          <Card key={kpi.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-            <p className="text-xs text-[var(--neutral-500)] mb-1 font-medium">{kpi.label}</p>
-            <p className="text-xl font-semibold tabular-nums text-[var(--neutral-900)]">{kpi.value}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{kpi.sub}</p>
-          </Card>
-        ))}
+        <KpiStatCard label="On hand" value="8" hint="units available" layout="compact" />
+        <KpiStatCard label="Reserved" value="5" hint="units allocated to jobs" layout="compact" />
+        <KpiStatCard label="On order" value="0" hint="units in production" layout="compact" />
+        <KpiStatCard label="Avg cost" value="$820.00" hint="per unit (FIFO)" layout="compact" />
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)]">
+      <div>
+        <div className="mb-3">
           <h4 className="text-sm font-medium text-[var(--neutral-900)]">Stock movements</h4>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['Date', 'Type', 'Reference', 'Qty', 'Balance'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Qty', 'Balance'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {INVENTORY_MOVEMENTS.map((m, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4 text-sm text-[var(--neutral-500)]">{m.date}</td>
-                <td className="px-4">
-                  <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-                    m.type === 'Production' ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
-                    m.type === 'Shipment'   ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)]' :
-                    'bg-[var(--neutral-100)] text-[var(--neutral-500)]'
-                  )}>
-                    {m.type}
-                  </Badge>
-                </td>
-                <td className="px-4 text-sm tabular-nums text-[var(--neutral-500)]">{m.ref}</td>
-                <td className={cn('px-4 text-right text-sm font-medium tabular-nums', m.qty > 0 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
-                  {m.qty > 0 ? `+${m.qty}` : m.qty}
-                </td>
-                <td className="px-4 text-right text-sm font-medium tabular-nums">{m.balance}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+        <MwDataTable
+          columns={movementColumns}
+          data={INVENTORY_MOVEMENTS}
+          keyExtractor={(_, i) => i}
+        />
+      </div>
     </div>
   );
 }
@@ -272,18 +301,17 @@ function AccountingTab() {
   const margin = ((PRODUCT.sellPrice - PRODUCT.costPrice) / PRODUCT.sellPrice) * 100;
   return (
     <div className="space-y-6">
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Revenue — last 6 months</h4>
+      <ChartCard title="Revenue — last 6 months">
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={REVENUE_DATA}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)', fontVariantNumeric: 'tabular-nums' }} axisLine={false} tickLine={false} />
-            <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-            <Area key="revenue" type="monotone" dataKey="revenue" stroke="var(--mw-yellow-400)" fill="var(--accent)" strokeWidth={2} />
+            <CartesianGrid {...MW_CARTESIAN_GRID} />
+            <XAxis dataKey="month" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
+            <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
+            <Area key="revenue" type="monotone" dataKey="revenue" stroke="var(--mw-yellow-400)" fill="var(--accent)" strokeWidth={2} {...MW_RECHARTS_ANIMATION} />
           </AreaChart>
         </ResponsiveContainer>
-      </Card>
+      </ChartCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
@@ -335,6 +363,56 @@ function DocumentsTab() {
     STP: 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
     XLS: 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
   };
+
+  const docColumns: MwColumnDef<typeof DOCUMENTS[number]>[] = [
+    {
+      key: 'document',
+      header: 'Document',
+      cell: (row) => (
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
+          <span className="text-[var(--neutral-900)]">{row.name}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'type',
+      header: 'Type',
+      cell: (row) => (
+        <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 ', typeColor[row.type] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
+          {row.type}
+        </Badge>
+      ),
+    },
+    {
+      key: 'size',
+      header: 'Size',
+      cell: (row) => <span className="text-[var(--neutral-500)] tabular-nums">{row.size}</span>,
+    },
+    {
+      key: 'updated',
+      header: 'Updated',
+      cell: (row) => <span className="text-[var(--neutral-500)]">{row.date}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (row) =>
+        row.status === 'current'
+          ? <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><CheckCircle className="w-4 h-4" /> Current</span>
+          : <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><AlertTriangle className="w-4 h-4" /> Outdated</span>,
+    },
+    {
+      key: 'actions',
+      header: '',
+      cell: () => (
+        <button className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast.success('Downloading\u2026')}>
+          <Download className="w-4 h-4 text-[var(--neutral-500)]" />
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -342,47 +420,11 @@ function DocumentsTab() {
           <FileText className="w-4 h-4" /> Upload document
         </Button>
       </div>
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['Document', 'Type', 'Size', 'Updated', 'Status', ''].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {DOCUMENTS.map((doc, i) => (
-              <tr key={i} className="border-b border-[var(--border)] h-14 hover:bg-[var(--mw-yellow-50)]">
-                <td className="px-4">
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-                    <span className="text-sm text-[var(--neutral-900)]">{doc.name}</span>
-                  </div>
-                </td>
-                <td className="px-4">
-                  <Badge className={cn('border-0 text-[10px] rounded px-1.5 py-0.5 ', typeColor[doc.type] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
-                    {doc.type}
-                  </Badge>
-                </td>
-                <td className="px-4 text-sm text-[var(--neutral-500)] tabular-nums">{doc.size}</td>
-                <td className="px-4 text-sm text-[var(--neutral-500)]">{doc.date}</td>
-                <td className="px-4">
-                  {doc.status === 'current'
-                    ? <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><CheckCircle className="w-4 h-4" /> Current</span>
-                    : <span className="flex items-center gap-1 text-xs text-[var(--neutral-900)]"><AlertTriangle className="w-4 h-4" /> Outdated</span>
-                  }
-                </td>
-                <td className="px-4">
-                  <button className="p-1.5 hover:bg-[var(--neutral-100)] rounded transition-colors" onClick={() => toast.success('Downloading\u2026')}>
-                    <Download className="w-4 h-4 text-[var(--neutral-500)]" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+      <MwDataTable
+        columns={docColumns}
+        data={DOCUMENTS}
+        keyExtractor={(_, i) => i}
+      />
     </div>
   );
 }
@@ -402,40 +444,30 @@ export function SellProductDetail() {
   const TabContent = TAB_COMPONENTS[tab];
 
   return (
-    <div className="p-8 space-y-8 overflow-y-auto">
-      {/* Back + header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-4">
-          <button onClick={() => navigate(-1)} className="mt-1 p-2 hover:bg-[var(--neutral-100)] rounded-lg transition-colors">
-            <ArrowLeft className="w-4 h-4 text-[var(--neutral-500)]" />
-          </button>
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl tracking-tight text-[var(--neutral-900)] font-medium">{PRODUCT.name}</h1>
-              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">Active</Badge>
-              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2">{PRODUCT.type}</Badge>
-            </div>
-            <p className="text-sm text-[var(--neutral-500)]"><span className="tabular-nums">{PRODUCT.sku}</span> · {PRODUCT.category}</p>
+    <PageShell>
+      <PageHeader
+        title={PRODUCT.name}
+        subtitle={`${PRODUCT.sku} · ${PRODUCT.category}`}
+        actions={
+          <div className="flex gap-4">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast('Edit product coming soon')}>
+              <Edit className="w-4 h-4" /> Edit
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-10 px-2">
+                  <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => toast.success('Product duplicated')}>Duplicate</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast('Archive product coming soon')}>Archive</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast('Product deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </div>
-        <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 h-10" onClick={() => toast('Edit product coming soon')}>
-            <Edit className="w-4 h-4" /> Edit
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 px-2">
-                <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => toast.success('Product duplicated')}>Duplicate</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast('Archive product coming soon')}>Archive</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast('Product deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+        }
+      />
 
       {/* Tabs */}
       <div className="flex border-b border-[var(--border)]">
@@ -457,6 +489,6 @@ export function SellProductDetail() {
 
       {/* Content */}
       <TabContent />
-    </div>
+    </PageShell>
   );
 }

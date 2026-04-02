@@ -8,8 +8,8 @@ import { Package, AlertTriangle } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
 const mockProducts = [
@@ -20,8 +20,8 @@ const mockProducts = [
 
 export function BuyProducts() {
   return (
-    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-6 space-y-6">
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Products</h1>
+    <PageShell>
+      <PageHeader title="Products" />
       <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
         <table className="w-full">
           <thead>
@@ -59,6 +59,6 @@ export function BuyProducts() {
           </tbody>
         </table>
       </Card>
-    </motion.div>
+    </PageShell>
   );
 }

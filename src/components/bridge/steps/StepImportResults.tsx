@@ -61,7 +61,7 @@ export function StepImportResults() {
         <>
           <div className="text-center space-y-4 py-12">
             <Loader2 className="w-12 h-12 text-[var(--mw-yellow-400)] animate-spin mx-auto" />
-            <h2 className="text-2xl font-semibold tracking-tight">Importing your data...</h2>
+            <h2 className="text-2xl font-medium tracking-tight">Importing your data...</h2>
             {importProgress && (
               <div className="max-w-md mx-auto space-y-2">
                 <p className="text-sm text-muted-foreground capitalize">
@@ -78,23 +78,23 @@ export function StepImportResults() {
         <>
           <div className="text-center space-y-2">
             <CheckCircle className="w-12 h-12 text-[var(--mw-success)] mx-auto" />
-            <h2 className="text-2xl font-semibold tracking-tight">Import complete</h2>
+            <h2 className="text-2xl font-medium tracking-tight">Import complete</h2>
             <p className="text-sm text-muted-foreground">Your data has been imported into MirrorWorks.</p>
           </div>
 
           {/* Summary cards */}
           <div className="grid gap-4 sm:grid-cols-3">
-            <Card className="p-5 text-center space-y-1">
+            <Card className="p-6 text-center space-y-1">
               <CheckCircle className="w-6 h-6 text-[var(--mw-success)] mx-auto" />
               <p className="text-3xl font-bold">{totalCreated}</p>
               <p className="text-sm text-muted-foreground">Records created</p>
             </Card>
-            <Card className="p-5 text-center space-y-1">
+            <Card className="p-6 text-center space-y-1">
               <AlertTriangle className="w-6 h-6 text-[var(--mw-warning)] mx-auto" />
               <p className="text-3xl font-bold">{totalFlagged}</p>
               <p className="text-sm text-muted-foreground">Flagged for review</p>
             </Card>
-            <Card className="p-5 text-center space-y-1">
+            <Card className="p-6 text-center space-y-1">
               <MinusCircle className="w-6 h-6 text-[var(--neutral-400)] mx-auto" />
               <p className="text-3xl font-bold">{totalSkipped}</p>
               <p className="text-sm text-muted-foreground">Skipped</p>
@@ -122,7 +122,7 @@ export function StepImportResults() {
 
           {/* Team setup CTA */}
           {hasEmployees && (
-            <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] p-5">
+            <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] p-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--mw-yellow-400)_22%,transparent)]">
                   <Users className="w-5 h-5 text-[var(--neutral-900)]" />

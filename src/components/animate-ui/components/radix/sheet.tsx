@@ -131,7 +131,7 @@ type SheetTitleProps = SheetTitlePrimitiveProps;
 function SheetTitle({ className, ...props }: SheetTitleProps) {
   return (
     <SheetTitlePrimitive
-      className={cn('text-lg font-semibold text-foreground', className)}
+      className={cn('text-lg font-bold text-foreground', className)}
       {...props}
     />
   );

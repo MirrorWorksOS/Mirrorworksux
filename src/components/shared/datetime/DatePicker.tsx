@@ -116,7 +116,7 @@ export function DatePicker({
                   !inMonth && "text-muted-foreground opacity-40",
                   inMonth && "text-[var(--neutral-900)] hover:bg-[var(--neutral-100)]",
                   selected && "bg-[var(--mw-yellow-400)] font-medium text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-400)]",
-                  today && !selected && "font-semibold",
+                  today && !selected && "font-medium",
                 )}
               >
                 {format(day, "d")}

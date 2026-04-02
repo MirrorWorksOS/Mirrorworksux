@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight, ChevronRight, Layers } from "lucide-react";
 import { Card } from "./ui/card";
+import { MwDataTable, type MwColumnDef } from "./shared/data/MwDataTable";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
@@ -103,6 +104,39 @@ function widgetVisible(
   return true;
 }
 
+interface RecentJob {
+  id: string;
+  customer: string;
+  due: string;
+}
+
+const RECENT_JOBS: RecentJob[] = [
+  { id: "JOB-2026-0012", customer: "TechCorp Industries", due: "Mar 28" },
+  { id: "JOB-2026-0011", customer: "Pacific Fab", due: "Mar 26" },
+];
+
+const RECENT_JOB_COLUMNS: MwColumnDef<RecentJob>[] = [
+  {
+    key: "job",
+    header: "Job",
+    cell: (row) => (
+      <span className="font-medium tabular-nums">{row.id}</span>
+    ),
+  },
+  {
+    key: "customer",
+    header: "Customer",
+    cell: (row) => row.customer,
+  },
+  {
+    key: "due",
+    header: "Due",
+    cell: (row) => (
+      <span className="text-[var(--neutral-500)]">{row.due}</span>
+    ),
+  },
+];
+
 export function WelcomeDashboard() {
   const [loading, setLoading] = useState(true);
   const user = mockUserContext;
@@ -123,7 +157,7 @@ export function WelcomeDashboard() {
         <h1 className="mb-2 text-4xl font-bold tracking-tight text-[var(--mw-mirage)]">
           Welcome, {user.displayName}
         </h1>
-        <p className="text-[17px] text-muted-foreground">
+        <p className="text-lg text-muted-foreground">
           {user.org} · {user.role}
         </p>
       </header>
@@ -150,7 +184,7 @@ export function WelcomeDashboard() {
               <p className="text-xs font-medium text-muted-foreground">
                 My open approvals
               </p>
-              <p className="mt-1 text-3xl font-semibold tabular-nums text-[var(--mw-mirage)]">
+              <p className="mt-1 text-3xl font-medium tabular-nums text-[var(--mw-mirage)]">
                 4
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
@@ -172,7 +206,7 @@ export function WelcomeDashboard() {
               <p className="text-xs font-medium text-muted-foreground">
                 Primary module
               </p>
-              <p className="mt-1 text-lg font-semibold capitalize text-[var(--mw-mirage)]">
+              <p className="mt-1 text-lg font-medium capitalize text-[var(--mw-mirage)]">
                 {user.primaryModule}
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
@@ -304,45 +338,23 @@ export function WelcomeDashboard() {
                 variants={staggerItem}
                 className="lg:col-span-6"
               >
-                <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                  <h2 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">
+                <div className="space-y-4">
+                  <h2 className="text-base font-medium text-[var(--mw-mirage)]">
                     Recent jobs / orders
                   </h2>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                          <th className="pb-2 pr-4">Job</th>
-                          <th className="pb-2 pr-4">Customer</th>
-                          <th className="pb-2">Due</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-[var(--mw-mirage)]">
-                        <tr className="border-t border-[var(--neutral-100)]">
-                          <td className="py-3 pr-4 font-medium tabular-nums">
-                            JOB-2026-0012
-                          </td>
-                          <td className="py-3 pr-4">TechCorp Industries</td>
-                          <td className="py-3 text-[var(--neutral-500)]">Mar 28</td>
-                        </tr>
-                        <tr className="border-t border-[var(--neutral-100)]">
-                          <td className="py-3 pr-4 font-medium tabular-nums">
-                            JOB-2026-0011
-                          </td>
-                          <td className="py-3 pr-4">Pacific Fab</td>
-                          <td className="py-3 text-[var(--neutral-500)]">Mar 26</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <MwDataTable
+                    columns={RECENT_JOB_COLUMNS}
+                    data={RECENT_JOBS}
+                    keyExtractor={(row) => row.id}
+                  />
                   <Button
                     asChild
                     variant="outline"
-                    className="mt-4 border-[var(--neutral-200)]"
+                    className="border-[var(--neutral-200)]"
                   >
                     <Link to="/plan">Open Plan</Link>
                   </Button>
-                </Card>
+                </div>
               </motion.div>
             ) : null}
 
@@ -369,7 +381,7 @@ export function WelcomeDashboard() {
                       <Button
                         asChild
                         size="sm"
-                        className="bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]"
+                        className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
                       >
                         <Link to="/control/mirrorworks-bridge">MirrorWorks Bridge</Link>
                       </Button>

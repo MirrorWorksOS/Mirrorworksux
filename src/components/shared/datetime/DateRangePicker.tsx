@@ -117,7 +117,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
                 inMonth && "text-[var(--neutral-900)]",
                 inRange && !endpoint && "bg-[var(--mw-yellow-50)]",
                 endpoint && "bg-[var(--mw-yellow-400)] font-medium text-[var(--neutral-800)]",
-                today && !endpoint && "font-semibold",
+                today && !endpoint && "font-medium",
               )}
             >
               {format(day, "d")}

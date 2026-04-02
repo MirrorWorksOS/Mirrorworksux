@@ -4,11 +4,8 @@
  */
 import React, { useState } from 'react';
 import { Search, ExternalLink, Package } from 'lucide-react';
-import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -21,6 +18,46 @@ const PRODUCTS = [
   { id: '4', name: 'Rail Platform Guard',             sku: 'PROD-RPG-004',category: 'Finished Goods',  leadTime: 18, routingSteps: 5, hasBOM: true,  workCenters: ['Cutting', 'Welding', 'Finishing'],             cycleHrs: 16,  lastProduced: 'Feb 28' },
   { id: '5', name: 'Machine Guard Panel',             sku: 'PROD-MG-005', category: 'Finished Goods',  leadTime: 7,  routingSteps: 4, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Finishing'],             cycleHrs: 3.5, lastProduced: 'Feb 20' },
   { id: '6', name: 'Custom Electrical Cabinet',       sku: 'PROD-EC-006', category: 'Finished Goods',  leadTime: 25, routingSteps: 9, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Welding', 'Assembly'],   cycleHrs: 22,  lastProduced: '—' },
+];
+
+type PlanProduct = (typeof PRODUCTS)[number];
+
+const planProductColumns: MwColumnDef<PlanProduct>[] = [
+  {
+    key: 'name',
+    header: 'Product',
+    cell: (p) => (
+      <div className="flex items-center gap-2">
+        <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
+        <span className="font-medium text-[var(--mw-mirage)]">{p.name}</span>
+      </div>
+    ),
+  },
+  { key: 'sku', header: 'SKU', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (p) => p.sku },
+  { key: 'leadTime', header: 'Lead time', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.leadTime}d` },
+  { key: 'cycleHrs', header: 'Cycle hrs', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.cycleHrs}h` },
+  { key: 'routingSteps', header: 'Routing steps', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => p.routingSteps },
+  {
+    key: 'workCenters',
+    header: 'Work centres',
+    cell: (p) => (
+      <div className="flex flex-wrap gap-1">
+        {p.workCenters.slice(0, 3).map(wc => (
+          <span key={wc} className="text-[10px] bg-[var(--neutral-100)] text-[var(--neutral-500)] px-1.5 py-0.5 rounded">{wc}</span>
+        ))}
+        {p.workCenters.length > 3 && <span className="text-[10px] text-[var(--neutral-500)]">+{p.workCenters.length - 3}</span>}
+      </div>
+    ),
+  },
+  {
+    key: 'bom',
+    header: 'BOM',
+    cell: (p) =>
+      p.hasBOM
+        ? <StatusBadge variant="neutral">Yes</StatusBadge>
+        : <StatusBadge variant="warning">Missing</StatusBadge>,
+  },
+  { key: 'lastProduced', header: 'Last produced', className: 'text-[var(--neutral-500)]', cell: (p) => p.lastProduced },
 ];
 
 export function PlanProducts() {
@@ -49,49 +86,11 @@ export function PlanProducts() {
           className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
       </div>
 
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              {['Product', 'SKU', 'Lead time', 'Cycle hrs', 'Routing steps', 'Work centres', 'BOM', 'Last produced'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium',
-                  ['Lead time', 'Cycle hrs', 'Routing steps'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(p => (
-              <tr key={p.id} className="border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors">
-                <td className="px-4">
-                  <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-                    <span className="text-sm text-[var(--mw-mirage)] font-medium">{p.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 text-xs tabular-nums text-[var(--neutral-500)]">{p.sku}</td>
-                <td className="px-4 text-right text-sm tabular-nums">{p.leadTime}d</td>
-                <td className="px-4 text-right text-sm tabular-nums">{p.cycleHrs}h</td>
-                <td className="px-4 text-right text-sm tabular-nums">{p.routingSteps}</td>
-                <td className="px-4">
-                  <div className="flex flex-wrap gap-1">
-                    {p.workCenters.slice(0, 3).map(wc => (
-                      <span key={wc} className="text-[10px] bg-[var(--neutral-100)] text-[var(--neutral-500)] px-1.5 py-0.5 rounded">{wc}</span>
-                    ))}
-                    {p.workCenters.length > 3 && <span className="text-[10px] text-[var(--neutral-500)]">+{p.workCenters.length - 3}</span>}
-                  </div>
-                </td>
-                <td className="px-4">
-                  {p.hasBOM
-                    ? <StatusBadge variant="neutral">Yes</StatusBadge>
-                    : <StatusBadge variant="warning">Missing</StatusBadge>
-                  }
-                </td>
-                <td className="px-4 text-sm text-[var(--neutral-500)]">{p.lastProduced}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+      <MwDataTable
+        columns={planProductColumns}
+        data={filtered}
+        keyExtractor={(p) => p.id}
+      />
     </PageShell>
   );
 }

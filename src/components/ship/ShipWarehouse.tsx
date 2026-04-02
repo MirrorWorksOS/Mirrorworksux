@@ -3,11 +3,15 @@
  * Token-aligned + semantic status dot colours
  */
 import React, { useState } from 'react';
-import { Search, Download, CheckCircle, AlertCircle, Play } from 'lucide-react';
+import { Download, CheckCircle, AlertCircle, Play } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 const ZONES = [
   { name: 'Receiving', items: 34,  util: 45, x: 5,  y: 5,  w: 25, h: 35 },
@@ -43,8 +47,65 @@ const CYCLE = [
   { bin: 'B-02-05', sku: 'RHS-50252',   expected: 200, actual: null },
 ];
 
+type InvItem = (typeof INVENTORY)[number];
+
+const warehouseInvColumns: MwColumnDef<InvItem>[] = [
+  { key: 'bin', header: 'Bin', cell: (inv) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{inv.bin}</span> },
+  { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (inv) => inv.sku },
+  { key: 'name', header: 'Product', cell: (inv) => <span className="text-[var(--mw-mirage)]">{inv.name}</span> },
+  { key: 'onHand', header: 'On Hand', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.onHand },
+  { key: 'avail', header: 'Available', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.avail },
+  {
+    key: 'status',
+    header: 'Status',
+    cell: (inv) => {
+      const cfg = statusBadge[inv.status];
+      return <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>;
+    },
+  },
+];
+
+type CycleItem = (typeof CYCLE)[number];
+
+const cycleColumns: MwColumnDef<CycleItem>[] = [
+  { key: 'bin', header: 'Bin', cell: (c) => <span className="font-medium tabular-nums">{c.bin}</span> },
+  { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (c) => c.sku },
+  { key: 'expected', header: 'Expected', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (c) => c.expected },
+  {
+    key: 'actual',
+    header: 'Actual',
+    headerClassName: 'text-right',
+    className: 'text-right',
+    cell: (c) =>
+      c.actual !== null ? (
+        <span className="font-medium tabular-nums">{c.actual}</span>
+      ) : (
+        <Input className="h-10 w-20 text-right tabular-nums bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto" placeholder="—" />
+      ),
+  },
+  {
+    key: 'variance',
+    header: '',
+    headerClassName: 'text-center',
+    className: 'text-center',
+    cell: (c) => {
+      const v = c.actual !== null ? c.actual - c.expected : null;
+      if (v === null) return null;
+      return v === 0 ? (
+        <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)] mx-auto" />
+      ) : (
+        <div className="flex items-center justify-center gap-1">
+          <AlertCircle className="w-4 h-4 text-[var(--mw-amber)]" />
+          <span className="text-xs font-medium tabular-nums text-[var(--mw-amber)]">{v > 0 ? '+' : ''}{v}</span>
+        </div>
+      );
+    },
+  },
+];
+
 export function ShipWarehouse() {
   const [tab, setTab] = useState('map');
+  const [invSearch, setInvSearch] = useState('');
   const tabs = [
     { key: 'map', label: 'Map' },
     { key: 'inventory', label: 'Inventory' },
@@ -52,8 +113,8 @@ export function ShipWarehouse() {
   ];
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto">
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Warehouse</h1>
+    <PageShell className="overflow-y-auto">
+      <PageHeader title="Warehouse" />
 
       <TextSegmentedControl
         ariaLabel="Warehouse sections"
@@ -96,45 +157,21 @@ export function ShipWarehouse() {
       {/* Inventory */}
       {tab === 'inventory' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="relative w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
-              <Input placeholder="Search inventory..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
-            </div>
-            <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
-              <Download className="w-4 h-4" /> Export
-            </button>
-          </div>
-          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  {['BIN', 'SKU', 'PRODUCT', 'ON HAND', 'AVAILABLE', 'STATUS'].map(h => (
-                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['ON HAND', 'AVAILABLE'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {INVENTORY.map(inv => {
-                  const cfg = statusBadge[inv.status];
-                  return (
-                    <tr key={inv.bin} className="border-b border-[var(--neutral-100)] h-14 hover:bg-[var(--accent)] transition-colors">
-                      <td className="px-4 py-3 text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{inv.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] tabular-nums">{inv.sku}</td>
-                      <td className="px-4 py-3 text-sm text-[var(--mw-mirage)]">{inv.name}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{inv.onHand}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{inv.avail}</td>
-                      <td className="px-4 py-3">
-                        <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>
-                          {cfg.label}
-                        </Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <FilterBar
+            searchValue={invSearch}
+            onSearchChange={setInvSearch}
+            searchPlaceholder="Search inventory…"
+            actions={
+              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+                <Download className="w-4 h-4" /> Export
+              </button>
+            }
+          />
+          <MwDataTable
+            columns={warehouseInvColumns}
+            data={INVENTORY}
+            keyExtractor={(inv) => inv.bin}
+          />
         </div>
       )}
 
@@ -147,7 +184,7 @@ export function ShipWarehouse() {
                 <span className="text-sm text-[var(--mw-mirage)] font-medium tabular-nums">CC-2026-012</span>
                 <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
-              <button className="h-10 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Play className="w-4 h-4" /> New count
               </button>
             </div>
@@ -156,47 +193,11 @@ export function ShipWarehouse() {
             </div>
           </div>
 
-          <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-                  {['BIN', 'SKU', 'EXPECTED', 'ACTUAL', ''].map(h => (
-                    <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['EXPECTED', 'ACTUAL'].includes(h) ? 'text-right' : 'text-left', h === '' && 'text-center')}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CYCLE.map(c => {
-                  const v = c.actual !== null ? c.actual - c.expected : null;
-                  return (
-                    <tr key={c.bin} className="border-b border-[var(--neutral-100)] h-14">
-                      <td className="px-4 py-3 text-sm font-medium tabular-nums">{c.bin}</td>
-                      <td className="px-4 py-3 text-xs text-[var(--neutral-500)] tabular-nums">{c.sku}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{c.expected}</td>
-                      <td className="px-4 py-3 text-right">
-                        {c.actual !== null
-                          ? <span className="text-sm font-medium tabular-nums">{c.actual}</span>
-                          : <Input className="h-10 w-20 text-right tabular-nums bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto" placeholder="—" />
-                        }
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {v !== null && (
-                          v === 0
-                            ? <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)] mx-auto" />
-                            : (
-                              <div className="flex items-center justify-center gap-1">
-                                <AlertCircle className="w-4 h-4 text-[var(--mw-amber)]" />
-                                <span className="text-xs font-medium tabular-nums text-[var(--mw-amber)]">{v > 0 ? '+' : ''}{v}</span>
-                              </div>
-                            )
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <MwDataTable
+            columns={cycleColumns}
+            data={CYCLE}
+            keyExtractor={(c) => c.bin}
+          />
 
           <div className="flex justify-end">
             <button className="h-12 px-8 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
@@ -205,6 +206,6 @@ export function ShipWarehouse() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

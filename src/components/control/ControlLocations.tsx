@@ -9,7 +9,10 @@ import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
 
 
@@ -80,21 +83,16 @@ export function ControlLocations() {
   );
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={staggerContainer}
-      className="p-6 space-y-6"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Locations</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">{LOCATIONS.filter(l => l.status === 'active').length} active sites</p>
-        </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New location coming soon')}>
-          <Plus className="w-4 h-4" /> New location
-        </Button>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Locations"
+        subtitle={`${LOCATIONS.filter(l => l.status === 'active').length} active sites`}
+        actions={
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New location coming soon')}>
+            <Plus className="w-4 h-4" /> New location
+          </Button>
+        }
+      />
 
       {/* Search */}
       <div className="relative w-80">
@@ -117,9 +115,7 @@ export function ControlLocations() {
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)] cursor-pointer group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[var(--neutral-100)] rounded-[var(--shape-md)] flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5 text-[var(--neutral-500)]" />
-                    </div>
+                    <IconWell icon={Icon} surface="onDark" />
                     <div>
                       <h3 className="font-medium text-sm text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
                         {loc.name}
@@ -172,6 +168,6 @@ export function ControlLocations() {
           );
         })}
       </div>
-    </motion.div>
+    </PageShell>
   );
 }

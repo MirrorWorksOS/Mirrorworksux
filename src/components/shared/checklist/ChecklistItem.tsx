@@ -32,7 +32,7 @@ export function ChecklistItem({
         id={id}
         checked={checked}
         onCheckedChange={(v) => onToggle(id, v === true)}
-        className="mt-1 size-5 shrink-0 rounded-[4px] data-[state=checked]:border-[var(--mw-yellow-400)] data-[state=checked]:bg-[var(--mw-yellow-400)] data-[state=checked]:text-[var(--neutral-800)]"
+        className="mt-1 size-5 shrink-0 rounded-xs data-[state=checked]:border-[var(--mw-yellow-400)] data-[state=checked]:bg-[var(--mw-yellow-400)] data-[state=checked]:text-[var(--neutral-800)]"
       />
       <span className="min-w-0 flex-1">
         <span

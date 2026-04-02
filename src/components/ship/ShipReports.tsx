@@ -16,7 +16,9 @@ import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_CARTESIAN_GRID,
   MW_CHART_COLOURS,
+  MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
+  MW_TOOLTIP_STYLE,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -70,10 +72,10 @@ export function ShipReports() {
         title="Reports"
         actions={
           <>
-            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
+            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
               <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
             </button>
-            <button type="button" className="flex h-10 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
+            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
               <Download className="h-4 w-4" strokeWidth={1.5} /> Export
             </button>
           </>
@@ -88,8 +90,8 @@ export function ShipReports() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Line key="v" type="monotone" dataKey="v" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
+                <Line key="v" type="monotone" dataKey="v" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} {...MW_RECHARTS_ANIMATION} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -102,9 +104,9 @@ export function ShipReports() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis domain={[85, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `${v}%`} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
                 <ReferenceLine y={95} stroke="var(--mw-yellow-400)" strokeWidth={2} />
-                <Line key="r" type="monotone" dataKey="r" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} />
+                <Line key="r" type="monotone" dataKey="r" stroke={LINE_STROKE} strokeWidth={2} dot={{ r: 2.5, fill: LINE_STROKE }} {...MW_RECHARTS_ANIMATION} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -117,7 +119,7 @@ export function ShipReports() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
-                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toFixed(2)}`} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toFixed(2)}`} />
                 <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {carrierCost.map((e, i) => (
                     <Cell
@@ -138,12 +140,12 @@ export function ShipReports() {
             <div className="flex items-center gap-4">
               <ResponsiveContainer width="55%" height={180}>
                 <PieChart>
-                  <Pie data={statusDist} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value">
+                  <Pie data={statusDist} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value" {...MW_RECHARTS_ANIMATION}>
                     {statusDist.map((s, i) => (
                       <Cell key={`status-dist-${s.name}-${i}`} fill={pieColors[i % pieColors.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2">
@@ -165,7 +167,7 @@ export function ShipReports() {
               <BarChart data={destData} layout="vertical" margin={{ left: 5 }}>
                 <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
-                <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} />
                 <Bar key="v" dataKey="v" fill="var(--chart-scale-mid)" radius={[0, 4, 4, 0]} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
@@ -179,8 +181,8 @@ export function ShipReports() {
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
                 <XAxis dataKey="d" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `${v}%`} />
-                <Line key="r" type="monotone" dataKey="r" stroke="var(--mw-yellow-400)" strokeWidth={2} dot={{ r: 2.5, fill: 'var(--mw-yellow-400)' }} />
+                <Tooltip contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
+                <Line key="r" type="monotone" dataKey="r" stroke="var(--mw-yellow-400)" strokeWidth={2} dot={{ r: 2.5, fill: 'var(--mw-yellow-400)' }} {...MW_RECHARTS_ANIMATION} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>

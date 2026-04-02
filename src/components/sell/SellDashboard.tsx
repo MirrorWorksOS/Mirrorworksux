@@ -14,6 +14,9 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
+import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { ProgressBar } from '@/components/shared/data/ProgressBar';
+import { IconWell } from '@/components/shared/icons/IconWell';
 import {
   MW_AXIS_TICK,
   MW_CARTESIAN_GRID,
@@ -256,14 +259,7 @@ export function SellDashboard() {
             }
             footer={
               <div className="mt-3">
-                <div className="relative h-2 overflow-hidden rounded-full bg-[var(--neutral-100)]">
-                  <div
-                    className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
-                    style={{
-                      width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%`,
-                    }}
-                  />
-                </div>
+                <ProgressBar value={kpiData.expensesThisMonth.value} max={kpiData.expensesThisMonth.budget} />
               </div>
             }
           />
@@ -272,10 +268,7 @@ export function SellDashboard() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
-              Revenue vs Expenses (12 months)
-            </h3>
+          <ChartCard title="Revenue vs Expenses (12 months)">
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={revenueData}>
                 <defs>
@@ -310,14 +303,11 @@ export function SellDashboard() {
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </Card>
+          </ChartCard>
         </motion.div>
 
         <motion.div variants={staggerItem}>
-          <Card className="p-6">
-            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
-              Top 10 Jobs by Profit Margin
-            </h3>
+          <ChartCard title="Top 10 Jobs by Profit Margin">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={jobProfitabilityData} layout="vertical">
                 <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
@@ -334,7 +324,7 @@ export function SellDashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </Card>
+          </ChartCard>
         </motion.div>
       </div>
 
@@ -561,10 +551,7 @@ export function SellDashboard() {
 
             {/* Revenue Trend (6 months) */}
             <motion.div variants={staggerItem}>
-              <Card className="p-6">
-                <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
-                  Revenue Trend (6 months)
-                </h3>
+              <ChartCard title="Revenue Trend (6 months)">
                 <ResponsiveContainer width="100%" height={240}>
                   <AreaChart data={revenueTrendData}>
                     <defs>
@@ -587,7 +574,7 @@ export function SellDashboard() {
                     />
                   </AreaChart>
                 </ResponsiveContainer>
-              </Card>
+              </ChartCard>
             </motion.div>
           </div>
 
@@ -606,7 +593,7 @@ export function SellDashboard() {
                     <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-sm font-bold text-[var(--neutral-900)]">
                       {rep.initials}
                       {i === 0 && (
-                        <Trophy className="absolute -right-1 -top-1 h-4 w-4 text-[var(--mw-yellow-600)]" strokeWidth={2} />
+                        <Trophy className="absolute -right-1 -top-1 h-4 w-4 text-[var(--mw-yellow-600)]" strokeWidth={1.5} />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -654,9 +641,7 @@ export function SellDashboard() {
               return (
                 <motion.div key={report.title} variants={staggerItem}>
                   <Card className="flex h-full flex-col p-6">
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
-                      <Icon className="h-5 w-5 text-[var(--neutral-600)]" strokeWidth={1.5} />
-                    </div>
+                    <IconWell icon={Icon} surface="onDark" className="mb-3" />
                     <h4 className="mb-1 text-sm font-medium text-[var(--neutral-900)]">{report.title}</h4>
                     <p className="mb-4 flex-1 text-xs leading-relaxed text-[var(--neutral-500)]">{report.description}</p>
                     <Button className="w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" size="sm" onClick={() => toast('Generating report\u2026')}>
@@ -676,10 +661,7 @@ export function SellDashboard() {
 
           {/* Forecast Chart */}
           <motion.div variants={staggerItem}>
-            <Card className="p-6">
-              <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
-                Revenue Forecast
-              </h3>
+            <ChartCard title="Revenue Forecast">
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={forecastChartData}>
                   <defs>
@@ -727,7 +709,7 @@ export function SellDashboard() {
                   <span className="text-xs text-[var(--neutral-500)]">Forecast</span>
                 </div>
               </div>
-            </Card>
+            </ChartCard>
           </motion.div>
 
           {/* Quarterly Targets */}
@@ -739,7 +721,7 @@ export function SellDashboard() {
                 const isComplete = q.status === 'complete';
                 const isActive = q.status === 'active';
                 return (
-                  <Card key={q.quarter} className="p-5">
+                  <Card key={q.quarter} className="p-6">
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-lg font-bold text-[var(--neutral-900)]">{q.quarter}</span>
                       {isComplete && (

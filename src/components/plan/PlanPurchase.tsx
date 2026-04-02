@@ -7,8 +7,7 @@ import { ShoppingCart, AlertTriangle, CheckCircle, RefreshCw, Download } from 'l
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -25,6 +24,66 @@ const MRP_ROWS = [
   { id: '8',  product: 'Aluminium Base Plate 5052',   sku: 'AL-5052-BP', required: 40, available: 120,onOrder: 0,  net: -80, job: 'MW-090', due: 'Apr 05', status: 'ok'        as const },
   { id: '9',  product: 'SS Fasteners M10 Grade A4',   sku: 'FST-M10A4',  required: 30, available: 0,  onOrder: 0,  net: 30,  job: 'MW-089', due: 'Mar 25', status: 'critical'  as const },
 ];
+
+type MrpRow = (typeof MRP_ROWS)[number];
+
+function buildMrpColumns(
+  selected: Set<string>,
+  toggleRow: (id: string) => void,
+  toggleAll: () => void,
+  shortages: MrpRow[],
+): MwColumnDef<MrpRow>[] {
+  return [
+    {
+      key: 'select',
+      header: (
+        <input type="checkbox"
+          checked={selected.size === shortages.length && shortages.length > 0}
+          onChange={toggleAll}
+          className="accent-[var(--mw-yellow-400)] w-4 h-4"
+        />
+      ),
+      headerClassName: 'w-10',
+      cell: (row) =>
+        row.status !== 'ok' ? (
+          <input type="checkbox"
+            checked={selected.has(row.id)}
+            onChange={() => toggleRow(row.id)}
+            className="accent-[var(--mw-yellow-400)] w-4 h-4"
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : null,
+    },
+    { key: 'product', header: 'Material', cell: (row) => <span className="text-[var(--mw-mirage)] font-medium">{row.product}</span> },
+    { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)]', cell: (row) => row.sku },
+    { key: 'job', header: 'Job', cell: (row) => <span className="tabular-nums text-[var(--mw-mirage)]">{row.job}</span> },
+    { key: 'due', header: 'Due', className: 'text-[var(--neutral-500)]', cell: (row) => row.due },
+    { key: 'required', header: 'Required', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (row) => row.required },
+    { key: 'available', header: 'Available', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (row) => row.available },
+    { key: 'onOrder', header: 'On Order', headerClassName: 'text-right', className: 'text-right tabular-nums text-[var(--neutral-500)]', cell: (row) => row.onOrder > 0 ? row.onOrder : '—' },
+    {
+      key: 'net',
+      header: 'Net Shortfall',
+      headerClassName: 'text-right',
+      className: 'text-right tabular-nums font-medium',
+      cell: (row) => (
+        <span style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
+          {row.net > 0 ? `+${row.net}` : row.net}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (row) =>
+        row.status === 'ok'
+          ? <StatusBadge variant="neutral">OK</StatusBadge>
+          : row.status === 'critical'
+            ? <StatusBadge variant="error">Critical</StatusBadge>
+            : <StatusBadge variant="warning">Shortage</StatusBadge>,
+    },
+  ];
+}
 
 export function PlanPurchase() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -73,70 +132,17 @@ export function PlanPurchase() {
                 <Icon className={cn('w-4 h-4', s.text)} />
               </div>
               <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-              <p className={cn('text-2xl tabular-nums font-semibold', s.text)}>{s.count}</p>
+              <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.count}</p>
             </Card>
           );
         })}
       </div>
 
-      {/* Table */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-[var(--neutral-100)] border-b border-[var(--border)]">
-              <th className="px-4 py-3 w-10">
-                <input type="checkbox"
-                  checked={selected.size === shortages.length && shortages.length > 0}
-                  onChange={toggleAll}
-                  className="accent-[var(--mw-yellow-400)] w-4 h-4"
-                />
-              </th>
-              {['Material', 'SKU', 'Job', 'Due', 'Required', 'Available', 'On Order', 'Net Shortfall', 'Status'].map(h => (
-                <th key={h} className={cn('px-4 py-3 text-xs tracking-wider text-[var(--neutral-500)] uppercase font-medium', ['Required', 'Available', 'On Order', 'Net Shortfall'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {MRP_ROWS.map(row => {
-              const isShortage = row.status !== 'ok';
-              const isCritical = row.status === 'critical';
-              return (
-                <tr key={row.id} className={cn('border-b border-[var(--border)] h-14 hover:bg-[var(--accent)] cursor-pointer transition-colors', isCritical && 'bg-[var(--mw-error-50)]')}>
-                  <td className="px-4">
-                    {isShortage && (
-                      <input type="checkbox"
-                        checked={selected.has(row.id)}
-                        onChange={() => toggleRow(row.id)}
-                        className="accent-[var(--mw-yellow-400)] w-4 h-4"
-                        onClick={e => e.stopPropagation()}
-                      />
-                    )}
-                  </td>
-                  <td className="px-4 text-sm text-[var(--mw-mirage)] font-medium">{row.product}</td>
-                  <td className="px-4 text-xs  text-[var(--neutral-500)]">{row.sku}</td>
-                  <td className="px-4 text-sm tabular-nums text-[var(--mw-mirage)]">{row.job}</td>
-                  <td className="px-4 text-sm text-[var(--neutral-500)]">{row.due}</td>
-                  <td className="px-4 text-right text-sm tabular-nums font-medium">{row.required}</td>
-                  <td className="px-4 text-right text-sm tabular-nums">{row.available}</td>
-                  <td className="px-4 text-right text-sm tabular-nums text-[var(--neutral-500)]">{row.onOrder > 0 ? row.onOrder : '—'}</td>
-                  <td className="px-4 text-right text-sm tabular-nums font-medium"
-                    style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
-                    {row.net > 0 ? `+${row.net}` : row.net}
-                  </td>
-                  <td className="px-4">
-                    {row.status === 'ok'
-                      ? <StatusBadge variant="neutral">OK</StatusBadge>
-                      : row.status === 'critical'
-                      ? <StatusBadge variant="error">Critical</StatusBadge>
-                      : <StatusBadge variant="warning">Shortage</StatusBadge>
-                    }
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+      <MwDataTable
+        columns={buildMrpColumns(selected, toggleRow, toggleAll, shortages)}
+        data={MRP_ROWS}
+        keyExtractor={(row) => row.id}
+      />
     </PageShell>
   );
 }

@@ -139,7 +139,7 @@ function AccessPermissionsPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[var(--mw-mirage)]">Access Groups</h3>
+          <h3 className="text-base font-medium text-[var(--mw-mirage)]">Access Groups</h3>
           <p className="text-sm text-[var(--neutral-500)] mt-0.5">
             Manage who can do what in the {moduleName} module. Permissions are additive across groups.
           </p>
@@ -182,7 +182,7 @@ function AccessPermissionsPanel({
                 <GripVertical className="w-4 h-4 text-[var(--neutral-400)] cursor-grab" />
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-[var(--mw-mirage)]">{group.name}</span>
+                    <span className="text-sm font-medium text-[var(--mw-mirage)]">{group.name}</span>
                     {group.isDefault && (
                       <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-[10px] rounded-full px-2">
                         Default

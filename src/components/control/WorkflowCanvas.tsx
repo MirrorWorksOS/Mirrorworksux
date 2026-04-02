@@ -311,13 +311,13 @@ export const WORKFLOW_DATA: Record<string, WorkflowData> = {
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: string }> = {
   trigger:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-emerald-500',          borderLeft: 'border-l-emerald-500' },
-  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-gradient-to-br from-[var(--mw-purple)] to-pink-500', borderLeft: 'border-l-[var(--mw-purple)]' },
-  action:       { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-blue-500',             borderLeft: 'border-l-blue-500' },
+  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-[var(--mw-mirage)]', borderLeft: 'border-l-[var(--mw-purple)]' },
+  action:       { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-info)]',     borderLeft: 'border-l-[var(--mw-info)]' },
   notification: { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
-  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',                iconBg: 'bg-orange-500',           borderLeft: 'border-l-orange-500' },
-  hold:         { card: 'bg-white border-[var(--mw-error)]/30',                         iconBg: 'bg-amber-500',            borderLeft: 'border-l-amber-500' },
+  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',                iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
+  hold:         { card: 'bg-white border-[var(--mw-error)]/30',                         iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
   email:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
-  purchase:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-red-500',              borderLeft: 'border-l-red-500' },
+  purchase:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-error)]',    borderLeft: 'border-l-[var(--mw-error)]' },
   schedule:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-indigo-500',           borderLeft: 'border-l-indigo-500' },
   machine:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
   delay:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-slate-500',            borderLeft: 'border-l-slate-500' },
@@ -420,7 +420,7 @@ function NodeCard({
         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0', s.iconBg)}>
           <Icon className="w-4 h-4 text-white" />
         </div>
-        <span className={cn('text-xs font-semibold leading-tight truncate', isDark ? 'text-white' : 'text-[var(--mw-mirage)]')}>
+        <span className={cn('text-xs font-medium leading-tight truncate', isDark ? 'text-white' : 'text-[var(--mw-mirage)]')}>
           {node.title}
         </span>
       </div>
@@ -445,8 +445,8 @@ function NodeCard({
       {/* Condition branch indicators */}
       {node.kind === 'condition' && (
         <div className="absolute -bottom-0.5 left-0 right-0 flex justify-between px-6">
-          <span className="text-[9px] font-semibold text-emerald-400 bg-[var(--mw-mirage)] px-1 rounded">Yes</span>
-          <span className="text-[9px] font-semibold text-red-400 bg-[var(--mw-mirage)] px-1 rounded">No</span>
+          <span className="text-[9px] font-medium text-emerald-400 bg-[var(--mw-mirage)] px-1 rounded">Yes</span>
+          <span className="text-[9px] font-medium text-[var(--mw-error)] bg-[var(--mw-mirage)] px-1 rounded">No</span>
         </div>
       )}
     </div>
@@ -512,7 +512,7 @@ export function WorkflowCanvas({
           {branchLabels.map(bl => (
             <div
               key={bl.text}
-              className="absolute text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"
+              className="absolute text-xs font-medium px-2.5 py-0.5 rounded-full whitespace-nowrap"
               style={{
                 left: bl.x,
                 top: bl.y,

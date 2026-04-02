@@ -24,7 +24,7 @@ export function FieldMappingRow({ mapping, targetFields, onUpdate }: FieldMappin
     <div
       className={cn(
         'flex items-start gap-4 rounded-lg border p-4 transition-colors',
-        !isMapped && !isSkipped && 'bg-red-50 dark:bg-red-950/10 border-red-200',
+        !isMapped && !isSkipped && 'bg-[var(--mw-error-light)] border-[var(--mw-error)]/20',
         isMapped && 'bg-background',
         isSkipped && 'bg-muted/50 opacity-60'
       )}

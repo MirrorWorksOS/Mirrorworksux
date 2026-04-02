@@ -8,6 +8,7 @@ import { cn } from '../ui/utils';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { AIInsightCard, AIInsightMessage } from '@/components/shared/ai/AIInsightCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
+import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
 
 export function PlanIntelligenceHubTab() {
@@ -382,9 +383,7 @@ export function PlanIntelligenceHubTab() {
               </p>
               <div className="flex gap-2">
                 <div className="border border-[var(--border)] rounded-[var(--shape-lg)] p-3 flex items-center gap-3 hover:bg-[var(--neutral-100)] cursor-pointer">
-                  <div className="w-8 h-8 bg-[var(--mw-mirage)] rounded flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-white" />
-                  </div>
+                  <IconWell icon={FileText} size="sm" />
                   <div>
                     <p className=" text-xs font-medium text-[var(--mw-mirage)]">
                       BOM_MW001_v2.xlsx

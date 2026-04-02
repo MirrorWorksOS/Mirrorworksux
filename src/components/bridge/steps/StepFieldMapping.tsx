@@ -37,7 +37,7 @@ export function StepFieldMapping() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Map your data to MirrorWorks</h2>
+          <h2 className="text-2xl font-medium tracking-tight">Map your data to MirrorWorks</h2>
           <p className="text-sm text-muted-foreground mt-1">
             We've matched your columns to MirrorWorks fields. Review and adjust as needed.
           </p>

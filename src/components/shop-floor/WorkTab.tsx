@@ -111,13 +111,13 @@ const StatusBadge = ({ status }: { status: string }) => {
 const PriorityBadge = ({ priority }: { priority: string }) => {
   if (priority === 'High') {
     return (
-      <span className="text-xs px-2 py-0.5 rounded-[4px] font-bold text-[var(--mw-error)] bg-[var(--mw-error)]/10">
+      <span className="text-xs px-2 py-0.5 rounded-xs font-bold text-[var(--mw-error)] bg-[var(--mw-error)]/10">
         HIGH
       </span>
     );
   }
   return (
-    <span className="text-xs px-2 py-0.5 rounded-[4px] font-medium text-[var(--neutral-500)] bg-[var(--neutral-100)]">
+    <span className="text-xs px-2 py-0.5 rounded-xs font-medium text-[var(--neutral-500)] bg-[var(--neutral-100)]">
       {priority}
     </span>
   );
@@ -140,14 +140,14 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
           <Input 
             placeholder="Search work orders..." 
-            className="pl-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] h-10 rounded-[8px] text-[var(--neutral-800)]"
+            className="pl-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] h-10 rounded-sm text-[var(--neutral-800)]"
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-[8px]">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
             <Filter className="w-4 h-4 mr-2" /> Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-[8px]">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
             View
           </Button>
         </div>
@@ -159,7 +159,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
             <div key={mo.id} className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden shadow-sm">
               {/* MO Header Row */}
               <div 
-                className="flex items-center gap-4 p-5 cursor-pointer transition-colors hover:bg-[var(--neutral-100)]"
+                className="flex items-center gap-4 p-6 cursor-pointer transition-colors hover:bg-[var(--neutral-100)]"
                 onClick={() => toggleMO(mo.id)}
               >
                 <div className={`p-1 rounded-full hover:bg-[var(--neutral-200)] transition-colors`}>
@@ -169,7 +169,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                 <div className="flex-1 grid grid-cols-12 gap-4 items-center">
                   <div className="col-span-4">
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="font-semibold text-lg text-[var(--neutral-800)]">{mo.id}</span>
+                      <span className="font-medium text-lg text-[var(--neutral-800)]">{mo.id}</span>
                       <PriorityBadge priority={mo.priority} />
                     </div>
                     <div className="text-sm font-medium text-[var(--neutral-500)]">{mo.customer}</div>
@@ -213,8 +213,8 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             {/* ID and Name */}
                             <div className="col-span-4">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className=" text-sm font-semibold text-[var(--neutral-500)]">{wo.id}</span>
-                                <Badge variant="outline" className="bg-white text-[var(--neutral-800)] border-[var(--neutral-200)]  text-[10px] px-1.5 py-0 h-5 rounded-[4px]">
+                                <span className=" text-sm font-medium text-[var(--neutral-500)]">{wo.id}</span>
+                                <Badge variant="outline" className="bg-white text-[var(--neutral-800)] border-[var(--neutral-200)]  text-[10px] px-1.5 py-0 h-5 rounded-xs">
                                   {wo.station}
                                 </Badge>
                               </div>
@@ -238,7 +238,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             {/* Status and Units */}
                             <div className="col-span-4 flex items-center justify-end gap-6">
                               <div className="text-right">
-                                  <div className="text-xs text-[var(--neutral-500)] uppercase tracking-wide font-semibold">Units</div>
+                                  <div className="text-xs text-[var(--neutral-500)] uppercase tracking-wide font-medium">Units</div>
                                   <div className=" text-sm text-[var(--neutral-800)]">{wo.unitsCompleted}/{wo.totalUnits}</div>
                               </div>
                               <StatusBadge status={wo.status} />

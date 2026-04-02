@@ -25,7 +25,7 @@ export function DarkAccentCard({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-1">
           <p className="text-sm text-white/70">{label}</p>
-          <p className="text-3xl font-semibold text-white tabular-nums">{value}</p>
+          <p className="text-3xl font-medium text-white tabular-nums">{value}</p>
           {subtext !== undefined && (
             <p className="text-xs text-white/60">{subtext}</p>
           )}
