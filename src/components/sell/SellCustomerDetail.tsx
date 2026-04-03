@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Building2, Users, FileText, Clock, Plus, Sparkles, ChevronDown, ChevronUp, ExternalLink, MessageSquare, PhoneCall, Send, Upload, Trash2, Pencil, Archive } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '../ui/button';
@@ -172,17 +173,17 @@ export function SellCustomerDetail() {
   ];
 
   const opportunityColumns: MwColumnDef<any>[] = [
-    { key: 'id', header: 'ID', cell: (opp) => <span className="text-xs font-medium tabular-nums">{opp.id}</span> },
-    { key: 'name', header: 'Name', cell: (opp) => opp.name },
+    { key: 'id', header: 'ID', tooltip: 'Opportunity reference', cell: (opp) => <span className="text-xs font-medium tabular-nums">{opp.id}</span> },
+    { key: 'name', header: 'Name', cell: (opp) => <span className="font-medium">{opp.name}</span> },
     { key: 'stage', header: 'Stage', cell: (opp) => <StatusBadge variant={recordStatusVariant(opp.stage)}>{opp.stage}</StatusBadge> },
-    { key: 'value', header: 'Value', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (opp) => fmt(opp.value) },
-    { key: 'closeDate', header: 'Expected close', cell: (opp) => <span className="text-[var(--neutral-500)]">{opp.closeDate}</span> },
+    { key: 'value', header: 'Value', tooltip: 'Estimated opportunity value', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (opp) => fmt(opp.value) },
+    { key: 'closeDate', header: 'Expected close', tooltip: 'Target close date', cell: (opp) => <span className="text-[var(--neutral-500)]">{opp.closeDate}</span> },
   ];
 
   const quoteOrderColumns: MwColumnDef<any>[] = [
-    { key: 'ref', header: 'Reference', cell: (row) => <span className="text-xs font-medium tabular-nums">{row.ref}</span> },
+    { key: 'ref', header: 'Reference', tooltip: 'Quote or order reference number', cell: (row) => <span className="text-xs font-medium tabular-nums">{row.ref}</span> },
     { key: 'date', header: 'Date', cell: (row) => <span className="text-[var(--neutral-500)]">{row.date}</span> },
-    { key: 'value', header: 'Value', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (row) => fmt(row.value) },
+    { key: 'value', header: 'Value', tooltip: 'Total value incl. tax', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (row) => fmt(row.value) },
     { key: 'status', header: 'Status', cell: (row) => <StatusBadge variant={recordStatusVariant(row.status)}>{row.status}</StatusBadge> },
   ];
 
@@ -196,18 +197,18 @@ export function SellCustomerDetail() {
 
   const contactColumns: MwColumnDef<any>[] = [
     { key: 'name', header: 'Name', cell: (c) => <span className="font-medium text-[var(--neutral-900)]">{c.name}</span> },
-    { key: 'role', header: 'Role', cell: (c) => <span className="text-[var(--neutral-500)]">{c.role}</span> },
+    { key: 'role', header: 'Role', tooltip: 'Contact role at company', cell: (c) => <span className="text-[var(--neutral-500)]">{c.role}</span> },
     { key: 'email', header: 'Email', cell: (c) => <a href={`mailto:${c.email}`} className="text-[var(--neutral-900)] hover:underline">{c.email}</a> },
     { key: 'phone', header: 'Phone', cell: (c) => <span className="text-[var(--neutral-500)]">{c.phone}</span> },
-    { key: 'primary', header: 'Primary', headerClassName: 'text-center', className: 'text-center', cell: (c) => c.isPrimary ? <span className="w-2 h-2 bg-[var(--mw-mirage)] rounded-full inline-block" /> : '—' },
+    { key: 'primary', header: 'Primary', tooltip: 'Primary contact for this account', headerClassName: 'text-center', className: 'text-center', cell: (c) => c.isPrimary ? <span className="w-2 h-2 bg-[var(--mw-mirage)] rounded-full inline-block" /> : '—' },
   ];
 
   const documentColumns: MwColumnDef<any>[] = [
-    { key: 'name', header: 'Filename', cell: (doc) => <span className="flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--neutral-500)]" /> {doc.name}</span> },
-    { key: 'category', header: 'Category', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.category}</span> },
+    { key: 'name', header: 'Filename', cell: (doc) => <span className="flex items-center gap-2 font-medium"><FileText className="w-4 h-4 text-[var(--neutral-500)]" /> {doc.name}</span> },
+    { key: 'category', header: 'Category', tooltip: 'Document classification', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.category}</span> },
     { key: 'uploadedBy', header: 'Uploaded by', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.uploadedBy}</span> },
     { key: 'date', header: 'Date', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.date}</span> },
-    { key: 'size', header: 'Size', headerClassName: 'text-right', className: 'text-right', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.size}</span> },
+    { key: 'size', header: 'Size', tooltip: 'File size', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (doc) => <span className="text-[var(--neutral-500)]">{doc.size}</span> },
   ];
 
   const tabs: { key: Tab; label: string; count?: number; icon?: React.ReactNode }[] = [
@@ -566,6 +567,9 @@ export function SellCustomerDetail() {
               data={customer.opportunities}
               keyExtractor={(opp: any) => opp.id}
               filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Active opportunities</h3>}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
 
             {/* Quotes */}
@@ -574,6 +578,9 @@ export function SellCustomerDetail() {
               data={customer.recentQuotes}
               keyExtractor={(q: any) => q.ref}
               filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Quotes</h3>}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
 
             {/* Sales Orders */}
@@ -582,6 +589,9 @@ export function SellCustomerDetail() {
               data={customer.recentOrders}
               keyExtractor={(o: any) => o.ref}
               filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Sales orders</h3>}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
           </div>
         )}
@@ -620,6 +630,9 @@ export function SellCustomerDetail() {
               columns={contactColumns}
               data={allContacts}
               keyExtractor={(c: any, i: number) => `contact-${i}`}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
           </div>
         )}
@@ -641,6 +654,9 @@ export function SellCustomerDetail() {
               columns={documentColumns}
               data={customer.documents}
               keyExtractor={(doc: any, i: number) => `doc-${i}`}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
           </div>
         )}

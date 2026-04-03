@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 
 interface Bill {
@@ -76,26 +77,28 @@ export function BuyBills() {
   };
 
   const columns: MwColumnDef<Bill>[] = [
-    { key: 'billNumber', header: 'Bill #', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.billNumber}</span> },
-    { key: 'supplier', header: 'Supplier', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.supplier}</span> },
-    { key: 'invoiceDate', header: 'Invoice date', cell: (bill) => <span className="text-[var(--neutral-500)]">{bill.invoiceDate}</span> },
-    { key: 'dueDate', header: 'Due', cell: (bill) => (
-      <span className={cn(bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
+    { key: 'billNumber', header: 'Bill #', tooltip: 'Bill reference number', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.billNumber}</span> },
+    { key: 'supplier', header: 'Supplier', tooltip: 'Supplier company name', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.supplier}</span> },
+    { key: 'invoiceDate', header: 'Invoice date', tooltip: 'Date invoice was received', cell: (bill) => <span className="tabular-nums text-[var(--neutral-500)]">{bill.invoiceDate}</span> },
+    { key: 'dueDate', header: 'Due', tooltip: 'Payment due date', cell: (bill) => (
+      <span className={cn('tabular-nums', bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
         {bill.dueDate}
       </span>
     )},
-    { key: 'poNumber', header: 'PO #', cell: (bill) => <span className="text-[var(--mw-mirage)]">{bill.poNumber}</span> },
-    { key: 'matchStatus', header: '3-way match', cell: (bill) => <MatchDots ms={bill.matchStatus} /> },
-    { key: 'amount', header: 'Amount', headerClassName: 'text-right', className: 'text-right', cell: (bill) => (
+    { key: 'poNumber', header: 'PO #', tooltip: 'Linked purchase order', cell: (bill) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{bill.poNumber}</span> },
+    { key: 'matchStatus', header: '3-way match', tooltip: 'PO, GRN and invoice match status', cell: (bill) => <MatchDots ms={bill.matchStatus} /> },
+    { key: 'amount', header: 'Amount', tooltip: 'Invoice total amount', headerClassName: 'text-right', className: 'text-right', cell: (bill) => (
       <span className="font-medium tabular-nums">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
     )},
-    { key: 'status', header: 'Status', cell: (bill) => {
+    { key: 'status', header: 'Status', tooltip: 'Current bill status', cell: (bill) => {
       const cfg = STATUS_CONFIG[bill.status];
       const Icon = cfg.icon;
       return (
         <div className="flex items-center gap-1.5">
           <Icon className={cn('w-4 h-4', cfg.text)} />
-          <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
+          <StatusBadge variant={bill.status === 'matched' ? 'neutral' : bill.status === 'pending' ? 'warning' : 'error'}>
+            {cfg.label}
+          </StatusBadge>
         </div>
       );
     }},
@@ -140,6 +143,9 @@ export function BuyBills() {
         data={filtered}
         keyExtractor={(bill) => bill.id}
         onRowClick={(bill) => setSelected(bill)}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
       />
 
       {/* Detail Sheet */}

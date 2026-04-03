@@ -6,6 +6,7 @@ import { Card } from '../ui/card';
 import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -37,15 +38,17 @@ const scheduled = [
 type ScheduledReport = (typeof scheduled)[number];
 
 const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
-  { key: 'name', header: 'Report Name', cell: (s) => <span className="font-medium text-[var(--mw-mirage)]">{s.name}</span> },
+  { key: 'name', header: 'Report Name', tooltip: 'Scheduled report name', cell: (s) => <span className="font-medium text-[var(--mw-mirage)]">{s.name}</span> },
   {
     key: 'schedule',
     header: 'Schedule',
+    tooltip: 'How often this report runs',
     cell: (s) => <Badge className={cn('rounded-full text-xs px-2 py-0.5 border-0', s.scheduleBg)}>{s.schedule}</Badge>,
   },
   {
     key: 'recipients',
     header: 'Recipients',
+    tooltip: 'Email recipients for the report',
     cell: (s) => (
       <div className="flex gap-1 flex-wrap">
         {s.recipients.map(r => (
@@ -54,8 +57,8 @@ const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
       </div>
     ),
   },
-  { key: 'lastRun', header: 'Last Run', className: 'text-[var(--neutral-600)]', cell: (s) => s.lastRun },
-  { key: 'nextRun', header: 'Next Run', className: 'text-[var(--neutral-600)]', cell: (s) => s.nextRun },
+  { key: 'lastRun', header: 'Last Run', className: 'text-[var(--neutral-600)] tabular-nums', cell: (s) => <span className="tabular-nums">{s.lastRun}</span> },
+  { key: 'nextRun', header: 'Next Run', className: 'text-[var(--neutral-600)] tabular-nums', cell: (s) => <span className="tabular-nums">{s.nextRun}</span> },
   { key: 'active', header: 'Active', cell: (s) => <Switch defaultChecked={s.active} /> },
 ];
 
@@ -118,10 +121,20 @@ export function ReportsGallery() {
       {/* Scheduled */}
       <div className="space-y-4">
         <h2 className="font-medium text-[var(--mw-mirage)]">Scheduled reports</h2>
+        <ToolbarSummaryBar
+          segments={[
+            { key: 'active', label: 'Active', value: scheduled.filter(s => s.active).length, color: 'var(--mw-yellow-400)' },
+            { key: 'inactive', label: 'Inactive', value: scheduled.filter(s => !s.active).length, color: 'var(--neutral-400)' },
+          ]}
+          formatValue={(v) => String(v)}
+        />
         <MwDataTable
           columns={scheduledColumns}
           data={scheduled}
           keyExtractor={(s) => s.name}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         />
       </div>
     </PageShell>

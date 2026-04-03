@@ -3,15 +3,17 @@
  * Status dots now use proper semantic colours (green=delivered, red=exception, blue=transit)
  */
 import React, { useState, useMemo } from 'react';
-import { Search, AlertTriangle, ExternalLink, Send } from 'lucide-react';
+import { Search, AlertTriangle, ExternalLink, Send, Truck } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { TimelineView, type TimelineEvent } from '@/components/shared/schedule/TimelineView';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 type Status = 'shipped' | 'transit' | 'delivering' | 'delivered' | 'exception';
 
@@ -49,9 +51,14 @@ const TIMELINE = [
 ];
 
 const trackingColumns: MwColumnDef<Shipment>[] = [
-  { key: 'tracking', header: 'Tracking', cell: (row) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{row.tracking}</span> },
+  { key: 'tracking', header: 'Tracking', tooltip: 'Shipment tracking number', cell: (row) => (
+    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+      <Truck className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+      {row.tracking}
+    </span>
+  ) },
   { key: 'customer', header: 'Customer', cell: (row) => <span className="text-[var(--mw-mirage)]">{row.customer}</span> },
-  { key: 'carrier', header: 'Carrier', cell: (row) => <span className="text-[var(--neutral-500)]">{row.carrier}</span> },
+  { key: 'carrier', header: 'Carrier', tooltip: 'Shipping carrier', cell: (row) => <span className="text-[var(--neutral-500)]">{row.carrier}</span> },
   {
     key: 'status',
     header: 'Status',
@@ -68,6 +75,7 @@ const trackingColumns: MwColumnDef<Shipment>[] = [
   {
     key: 'eta',
     header: 'ETA',
+    tooltip: 'Estimated time of arrival',
     cell: (row) => (
       <span className={cn('text-sm', row.eta === 'Today' ? 'font-medium' : 'font-normal', row.status === 'exception' ? 'text-[var(--mw-error)]' : 'text-[var(--neutral-500)]')}>
         {row.eta}
@@ -81,6 +89,11 @@ export function ShipTracking() {
   const [selected, setSelected]               = useState<Shipment | null>(null);
   const [exceptionsOnly, setExceptionsOnly]   = useState(false);
   const filtered = exceptionsOnly ? SHIPMENTS.filter(s => s.status === 'exception') : SHIPMENTS;
+
+  const inTransitCount = SHIPMENTS.filter(s => s.status === 'transit').length;
+  const deliveredCount = SHIPMENTS.filter(s => s.status === 'delivered').length;
+  const deliveringCount = SHIPMENTS.filter(s => s.status === 'delivering').length;
+  const exceptionCount = SHIPMENTS.filter(s => s.status === 'exception').length;
 
   return (
     <PageShell className="overflow-y-auto">
@@ -101,6 +114,21 @@ export function ShipTracking() {
         }
       />
 
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'In Transit', value: inTransitCount, sub: 'On the way', bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]' },
+          { label: 'Delivering', value: deliveringCount, sub: 'Out for delivery', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Delivered', value: deliveredCount, sub: `${SHIPMENTS.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Exceptions', value: exceptionCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
+
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
         <Input placeholder="Search tracking..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
@@ -111,6 +139,9 @@ export function ShipTracking() {
         data={filtered}
         keyExtractor={(row) => row.tracking}
         onRowClick={(row) => setSelected(row)}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
       />
 
       {/* Detail Sheet */}

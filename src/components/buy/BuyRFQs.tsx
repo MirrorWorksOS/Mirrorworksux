@@ -17,6 +17,8 @@ import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 
 
 interface SupplierQuote {
@@ -157,27 +159,34 @@ export function BuyRFQs() {
     r.rfqNumber.toLowerCase().includes(search.toLowerCase())
   );
 
+  const countOpen = RFQS.filter(r => r.status === 'open').length;
+  const countAwarded = RFQS.filter(r => r.status === 'awarded').length;
+  const countDraft = RFQS.filter(r => r.status === 'draft').length;
+  const countClosed = RFQS.filter(r => r.status === 'closed').length;
+
   const columns: MwColumnDef<RFQ>[] = [
-    { key: 'rfqNumber', header: 'RFQ #', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span> },
-    { key: 'title', header: 'Title', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.title}</span> },
-    { key: 'sku', header: 'SKU', cell: (rfq) => <span className="text-xs text-[var(--neutral-500)]">{rfq.sku}</span> },
-    { key: 'qty', header: 'Qty', cell: (rfq) => <span className="tabular-nums">{rfq.qty}</span> },
-    { key: 'suppliers', header: 'Suppliers', cell: (rfq) => <span className="tabular-nums">{rfq.suppliers}</span> },
-    { key: 'responses', header: 'Responses', cell: (rfq) => {
+    { key: 'rfqNumber', header: 'RFQ #', tooltip: 'Request for quotation number', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span> },
+    { key: 'title', header: 'Title', tooltip: 'RFQ description', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.title}</span> },
+    { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', cell: (rfq) => <span className="text-xs tabular-nums text-[var(--neutral-500)]">{rfq.sku}</span> },
+    { key: 'qty', header: 'Qty', tooltip: 'Requested quantity', cell: (rfq) => <span className="tabular-nums">{rfq.qty}</span> },
+    { key: 'suppliers', header: 'Suppliers', tooltip: 'Number of invited suppliers', cell: (rfq) => <span className="tabular-nums">{rfq.suppliers}</span> },
+    { key: 'responses', header: 'Responses', tooltip: 'Quotes received from suppliers', cell: (rfq) => {
       const responseRate = rfq.suppliers > 0 ? (rfq.responses / rfq.suppliers) * 100 : 0;
       return (
         <div className="flex items-center gap-2">
           <div className="w-16 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${responseRate}%` }} />
+            <div className="h-full bg-[var(--mw-yellow-400)] rounded-full transition-all duration-200 ease-[var(--ease-standard)]" style={{ width: `${responseRate}%` }} />
           </div>
           <span className="text-xs text-[var(--neutral-500)] tabular-nums">{rfq.responses}/{rfq.suppliers}</span>
         </div>
       );
     }},
-    { key: 'dueDate', header: 'Due', cell: (rfq) => <span className="text-[var(--neutral-500)]">{rfq.dueDate}</span> },
-    { key: 'status', header: 'Status', cell: (rfq) => {
-      const cfg = STATUS_CONFIG[rfq.status];
-      return <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>;
+    { key: 'dueDate', header: 'Due', tooltip: 'Response deadline', cell: (rfq) => <span className="tabular-nums text-[var(--neutral-500)]">{rfq.dueDate}</span> },
+    { key: 'status', header: 'Status', tooltip: 'Current RFQ status', cell: (rfq) => {
+      const variantMap: Record<string, 'info' | 'neutral' | 'success'> = {
+        open: 'info', closed: 'neutral', awarded: 'success', draft: 'neutral',
+      };
+      return <StatusBadge variant={variantMap[rfq.status]}>{STATUS_CONFIG[rfq.status].label}</StatusBadge>;
     }},
     { key: 'arrow', header: '', cell: () => <ChevronRight className="w-4 h-4 text-[var(--neutral-400)]" /> },
   ];
@@ -200,11 +209,24 @@ export function BuyRFQs() {
           className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-xl text-sm" />
       </div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'open', label: 'Open', value: countOpen, color: 'var(--mw-yellow-400)' },
+          { key: 'awarded', label: 'Awarded', value: countAwarded, color: 'var(--mw-mirage)' },
+          { key: 'closed', label: 'Closed', value: countClosed, color: 'var(--neutral-400)' },
+          { key: 'draft', label: 'Draft', value: countDraft, color: 'var(--neutral-200)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <MwDataTable
         columns={columns}
         data={filtered}
         keyExtractor={(rfq) => rfq.id}
         onRowClick={(rfq) => setSelectedRFQ(rfq)}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
       />
 
       {selectedRFQ && <RFQDetail rfq={selectedRFQ} onClose={() => setSelectedRFQ(null)} />}

@@ -9,12 +9,11 @@ import { toast } from 'sonner';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { cn } from '../ui/utils';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'expired';
 
@@ -92,23 +91,11 @@ const mockQuotes: Quote[] = [
   },
 ];
 
-const STATUS_BADGE: Record<QuoteStatus, { label: string; className: string }> = {
-  draft: {
-    label: 'Draft',
-    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-700)]',
-  },
-  sent: {
-    label: 'Sent',
-    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  },
-  accepted: {
-    label: 'Accepted',
-    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  },
-  expired: {
-    label: 'Expired',
-    className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]',
-  },
+const STATUS_VARIANT: Record<QuoteStatus, { variant: 'neutral' | 'info' | 'success' | 'error'; label: string }> = {
+  draft: { variant: 'neutral', label: 'Draft' },
+  sent: { variant: 'info', label: 'Sent' },
+  accepted: { variant: 'success', label: 'Accepted' },
+  expired: { variant: 'error', label: 'Expired' },
 };
 
 const TABS = [
@@ -129,53 +116,57 @@ const STATUS_MAP: Record<string, QuoteStatus> = {
 const quoteColumns: MwColumnDef<Quote>[] = [
   {
     key: 'quoteNumber',
-    header: 'QUOTE #',
+    header: 'Quote #',
+    tooltip: 'Unique quote reference number',
     className: 'font-medium tabular-nums text-[var(--neutral-900)]',
     cell: (row) => row.quoteNumber,
   },
   {
     key: 'opportunity',
-    header: 'OPPORTUNITY',
+    header: 'Opportunity',
+    tooltip: 'Linked sales opportunity',
     className: 'tabular-nums text-[var(--neutral-600)]',
     cell: (row) => row.opportunity,
   },
   {
     key: 'customer',
-    header: 'CUSTOMER',
+    header: 'Customer',
+    tooltip: 'Quoting customer name',
     className: 'text-[var(--neutral-900)]',
     cell: (row) => row.customer,
   },
   {
     key: 'value',
-    header: 'VALUE',
+    header: 'Value',
+    tooltip: 'Total quoted value incl. tax',
     headerClassName: 'text-right',
     className: 'text-right tabular-nums font-medium text-[var(--neutral-900)]',
     cell: (row) => `$${row.value.toLocaleString()}`,
   },
   {
     key: 'status',
-    header: 'STATUS',
+    header: 'Status',
     headerClassName: 'text-center',
+    className: 'text-center',
     cell: (row) => {
-      const statusBadge = STATUS_BADGE[row.status];
+      const sv = STATUS_VARIANT[row.status];
       return (
         <div className="flex items-center justify-center">
-          <Badge className={cn('rounded-full text-xs px-2 py-0.5', statusBadge.className)}>
-            {statusBadge.label}
-          </Badge>
+          <StatusBadge variant={sv.variant}>{sv.label}</StatusBadge>
         </div>
       );
     },
   },
   {
     key: 'created',
-    header: 'CREATED',
+    header: 'Created',
     className: 'tabular-nums text-[var(--neutral-600)]',
     cell: (row) => row.created,
   },
   {
     key: 'validUntil',
-    header: 'VALID UNTIL',
+    header: 'Valid until',
+    tooltip: 'Quote expiry date',
     className: 'tabular-nums text-[var(--neutral-600)]',
     cell: (row) => row.validUntil,
   },
@@ -202,6 +193,15 @@ export function SellQuotes() {
       <PageHeader
         title="Quotes"
         subtitle={`${mockQuotes.length} quotes • $${totalValue.toLocaleString()} total value`}
+      />
+
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'accepted', label: 'Accepted', value: mockQuotes.filter(q => q.status === 'accepted').reduce((s, q) => s + q.value, 0), color: 'var(--mw-yellow-400)' },
+          { key: 'sent', label: 'Sent', value: mockQuotes.filter(q => q.status === 'sent').reduce((s, q) => s + q.value, 0), color: 'var(--mw-mirage)' },
+          { key: 'draft', label: 'Draft', value: mockQuotes.filter(q => q.status === 'draft').reduce((s, q) => s + q.value, 0), color: 'var(--neutral-400)' },
+          { key: 'expired', label: 'Expired', value: mockQuotes.filter(q => q.status === 'expired').reduce((s, q) => s + q.value, 0), color: 'var(--neutral-200)' },
+        ]}
       />
 
       <PageToolbar>
@@ -231,6 +231,9 @@ export function SellQuotes() {
         data={filtered}
         keyExtractor={(row) => row.id}
         onRowClick={() => navigate('/sell/quotes/new')}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         striped
       />
 

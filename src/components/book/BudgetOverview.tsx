@@ -28,10 +28,12 @@ import {
 } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
+import { toast } from 'sonner';
 
 
 type BudgetStatus = 'active' | 'draft' | 'closed';
@@ -245,6 +247,12 @@ export function BudgetOverview() {
     });
   }
 
+  // Compute summary totals by status
+  const onTrackTotal = mockBudgets.filter(b => b.status === 'on_track').reduce((s, b) => s + b.budgeted, 0);
+  const monitorTotal = mockBudgets.filter(b => b.status === 'monitor').reduce((s, b) => s + b.budgeted, 0);
+  const overBudgetTotal = mockBudgets.filter(b => b.status === 'over_budget').reduce((s, b) => s + b.budgeted, 0);
+  const draftBudgetTotal = mockBudgets.filter(b => b.status === 'draft').reduce((s, b) => s + b.budgeted, 0);
+
   const budgetColumns: MwColumnDef<Budget>[] = useMemo(
     () => [
       {
@@ -257,6 +265,7 @@ export function BudgetOverview() {
             onSort={() => handleSort('name')}
           />
         ),
+        tooltip: 'Budget or job identifier',
         cell: (budget) => (
           <Link
             to={`/book/job-costs/${budget.id}`}
@@ -288,7 +297,7 @@ export function BudgetOverview() {
       {
         key: 'period',
         header: 'Period',
-        cell: (budget) => <span className="text-[var(--neutral-600)]">{budget.period}</span>,
+        cell: (budget) => <span className="text-[var(--neutral-600)] tabular-nums">{budget.period}</span>,
       },
       {
         key: 'budgeted',
@@ -332,6 +341,7 @@ export function BudgetOverview() {
             onSort={() => handleSort('variance')}
           />
         ),
+        tooltip: 'Difference between budgeted and actual spend',
         className: 'text-right',
         headerClassName: 'text-right',
         cell: (budget) => (
@@ -628,12 +638,24 @@ export function BudgetOverview() {
         </ChartCard>
       </motion.div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'on_track', label: 'On Track', value: onTrackTotal, color: 'var(--mw-yellow-400)' },
+          { key: 'monitor', label: 'Monitor', value: monitorTotal, color: 'var(--mw-mirage)' },
+          { key: 'over_budget', label: 'Over Budget', value: overBudgetTotal, color: 'var(--neutral-400)' },
+          { key: 'draft', label: 'Draft', value: draftBudgetTotal, color: 'var(--neutral-200)' },
+        ]}
+      />
+
       <motion.div variants={staggerItem}>
         <MwDataTable
           columns={budgetColumns}
           data={sortedBudgets}
           keyExtractor={(row) => row.id}
           striped
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           onRowClick={(budget) => {
             if (budget.type === 'job') {
               navigate(`/book/job-costs/${budget.id}`);

@@ -5,8 +5,10 @@
 import React, { useState } from 'react';
 import { Truck, Download, Printer, Sparkles } from 'lucide-react';
 import { Input } from '../ui/input';
+import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
 import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -41,18 +43,21 @@ const MANIFESTS = [
 type Manifest = (typeof MANIFESTS)[number];
 
 const manifestColumns: MwColumnDef<Manifest>[] = [
-  { key: 'date', header: 'Date', cell: (m) => <span className="text-[var(--mw-mirage)]">{m.date}</span> },
-  { key: 'carrier', header: 'Carrier', cell: (m) => <span className="text-[var(--neutral-500)]">{m.carrier}</span> },
-  { key: 'count', header: 'Shipments', cell: (m) => <span className="font-medium tabular-nums">{m.count}</span> },
-  { key: 'weight', header: 'Weight', cell: (m) => <span className="tabular-nums">{m.weight}</span> },
+  { key: 'date', header: 'Date', tooltip: 'Manifest date', cell: (m) => <span className="text-[var(--mw-mirage)] tabular-nums">{m.date}</span> },
+  { key: 'carrier', header: 'Carrier', tooltip: 'Shipping carrier', cell: (m) => (
+    <span className="text-[var(--neutral-500)] inline-flex items-center gap-1.5">
+      <Truck className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+      {m.carrier}
+    </span>
+  ) },
+  { key: 'count', header: 'Shipments', tooltip: 'Number of shipments in manifest', headerClassName: 'text-right', className: 'text-right', cell: (m) => <span className="font-medium tabular-nums">{m.count}</span> },
+  { key: 'weight', header: 'Weight', headerClassName: 'text-right', className: 'text-right', cell: (m) => <span className="tabular-nums">{m.weight}</span> },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Manifest status',
     cell: (m) => (
-      <div className="flex items-center gap-2">
-        <div className={cn('w-2 h-2 rounded-full', m.open ? 'bg-[var(--mw-yellow-400)]' : 'bg-[var(--mw-mirage)]')} />
-        <span className="text-xs text-[var(--neutral-500)]">{m.open ? 'Open' : 'Closed'}</span>
-      </div>
+      <StatusBadge variant={m.open ? 'warning' : 'dark'}>{m.open ? 'Open' : 'Closed'}</StatusBadge>
     ),
   },
   {
@@ -79,9 +84,29 @@ export function ShipShipping() {
     { key: 'manifests', label: 'Manifests' },
   ];
 
+  const totalCarriers = CARRIERS.length;
+  const activeCarriers = CARRIERS.filter(c => c.ok).length;
+  const totalShipmentsToday = CARRIERS.reduce((s, c) => s + c.ships, 0);
+  const avgOnTime = Math.round(CARRIERS.reduce((s, c) => s + c.onTime, 0) / CARRIERS.length);
+
   return (
     <PageShell className="overflow-y-auto">
       <PageHeader title="Shipping" />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'Active Carriers', value: activeCarriers, sub: `${totalCarriers} total`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Shipments Today', value: totalShipmentsToday, sub: 'Across all carriers', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Avg On-Time', value: `${avgOnTime}%`, sub: 'Delivery performance', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Open Manifests', value: MANIFESTS.filter(m => m.open).length, sub: 'Awaiting closure', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <TextSegmentedControl
         ariaLabel="Shipping sections"
@@ -186,6 +211,9 @@ export function ShipShipping() {
             columns={manifestColumns}
             data={MANIFESTS}
             keyExtractor={(_m, i) => String(i)}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
         </div>
       )}

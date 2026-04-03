@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Plus, Download, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
+import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
@@ -70,34 +70,26 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
 
   const columns: MwColumnDef<Invoice>[] = [
     {
-      key: 'checkbox',
-      header: <Checkbox className="w-[18px] h-[18px]" />,
-      cell: () => (
-        <span onClick={e => e.stopPropagation()}>
-          <Checkbox className="w-[18px] h-[18px]" />
-        </span>
-      ),
-      className: 'w-12',
-    },
-    {
       key: 'id',
       header: 'INVOICE #',
-      cell: (inv) => <span className="text-xs text-[var(--mw-mirage)] tabular-nums">{inv.id}</span>,
+      tooltip: 'Unique invoice identifier',
+      cell: (inv) => <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{inv.id}</span>,
     },
     {
       key: 'customer',
       header: 'CUSTOMER',
-      cell: (inv) => <span className="text-sm text-[var(--mw-mirage)]">{inv.customer}</span>,
+      cell: (inv) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{inv.customer}</span>,
     },
     {
       key: 'issueDate',
       header: 'ISSUE DATE',
-      cell: (inv) => <span className="text-sm text-[var(--neutral-600)]">{inv.issueDate}</span>,
+      cell: (inv) => <span className="text-sm text-[var(--neutral-600)] tabular-nums">{inv.issueDate}</span>,
     },
     {
       key: 'dueDate',
       header: 'DUE DATE',
-      cell: (inv) => <span className="text-sm text-[var(--neutral-600)]">{inv.dueDate}</span>,
+      tooltip: 'Payment due date',
+      cell: (inv) => <span className="text-sm text-[var(--neutral-600)] tabular-nums">{inv.dueDate}</span>,
     },
     {
       key: 'status',
@@ -111,6 +103,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
     {
       key: 'total',
       header: 'TOTAL',
+      tooltip: 'Invoice total amount',
       headerClassName: 'text-right',
       className: 'text-right',
       cell: (inv) => (
@@ -122,6 +115,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
     {
       key: 'balanceDue',
       header: 'BALANCE DUE',
+      tooltip: 'Outstanding amount remaining',
       headerClassName: 'text-right',
       className: 'text-right',
       cell: (inv) => (
@@ -181,6 +175,9 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
         data={filtered}
         keyExtractor={(inv) => inv.id}
         striped
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         onRowClick={(inv) => onSelectInvoice?.(inv.id)}
       />
 

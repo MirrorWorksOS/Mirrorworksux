@@ -11,6 +11,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { toast } from 'sonner';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import {
   AnimatedSearch,
   AnimatedFilter,
@@ -130,10 +131,16 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     return acc;
   }, {} as Record<InvoiceStatus, number>);
 
+  // Compute summary totals by status
+  const paidTotal = MOCK_INVOICES.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0);
+  const pendingTotal = MOCK_INVOICES.filter(i => ['sent', 'viewed', 'partiallyPaid', 'draft'].includes(i.status)).reduce((s, i) => s + i.total, 0);
+  const overdueTotal = MOCK_INVOICES.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0);
+
   const columns: MwColumnDef<Invoice>[] = [
     {
       key: 'id',
       header: 'Invoice #',
+      tooltip: 'Unique invoice identifier',
       cell: (invoice) => (
         <div className="flex flex-col">
           <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
@@ -158,7 +165,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               {invoice.customer.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="font-normal text-xs text-[var(--mw-mirage)]">
+          <span className="font-medium text-xs text-[var(--mw-mirage)]">
             {invoice.customer}
           </span>
         </div>
@@ -168,7 +175,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
       key: 'issueDate',
       header: 'Issue Date',
       cell: (invoice) => (
-        <span className="font-normal text-xs text-[var(--neutral-500)]">
+        <span className="font-normal text-xs text-[var(--neutral-500)] tabular-nums">
           {new Date(invoice.issueDate).toLocaleDateString('en-AU', {
             day: 'numeric',
             month: 'short',
@@ -180,10 +187,11 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     {
       key: 'dueDate',
       header: 'Due Date',
+      tooltip: 'Payment due date',
       cell: (invoice) => (
         <span
           className={cn(
-            'text-xs',
+            'text-xs tabular-nums',
             invoice.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)]'
           )}
         >
@@ -207,6 +215,8 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     {
       key: 'total',
       header: 'Total',
+      headerClassName: 'text-right',
+      className: 'text-right',
       cell: (invoice) => (
         <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
           ${invoice.total.toLocaleString()}
@@ -216,6 +226,9 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     {
       key: 'balanceDue',
       header: 'Balance Due',
+      tooltip: 'Outstanding amount remaining',
+      headerClassName: 'text-right',
+      className: 'text-right',
       cell: (invoice) => (
         <span
           className={cn(
@@ -340,10 +353,20 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
         variants={staggerContainer}
         className="flex-1 overflow-auto p-6"
       >
+        <ToolbarSummaryBar
+          segments={[
+            { key: 'paid', label: 'Paid', value: paidTotal, color: 'var(--mw-yellow-400)' },
+            { key: 'pending', label: 'Pending', value: pendingTotal, color: 'var(--mw-mirage)' },
+            { key: 'overdue', label: 'Overdue', value: overdueTotal, color: 'var(--neutral-400)' },
+          ]}
+        />
         <MwDataTable
           columns={columns}
           data={filteredInvoices}
           keyExtractor={(invoice) => invoice.id}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           onRowClick={(invoice) => onSelectInvoice ? onSelectInvoice(invoice.id) : navigate(`/book/invoices/${invoice.id}`)}
           emptyState={
             <EmptyState

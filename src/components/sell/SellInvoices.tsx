@@ -49,8 +49,6 @@ export function SellInvoices() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [search, setSearch] = useState('');
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-
   const filteredInvoices = (activeTab === 'all'
     ? mockInvoices
     : mockInvoices.filter(inv => inv.status === activeTab)
@@ -71,39 +69,9 @@ export function SellInvoices() {
 
   const invoiceColumns: MwColumnDef<Invoice>[] = [
     {
-      key: 'checkbox',
-      header: (
-        <input
-          type="checkbox"
-          className="rounded border-[var(--border)]"
-          checked={selectedRows.size === filteredInvoices.length && filteredInvoices.length > 0}
-          onChange={(e) => {
-            if (e.target.checked) setSelectedRows(new Set(filteredInvoices.map(i => i.id)));
-            else setSelectedRows(new Set());
-          }}
-        />
-      ),
-      headerClassName: 'w-12',
-      className: 'w-12',
-      cell: (inv) => (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="checkbox"
-            className="rounded border-[var(--border)]"
-            checked={selectedRows.has(inv.id)}
-            onChange={() => setSelectedRows(prev => {
-              const next = new Set(prev);
-              if (next.has(inv.id)) next.delete(inv.id);
-              else next.add(inv.id);
-              return next;
-            })}
-          />
-        </div>
-      ),
-    },
-    {
       key: 'invoiceNumber',
       header: 'Invoice #',
+      tooltip: 'Unique invoice reference number',
       cell: (inv) => (
         <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
           {inv.invoiceNumber}
@@ -111,7 +79,7 @@ export function SellInvoices() {
         </span>
       ),
     },
-    { key: 'customer', header: 'Customer', cell: (inv) => inv.customer },
+    { key: 'customer', header: 'Customer', tooltip: 'Billing customer name', cell: (inv) => inv.customer },
     {
       key: 'issueDate',
       header: 'Issue date',
@@ -152,6 +120,7 @@ export function SellInvoices() {
     {
       key: 'total',
       header: 'Total',
+      tooltip: 'Total invoice amount incl. tax',
       headerClassName: 'text-right',
       className: 'text-right font-medium tabular-nums',
       cell: (inv) => `$${inv.total.toLocaleString()}`,
@@ -159,6 +128,7 @@ export function SellInvoices() {
     {
       key: 'balanceDue',
       header: 'Balance due',
+      tooltip: 'Remaining unpaid balance',
       headerClassName: 'text-right',
       className: 'text-right font-medium tabular-nums',
       cell: (inv) => (
@@ -246,6 +216,9 @@ export function SellInvoices() {
           data={filteredInvoices}
           keyExtractor={(inv) => inv.id}
           onRowClick={(inv) => navigate(`/sell/invoices/${inv.id}`)}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           striped
         />
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-white rounded-b-[var(--shape-lg)]">

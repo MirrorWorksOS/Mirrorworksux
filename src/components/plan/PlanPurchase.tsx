@@ -2,7 +2,7 @@
  * Plan Purchase — Material Requirements Planning (MRP)
  * Shows shortfalls per job, lets user create PRs for shortfalls in bulk
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { ShoppingCart, AlertTriangle, CheckCircle, RefreshCw, Download } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -11,6 +11,8 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { toast } from 'sonner';
 
 
 const MRP_ROWS = [
@@ -27,103 +29,77 @@ const MRP_ROWS = [
 
 type MrpRow = (typeof MRP_ROWS)[number];
 
-function buildMrpColumns(
-  selected: Set<string>,
-  toggleRow: (id: string) => void,
-  toggleAll: () => void,
-  shortages: MrpRow[],
-): MwColumnDef<MrpRow>[] {
-  return [
-    {
-      key: 'select',
-      header: (
-        <input type="checkbox"
-          checked={selected.size === shortages.length && shortages.length > 0}
-          onChange={toggleAll}
-          className="accent-[var(--mw-yellow-400)] w-4 h-4"
-        />
-      ),
-      headerClassName: 'w-10',
-      cell: (row) =>
-        row.status !== 'ok' ? (
-          <input type="checkbox"
-            checked={selected.has(row.id)}
-            onChange={() => toggleRow(row.id)}
-            className="accent-[var(--mw-yellow-400)] w-4 h-4"
-            onClick={(e) => e.stopPropagation()}
-          />
-        ) : null,
-    },
-    { key: 'product', header: 'Material', cell: (row) => <span className="text-[var(--mw-mirage)] font-medium">{row.product}</span> },
-    { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)]', cell: (row) => row.sku },
-    { key: 'job', header: 'Job', cell: (row) => <span className="tabular-nums text-[var(--mw-mirage)]">{row.job}</span> },
-    { key: 'due', header: 'Due', className: 'text-[var(--neutral-500)]', cell: (row) => row.due },
-    { key: 'required', header: 'Required', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (row) => row.required },
-    { key: 'available', header: 'Available', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (row) => row.available },
-    { key: 'onOrder', header: 'On Order', headerClassName: 'text-right', className: 'text-right tabular-nums text-[var(--neutral-500)]', cell: (row) => row.onOrder > 0 ? row.onOrder : '—' },
-    {
-      key: 'net',
-      header: 'Net Shortfall',
-      headerClassName: 'text-right',
-      className: 'text-right tabular-nums font-medium',
-      cell: (row) => (
-        <span style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
-          {row.net > 0 ? `+${row.net}` : row.net}
-        </span>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      cell: (row) =>
-        row.status === 'ok'
-          ? <StatusBadge variant="neutral">OK</StatusBadge>
-          : row.status === 'critical'
-            ? <StatusBadge variant="error">Critical</StatusBadge>
-            : <StatusBadge variant="warning">Shortage</StatusBadge>,
-    },
-  ];
-}
+const mrpColumns: MwColumnDef<MrpRow>[] = [
+  { key: 'product', header: 'Material', tooltip: 'Material name', cell: (row) => <span className="text-[var(--mw-mirage)] font-medium">{row.product}</span> },
+  { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (row) => row.sku },
+  { key: 'job', header: 'Job', tooltip: 'Associated job number', cell: (row) => <span className="tabular-nums font-medium text-[var(--mw-mirage)]">{row.job}</span> },
+  { key: 'due', header: 'Due', tooltip: 'Required by date', className: 'tabular-nums text-[var(--neutral-500)]', cell: (row) => row.due },
+  { key: 'required', header: 'Required', tooltip: 'Total quantity required', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (row) => row.required },
+  { key: 'available', header: 'Available', tooltip: 'Current stock on hand', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (row) => row.available },
+  { key: 'onOrder', header: 'On Order', tooltip: 'Quantity already on order', headerClassName: 'text-right', className: 'text-right tabular-nums text-[var(--neutral-500)]', cell: (row) => row.onOrder > 0 ? row.onOrder : '\u2014' },
+  {
+    key: 'net',
+    header: 'Net Shortfall',
+    tooltip: 'Remaining shortfall after stock and orders',
+    headerClassName: 'text-right',
+    className: 'text-right tabular-nums font-medium',
+    cell: (row) => (
+      <span style={{ color: row.net > 0 ? 'var(--mw-error)' : 'var(--mw-success)' }}>
+        {row.net > 0 ? `+${row.net}` : row.net}
+      </span>
+    ),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    tooltip: 'Material availability status',
+    cell: (row) =>
+      row.status === 'ok'
+        ? <StatusBadge variant="neutral">OK</StatusBadge>
+        : row.status === 'critical'
+          ? <StatusBadge variant="error">Critical</StatusBadge>
+          : <StatusBadge variant="warning">Shortage</StatusBadge>,
+  },
+];
 
 export function PlanPurchase() {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
   const shortages  = MRP_ROWS.filter(r => r.status !== 'ok');
-  const toggleRow  = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const toggleAll  = () => setSelected(prev => prev.size === shortages.length ? new Set() : new Set(shortages.map(r => r.id)));
+  const countCritical = shortages.filter(s => s.status === 'critical').length;
+  const countShortage = shortages.filter(s => s.status === 'shortage').length;
+  const countOk = MRP_ROWS.filter(r => r.status === 'ok').length;
 
   return (
     <PageShell>
       <PageHeader
         title="Material requirements"
-        subtitle={`${shortages.filter(s => s.status === 'critical').length > 0 ? `${shortages.filter(s => s.status === 'critical').length} critical shortage · ` : ''}${shortages.filter(s => s.status === 'shortage').length} shortages · ${MRP_ROWS.filter(r => r.status === 'ok').length} items available`}
+        subtitle={`${countCritical > 0 ? `${countCritical} critical shortage \u00B7 ` : ''}${countShortage} shortages \u00B7 ${countOk} items available`}
         actions={
           <div className="flex gap-4">
-            <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-12 rounded-md">
               <RefreshCw className="w-4 h-4" /> Recalculate MRP
             </Button>
-            <Button variant="outline" className="border-[var(--border)] gap-2 h-10">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-12 rounded-md">
               <Download className="w-4 h-4" /> Export
-            </Button>
-            <Button
-              className={cn('gap-2 h-10', selected.size > 0
-                ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
-                : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] cursor-not-allowed'
-              )}
-              disabled={selected.size === 0}
-            >
-              <ShoppingCart className="w-4 h-4" /> Create {selected.size > 0 ? `${selected.size} PRs` : 'PRs'}
             </Button>
           </div>
         }
       />
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'critical', label: 'Critical', value: countCritical, color: 'var(--mw-yellow-400)' },
+          { key: 'shortage', label: 'Shortage', value: countShortage, color: 'var(--mw-mirage)' },
+          { key: 'ok', label: 'OK', value: countOk, color: 'var(--neutral-400)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Critical shortages', count: shortages.filter(s => s.status === 'critical').length, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', icon: AlertTriangle },
-          { label: 'Active shortages',   count: shortages.filter(s => s.status === 'shortage').length, bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', icon: AlertTriangle },
-          { label: 'Items available',    count: MRP_ROWS.filter(r => r.status === 'ok').length,        bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', icon: CheckCircle },
+          { label: 'Critical shortages', count: countCritical, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', icon: AlertTriangle },
+          { label: 'Active shortages',   count: countShortage, bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', icon: AlertTriangle },
+          { label: 'Items available',    count: countOk,        bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', icon: CheckCircle },
         ].map(s => {
           const Icon = s.icon;
           return (
@@ -139,9 +115,12 @@ export function PlanPurchase() {
       </div>
 
       <MwDataTable
-        columns={buildMrpColumns(selected, toggleRow, toggleAll, shortages)}
+        columns={mrpColumns}
         data={MRP_ROWS}
         keyExtractor={(row) => row.id}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
       />
     </PageShell>
   );

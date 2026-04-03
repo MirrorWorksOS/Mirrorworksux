@@ -5,14 +5,13 @@ import React, { useState } from 'react';
 import { Plus, Download } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 
 const INVENTORY = [
@@ -28,43 +27,46 @@ const INVENTORY = [
   { id: '10', sku: 'PROD-BP-002', name: 'Bracket Type A (standard)',    category: 'Finished Goods', unit: 'each',   onHand: 12,  minStock: 5,   costPrice: 145.00, location: 'FG-01-02',status: 'ok' },
 ];
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  ok:  { label: 'OK',       bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-mirage)' },
-  low: { label: 'Low',      bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', dot: 'var(--mw-amber)' },
-  out: { label: 'Out',      bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)' },
-};
-
 const CATEGORIES = ['All', 'Raw Materials', 'Consumables', 'Finished Goods'];
 
 type InventoryItem = (typeof INVENTORY)[number];
+
+const STATUS_BADGE_MAP: Record<string, 'active' | 'pending' | 'cancelled'> = {
+  ok: 'active',
+  low: 'pending',
+  out: 'cancelled',
+};
+const STATUS_LABEL_MAP: Record<string, string> = { ok: 'OK', low: 'Low', out: 'Out' };
 
 const inventoryColumns: MwColumnDef<InventoryItem>[] = [
   {
     key: 'sku',
     header: 'SKU',
+    tooltip: 'Stock-keeping unit code',
     cell: (item) => item.sku,
     className: 'text-xs font-medium text-[var(--neutral-500)]',
   },
   {
     key: 'name',
     header: 'Name',
+    tooltip: 'Item description',
     cell: (item) => item.name,
     className: 'font-medium text-[var(--mw-mirage)]',
   },
   {
     key: 'category',
     header: 'Category',
+    tooltip: 'Inventory category',
     cell: (item) => (
-      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">
-        {item.category}
-      </Badge>
+      <StatusBadge variant="neutral">{item.category}</StatusBadge>
     ),
   },
   {
     key: 'onHand',
     header: 'On Hand',
+    tooltip: 'Current stock quantity',
     headerClassName: 'text-right',
-    className: 'text-right font-medium',
+    className: 'text-right font-medium tabular-nums',
     cell: (item) => (
       <span
         style={{
@@ -78,13 +80,15 @@ const inventoryColumns: MwColumnDef<InventoryItem>[] = [
   {
     key: 'minStock',
     header: 'Min Stock',
+    tooltip: 'Minimum stock threshold',
     headerClassName: 'text-right',
-    className: 'text-right text-[var(--neutral-500)]',
+    className: 'text-right text-[var(--neutral-500)] tabular-nums',
     cell: (item) => item.minStock,
   },
   {
     key: 'cost',
     header: 'Cost',
+    tooltip: 'Unit cost price',
     headerClassName: 'text-right',
     className: 'text-right tabular-nums',
     cell: (item) => `$${item.costPrice.toFixed(2)}`,
@@ -92,23 +96,22 @@ const inventoryColumns: MwColumnDef<InventoryItem>[] = [
   {
     key: 'location',
     header: 'Location',
-    className: 'text-xs text-[var(--neutral-500)]',
+    tooltip: 'Warehouse location code',
+    className: 'text-xs font-medium text-[var(--neutral-500)]',
     cell: (item) => item.location,
   },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Stock level status',
     headerClassName: 'text-center',
-    cell: (item) => {
-      const cfg = STATUS_CONFIG[item.status];
-      return (
-        <div className="flex justify-center">
-          <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>
-            {cfg.label}
-          </Badge>
-        </div>
-      );
-    },
+    cell: (item) => (
+      <div className="flex justify-center">
+        <StatusBadge status={STATUS_BADGE_MAP[item.status] as any} withDot>
+          {STATUS_LABEL_MAP[item.status]}
+        </StatusBadge>
+      </div>
+    ),
   },
 ];
 
@@ -151,10 +154,22 @@ export function ControlInventory() {
         </ToolbarPrimaryButton>
       </PageToolbar>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'ok', label: 'In Stock', value: INVENTORY.filter(i => i.status === 'ok').length, color: 'var(--mw-yellow-400)' },
+          { key: 'low', label: 'Low Stock', value: totals.low, color: 'var(--mw-mirage)' },
+          { key: 'out', label: 'Out of Stock', value: totals.out, color: 'var(--neutral-400)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <MwDataTable
         columns={inventoryColumns}
         data={filtered}
         keyExtractor={(item) => item.id}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         emptyState={<EmptyState variant="inline" title="No items match your search." />}
       />
     </PageShell>

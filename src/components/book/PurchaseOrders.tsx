@@ -3,10 +3,10 @@ import { PlusCircle, Search, SlidersHorizontal, ChevronDown, ChevronLeft, Chevro
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { toast } from 'sonner';
@@ -51,32 +51,34 @@ const MatchIcon = ({ match }: { match: string }) => {
 export function PurchaseOrders() {
   const [activeTab, setActiveTab] = useState('All');
 
+  // Compute summary totals by status
+  const receivedTotal = POS.filter(p => p.status === 'Received').reduce((s, p) => s + p.total, 0);
+  const sentTotal = POS.filter(p => p.status === 'Sent').reduce((s, p) => s + p.total, 0);
+  const partialTotal = POS.filter(p => p.status === 'Partial').reduce((s, p) => s + p.total, 0);
+  const draftTotal = POS.filter(p => ['Draft', 'Cancelled'].includes(p.status)).reduce((s, p) => s + p.total, 0);
+
   const columns: MwColumnDef<PO>[] = [
-    {
-      key: 'checkbox',
-      header: <Checkbox className="w-[18px] h-[18px]" />,
-      cell: () => <Checkbox className="w-[18px] h-[18px]" />,
-      className: 'w-10',
-    },
     {
       key: 'id',
       header: 'PO #',
-      cell: (po) => <span className="text-xs text-[var(--mw-mirage)] tabular-nums">{po.id}</span>,
+      tooltip: 'Purchase order number',
+      cell: (po) => <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{po.id}</span>,
     },
     {
       key: 'vendor',
       header: 'VENDOR',
-      cell: (po) => <span className="text-sm text-[var(--mw-mirage)]">{po.vendor}</span>,
+      cell: (po) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{po.vendor}</span>,
     },
     {
       key: 'orderDate',
       header: 'ORDER DATE',
-      cell: (po) => <span className="text-sm text-[var(--neutral-600)]">{po.orderDate}</span>,
+      cell: (po) => <span className="text-sm text-[var(--neutral-600)] tabular-nums">{po.orderDate}</span>,
     },
     {
       key: 'expectedDelivery',
       header: 'EXPECTED DELIVERY',
-      cell: (po) => <span className="text-sm text-[var(--neutral-600)]">{po.expectedDelivery}</span>,
+      tooltip: 'Expected delivery date from vendor',
+      cell: (po) => <span className="text-sm text-[var(--neutral-600)] tabular-nums">{po.expectedDelivery}</span>,
     },
     {
       key: 'status',
@@ -90,6 +92,7 @@ export function PurchaseOrders() {
     {
       key: 'total',
       header: 'TOTAL',
+      tooltip: 'Purchase order total',
       headerClassName: 'text-right',
       className: 'text-right',
       cell: (po) => <span className="text-sm tabular-nums font-medium">${po.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>,
@@ -97,11 +100,13 @@ export function PurchaseOrders() {
     {
       key: 'jobRef',
       header: 'JOB REF',
-      cell: (po) => <span className="text-xs tabular-nums" style={{ color: po.jobRef === '\u2014' ? 'var(--neutral-400)' : 'var(--mw-info)' }}>{po.jobRef}</span>,
+      tooltip: 'Linked job reference',
+      cell: (po) => <span className="text-xs font-medium tabular-nums" style={{ color: po.jobRef === '\u2014' ? 'var(--neutral-400)' : 'var(--mw-info)' }}>{po.jobRef}</span>,
     },
     {
       key: 'match',
       header: 'MATCH',
+      tooltip: '3-way match status',
       headerClassName: 'text-center',
       className: 'text-center',
       cell: (po) => <MatchIcon match={po.match} />,
@@ -143,11 +148,22 @@ export function PurchaseOrders() {
         ))}
       </div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'received', label: 'Received', value: receivedTotal, color: 'var(--mw-yellow-400)' },
+          { key: 'sent', label: 'Sent', value: sentTotal, color: 'var(--mw-mirage)' },
+          { key: 'partial', label: 'Partial', value: partialTotal, color: 'var(--neutral-400)' },
+          { key: 'other', label: 'Draft / Cancelled', value: draftTotal, color: 'var(--neutral-200)' },
+        ]}
+      />
       <MwDataTable
         columns={columns}
         data={POS}
         keyExtractor={(po) => po.id}
         striped
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
       />
 
       <div className="flex items-center justify-between px-4 py-3">

@@ -9,6 +9,7 @@ import { Plus, Grid3x3, List, Package, Play } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
@@ -53,7 +54,13 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'sku',
     header: 'SKU',
-    cell: (p) => <span className="font-medium text-[var(--mw-mirage)] tabular-nums">{p.sku}</span>,
+    tooltip: 'Stock keeping unit identifier',
+    cell: (p) => (
+      <span className="font-medium text-[var(--mw-mirage)] tabular-nums inline-flex items-center gap-1.5">
+        <Package className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+        {p.sku}
+      </span>
+    ),
   },
   {
     key: 'name',
@@ -68,6 +75,7 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'bom',
     header: 'BOM',
+    tooltip: 'Bill of Materials status',
     cell: (p) => {
       const badge = getBomBadgeProps(p.bomStatus);
       return <StatusBadge variant={badge.variant}>{badge.label}</StatusBadge>;
@@ -76,16 +84,19 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'routing',
     header: 'Routing',
+    tooltip: 'Number of manufacturing steps',
     cell: (p) => <span className="text-[var(--neutral-600)] tabular-nums">{p.routingSteps > 0 ? `${p.routingSteps} steps` : '—'}</span>,
   },
   {
     key: 'workCentre',
     header: 'Default Work Centre',
+    tooltip: 'Manufacturing path through work centres',
     cell: (p) => <span className="text-[var(--neutral-600)]">{p.defaultWorkCentre}</span>,
   },
   {
     key: 'unitCost',
     header: 'Unit Cost',
+    tooltip: 'Standard manufacturing cost per unit',
     headerClassName: 'text-right',
     className: 'text-right font-medium text-[var(--neutral-900)] tabular-nums',
     cell: (p) => p.unitCost > 0 ? `$${p.unitCost.toLocaleString()}` : '—',
@@ -104,6 +115,11 @@ export function MakeProducts() {
       p.category.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const completeCount = PRODUCTS.filter((p) => p.bomStatus === 'complete').length;
+  const draftCount = PRODUCTS.filter((p) => p.bomStatus === 'draft').length;
+  const missingCount = PRODUCTS.filter((p) => p.bomStatus === 'missing').length;
+  const avgCost = Math.round(PRODUCTS.filter((p) => p.unitCost > 0).reduce((s, p) => s + p.unitCost, 0) / PRODUCTS.filter((p) => p.unitCost > 0).length);
+
   const handleMake = (product: Product) => {
     toast.success(`Manufacturing order started for ${product.name}`);
     navigate('/make/manufacturing-orders/new');
@@ -115,6 +131,21 @@ export function MakeProducts() {
         title="Products"
         subtitle={`${filtered.length} products with manufacturing data`}
       />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'Total Products', value: PRODUCTS.length, sub: `${filtered.length} shown`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'BOM Complete', value: completeCount, sub: 'Ready to manufacture', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'BOM Draft', value: draftCount, sub: 'In progress', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+          { label: 'BOM Missing', value: missingCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <PageToolbar>
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search products…" />
@@ -197,6 +228,9 @@ export function MakeProducts() {
           data={filtered}
           keyExtractor={(p) => p.id}
           striped
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         />
       )}
 

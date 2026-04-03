@@ -19,12 +19,13 @@ import {
 } from 'date-fns';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -320,13 +321,20 @@ export function SellActivities() {
   const [form, setForm] = useState<NewActivityForm>(emptyForm);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
+  const statusVariantMap: Record<ActivityStatus, 'neutral' | 'info' | 'error' | 'warning'> = {
+    completed: 'neutral',
+    scheduled: 'info',
+    overdue: 'error',
+    in_progress: 'warning',
+  };
+
   const activityColumns: MwColumnDef<Activity>[] = [
-    { key: 'type', header: 'Type', cell: (a) => <Badge className={TYPE_BADGE[a.type].className}>{TYPE_BADGE[a.type].label}</Badge> },
+    { key: 'type', header: 'Type', tooltip: 'Activity type (email, call, meeting, task)', cell: (a) => <Badge className={TYPE_BADGE[a.type].className}>{TYPE_BADGE[a.type].label}</Badge> },
     { key: 'description', header: 'Description', cell: (a) => <span className="font-medium text-[var(--neutral-900)]">{a.description}</span> },
-    { key: 'opportunity', header: 'Opportunity', cell: (a) => <a href={a.opportunityPath} className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline">{a.opportunity}</a> },
-    { key: 'assignedTo', header: 'Assigned To', cell: (a) => <span className="text-[var(--neutral-600)]">{a.assignedTo}</span> },
-    { key: 'dueDate', header: 'Due Date', className: 'tabular-nums', cell: (a) => <span className="text-[var(--neutral-600)]">{a.dueDate}</span> },
-    { key: 'status', header: 'Status', cell: (a) => <Badge className={STATUS_BADGE[a.status].className}>{STATUS_BADGE[a.status].label}</Badge> },
+    { key: 'opportunity', header: 'Opportunity', tooltip: 'Linked sales opportunity', cell: (a) => <a href={a.opportunityPath} className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline">{a.opportunity}</a> },
+    { key: 'assignedTo', header: 'Assigned to', tooltip: 'Team member responsible', cell: (a) => <span className="text-[var(--neutral-600)]">{a.assignedTo}</span> },
+    { key: 'dueDate', header: 'Due date', className: 'tabular-nums', cell: (a) => <span className="text-[var(--neutral-600)]">{a.dueDate}</span> },
+    { key: 'status', header: 'Status', cell: (a) => <StatusBadge variant={statusVariantMap[a.status]}>{STATUS_BADGE[a.status].label}</StatusBadge> },
   ];
 
   // Filtered activities for the list view
@@ -395,6 +403,16 @@ export function SellActivities() {
         subtitle="Track sales activities across all opportunities"
       />
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'completed', label: 'Completed', value: activities.filter(a => a.status === 'completed').length, color: 'var(--mw-yellow-400)' },
+          { key: 'scheduled', label: 'Scheduled', value: activities.filter(a => a.status === 'scheduled').length, color: 'var(--mw-mirage)' },
+          { key: 'in_progress', label: 'In Progress', value: activities.filter(a => a.status === 'in_progress').length, color: 'var(--neutral-400)' },
+          { key: 'overdue', label: 'Overdue', value: activities.filter(a => a.status === 'overdue').length, color: 'var(--neutral-200)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <PageToolbar>
         <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search activities…" />
         <ToolbarSpacer />
@@ -419,6 +437,9 @@ export function SellActivities() {
           data={filtered}
           keyExtractor={(a) => a.id}
           onRowClick={(a) => setSelectedEvent(activityToEventDetail(a))}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         />
       )}
 

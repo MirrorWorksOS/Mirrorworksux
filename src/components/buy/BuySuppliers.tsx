@@ -17,6 +17,9 @@ import { AnimatedPlus, AnimatedFilter, AnimatedSearch } from '../ui/animated-ico
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { toast } from 'sonner';
 
 interface Supplier {
   id: string;
@@ -54,11 +57,15 @@ export function BuySuppliers() {
     supplier.contact.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  const countActive = mockSuppliers.filter(s => s.activePOs > 0).length;
+  const countInactive = mockSuppliers.filter(s => s.activePOs === 0).length;
+
   const listColumns: MwColumnDef<Supplier>[] = useMemo(
     () => [
       {
         key: 'supplier',
         header: 'Supplier',
+        tooltip: 'Supplier company name',
         cell: (row) => (
           <a href={`/buy/suppliers/${row.id}`} className="flex items-center gap-1 text-sm font-medium text-[var(--mw-mirage)] hover:underline">
             {row.company}
@@ -69,17 +76,17 @@ export function BuySuppliers() {
       {
         key: 'contact',
         header: 'Contact',
+        tooltip: 'Primary contact person',
         cell: (row) => <span className="text-sm text-[var(--neutral-600)]">{row.contact}</span>,
       },
       {
         key: 'categories',
         header: 'Categories',
+        tooltip: 'Supply categories',
         cell: (row) => (
           <div className="flex flex-wrap gap-1">
             {row.categories.map((cat) => (
-              <Badge key={cat} className="border-0 bg-[var(--neutral-100)] text-xs text-[var(--neutral-600)]">
-                {cat}
-              </Badge>
+              <StatusBadge key={cat} variant="neutral">{cat}</StatusBadge>
             ))}
           </div>
         ),
@@ -87,6 +94,7 @@ export function BuySuppliers() {
       {
         key: 'pos',
         header: 'Active POs',
+        tooltip: 'Number of active purchase orders',
         className: 'text-center',
         headerClassName: 'text-center',
         cell: (row) => <span className="text-sm font-medium tabular-nums">{row.activePOs}</span>,
@@ -94,6 +102,7 @@ export function BuySuppliers() {
       {
         key: 'ontime',
         header: 'On-time %',
+        tooltip: 'On-time delivery rate',
         className: 'text-center',
         headerClassName: 'text-center',
         cell: (row) => <span className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{row.onTimeRate}%</span>,
@@ -101,6 +110,7 @@ export function BuySuppliers() {
       {
         key: 'spend',
         header: 'Total spend',
+        tooltip: 'Lifetime spend with supplier',
         className: 'text-right',
         headerClassName: 'text-right',
         cell: (row) => <span className="text-sm font-medium tabular-nums">${row.totalSpend.toLocaleString()}</span>,
@@ -108,14 +118,15 @@ export function BuySuppliers() {
       {
         key: 'performance',
         header: 'Performance',
+        tooltip: 'Delivery performance rating',
         className: 'text-center',
         headerClassName: 'text-center',
         cell: (row) => {
           const perf = getPerformanceBadge(row.onTimeRate);
           return (
-            <Badge className={cn('rounded-full border-0 px-2 py-0.5 text-xs', perf.bg, perf.text)}>
+            <StatusBadge variant={row.onTimeRate >= 95 ? 'success' : row.onTimeRate >= 85 ? 'neutral' : row.onTimeRate >= 75 ? 'warning' : 'error'}>
               {perf.label}
-            </Badge>
+            </StatusBadge>
           );
         },
       },
@@ -248,12 +259,23 @@ export function BuySuppliers() {
         )}
 
         {viewMode === 'list' && (
-          <MwDataTable<Supplier>
-            columns={listColumns}
-            data={filteredSuppliers}
-            keyExtractor={(row) => row.id}
-            filterBar={undefined}
-          />
+          <div className="space-y-4">
+            <ToolbarSummaryBar
+              segments={[
+                { key: 'active', label: 'Active', value: countActive, color: 'var(--mw-yellow-400)' },
+                { key: 'inactive', label: 'Inactive', value: countInactive, color: 'var(--neutral-400)' },
+              ]}
+              formatValue={(v) => String(v)}
+            />
+            <MwDataTable<Supplier>
+              columns={listColumns}
+              data={filteredSuppliers}
+              keyExtractor={(row) => row.id}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
+            />
+          </div>
         )}
       </motion.div>
     </PageShell>

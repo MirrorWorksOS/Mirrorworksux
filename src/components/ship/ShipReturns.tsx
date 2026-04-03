@@ -5,6 +5,7 @@
  */
 import React, { useState } from 'react';
 import { PlusCircle, ChevronRight } from 'lucide-react';
+import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -14,6 +15,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recha
 import { MW_BAR_TOOLTIP_CURSOR, MW_RECHARTS_ANIMATION_BAR, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 type RStatus = 'pending' | 'approved' | 'in_transit' | 'received' | 'refunded' | 'closed';
 
@@ -58,23 +60,29 @@ const REASONS = [
 const TIMELINE_STAGES: RStatus[] = ['pending', 'approved', 'in_transit', 'received', 'refunded', 'closed'];
 
 const returnColumns: MwColumnDef<RMA>[] = [
-  { key: 'id', header: 'RMA', cell: (r) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{r.id}</span> },
+  { key: 'id', header: 'RMA', tooltip: 'Return merchandise authorisation number', cell: (r) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{r.id}</span> },
   { key: 'customer', header: 'Customer', cell: (r) => <span className="text-[var(--mw-mirage)]">{r.customer}</span> },
-  { key: 'reason', header: 'Reason', className: 'text-xs text-[var(--neutral-500)]', cell: (r) => r.reason },
+  { key: 'reason', header: 'Reason', tooltip: 'Return reason category', className: 'text-xs text-[var(--neutral-500)]', cell: (r) => r.reason },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Current return status',
     cell: (r) => (
       <StatusBadge variant={rStatusVariant[r.status]}>{rStatusLabel[r.status]}</StatusBadge>
     ),
   },
-  { key: 'date', header: 'Date', className: 'text-[var(--neutral-500)]', cell: (r) => r.date },
+  { key: 'date', header: 'Date', className: 'text-[var(--neutral-500)] tabular-nums', cell: (r) => r.date },
   { key: 'arrow', header: '', cell: () => <ChevronRight className="w-4 h-4 text-[var(--neutral-200)]" /> },
 ];
 
 export function ShipReturns() {
   const [selected, setSelected] = useState<RMA | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const pendingCount = RMAS.filter(r => r.status === 'pending').length;
+  const inTransitCount = RMAS.filter(r => r.status === 'in_transit').length;
+  const receivedCount = RMAS.filter(r => r.status === 'received').length;
+  const closedCount = RMAS.filter(r => r.status === 'closed' || r.status === 'refunded').length;
 
   return (
     <PageShell className="overflow-y-auto">
@@ -86,6 +94,21 @@ export function ShipReturns() {
           </button>
         }
       />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'Pending', value: pendingCount, sub: 'Awaiting review', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+          { label: 'In Transit', value: inTransitCount, sub: 'Return shipping', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Resolved', value: closedCount, sub: `${RMAS.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <FilterBar
         searchValue={searchQuery}
@@ -100,6 +123,9 @@ export function ShipReturns() {
             data={RMAS}
             keyExtractor={(r) => r.id}
             onRowClick={(r) => setSelected(r)}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
         </div>
 

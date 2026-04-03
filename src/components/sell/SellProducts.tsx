@@ -12,7 +12,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
@@ -59,23 +59,31 @@ export function SellProducts() {
     product.sku.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const summaryByCategory = {
+    rawMaterials: mockProducts.filter(p => p.category === 'Raw Materials').length,
+    finishedGoods: mockProducts.filter(p => p.category === 'Finished Goods').length,
+    consumables: mockProducts.filter(p => p.category === 'Consumables').length,
+  };
+
   const productColumns: MwColumnDef<Product>[] = [
     {
       key: 'name',
       header: 'Product',
+      tooltip: 'Product name and description',
       cell: (p) => (
         <a href={`/sell/products/${p.id}`} className="text-sm font-medium text-[var(--neutral-900)] hover:underline">
           {p.name}
         </a>
       ),
     },
-    { key: 'sku', header: 'SKU', className: 'tabular-nums text-[var(--neutral-600)]', cell: (p) => p.sku },
+    { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit code', className: 'tabular-nums text-[var(--neutral-600)]', cell: (p) => p.sku },
     { key: 'category', header: 'Category', cell: (p) => <span className="text-[var(--neutral-600)]">{p.category}</span> },
-    { key: 'stock', header: 'Stock', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => p.stockLevel },
-    { key: 'unitPrice', header: 'Unit price', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => `$${p.unitPrice.toFixed(2)}` },
+    { key: 'stock', header: 'Stock', tooltip: 'Current stock level in units', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => p.stockLevel },
+    { key: 'unitPrice', header: 'Unit price', tooltip: 'Sell price per unit excl. tax', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (p) => `$${p.unitPrice.toFixed(2)}` },
     {
       key: 'status',
       header: 'Status',
+      tooltip: 'Stock availability status',
       headerClassName: 'text-center',
       className: 'text-center',
       cell: (p) => {
@@ -94,6 +102,15 @@ export function SellProducts() {
       <PageHeader
         title="Products"
         subtitle={`${filteredProducts.length} total products`}
+      />
+
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'rawMaterials', label: 'Raw Materials', value: summaryByCategory.rawMaterials, color: 'var(--mw-yellow-400)' },
+          { key: 'finishedGoods', label: 'Finished Goods', value: summaryByCategory.finishedGoods, color: 'var(--mw-mirage)' },
+          { key: 'consumables', label: 'Consumables', value: summaryByCategory.consumables, color: 'var(--neutral-400)' },
+        ]}
+        formatValue={(v) => String(v)}
       />
 
       <PageToolbar>
@@ -180,6 +197,9 @@ export function SellProducts() {
           columns={productColumns}
           data={filteredProducts}
           keyExtractor={(p) => p.id}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           striped
         />
       )}

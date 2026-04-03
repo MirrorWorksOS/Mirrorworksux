@@ -12,6 +12,8 @@ import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { FilterBar } from '@/components/shared/layout/FilterBar';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 
 interface BOMLine {
@@ -85,12 +87,12 @@ const LINE_TYPE_CONFIG: Record<string, { bg: string; text: string }> = {
 
 /* Column definitions for the nested BOM-lines sub-table */
 const bomLineColumns: MwColumnDef<BOMLine>[] = [
-  { key: 'sku',         header: 'SKU',         cell: (line) => <span className="text-xs text-[var(--neutral-500)]">{line.sku}</span> },
-  { key: 'description', header: 'Description', cell: (line) => <span className="text-sm text-[var(--mw-mirage)]">{line.description}</span> },
-  { key: 'qty',         header: 'Qty',         cell: (line) => <span className="text-sm font-medium">{line.qty}</span>, className: 'text-right', headerClassName: 'text-right' },
-  { key: 'unit',        header: 'Unit',        cell: (line) => <span className="text-sm text-[var(--neutral-500)]">{line.unit}</span> },
+  { key: 'sku',         header: 'SKU',         tooltip: 'Component SKU', cell: (line) => <span className="text-xs font-medium text-[var(--neutral-500)]">{line.sku}</span> },
+  { key: 'description', header: 'Description', tooltip: 'Component description', cell: (line) => <span className="text-sm text-[var(--mw-mirage)]">{line.description}</span> },
+  { key: 'qty',         header: 'Qty',         tooltip: 'Quantity required', cell: (line) => <span className="text-sm font-medium tabular-nums">{line.qty}</span>, className: 'text-right', headerClassName: 'text-right' },
+  { key: 'unit',        header: 'Unit',        tooltip: 'Unit of measure', cell: (line) => <span className="text-sm text-[var(--neutral-500)]">{line.unit}</span> },
   {
-    key: 'type', header: 'Type',
+    key: 'type', header: 'Type', tooltip: 'Line type',
     cell: (line) => {
       const ltcfg = LINE_TYPE_CONFIG[line.type];
       return (
@@ -127,23 +129,20 @@ export function ControlBOMs() {
         ? <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />
         : <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />,
     },
-    { key: 'product',   header: 'Product',    cell: (bom) => <span className="text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</span> },
-    { key: 'sku',       header: 'SKU',        cell: (bom) => <span className="text-xs text-[var(--neutral-500)]">{bom.sku}</span> },
-    { key: 'version',   header: 'Version',    cell: (bom) => <span className="text-sm text-[var(--neutral-500)]">{bom.version}</span> },
-    { key: 'components',header: 'Components', cell: (bom) => <span className="text-sm font-medium">{bom.componentCount}</span>, className: 'text-right', headerClassName: 'text-right' },
-    { key: 'updated',   header: 'Updated',    cell: (bom) => <span className="text-sm text-[var(--neutral-500)]">{bom.updatedAt}</span> },
+    { key: 'product',   header: 'Product', tooltip: 'Finished product name', cell: (bom) => <span className="text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</span> },
+    { key: 'sku',       header: 'SKU', tooltip: 'Product SKU', cell: (bom) => <span className="text-xs font-medium text-[var(--neutral-500)]">{bom.sku}</span> },
+    { key: 'version',   header: 'Version', tooltip: 'BOM revision', cell: (bom) => <span className="text-sm font-medium text-[var(--neutral-500)]">{bom.version}</span> },
+    { key: 'components',header: 'Components', tooltip: 'Number of line items', cell: (bom) => <span className="text-sm font-medium tabular-nums">{bom.componentCount}</span>, className: 'text-right', headerClassName: 'text-right' },
+    { key: 'updated',   header: 'Updated', tooltip: 'Last modified date', cell: (bom) => <span className="text-sm text-[var(--neutral-500)]">{bom.updatedAt}</span> },
     {
-      key: 'status', header: 'Status', headerClassName: 'text-center',
-      cell: (bom) => {
-        const cfg = STATUS_CONFIG[bom.status];
-        return (
-          <div className="flex justify-center">
-            <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5 capitalize', cfg.bg, cfg.text)}>
-              {bom.status}
-            </Badge>
-          </div>
-        );
-      },
+      key: 'status', header: 'Status', headerClassName: 'text-center', tooltip: 'BOM lifecycle status',
+      cell: (bom) => (
+        <div className="flex justify-center">
+          <StatusBadge status={bom.status as any}>
+            {bom.status.charAt(0).toUpperCase() + bom.status.slice(1)}
+          </StatusBadge>
+        </div>
+      ),
     },
     {
       key: 'actions', header: 'Actions', headerClassName: 'text-right',
@@ -205,11 +204,23 @@ export function ControlBOMs() {
         </Button>
       </div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'active', label: 'Active', value: BOMS.filter(b => b.status === 'active').length, color: 'var(--mw-yellow-400)' },
+          { key: 'draft', label: 'Draft', value: BOMS.filter(b => b.status === 'draft').length, color: 'var(--mw-mirage)' },
+          { key: 'obsolete', label: 'Obsolete', value: BOMS.filter(b => b.status === 'obsolete').length, color: 'var(--neutral-400)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <MwDataTable<BOM>
         columns={bomColumns}
         data={filtered}
         keyExtractor={(bom) => bom.id}
         onRowClick={(bom) => toggle(bom.id)}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         filterBar={
           <FilterBar
             searchValue={search}

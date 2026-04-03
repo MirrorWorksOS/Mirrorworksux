@@ -2,7 +2,8 @@
  * Ship Orders — token-aligned to standard design system
  */
 import React, { useCallback, useState } from 'react';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, Truck } from 'lucide-react';
+import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
@@ -10,6 +11,7 @@ import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/Ka
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
@@ -82,6 +84,22 @@ const DetailTimeline = ({ current }: { current: Stage }) => {
   );
 };
 
+const orderColumns: MwColumnDef<Order>[] = [
+  { key: 'id', header: 'Order', tooltip: 'Shipping order number', cell: (o) => (
+    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+      <Truck className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+      {o.id}
+    </span>
+  ) },
+  { key: 'customer', header: 'Customer', cell: (o) => <span className="text-[var(--mw-mirage)]">{o.customer}</span> },
+  { key: 'items', header: 'Items', tooltip: 'Number of items in order', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (o) => o.items },
+  { key: 'weight', header: 'Weight', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (o) => o.weight },
+  { key: 'carrier', header: 'Carrier', tooltip: 'Shipping carrier', cell: (o) => <span className="text-[var(--neutral-500)]">{o.carrier}</span> },
+  { key: 'stage', header: 'Stage', tooltip: 'Current fulfilment stage', cell: (o) => <StatusBadge status={o.stage === 'Delivered' ? 'completed' : o.stage === 'Transit' ? 'progress' : o.stage === 'Ship' ? 'confirmed' : 'draft'}>{o.stage}</StatusBadge> },
+  { key: 'due', header: 'Due', cell: (o) => <span className={cn('tabular-nums', (o.due === 'Today' || o.due === '1d') ? 'font-medium text-[var(--mw-mirage)]' : 'text-[var(--neutral-500)]')}>{o.due}</span> },
+  { key: 'progress', header: 'Progress', tooltip: 'Fulfilment progress', headerClassName: 'w-28', cell: (o) => <ProgressBar value={o.progress} size="sm" showLabel /> },
+];
+
 export function ShipOrders() {
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
   const [search, setSearch] = useState('');
@@ -92,9 +110,29 @@ export function ShipOrders() {
     setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
   }, []);
 
+  const pickCount = orders.filter(o => o.stage === 'Pick').length;
+  const packCount = orders.filter(o => o.stage === 'Pack').length;
+  const shipCount = orders.filter(o => o.stage === 'Ship').length;
+  const urgentCount = orders.filter(o => o.urgent).length;
+
   return (
     <PageShell className="p-6 space-y-6 flex flex-col h-full overflow-hidden">
       <PageHeader title="Orders" />
+
+      <div className="grid grid-cols-4 gap-4 shrink-0">
+        {[
+          { label: 'To Pick', value: pickCount, sub: 'Awaiting pick', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'To Pack', value: packCount, sub: 'Ready to pack', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'To Ship', value: shipCount, sub: 'Awaiting dispatch', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Urgent', value: urgentCount, sub: 'Needs priority', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <PageToolbar>
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search orders…" />
@@ -145,6 +183,9 @@ export function ShipOrders() {
             data={orders}
             keyExtractor={(o) => o.id}
             onRowClick={(o) => setSelected(o)}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
         </div>
       )}

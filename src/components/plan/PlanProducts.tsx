@@ -9,6 +9,8 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { toast } from 'sonner';
 
 
 const PRODUCTS = [
@@ -26,6 +28,7 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
   {
     key: 'name',
     header: 'Product',
+    tooltip: 'Product name',
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
@@ -33,13 +36,14 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
       </div>
     ),
   },
-  { key: 'sku', header: 'SKU', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (p) => p.sku },
-  { key: 'leadTime', header: 'Lead time', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.leadTime}d` },
-  { key: 'cycleHrs', header: 'Cycle hrs', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.cycleHrs}h` },
-  { key: 'routingSteps', header: 'Routing steps', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => p.routingSteps },
+  { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (p) => p.sku },
+  { key: 'leadTime', header: 'Lead time', tooltip: 'Manufacturing lead time in days', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.leadTime}d` },
+  { key: 'cycleHrs', header: 'Cycle hrs', tooltip: 'Total cycle hours per unit', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => `${p.cycleHrs}h` },
+  { key: 'routingSteps', header: 'Routing steps', tooltip: 'Number of production steps', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (p) => p.routingSteps },
   {
     key: 'workCenters',
     header: 'Work centres',
+    tooltip: 'Assigned production work centres',
     cell: (p) => (
       <div className="flex flex-wrap gap-1">
         {p.workCenters.slice(0, 3).map(wc => (
@@ -52,12 +56,13 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
   {
     key: 'bom',
     header: 'BOM',
+    tooltip: 'Bill of materials status',
     cell: (p) =>
       p.hasBOM
         ? <StatusBadge variant="neutral">Yes</StatusBadge>
         : <StatusBadge variant="warning">Missing</StatusBadge>,
   },
-  { key: 'lastProduced', header: 'Last produced', className: 'text-[var(--neutral-500)]', cell: (p) => p.lastProduced },
+  { key: 'lastProduced', header: 'Last produced', tooltip: 'Most recent production date', className: 'tabular-nums text-[var(--neutral-500)]', cell: (p) => p.lastProduced },
 ];
 
 export function PlanProducts() {
@@ -86,10 +91,21 @@ export function PlanProducts() {
           className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
       </div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'withBom', label: 'With BOM', value: PRODUCTS.filter(p => p.hasBOM).length, color: 'var(--mw-yellow-400)' },
+          { key: 'missingBom', label: 'Missing BOM', value: PRODUCTS.filter(p => !p.hasBOM).length, color: 'var(--mw-mirage)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <MwDataTable
         columns={planProductColumns}
         data={filtered}
         keyExtractor={(p) => p.id}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
       />
     </PageShell>
   );

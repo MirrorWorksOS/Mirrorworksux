@@ -3,11 +3,13 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { Calendar as CalendarIcon, ChartGantt, List, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, ChartGantt, Factory, List, Plus } from 'lucide-react';
 import { addDays } from 'date-fns';
 import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
@@ -100,10 +102,15 @@ function useCalendarEvents(): CalendarEvent[] {
 const fmtDate = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
 
 const listColumns: MwColumnDef<MO>[] = [
-  { key: 'moNumber', header: 'MO #', cell: (mo) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.moNumber}</span> },
-  { key: 'job', header: 'Job', cell: (mo) => <span className="tabular-nums text-[var(--mw-mirage)]">{mo.job}</span> },
+  { key: 'moNumber', header: 'MO #', tooltip: 'Manufacturing order number', cell: (mo) => (
+    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+      <Factory className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+      {mo.moNumber}
+    </span>
+  ) },
+  { key: 'job', header: 'Job', tooltip: 'Associated job reference', cell: (mo) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.job}</span> },
   { key: 'product', header: 'Product', cell: (mo) => <span className="text-[var(--mw-mirage)]">{mo.product}</span> },
-  { key: 'workCenter', header: 'Work Centre', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.workCenter}</span> },
+  { key: 'workCenter', header: 'Work Centre', tooltip: 'Assigned work centre', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.workCenter}</span> },
   {
     key: 'operator',
     header: 'Operator',
@@ -119,7 +126,7 @@ const listColumns: MwColumnDef<MO>[] = [
     cell: (mo) => {
       const d = new Date(START_DATE);
       d.setDate(d.getDate() + mo.startDay);
-      return <span className="text-[var(--neutral-600)]">{fmtDate(d)}</span>;
+      return <span className="text-[var(--neutral-600)] tabular-nums">{fmtDate(d)}</span>;
     },
   },
   {
@@ -128,12 +135,13 @@ const listColumns: MwColumnDef<MO>[] = [
     cell: (mo) => {
       const d = new Date(START_DATE);
       d.setDate(d.getDate() + mo.startDay + mo.durationDays - 1);
-      return <span className="text-[var(--neutral-600)]">{fmtDate(d)}</span>;
+      return <span className="text-[var(--neutral-600)] tabular-nums">{fmtDate(d)}</span>;
     },
   },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Current schedule status',
     cell: (mo) => {
       const cfg = STATUS_CONFIG[mo.status];
       return (
@@ -151,6 +159,9 @@ function ListView() {
       columns={listColumns}
       data={MOs}
       keyExtractor={(mo) => mo.id}
+      selectable
+      onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+      onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
     />
   );
 }
@@ -193,6 +204,21 @@ export function MakeSchedule() {
           </div>
         }
       />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'In Progress', value: statusCounts.in_progress, sub: 'Active operations', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Scheduled', value: statusCounts.scheduled, sub: 'Upcoming orders', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Overdue', value: statusCounts.overdue, sub: 'Past due date', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
+          { label: 'Completed', value: statusCounts.completed, sub: `${MOs.length} total MOs`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <div className="flex flex-wrap items-center gap-6">
         {Object.entries(STATUS_CONFIG).map(([status, cfg]) => (

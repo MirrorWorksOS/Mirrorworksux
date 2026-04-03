@@ -9,13 +9,14 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import {
   Plus,
   Pencil,
@@ -89,36 +90,35 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
   {
     key: 'target',
     header: 'Target',
+    tooltip: 'Target name',
     cell: (t) => <span className="font-medium text-[var(--mw-mirage)]">{t.target}</span>,
   },
   {
     key: 'metric',
     header: 'Metric',
+    tooltip: 'Measured KPI',
     cell: (t) => <span className="text-[var(--neutral-600)]">{t.metric}</span>,
   },
   {
     key: 'period',
     header: 'Period',
+    tooltip: 'Measurement frequency',
     cell: (t) => <span className="text-[var(--neutral-600)]">{t.period}</span>,
   },
   {
     key: 'value',
     header: 'Value',
-    cell: (t) => <span className="font-medium text-[var(--mw-mirage)]">{t.value}</span>,
+    tooltip: 'Target threshold',
+    cell: (t) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{t.value}</span>,
   },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Active or draft',
     cell: (t) => (
-      <Badge
-        className={
-          t.status === 'Active'
-            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-            : 'bg-[var(--neutral-100)] text-[var(--neutral-500)] border-[var(--neutral-200)]'
-        }
-      >
+      <StatusBadge status={t.status === 'Active' ? 'active' : 'draft'}>
         {t.status}
-      </Badge>
+      </StatusBadge>
     ),
   },
   {
@@ -205,10 +205,22 @@ export function ControlGamification() {
             </Button>
           </div>
 
+          <ToolbarSummaryBar
+            segments={[
+              { key: 'active', label: 'Active', value: targets.filter(t => t.status === 'Active').length, color: 'var(--mw-yellow-400)' },
+              { key: 'draft', label: 'Draft', value: targets.filter(t => t.status === 'Draft').length, color: 'var(--neutral-400)' },
+            ]}
+            formatValue={(v) => String(v)}
+            className="mb-4"
+          />
+
           <MwDataTable
             columns={targetColumns(toggleTarget)}
             data={targets}
             keyExtractor={(t) => t.id}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
         </motion.section>
 

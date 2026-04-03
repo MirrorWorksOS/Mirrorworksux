@@ -13,12 +13,11 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedDownload } from '../ui/animated-icons';
@@ -57,7 +56,6 @@ const ORDER_STATUS_MAP: Record<OrderStatus, { status: StatusKey; label?: string 
 export function SellOrders() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const totalValue = mockOrders.reduce((sum, order) => sum + order.total, 0);
 
@@ -66,6 +64,16 @@ export function SellOrders() {
       <PageHeader
         title="Sales Orders"
         subtitle={`${mockOrders.length} orders • $${totalValue.toLocaleString()} total value`}
+      />
+
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'complete', label: 'Complete', value: mockOrders.filter(o => o.status === 'complete').reduce((s, o) => s + o.total, 0), color: 'var(--mw-yellow-400)' },
+          { key: 'shipped', label: 'Shipped', value: mockOrders.filter(o => o.status === 'shipped').reduce((s, o) => s + o.total, 0), color: 'var(--mw-mirage)' },
+          { key: 'in_production', label: 'In Production', value: mockOrders.filter(o => o.status === 'in_production').reduce((s, o) => s + o.total, 0), color: 'var(--neutral-400)' },
+          { key: 'confirmed', label: 'Confirmed', value: mockOrders.filter(o => o.status === 'confirmed').reduce((s, o) => s + o.total, 0), color: 'var(--neutral-300)' },
+          { key: 'draft', label: 'Draft', value: mockOrders.filter(o => o.status === 'draft').reduce((s, o) => s + o.total, 0), color: 'var(--neutral-200)' },
+        ]}
       />
 
       <PageToolbar>
@@ -86,20 +94,9 @@ export function SellOrders() {
         <MwDataTable<Order>
           columns={[
             {
-              key: 'checkbox',
-              header: (
-                <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.size === mockOrders.length && mockOrders.length > 0} onChange={(e) => { if (e.target.checked) { setSelectedRows(new Set(mockOrders.map(o => o.id))); } else { setSelectedRows(new Set()); } }} />
-              ),
-              cell: (order) => (
-                <div onClick={(e) => e.stopPropagation()}>
-                  <input type="checkbox" className="rounded border-[var(--border)]" checked={selectedRows.has(order.id)} onChange={() => { setSelectedRows(prev => { const next = new Set(prev); if (next.has(order.id)) next.delete(order.id); else next.add(order.id); return next; }); }} />
-                </div>
-              ),
-              className: 'w-12',
-            },
-            {
               key: 'orderNumber',
-              header: 'ORDER #',
+              header: 'Order #',
+              tooltip: 'Unique sales order reference',
               cell: (order) => (
                 <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] font-medium tabular-nums hover:underline flex items-center gap-1">
                   {order.orderNumber}
@@ -109,12 +106,13 @@ export function SellOrders() {
             },
             {
               key: 'customer',
-              header: 'CUSTOMER',
+              header: 'Customer',
+              tooltip: 'Customer company name',
               cell: (order) => <span className="text-[var(--neutral-900)]">{order.customer}</span>,
             },
             {
               key: 'date',
-              header: 'DATE',
+              header: 'Date',
               cell: (order) => (
                 <span className="text-[var(--neutral-600)]">
                   {new Date(order.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}
@@ -123,7 +121,8 @@ export function SellOrders() {
             },
             {
               key: 'status',
-              header: 'STATUS',
+              header: 'Status',
+              tooltip: 'Current order fulfilment status',
               headerClassName: 'text-center',
               cell: (order) => {
                 const sp = ORDER_STATUS_MAP[order.status];
@@ -137,14 +136,16 @@ export function SellOrders() {
             },
             {
               key: 'total',
-              header: 'TOTAL',
+              header: 'Total',
+              tooltip: 'Total order value incl. tax',
               headerClassName: 'text-right',
               cell: (order) => <span className="font-medium tabular-nums">${order.total.toLocaleString()}</span>,
               className: 'text-right',
             },
             {
               key: 'jobReference',
-              header: 'JOB REF',
+              header: 'Job Ref',
+              tooltip: 'Linked production job reference',
               cell: (order) => order.jobReference ? (
                 <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)] text-xs tabular-nums hover:underline">
                   {order.jobReference}
@@ -179,7 +180,9 @@ export function SellOrders() {
           data={mockOrders}
           keyExtractor={(order) => order.id}
           onRowClick={(order) => navigate(`/sell/orders/${order.id}`)}
-          selectedKeys={selectedRows}
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           striped
         />
       </motion.div>

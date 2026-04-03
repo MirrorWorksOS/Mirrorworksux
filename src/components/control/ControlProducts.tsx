@@ -13,6 +13,8 @@ import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { FilterBar } from '@/components/shared/layout/FilterBar';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 
 const PRODUCTS = [
@@ -36,7 +38,7 @@ const TYPES      = ['All', 'Manufactured', 'Purchased'];
 
 const productColumns: MwColumnDef<Product>[] = [
   {
-    key: 'product', header: 'Product',
+    key: 'product', header: 'Product', tooltip: 'Product name',
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
@@ -44,30 +46,28 @@ const productColumns: MwColumnDef<Product>[] = [
       </div>
     ),
   },
-  { key: 'sku',      header: 'SKU',      cell: (p) => <span className="text-xs text-[var(--neutral-500)]">{p.sku}</span> },
-  { key: 'category', header: 'Category', cell: (p) => <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{p.category}</Badge> },
+  { key: 'sku', header: 'SKU', tooltip: 'Stock-keeping unit code', cell: (p) => <span className="text-xs font-medium text-[var(--neutral-500)]">{p.sku}</span> },
+  { key: 'category', header: 'Category', tooltip: 'Product category', cell: (p) => <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{p.category}</Badge> },
   {
-    key: 'type', header: 'Type', headerClassName: 'text-center',
+    key: 'type', header: 'Type', headerClassName: 'text-center', tooltip: 'Manufactured or purchased',
     cell: (p) => (
       <div className="flex justify-center">
-        <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5',
-          'bg-[var(--neutral-100)] text-[var(--mw-mirage)]'
-        )}>
+        <StatusBadge variant={p.type === 'Manufactured' ? 'accent' : 'neutral'}>
           {p.type}
-        </Badge>
+        </StatusBadge>
       </div>
     ),
   },
   {
-    key: 'cost', header: 'Cost', headerClassName: 'text-right', className: 'text-right',
+    key: 'cost', header: 'Cost', headerClassName: 'text-right', className: 'text-right tabular-nums', tooltip: 'Unit cost price',
     cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '\u2014'}</span>,
   },
   {
-    key: 'sell', header: 'Sell', headerClassName: 'text-right', className: 'text-right',
+    key: 'sell', header: 'Sell', headerClassName: 'text-right', className: 'text-right tabular-nums', tooltip: 'Unit sell price',
     cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '\u2014'}</span>,
   },
   {
-    key: 'bom', header: 'BOM', headerClassName: 'text-center',
+    key: 'bom', header: 'BOM', headerClassName: 'text-center', tooltip: 'Has a Bill of Materials',
     cell: (p) => (
       <div className="flex justify-center">
         {p.hasBOM
@@ -91,6 +91,11 @@ export function ControlProducts() {
     return matchSearch && matchCategory && matchType;
   });
 
+  const activeCount = PRODUCTS.filter(p => p.status === 'active').length;
+  const inactiveCount = PRODUCTS.filter(p => p.status === 'inactive').length;
+  const manufacturedCount = PRODUCTS.filter(p => p.type === 'Manufactured').length;
+  const purchasedCount = PRODUCTS.filter(p => p.type === 'Purchased').length;
+
   return (
     <motion.div
       initial="initial"
@@ -102,7 +107,7 @@ export function ControlProducts() {
         <div>
           <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Product master</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">
-            {PRODUCTS.filter(p => p.status === 'active').length} active products
+            {activeCount} active products
           </p>
         </div>
         <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New product coming soon')}>
@@ -110,10 +115,23 @@ export function ControlProducts() {
         </Button>
       </div>
 
+      <ToolbarSummaryBar
+        segments={[
+          { key: 'active', label: 'Active', value: activeCount, color: 'var(--mw-yellow-400)' },
+          { key: 'inactive', label: 'Inactive', value: inactiveCount, color: 'var(--neutral-400)' },
+          { key: 'manufactured', label: 'Manufactured', value: manufacturedCount, color: 'var(--mw-mirage)' },
+          { key: 'purchased', label: 'Purchased', value: purchasedCount, color: 'var(--neutral-200)' },
+        ]}
+        formatValue={(v) => String(v)}
+      />
+
       <MwDataTable<Product>
         columns={productColumns}
         data={filtered}
         keyExtractor={(p) => p.id}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         filterBar={
           <FilterBar
             searchValue={search}

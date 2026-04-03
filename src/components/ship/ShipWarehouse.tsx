@@ -3,15 +3,18 @@
  * Token-aligned + semantic status dot colours
  */
 import React, { useState } from 'react';
-import { Download, CheckCircle, AlertCircle, Play } from 'lucide-react';
+import { Download, CheckCircle, AlertCircle, Package, Play } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedControl';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { toast } from 'sonner';
 
 const ZONES = [
   { name: 'Receiving', items: 34,  util: 45, x: 5,  y: 5,  w: 25, h: 35 },
@@ -50,17 +53,23 @@ const CYCLE = [
 type InvItem = (typeof INVENTORY)[number];
 
 const warehouseInvColumns: MwColumnDef<InvItem>[] = [
-  { key: 'bin', header: 'Bin', cell: (inv) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{inv.bin}</span> },
-  { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (inv) => inv.sku },
+  { key: 'bin', header: 'Bin', tooltip: 'Warehouse bin location', cell: (inv) => (
+    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+      <Package className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+      {inv.bin}
+    </span>
+  ) },
+  { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (inv) => inv.sku },
   { key: 'name', header: 'Product', cell: (inv) => <span className="text-[var(--mw-mirage)]">{inv.name}</span> },
-  { key: 'onHand', header: 'On Hand', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.onHand },
-  { key: 'avail', header: 'Available', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.avail },
+  { key: 'onHand', header: 'On Hand', tooltip: 'Total quantity in warehouse', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.onHand },
+  { key: 'avail', header: 'Available', tooltip: 'Quantity available for allocation', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.avail },
   {
     key: 'status',
     header: 'Status',
+    tooltip: 'Stock status',
     cell: (inv) => {
-      const cfg = statusBadge[inv.status];
-      return <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>;
+      const v = inv.status === 'ok' ? 'dark' : inv.status === 'low' ? 'warning' : inv.status === 'empty' ? 'error' : 'info';
+      return <StatusBadge variant={v as 'dark' | 'warning' | 'error' | 'info'}>{statusBadge[inv.status].label}</StatusBadge>;
     },
   },
 ];
@@ -68,9 +77,9 @@ const warehouseInvColumns: MwColumnDef<InvItem>[] = [
 type CycleItem = (typeof CYCLE)[number];
 
 const cycleColumns: MwColumnDef<CycleItem>[] = [
-  { key: 'bin', header: 'Bin', cell: (c) => <span className="font-medium tabular-nums">{c.bin}</span> },
-  { key: 'sku', header: 'SKU', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (c) => c.sku },
-  { key: 'expected', header: 'Expected', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (c) => c.expected },
+  { key: 'bin', header: 'Bin', tooltip: 'Warehouse bin location', cell: (c) => <span className="font-medium tabular-nums">{c.bin}</span> },
+  { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (c) => c.sku },
+  { key: 'expected', header: 'Expected', tooltip: 'System quantity', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (c) => c.expected },
   {
     key: 'actual',
     header: 'Actual',
@@ -112,9 +121,29 @@ export function ShipWarehouse() {
     { key: 'count', label: 'Cycle count' },
   ];
 
+  const totalItems = ZONES.reduce((s, z) => s + z.items, 0);
+  const avgUtil = Math.round(ZONES.reduce((s, z) => s + z.util, 0) / ZONES.length);
+  const lowStockCount = INVENTORY.filter(i => i.status === 'low').length;
+  const emptyCount = INVENTORY.filter(i => i.status === 'empty').length;
+
   return (
     <PageShell className="overflow-y-auto">
       <PageHeader title="Warehouse" />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'Total Items', value: totalItems, sub: `${ZONES.length} zones`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Avg Utilisation', value: `${avgUtil}%`, sub: 'Across all zones', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Low Stock', value: lowStockCount, sub: 'Below threshold', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+          { label: 'Empty Bins', value: emptyCount, sub: 'Needs restock', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <TextSegmentedControl
         ariaLabel="Warehouse sections"
@@ -171,6 +200,9 @@ export function ShipWarehouse() {
             columns={warehouseInvColumns}
             data={INVENTORY}
             keyExtractor={(inv) => inv.bin}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
         </div>
       )}
@@ -197,6 +229,9 @@ export function ShipWarehouse() {
             columns={cycleColumns}
             data={CYCLE}
             keyExtractor={(c) => c.bin}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           />
 
           <div className="flex justify-end">

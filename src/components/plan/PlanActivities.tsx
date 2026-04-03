@@ -17,6 +17,9 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { toast } from 'sonner';
 
 type EventType = 'job' | 'maintenance' | 'qc';
 
@@ -83,25 +86,30 @@ export function PlanActivities() {
 
   const calendarEvents = useMemo(() => toCalendarEvents(mockEvents), []);
 
+  const countJob = mockEvents.filter(e => e.type === 'job').length;
+  const countMaintenance = mockEvents.filter(e => e.type === 'maintenance').length;
+  const countQc = mockEvents.filter(e => e.type === 'qc').length;
+
   const listColumns: MwColumnDef<PlanEvent>[] = useMemo(
     () => [
       {
         key: 'title',
         header: 'Title',
+        tooltip: 'Event name or description',
         cell: (row) => <span className="font-medium text-[var(--mw-mirage)]">{row.title}</span>,
       },
       {
         key: 'type',
         header: 'Type',
+        tooltip: 'Event category',
         cell: (row) => (
-          <Badge className="border-0 bg-[var(--neutral-100)] text-xs font-medium text-[var(--mw-mirage)]">
-            {typeLabel[row.type]}
-          </Badge>
+          <StatusBadge variant="neutral">{typeLabel[row.type]}</StatusBadge>
         ),
       },
       {
         key: 'date',
         header: 'Date',
+        tooltip: 'Scheduled date',
         className: 'tabular-nums',
         headerClassName: 'text-right',
         cell: (row) => (
@@ -113,6 +121,7 @@ export function PlanActivities() {
       {
         key: 'time',
         header: 'Time',
+        tooltip: 'Scheduled start time',
         className: 'text-right tabular-nums',
         headerClassName: 'text-right',
         cell: (row) => <span className="text-[var(--neutral-600)]">{row.time}</span>,
@@ -164,12 +173,23 @@ export function PlanActivities() {
       )}
 
       {view === 'list' && (
-        <motion.div variants={staggerItem}>
+        <motion.div variants={staggerItem} className="space-y-4">
+          <ToolbarSummaryBar
+            segments={[
+              { key: 'job', label: 'Jobs', value: countJob, color: 'var(--mw-yellow-400)' },
+              { key: 'maintenance', label: 'Maintenance', value: countMaintenance, color: 'var(--mw-mirage)' },
+              { key: 'qc', label: 'QC', value: countQc, color: 'var(--neutral-400)' },
+            ]}
+            formatValue={(v) => String(v)}
+          />
           <MwDataTable
             columns={listColumns}
             data={mockEvents}
             keyExtractor={(row) => row.id}
             onRowClick={(row) => setSelectedEvent(planEventToDetail(row))}
+            selectable
+            onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+            onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
           />
         </motion.div>
       )}

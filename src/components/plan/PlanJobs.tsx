@@ -11,7 +11,7 @@ import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/Ka
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
@@ -276,23 +276,25 @@ export function PlanJobs() {
           jobs.map((job) => ({ ...job, _stageId: stageId })),
         );
         const listColumns: MwColumnDef<Job & { _stageId: string }>[] = [
-          { key: 'id', header: 'Job ID', className: 'tabular-nums text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.id },
-          { key: 'name', header: 'Job Name', className: 'text-xs text-[var(--mw-mirage)]', cell: (job) => job.name },
-          { key: 'customer', header: 'Customer', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.customer },
+          { key: 'id', header: 'Job ID', tooltip: 'Unique job identifier', className: 'tabular-nums text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.id },
+          { key: 'name', header: 'Job Name', tooltip: 'Job description', className: 'text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.name },
+          { key: 'customer', header: 'Customer', tooltip: 'Assigned customer', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.customer },
           {
             key: 'stage',
             header: 'Stage',
+            tooltip: 'Current production stage',
             cell: (job) => {
               const stage = STAGES.find(s => s.id === job._stageId);
-              return <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--mw-mirage)] text-xs">{stage?.label}</Badge>;
+              return <StatusBadge variant="neutral">{stage?.label}</StatusBadge>;
             },
           },
-          { key: 'priority', header: 'Priority', cell: (job) => job.priority ? <StatusBadge priority={job.priority} /> : null },
-          { key: 'value', header: 'Value', className: 'tabular-nums text-xs text-[var(--mw-mirage)]', cell: (job) => `$${job.value.toLocaleString()}` },
-          { key: 'dueDate', header: 'Due Date', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.dueDate },
+          { key: 'priority', header: 'Priority', tooltip: 'Job priority level', cell: (job) => job.priority ? <StatusBadge priority={job.priority} /> : null },
+          { key: 'value', header: 'Value', tooltip: 'Estimated job value', headerClassName: 'text-right', className: 'text-right tabular-nums text-xs text-[var(--mw-mirage)]', cell: (job) => `$${job.value.toLocaleString()}` },
+          { key: 'dueDate', header: 'Due Date', tooltip: 'Expected completion date', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (job) => job.dueDate },
           {
             key: 'assigned',
             header: 'Assigned',
+            tooltip: 'Assigned team member',
             cell: (job) => (
               <Avatar className="w-6 h-6 border border-[var(--border)]">
                 <AvatarImage src={job.assignedUser.avatar} />
@@ -303,23 +305,40 @@ export function PlanJobs() {
           {
             key: 'progress',
             header: 'Progress',
+            tooltip: 'Completion percentage',
             cell: (job) => (
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--mw-yellow-400)] transition-all" style={{ width: `${job.progress}%` }} />
+                  <div className="h-full bg-[var(--mw-yellow-400)] transition-all duration-200 ease-[var(--ease-standard)]" style={{ width: `${job.progress}%` }} />
                 </div>
                 <span className="text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">{job.progress}%</span>
               </div>
             ),
           },
         ];
+        const countInProduction = flatJobs.filter(j => j._stageId === 'inProduction').length;
+        const countScheduled = flatJobs.filter(j => j._stageId === 'scheduled').length;
+        const countBacklog = flatJobs.filter(j => j._stageId === 'backlog').length;
+        const countOther = flatJobs.length - countInProduction - countScheduled - countBacklog;
         return (
-          <div className="flex-1 overflow-auto p-6">
+          <div className="flex-1 overflow-auto p-6 space-y-4">
+            <ToolbarSummaryBar
+              segments={[
+                { key: 'inProduction', label: 'In Production', value: countInProduction, color: 'var(--mw-yellow-400)' },
+                { key: 'scheduled', label: 'Scheduled', value: countScheduled, color: 'var(--mw-mirage)' },
+                { key: 'backlog', label: 'Backlog', value: countBacklog, color: 'var(--neutral-400)' },
+                { key: 'other', label: 'Other', value: countOther, color: 'var(--neutral-200)' },
+              ]}
+              formatValue={(v) => String(v)}
+            />
             <MwDataTable
               columns={listColumns}
               data={flatJobs}
               keyExtractor={(job) => job.id}
               onRowClick={(job) => navigate(`/plan/jobs/${job.id}`)}
+              selectable
+              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
             />
           </div>
         );

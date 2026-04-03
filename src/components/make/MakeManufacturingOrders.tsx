@@ -5,8 +5,9 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus } from 'lucide-react';
+import { Plus, Factory } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -58,12 +59,32 @@ export function MakeManufacturingOrders() {
       mo.customer.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const inProgressCount = MO_DATA.filter((mo) => mo.status === 'in_progress').length;
+  const confirmedCount = MO_DATA.filter((mo) => mo.status === 'confirmed').length;
+  const doneCount = MO_DATA.filter((mo) => mo.status === 'done').length;
+  const draftCount = MO_DATA.filter((mo) => mo.status === 'draft').length;
+
   return (
     <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Manufacturing Orders"
         subtitle={`${MO_DATA.length} manufacturing orders`}
       />
+
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'In Progress', value: inProgressCount, sub: 'Active orders', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Confirmed', value: confirmedCount, sub: 'Ready to start', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Draft', value: draftCount, sub: 'Needs confirmation', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+          { label: 'Completed', value: doneCount, sub: `${MO_DATA.length} total orders`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+        ].map(s => (
+          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
+            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
+          </Card>
+        ))}
+      </div>
 
       <PageToolbar>
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search manufacturing orders…" />
@@ -77,19 +98,27 @@ export function MakeManufacturingOrders() {
       {/* Table */}
       <MwDataTable<ManufacturingOrder>
         columns={[
-          { key: 'moNumber', header: 'MO #', cell: (mo) => <span className="font-medium text-[var(--mw-mirage)] tabular-nums">{mo.moNumber}</span> },
+          { key: 'moNumber', header: 'MO #', tooltip: 'Manufacturing order number', cell: (mo) => (
+            <span className="font-medium text-[var(--mw-mirage)] tabular-nums inline-flex items-center gap-1.5">
+              <Factory className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
+              {mo.moNumber}
+            </span>
+          ) },
           { key: 'product', header: 'Product', cell: (mo) => <span className="text-[var(--neutral-700)]">{mo.product}</span> },
-          { key: 'job', header: 'Job', cell: (mo) => <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">{mo.jobNumber}</Badge> },
+          { key: 'job', header: 'Job', tooltip: 'Associated job number', cell: (mo) => <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">{mo.jobNumber}</Badge> },
           { key: 'customer', header: 'Customer', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.customer}</span> },
-          { key: 'status', header: 'Status', cell: (mo) => <StatusBadge status={mo.status === 'in_progress' ? 'progress' : mo.status === 'done' ? 'completed' : mo.status} /> },
+          { key: 'status', header: 'Status', tooltip: 'Current order status', cell: (mo) => <StatusBadge status={mo.status === 'in_progress' ? 'progress' : mo.status === 'done' ? 'completed' : mo.status} /> },
           { key: 'priority', header: 'Priority', cell: (mo) => <StatusBadge priority={mo.priority} /> },
-          { key: 'due', header: 'Due', cell: (mo) => <span className="text-[var(--neutral-600)] tabular-nums">{mo.dueDate}</span> },
-          { key: 'progress', header: 'Progress', headerClassName: 'w-32', cell: (mo) => <ProgressBar value={mo.progress} size="sm" showLabel /> },
-          { key: 'wos', header: 'WOs', headerClassName: 'text-center', cell: (mo) => <div className="text-center"><Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{mo.workOrders}</Badge></div> },
+          { key: 'due', header: 'Due', tooltip: 'Due date for completion', cell: (mo) => <span className="text-[var(--neutral-600)] tabular-nums">{mo.dueDate}</span> },
+          { key: 'progress', header: 'Progress', tooltip: 'Manufacturing completion %', headerClassName: 'w-32', cell: (mo) => <ProgressBar value={mo.progress} size="sm" showLabel /> },
+          { key: 'wos', header: 'WOs', tooltip: 'Number of work orders', headerClassName: 'text-center', cell: (mo) => <div className="text-center"><Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{mo.workOrders}</Badge></div> },
         ]}
         data={filtered}
         keyExtractor={(mo) => mo.id}
         onRowClick={(mo) => navigate(`/make/manufacturing-orders/${mo.id}`)}
+        selectable
+        onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+        onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
       />
     </PageShell>
   );

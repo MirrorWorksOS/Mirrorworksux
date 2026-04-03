@@ -554,10 +554,10 @@ export function Sidebar() {
                             {!isSubActive && (
                               <span
                                 className={cn(
-                                  'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset] duration-200',
+                                  'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
                                   isSubHovered
-                                    ? 'opacity-100 -inset-y-[2px] ease-in'
-                                    : 'opacity-0 inset-y-0 ease-out'
+                                    ? 'opacity-100 -inset-y-[2px] duration-200 ease-in'
+                                    : 'opacity-0 inset-y-0 duration-700 ease-out'
                                 )}
                               />
                             )}
