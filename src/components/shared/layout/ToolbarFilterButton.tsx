@@ -64,7 +64,7 @@ export function ToolbarFilterButton({
           type="button"
           variant="outline"
           className={cn(
-            "h-12 min-h-[48px] gap-2 rounded-full border-[var(--neutral-200)] bg-background px-5 text-sm font-medium text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)]",
+            "h-12 min-h-[48px] gap-2 rounded-full border-[var(--neutral-200)] bg-background px-5 text-sm font-medium text-foreground hover:bg-[var(--neutral-50)]",
             className,
           )}
           {...props}
@@ -100,7 +100,7 @@ export function ToolbarFilterButton({
               {STATUS_OPTIONS.map((status) => (
                 <label
                   key={status}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)] transition-colors"
+                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground hover:bg-[var(--neutral-50)] transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -148,7 +148,7 @@ export function ToolbarFilterButton({
             </Button>
             <Button
               size="sm"
-              className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] text-xs rounded-xl px-4"
+              className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs rounded-xl px-4"
               onClick={handleApply}
             >
               Apply Filters

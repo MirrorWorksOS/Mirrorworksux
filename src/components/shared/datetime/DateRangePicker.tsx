@@ -77,7 +77,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <span className="text-center text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+        <span className="text-center text-sm font-medium tabular-nums text-foreground">
           {format(month, "MMM yyyy")}
         </span>
         <Button
@@ -114,7 +114,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
               className={cn(
                 "relative flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] text-xs transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                 !inMonth && "text-muted-foreground opacity-40",
-                inMonth && "text-[var(--neutral-900)]",
+                inMonth && "text-foreground",
                 inRange && !endpoint && "bg-[var(--mw-yellow-50)]",
                 endpoint && "bg-[var(--mw-yellow-400)] font-medium text-[var(--neutral-800)]",
                 today && !endpoint && "font-medium",

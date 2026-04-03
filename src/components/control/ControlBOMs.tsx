@@ -73,7 +73,7 @@ const BOMS: BOM[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  active:   { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  active:   { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
   draft:    { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]' },
   obsolete: { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
 };
@@ -81,7 +81,7 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
 /* Column definitions for the nested BOM-lines sub-table */
 const bomLineColumns: MwColumnDef<BOMLine>[] = [
   { key: 'sku',         header: 'SKU',         tooltip: 'Component SKU', cell: (line) => <span className="text-xs font-medium text-[var(--neutral-500)]">{line.sku}</span> },
-  { key: 'description', header: 'Description', tooltip: 'Component description', cell: (line) => <span className="text-sm text-[var(--mw-mirage)]">{line.description}</span> },
+  { key: 'description', header: 'Description', tooltip: 'Component description', cell: (line) => <span className="text-sm text-foreground">{line.description}</span> },
   { key: 'qty',         header: 'Qty',         tooltip: 'Quantity required', cell: (line) => <span className="text-sm font-medium tabular-nums">{line.qty}</span>, className: 'text-right', headerClassName: 'text-right' },
   { key: 'unit',        header: 'Unit',        tooltip: 'Unit of measure', cell: (line) => <span className="text-sm text-[var(--neutral-500)]">{line.unit}</span> },
   {
@@ -126,7 +126,7 @@ export function ControlBOMs() {
         ? <ChevronDown className="w-4 h-4 text-[var(--neutral-500)]" />
         : <ChevronRight className="w-4 h-4 text-[var(--neutral-500)]" />,
     },
-    { key: 'product',   header: 'Product', tooltip: 'Finished product name', cell: (bom) => <span className="text-sm text-[var(--mw-mirage)] font-medium">{bom.product}</span> },
+    { key: 'product',   header: 'Product', tooltip: 'Finished product name', cell: (bom) => <span className="text-sm text-foreground font-medium">{bom.product}</span> },
     { key: 'sku',       header: 'SKU', tooltip: 'Product SKU', cell: (bom) => <span className="text-xs font-medium text-[var(--neutral-500)]">{bom.sku}</span> },
     { key: 'version',   header: 'Version', tooltip: 'BOM revision', cell: (bom) => <span className="text-sm font-medium text-[var(--neutral-500)]">{bom.version}</span> },
     { key: 'components',header: 'Components', tooltip: 'Number of line items', cell: (bom) => <span className="text-sm font-medium tabular-nums">{bom.componentCount}</span>, className: 'text-right', headerClassName: 'text-right' },
@@ -145,7 +145,7 @@ export function ControlBOMs() {
       key: 'actions', header: 'Actions', headerClassName: 'text-right',
       cell: (_bom) => (
         <div className="text-right" onClick={e => e.stopPropagation()}>
-          <Button variant="ghost" size="sm" className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]" onClick={() => toast('Edit BOM coming soon')}>
+          <Button variant="ghost" size="sm" className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-foreground" onClick={() => toast('Edit BOM coming soon')}>
             Edit
           </Button>
         </div>
@@ -193,10 +193,10 @@ export function ControlBOMs() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Bills of Materials</h1>
+          <h1 className="text-3xl tracking-tight text-foreground">Bills of Materials</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">{BOMS.filter(b => b.status === 'active').length} active BOMs</p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New BOM coming soon')}>
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New BOM coming soon')}>
           <Plus className="w-4 h-4" /> New BOM
         </Button>
       </div>

@@ -69,7 +69,7 @@ const LOCATIONS = [
 
 const TYPE_CONFIG: Record<string, { icon: any; badge: string; text: string }> = {
   Factory:   { icon: Building2, badge: 'bg-[var(--mw-blue-100)]',  text: 'text-[var(--mw-blue)]' },
-  Warehouse: { icon: Warehouse, badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--mw-mirage)]' },
+  Warehouse: { icon: Warehouse, badge: 'bg-[var(--neutral-100)]',  text: 'text-foreground' },
   Office:    { icon: MapPin,    badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--neutral-500)]' },
   Storage:   { icon: Warehouse, badge: 'bg-[var(--mw-amber-100)]',  text: 'text-[var(--mw-amber)]' },
 };
@@ -88,7 +88,7 @@ export function ControlLocations() {
         title="Locations"
         subtitle={`${LOCATIONS.filter(l => l.status === 'active').length} active sites`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New location coming soon')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New location coming soon')}>
             <Plus className="w-4 h-4" /> New location
           </Button>
         }
@@ -112,12 +112,12 @@ export function ControlLocations() {
           const Icon = cfg.icon;
           return (
             <motion.div key={loc.id} variants={staggerItem}>
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)] cursor-pointer group">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)] cursor-pointer group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
                     <IconWell icon={Icon} surface="onDark" />
                     <div>
-                      <h3 className="font-medium text-sm text-[var(--mw-mirage)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="font-medium text-sm text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors">
                         {loc.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -143,15 +143,15 @@ export function ControlLocations() {
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--neutral-100)]">
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Floor area</p>
-                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.floorArea}</p>
+                    <p className="text-sm  font-medium text-foreground">{loc.floorArea}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Machines</p>
-                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.machines}</p>
+                    <p className="text-sm  font-medium text-foreground">{loc.machines}</p>
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Staff</p>
-                    <p className="text-sm  font-medium text-[var(--mw-mirage)]">{loc.staff}</p>
+                    <p className="text-sm  font-medium text-foreground">{loc.staff}</p>
                   </div>
                 </div>
 

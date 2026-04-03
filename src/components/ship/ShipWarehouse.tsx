@@ -37,7 +37,7 @@ const INVENTORY = [
 ];
 
 const statusBadge: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  ok:       { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--mw-mirage)', label: 'OK' },
+  ok:       { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', dot: 'var(--mw-mirage)', label: 'OK' },
   low:      { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', dot: 'var(--mw-amber)', label: 'Low' },
   empty:    { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', dot: 'var(--mw-error)', label: 'Empty' },
   reserved: { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', dot: 'var(--mw-blue)', label: 'Reserved' },
@@ -54,13 +54,13 @@ type InvItem = (typeof INVENTORY)[number];
 
 const warehouseInvColumns: MwColumnDef<InvItem>[] = [
   { key: 'bin', header: 'Bin', tooltip: 'Warehouse bin location', cell: (inv) => (
-    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+    <span className="font-medium tabular-nums text-foreground inline-flex items-center gap-1.5">
       <Package className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
       {inv.bin}
     </span>
   ) },
   { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs text-[var(--neutral-500)] tabular-nums', cell: (inv) => inv.sku },
-  { key: 'name', header: 'Product', cell: (inv) => <span className="text-[var(--mw-mirage)]">{inv.name}</span> },
+  { key: 'name', header: 'Product', cell: (inv) => <span className="text-foreground">{inv.name}</span> },
   { key: 'onHand', header: 'On Hand', tooltip: 'Total quantity in warehouse', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.onHand },
   { key: 'avail', header: 'Available', tooltip: 'Quantity available for allocation', headerClassName: 'text-right', className: 'text-right font-medium tabular-nums', cell: (inv) => inv.avail },
   {
@@ -101,7 +101,7 @@ const cycleColumns: MwColumnDef<CycleItem>[] = [
       const v = c.actual !== null ? c.actual - c.expected : null;
       if (v === null) return null;
       return v === 0 ? (
-        <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)] mx-auto" />
+        <CheckCircle className="w-4 h-4 text-foreground mx-auto" />
       ) : (
         <div className="flex items-center justify-center gap-1">
           <AlertCircle className="w-4 h-4 text-[var(--mw-amber)]" />
@@ -132,12 +132,12 @@ export function ShipWarehouse() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Total Items', value: totalItems, sub: `${ZONES.length} zones`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Avg Utilisation', value: `${avgUtil}%`, sub: 'Across all zones', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Total Items', value: totalItems, sub: `${ZONES.length} zones`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Avg Utilisation', value: `${avgUtil}%`, sub: 'Across all zones', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Low Stock', value: lowStockCount, sub: 'Below threshold', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'Empty Bins', value: emptyCount, sub: 'Needs restock', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -191,7 +191,7 @@ export function ShipWarehouse() {
             onSearchChange={setInvSearch}
             searchPlaceholder="Search inventory…"
             actions={
-              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Download className="w-4 h-4" /> Export
               </button>
             }
@@ -213,10 +213,10 @@ export function ShipWarehouse() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <span className="text-sm text-[var(--mw-mirage)] font-medium tabular-nums">CC-2026-012</span>
+                <span className="text-sm text-foreground font-medium tabular-nums">CC-2026-012</span>
                 <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
-              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Play className="w-4 h-4" /> New count
               </button>
             </div>
@@ -235,7 +235,7 @@ export function ShipWarehouse() {
           />
 
           <div className="flex justify-end">
-            <button className="h-12 px-8 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
+            <button className="h-12 px-8 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
               Submit count
             </button>
           </div>

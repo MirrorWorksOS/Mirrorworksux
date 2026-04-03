@@ -239,11 +239,11 @@ const PRIORITY_BADGE: Record<
   },
   high: {
     className:
-      "border-0 bg-[var(--mw-yellow-400)]/25 text-[var(--neutral-900)]",
+      "border-0 bg-[var(--mw-yellow-400)]/25 text-foreground",
     label: "High",
   },
   medium: {
-    className: "border-0 bg-[var(--neutral-100)] text-[var(--neutral-900)]",
+    className: "border-0 bg-[var(--neutral-100)] text-foreground",
     label: "Medium",
   },
   low: {
@@ -322,10 +322,10 @@ export function SellOpportunityPage() {
         return (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
             <div className="space-y-6">
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-base font-medium text-[var(--neutral-900)]">
+                    <h2 className="text-base font-medium text-foreground">
                       Opportunity details
                     </h2>
                     <p className="text-xs text-[var(--neutral-500)]">
@@ -364,7 +364,7 @@ export function SellOpportunityPage() {
                           }}
                         />
                         {active ? (
-                          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-[var(--neutral-900)]">
+                          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground">
                             {s.label}
                           </span>
                         ) : null}
@@ -475,8 +475,8 @@ export function SellOpportunityPage() {
                           className={cn(
                             "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                             on
-                              ? "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-[var(--neutral-900)]"
-                              : "border-[var(--border)] bg-white text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]",
+                              ? "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground"
+                              : "border-[var(--border)] bg-card text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]",
                           )}
                         >
                           {tag}
@@ -497,9 +497,9 @@ export function SellOpportunityPage() {
                 </div>
               </Card>
 
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">
+                  <h2 className="text-base font-medium text-foreground">
                     Quick quote
                   </h2>
                   <Button
@@ -549,19 +549,19 @@ export function SellOpportunityPage() {
               </Card>
 
               <div className="flex flex-wrap gap-2">
-                <Badge className="rounded-full border-0 bg-[var(--mw-yellow-400)]/30 text-[var(--neutral-900)]">
+                <Badge className="rounded-full border-0 bg-[var(--mw-yellow-400)]/30 text-foreground">
                   Hot
                 </Badge>
-                <Badge className="rounded-full border-0 bg-[var(--neutral-100)] text-[var(--neutral-900)]">
+                <Badge className="rounded-full border-0 bg-[var(--neutral-100)] text-foreground">
                   Fabrication
                 </Badge>
               </div>
             </div>
 
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">
+                  <h2 className="text-base font-medium text-foreground">
                     Activities
                   </h2>
                   <Button
@@ -582,7 +582,7 @@ export function SellOpportunityPage() {
                       key={ev.id}
                       className="border-b border-[var(--border)] pb-3 last:border-0 last:pb-0"
                     >
-                      <p className="font-medium text-[var(--neutral-900)]">
+                      <p className="font-medium text-foreground">
                         {ev.title}
                       </p>
                       <p className="text-xs text-[var(--neutral-500)]">
@@ -592,16 +592,16 @@ export function SellOpportunityPage() {
                   ))}
                 </ul>
                 <Button
-                  className="mt-4 w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12"
+                  className="mt-4 w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
                   onClick={() => setActiveTab("activities")}
                 >
                   Log activity
                 </Button>
               </Card>
 
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">
+                  <h2 className="text-base font-medium text-foreground">
                     Intelligence Hub
                   </h2>
                   <Button
@@ -624,13 +624,13 @@ export function SellOpportunityPage() {
 
       case "quotes":
         return (
-          <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-[var(--neutral-900)]">
+              <h2 className="text-base font-medium text-foreground">
                 Quotes linked to this opportunity
               </h2>
               <Button
-                className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12"
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
                 onClick={() => navigate("/sell/quotes/new")}
               >
                 <FileText className="mr-2 h-4 w-4" />
@@ -667,7 +667,7 @@ export function SellOpportunityPage() {
                       ${q.value.toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-900)]">
+                      <Badge className="border-0 bg-[var(--neutral-100)] text-foreground">
                         {q.status}
                       </Badge>
                     </TableCell>
@@ -686,7 +686,7 @@ export function SellOpportunityPage() {
                 Assign activities to a team member or a group (e.g. Sales,
                 Estimating). Prototype data is static.
               </p>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12">
+              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12">
                 New activity
               </Button>
             </div>
@@ -694,7 +694,7 @@ export function SellOpportunityPage() {
               {MOCK_ACTIVITIES.map((ev) => (
                 <Card
                   key={ev.id}
-                  className="border border-[var(--neutral-200)] bg-white p-4 shadow-xs rounded-[var(--shape-lg)]"
+                  className="border border-[var(--neutral-200)] bg-card p-4 shadow-xs rounded-[var(--shape-lg)]"
                 >
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <Badge
@@ -721,8 +721,8 @@ export function SellOpportunityPage() {
                 </Card>
               ))}
             </div>
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="mb-4 text-sm font-medium text-foreground">
                 Activity log
               </h3>
               <TimelineView events={MOCK_ACTIVITIES} />
@@ -735,18 +735,18 @@ export function SellOpportunityPage() {
           <div className="space-y-6">
             {/* AI top-line signal */}
             <AIInsightCard title="Intelligence Hub">
-              Win probability is <strong className="text-[var(--neutral-900)]">68%</strong> based on 142 similar fabrication opportunities. Next best action: call {customer.contact.split(" ")[0]} — quote engagement is high.
+              Win probability is <strong className="text-foreground">68%</strong> based on 142 similar fabrication opportunities. Next best action: call {customer.contact.split(" ")[0]} — quote engagement is high.
             </AIInsightCard>
 
             {/* 1. Win Probability Card */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-[var(--neutral-900)]">Win Probability</h3>
+                <h3 className="text-sm font-medium text-foreground">Win Probability</h3>
                 <Badge className="border-0 bg-[var(--mw-green)]/15 text-[var(--mw-green)] text-xs">AI-powered</Badge>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-4xl font-bold tabular-nums text-[var(--neutral-900)]">68%</div>
+                  <div className="text-4xl font-bold tabular-nums text-foreground">68%</div>
                   <p className="text-xs text-[var(--neutral-500)] mt-1">Win likelihood</p>
                 </div>
                 <div className="flex-1 space-y-2">
@@ -772,8 +772,8 @@ export function SellOpportunityPage() {
             {/* 2. Two-column: Recommended Actions + Deal Velocity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Recommended Next Actions */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Recommended Next Actions</h3>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h3 className="mb-4 text-sm font-medium text-foreground">Recommended Next Actions</h3>
                 <div className="space-y-4">
                   {[
                     {
@@ -800,7 +800,7 @@ export function SellOpportunityPage() {
                         {a.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[var(--neutral-900)]">{a.title}</p>
+                        <p className="text-sm font-medium text-foreground">{a.title}</p>
                         <p className="text-xs text-[var(--neutral-500)] mt-0.5">{a.desc}</p>
                       </div>
                       <Button variant="outline" size="sm" className="shrink-0 text-xs">
@@ -812,12 +812,12 @@ export function SellOpportunityPage() {
               </Card>
 
               {/* Deal Velocity */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Deal Velocity</h3>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h3 className="mb-4 text-sm font-medium text-foreground">Deal Velocity</h3>
                 <div className="space-y-4">
                   <div className="flex items-baseline justify-between">
                     <div>
-                      <p className="text-2xl font-bold tabular-nums text-[var(--neutral-900)]">8 days</p>
+                      <p className="text-2xl font-bold tabular-nums text-foreground">8 days</p>
                       <p className="text-xs text-[var(--neutral-500)]">In current stage</p>
                     </div>
                     <div className="text-right">
@@ -862,15 +862,15 @@ export function SellOpportunityPage() {
             </div>
 
             {/* 3. Customer Engagement Score */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-[var(--neutral-900)]">Customer Engagement Score</h3>
+                <h3 className="text-sm font-medium text-foreground">Customer Engagement Score</h3>
                 <span className="text-xs font-medium text-[var(--mw-green)] flex items-center gap-1">
                   <TrendingUp className="h-3.5 w-3.5" /> 15% vs last month
                 </span>
               </div>
               <div className="flex items-center gap-4 mb-5">
-                <div className="text-3xl font-bold tabular-nums text-[var(--neutral-900)]">8.4<span className="text-lg text-[var(--neutral-400)]"> / 10</span></div>
+                <div className="text-3xl font-bold tabular-nums text-foreground">8.4<span className="text-lg text-[var(--neutral-400)]"> / 10</span></div>
                 <div className="flex-1 h-2 rounded-full bg-[var(--neutral-100)]">
                   <div className="h-full rounded-full bg-[var(--mw-green)]" style={{ width: "84%" }} />
                 </div>
@@ -885,7 +885,7 @@ export function SellOpportunityPage() {
                   <div key={m.label} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-50)] px-4 py-3">
                     {m.icon}
                     <div>
-                      <p className="text-lg font-medium tabular-nums text-[var(--neutral-900)]">{m.value}</p>
+                      <p className="text-lg font-medium tabular-nums text-foreground">{m.value}</p>
                       <p className="text-xs text-[var(--neutral-500)]">{m.label}</p>
                     </div>
                   </div>
@@ -894,8 +894,8 @@ export function SellOpportunityPage() {
             </Card>
 
             {/* 4. Competitor Intelligence */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="mb-1 text-sm font-medium text-[var(--neutral-900)]">Competitor Intelligence</h3>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="mb-1 text-sm font-medium text-foreground">Competitor Intelligence</h3>
               <p className="mb-4 text-xs text-[var(--neutral-500)]">Based on customer communication patterns and market data</p>
               <div className="space-y-3">
                 {[
@@ -914,7 +914,7 @@ export function SellOpportunityPage() {
                 ].map((c) => (
                   <div key={c.name} className="rounded-[var(--shape-md)] border border-[var(--neutral-100)] p-4">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-[var(--neutral-900)]">{c.name}</span>
+                      <span className="text-sm font-medium text-foreground">{c.name}</span>
                       <Badge variant="outline" className="text-[10px]" style={{ borderColor: c.color, color: c.color }}>
                         {c.likelihood}
                       </Badge>
@@ -926,8 +926,8 @@ export function SellOpportunityPage() {
             </Card>
 
             {/* 5. Similar Deals */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="mb-4 text-sm font-medium text-[var(--neutral-900)]">Similar Deals</h3>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="mb-4 text-sm font-medium text-foreground">Similar Deals</h3>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -945,7 +945,7 @@ export function SellOpportunityPage() {
                     { title: "Equipment Enclosures", cust: "BlueScope", value: "$42,000", result: "Lost", sim: "78%", won: false },
                   ].map((d) => (
                     <TableRow key={d.title}>
-                      <TableCell className="text-sm font-medium text-[var(--neutral-900)]">{d.title}</TableCell>
+                      <TableCell className="text-sm font-medium text-foreground">{d.title}</TableCell>
                       <TableCell className="text-sm text-[var(--neutral-700)]">{d.cust}</TableCell>
                       <TableCell className="text-sm tabular-nums text-right text-[var(--neutral-700)]">{d.value}</TableCell>
                       <TableCell>
@@ -1014,7 +1014,7 @@ export function SellOpportunityPage() {
             Save
           </Button>
           <Button
-            className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+            className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
             onClick={() => navigate("/sell/quotes/new")}
           >
             <FileText className="mr-2 h-4 w-4" />

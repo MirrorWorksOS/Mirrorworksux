@@ -144,7 +144,7 @@ export function SellCRM() {
               variants={staggerItem}
               custom={idx}
             >
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
                 onClick={() => navigate(`/sell/crm/${customer.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -155,7 +155,7 @@ export function SellCRM() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors">
                         {customer.company}
                       </h3>
                       <p className="text-xs text-[var(--neutral-500)]">
@@ -183,7 +183,7 @@ export function SellCRM() {
                       <DollarSign className="w-4 h-4 text-[var(--neutral-500)]" />
                       <span className="text-xs text-[var(--neutral-500)]">Total Revenue</span>
                     </div>
-                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                    <p className="text-sm font-medium tabular-nums text-foreground">
                       ${customer.totalRevenue.toLocaleString()}
                     </p>
                   </div>
@@ -192,7 +192,7 @@ export function SellCRM() {
                       <Briefcase className="w-4 h-4 text-[var(--neutral-500)]" />
                       <span className="text-xs text-[var(--neutral-500)]">Opportunities</span>
                     </div>
-                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                    <p className="text-sm font-medium tabular-nums text-foreground">
                       {customer.activeOpportunities}
                     </p>
                   </div>
@@ -205,7 +205,7 @@ export function SellCRM() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <p className="text-sm text-[var(--neutral-500)] text-center">
             List view - Would render SellCRMList component here
           </p>

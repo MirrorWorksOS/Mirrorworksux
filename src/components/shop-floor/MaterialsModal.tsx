@@ -20,7 +20,7 @@ function Icon() {
 
 function Container() {
   return (
-    <div className="bg-white relative rounded-md shrink-0 size-[48px]" data-name="Container">
+    <div className="bg-card relative rounded-md shrink-0 size-[48px]" data-name="Container">
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-md shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[48px]">
         <Icon />
@@ -33,7 +33,7 @@ function Heading() {
   return (
     <div className="h-[32px] relative shrink-0 w-[171.008px]" data-name="Heading 2">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[32px] relative w-[171.008px]">
-        <p className="absolute font-bold leading-[32px] left-0 not-italic text-[var(--neutral-900)] text-2xl text-nowrap top-0 tracking-[0.0703px] whitespace-pre">Bill of materials</p>
+        <p className="absolute font-bold leading-[32px] left-0 not-italic text-foreground text-2xl text-nowrap top-0 tracking-[0.0703px] whitespace-pre">Bill of materials</p>
       </div>
     </div>
   );
@@ -88,7 +88,7 @@ function Icon2() {
 
 function Button() {
   return (
-    <div className="basis-0 bg-white grow h-[40px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
+    <div className="basis-0 bg-card grow h-[40px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[40px] relative w-full">
         <Icon1 />
@@ -114,7 +114,7 @@ function Icon3() {
 
 function Button1() {
   return (
-    <div className="bg-white relative rounded-sm shrink-0 size-[40px]" data-name="Button">
+    <div className="bg-card relative rounded-sm shrink-0 size-[40px]" data-name="Button">
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[40px]">
         <Icon3 />
@@ -148,14 +148,14 @@ function Button3() {
   return (
     <div className="absolute h-[32px] left-[60.49px] rounded-full top-[4px] w-[101.563px]" data-name="Button">
       <Container3 />
-      <p className="absolute font-medium leading-[20px] left-[51.5px] not-italic text-[var(--neutral-900)] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Multi-level</p>
+      <p className="absolute font-medium leading-[20px] left-[51.5px] not-italic text-foreground text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Multi-level</p>
     </div>
   );
 }
 
 function SegmentedControl() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[42px] left-0 rounded-full top-0 w-[168.055px]" data-name="SegmentedControl">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[42px] left-0 rounded-full top-0 w-[168.055px]" data-name="SegmentedControl">
       <Button2 />
       <Button3 />
     </div>
@@ -182,7 +182,7 @@ function PrimitiveButton() {
 function Container6() {
   return (
     <div className="absolute h-[19.5px] left-[80px] top-[11.75px] w-[200px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Product</p>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function Container6() {
 function Container7() {
   return (
     <div className="absolute h-[19.5px] left-[280px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">SKU</p>
     </div>
   );
 }
@@ -198,7 +198,7 @@ function Container7() {
 function Container8() {
   return (
     <div className="absolute h-[19.5px] left-[400px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[49.81px] not-italic text-[var(--neutral-900)] text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
+      <p className="absolute font-medium leading-[19.5px] left-[49.81px] not-italic text-foreground text-xs text-center text-nowrap top-px tracking-[-0.0762px] translate-x-[-50%] whitespace-pre">Quantity</p>
     </div>
   );
 }
@@ -206,7 +206,7 @@ function Container8() {
 function Container9() {
   return (
     <div className="absolute h-[19.5px] left-[500px] top-[11.75px] w-[80px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Units</p>
     </div>
   );
 }
@@ -214,7 +214,7 @@ function Container9() {
 function Container10() {
   return (
     <div className="absolute h-[19.5px] left-[580px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[88.03px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
+      <p className="absolute font-medium leading-[19.5px] left-[88.03px] not-italic text-foreground text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Unit Cost</p>
     </div>
   );
 }
@@ -222,7 +222,7 @@ function Container10() {
 function Container11() {
   return (
     <div className="absolute h-[19.5px] left-[680px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[88.09px] not-italic text-[var(--neutral-900)] text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
+      <p className="absolute font-medium leading-[19.5px] left-[88.09px] not-italic text-foreground text-xs text-nowrap text-right top-px tracking-[-0.0762px] translate-x-[-100%] whitespace-pre">Total Cost</p>
     </div>
   );
 }
@@ -230,7 +230,7 @@ function Container11() {
 function Container12() {
   return (
     <div className="absolute h-[19.5px] left-[780px] top-[11.75px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Route</p>
     </div>
   );
 }
@@ -238,7 +238,7 @@ function Container12() {
 function Container13() {
   return (
     <div className="absolute h-[19.5px] left-[880px] top-[11.75px] w-[120px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Work Centre</p>
     </div>
   );
 }
@@ -246,7 +246,7 @@ function Container13() {
 function Container14() {
   return (
     <div className="absolute h-[19.5px] left-[1000px] top-[11.75px] w-[140px]" data-name="Container">
-      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
+      <p className="absolute font-medium leading-[19.5px] left-[12px] not-italic text-foreground text-xs text-nowrap top-px tracking-[-0.0762px] whitespace-pre">Subassembly</p>
     </div>
   );
 }
@@ -333,7 +333,7 @@ function Button4() {
 function Text() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[124px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm top-[0.5px] tracking-[-0.1504px] w-[138px]">Bracket 1200 x 2400</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm top-[0.5px] tracking-[-0.1504px] w-[138px]">Bracket 1200 x 2400</p>
     </div>
   );
 }
@@ -384,7 +384,7 @@ function Container21() {
       <input 
         type="number" 
         defaultValue="60"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -415,7 +415,7 @@ function Container22() {
 function Container23() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px] tabular-nums">$45.07</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[47px] tabular-nums">$45.07</p>
     </div>
   );
 }
@@ -423,15 +423,15 @@ function Container23() {
 function Container24() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px] tabular-nums">$2704.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.85px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[65px] tabular-nums">$2704.20</p>
     </div>
   );
 }
 
 function Badge() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-foreground text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -465,7 +465,7 @@ function Icon7() {
 
 function Button6() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon7 />
       <p className="absolute font-medium leading-[16px] left-[66.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Assembly</p>
     </div>
@@ -569,7 +569,7 @@ function Text1() {
 function Text2() {
   return (
     <div className="absolute h-[20px] left-[71.96px] overflow-clip top-[2px] w-[84.039px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm top-[0.5px] tracking-[-0.1504px] w-[113px]">Steel Sheet 2mm</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm top-[0.5px] tracking-[-0.1504px] w-[113px]">Steel Sheet 2mm</p>
     </div>
   );
 }
@@ -621,7 +621,7 @@ function Container30() {
       <input 
         type="number" 
         defaultValue="1"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -652,7 +652,7 @@ function Container31() {
 function Container32() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
     </div>
   );
 }
@@ -660,14 +660,14 @@ function Container32() {
 function Container33() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
+      <p className="absolute font-medium leading-[20px] left-[88.25px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$40.00</p>
     </div>
   );
 }
 
 function Badge2() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -769,7 +769,7 @@ function Text3() {
 function Text4() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[101.125px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle Brace 56</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle Brace 56</p>
     </div>
   );
 }
@@ -820,7 +820,7 @@ function Container40() {
       <input 
         type="number" 
         defaultValue="20"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -851,7 +851,7 @@ function Container41() {
 function Container42() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$22.56</p>
+      <p className="absolute font-medium leading-[20px] left-[88.84px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[48px] tabular-nums">$22.56</p>
     </div>
   );
 }
@@ -859,15 +859,15 @@ function Container42() {
 function Container43() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px] tabular-nums">$451.20</p>
+      <p className="absolute font-medium leading-[20px] left-[88.77px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[55px] tabular-nums">$451.20</p>
     </div>
   );
 }
 
 function Badge4() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-foreground text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -896,7 +896,7 @@ function Icon15() {
 
 function Button11() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon15 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -987,7 +987,7 @@ function Text5() {
 function Text6() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[86.758px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sliding Brace</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Sliding Brace</p>
     </div>
   );
 }
@@ -1038,7 +1038,7 @@ function Container49() {
       <input 
         type="number" 
         defaultValue="45"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1069,7 +1069,7 @@ function Container50() {
 function Container51() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px] tabular-nums">$13.67</p>
+      <p className="absolute font-medium leading-[20px] left-[88.61px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[45px] tabular-nums">$13.67</p>
     </div>
   );
 }
@@ -1077,15 +1077,15 @@ function Container51() {
 function Container52() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px] tabular-nums">$615.15</p>
+      <p className="absolute font-medium leading-[20px] left-[88.34px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[52px] tabular-nums">$615.15</p>
     </div>
   );
 }
 
 function Badge6() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
-      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-900)] text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[50.672px]" data-name="Badge">
+      <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-foreground text-xs text-nowrap top-[3px] whitespace-pre">Make</p>
     </div>
   );
 }
@@ -1114,7 +1114,7 @@ function Icon19() {
 
 function Button14() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon19 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1205,7 +1205,7 @@ function Text7() {
 function Text8() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[113.211px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle 50 x 50 EA</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Angle 50 x 50 EA</p>
     </div>
   );
 }
@@ -1256,7 +1256,7 @@ function Container58() {
       <input 
         type="number" 
         defaultValue="60"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1287,7 +1287,7 @@ function Container59() {
 function Container60() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px] tabular-nums">$12.74</p>
+      <p className="absolute font-medium leading-[20px] left-[88.21px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[44px] tabular-nums">$12.74</p>
     </div>
   );
 }
@@ -1295,14 +1295,14 @@ function Container60() {
 function Container61() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[17.5px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px] tabular-nums">$764.40</p>
+      <p className="absolute font-medium leading-[20px] left-[88.81px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[57px] tabular-nums">$764.40</p>
     </div>
   );
 }
 
 function Badge8() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[16.5px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -1332,7 +1332,7 @@ function Icon23() {
 
 function Button17() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[13.5px] w-[116px]" data-name="Button">
       <Icon23 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1423,7 +1423,7 @@ function Text9() {
 function Text10() {
   return (
     <div className="absolute h-[20px] left-[32px] overflow-clip top-[2px] w-[74.352px]" data-name="Text">
-      <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Toggle Bolt</p>
+      <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Toggle Bolt</p>
     </div>
   );
 }
@@ -1474,7 +1474,7 @@ function Container67() {
       <input 
         type="number" 
         defaultValue="45"
-        className="w-12 text-center font-normal text-[var(--neutral-900)] text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-12 text-center font-normal text-foreground text-sm bg-transparent border-b border-transparent hover:border-[var(--neutral-200)] focus:border-[var(--mw-yellow-400)] focus:outline-none transition-colors p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       />
       <button 
         className="opacity-0 group-hover:opacity-100 absolute right-2 p-0.5 hover:bg-[var(--neutral-100)] rounded cursor-pointer transition-opacity"
@@ -1505,7 +1505,7 @@ function Container68() {
 function Container69() {
   return (
     <div className="absolute h-[20px] left-[580px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px] tabular-nums">$8.06</p>
+      <p className="absolute font-medium leading-[20px] left-[88.02px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[39px] tabular-nums">$8.06</p>
     </div>
   );
 }
@@ -1513,14 +1513,14 @@ function Container69() {
 function Container70() {
   return (
     <div className="absolute h-[20px] left-[680px] top-[18px] w-[100px]" data-name="Container">
-      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-[var(--neutral-900)] text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px] tabular-nums">$362.70</p>
+      <p className="absolute font-medium leading-[20px] left-[88.56px] not-italic text-foreground text-sm text-right top-[0.5px] tracking-[-0.1504px] translate-x-[-100%] w-[56px] tabular-nums">$362.70</p>
     </div>
   );
 }
 
 function Badge10() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[17px] w-[42.32px]" data-name="Badge">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[22px] left-[792px] overflow-clip rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-[17px] w-[42.32px]" data-name="Badge">
       <p className="absolute font-medium leading-[16px] left-[10px] not-italic text-[var(--neutral-500)] text-xs text-nowrap top-[3px] whitespace-pre">Buy</p>
     </div>
   );
@@ -1550,7 +1550,7 @@ function Icon27() {
 
 function Button20() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[14px] w-[116px]" data-name="Button">
+    <div className="absolute bg-card border border-[var(--neutral-200)] border-solid h-[28px] left-[1012px] rounded-sm top-[14px] w-[116px]" data-name="Button">
       <Icon27 />
       <p className="absolute font-medium leading-[16px] left-[59.5px] not-italic text-[var(--neutral-600)] text-xs text-center text-nowrap top-[6px] translate-x-[-50%] whitespace-pre">Upload</p>
     </div>
@@ -1615,7 +1615,7 @@ function Container72() {
 
 function BomTable() {
   return (
-    <div className="bg-white h-[382px] relative rounded-sm shrink-0 w-full" data-name="BOMTable">
+    <div className="bg-card h-[382px] relative rounded-sm shrink-0 w-full" data-name="BOMTable">
       <div className="overflow-clip rounded-[inherit] size-full">
         <div className="content-stretch flex flex-col h-[382px] items-start p-px relative w-full">
           <Container16 />
@@ -1631,7 +1631,7 @@ function Text11() {
   return (
     <div className="h-[20px] relative shrink-0 w-[70.5px]" data-name="Text">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid h-[20px] relative w-[70.5px]">
-        <p className="absolute font-medium leading-[20px] left-0 not-italic text-[var(--neutral-900)] text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Page 1 of 1</p>
+        <p className="absolute font-medium leading-[20px] left-0 not-italic text-foreground text-sm text-nowrap top-[0.5px] tracking-[-0.1504px] whitespace-pre">Page 1 of 1</p>
       </div>
     </div>
   );
@@ -1651,7 +1651,7 @@ function Icon29() {
 
 function Button22() {
   return (
-    <div className="bg-white opacity-[0.38] relative rounded-sm shrink-0 size-[36px]" data-name="Button">
+    <div className="bg-card opacity-[0.38] relative rounded-sm shrink-0 size-[36px]" data-name="Button">
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[36px]">
         <div className="flex items-center justify-center relative shrink-0 size-[16px]" style={{ "--transform-inner-width": "16", "--transform-inner-height": "16" } as React.CSSProperties}>
@@ -1678,7 +1678,7 @@ function Icon30() {
 
 function Button23() {
   return (
-    <div className="basis-0 bg-white grow h-[36px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
+    <div className="basis-0 bg-card grow h-[36px] min-h-px min-w-px relative rounded-sm shrink-0" data-name="Button">
       <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex h-[36px] items-center justify-center p-px relative w-full">
         <div className="flex items-center justify-center relative shrink-0 size-[16px]" style={{ "--transform-inner-width": "16", "--transform-inner-height": "16" } as React.CSSProperties}>
@@ -1742,7 +1742,7 @@ interface MaterialsModalProps {
 export function MaterialsModal({ isOpen, onClose }: MaterialsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[1350px] w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-none">
+      <DialogContent className="sm:max-w-[1350px] w-full p-0 overflow-hidden bg-popover/95 backdrop-blur-xl border-none">
         <DialogTitle className="sr-only">Materials</DialogTitle>
         <DialogDescription className="sr-only">Bill of materials table</DialogDescription>
         <div className="content-stretch flex flex-col items-start relative w-full max-h-[90vh] overflow-auto" data-name="Container">

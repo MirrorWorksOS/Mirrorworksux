@@ -80,7 +80,7 @@ function EmptyState({
             />
           )}
           <div className="flex flex-col items-center gap-2 text-center w-full">
-            <h2 className="text-4xl tracking-tight text-[var(--mw-mirage)]">
+            <h2 className="text-4xl tracking-tight text-foreground">
               {title}
             </h2>
             {description && (
@@ -98,7 +98,7 @@ function EmptyState({
                   variant={act.variant === "outline" ? "outline" : undefined}
                   className={cn(
                     act.variant === "outline"
-                      ? "border-[var(--border)] text-[var(--mw-mirage)]"
+                      ? "border-[var(--border)] text-foreground"
                       : "bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90",
                   )}
                 >

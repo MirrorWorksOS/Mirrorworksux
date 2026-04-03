@@ -359,7 +359,7 @@ function ListWidgetContent({ type }: { type: string }) {
           key={i}
           className="flex items-center justify-between gap-4 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0"
         >
-          <span className="truncate text-sm text-[var(--neutral-900)]">
+          <span className="truncate text-sm text-foreground">
             {item.label}
           </span>
           <span className="shrink-0 text-xs text-[var(--neutral-500)]">
@@ -499,7 +499,7 @@ export function DashboardWidgetGrid({
               {Icon ? (
                 <Icon className="h-4 w-4 text-[var(--neutral-500)]" strokeWidth={1.5} aria-hidden />
               ) : null}
-              <h3 className="flex-1 truncate text-sm font-medium text-[var(--neutral-900)]">
+              <h3 className="flex-1 truncate text-sm font-medium text-foreground">
                 {widget.title}
               </h3>
               <Button

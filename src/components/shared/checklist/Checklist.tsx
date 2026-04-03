@@ -20,7 +20,7 @@ export function Checklist({ title, progress, children, className }: ChecklistPro
         <div className="mb-4 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             {title ?
-              <h3 className="text-sm font-medium text-[var(--neutral-900)]">{title}</h3>
+              <h3 className="text-sm font-medium text-foreground">{title}</h3>
             : null}
             {progress ?
               <span className="text-xs tabular-nums text-muted-foreground">

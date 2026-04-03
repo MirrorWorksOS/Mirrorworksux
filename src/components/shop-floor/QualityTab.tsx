@@ -269,7 +269,7 @@ export function QualityTab() {
             </div>
             <div className="flex overflow-x-auto gap-4 pb-4 -mx-1 px-1 hide-scrollbar">
               {QUALITY_HOLDS.map((hold) => (
-                <div key={hold.id} className="flex-shrink-0 w-[320px] bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--neutral-200)] p-6">
+                <div key={hold.id} className="flex-shrink-0 w-[320px] bg-card rounded-[var(--shape-lg)] shadow-xs border border-[var(--neutral-200)] p-6">
                    <div className="flex justify-between items-start mb-2">
                      <span className="text-base font-bold text-[var(--neutral-800)]">{hold.wo}</span>
                      <span className="text-xs text-[var(--neutral-500)]">{hold.time}</span>
@@ -297,12 +297,12 @@ export function QualityTab() {
                     {['Today', 'This Week', 'Month'].map((filter, i) => (
                       <button key={filter} className={cn(
                         "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        i === 0 ? "bg-white text-[var(--neutral-800)] shadow-sm" : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]"
+                        i === 0 ? "bg-card text-[var(--neutral-800)] shadow-sm" : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]"
                       )}>{filter}</button>
                     ))}
                   </div>
                </div>
-               <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-sm overflow-hidden">
+               <div className="bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-sm overflow-hidden">
                  {RECENT_INSPECTIONS.map((insp, i) => (
                    <div key={insp.id} className={cn(
                      "flex items-center justify-between p-4 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer",
@@ -388,10 +388,10 @@ export function QualityTab() {
           <div className="flex flex-wrap gap-3 mb-6">
              <div className="relative flex-1 min-w-[300px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-500)]" />
-                <Input placeholder="Search issues..." className="pl-9 bg-white border-[var(--neutral-200)] h-10" />
+                <Input placeholder="Search issues..." className="pl-9 bg-card border-[var(--neutral-200)] h-10" />
              </div>
-             <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-white text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Status</Button>
-             <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-white text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Priority</Button>
+             <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-card text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Status</Button>
+             <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-card text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Priority</Button>
              <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">
                <Plus className="w-4 h-4 mr-2"/> Log New Issue
              </Button>
@@ -400,7 +400,7 @@ export function QualityTab() {
           <div className="space-y-4">
             {ACTIVE_ISSUES.map((issue) => (
               <div key={issue.id} className={cn(
-                "bg-white rounded-[var(--shape-lg)] shadow-sm border border-[var(--neutral-200)] p-6",
+                "bg-card rounded-[var(--shape-lg)] shadow-sm border border-[var(--neutral-200)] p-6",
               )}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                    <div className="flex items-center gap-3">
@@ -429,7 +429,7 @@ export function QualityTab() {
                       <Avatar className="w-6 h-6 border border-[var(--neutral-200)]"><AvatarFallback className="text-[10px]">ER</AvatarFallback></Avatar>
                       <span className="text-xs font-medium text-[var(--neutral-800)]">{issue.assignee}</span>
                    </div>
-                   <Button variant="ghost" className="h-14 text-[var(--neutral-800)] hover:text-black p-0 hover:bg-transparent font-medium">
+                   <Button variant="ghost" className="h-14 text-[var(--neutral-800)] hover:text-foreground p-0 hover:bg-transparent font-medium">
                      View Details <ChevronRight className="w-4 h-4 ml-1" />
                    </Button>
                 </div>
@@ -447,7 +447,7 @@ export function QualityTab() {
              {['All Types', 'First Article', 'In-Process', 'Final', 'Receiving'].map((type, i) => (
                 <button key={type} className={cn(
                    "px-4 py-2 rounded-full text-sm font-medium transition-colors border",
-                   i === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-[var(--mw-yellow-400)]" : "bg-white text-[var(--neutral-500)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
+                   i === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-[var(--mw-yellow-400)]" : "bg-card text-[var(--neutral-500)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
                 )}>
                    {type}
                 </button>
@@ -494,8 +494,8 @@ export function QualityTab() {
       {/* Log Issue Modal Overlay */}
       {showLogModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-[var(--shape-lg)] shadow-xs w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-6 border-b border-[var(--neutral-200)] flex items-center justify-between bg-white">
+           <div className="bg-card rounded-[var(--shape-lg)] shadow-xs w-full max-w-[600px] overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="p-6 border-b border-[var(--neutral-200)] flex items-center justify-between bg-card">
                  <h2 className="text-xl font-medium text-[var(--neutral-800)]">Log Quality Issue</h2>
                  <Button variant="ghost" size="icon" onClick={() => setShowLogModal(false)} className="rounded-full text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]">
                     <X className="w-5 h-5" />
@@ -568,7 +568,7 @@ export function QualityTab() {
               </div>
 
               <div className="p-6 border-t border-[var(--neutral-200)] bg-[var(--neutral-100)] flex items-center justify-between gap-4">
-                 <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1 h-12 bg-white border-[var(--neutral-200)] text-[var(--neutral-500)] font-medium hover:text-[var(--neutral-800)]">
+                 <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1 h-12 bg-card border-[var(--neutral-200)] text-[var(--neutral-500)] font-medium hover:text-[var(--neutral-800)]">
                     Cancel
                  </Button>
                  <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">

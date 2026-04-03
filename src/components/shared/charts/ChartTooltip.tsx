@@ -43,7 +43,7 @@ export function ChartTooltip({
   return (
     <div className={cn(className)} style={MW_TOOLTIP_STYLE}>
       {label ? (
-        <div className="text-xs font-medium text-[var(--neutral-900)] mb-1.5">{label}</div>
+        <div className="text-xs font-medium text-foreground mb-1.5">{label}</div>
       ) : null}
       <ul className="space-y-1">
         {payload.map((item, index) => {
@@ -62,7 +62,7 @@ export function ChartTooltip({
                 style={item.color ? { backgroundColor: item.color } : undefined}
               />
               <span className="flex-1 min-w-0">{item.name}</span>
-              <span className="tabular-nums font-medium text-[var(--neutral-900)]">{text}</span>
+              <span className="tabular-nums font-medium text-foreground">{text}</span>
             </li>
           );
         })}

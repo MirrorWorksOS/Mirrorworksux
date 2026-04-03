@@ -73,12 +73,12 @@ export function MakeManufacturingOrders() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'In Progress', value: inProgressCount, sub: 'Active orders', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Confirmed', value: confirmedCount, sub: 'Ready to start', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'In Progress', value: inProgressCount, sub: 'Active orders', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Confirmed', value: confirmedCount, sub: 'Ready to start', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Draft', value: draftCount, sub: 'Needs confirmation', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
-          { label: 'Completed', value: doneCount, sub: `${MO_DATA.length} total orders`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Completed', value: doneCount, sub: `${MO_DATA.length} total orders`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -99,7 +99,7 @@ export function MakeManufacturingOrders() {
       <MwDataTable<ManufacturingOrder>
         columns={[
           { key: 'moNumber', header: 'MO #', tooltip: 'Manufacturing order number', cell: (mo) => (
-            <span className="font-medium text-[var(--mw-mirage)] tabular-nums inline-flex items-center gap-1.5">
+            <span className="font-medium text-foreground tabular-nums inline-flex items-center gap-1.5">
               <Factory className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
               {mo.moNumber}
             </span>

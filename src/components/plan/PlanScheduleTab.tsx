@@ -66,10 +66,10 @@ export function PlanScheduleTab() {
   return (
     <div className="flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
+      <div className="bg-card border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-medium text-[var(--mw-mirage)] mr-4">
+            <h2 className="text-base font-medium text-foreground mr-4">
               Schedule
             </h2>
             <Button
@@ -79,7 +79,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'all'
-                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] hover:bg-[var(--border)]'
+                  ? 'bg-[var(--neutral-100)] text-foreground hover:bg-[var(--border)]'
                   : 'text-[var(--neutral-500)]',
               )}
             >
@@ -92,7 +92,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'done'
-                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] hover:bg-[var(--border)]'
+                  ? 'bg-[var(--neutral-100)] text-foreground hover:bg-[var(--border)]'
                   : 'text-[var(--neutral-500)]',
               )}
             >
@@ -105,7 +105,7 @@ export function PlanScheduleTab() {
               className={cn(
                 'h-8 text-xs',
                 filterMode === 'pending'
-                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] hover:bg-[var(--border)]'
+                  ? 'bg-[var(--neutral-100)] text-foreground hover:bg-[var(--border)]'
                   : 'text-[var(--neutral-500)]',
               )}
             >

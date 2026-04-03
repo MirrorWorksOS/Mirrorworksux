@@ -39,8 +39,8 @@ const donutData = [
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 const ageStyles: Record<AgeCategory, string> = {
-  Fresh: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  Active: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Fresh: 'bg-[var(--neutral-100)] text-foreground',
+  Active: 'bg-[var(--neutral-100)] text-foreground',
   Slow: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
   Stale: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
 };
@@ -75,7 +75,7 @@ export function StockValuation() {
   const [activeTab, setActiveTab] = useState('Raw Materials');
 
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Stock valuation"
         actions={
@@ -93,7 +93,7 @@ export function StockValuation() {
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
               <Calendar className="h-4 w-4" /> As at
             </Button>
-            <Button className="h-10 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="h-10 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               Generate report
             </Button>
           </div>
@@ -167,13 +167,13 @@ export function StockValuation() {
       </div>
 
       {/* Tabs + Table */}
-      <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-card rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
         <div className="flex border-b border-[var(--border)]">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={cn(
                 "px-4 py-3 text-sm relative transition-colors",
-                activeTab === tab ? "text-[var(--mw-mirage)] font-medium" : "text-[var(--neutral-500)] hover:text-[var(--mw-mirage)] font-normal"
+                activeTab === tab ? "text-foreground font-medium" : "text-[var(--neutral-500)] hover:text-foreground font-normal"
               )}>
               {tab}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}

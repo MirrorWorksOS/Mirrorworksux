@@ -15,9 +15,8 @@ import {
   LogOut,
   Bell,
   User,
-  Sun,
-  Moon,
-  Monitor,
+  TrendingUp,
+  X,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from './ui/utils';
@@ -33,6 +32,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { ThemeToggler } from '@/components/animate-ui/primitives/effects/theme-toggler';
+import {
+  getHighestUsageAcrossModules,
+  getUsageStatus,
+  getNextTier,
+  CURRENT_SUBSCRIPTION,
+} from '@/lib/subscription';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -371,7 +377,7 @@ function KbdPill({
           className={cn(
             'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-xs font-medium leading-none select-none',
             isYellow
-              ? 'bg-[#E6A600]/20 text-[#2C2C2C]/60 border border-[#E6A600]/30'
+              ? 'bg-[#E6A600]/20 text-primary-foreground/60 border border-[#E6A600]/30'
               : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] border border-[var(--neutral-200)]'
           )}
         >
@@ -383,55 +389,123 @@ function KbdPill({
 }
 
 // ---------------------------------------------------------------------------
-// Segmented theme switcher (light / system / dark)
+// M3 split button — user profile + theme toggle
 // ---------------------------------------------------------------------------
 
-const themeOptions = [
-  { value: 'light' as const, icon: Sun, label: 'Light' },
-  { value: 'system' as const, icon: Monitor, label: 'System' },
-  { value: 'dark' as const, icon: Moon, label: 'Dark' },
-];
-
-function ThemeSegmentedControl() {
-  const { theme, setTheme } = useTheme();
+function UserProfileSplitButton() {
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
-    <div
-      className="relative flex items-center gap-0.5 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] p-0.5"
-      role="radiogroup"
-      aria-label="Theme preference"
-    >
-      {themeOptions.map(({ value, icon: Icon, label }) => {
-        const isActive = theme === value;
-        return (
-          <button
-            key={value}
-            role="radio"
-            aria-checked={isActive}
-            aria-label={label}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setTheme(value);
-            }}
-            className={cn(
-              'relative z-10 flex h-6 w-7 items-center justify-center rounded-full transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-              isActive
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground/70',
-            )}
-          >
-            {isActive && (
-              <motion.span
-                layoutId="theme-segment-pill"
-                className="absolute inset-0 rounded-full bg-card shadow-xs"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-            )}
-            <Icon className="relative z-10 h-3.5 w-3.5" strokeWidth={1.5} />
+    <div className="flex items-center rounded-full border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+      {/* Leading segment — user profile dropdown trigger */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex flex-1 items-center gap-2.5 py-1.5 pl-1.5 pr-3 rounded-l-full min-w-0 hover:bg-[#0A0A0A]/[0.04] dark:hover:bg-white/[0.06] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none">
+            <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-xs font-medium">MQ</span>
+            </div>
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-sm text-foreground truncate">Matt Quigley</p>
+              <p className="text-xs text-muted-foreground truncate">Admin</p>
+            </div>
           </button>
-        );
-      })}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="top" align="start" className="w-56 mb-1">
+          <DropdownMenuItem asChild>
+            <Link to="/control/people" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              <span>Account Profile</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/notifications" className="flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              <span>Notifications</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="flex items-center gap-2 text-[var(--error)]">
+            <LogOut className="w-4 h-4" />
+            <span>Log Out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* M3 split divider */}
+      <div className="w-px self-stretch my-2.5 bg-[var(--neutral-200)] dark:bg-[var(--neutral-700)] shrink-0" />
+
+      {/* Trailing segment — theme toggle */}
+      <ThemeToggler
+        resolvedTheme={resolvedTheme}
+        setTheme={setTheme}
+        direction="btt"
+        className="self-stretch w-11 shrink-0 rounded-r-full hover:bg-[#0A0A0A]/[0.04] dark:hover:bg-white/[0.06]"
+        iconClassName="h-4 w-4 text-foreground"
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Usage Warning Banner — shows when any metric hits 90%+
+// ---------------------------------------------------------------------------
+
+function UsageBanner() {
+  const [dismissed, setDismissed] = useState(false);
+  const highest = getHighestUsageAcrossModules();
+
+  if (!highest || dismissed) return null;
+
+  const status = getUsageStatus(highest.percentage);
+  if (status !== 'critical' && status !== 'exceeded') return null;
+
+  const nextTier = getNextTier(CURRENT_SUBSCRIPTION.tier);
+  const remaining = highest.limit - highest.current;
+  const isExceeded = status === 'exceeded';
+
+  return (
+    <div className="px-3 pb-2">
+      <div
+        className={cn(
+          'rounded-xl p-3 border transition-colors',
+          isExceeded
+            ? 'bg-[var(--mw-error)]/5 border-[var(--mw-error)]/20'
+            : 'bg-[var(--mw-yellow-400)]/5 border-[var(--mw-yellow-400)]/20',
+        )}
+      >
+        <div className="flex items-start gap-2">
+          <TrendingUp
+            className={cn(
+              'w-4 h-4 mt-0.5 shrink-0',
+              isExceeded ? 'text-[var(--mw-error)]' : 'text-[var(--mw-yellow-500)]',
+            )}
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-foreground">
+              {isExceeded ? 'Plan limit exceeded' : 'Approaching limit'}
+            </p>
+            <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+              {isExceeded
+                ? `${highest.current}/${highest.limit} ${highest.metric} in ${highest.module}.`
+                : `${remaining} ${highest.metric.toLowerCase()} remaining in ${highest.module}.`}
+              {nextTier && (
+                <Link
+                  to={`/${highest.module.toLowerCase()}/settings`}
+                  className="underline ml-1 text-[var(--neutral-600)] dark:text-[var(--neutral-400)] hover:text-foreground"
+                >
+                  Upgrade
+                </Link>
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() => setDismissed(true)}
+            className="text-[var(--neutral-400)] hover:text-foreground transition-colors shrink-0"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -506,8 +580,8 @@ export function Sidebar() {
             type="button"
             className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-yellow-500)]"
           >
-            <Plus className="h-5 w-5 shrink-0 text-[var(--neutral-900)]" strokeWidth={1.5} aria-hidden />
-            <span className="flex-1 text-left text-sm font-medium text-[var(--neutral-900)]">
+            <Plus className="h-5 w-5 shrink-0 text-primary-foreground" strokeWidth={1.5} aria-hidden />
+            <span className="flex-1 text-left text-sm font-medium text-primary-foreground">
               Quick Create
             </span>
             <KbdPill keys={['⌘', 'N']} variant="on-yellow" />
@@ -595,47 +669,12 @@ export function Sidebar() {
         })}
       </div>
 
-      {/* User Profile Footer */}
-      <div className="p-3 border-t border-border space-y-2">
-        <div className="flex items-center justify-between px-2">
-          <ThemeSegmentedControl />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-2.5 p-2 rounded-full hover:bg-[var(--neutral-200)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
-              <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs font-medium">MQ</span>
-              </div>
-              <div className="flex-1 text-left min-w-0">
-                <p className="text-sm text-foreground truncate">Matt Quigley</p>
-                <p className="text-xs text-muted-foreground truncate">Admin</p>
-              </div>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="top"
-            align="start"
-            className="w-56 mb-1"
-          >
-            <DropdownMenuItem asChild>
-              <Link to="/control/people" className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Account Profile</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/notifications" className="flex items-center gap-2">
-                <Bell className="w-4 h-4" />
-                <span>Notifications</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center gap-2 text-[var(--error)]">
-              <LogOut className="w-4 h-4" />
-              <span>Log Out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Usage Warning Banner */}
+      <UsageBanner />
+
+      {/* Footer — M3 split button: user profile + theme toggle */}
+      <div className="p-3 border-t border-border">
+        <UserProfileSplitButton />
       </div>
 
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />

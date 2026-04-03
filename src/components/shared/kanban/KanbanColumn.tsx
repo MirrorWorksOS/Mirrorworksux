@@ -59,7 +59,7 @@ export function KanbanColumn({
     >
       <div className="px-3 py-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-medium text-[var(--neutral-900)]">{title}</h3>
+          <h3 className="text-sm font-medium text-foreground">{title}</h3>
           {count !== undefined && (
             <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-[var(--neutral-200)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--neutral-600)]">
               {count}

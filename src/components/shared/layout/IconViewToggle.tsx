@@ -53,8 +53,8 @@ export function IconViewToggle({
             className={cn(
               "flex h-12 min-h-[48px] w-12 shrink-0 items-center justify-center rounded-full transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
               active
-                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
-                : "text-[var(--neutral-500)] hover:bg-[var(--neutral-50)] hover:text-[var(--neutral-800)]",
+                ? "bg-[var(--mw-yellow-400)] text-primary-foreground"
+                : "text-muted-foreground hover:bg-[var(--neutral-50)] hover:text-foreground",
             )}
           >
             <Icon className="h-4 w-4" strokeWidth={LUCIDE_STROKE} aria-hidden />

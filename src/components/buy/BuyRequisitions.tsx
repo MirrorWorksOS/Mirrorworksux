@@ -45,9 +45,9 @@ const getStatusBadge = (status: ReqStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
     case 'submitted': return { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', label: 'Submitted', dot: 'var(--mw-blue)' };
-    case 'approved': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Approved', dot: 'var(--mw-mirage)' };
+    case 'approved': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Approved', dot: 'var(--mw-mirage)' };
     case 'rejected': return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Rejected', dot: 'var(--mw-error)' };
-    case 'converted': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Converted', dot: 'var(--mw-mirage)' };
+    case 'converted': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Converted', dot: 'var(--mw-mirage)' };
   }
 };
 
@@ -63,12 +63,12 @@ export function BuyRequisitions() {
 
   const columns: MwColumnDef<Requisition>[] = [
     { key: 'reqNumber', header: 'REQ #', tooltip: 'Requisition number', cell: (req) => (
-      <a href={`/buy/requisitions/${req.id}`} className="text-[var(--mw-mirage)] text-sm font-medium hover:underline flex items-center gap-1">
+      <a href={`/buy/requisitions/${req.id}`} className="text-foreground text-sm font-medium hover:underline flex items-center gap-1">
         {req.reqNumber}
         <ExternalLink className="w-4 h-4" />
       </a>
     )},
-    { key: 'requestor', header: 'Requestor', tooltip: 'Person who raised the requisition', cell: (req) => <span className="text-[var(--mw-mirage)]">{req.requestor}</span> },
+    { key: 'requestor', header: 'Requestor', tooltip: 'Person who raised the requisition', cell: (req) => <span className="text-foreground">{req.requestor}</span> },
     { key: 'department', header: 'Department', tooltip: 'Requesting department', cell: (req) => <span className="text-[var(--neutral-600)]">{req.department}</span> },
     { key: 'date', header: 'Date', tooltip: 'Requisition date', cell: (req) => <span className="tabular-nums text-[var(--neutral-600)]">{new Date(req.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</span> },
     { key: 'status', header: 'Status', tooltip: 'Approval status', headerClassName: 'text-center', className: 'text-center', cell: (req) => {
@@ -88,7 +88,7 @@ export function BuyRequisitions() {
         {req.status === 'submitted' && (
           <div className="flex items-center gap-1">
             <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-all duration-200 ease-[var(--ease-standard)]" title="Approve" onClick={(e) => { e.stopPropagation(); toast.success(`Requisition ${req.reqNumber} approved`); }}>
-              <CheckCircle2 className="w-4 h-4 text-[var(--mw-mirage)]" />
+              <CheckCircle2 className="w-4 h-4 text-foreground" />
             </button>
             <button className="p-1 hover:bg-[var(--mw-error-100)] rounded transition-all duration-200 ease-[var(--ease-standard)]" title="Reject" onClick={(e) => { e.stopPropagation(); toast.success(`Requisition ${req.reqNumber} rejected`); }}>
               <XCircle className="w-4 h-4 text-[var(--mw-error)]" />
@@ -115,7 +115,7 @@ export function BuyRequisitions() {
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded-xl group" onClick={() => toast('New requisition coming soon')}>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground rounded-xl group" onClick={() => toast('New requisition coming soon')}>
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Requisition
             </Button>
@@ -128,7 +128,7 @@ export function BuyRequisitions() {
         {(['all', 'draft', 'submitted', 'approved', 'rejected', 'converted'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={cn("px-4 py-2 text-sm border-b-2 transition-colors",
-              activeTab === tab ? 'border-[var(--mw-yellow-400)] text-[var(--mw-mirage)] font-medium' : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]')}>
+              activeTab === tab ? 'border-[var(--mw-yellow-400)] text-foreground font-medium' : 'border-transparent text-[var(--neutral-500)] hover:text-foreground')}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}

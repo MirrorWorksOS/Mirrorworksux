@@ -165,7 +165,7 @@ export function OverviewTab() {
     <div className="flex flex-col overflow-hidden">
       {/* Floor Mode Toggle */}
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-medium text-[var(--neutral-900)]">
+        <span className="text-sm font-medium text-foreground">
           {floorMode ? 'Factory Floor View' : 'Office View'}
         </span>
         <Button
@@ -173,7 +173,7 @@ export function OverviewTab() {
           size="sm"
           className={cn(
             "h-14 gap-2",
-            floorMode ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" : "border-[var(--border)]"
+            floorMode ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" : "border-[var(--border)]"
           )}
           onClick={() => setFloorMode(!floorMode)}
         >
@@ -249,7 +249,7 @@ export function OverviewTab() {
       <div className="flex-1 flex flex-col space-y-6 min-w-0">
         
         {/* Intelligence Hub Banner */}
-        <div className="bg-white rounded-[var(--shape-lg)] overflow-hidden border border-[var(--border)]">
+        <div className="bg-card rounded-[var(--shape-lg)] overflow-hidden border border-[var(--border)]">
            <div 
              className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[var(--accent)] transition-colors"
              onClick={() => setIsInsightsOpen(!isInsightsOpen)}
@@ -274,20 +274,20 @@ export function OverviewTab() {
                  className="overflow-hidden"
                >
                  <div className="border-t border-[var(--border)] p-2 space-y-2">
-                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
-                       <AlertCircle className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-card transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                       <AlertCircle className="w-5 h-5 text-foreground shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-medium">Material shortage:</span> 16ga stainless sheets. 15 needed, 8 in stock. Expedite #PO-8847 with Central Steel.
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
-                       <Zap className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-card transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                       <Zap className="w-5 h-5 text-foreground shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-medium">Optimization:</span> Amada Ensis Laser free in 15 min - Queue MO-26-405 now
                        </div>
                     </div>
-                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
-                       <Info className="w-5 h-5 text-[var(--mw-mirage)] shrink-0" />
+                    <div className="flex items-start gap-3 p-3 rounded-sm hover:bg-card transition-colors cursor-pointer border border-transparent hover:border-[var(--border)]">
+                       <Info className="w-5 h-5 text-foreground shrink-0" />
                        <div className="text-sm text-[var(--neutral-800)] text-sm">
                           <span className="font-medium">Efficiency:</span> Shop running 8% above target efficiency today
                        </div>
@@ -304,17 +304,17 @@ export function OverviewTab() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
             <Input 
               placeholder="Search work orders" 
-              className="pl-10 h-12 w-full bg-white text-base shadow-sm border-[var(--neutral-200)] rounded-sm focus-visible:ring-[var(--mw-yellow-400)]"
+              className="pl-10 h-12 w-full bg-card text-base shadow-sm border-[var(--neutral-200)] rounded-sm focus-visible:ring-[var(--mw-yellow-400)]"
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Status <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Priority <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
               Machine <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
           </div>
@@ -326,7 +326,7 @@ export function OverviewTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Card A: Active Jobs */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Active Job Focus</CardTitle>
                 </CardHeader>
@@ -344,7 +344,7 @@ export function OverviewTab() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
+                    <div className="flex items-center justify-between p-4 bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
                       <div className="space-y-1">
                         <div className="text-xs text-[var(--neutral-500)] font-medium">DUE IN</div>
                         <div className="text-2xl font-medium text-[var(--neutral-800)] tabular-nums">4d 12h</div>
@@ -359,7 +359,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card B: Time Tracking */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Shift Performance</CardTitle>
                 </CardHeader>
@@ -402,7 +402,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card C: Andon Alerts */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white relative overflow-hidden">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
                   <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-xl px-3">
                     {ANDON_ALERTS.length} Active
@@ -434,7 +434,7 @@ export function OverviewTab() {
             </div>
 
             {/* Manufacturing Orders List */}
-            <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+            <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
               <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--border)] bg-[var(--neutral-100)] text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wide">
                 <div className="col-span-2">MO #</div>
                 <div className="col-span-3">Customer & Part</div>
@@ -446,7 +446,7 @@ export function OverviewTab() {
 
               <div className="divide-y divide-[var(--border)]">
                 {MANUFACTURING_ORDERS.map((mo) => (
-                  <div key={mo.id} className="group transition-colors bg-white hover:bg-[var(--neutral-100)]">
+                  <div key={mo.id} className="group transition-colors bg-card hover:bg-[var(--neutral-100)]">
                     {/* Parent Row */}
                     <div 
                       className="grid grid-cols-12 gap-4 p-4 items-center min-h-[56px] cursor-pointer"
@@ -497,7 +497,7 @@ export function OverviewTab() {
                                 {wo.name}
                               </div>
                               <div className="col-span-2">
-                                <Badge variant="secondary" className="bg-white border-[var(--neutral-200)] text-[var(--neutral-500)] font-normal">
+                                <Badge variant="secondary" className="bg-card border-[var(--neutral-200)] text-[var(--neutral-500)] font-normal">
                                   {wo.station}
                                 </Badge>
                               </div>
@@ -529,7 +529,7 @@ export function OverviewTab() {
 
       {/* Right Sidebar */}
       {isSidebarOpen && (
-        <div className="w-[320px] shrink-0 bg-white flex flex-col rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden py-4">
+        <div className="w-[320px] shrink-0 bg-card flex flex-col rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden py-4">
           <div className="flex items-center justify-between px-4 mb-4">
             <h3 className="font-medium text-[var(--neutral-800)]">Communication</h3>
             <Button variant="ghost" size="icon" className="h-14 w-14 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
@@ -577,7 +577,7 @@ export function OverviewTab() {
                    {/* Context Message (System/Yellow) */}
                     <div className="flex gap-3">
                      <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
-                       <AvatarFallback className="bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)] text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
+                       <AvatarFallback className="bg-[var(--mw-yellow-400)]/20 text-foreground text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
@@ -599,7 +599,7 @@ export function OverviewTab() {
                      {chatMessages.map((m, i) => (
                        <div key={i} className="flex gap-3">
                          <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
-                           <AvatarFallback className={m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 text-[var(--mw-mirage)] text-xs' : 'bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs'}>
+                           <AvatarFallback className={m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 text-foreground text-xs' : 'bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs'}>
                              {m.from === 'ai' ? <Bot className="w-4 h-4" /> : 'You'}
                            </AvatarFallback>
                          </Avatar>
@@ -617,11 +617,11 @@ export function OverviewTab() {
                )}
 
                {/* Input Area */}
-               <div className="p-4 border-t border-[var(--neutral-200)] bg-white">
+               <div className="p-4 border-t border-[var(--neutral-200)] bg-card">
                  <div className="relative">
                    <Input
                      placeholder="Type a message..."
-                     className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] transition-all rounded-sm"
+                     className="pr-10 bg-[var(--neutral-100)] border-transparent focus:bg-card focus:border-[var(--mw-yellow-400)] transition-all rounded-sm"
                      value={chatInput}
                      onChange={e => setChatInput(e.target.value)}
                      onKeyDown={e => { if (e.key === 'Enter') handleChatSubmit(); }}
@@ -644,14 +644,14 @@ export function OverviewTab() {
              <div className="px-4 py-2">
                <h3 className="font-medium text-[var(--neutral-800)] mb-3 text-sm">Quick Access</h3>
                <div className="space-y-2">
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-sm">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] rounded-sm">
                    <FileText className="w-4 h-4 mr-3 text-[var(--mw-yellow-400)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">SOP-001 Assembly</div>
                      <div className="text-xs text-[var(--neutral-500)]">Updated 2 days ago</div>
                    </div>
                  </Button>
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] rounded-sm">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] rounded-sm">
                    <ShieldAlert className="w-4 h-4 mr-3 text-[var(--mw-error)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">Safety Protocol</div>
@@ -665,7 +665,7 @@ export function OverviewTab() {
       )}
       {!isSidebarOpen && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-           <Button variant="secondary" size="icon" className="h-14 w-14 rounded-l-lg rounded-r-none shadow-[var(--elevation-2)] border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
+           <Button variant="secondary" size="icon" className="h-14 w-14 rounded-l-lg rounded-r-none shadow-[var(--elevation-2)] border-y border-l border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
              <ChevronDown className="w-4 h-4 rotate-90 text-[var(--neutral-500)]" />
            </Button>
         </div>

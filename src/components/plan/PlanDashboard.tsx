@@ -143,7 +143,7 @@ export function PlanDashboard() {
           <Card className="p-0 overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Upcoming Tasks</h3>
+                <h3 className="text-sm font-medium text-foreground">Upcoming Tasks</h3>
                 <p className="text-xs text-[var(--neutral-500)]">Today's priority items</p>
               </div>
               <Button
@@ -161,7 +161,7 @@ export function PlanDashboard() {
                 <div key={task.id} className="px-5 py-3 flex items-center gap-3 hover:bg-[var(--accent)] transition-colors cursor-pointer">
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${taskTypeColors[task.type]}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-[var(--mw-mirage)] truncate">{task.title}</p>
+                    <p className="text-xs font-medium text-foreground truncate">{task.title}</p>
                   </div>
                   <span className="text-xs tabular-nums text-[var(--neutral-500)] flex-shrink-0">{task.time}</span>
                 </div>
@@ -175,7 +175,7 @@ export function PlanDashboard() {
           <Card className="p-0 overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Priority Jobs</h3>
+                <h3 className="text-sm font-medium text-foreground">Priority Jobs</h3>
                 <p className="text-xs text-[var(--neutral-500)]">Requires attention</p>
               </div>
               <Button
@@ -197,10 +197,10 @@ export function PlanDashboard() {
                 >
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs tabular-nums font-medium text-[var(--mw-mirage)]">{job.id}</span>
+                      <span className="text-xs tabular-nums font-medium text-foreground">{job.id}</span>
                       <StatusBadge priority={job.priority.toLowerCase()}>{job.priority}</StatusBadge>
                     </div>
-                    <span className="text-xs tabular-nums font-medium text-[var(--mw-mirage)]">{job.value}</span>
+                    <span className="text-xs tabular-nums font-medium text-foreground">{job.value}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-[var(--neutral-500)]">{job.name} — {job.customer}</p>
@@ -215,7 +215,7 @@ export function PlanDashboard() {
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
           <Card className="p-6">
-            <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-1">Quick Actions</h3>
+            <h3 className="text-sm font-medium text-foreground mb-1">Quick Actions</h3>
             <p className="text-xs text-[var(--neutral-500)] mb-4">Common workflows</p>
             <div className="space-y-2">
               <Button

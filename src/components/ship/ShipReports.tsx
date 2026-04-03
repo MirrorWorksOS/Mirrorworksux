@@ -76,10 +76,10 @@ export function ShipReports() {
         title="Reports"
         actions={
           <>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]">
+            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]">
               <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
             </button>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--mw-mirage)] transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
+            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
               <Download className="h-4 w-4" strokeWidth={1.5} /> Export
             </button>
           </>
@@ -158,7 +158,7 @@ export function ShipReports() {
                   <div key={s.name} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: pieColors[i % pieColors.length] }} />
                     <span className="text-[var(--neutral-500)] w-16">{s.name}</span>
-                    <span className="text-[var(--mw-mirage)] font-medium tabular-nums">{s.value}</span>
+                    <span className="text-foreground font-medium tabular-nums">{s.value}</span>
                   </div>
                 ))}
               </div>

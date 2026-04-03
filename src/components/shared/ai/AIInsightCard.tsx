@@ -47,7 +47,7 @@ export function AIInsightCard({
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)] flex-shrink-0" />
           <span
-            className="text-xs font-medium text-[var(--mw-mirage)]"
+            className="text-xs font-medium text-foreground"
             style={{ letterSpacing: '0.1px' }}
           >
             {title}
@@ -57,7 +57,7 @@ export function AIInsightCard({
           <button
             onClick={onRefresh}
             disabled={refreshing}
-            className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38] text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]"
+            className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38] text-[var(--neutral-500)] hover:text-foreground"
             aria-label="Refresh insight"
           >
             <RefreshCw
@@ -84,7 +84,7 @@ export function AIInsightCard({
             <Button
               variant="ghost"
               size="sm"
-              className="h-12 px-2 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]"
+              className="h-12 px-2 text-xs text-[var(--neutral-500)] hover:text-foreground hover:bg-[var(--neutral-100)]"
               onClick={onAction}
             >
               {actionLabel} →
@@ -117,7 +117,7 @@ export function AIInsightMessage({
         <div className="w-5 h-5 bg-[var(--mw-mirage)] rounded-full flex items-center justify-center flex-shrink-0">
           <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
         </div>
-        <span className="text-xs font-medium text-[var(--mw-mirage)]">
+        <span className="text-xs font-medium text-foreground">
           Intelligence Hub
         </span>
         {timestamp && (

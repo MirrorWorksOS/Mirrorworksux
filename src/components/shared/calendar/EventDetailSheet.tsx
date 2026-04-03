@@ -104,7 +104,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
               <Icon className={cn('w-5 h-5', cfg.text)} strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-base font-medium text-[var(--mw-mirage)] leading-tight">
+              <SheetTitle className="text-base font-medium text-foreground leading-tight">
                 {event.title}
               </SheetTitle>
               <SheetDescription className="mt-1 flex items-center gap-2 text-sm">
@@ -229,7 +229,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
           <div className="flex flex-wrap gap-2 w-full">
             <Button
               size="sm"
-              className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] text-xs font-medium gap-1.5"
+              className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] text-xs font-medium gap-1.5"
               onClick={() => { toast.success('Event marked as complete'); onOpenChange(false); }}
             >
               <Check className="w-4 h-4" /> Mark Complete

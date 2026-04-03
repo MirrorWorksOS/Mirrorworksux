@@ -76,7 +76,7 @@ const RFQS: RFQ[] = [
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
   open:    { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', label: 'Open' },
   closed:  { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Closed' },
-  awarded: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Awarded' },
+  awarded: { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Awarded' },
   draft:   { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft' },
 };
 
@@ -88,10 +88,10 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
       <SheetContent className="w-[520px] sm:max-w-[520px] p-0 overflow-y-auto border-l border-[var(--border)]">
         <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm  font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span>
+            <span className="text-sm  font-medium text-foreground">{rfq.rfqNumber}</span>
             <StatusBadge variant={rfq.status === 'open' ? 'info' : rfq.status === 'awarded' ? 'success' : 'neutral'}>{cfg.label}</StatusBadge>
           </div>
-          <SheetTitle className="text-base font-medium text-[var(--mw-mirage)]">{rfq.title}</SheetTitle>
+          <SheetTitle className="text-base font-medium text-foreground">{rfq.title}</SheetTitle>
           <SheetDescription className="text-[var(--neutral-500)]  text-xs">{rfq.sku} · Qty: {rfq.qty} {rfq.unit}</SheetDescription>
         </SheetHeader>
 
@@ -111,29 +111,29 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                   <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-card')}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[var(--mw-mirage)]">{q.supplier}</span>
+                        <span className="text-sm font-medium text-foreground">{q.supplier}</span>
                         {q.aiPick && (
-                          <span className="text-[10px] bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                          <span className="text-[10px] bg-[var(--mw-yellow-400)] text-primary-foreground px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                             <Sparkles className="w-2.5 h-2.5" /> AI pick
                           </span>
                         )}
                         {i === 0 && !q.aiPick && (
-                          <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
+                          <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-[10px] rounded-full px-1.5">Lowest</Badge>
                         )}
                       </div>
-                      <span className="text-xl font-medium tabular-nums text-[var(--mw-mirage)]">
+                      <span className="text-xl font-medium tabular-nums text-foreground">
                         ${q.unitPrice.toFixed(2)}<span className="text-xs text-[var(--neutral-500)] font-normal">/{rfq.unit.replace(/s$/, '')}</span>
                       </span>
                     </div>
                     <div className="flex items-center gap-6 text-xs text-[var(--neutral-500)]">
-                      <span>Lead: <strong className="text-[var(--mw-mirage)]">{q.leadTime}d</strong></span>
-                      <span>Total: <strong className="text-[var(--mw-mirage)] tabular-nums">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
+                      <span>Lead: <strong className="text-foreground">{q.leadTime}d</strong></span>
+                      <span>Total: <strong className="text-foreground tabular-nums">${(q.unitPrice * rfq.qty).toLocaleString('en-AU', { minimumFractionDigits: 2 })}</strong></span>
                       <span>Valid to: {q.validUntil}</span>
                     </div>
                     {q.notes && <p className="text-xs text-[var(--mw-amber)] mt-1">⚠ {q.notes}</p>}
                     {rfq.status === 'open' && (
                       <Button size="sm" className={cn('w-full mt-3 h-12 text-xs gap-1', q.aiPick
-                        ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
+                        ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
                         : 'bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white'
                       )} onClick={() => toast.success(`Awarded to ${q.supplier}`)}>
                         <Check className="w-4 h-4" /> Award to {q.supplier.split(' ')[0]}
@@ -165,8 +165,8 @@ export function BuyRFQs() {
   const countClosed = RFQS.filter(r => r.status === 'closed').length;
 
   const columns: MwColumnDef<RFQ>[] = [
-    { key: 'rfqNumber', header: 'RFQ #', tooltip: 'Request for quotation number', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span> },
-    { key: 'title', header: 'Title', tooltip: 'RFQ description', cell: (rfq) => <span className="font-medium text-[var(--mw-mirage)]">{rfq.title}</span> },
+    { key: 'rfqNumber', header: 'RFQ #', tooltip: 'Request for quotation number', cell: (rfq) => <span className="font-medium text-foreground">{rfq.rfqNumber}</span> },
+    { key: 'title', header: 'Title', tooltip: 'RFQ description', cell: (rfq) => <span className="font-medium text-foreground">{rfq.title}</span> },
     { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', cell: (rfq) => <span className="text-xs tabular-nums text-[var(--neutral-500)]">{rfq.sku}</span> },
     { key: 'qty', header: 'Qty', tooltip: 'Requested quantity', cell: (rfq) => <span className="tabular-nums">{rfq.qty}</span> },
     { key: 'suppliers', header: 'Suppliers', tooltip: 'Number of invited suppliers', cell: (rfq) => <span className="tabular-nums">{rfq.suppliers}</span> },
@@ -197,7 +197,7 @@ export function BuyRFQs() {
         title="RFQs"
         subtitle={`${RFQS.filter(r => r.status === 'open').length} open · ${RFQS.filter(r => r.status === 'awarded').length} awarded`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
             <AnimatedPlus className="w-4 h-4" /> New RFQ
           </Button>
         }

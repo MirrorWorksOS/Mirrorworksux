@@ -126,13 +126,13 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
         role="img"
         aria-label="Gantt chart"
       >
-        <rect width={svgW} height={svgH} fill="white" />
+        <rect width={svgW} height={svgH} fill="var(--card)" />
         <line
           x1={LABEL_W}
           y1={0}
           x2={LABEL_W}
           y2={svgH}
-          stroke="var(--neutral-200)"
+          stroke="var(--border)"
           strokeWidth={1}
         />
         {dayTicks.map((d, i) => {
@@ -144,7 +144,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                 y1={HEADER_H}
                 x2={x}
                 y2={svgH}
-                stroke="var(--neutral-200)"
+                stroke="var(--border)"
                 strokeWidth={1}
               />
               <text
@@ -176,7 +176,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
               y1={y + ROW_H}
               x2={svgW}
               y2={y + ROW_H}
-              stroke="var(--neutral-200)"
+              stroke="var(--border)"
               strokeWidth={1}
             />
           );
@@ -238,7 +238,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
           return (
             <g key={task.id}>
               <title>{task.label}</title>
-              <text x={12} y={y + ROW_H / 2 + 4} fill="var(--neutral-900)" fontSize={12} fontWeight={500}>
+              <text x={12} y={y + ROW_H / 2 + 4} fill="var(--foreground)" fontSize={12} fontWeight={500}>
                 {labelShort}
               </text>
               {bar}

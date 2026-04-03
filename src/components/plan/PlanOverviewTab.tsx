@@ -132,7 +132,7 @@ export function PlanOverviewTab() {
       key: 'part',
       header: 'Part',
       cell: (row) => (
-        <span className="text-xs font-medium text-[var(--mw-mirage)]">{row.part}</span>
+        <span className="text-xs font-medium text-foreground">{row.part}</span>
       ),
     },
     {
@@ -146,7 +146,7 @@ export function PlanOverviewTab() {
       key: 'toProduce',
       header: 'To Produce',
       cell: (row) => (
-        <span className="text-xs tabular-nums text-[var(--mw-mirage)]">{row.toProduce}</span>
+        <span className="text-xs tabular-nums text-foreground">{row.toProduce}</span>
       ),
     },
     {
@@ -197,7 +197,7 @@ export function PlanOverviewTab() {
         {/* Job Metadata Section */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className=" text-lg font-medium text-[var(--mw-mirage)]">
+            <h2 className=" text-lg font-medium text-foreground">
               Job Details
             </h2>
             <Button variant="outline" className="border-[var(--border)]">
@@ -210,7 +210,7 @@ export function PlanOverviewTab() {
             {/* Job ID and Stage */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Job ID #
                 </label>
                 <Input
@@ -220,7 +220,7 @@ export function PlanOverviewTab() {
                 />
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Stage
                 </label>
                 <Select defaultValue="planning">
@@ -242,13 +242,13 @@ export function PlanOverviewTab() {
             {/* Customer Info */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Customer
                 </label>
                 <Input placeholder="Select customer..." />
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Customer Contact
                 </label>
                 <Input placeholder="Primary contact name" />
@@ -258,13 +258,13 @@ export function PlanOverviewTab() {
             {/* PO and Tags */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Customer PO
                 </label>
                 <Input placeholder="Purchase order reference" />
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Tags
                 </label>
                 <div className="flex gap-2">
@@ -277,7 +277,7 @@ export function PlanOverviewTab() {
             {/* Sales Order and Opportunity — linked entities (§4.5); IDs match Sell mocks */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Sales Order
                 </label>
                 <button
@@ -292,7 +292,7 @@ export function PlanOverviewTab() {
                 </button>
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Opportunity
                 </label>
                 <button
@@ -311,19 +311,19 @@ export function PlanOverviewTab() {
             {/* Dates */}
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Order Date
                 </label>
                 <Input type="date" defaultValue="2026-03-15" />
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Planned Production Date
                 </label>
                 <Input type="date" defaultValue="2026-04-01" />
               </div>
               <div>
-                <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+                <label className="block  text-xs font-medium text-foreground mb-2">
                   Expected Delivery Date
                 </label>
                 <Input type="date" defaultValue="2026-04-15" />
@@ -332,7 +332,7 @@ export function PlanOverviewTab() {
 
             {/* Sales Rep */}
             <div>
-              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+              <label className="block  text-xs font-medium text-foreground mb-2">
                 Sales Representative
               </label>
               <Select>
@@ -349,7 +349,7 @@ export function PlanOverviewTab() {
 
             {/* Shipping and Description */}
             <div>
-              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+              <label className="block  text-xs font-medium text-foreground mb-2">
                 Shipping Instructions
               </label>
               <Textarea
@@ -359,7 +359,7 @@ export function PlanOverviewTab() {
             </div>
 
             <div>
-              <label className="block  text-xs font-medium text-[var(--mw-mirage)] mb-2">
+              <label className="block  text-xs font-medium text-foreground mb-2">
                 Description
               </label>
               <Textarea
@@ -373,7 +373,7 @@ export function PlanOverviewTab() {
         {/* Products Table */}
         <Card className="p-6">
           <div className="mb-4">
-            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-foreground">
               Products
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -407,7 +407,7 @@ export function PlanOverviewTab() {
         {/* Budget Section */}
         <Card className="p-6">
           <div className="mb-4">
-            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-foreground">
               Budget
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -417,29 +417,29 @@ export function PlanOverviewTab() {
 
           <div className="space-y-4">
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
+              <div className=" text-xs font-medium text-foreground">
                 Materials
               </div>
               <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-foreground">
                 $500
               </div>
-              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-foreground">
                 $19,500
               </div>
               <ProgressBar value={500} max={20000} size="sm" />
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
+              <div className=" text-xs font-medium text-foreground">
                 Labour
               </div>
               <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $20,000
               </div>
-              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-foreground">
                 $10,000
               </div>
               <div className=" text-xs tabular-nums text-[var(--mw-amber)]">
@@ -449,16 +449,16 @@ export function PlanOverviewTab() {
             </div>
 
             <div className="grid grid-cols-5 gap-4 items-center">
-              <div className=" text-xs font-medium text-[var(--mw-mirage)]">
+              <div className=" text-xs font-medium text-foreground">
                 Purchase
               </div>
               <div className=" text-xs tabular-nums text-[var(--neutral-500)]">
                 $10,000
               </div>
-              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-foreground">
                 $3,000
               </div>
-              <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">
+              <div className=" text-xs tabular-nums text-foreground">
                 $7,000
               </div>
               <ProgressBar value={3000} max={10000} size="sm" />
@@ -487,7 +487,7 @@ export function PlanOverviewTab() {
         {/* Schedule Mini-Calendar */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-sm font-medium text-foreground">
               Schedule
             </h3>
             <Calendar className="w-4 h-4 text-[var(--neutral-500)]" />
@@ -495,7 +495,7 @@ export function PlanOverviewTab() {
           
           <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 mb-4">
             <div className="text-center mb-2">
-              <span className=" text-xs font-medium text-[var(--mw-mirage)]">
+              <span className=" text-xs font-medium text-foreground">
                 April 2026
               </span>
             </div>
@@ -513,7 +513,7 @@ export function PlanOverviewTab() {
                   className={cn(
                     'text-xs p-1 rounded',
                     day === 15 ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium' :
-                    day === 8 || day === 22 ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]' :
+                    day === 8 || day === 22 ? 'bg-[var(--neutral-100)] text-foreground' :
                     'text-[var(--neutral-500)]'
                   )}
                 >
@@ -525,7 +525,7 @@ export function PlanOverviewTab() {
 
           <div className="space-y-2">
             <div className="p-2 bg-[var(--neutral-100)] rounded">
-              <p className=" text-xs font-medium text-[var(--mw-mirage)] mb-1">
+              <p className=" text-xs font-medium text-foreground mb-1">
                 Order 3rd party powder coating
               </p>
               <p className=" text-xs text-[var(--neutral-500)]">
@@ -549,7 +549,7 @@ export function PlanOverviewTab() {
         {/* Intelligence Hub Preview */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-sm font-medium text-foreground">
               Intelligence Hub
             </h3>
             <Button variant="ghost" size="sm" className="text-xs h-10">
@@ -562,7 +562,7 @@ export function PlanOverviewTab() {
             <span className="text-4xl">🔧</span>
           </div>
 
-          <p className=" text-xs font-medium text-[var(--mw-mirage)] mb-2">
+          <p className=" text-xs font-medium text-foreground mb-2">
             Customer engagement and notes
           </p>
           
@@ -573,7 +573,7 @@ export function PlanOverviewTab() {
                 <AvatarFallback className="text-xs">JW</AvatarFallback>
               </Avatar>
               <div>
-                <p className=" text-xs text-[var(--mw-mirage)]">
+                <p className=" text-xs text-foreground">
                   Jill Wright uploaded BOM and NC files
                 </p>
                 <p className=" text-[10px] text-[var(--neutral-500)]">
@@ -586,7 +586,7 @@ export function PlanOverviewTab() {
 
         {/* Files Section */}
         <Card className="p-6">
-          <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
+          <h3 className=" text-sm font-medium text-foreground mb-3">
             Files
           </h3>
           
@@ -596,7 +596,7 @@ export function PlanOverviewTab() {
                 CAD
               </div>
               <div className="flex-1 min-w-0">
-                <p className=" text-xs font-medium text-[var(--mw-mirage)] truncate">
+                <p className=" text-xs font-medium text-foreground truncate">
                   CAD Drawings
                 </p>
                 <p className=" text-[10px] text-[var(--neutral-500)]">
@@ -620,7 +620,7 @@ export function PlanOverviewTab() {
 
         {/* Chatter Section */}
         <Card className="p-6">
-          <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
+          <h3 className=" text-sm font-medium text-foreground mb-3">
             Chatter
           </h3>
           
@@ -636,14 +636,14 @@ export function PlanOverviewTab() {
               </Avatar>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className=" text-xs font-medium text-[var(--mw-mirage)]">
+                  <span className=" text-xs font-medium text-foreground">
                     David Miller
                   </span>
                   <span className=" text-[10px] text-[var(--neutral-500)]">
                     2 hours ago
                   </span>
                 </div>
-                <p className=" text-xs text-[var(--mw-mirage)]">
+                <p className=" text-xs text-foreground">
                   BOM reviewed and approved. Moving to production planning.
                 </p>
               </div>
@@ -661,7 +661,7 @@ export function PlanOverviewTab() {
                     'rounded-lg px-3 py-2 text-xs max-w-[85%]',
                     m.role === 'user'
                       ? 'bg-[var(--mw-mirage)] text-white'
-                      : 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+                      : 'bg-[var(--neutral-100)] text-foreground',
                   )}>
                     {m.text}
                   </div>

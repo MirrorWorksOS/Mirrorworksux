@@ -43,7 +43,7 @@ const TABS = [
 ];
 
 const MatchIcon = ({ match }: { match: string }) => {
-  if (match === 'green') return <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)]" />;
+  if (match === 'green') return <CheckCircle className="w-4 h-4 text-foreground" />;
   if (match === 'yellow') return <AlertCircle className="w-4 h-4 text-[var(--mw-yellow-400)]" />;
   return <Circle className="w-4 h-4 text-[var(--neutral-300)]" />;
 };
@@ -62,12 +62,12 @@ export function PurchaseOrders() {
       key: 'id',
       header: 'PO #',
       tooltip: 'Purchase order number',
-      cell: (po) => <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{po.id}</span>,
+      cell: (po) => <span className="text-xs text-foreground font-medium tabular-nums">{po.id}</span>,
     },
     {
       key: 'vendor',
       header: 'VENDOR',
-      cell: (po) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{po.vendor}</span>,
+      cell: (po) => <span className="text-sm font-medium text-foreground">{po.vendor}</span>,
     },
     {
       key: 'orderDate',
@@ -119,11 +119,11 @@ export function PurchaseOrders() {
   ];
 
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Purchase orders"
         actions={
-          <Button className="h-12 gap-2 rounded-md bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+          <Button className="h-12 gap-2 rounded-md bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
             <PlusCircle className="h-5 w-5" /> New PO
           </Button>
         }
@@ -132,7 +132,7 @@ export function PurchaseOrders() {
       <div className="flex items-center gap-3">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-white border-[var(--border)] rounded text-sm" />
+          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-card border-[var(--border)] rounded text-sm" />
         </div>
         <Button variant="outline" size="sm" className="h-10 gap-2 rounded-md border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
         <Button variant="outline" size="sm" className="h-10 gap-2 rounded-md border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
@@ -141,7 +141,7 @@ export function PurchaseOrders() {
       <div className="flex gap-0 border-b border-[var(--border)]">
         {TABS.map(tab => (
           <button key={tab.label} onClick={() => setActiveTab(tab.label)}
-            className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-[var(--mw-mirage)] font-medium" : "text-[var(--neutral-500)]")}>
+            className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-foreground font-medium" : "text-[var(--neutral-500)]")}>
             {tab.label} <span className="text-xs">({tab.count})</span>
             {activeTab === tab.label && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}
           </button>
@@ -172,7 +172,7 @@ export function PurchaseOrders() {
           <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
           {[1, 2, 3].map(p => (
             <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}>{p}</Button>
+              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}>{p}</Button>
           ))}
           <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>
         </div>

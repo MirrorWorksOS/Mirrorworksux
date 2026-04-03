@@ -52,10 +52,10 @@ const MOs: MO[] = [
 ];
 
 const STATUS_CONFIG: Record<MOStatus, { bar: string; badge: string; text: string; label: string }> = {
-  completed: { bar: 'var(--mw-yellow-400)', badge: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Completed' },
-  in_progress: { bar: 'var(--chart-scale-mid)', badge: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'In progress' },
+  completed: { bar: 'var(--mw-yellow-400)', badge: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Completed' },
+  in_progress: { bar: 'var(--chart-scale-mid)', badge: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'In progress' },
   scheduled: { bar: 'var(--neutral-400)', badge: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-600)]', label: 'Scheduled' },
-  overdue: { bar: 'var(--neutral-700)', badge: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Overdue' },
+  overdue: { bar: 'var(--neutral-700)', badge: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Overdue' },
 };
 
 const START_DATE = new Date(2026, 2, 18);
@@ -103,13 +103,13 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-AU', { day: 'numeric', mon
 
 const listColumns: MwColumnDef<MO>[] = [
   { key: 'moNumber', header: 'MO #', tooltip: 'Manufacturing order number', cell: (mo) => (
-    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+    <span className="font-medium tabular-nums text-foreground inline-flex items-center gap-1.5">
       <Factory className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
       {mo.moNumber}
     </span>
   ) },
-  { key: 'job', header: 'Job', tooltip: 'Associated job reference', cell: (mo) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.job}</span> },
-  { key: 'product', header: 'Product', cell: (mo) => <span className="text-[var(--mw-mirage)]">{mo.product}</span> },
+  { key: 'job', header: 'Job', tooltip: 'Associated job reference', cell: (mo) => <span className="font-medium tabular-nums text-foreground">{mo.job}</span> },
+  { key: 'product', header: 'Product', cell: (mo) => <span className="text-foreground">{mo.product}</span> },
   { key: 'workCenter', header: 'Work Centre', tooltip: 'Assigned work centre', cell: (mo) => <span className="text-[var(--neutral-600)]">{mo.workCenter}</span> },
   {
     key: 'operator',
@@ -202,12 +202,12 @@ export function MakeSchedule() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'In Progress', value: statusCounts.in_progress, sub: 'Active operations', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Scheduled', value: statusCounts.scheduled, sub: 'Upcoming orders', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'In Progress', value: statusCounts.in_progress, sub: 'Active operations', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Scheduled', value: statusCounts.scheduled, sub: 'Upcoming orders', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Overdue', value: statusCounts.overdue, sub: 'Past due date', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
-          { label: 'Completed', value: statusCounts.completed, sub: `${MOs.length} total MOs`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Completed', value: statusCounts.completed, sub: `${MOs.length} total MOs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>

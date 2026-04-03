@@ -42,7 +42,7 @@ const WORKFLOWS = [
 type WFStatus = 'active' | 'paused' | 'draft';
 
 const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
-  active: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  active: { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
   paused: { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
   draft:  { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]' },
 };
@@ -253,10 +253,10 @@ function NodeDetailPanel({
   onClose: () => void;
 }) {
   return (
-    <div className="w-[300px] flex-shrink-0 border-l border-[var(--border)] bg-white flex flex-col overflow-hidden">
+    <div className="w-[300px] flex-shrink-0 border-l border-[var(--border)] bg-card flex flex-col overflow-hidden">
       {/* Header */}
       <div className="h-14 border-b border-[var(--border)] px-4 flex items-center justify-between flex-shrink-0">
-        <span className="text-sm font-medium text-[var(--mw-mirage)]">
+        <span className="text-sm font-medium text-foreground">
           Node properties
         </span>
         <button
@@ -272,7 +272,7 @@ function NodeDetailPanel({
         {/* Kind badge + icon */}
         <div>
           <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-1.5">Node type</p>
-          <span className="inline-flex items-center gap-1.5 bg-[var(--neutral-100)] border border-[var(--border)] px-2 py-1 rounded text-xs text-[var(--mw-mirage)] capitalize font-medium">
+          <span className="inline-flex items-center gap-1.5 bg-[var(--neutral-100)] border border-[var(--border)] px-2 py-1 rounded text-xs text-foreground capitalize font-medium">
             <node.icon className="w-3.5 h-3.5" />
             {node.kind}
           </span>
@@ -402,12 +402,12 @@ export function ControlWorkflowDesigner() {
     <div className="flex h-full overflow-hidden">
 
       {/* -- Left panel ---------------------------------------------------- */}
-      <div className="w-[268px] flex-shrink-0 border-r border-[var(--border)] bg-white flex flex-col overflow-hidden">
+      <div className="w-[268px] flex-shrink-0 border-r border-[var(--border)] bg-card flex flex-col overflow-hidden">
 
         {/* Panel header */}
         <div className="p-4 border-b border-[var(--border)] space-y-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-[var(--mw-mirage)]">
+            <h2 className="text-sm font-medium text-foreground">
               Workflows
             </h2>
             <Button size="sm" className="h-10 w-10 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
@@ -422,7 +422,7 @@ export function ControlWorkflowDesigner() {
               <span className="text-xs font-medium text-[var(--mw-purple)]">Generate with AI</span>
             </div>
             <Textarea
-              className="w-full bg-white border border-[var(--border)] rounded-md text-xs px-2.5 py-2 text-[var(--mw-mirage)] resize-none focus:outline-none focus:border-[var(--mw-purple)] transition-colors leading-relaxed"
+              className="w-full bg-card border border-[var(--border)] rounded-md text-xs px-2.5 py-2 text-foreground resize-none focus:outline-none focus:border-[var(--mw-purple)] transition-colors leading-relaxed"
               rows={2}
               placeholder="e.g. When a job is overdue, notify the manager and reschedule the machine..."
               value={aiPrompt}
@@ -462,7 +462,7 @@ export function ControlWorkflowDesigner() {
                 )}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-xs font-medium text-[var(--mw-mirage)] truncate pr-2 leading-tight">{wf.name}</span>
+                  <span className="text-xs font-medium text-foreground truncate pr-2 leading-tight">{wf.name}</span>
                   <Badge className={cn('text-[10px] px-1.5 py-0 h-4 border-0 flex-shrink-0 rounded', sc.bg, sc.text)}>
                     {wf.status}
                   </Badge>
@@ -491,7 +491,7 @@ export function ControlWorkflowDesigner() {
                   <div className={cn('w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0', nt.bg)}>
                     <Icon className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-xs text-[var(--mw-mirage)] truncate leading-tight">{nt.label}</span>
+                  <span className="text-xs text-foreground truncate leading-tight">{nt.label}</span>
                 </div>
               );
             })}
@@ -503,11 +503,11 @@ export function ControlWorkflowDesigner() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Toolbar */}
-        <div className="h-14 border-b border-[var(--border)] bg-white flex items-center px-4 gap-3 flex-shrink-0">
+        <div className="h-14 border-b border-[var(--border)] bg-card flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
           <IconWell icon={Sparkles} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--mw-mirage)] truncate leading-tight">
+            <p className="text-sm font-medium text-foreground truncate leading-tight">
               {selectedWF.name}
             </p>
             <p className="text-xs text-[var(--neutral-500)]">Trigger: {selectedWF.trigger}</p>
@@ -520,11 +520,11 @@ export function ControlWorkflowDesigner() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden sm:flex"
+            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-foreground text-xs hidden sm:flex"
               onClick={() => toast('Edit mode coming soon')}>
               <Edit2 className="w-4 h-4" /> Edit
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-[var(--mw-mirage)] text-xs hidden md:flex"
+            <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-foreground text-xs hidden md:flex"
               onClick={() => toast.success('Workflow duplicated')}>
               <Copy className="w-4 h-4" /> Duplicate
             </Button>

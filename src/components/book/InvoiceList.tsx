@@ -73,12 +73,12 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
       key: 'id',
       header: 'INVOICE #',
       tooltip: 'Unique invoice identifier',
-      cell: (inv) => <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{inv.id}</span>,
+      cell: (inv) => <span className="text-xs text-foreground font-medium tabular-nums">{inv.id}</span>,
     },
     {
       key: 'customer',
       header: 'CUSTOMER',
-      cell: (inv) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{inv.customer}</span>,
+      cell: (inv) => <span className="text-sm font-medium text-foreground">{inv.customer}</span>,
     },
     {
       key: 'issueDate',
@@ -137,7 +137,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
   ];
 
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Invoices"
         subtitle="Manage customer invoices and track payments"
@@ -188,7 +188,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
           <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
           {[1, 2, 3, 4, 5].map(p => (
             <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}
+              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}
             >{p}</Button>
           ))}
           <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>

@@ -127,7 +127,7 @@ function GeneralPanel() {
             { label: 'Enable AI deal scoring', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -157,9 +157,9 @@ function PipelinePanel() {
         <SectionLabel>Pipeline stages</SectionLabel>
         <div className="space-y-2">
           {stages.map(s => (
-            <div key={s.name} className="flex items-center gap-4 bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
+            <div key={s.name} className="flex items-center gap-4 bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-              <span className="flex-1 text-sm text-[var(--neutral-900)] font-medium">{s.name}</span>
+              <span className="flex-1 text-sm text-foreground font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[var(--neutral-500)]">Probability</span>
                 <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[var(--border)] text-right  rounded-lg" />
@@ -174,8 +174,8 @@ function PipelinePanel() {
         <SectionLabel>Lead sources</SectionLabel>
         <div className="flex flex-wrap gap-2">
           {sources.map(s => (
-            <div key={s} className="flex items-center gap-1.5 bg-white border border-[var(--border)] rounded-full px-3 py-1.5">
-              <span className="text-sm text-[var(--neutral-900)]">{s}</span>
+            <div key={s} className="flex items-center gap-1.5 bg-card border border-[var(--border)] rounded-full px-3 py-1.5">
+              <span className="text-sm text-foreground">{s}</span>
               <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors" onClick={() => toast('Lead source removed')}>
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -197,8 +197,8 @@ function PipelinePanel() {
             { rule: 'No activity for 14+ days', points: '-10' },
           ].map(r => (
             <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--neutral-900)]">{r.rule}</span>
-              <span className={cn('text-sm  font-medium', r.points.startsWith('+') ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-error)]')}>
+              <span className="text-sm text-foreground">{r.rule}</span>
+              <span className={cn('text-sm  font-medium', r.points.startsWith('+') ? 'text-foreground' : 'text-[var(--mw-error)]')}>
                 {r.points}
               </span>
             </div>
@@ -269,7 +269,7 @@ function QuotingPanel() {
             { label: 'Require approval for discounts over', value: '10', suffix: '%' },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2">
-              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <div className="flex items-center gap-2">
                 <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-lg w-24 text-right " />
                 <span className="text-sm text-[var(--neutral-500)]">{r.suffix}</span>
@@ -278,7 +278,7 @@ function QuotingPanel() {
           ))}
           <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[var(--neutral-900)]">Notify manager on quote submission</span>
+              <span className="text-sm text-foreground">Notify manager on quote submission</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Send email when estimator submits a quote for review</p>
             </div>
             <Switch defaultChecked />
@@ -302,7 +302,7 @@ function PaymentsPanel() {
     <div className="space-y-6 max-w-[640px]">
       <div className="space-y-4">
         {integrations.map(integ => (
-          <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-11 h-11 rounded-[var(--shape-md)] flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
@@ -310,9 +310,9 @@ function PaymentsPanel() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-[var(--neutral-900)]">{integ.name}</h3>
+                    <h3 className="text-sm font-medium text-foreground">{integ.name}</h3>
                     {integ.connected && (
-                      <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                      <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                     )}
                   </div>
                   <p className="text-xs text-[var(--neutral-500)] mt-0.5">{integ.description}</p>
@@ -328,7 +328,7 @@ function PaymentsPanel() {
                   'h-9 text-xs rounded-[var(--shape-md)]',
                   integ.connected
                     ? 'border-[var(--border)] text-[var(--neutral-500)]'
-                    : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
+                    : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
                 )}
                 onClick={() => toast(integ.connected ? `Opening ${integ.name} configuration\u2026` : `Connecting to ${integ.name}\u2026`)}
               >
@@ -339,7 +339,7 @@ function PaymentsPanel() {
         ))}
       </div>
       <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h4 className="text-sm font-medium text-[var(--neutral-900)] mb-3">Bank account (EFT)</h4>
+        <h4 className="text-sm font-medium text-foreground mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
@@ -351,7 +351,7 @@ function PaymentsPanel() {
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] rounded-[var(--shape-md)]" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-[var(--shape-md)]" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -378,10 +378,10 @@ function ActivitiesPanel() {
           {activityTypes.map(a => {
             const Icon = a.icon;
             return (
-              <div key={a.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <div key={a.name} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
                 <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 text-[var(--neutral-900)]" />
-                  <span className="text-sm text-[var(--neutral-900)] font-medium">{a.name}</span>
+                  <Icon className="w-4 h-4 text-foreground" />
+                  <span className="text-sm text-foreground font-medium">{a.name}</span>
                 </div>
                 <Switch defaultChecked={a.enabled} />
               </div>
@@ -402,7 +402,7 @@ function ActivitiesPanel() {
             { label: 'Reminder 1 day before activity due date', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--neutral-900)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -432,8 +432,8 @@ function AnalyticsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Sell dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--neutral-900)]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}
@@ -477,7 +477,7 @@ function IntegrationsPanel() {
         { name: 'Google Cal', description: 'Sync activities to Google Calendar', connected: false, colour: '#4285F4' },
         { name: 'Slack', description: 'Post won/lost deal notifications to Slack', connected: false, colour: '#4A154B' },
       ].map(integ => (
-        <Card key={integ.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
@@ -485,9 +485,9 @@ function IntegrationsPanel() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-medium text-[var(--neutral-900)]">{integ.name}</h3>
+                  <h3 className="text-sm font-medium text-foreground">{integ.name}</h3>
                   {integ.connected && (
-                    <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-900)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                    <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
                   )}
                 </div>
                 <p className="text-xs text-[var(--neutral-500)] mt-0.5">{integ.description}</p>
@@ -500,7 +500,7 @@ function IntegrationsPanel() {
                 'h-9 text-xs rounded-[var(--shape-md)]',
                 integ.connected
                   ? 'border-[var(--border)] text-[var(--neutral-500)]'
-                  : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] border-0'
+                  : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
               )}
               onClick={() => toast(integ.connected ? `Opening ${integ.name} configuration\u2026` : `Connecting to ${integ.name}\u2026`)}
             >

@@ -96,7 +96,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
         <div className="w-1 rounded-full" style={{ backgroundColor: moduleMeta.dot }} />
         <div className="min-w-0 flex-1 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="text-base font-medium text-[var(--mw-mirage)]">{moduleLabels[moduleKey]}</h4>
+            <h4 className="text-base font-medium text-foreground">{moduleLabels[moduleKey]}</h4>
             <Badge
               className="rounded-full border-0 px-2.5 py-0.5 text-xs"
               style={{ backgroundColor: moduleMeta.bg, color: moduleMeta.text }}
@@ -112,7 +112,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
                 <button
                   key={group}
                   type="button"
-                  className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-xs text-[var(--neutral-600)] transition-colors hover:bg-[var(--neutral-100)]"
+                  className="rounded-full border border-[var(--border)] bg-card px-2.5 py-1 text-xs text-[var(--neutral-600)] transition-colors hover:bg-[var(--neutral-100)]"
                 >
                   {group}
                 </button>
@@ -123,7 +123,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
             <CollapsibleTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 text-sm font-medium text-[var(--neutral-800)] hover:text-[var(--mw-mirage)]"
+                className="flex items-center gap-2 text-sm font-medium text-[var(--neutral-800)] hover:text-foreground"
               >
                 View permissions
                 <ChevronDown className={cn('h-4 w-4 transition-transform', open && 'rotate-180')} />
@@ -138,7 +138,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 rounded-xl border-[var(--border)] bg-white px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                  className="h-10 rounded-xl border-[var(--border)] bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
                 >
                   <Plus className="h-4 w-4" />
                   Add to group
@@ -181,7 +181,7 @@ export function UnassignedModuleCard({
   moduleKey: ModuleKey;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-white p-4 opacity-60">
+    <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-4 opacity-60">
       <span className="text-sm text-[var(--neutral-800)]">{moduleLabels[moduleKey]}</span>
       <Button variant="outline" className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-transparent px-3 text-xs">
         + Assign

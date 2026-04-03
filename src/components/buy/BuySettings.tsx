@@ -120,7 +120,7 @@ function GeneralPanel() {
             { label: 'Over $10,000', approver: 'Director' },
           ].map(t => (
             <div key={t.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--mw-mirage)]">{t.label}</span>
+              <span className="text-sm text-foreground">{t.label}</span>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
             </div>
           ))}
@@ -140,7 +140,7 @@ function GeneralPanel() {
             { label: 'Allow partial deliveries', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -199,7 +199,7 @@ function SuppliersPanel() {
         <div className="space-y-2">
           {categories.map(c => (
             <div key={c} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
-              <span className="text-sm text-[var(--mw-mirage)] font-medium">{c}</span>
+              <span className="text-sm text-foreground font-medium">{c}</span>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-lg" onClick={() => toast('Edit approval level coming soon')}>Edit</Button>
                 <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
@@ -224,7 +224,7 @@ function SuppliersPanel() {
             { label: 'Auto-flag suppliers below 70% score', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -254,7 +254,7 @@ function ReportsPanel() {
         <div className="space-y-2">
           {reports.map(r => (
             <div key={r.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
             </div>
           ))}

@@ -28,7 +28,7 @@ export function DashboardWidget({
       )}
     >
       <div className="mb-4 flex items-start justify-between gap-4">
-        <h2 className="text-base font-medium text-[var(--neutral-900)]">
+        <h2 className="text-base font-medium text-foreground">
           {title}
         </h2>
         {actions ? (

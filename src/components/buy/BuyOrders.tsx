@@ -48,16 +48,16 @@ const getStatusBadge = (status: POStatus) => {
   switch (status) {
     case 'draft': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Draft', dot: 'var(--neutral-500)' };
     case 'sent': return { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]', label: 'Sent', dot: 'var(--mw-blue)' };
-    case 'acknowledged': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Acknowledged', dot: 'var(--mw-mirage)' };
+    case 'acknowledged': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Acknowledged', dot: 'var(--mw-mirage)' };
     case 'partial': return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', label: 'Partial', dot: 'var(--mw-warning)' };
-    case 'received': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Received', dot: 'var(--mw-mirage)' };
+    case 'received': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Received', dot: 'var(--mw-mirage)' };
     case 'cancelled': return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Cancelled', dot: 'var(--mw-error)' };
   }
 };
 
 const poColumns: MwColumnDef<PurchaseOrder>[] = [
-  { key: 'poNumber', header: 'PO #', tooltip: 'Purchase order number', cell: (row) => <span className="font-medium text-[var(--mw-mirage)]">{row.poNumber}</span> },
-  { key: 'supplier', header: 'Supplier', tooltip: 'Supplier company name', cell: (row) => <span className="text-[var(--mw-mirage)]">{row.supplier}</span> },
+  { key: 'poNumber', header: 'PO #', tooltip: 'Purchase order number', cell: (row) => <span className="font-medium text-foreground">{row.poNumber}</span> },
+  { key: 'supplier', header: 'Supplier', tooltip: 'Supplier company name', cell: (row) => <span className="text-foreground">{row.supplier}</span> },
   { key: 'date', header: 'Date', tooltip: 'Order creation date', cell: (row) => {
     const d = new Date(row.date);
     return <span className="tabular-nums text-[var(--neutral-500)]">{d.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</span>;
@@ -164,8 +164,8 @@ export function BuyOrders() {
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--neutral-100)]">
           <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredPOs.length} of {filteredPOs.length}</p>
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Previous</button>
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]" disabled>Next</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Next</button>
           </div>
         </div>
       </motion.div>

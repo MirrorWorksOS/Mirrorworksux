@@ -143,7 +143,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
       tooltip: 'Unique invoice identifier',
       cell: (invoice) => (
         <div className="flex flex-col">
-          <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
+          <span className="text-xs text-foreground font-medium tabular-nums">
             {invoice.id}
           </span>
           {invoice.jobReference && (
@@ -165,7 +165,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               {invoice.customer.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="font-medium text-xs text-[var(--mw-mirage)]">
+          <span className="font-medium text-xs text-foreground">
             {invoice.customer}
           </span>
         </div>
@@ -218,7 +218,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
       headerClassName: 'text-right',
       className: 'text-right',
       cell: (invoice) => (
-        <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">
+        <span className="text-xs text-foreground font-medium tabular-nums">
           ${invoice.total.toLocaleString()}
         </span>
       ),
@@ -233,7 +233,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
         <span
           className={cn(
             'tabular-nums text-xs font-medium',
-            invoice.balanceDue === 0 ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]'
+            invoice.balanceDue === 0 ? 'text-foreground' : 'text-foreground'
           )}
         >
           {invoice.balanceDue === 0 ? 'Paid' : `$${invoice.balanceDue.toLocaleString()}`}
@@ -285,7 +285,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
   return (
     <div className="flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
+      <div className="bg-card border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
@@ -294,10 +294,10 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by invoice # or customer..."
-                className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-white"
+                className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-card"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-[var(--mw-mirage)]" onClick={() => toast('Filter panel coming soon')}>
+            <Button variant="outline" className="border-[var(--border)] text-foreground" onClick={() => toast('Filter panel coming soon')}>
               <AnimatedFilter className="w-4 h-4 mr-2" />
               Filter
             </Button>
@@ -322,7 +322,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
             className={cn(
               'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors whitespace-nowrap',
               activeTab === 'all'
-                ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium'
+                ? 'bg-[var(--neutral-100)] text-foreground font-medium'
                 : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
@@ -335,7 +335,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               className={cn(
                 'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors whitespace-nowrap',
                 activeTab === status
-                  ? 'bg-[var(--neutral-100)] text-[var(--mw-mirage)] font-medium'
+                  ? 'bg-[var(--neutral-100)] text-foreground font-medium'
                   : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >

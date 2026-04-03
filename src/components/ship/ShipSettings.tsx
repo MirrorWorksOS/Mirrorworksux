@@ -105,7 +105,7 @@ function GeneralPanel() {
             { label: 'Enable bin location tracking', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -142,7 +142,7 @@ function GeneralPanel() {
             { label: 'Include weight on packing slip', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -170,7 +170,7 @@ function CarriersPanel() {
         <SectionLabel>Carrier management</SectionLabel>
         <div className="space-y-4">
           {carriers.map(c => (
-            <Card key={c.name} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card key={c.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: c.colour }}>
@@ -178,9 +178,9 @@ function CarriersPanel() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{c.name}</h3>
+                      <h3 className="text-sm font-medium text-foreground">{c.name}</h3>
                       {c.connected && (
-                        <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
+                        <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-xs rounded-full px-2 py-0.5">Active</Badge>
                       )}
                     </div>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{c.description}</p>
@@ -193,7 +193,7 @@ function CarriersPanel() {
                     'h-9 text-xs rounded-xl',
                     c.connected
                       ? 'border-[var(--border)] text-[var(--neutral-500)]'
-                      : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] border-0'
+                      : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
                   )}
                   onClick={() => toast(c.connected ? `${c.name} configuration coming soon` : `Connecting ${c.name}…`)}
                 >
@@ -213,7 +213,7 @@ function CarriersPanel() {
             { label: 'Send tracking notification to customer', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -242,8 +242,8 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Ship dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--mw-mirage)]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}

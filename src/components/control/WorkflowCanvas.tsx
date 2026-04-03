@@ -310,17 +310,17 @@ export const WORKFLOW_DATA: Record<string, WorkflowData> = {
 // ─── Visual styles per kind ───────────────────────────────────────────────────
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: string }> = {
-  trigger:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-success)]',          borderLeft: 'border-l-[var(--mw-success)]' },
+  trigger:      { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-success)]',          borderLeft: 'border-l-[var(--mw-success)]' },
   ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-[var(--mw-mirage)]', borderLeft: 'border-l-[var(--mw-purple)]' },
-  action:       { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-info)]',     borderLeft: 'border-l-[var(--mw-info)]' },
-  notification: { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
+  action:       { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-info)]',     borderLeft: 'border-l-[var(--mw-info)]' },
+  notification: { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
   condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',                iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
-  hold:         { card: 'bg-white border-[var(--mw-error)]/30',                         iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
-  email:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
-  purchase:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-error)]',    borderLeft: 'border-l-[var(--mw-error)]' },
-  schedule:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
-  machine:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
-  delay:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-500)]',            borderLeft: 'border-l-[var(--neutral-500)]' },
+  hold:         { card: 'bg-card border-[var(--mw-error)]/30',                         iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
+  email:        { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
+  purchase:     { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-error)]',    borderLeft: 'border-l-[var(--mw-error)]' },
+  schedule:     { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
+  machine:      { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
+  delay:        { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-500)]',            borderLeft: 'border-l-[var(--neutral-500)]' },
 };
 
 // ─── SVG Connection layer ────────────────────────────────────────────────────
@@ -376,7 +376,7 @@ function Connections({ edges, nodes, canvasW, canvasH }: { edges: WFEdge[]; node
 function AddStepButton({ x, y }: { x: number; y: number }) {
   return (
     <button
-      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-white text-[var(--neutral-400)] transition-all hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)]"
+      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)]"
       style={{ left: x - 12, top: y - 12 }}
       title="Add step"
     >
@@ -413,14 +413,14 @@ function NodeCard({
       onClick={onClick}
     >
       {/* Connection dot top */}
-      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-white" />
+      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-card" />
 
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0', s.iconBg)}>
           <Icon className="w-4 h-4 text-white" />
         </div>
-        <span className={cn('text-xs font-medium leading-tight truncate', isDark ? 'text-white' : 'text-[var(--mw-mirage)]')}>
+        <span className={cn('text-xs font-medium leading-tight truncate', isDark ? 'text-white' : 'text-foreground')}>
           {node.title}
         </span>
       </div>
@@ -440,7 +440,7 @@ function NodeCard({
       </div>
 
       {/* Connection dot bottom */}
-      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-white" />
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-[var(--neutral-300)] bg-card" />
 
       {/* Condition branch indicators */}
       {node.kind === 'condition' && (

@@ -35,7 +35,7 @@ export function StatCard({
       <div
         className={cn(
           "mt-1 flex items-center gap-1 text-sm font-medium tabular-nums text-[var(--neutral-600)]",
-          changePositive && "text-[var(--neutral-900)]",
+          changePositive && "text-foreground",
           changeNegative && "text-[var(--neutral-700)]",
         )}
       >

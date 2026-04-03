@@ -110,7 +110,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                       className="w-full p-4 rounded-[var(--shape-lg)] bg-white/5 border border-white/10 text-left text-sm text-white/90 active:bg-white/10 transition-colors flex items-center justify-between group"
                     >
                       "{suggestion}"
-                      <Sparkles className="w-4 h-4 text-white/20 group-active:text-[var(--mw-mirage)] transition-colors" />
+                      <Sparkles className="w-4 h-4 text-white/20 group-active:text-foreground transition-colors" />
                     </motion.button>
                   ))}
                 </div>
@@ -184,13 +184,13 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                   "relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-[var(--elevation-3)] transition-all duration-[250ms]",
                   isRecording 
                      ? "bg-[var(--mw-error)] text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
-                     : "bg-white text-[var(--neutral-900)] hover:bg-[var(--neutral-100)] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                     : "bg-card text-foreground hover:bg-[var(--neutral-100)] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                )}
                whileTap={{ scale: 0.95 }}
                onClick={() => setIsRecording(!isRecording)}
             >
                {isRecording ? (
-                  <div className="w-8 h-8 rounded-xs bg-white" />
+                  <div className="w-8 h-8 rounded-xs bg-card" />
                ) : (
                   <Mic className="w-8 h-8" />
                )}

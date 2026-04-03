@@ -43,7 +43,7 @@ const MANIFESTS = [
 type Manifest = (typeof MANIFESTS)[number];
 
 const manifestColumns: MwColumnDef<Manifest>[] = [
-  { key: 'date', header: 'Date', tooltip: 'Manifest date', cell: (m) => <span className="text-[var(--mw-mirage)] tabular-nums">{m.date}</span> },
+  { key: 'date', header: 'Date', tooltip: 'Manifest date', cell: (m) => <span className="text-foreground tabular-nums">{m.date}</span> },
   { key: 'carrier', header: 'Carrier', tooltip: 'Shipping carrier', cell: (m) => (
     <span className="text-[var(--neutral-500)] inline-flex items-center gap-1.5">
       <Truck className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
@@ -95,12 +95,12 @@ export function ShipShipping() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Active Carriers', value: activeCarriers, sub: `${totalCarriers} total`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Shipments Today', value: totalShipmentsToday, sub: 'Across all carriers', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Avg On-Time', value: `${avgOnTime}%`, sub: 'Delivery performance', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Active Carriers', value: activeCarriers, sub: `${totalCarriers} total`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Shipments Today', value: totalShipmentsToday, sub: 'Across all carriers', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Avg On-Time', value: `${avgOnTime}%`, sub: 'Delivery performance', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Open Manifests', value: MANIFESTS.filter(m => m.open).length, sub: 'Awaiting closure', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -122,8 +122,8 @@ export function ShipShipping() {
             <Card key={c.name} className="p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
-                  <Truck className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} />
-                  <span className="text-sm text-[var(--mw-mirage)] font-medium">{c.name}</span>
+                  <Truck className="w-5 h-5 text-foreground" strokeWidth={1.5} />
+                  <span className="text-sm text-foreground font-medium">{c.name}</span>
                 </div>
                 <div className={cn('w-2 h-2 rounded-full', c.ok ? 'bg-[var(--mw-mirage)]' : 'bg-[var(--neutral-200)]')} />
               </div>
@@ -134,7 +134,7 @@ export function ShipShipping() {
                   { l: 'On-time', v: `${c.onTime}%` },
                 ].map(s => (
                   <div key={s.l}>
-                    <div className="text-lg text-[var(--mw-mirage)] font-medium tabular-nums">{s.v}</div>
+                    <div className="text-lg text-foreground font-medium tabular-nums">{s.v}</div>
                     <span className="text-[10px] text-[var(--neutral-500)] tracking-wider">{s.l}</span>
                   </div>
                 ))}
@@ -172,23 +172,23 @@ export function ShipShipping() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[var(--mw-mirage)] font-medium">{r.carrier}</span>
+                    <span className="text-sm text-foreground font-medium">{r.carrier}</span>
                     <span className="text-xs text-[var(--neutral-500)]">{r.service}</span>
                     {r.ai && (
-                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] font-medium flex items-center gap-1">
+                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[var(--mw-yellow-400)] text-primary-foreground font-medium flex items-center gap-1">
                         <Sparkles className="w-4 h-4" /> AI pick
                       </span>
                     )}
                   </div>
                   <span className="text-xs text-[var(--neutral-500)]">{r.days}d transit</span>
                 </div>
-                <span className="text-xl text-[var(--mw-mirage)] font-medium tabular-nums">${r.cost.toFixed(2)}</span>
+                <span className="text-xl text-foreground font-medium tabular-nums">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
                     'h-14 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
                     i === 0 || r.ai
-                      ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
-                      : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
+                      ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
+                      : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]'
                   )}
                 >
                   Select
@@ -203,7 +203,7 @@ export function ShipShipping() {
       {tab === 'manifests' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium" onClick={() => toast.success('Shipping manifest generated')}>
+            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium" onClick={() => toast.success('Shipping manifest generated')}>
               Generate manifest
             </button>
           </div>

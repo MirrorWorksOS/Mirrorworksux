@@ -158,7 +158,7 @@ const TYPE_BADGE: Record<ActivityType, { label: string; className: string }> = {
   },
   meeting: {
     label: 'Meeting',
-    className: 'border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+    className: 'border-0 bg-[var(--neutral-100)] text-foreground',
   },
   task: {
     label: 'Task',
@@ -330,7 +330,7 @@ export function SellActivities() {
 
   const activityColumns: MwColumnDef<Activity>[] = [
     { key: 'type', header: 'Type', tooltip: 'Activity type (email, call, meeting, task)', cell: (a) => <Badge className={TYPE_BADGE[a.type].className}>{TYPE_BADGE[a.type].label}</Badge> },
-    { key: 'description', header: 'Description', cell: (a) => <span className="font-medium text-[var(--neutral-900)]">{a.description}</span> },
+    { key: 'description', header: 'Description', cell: (a) => <span className="font-medium text-foreground">{a.description}</span> },
     { key: 'opportunity', header: 'Opportunity', tooltip: 'Linked sales opportunity', cell: (a) => <a href={a.opportunityPath} className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline">{a.opportunity}</a> },
     { key: 'assignedTo', header: 'Assigned to', tooltip: 'Team member responsible', cell: (a) => <span className="text-[var(--neutral-600)]">{a.assignedTo}</span> },
     { key: 'dueDate', header: 'Due date', className: 'tabular-nums', cell: (a) => <span className="text-[var(--neutral-600)]">{a.dueDate}</span> },
@@ -471,8 +471,8 @@ export function SellActivities() {
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors',
                   calendarGranularity === g
-                    ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-[var(--neutral-900)]'
-                    : 'border-[var(--border)] bg-white text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]',
+                    ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
+                    : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]',
                 )}
               >
                 {g}
@@ -501,7 +501,7 @@ export function SellActivities() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm font-medium text-[var(--neutral-900)] tabular-nums">
+                <span className="text-sm font-medium text-foreground tabular-nums">
                   {format(startOfWeek(weekAnchor, { weekStartsOn: 1 }), 'd MMM')}{' '}
                   – {format(endOfWeek(weekAnchor, { weekStartsOn: 1 }), 'd MMM yyyy')}
                 </span>
@@ -521,14 +521,14 @@ export function SellActivities() {
                   return (
                     <div
                       key={day.toISOString()}
-                      className="min-h-[140px] bg-white p-2"
+                      className="min-h-[140px] bg-card p-2"
                     >
                       <button
                         type="button"
                         onClick={() => setSelectedDate(day)}
                         className="mb-2 w-full text-left"
                       >
-                        <span className="text-xs font-medium text-[var(--neutral-900)]">
+                        <span className="text-xs font-medium text-foreground">
                           {format(day, 'EEE')}
                         </span>
                         <span className="ml-1 text-xs tabular-nums text-[var(--neutral-500)]">
@@ -570,7 +570,7 @@ export function SellActivities() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm font-medium text-[var(--neutral-900)]">
+                <span className="text-sm font-medium text-foreground">
                   {dayViewDate.toLocaleDateString('en-AU', {
                     weekday: 'long',
                     day: 'numeric',
@@ -600,7 +600,7 @@ export function SellActivities() {
                     return (
                       <div key={activity.id} className="flex flex-wrap items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
                         <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
-                        <span className="flex-1 min-w-[120px] text-sm font-medium text-[var(--neutral-900)]">
+                        <span className="flex-1 min-w-[120px] text-sm font-medium text-foreground">
                           {activity.description}
                         </span>
                         {activity.opportunity && (
@@ -625,7 +625,7 @@ export function SellActivities() {
           {selectedDate && calendarGranularity !== 'day' && (
             <Card className="overflow-hidden">
               <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3">
-                <h3 className="text-sm font-medium text-[var(--neutral-900)]">
+                <h3 className="text-sm font-medium text-foreground">
                   Activities for{' '}
                   {selectedDate.toLocaleDateString('en-AU', {
                     weekday: 'long',
@@ -653,7 +653,7 @@ export function SellActivities() {
                     return (
                       <div key={activity.id} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
                         <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
-                        <span className="flex-1 text-sm font-medium text-[var(--neutral-900)]">
+                        <span className="flex-1 text-sm font-medium text-foreground">
                           {activity.description}
                         </span>
                         {activity.opportunity && (
@@ -796,7 +796,7 @@ export function SellActivities() {
               Cancel
             </Button>
             <Button
-              className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+              className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
               onClick={handleSave}
               disabled={!form.title || !form.type || !form.dueDate}
             >

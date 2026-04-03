@@ -42,7 +42,7 @@ export function BridgeStepper() {
                   className={cn(
                     'flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium shrink-0 transition-colors',
                     isCompleted && 'bg-[var(--mw-success-light)] text-[var(--mw-success)]',
-                    isCurrent && 'bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]',
+                    isCurrent && 'bg-[var(--mw-yellow-400)] text-primary-foreground',
                     isFuture && 'bg-muted text-muted-foreground/50'
                   )}
                 >

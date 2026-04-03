@@ -59,7 +59,7 @@ export function ShipPackaging() {
           <>
             <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white">Pack Station 1</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-[var(--mw-mirage)]">MQ</span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-foreground">MQ</span>
               Matt Quigley
             </span>
           </>
@@ -74,10 +74,10 @@ export function ShipPackaging() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Items column */}
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs lg:col-span-3">
+        <div className="flex min-h-0 flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-3">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-medium tracking-tight text-[var(--mw-mirage)]">SH-001</h1>
+              <h1 className="text-2xl font-medium tracking-tight text-foreground">SH-001</h1>
               <p className="mt-1 text-sm text-[var(--neutral-500)]">Con-form Group</p>
             </div>
             <span className="text-xs tabular-nums text-[var(--neutral-500)]">
@@ -123,7 +123,7 @@ export function ShipPackaging() {
         </div>
 
         {/* Package column */}
-        <div className="flex min-h-0 flex-col overflow-y-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs lg:col-span-2">
+        <div className="flex min-h-0 flex-col overflow-y-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-2">
           <p className="mb-4 text-[10px] font-medium uppercase tracking-widest text-[var(--neutral-500)]">Package</p>
           <div className="mb-6 grid grid-cols-2 gap-2">
             {PACKAGES.map((p) => (
@@ -134,11 +134,11 @@ export function ShipPackaging() {
                 className={cn(
                   'rounded-[var(--shape-lg)] p-4 text-left transition-all duration-150',
                   pkg === p.name
-                    ? 'border-2 border-[var(--mw-yellow-400)] bg-white shadow-xs ring-1 ring-[color-mix(in_srgb,var(--mw-yellow-400)_35%,transparent)]'
+                    ? 'border-2 border-[var(--mw-yellow-400)] bg-card shadow-xs ring-1 ring-[color-mix(in_srgb,var(--mw-yellow-400)_35%,transparent)]'
                     : 'border border-[var(--border)] bg-[var(--neutral-50)] hover:border-[var(--neutral-400)]',
                 )}
               >
-                <p className="text-sm font-medium text-[var(--mw-mirage)]">{p.name}</p>
+                <p className="text-sm font-medium text-foreground">{p.name}</p>
                 <span
                   className={cn(
                     'text-xs',
@@ -157,26 +157,26 @@ export function ShipPackaging() {
               <div className="relative mt-1">
                 <Input
                   defaultValue="12.4"
-                  className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-white pr-10 font-medium"
+                  className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-card pr-10 font-medium"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">kg</span>
               </div>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-[var(--mw-mirage)]">Fragile</span>
+              <span className="text-sm text-foreground">Fragile</span>
               <Switch checked={fragile} onCheckedChange={setFragile} />
             </div>
           </div>
 
           <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-4 text-xs shadow-xs">
-            <p className="font-medium text-[var(--mw-mirage)]">Special instructions</p>
+            <p className="font-medium text-foreground">Special instructions</p>
             <p className="mt-1 text-muted-foreground">Handle with care — powder-coated finish. Use corner protectors.</p>
           </div>
         </div>
       </div>
 
       {/* Bottom action bar */}
-      <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs">
+      <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs">
         <div className="mr-6 h-1.5 max-w-xs flex-1 overflow-hidden rounded-full bg-[var(--neutral-200)]">
           <div
             className="h-full rounded-full transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
@@ -190,7 +190,7 @@ export function ShipPackaging() {
           <Button
             type="button"
             variant="outline"
-            className="h-12 min-h-[48px] rounded-[var(--shape-lg)] border-[var(--border)] px-6 font-medium text-[var(--mw-mirage)]"
+            className="h-12 min-h-[48px] rounded-[var(--shape-lg)] border-[var(--border)] px-6 font-medium text-foreground"
           >
             Park
           </Button>
@@ -200,7 +200,7 @@ export function ShipPackaging() {
             className={cn(
               'h-12 min-h-[48px] rounded-[var(--shape-lg)] px-8 font-medium',
               allPacked
-                ? 'bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]'
+                ? 'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]'
                 : 'cursor-not-allowed bg-[var(--neutral-100)] text-[var(--neutral-400)]',
             )}
           >

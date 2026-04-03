@@ -86,7 +86,7 @@ export function ScheduleCalendar({
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-base font-medium tabular-nums text-[var(--neutral-900)]">
+        <h2 className="text-base font-medium tabular-nums text-foreground">
           {format(month, "MMMM yyyy")}
         </h2>
         <Button
@@ -126,7 +126,7 @@ export function ScheduleCalendar({
                 onClick={() => onDateClick?.(day)}
                 className={cn(
                   "mb-1 flex h-7 w-7 items-center justify-center rounded-[var(--shape-md)] text-xs tabular-nums transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-                  inMonth && "text-[var(--neutral-900)] hover:bg-[var(--neutral-100)]",
+                  inMonth && "text-foreground hover:bg-[var(--neutral-100)]",
                 !inMonth && "text-muted-foreground",
                   today && "font-medium ring-1 ring-[var(--mw-yellow-400)]",
                 )}
@@ -142,7 +142,7 @@ export function ScheduleCalendar({
                       e.stopPropagation();
                       onEventClick?.(ev);
                     }}
-                    className="max-w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium leading-tight text-[var(--neutral-900)] transition-opacity hover:opacity-90"
+                    className="max-w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium leading-tight text-foreground transition-opacity hover:opacity-90"
                     style={{
                       backgroundColor: ev.color
                         ? `color-mix(in srgb, ${ev.color} 22%, white)`

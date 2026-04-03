@@ -21,7 +21,7 @@ const statusConfig: Record<Status, { label: string; dot: string; badge: string; 
   shipped:    { label: 'Shipped',     dot: 'var(--neutral-400)', badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--neutral-500)]' },
   transit:    { label: 'In Transit',  dot: 'var(--mw-blue)', badge: 'bg-[var(--mw-blue-100)]',  text: 'text-[var(--mw-blue)]' },
   delivering: { label: 'Delivering',  dot: 'var(--mw-amber)', badge: 'bg-[var(--mw-amber-100)]',  text: 'text-[var(--mw-amber)]' },
-  delivered:  { label: 'Delivered',   dot: 'var(--mw-mirage)', badge: 'bg-[var(--neutral-100)]',  text: 'text-[var(--mw-mirage)]' },
+  delivered:  { label: 'Delivered',   dot: 'var(--mw-mirage)', badge: 'bg-[var(--neutral-100)]',  text: 'text-foreground' },
   exception:  { label: 'Exception',   dot: 'var(--mw-error)', badge: 'bg-[var(--mw-error-100)]',  text: 'text-[var(--mw-error)]' },
 };
 
@@ -52,12 +52,12 @@ const TIMELINE = [
 
 const trackingColumns: MwColumnDef<Shipment>[] = [
   { key: 'tracking', header: 'Tracking', tooltip: 'Shipment tracking number', cell: (row) => (
-    <span className="font-medium tabular-nums text-[var(--mw-mirage)] inline-flex items-center gap-1.5">
+    <span className="font-medium tabular-nums text-foreground inline-flex items-center gap-1.5">
       <Truck className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
       {row.tracking}
     </span>
   ) },
-  { key: 'customer', header: 'Customer', cell: (row) => <span className="text-[var(--mw-mirage)]">{row.customer}</span> },
+  { key: 'customer', header: 'Customer', cell: (row) => <span className="text-foreground">{row.customer}</span> },
   { key: 'carrier', header: 'Carrier', tooltip: 'Shipping carrier', cell: (row) => <span className="text-[var(--neutral-500)]">{row.carrier}</span> },
   {
     key: 'status',
@@ -106,7 +106,7 @@ export function ShipTracking() {
               'h-14 px-4 rounded-[var(--shape-lg)] text-sm flex items-center gap-2 transition-colors font-medium',
               exceptionsOnly
                 ? 'bg-[var(--mw-error-100)] text-[var(--mw-error)]'
-                : 'border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]'
+                : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]'
             )}
           >
             <AlertTriangle className="w-4 h-4" /> Exceptions
@@ -117,11 +117,11 @@ export function ShipTracking() {
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'In Transit', value: inTransitCount, sub: 'On the way', bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]' },
-          { label: 'Delivering', value: deliveringCount, sub: 'Out for delivery', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Delivered', value: deliveredCount, sub: `${SHIPMENTS.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Delivering', value: deliveringCount, sub: 'Out for delivery', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Delivered', value: deliveredCount, sub: `${SHIPMENTS.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Exceptions', value: exceptionCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -153,7 +153,7 @@ export function ShipTracking() {
             return (
               <>
                 <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
-                  <p className="text-xl  font-medium text-[var(--mw-mirage)]">{selected.tracking}</p>
+                  <p className="text-xl  font-medium text-foreground">{selected.tracking}</p>
                   <SheetDescription className="text-[var(--neutral-500)]">{selected.customer} · {selected.carrier}</SheetDescription>
                 </SheetHeader>
                 <div className="px-6 py-6 space-y-6">
@@ -179,16 +179,16 @@ export function ShipTracking() {
                     ].map(d => (
                       <div key={d.l} className="flex justify-between text-sm">
                         <span className="text-[var(--neutral-500)]">{d.l}</span>
-                        <span className={cn('text-[var(--mw-mirage)] font-medium', d.mono && 'tabular-nums')}>{d.v}</span>
+                        <span className={cn('text-foreground font-medium', d.mono && 'tabular-nums')}>{d.v}</span>
                       </div>
                     ))}
                   </div>
 
                   <div className="space-y-2">
-                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2">
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
-                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
                       <ExternalLink className="w-4 h-4" /> Carrier portal
                     </button>
                   </div>

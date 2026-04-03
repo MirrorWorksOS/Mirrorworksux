@@ -185,7 +185,7 @@ export function PlanJobs() {
       className="p-4 cursor-pointer group"
     >
       <div className="flex items-start justify-between mb-2">
-        <span className="tabular-nums text-sm font-medium text-[var(--mw-mirage)]">
+        <span className="tabular-nums text-sm font-medium text-foreground">
           {job.id}
         </span>
         <Avatar className="w-8 h-8 border border-[var(--border)]">
@@ -194,7 +194,7 @@ export function PlanJobs() {
         </Avatar>
       </div>
 
-      <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-1">
+      <h3 className="text-sm font-medium text-foreground mb-1">
         {job.name}
       </h3>
 
@@ -210,7 +210,7 @@ export function PlanJobs() {
         <span className="text-[var(--neutral-500)]">
           {job.quoteCount} {job.quoteCount === 1 ? 'Quote' : 'Quotes'}
         </span>
-        <span className="font-medium tabular-nums text-[var(--mw-mirage)]">
+        <span className="font-medium tabular-nums text-foreground">
           ${job.value.toLocaleString()}
         </span>
       </div>
@@ -220,7 +220,7 @@ export function PlanJobs() {
   return (
     <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--neutral-100)]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4 space-y-4">
+      <div className="bg-card border-b border-[var(--border)] px-6 py-4 space-y-4">
         <PageHeader title="Jobs" />
         <PageToolbar>
           <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search jobs…" />
@@ -276,8 +276,8 @@ export function PlanJobs() {
           jobs.map((job) => ({ ...job, _stageId: stageId })),
         );
         const listColumns: MwColumnDef<Job & { _stageId: string }>[] = [
-          { key: 'id', header: 'Job ID', tooltip: 'Unique job identifier', className: 'tabular-nums text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.id },
-          { key: 'name', header: 'Job Name', tooltip: 'Job description', className: 'text-xs font-medium text-[var(--mw-mirage)]', cell: (job) => job.name },
+          { key: 'id', header: 'Job ID', tooltip: 'Unique job identifier', className: 'tabular-nums text-xs font-medium text-foreground', cell: (job) => job.id },
+          { key: 'name', header: 'Job Name', tooltip: 'Job description', className: 'text-xs font-medium text-foreground', cell: (job) => job.name },
           { key: 'customer', header: 'Customer', tooltip: 'Assigned customer', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.customer },
           {
             key: 'stage',
@@ -289,7 +289,7 @@ export function PlanJobs() {
             },
           },
           { key: 'priority', header: 'Priority', tooltip: 'Job priority level', cell: (job) => job.priority ? <StatusBadge priority={job.priority} /> : null },
-          { key: 'value', header: 'Value', tooltip: 'Estimated job value', headerClassName: 'text-right', className: 'text-right tabular-nums text-xs text-[var(--mw-mirage)]', cell: (job) => `$${job.value.toLocaleString()}` },
+          { key: 'value', header: 'Value', tooltip: 'Estimated job value', headerClassName: 'text-right', className: 'text-right tabular-nums text-xs text-foreground', cell: (job) => `$${job.value.toLocaleString()}` },
           { key: 'dueDate', header: 'Due Date', tooltip: 'Expected completion date', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (job) => job.dueDate },
           {
             key: 'assigned',

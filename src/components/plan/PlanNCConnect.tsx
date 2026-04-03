@@ -149,7 +149,7 @@ export function PlanNCConnect() {
         title="NC Connect"
         subtitle="Upload, validate, and send NC files to machines"
         actions={
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
             <Upload className="mr-2 h-4 w-4" />
             Upload NC File
           </Button>
@@ -172,12 +172,12 @@ export function PlanNCConnect() {
 
           {/* Uploaded file */}
           {selectedFile && (
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <IconWell icon={FileCode2} />
                   <div>
-                    <p className="text-sm font-medium text-[var(--neutral-900)]">{selectedFile}</p>
+                    <p className="text-sm font-medium text-foreground">{selectedFile}</p>
                     <p className="text-xs text-[var(--neutral-500)]">12.4 KB · Uploaded 2 min ago</p>
                   </div>
                 </div>
@@ -194,9 +194,9 @@ export function PlanNCConnect() {
           )}
 
           {/* G-code preview */}
-          <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-[var(--neutral-900)]">G-code Preview</h3>
+              <h3 className="text-sm font-medium text-foreground">G-code Preview</h3>
               <Badge variant="outline" className="border-[var(--border)] text-xs">Fanuc G-code</Badge>
             </div>
             <div className="overflow-auto max-h-[420px] bg-[var(--neutral-900)] p-4">
@@ -225,14 +225,14 @@ export function PlanNCConnect() {
         {/* Right column — validation + machines */}
         <div className="space-y-6">
           {/* File validation */}
-          <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-            <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">File Validation</h3>
+          <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <h3 className="text-sm font-medium text-foreground mb-4">File Validation</h3>
             <ul className="space-y-3">
               {VALIDATIONS.map((v, i) => (
                 <li key={i} className="flex items-start gap-3">
                   {statusIcon(v.status)}
                   <div>
-                    <p className="text-sm font-medium text-[var(--neutral-900)]">{v.label}</p>
+                    <p className="text-sm font-medium text-foreground">{v.label}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{v.detail}</p>
                   </div>
                 </li>
@@ -252,20 +252,20 @@ export function PlanNCConnect() {
 
           {/* Machine status cards */}
           <div>
-            <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-3">Available Machines</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">Available Machines</h3>
             <div className="space-y-3">
               {MACHINES.map((m) => (
                 <Card
                   key={m.name}
                   className={cn(
-                    'border bg-white p-4 shadow-xs rounded-[var(--shape-lg)] transition-colors hover:bg-[var(--neutral-50)] cursor-pointer',
+                    'border bg-card p-4 shadow-xs rounded-[var(--shape-lg)] transition-colors hover:bg-[var(--neutral-50)] cursor-pointer',
                     m.status === 'error' ? 'border-[var(--mw-error)]/30' : 'border-[var(--neutral-200)]',
                   )}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Server className="h-4 w-4 text-[var(--neutral-500)]" />
-                      <span className="text-sm font-medium text-[var(--neutral-900)]">{m.name}</span>
+                      <span className="text-sm font-medium text-foreground">{m.name}</span>
                     </div>
                     {machineStatusBadge(m.status)}
                   </div>

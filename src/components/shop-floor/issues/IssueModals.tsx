@@ -35,7 +35,7 @@ const VoiceNoteButton = () => {
 };
 
 const SectionHeader = ({ title }: { title: string }) => (
-  <h3 className="font-medium text-[var(--neutral-900)] mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
+  <h3 className="font-medium text-foreground mt-4 mb-2 text-sm uppercase tracking-wide">{title}</h3>
 );
 
 // --- Forms ---
@@ -44,7 +44,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
       <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
-        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Material Issue</h2>
+        <h2 className="text-xl font-bold text-foreground">Report Material Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -120,7 +120,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Issue submitted successfully'); onClose(); }}>Submit Issue</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Issue submitted successfully'); onClose(); }}>Submit Issue</Button>
       </div>
     </div>
   );
@@ -130,7 +130,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
       <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
-        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Machine Issue</h2>
+        <h2 className="text-xl font-bold text-foreground">Report Machine Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -168,13 +168,13 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
         <div>
            <SectionHeader title="Severity" />
-           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden bg-white">
+           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden bg-card">
              {['Critical', 'High', 'Medium'].map((option, index) => (
                <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer", index !== 2 && "border-b border-[var(--neutral-200)]")}>
                   <RadioGroupItem 
                     value={option.toLowerCase()} 
                     id={`severity-${option.toLowerCase()}`}
-                    className="h-6 w-6 border-2 border-[var(--neutral-200)] bg-white text-white shadow-none data-[state=checked]:border-[var(--mw-yellow-400)] data-[state=checked]:bg-[var(--mw-yellow-400)] transition-all"
+                    className="h-6 w-6 border-2 border-[var(--neutral-200)] bg-card text-white shadow-none data-[state=checked]:border-[var(--mw-yellow-400)] data-[state=checked]:bg-[var(--mw-yellow-400)] transition-all"
                   />
                   <Label htmlFor={`severity-${option.toLowerCase()}`} className="ml-4 flex-1 text-base font-medium text-[var(--neutral-800)] cursor-pointer">
                     {option}
@@ -217,7 +217,7 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
       <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
-        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Quality Issue</h2>
+        <h2 className="text-xl font-bold text-foreground">Report Quality Issue</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -275,13 +275,13 @@ export const QualityIssueForm = ({ onClose }: { onClose: () => void }) => {
            <p className="text-sm text-[var(--neutral-700)] mb-2">
               ⚠️ <strong>Alert:</strong> Last 5 parts trending toward upper limit. Likely cause: Tool wear.
            </p>
-           <Button size="sm" variant="outline" className="bg-white text-[var(--neutral-700)] border-[var(--neutral-200)] h-14">View Quality Chart</Button>
+           <Button size="sm" variant="outline" className="bg-card text-[var(--neutral-700)] border-[var(--neutral-200)] h-14">View Quality Chart</Button>
         </div>
       </div>
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('NCR submitted and part quarantined'); onClose(); }}>Submit & Quarantine</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('NCR submitted and part quarantined'); onClose(); }}>Submit & Quarantine</Button>
       </div>
     </div>
   );
@@ -291,7 +291,7 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
       <div className="flex items-center justify-between p-6 border-b border-[var(--neutral-100)]">
-        <h2 className="text-xl font-bold text-[var(--neutral-900)]">Report Scrap / Waste</h2>
+        <h2 className="text-xl font-bold text-foreground">Report Scrap / Waste</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -339,7 +339,7 @@ export const ScrapIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Scrap logged successfully'); onClose(); }}>Log Scrap</Button>
+         <Button className="flex-1 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast.success('Scrap logged successfully'); onClose(); }}>Log Scrap</Button>
       </div>
     </div>
   );

@@ -101,7 +101,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
   const detailTabs = ['Materials', 'Labour', 'Overhead', 'Subcontract'];
 
   return (
-    <PageShell className="p-6 space-y-6 max-w-[1200px] mx-auto overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="JOB-2026-0012"
         subtitle={
@@ -117,16 +117,16 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
           { label: 'JOB-2026-0012' },
         ]}
         actions={
-          <Badge className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-[var(--mw-mirage)]">In Production</Badge>
+          <Badge className="rounded-full text-xs px-2 py-0.5 border-0 bg-[var(--neutral-100)] text-foreground">In Production</Badge>
         }
       />
 
       {/* Hero Metrics */}
-      <Card className="bg-white rounded-xl border border-[var(--border)] p-8">
+      <Card className="bg-card rounded-xl border border-[var(--border)] p-8">
         <div className="grid grid-cols-3 items-center">
           <div className="text-center">
             <div className="text-sm text-[var(--neutral-500)] mb-2 font-medium">Quoted</div>
-            <div className="text-4xl tracking-tight text-[var(--mw-mirage)] tabular-nums">$18,500</div>
+            <div className="text-4xl tracking-tight text-foreground tabular-nums">$18,500</div>
           </div>
           <div className="text-center">
             <div className="relative w-[120px] h-[120px] mx-auto mb-2">
@@ -139,11 +139,11 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
               </div>
             </div>
             <div className="text-xs text-[var(--neutral-500)] font-medium">Profit Margin</div>
-            <div className="text-sm text-[var(--mw-mirage)] mt-1">Under budget by $4,270</div>
+            <div className="text-sm text-foreground mt-1">Under budget by $4,270</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-[var(--neutral-500)] mb-2 font-medium">Actual to Date</div>
-            <div className="text-4xl tracking-tight text-[var(--mw-mirage)] tabular-nums">$14,230</div>
+            <div className="text-4xl tracking-tight text-foreground tabular-nums">$14,230</div>
           </div>
         </div>
       </Card>
@@ -151,7 +151,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       {/* Cost Breakdown Table */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <h3 className="text-[var(--mw-mirage)] font-medium">Cost Breakdown</h3>
+          <h3 className="text-foreground font-medium">Cost Breakdown</h3>
           <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
         </div>
         <FinancialTable
@@ -211,13 +211,13 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Detail Tabs */}
-      <Card className="bg-white rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-card rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
         <div className="flex border-b border-[var(--border)]">
           {detailTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={cn(
                 "px-4 py-3 text-sm relative transition-colors",
-                activeTab === tab ? "text-[var(--mw-mirage)] font-medium" : "text-[var(--neutral-500)] hover:text-[var(--mw-mirage)] font-normal"
+                activeTab === tab ? "text-foreground font-medium" : "text-[var(--neutral-500)] hover:text-foreground font-normal"
               )}>
               {tab}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}

@@ -30,15 +30,15 @@ const mwReports = [
 ];
 
 const scheduled = [
-  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
+  { name: 'Job Profitability', schedule: 'Weekly', scheduleBg: 'bg-[var(--neutral-100)] text-foreground', recipients: ['matt@mirrorworks.io'], lastRun: '19 Feb', nextRun: '26 Feb', active: true },
   { name: 'Expense Report', schedule: 'Monthly', scheduleBg: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]', recipients: ['cormac@mirrorworks.io', 'matt@mirrorworks.io'], lastRun: '01 Feb', nextRun: '01 Mar', active: true },
-  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
+  { name: 'Budget vs Actual', schedule: 'Daily', scheduleBg: 'bg-[var(--neutral-100)] text-foreground', recipients: ['matt@mirrorworks.io'], lastRun: '01 Mar', nextRun: '02 Mar', active: false },
 ];
 
 type ScheduledReport = (typeof scheduled)[number];
 
 const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
-  { key: 'name', header: 'Report Name', tooltip: 'Scheduled report name', cell: (s) => <span className="font-medium text-[var(--mw-mirage)]">{s.name}</span> },
+  { key: 'name', header: 'Report Name', tooltip: 'Scheduled report name', cell: (s) => <span className="font-medium text-foreground">{s.name}</span> },
   {
     key: 'schedule',
     header: 'Schedule',
@@ -63,15 +63,15 @@ const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
 ];
 
 const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) => (
-  <Card className={cn("bg-white rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6 hover:shadow-md transition-shadow", borderColor && `border-l-[3px] ${borderColor}`)}>
-    <Icon className="w-8 h-8 text-[var(--mw-mirage)] mb-3" />
+  <Card className={cn("bg-card rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6 hover:shadow-md transition-shadow", borderColor && `border-l-[3px] ${borderColor}`)}>
+    <Icon className="w-8 h-8 text-foreground mb-3" />
     <div className="flex items-center gap-2 mb-1">
-      <h3 className="text-sm text-[var(--mw-mirage)] font-medium">{title}</h3>
+      <h3 className="text-sm text-foreground font-medium">{title}</h3>
       {ai && <Badge className="rounded-full text-[10px] px-2 py-0 border-0 bg-[var(--mw-purple-100)] text-[var(--mw-purple)]">AI</Badge>}
     </div>
     <p className="text-xs text-[var(--neutral-500)] mb-4">{desc}</p>
     <div className="flex items-center justify-between">
-      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-[var(--mw-mirage)] rounded" onClick={() => toast('Generating report…')}>Generate</Button>
+      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-foreground rounded" onClick={() => toast('Generating report…')}>Generate</Button>
       {badge && <span className="text-xs text-[var(--neutral-400)]">{badge}</span>}
     </div>
   </Card>
@@ -79,7 +79,7 @@ const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) =>
 
 export function ReportsGallery() {
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Reports"
         subtitle="Financial reports and manufacturing analytics"
@@ -88,7 +88,7 @@ export function ReportsGallery() {
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
               <Calendar className="h-4 w-4" /> Schedule report
             </Button>
-            <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               <Sparkles className="h-4 w-4" /> Custom report
             </Button>
           </div>
@@ -98,7 +98,7 @@ export function ReportsGallery() {
       {/* Xero Reports */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <h2 className="font-medium text-[var(--mw-mirage)]">From Xero</h2>
+          <h2 className="font-medium text-foreground">From Xero</h2>
           <div className="h-4 w-4 rounded-full bg-[#13B5EA]" aria-hidden />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -110,7 +110,7 @@ export function ReportsGallery() {
 
       {/* MW Reports */}
       <div className="space-y-4">
-        <h2 className="font-medium text-[var(--mw-mirage)]">MirrorWorks reports</h2>
+        <h2 className="font-medium text-foreground">MirrorWorks reports</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mwReports.map(r => (
             <ReportCard key={r.title} {...r} borderColor="border-l-[var(--mw-yellow-400)]" />
@@ -120,7 +120,7 @@ export function ReportsGallery() {
 
       {/* Scheduled */}
       <div className="space-y-4">
-        <h2 className="font-medium text-[var(--mw-mirage)]">Scheduled reports</h2>
+        <h2 className="font-medium text-foreground">Scheduled reports</h2>
         <ToolbarSummaryBar
           segments={[
             { key: 'active', label: 'Active', value: scheduled.filter(s => s.active).length, color: 'var(--mw-yellow-400)' },

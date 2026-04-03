@@ -61,8 +61,8 @@ const REASONS = [
 const TIMELINE_STAGES: RStatus[] = ['pending', 'approved', 'in_transit', 'received', 'refunded', 'closed'];
 
 const returnColumns: MwColumnDef<RMA>[] = [
-  { key: 'id', header: 'RMA', tooltip: 'Return merchandise authorisation number', cell: (r) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{r.id}</span> },
-  { key: 'customer', header: 'Customer', cell: (r) => <span className="text-[var(--mw-mirage)]">{r.customer}</span> },
+  { key: 'id', header: 'RMA', tooltip: 'Return merchandise authorisation number', cell: (r) => <span className="font-medium tabular-nums text-foreground">{r.id}</span> },
+  { key: 'customer', header: 'Customer', cell: (r) => <span className="text-foreground">{r.customer}</span> },
   { key: 'reason', header: 'Reason', tooltip: 'Return reason category', className: 'text-xs text-[var(--neutral-500)]', cell: (r) => r.reason },
   {
     key: 'status',
@@ -90,7 +90,7 @@ export function ShipReturns() {
       <PageHeader
         title="Returns"
         actions={
-          <button className="h-14 px-5 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors flex items-center gap-2 font-medium">
+          <button className="h-14 px-5 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors flex items-center gap-2 font-medium">
             <PlusCircle className="w-4 h-4" /> Create RMA
           </button>
         }
@@ -99,11 +99,11 @@ export function ShipReturns() {
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'Pending', value: pendingCount, sub: 'Awaiting review', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
-          { label: 'In Transit', value: inTransitCount, sub: 'Return shipping', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'Resolved', value: closedCount, sub: `${RMAS.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'In Transit', value: inTransitCount, sub: 'Return shipping', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Resolved', value: closedCount, sub: `${RMAS.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -134,7 +134,7 @@ export function ShipReturns() {
         <div className="space-y-4">
           <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">This month</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">12</div>
+            <div className="text-3xl text-foreground mt-1 font-medium tabular-nums">12</div>
           </Card>
           <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium block mb-4">Top reasons</span>
@@ -150,13 +150,13 @@ export function ShipReturns() {
           </Card>
           <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Avg processing</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">
+            <div className="text-3xl text-foreground mt-1 font-medium tabular-nums">
               4.2<span className="text-sm text-[var(--neutral-500)] ml-1">days</span>
             </div>
           </Card>
           <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Return rate</span>
-            <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">2.8%</div>
+            <div className="text-3xl text-foreground mt-1 font-medium tabular-nums">2.8%</div>
           </Card>
         </div>
       </div>
@@ -169,7 +169,7 @@ export function ShipReturns() {
             return (
               <>
                 <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
-                  <p className="text-xl font-medium text-[var(--mw-mirage)]">{selected.id}</p>
+                  <p className="text-xl font-medium text-foreground">{selected.id}</p>
                   <SheetDescription className="text-[var(--neutral-500)]">{selected.customer} · {selected.reason}</SheetDescription>
                 </SheetHeader>
                 <div className="px-6 py-6 space-y-6">
@@ -190,9 +190,9 @@ export function ShipReturns() {
                           <div key={stage} className="flex items-center gap-4 relative py-2">
                             <div className={cn(
                               'w-4 h-4 rounded-full shrink-0 z-10 border-2 transition-colors',
-                              done ? 'bg-[var(--mw-mirage)] border-[var(--mw-mirage)]' : 'bg-white border-[var(--border)]'
+                              done ? 'bg-[var(--mw-mirage)] border-[var(--mw-mirage)]' : 'bg-card border-[var(--border)]'
                             )} />
-                            <span className={cn('text-sm', done ? 'text-[var(--mw-mirage)] font-medium' : 'text-[var(--neutral-400)]')}>
+                            <span className={cn('text-sm', done ? 'text-foreground font-medium' : 'text-[var(--neutral-400)]')}>
                               {rStatusLabel[stage]}
                             </span>
                           </div>
@@ -208,11 +208,11 @@ export function ShipReturns() {
                       </button>
                     )}
                     {selected.status === 'received' && (
-                      <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] transition-colors font-medium">
+                      <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
                         Process refund
                       </button>
                     )}
-                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)] transition-colors font-medium">
+                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium">
                       Contact customer
                     </button>
                   </div>

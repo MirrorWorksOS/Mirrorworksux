@@ -48,7 +48,7 @@ const AGREEMENTS = [
 ];
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; barColor: string }> = {
-  active:      { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Active',     barColor: 'var(--mw-yellow-400)' },
+  active:      { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Active',     barColor: 'var(--mw-yellow-400)' },
   'near-limit':{ bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', label: 'Near limit', barColor: 'var(--mw-amber)' },
   exhausted:   { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Exhausted',  barColor: 'var(--mw-error)' },
   expired:     { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Expired',    barColor: 'var(--neutral-400)' },
@@ -71,7 +71,7 @@ export function BuyAgreements() {
         title="Blanket agreements"
         subtitle={`${AGREEMENTS.filter(a => a.status === 'active').length} active${AGREEMENTS.filter(a => a.status === 'near-limit').length > 0 ? ` · ${AGREEMENTS.filter(a => a.status === 'near-limit').length} near limit` : ''}`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10">
             <Plus className="w-4 h-4" /> New agreement
           </Button>
         }
@@ -86,7 +86,7 @@ export function BuyAgreements() {
         ].map(s => (
           <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className="text-xl font-medium tabular-nums text-[var(--mw-mirage)]">{s.value}</p>
+            <p className="text-xl font-medium tabular-nums text-foreground">{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
           </Card>
         ))}
@@ -115,12 +115,12 @@ export function BuyAgreements() {
 
                       <StatusBadge variant={agr.status === 'active' ? 'success' : agr.status === 'near-limit' ? 'warning' : agr.status === 'exhausted' ? 'error' : 'neutral'}>{cfg.label}</StatusBadge>
                     </div>
-                    <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{agr.supplier}</h3>
+                    <h3 className="text-sm font-medium text-foreground">{agr.supplier}</h3>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{agr.category} · {agr.startDate} – {agr.endDate} · {agr.discount} discount · {agr.terms}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-[var(--neutral-500)]">Contract value</p>
-                    <p className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">${agr.value.toLocaleString()}</p>
+                    <p className="text-lg font-medium tabular-nums text-foreground">${agr.value.toLocaleString()}</p>
                   </div>
                 </div>
 
@@ -128,7 +128,7 @@ export function BuyAgreements() {
                 <div className="space-y-1.5 mb-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[var(--neutral-500)]">Spend utilisation</span>
-                    <span className=" text-[var(--mw-mirage)] font-medium">{spendPct.toFixed(0)}%</span>
+                    <span className=" text-foreground font-medium">{spendPct.toFixed(0)}%</span>
                   </div>
                   <div className="h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
                     {/* Used (solid) */}
@@ -151,7 +151,7 @@ export function BuyAgreements() {
                   </div>
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-0.5">Remaining</p>
-                    <p className={cn('tabular-nums font-medium', remaining <= 0 ? 'text-[var(--mw-error)]' : remaining < agr.value * 0.1 ? 'text-[var(--mw-amber)]' : 'text-[var(--mw-mirage)]')}>
+                    <p className={cn('tabular-nums font-medium', remaining <= 0 ? 'text-[var(--mw-error)]' : remaining < agr.value * 0.1 ? 'text-[var(--mw-amber)]' : 'text-foreground')}>
                       ${remaining.toLocaleString()}
                     </p>
                   </div>

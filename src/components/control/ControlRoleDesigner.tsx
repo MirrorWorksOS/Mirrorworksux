@@ -14,7 +14,7 @@ const roles = [
   {
     name: 'Admin',
     wellClass: 'bg-[var(--chart-scale-high)]',
-    iconClass: 'text-[#2C2C2C]',
+    iconClass: 'text-foreground',
     description: 'Full system access',
   },
   {
@@ -26,7 +26,7 @@ const roles = [
   {
     name: 'Scheduler',
     wellClass: 'bg-[var(--chart-scale-low)]',
-    iconClass: 'text-[var(--mw-mirage)]',
+    iconClass: 'text-foreground',
     description: 'Plan and budget access',
   },
   {
@@ -46,7 +46,7 @@ const roles = [
 export function ControlRoleDesigner() {
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Role designer</h1>
+      <h1 className="text-3xl tracking-tight text-foreground">Role designer</h1>
 
       <ModuleInfoCallout
         title="Organisation roles"
@@ -57,7 +57,7 @@ export function ControlRoleDesigner() {
         {roles.map(role => (
           <Card
             key={role.name}
-            className="cursor-pointer rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs transition-shadow hover:shadow-md"
+            className="cursor-pointer rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs transition-shadow hover:shadow-md"
           >
             <div className="mb-3 flex items-center gap-3">
               <div
@@ -69,7 +69,7 @@ export function ControlRoleDesigner() {
                 <Shield className={cn('h-5 w-5', role.iconClass)} />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{role.name}</h3>
+                <h3 className="text-sm font-medium text-foreground">{role.name}</h3>
                 <p className="text-xs text-muted-foreground">{role.description}</p>
               </div>
             </div>

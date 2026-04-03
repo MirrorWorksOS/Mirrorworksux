@@ -335,10 +335,10 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">
+              <h3 className="text-base font-medium text-foreground">
                 Approval Queue
               </h3>
-              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]">
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-primary-foreground">
                 {approvalQueue.length}
               </Badge>
             </div>
@@ -347,7 +347,7 @@ export function SellDashboard() {
                 <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-xs font-medium text-[var(--neutral-900)]">
+                      <span className="text-xs font-medium text-foreground">
                         {item.type}
                       </span>
                       <span className="text-xs text-[var(--neutral-500)] tabular-nums">
@@ -357,7 +357,7 @@ export function SellDashboard() {
                     <p className="mb-1 text-xs text-[var(--neutral-600)]">
                       {item.customer}
                     </p>
-                    <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                    <p className="text-sm font-medium tabular-nums text-foreground">
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
@@ -375,7 +375,7 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">
+              <h3 className="text-base font-medium text-foreground">
                 Xero Sync Status
               </h3>
               <div className="h-3 w-3 rounded-full bg-[var(--mw-yellow-400)]" />
@@ -385,7 +385,7 @@ export function SellDashboard() {
                 <span className="text-xs text-[var(--neutral-500)]">
                   Last synced
                 </span>
-                <span className="text-xs font-medium text-[var(--neutral-900)]">
+                <span className="text-xs font-medium text-foreground">
                   2 minutes ago
                 </span>
               </div>
@@ -393,7 +393,7 @@ export function SellDashboard() {
                 <span className="text-xs text-[var(--neutral-500)]">
                   Invoices synced
                 </span>
-                <span className="text-xs font-medium text-[var(--neutral-900)]">
+                <span className="text-xs font-medium text-foreground">
                   147 / 147
                 </span>
               </div>
@@ -406,7 +406,7 @@ export function SellDashboard() {
                 </Badge>
               </div>
             </div>
-            <Button className="group w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Syncing with Xero\u2026'); setTimeout(() => toast.success('Xero sync complete'), 1500); }}>
+            <Button className="group w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Syncing with Xero\u2026'); setTimeout(() => toast.success('Xero sync complete'), 1500); }}>
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{
@@ -426,7 +426,7 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">
+              <h3 className="text-base font-medium text-foreground">
                 Overdue Actions
               </h3>
               <Badge className="border-0 bg-[var(--neutral-200)] text-[var(--neutral-800)]">
@@ -438,14 +438,14 @@ export function SellDashboard() {
                 <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-200)]">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">
+                      <span className="text-xs font-medium tabular-nums text-foreground">
                         {item.id}
                       </span>
-                      <Badge className="border-0 bg-[var(--neutral-300)] text-[var(--neutral-900)] text-xs">
+                      <Badge className="border-0 bg-[var(--neutral-300)] text-foreground text-xs">
                         {item.daysOverdue}d
                       </Badge>
                     </div>
-                    <p className="mb-1 text-xs text-[var(--neutral-900)]">
+                    <p className="mb-1 text-xs text-foreground">
                       {item.customer}
                     </p>
                     <p className="text-xs font-medium tabular-nums text-[var(--neutral-800)]">
@@ -456,7 +456,7 @@ export function SellDashboard() {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="mt-4 w-full border-[var(--border)] text-[var(--neutral-900)]" onClick={() => toast.success('Follow-up emails queued for 3 contacts')}>
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)] text-foreground" onClick={() => toast.success('Follow-up emails queued for 3 contacts')}>
               <AlertTriangle className="mr-2 h-4 w-4" strokeWidth={1.5} />
               Follow Up All
             </Button>
@@ -473,7 +473,7 @@ export function SellDashboard() {
           {/* Pipeline Funnel */}
           <motion.div variants={staggerItem}>
             <Card className="p-6">
-              <h3 className="mb-6 text-base font-medium text-[var(--neutral-900)]">
+              <h3 className="mb-6 text-base font-medium text-foreground">
                 Pipeline Funnel
               </h3>
               <div className="flex items-stretch gap-1">
@@ -486,7 +486,7 @@ export function SellDashboard() {
                         backgroundColor: `color-mix(in srgb, var(--mw-yellow-400) ${100 - i * 18}%, var(--neutral-100))`,
                         minHeight: `${heightPct}px`,
                       }}>
-                        <span className="text-2xl font-bold tabular-nums text-[var(--neutral-900)]">{stage.count}</span>
+                        <span className="text-2xl font-bold tabular-nums text-foreground">{stage.count}</span>
                         <span className="text-[10px] font-medium tabular-nums text-[var(--neutral-700)]">${(stage.value / 1000).toFixed(0)}k</span>
                       </div>
                       <span className="text-xs font-medium text-[var(--neutral-600)] text-center">{stage.stage}</span>
@@ -506,7 +506,7 @@ export function SellDashboard() {
             {/* Win/Loss Analysis */}
             <motion.div variants={staggerItem}>
               <Card className="p-6">
-                <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">
+                <h3 className="mb-4 text-base font-medium text-foreground">
                   Win / Loss Analysis
                 </h3>
                 <div className="flex items-center gap-8">
@@ -523,7 +523,7 @@ export function SellDashboard() {
                       />
                     </svg>
                     <div className="absolute flex flex-col items-center">
-                      <span className="text-2xl font-bold tabular-nums text-[var(--neutral-900)]">{winLossData.wins}%</span>
+                      <span className="text-2xl font-bold tabular-nums text-foreground">{winLossData.wins}%</span>
                       <span className="text-xs text-[var(--neutral-500)]">Win Rate</span>
                     </div>
                   </div>
@@ -531,21 +531,21 @@ export function SellDashboard() {
                     <div className="flex items-center gap-3">
                       <div className="h-3 w-3 rounded-full bg-[var(--chart-scale-high)]" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[var(--neutral-900)]">Won</p>
+                        <p className="text-sm font-medium text-foreground">Won</p>
                         <p className="text-xs text-[var(--neutral-500)]">{winLossData.wins}% of opportunities</p>
                       </div>
-                      <span className="text-lg font-bold tabular-nums text-[var(--neutral-900)]">31</span>
+                      <span className="text-lg font-bold tabular-nums text-foreground">31</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-3 w-3 rounded-full bg-[var(--neutral-200)]" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[var(--neutral-900)]">Lost</p>
+                        <p className="text-sm font-medium text-foreground">Lost</p>
                         <p className="text-xs text-[var(--neutral-500)]">{winLossData.losses}% of opportunities</p>
                       </div>
-                      <span className="text-lg font-bold tabular-nums text-[var(--neutral-900)]">19</span>
+                      <span className="text-lg font-bold tabular-nums text-foreground">19</span>
                     </div>
                     <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2">
-                      <p className="text-xs text-[var(--neutral-600)]">Top loss reason: <span className="font-medium text-[var(--neutral-900)]">Price (42%)</span></p>
+                      <p className="text-xs text-[var(--neutral-600)]">Top loss reason: <span className="font-medium text-foreground">Price (42%)</span></p>
                     </div>
                   </div>
                 </div>
@@ -585,7 +585,7 @@ export function SellDashboard() {
           <motion.div variants={staggerItem}>
             <Card className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-base font-medium text-[var(--neutral-900)]">
+                <h3 className="text-base font-medium text-foreground">
                   Top Performers
                 </h3>
                 <Badge className={badgeNeutral}>This quarter</Badge>
@@ -593,17 +593,17 @@ export function SellDashboard() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {topPerformers.map((rep, i) => (
                   <div key={rep.name} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-4">
-                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-sm font-bold text-[var(--neutral-900)]">
+                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-sm font-bold text-primary-foreground">
                       {rep.initials}
                       {i === 0 && (
                         <Trophy className="absolute -right-1 -top-1 h-4 w-4 text-[var(--mw-yellow-600)]" strokeWidth={1.5} />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-[var(--neutral-900)]">{rep.name}</p>
+                      <p className="truncate text-sm font-medium text-foreground">{rep.name}</p>
                       <p className="text-xs tabular-nums text-[var(--neutral-600)]">{rep.deals} deals</p>
                     </div>
-                    <span className="text-sm font-bold tabular-nums text-[var(--neutral-900)]">${(rep.revenue / 1000).toFixed(1)}k</span>
+                    <span className="text-sm font-bold tabular-nums text-foreground">${(rep.revenue / 1000).toFixed(1)}k</span>
                   </div>
                 ))}
               </div>
@@ -619,7 +619,7 @@ export function SellDashboard() {
           {/* Export Row */}
           <motion.div variants={staggerItem}>
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">Report Templates</h3>
+              <h3 className="text-base font-medium text-foreground">Report Templates</h3>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" className="border-[var(--border)] text-xs" onClick={() => toast.success('Exporting as PDF\u2026')}>
                   <Download className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
@@ -645,9 +645,9 @@ export function SellDashboard() {
                 <motion.div key={report.title} variants={staggerItem}>
                   <Card className="flex h-full flex-col p-6">
                     <IconWell icon={Icon} surface="onDark" className="mb-3" />
-                    <h4 className="mb-1 text-sm font-medium text-[var(--neutral-900)]">{report.title}</h4>
+                    <h4 className="mb-1 text-sm font-medium text-foreground">{report.title}</h4>
                     <p className="mb-4 flex-1 text-xs leading-relaxed text-[var(--neutral-500)]">{report.description}</p>
-                    <Button className="w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" size="sm" onClick={() => toast('Generating report\u2026')}>
+                    <Button className="w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" size="sm" onClick={() => toast('Generating report\u2026')}>
                       Generate
                     </Button>
                   </Card>
@@ -717,7 +717,7 @@ export function SellDashboard() {
 
           {/* Quarterly Targets */}
           <motion.div variants={staggerItem}>
-            <h3 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Quarterly Targets</h3>
+            <h3 className="mb-4 text-base font-medium text-foreground">Quarterly Targets</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {quarterlyTargets.map((q) => {
                 const pct = q.target > 0 ? Math.min(100, Math.round((q.current / q.target) * 100)) : 0;
@@ -726,7 +726,7 @@ export function SellDashboard() {
                 return (
                   <Card key={q.quarter} className="p-6">
                     <div className="mb-3 flex items-center justify-between">
-                      <span className="text-lg font-bold text-[var(--neutral-900)]">{q.quarter}</span>
+                      <span className="text-lg font-bold text-foreground">{q.quarter}</span>
                       {isComplete && (
                         <Badge className="border-0 bg-[var(--chart-scale-high)]/15 text-[var(--chart-scale-high)] text-xs">
                           <CheckCircle2 className="mr-1 h-3 w-3" />
@@ -744,15 +744,15 @@ export function SellDashboard() {
                     </div>
                     <div className="mb-1 flex items-baseline justify-between">
                       <span className="text-xs text-[var(--neutral-500)]">Target</span>
-                      <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">${(q.target / 1000).toFixed(0)}k</span>
+                      <span className="text-sm font-medium tabular-nums text-foreground">${(q.target / 1000).toFixed(0)}k</span>
                     </div>
                     <div className="mb-1 flex items-baseline justify-between">
                       <span className="text-xs text-[var(--neutral-500)]">Current</span>
-                      <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">${(q.current / 1000).toFixed(0)}k</span>
+                      <span className="text-sm font-medium tabular-nums text-foreground">${(q.current / 1000).toFixed(0)}k</span>
                     </div>
                     <div className="mb-2 flex items-baseline justify-between">
                       <span className="text-xs text-[var(--neutral-500)]">Completion</span>
-                      <span className="text-sm font-bold tabular-nums text-[var(--neutral-900)]">{pct}%</span>
+                      <span className="text-sm font-bold tabular-nums text-foreground">{pct}%</span>
                     </div>
                     <div className="relative h-2 overflow-hidden rounded-full bg-[var(--neutral-100)]">
                       <div

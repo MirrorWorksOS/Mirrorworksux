@@ -174,7 +174,7 @@ export const componentClasses = {
     success: `bg-[var(--mw-success-light)] text-[var(--mw-success)]`,
     warning: `bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)]`,
     error: `bg-[var(--mw-error-light)] text-[var(--mw-error)]`,
-    info: `bg-[var(--neutral-100)] text-[var(--neutral-900)]`,
+    info: `bg-[var(--neutral-100)] text-foreground`,
     neutral: `bg-[var(--neutral-100)] text-[var(--neutral-600)]`,
   },
 

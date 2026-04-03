@@ -38,7 +38,7 @@ export function DetailSheet({
         )}
       >
         <SheetHeader className="shrink-0 space-y-1 border-b border-[var(--neutral-200)] px-6 pb-4 pt-6 text-left">
-          <SheetTitle className="text-[var(--mw-mirage)]">{title}</SheetTitle>
+          <SheetTitle className="text-foreground">{title}</SheetTitle>
           {subtitle ? (
             <SheetDescription>{subtitle}</SheetDescription>
           ) : null}

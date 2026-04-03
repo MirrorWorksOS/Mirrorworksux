@@ -58,7 +58,7 @@ export function EntityCard({
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-[var(--neutral-900)]">{name}</p>
+              <p className="text-sm font-medium text-foreground">{name}</p>
               {subtitle !== undefined && (
                 <p className="text-xs text-muted-foreground">{subtitle}</p>
               )}
@@ -74,7 +74,7 @@ export function EntityCard({
               {meta.map((row) => (
                 <div key={`${row.label}-${row.value}`} className="flex items-baseline justify-between gap-4 text-xs">
                   <dt className="text-muted-foreground">{row.label}</dt>
-                  <dd className="tabular-nums text-[var(--neutral-900)]">{row.value}</dd>
+                  <dd className="tabular-nums text-foreground">{row.value}</dd>
                 </div>
               ))}
             </dl>

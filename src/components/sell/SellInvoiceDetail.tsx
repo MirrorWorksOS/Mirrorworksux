@@ -251,7 +251,7 @@ const MOCK_PAYMENT_HISTORY: PaymentEvent[] = [
 const STATUS_BADGE: Record<InvoiceStatus, string> = {
   Draft: "border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]",
   Sent: "border-0 bg-[var(--mw-info)]/15 text-[var(--mw-info)]",
-  "Partially Paid": "border-0 bg-[var(--mw-yellow-400)]/25 text-[var(--neutral-900)]",
+  "Partially Paid": "border-0 bg-[var(--mw-yellow-400)]/25 text-foreground",
   Paid: "border-0 bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
   Overdue: "border-0 bg-[var(--mw-error)]/15 text-[var(--mw-error)]",
 };
@@ -323,8 +323,8 @@ export function SellInvoiceDetail() {
             {/* Left column */}
             <div className="space-y-6">
               {/* Invoice details card */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-1 text-base font-medium text-[var(--neutral-900)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-1 text-base font-medium text-foreground">
                   Invoice details
                 </h2>
                 <p className="mb-6 text-xs text-[var(--neutral-500)]">
@@ -372,8 +372,8 @@ export function SellInvoiceDetail() {
               </Card>
 
               {/* Notes card */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-1 text-base font-medium text-[var(--neutral-900)]">Notes</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-1 text-base font-medium text-foreground">Notes</h2>
                 <p className="mb-4 text-xs text-[var(--neutral-500)]">Internal notes and payment instructions</p>
                 <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-700)]">
                   {invoice.notes}
@@ -384,20 +384,20 @@ export function SellInvoiceDetail() {
             {/* Right column (sticky) */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Amounts card */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Amounts</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-4 text-base font-medium text-foreground">Amounts</h2>
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Subtotal</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(invoice.subtotal)}</dd>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(invoice.subtotal)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Tax ({invoice.taxRate}% GST)</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(invoice.tax)}</dd>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(invoice.tax)}</dd>
                   </div>
                   <div className="flex justify-between border-t border-[var(--border)] pt-3">
-                    <dt className="font-medium text-[var(--neutral-900)]">Total</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(invoice.total)}</dd>
+                    <dt className="font-medium text-foreground">Total</dt>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(invoice.total)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Amount paid</dt>
@@ -405,7 +405,7 @@ export function SellInvoiceDetail() {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Balance due</dt>
-                    <dd className={cn("font-medium tabular-nums", invoice.balanceDue > 0 ? "text-[var(--mw-error)]" : "text-[var(--neutral-900)]")}>
+                    <dd className={cn("font-medium tabular-nums", invoice.balanceDue > 0 ? "text-[var(--mw-error)]" : "text-foreground")}>
                       {fmt(invoice.balanceDue)}
                     </dd>
                   </div>
@@ -413,9 +413,9 @@ export function SellInvoiceDetail() {
               </Card>
 
               {/* Quick line items summary */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">Line items</h2>
+                  <h2 className="text-base font-medium text-foreground">Line items</h2>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -453,12 +453,12 @@ export function SellInvoiceDetail() {
       /* ============================================================ */
       case "line-items":
         return (
-          <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-[var(--neutral-900)]">
+              <h2 className="text-base font-medium text-foreground">
                 Line items
               </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
+              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Line Item
               </Button>
@@ -501,7 +501,7 @@ export function SellInvoiceDetail() {
                     <span className="font-medium tabular-nums">{fmt(invoice.tax)}</span>
                   </div>
                   <div className="flex justify-between border-t border-[var(--border)] pt-2">
-                    <span className="font-medium text-[var(--neutral-900)]">Total</span>
+                    <span className="font-medium text-foreground">Total</span>
                     <span className="text-lg font-bold tabular-nums">{fmt(invoice.total)}</span>
                   </div>
                 </div>
@@ -516,13 +516,13 @@ export function SellInvoiceDetail() {
       case "payment-history":
         return (
           <div className="space-y-6">
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">Payment history</h2>
+                  <h2 className="text-base font-medium text-foreground">Payment history</h2>
                   <p className="text-xs text-[var(--neutral-500)]">Timeline of invoice events and payments</p>
                 </div>
-                <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Record payment coming soon')}>
+                <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Record payment coming soon')}>
                   <DollarSign className="mr-2 h-4 w-4" />
                   Record Payment
                 </Button>
@@ -537,7 +537,7 @@ export function SellInvoiceDetail() {
                       {EVENT_ICON[evt.icon]}
                     </div>
                     <div className="flex-1 pt-0.5">
-                      <p className="text-sm font-medium text-[var(--neutral-900)]">{evt.title}</p>
+                      <p className="text-sm font-medium text-foreground">{evt.title}</p>
                       {evt.description && (
                         <p className="text-xs text-[var(--neutral-600)] mt-0.5">{evt.description}</p>
                       )}
@@ -549,19 +549,19 @@ export function SellInvoiceDetail() {
             </Card>
 
             {/* Payment summary card */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Payment summary</h2>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h2 className="mb-4 text-base font-medium text-foreground">Payment summary</h2>
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-[var(--neutral-500)]">Invoice total</dt>
-                  <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(invoice.total)}</dd>
+                  <dd className="font-medium tabular-nums text-foreground">{fmt(invoice.total)}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-[var(--neutral-500)]">Total paid</dt>
                   <dd className="font-medium tabular-nums text-[var(--mw-success)]">{fmt(invoice.amountPaid)}</dd>
                 </div>
                 <div className="flex justify-between border-t border-[var(--border)] pt-3">
-                  <dt className="font-medium text-[var(--neutral-900)]">Outstanding</dt>
+                  <dt className="font-medium text-foreground">Outstanding</dt>
                   <dd className={cn("font-medium tabular-nums", invoice.balanceDue > 0 ? "text-[var(--mw-error)]" : "text-[var(--mw-success)]")}>
                     {fmt(invoice.balanceDue)}
                   </dd>
@@ -615,7 +615,7 @@ export function SellInvoiceDetail() {
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Record payment coming soon')}>
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Record payment coming soon')}>
             <DollarSign className="mr-2 h-4 w-4" />
             Record Payment
           </Button>

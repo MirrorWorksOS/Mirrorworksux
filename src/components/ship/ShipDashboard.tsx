@@ -92,7 +92,7 @@ export function ShipDashboard() {
 
       {/* Pipeline */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Fulfilment pipeline</p>
           <div className="flex items-center justify-between">
             {PIPELINE.map((s, i) => (
@@ -154,7 +154,7 @@ export function ShipDashboard() {
 
         {/* Exceptions */}
         <motion.div variants={staggerItem} className="lg:col-span-2">
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 flex flex-col h-full">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 flex flex-col h-full">
             <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Exceptions</p>
             <div className="flex-1 space-y-4">
               {EXCEPTIONS.map(exc => (
@@ -164,7 +164,7 @@ export function ShipDashboard() {
                 >
                   <div className="w-2 h-2 rounded-full bg-[var(--mw-error)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs text-[var(--mw-mirage)] font-medium tabular-nums">{exc.id}</span>
+                    <span className="text-xs text-foreground font-medium tabular-nums">{exc.id}</span>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{exc.customer}</p>
                   </div>
                   <span className="text-[10px] text-[var(--neutral-500)] tracking-wide uppercase shrink-0">{exc.type}</span>

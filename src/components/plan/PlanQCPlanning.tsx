@@ -45,7 +45,7 @@ export function PlanQCPlanning() {
         title="QC checkpoints"
         subtitle={`${CHECKPOINTS.filter(c => c.mandatory).length} mandatory · ${CHECKPOINTS.filter(c => !c.mandatory).length} optional`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2">
             <Plus className="w-4 h-4" /> New checkpoint
           </Button>
         }
@@ -56,7 +56,7 @@ export function PlanQCPlanning() {
         {STAGES.map(s => (
           <button key={s} onClick={() => setStageTab(s)}
             className={cn('px-3 py-1.5 rounded-md text-sm transition-colors font-medium',
-              stageTab === s ? 'bg-white text-[var(--mw-mirage)] shadow-sm' : 'text-[var(--neutral-500)] hover:text-[var(--mw-yellow-400)]'
+              stageTab === s ? 'bg-card text-foreground shadow-sm' : 'text-[var(--neutral-500)] hover:text-[var(--mw-yellow-400)]'
             )}>
             {s}
           </button>
@@ -74,11 +74,11 @@ export function PlanQCPlanning() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map(cp => (
           <motion.div key={cp.id} variants={staggerItem}>
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+            <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-[var(--mw-mirage)]' : 'text-[var(--neutral-400)]')} />
-                  <h3 className="text-sm font-medium text-[var(--mw-mirage)] leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                  <CheckCircle2 className={cn('w-5 h-5 shrink-0', cp.mandatory ? 'text-foreground' : 'text-[var(--neutral-400)]')} />
+                  <h3 className="text-sm font-medium text-foreground leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
                     {cp.name}
                   </h3>
                 </div>
@@ -94,15 +94,15 @@ export function PlanQCPlanning() {
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-[var(--neutral-500)]">Frequency</span>
-                  <span className="text-[var(--mw-mirage)] font-medium">{cp.frequency}</span>
+                  <span className="text-foreground font-medium">{cp.frequency}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--neutral-500)]">Duration</span>
-                  <span className="tabular-nums text-[var(--mw-mirage)]">{cp.duration} min</span>
+                  <span className="tabular-nums text-foreground">{cp.duration} min</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--neutral-500)]">Applies to</span>
-                  <span className="text-[var(--mw-mirage)] text-xs">{cp.products}</span>
+                  <span className="text-foreground text-xs">{cp.products}</span>
                 </div>
               </div>
               <p className="text-xs text-[var(--neutral-400)] mt-3">Updated {cp.lastUpdated}</p>

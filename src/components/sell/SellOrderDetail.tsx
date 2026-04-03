@@ -199,7 +199,7 @@ const MOCK_DOCUMENTS: DocFile[] = [
 const STATUS_BADGE: Record<OrderStatus, string> = {
   Draft: "border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]",
   Confirmed: "border-0 bg-[var(--mw-info)]/15 text-[var(--mw-info)]",
-  "In Production": "border-0 bg-[var(--mw-yellow-400)]/25 text-[var(--neutral-900)]",
+  "In Production": "border-0 bg-[var(--mw-yellow-400)]/25 text-foreground",
   Shipped: "border-0 bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
   Delivered: "border-0 bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
 };
@@ -274,8 +274,8 @@ export function SellOrderDetail() {
             {/* Left column */}
             <div className="space-y-6">
               {/* Order details card */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-1 text-base font-medium text-[var(--neutral-900)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-1 text-base font-medium text-foreground">
                   Order details
                 </h2>
                 <p className="mb-6 text-xs text-[var(--neutral-500)]">
@@ -349,9 +349,9 @@ export function SellOrderDetail() {
               </Card>
 
               {/* Line items summary */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">Line items</h2>
+                  <h2 className="text-base font-medium text-foreground">Line items</h2>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -385,20 +385,20 @@ export function SellOrderDetail() {
             {/* Right column (sticky) */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Order value card */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Order value</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-4 text-base font-medium text-foreground">Order value</h2>
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Subtotal</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(order.subtotal)}</dd>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(order.subtotal)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Tax (GST)</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(order.tax)}</dd>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(order.tax)}</dd>
                   </div>
                   <div className="flex justify-between border-t border-[var(--border)] pt-3">
-                    <dt className="font-medium text-[var(--neutral-900)]">Total</dt>
-                    <dd className="font-medium tabular-nums text-[var(--neutral-900)]">{fmt(order.total)}</dd>
+                    <dt className="font-medium text-foreground">Total</dt>
+                    <dd className="font-medium tabular-nums text-foreground">{fmt(order.total)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Paid</dt>
@@ -406,7 +406,7 @@ export function SellOrderDetail() {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-[var(--neutral-500)]">Balance due</dt>
-                    <dd className={cn("font-medium tabular-nums", balance > 0 ? "text-[var(--mw-error)]" : "text-[var(--neutral-900)]")}>
+                    <dd className={cn("font-medium tabular-nums", balance > 0 ? "text-[var(--mw-error)]" : "text-foreground")}>
                       {fmt(balance)}
                     </dd>
                   </div>
@@ -414,8 +414,8 @@ export function SellOrderDetail() {
               </Card>
 
               {/* Status timeline */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Status timeline</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="mb-4 text-base font-medium text-foreground">Status timeline</h2>
                 <ol className="space-y-3">
                   {STATUS_TIMELINE.map((step, i) => {
                     const done = i <= currentStageIdx;
@@ -426,8 +426,8 @@ export function SellOrderDetail() {
                           className={cn(
                             "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium",
                             done
-                              ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]"
-                              : "border border-[var(--border)] bg-white text-[var(--neutral-400)]",
+                              ? "bg-[var(--mw-yellow-400)] text-primary-foreground"
+                              : "border border-[var(--border)] bg-card text-[var(--neutral-400)]",
                           )}
                         >
                           {i + 1}
@@ -436,7 +436,7 @@ export function SellOrderDetail() {
                           className={cn(
                             "text-sm",
                             isCurrent
-                              ? "font-medium text-[var(--neutral-900)]"
+                              ? "font-medium text-foreground"
                               : done
                                 ? "text-[var(--neutral-600)]"
                                 : "text-[var(--neutral-400)]",
@@ -453,7 +453,7 @@ export function SellOrderDetail() {
               {/* AI insight */}
               <AIInsightCard title="Delivery forecast">
                 This order is tracking 2 days ahead of schedule. Expected delivery:{" "}
-                <strong className="text-[var(--neutral-900)]">14 Apr</strong>.
+                <strong className="text-foreground">14 Apr</strong>.
               </AIInsightCard>
             </div>
           </div>
@@ -464,12 +464,12 @@ export function SellOrderDetail() {
       /* ============================================================ */
       case "line-items":
         return (
-          <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-[var(--neutral-900)]">
+              <h2 className="text-base font-medium text-foreground">
                 Line items
               </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
+              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
                 <Package className="mr-2 h-4 w-4" />
                 Add item
               </Button>
@@ -494,7 +494,7 @@ export function SellOrderDetail() {
                     <TableCell className="text-right text-sm tabular-nums">{fmt(li.unitPrice)}</TableCell>
                     <TableCell className="text-right text-sm font-medium tabular-nums">{fmt(li.total)}</TableCell>
                     <TableCell>
-                      <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-900)] text-xs">
+                      <Badge className="border-0 bg-[var(--neutral-100)] text-foreground text-xs">
                         {li.status}
                       </Badge>
                     </TableCell>
@@ -512,8 +512,8 @@ export function SellOrderDetail() {
         return (
           <div className="space-y-6">
             {/* Shipping details */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h2 className="mb-1 text-base font-medium text-[var(--neutral-900)]">Shipping details</h2>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h2 className="mb-1 text-base font-medium text-foreground">Shipping details</h2>
               <p className="mb-6 text-xs text-[var(--neutral-500)]">Delivery address and logistics</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
@@ -532,13 +532,13 @@ export function SellOrderDetail() {
             </Card>
 
             {/* Fulfilment progress */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Fulfilment progress</h2>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h2 className="mb-4 text-base font-medium text-foreground">Fulfilment progress</h2>
               <div className="mb-2 flex items-baseline justify-between">
                 <span className="text-sm text-[var(--neutral-600)]">
                   Items shipped
                 </span>
-                <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                <span className="text-sm font-medium tabular-nums text-foreground">
                   {order.itemsShipped} / {order.itemsTotal}
                 </span>
               </div>
@@ -551,12 +551,12 @@ export function SellOrderDetail() {
             </Card>
 
             {/* Job link */}
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h2 className="mb-4 text-base font-medium text-[var(--neutral-900)]">Production job</h2>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h2 className="mb-4 text-base font-medium text-foreground">Production job</h2>
               {order.jobId ? (
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[var(--neutral-900)] tabular-nums">{order.jobId}</p>
+                    <p className="text-sm font-medium text-foreground tabular-nums">{order.jobId}</p>
                     <p className="text-xs text-[var(--neutral-500)]">Manufacturing job linked to this order</p>
                   </div>
                   <Button variant="outline" className="h-12 border-[var(--border)]" asChild>
@@ -569,7 +569,7 @@ export function SellOrderDetail() {
               ) : (
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-[var(--neutral-500)]">No production job linked yet.</p>
-                  <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" asChild>
+                  <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" asChild>
                     <Link to="/plan/jobs">
                       <Package className="mr-2 h-4 w-4" />
                       Create Job
@@ -586,10 +586,10 @@ export function SellOrderDetail() {
       /* ============================================================ */
       case "documents":
         return (
-          <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-[var(--neutral-900)]">Documents</h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Upload document coming soon')}>
+              <h2 className="text-base font-medium text-foreground">Documents</h2>
+              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Upload document coming soon')}>
                 <FileText className="mr-2 h-4 w-4" />
                 Upload
               </Button>
@@ -600,7 +600,7 @@ export function SellOrderDetail() {
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 shrink-0 text-[var(--neutral-500)]" />
                     <div>
-                      <p className="text-sm font-medium text-[var(--neutral-900)]">{doc.name}</p>
+                      <p className="text-sm font-medium text-foreground">{doc.name}</p>
                       <p className="text-xs text-[var(--neutral-500)]">
                         <span className="tabular-nums">{doc.size}</span> &middot; {doc.date}
                       </p>
@@ -660,7 +660,7 @@ export function SellOrderDetail() {
             <Mail className="mr-2 h-4 w-4" />
             Email Customer
           </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Printing\u2026'); window.print(); }}>
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Printing\u2026'); window.print(); }}>
             <Printer className="mr-2 h-4 w-4" />
             Print Order
           </Button>

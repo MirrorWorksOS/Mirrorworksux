@@ -89,7 +89,7 @@ const MODULE_COLORS: Record<string, { bg: string; text: string }> = {
   Buy: { bg: 'bg-[var(--mw-purple-50)]', text: 'text-[var(--mw-purple)]' },
   Ship: { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-amber)]' },
   Book: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-600)]' },
-  Control: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+  Control: { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
 };
 
 // ---------------------------------------------------------------------------

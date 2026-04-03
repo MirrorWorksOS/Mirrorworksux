@@ -204,7 +204,7 @@ export function SellNewQuote() {
             className={cn(
               'h-9 border-transparent bg-transparent hover:border-[var(--border)] focus:border-[var(--mw-mirage)] text-sm text-right pr-5',
               row.margin < 15 && 'text-[var(--mw-error)]',
-              row.margin >= 25 && 'text-[var(--neutral-900)]',
+              row.margin >= 25 && 'text-foreground',
             )}
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">%</span>
@@ -229,7 +229,7 @@ export function SellNewQuote() {
       key: 'total',
       header: 'Total',
       headerClassName: 'text-right',
-      className: 'w-[10%] px-3 py-2 text-right font-medium tabular-nums text-[var(--neutral-900)] whitespace-nowrap',
+      className: 'w-[10%] px-3 py-2 text-right font-medium tabular-nums text-foreground whitespace-nowrap',
       cell: (row) => `$${fmtCurrency(row.qty * row.unitPrice)}`,
     },
     {
@@ -258,7 +258,7 @@ export function SellNewQuote() {
           <div>
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[var(--neutral-500)]" />
-              <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">{quoteNumber}</span>
+              <span className="text-sm font-medium tabular-nums text-foreground">{quoteNumber}</span>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">Draft</Badge>
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">New quote</p>
@@ -280,7 +280,7 @@ export function SellNewQuote() {
           <Button variant="outline" className="border-[var(--border)] h-10" onClick={() => toast.success('Quote saved as draft')}>
             Save draft
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-10 gap-2" onClick={() => toast.success('Quote sent successfully')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-10 gap-2" onClick={() => toast.success('Quote sent successfully')}>
             <FileText className="w-4 h-4" /> Send quote
           </Button>
         </div>
@@ -302,8 +302,8 @@ export function SellNewQuote() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Header details */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Quote details</h3>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h3 className="text-sm font-medium text-foreground mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label className="text-sm mb-2 block font-medium">Customer *</Label>
@@ -344,7 +344,7 @@ export function SellNewQuote() {
               {/* Line items */}
               <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-[var(--neutral-900)]">Line items</h3>
+                  <h3 className="text-sm font-medium text-foreground">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
                     <SelectTrigger className="h-9 border-[var(--border)] w-52 text-sm">
                       <SelectValue placeholder="Add from catalogue…" />
@@ -367,7 +367,7 @@ export function SellNewQuote() {
                 <div className="p-4 border-t border-[var(--border)]">
                   <button
                     onClick={() => setLines(prev => [...prev, newLine()])}
-                    className="flex items-center gap-2 text-sm text-[var(--neutral-500)] hover:text-[var(--neutral-900)] transition-colors"
+                    className="flex items-center gap-2 text-sm text-[var(--neutral-500)] hover:text-foreground transition-colors"
                   >
                     <Plus className="w-4 h-4" /> Add line item
                   </button>
@@ -375,13 +375,13 @@ export function SellNewQuote() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
                 <Textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus-visible:outline-none focus:bg-background focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
+                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-foreground resize-none focus-visible:outline-none focus:bg-background focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
                   placeholder="Add notes, special instructions, or delivery requirements…"
                 />
               </Card>
@@ -389,8 +389,8 @@ export function SellNewQuote() {
 
             {/* Right — Summary */}
             <div className="space-y-4">
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">Quote summary</h3>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h3 className="text-sm font-medium text-foreground mb-4">Quote summary</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Subtotal</span>
@@ -402,8 +402,8 @@ export function SellNewQuote() {
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base font-medium">
-                    <span className="text-[var(--neutral-900)]">Total (inc. GST)</span>
-                    <span className="tabular-nums text-[var(--neutral-900)]">${fmtCurrency(total)}</span>
+                    <span className="text-foreground">Total (inc. GST)</span>
+                    <span className="tabular-nums text-foreground">${fmtCurrency(total)}</span>
                   </div>
                 </div>
 
@@ -417,12 +417,12 @@ export function SellNewQuote() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Gross profit</span>
-                    <span className="font-medium tabular-nums text-[var(--neutral-900)]">${fmtCurrency(subtotal - cost)}</span>
+                    <span className="font-medium tabular-nums text-foreground">${fmtCurrency(subtotal - cost)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--neutral-500)]">Margin</span>
                     <span className={cn('font-medium tabular-nums text-base',
-                      margin < 15 ? 'text-[var(--mw-error)]' : margin >= 25 ? 'text-[var(--neutral-900)]' : 'text-[var(--mw-yellow-400)]'
+                      margin < 15 ? 'text-[var(--mw-error)]' : margin >= 25 ? 'text-foreground' : 'text-[var(--mw-yellow-400)]'
                     )}>
                       {margin.toFixed(1)}%
                     </span>
@@ -460,7 +460,7 @@ export function SellNewQuote() {
                 </div>
               </Card>
 
-              <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-900)] h-12 gap-2" onClick={() => toast.success('Quote sent successfully')}>
+              <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-12 gap-2" onClick={() => toast.success('Quote sent successfully')}>
                 <FileText className="w-4 h-4" /> Send quote
               </Button>
               <Button variant="outline" className="w-full border-[var(--border)] h-10" onClick={() => toast('Generating PDF preview\u2026')}>

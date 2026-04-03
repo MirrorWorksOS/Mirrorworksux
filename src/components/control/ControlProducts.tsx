@@ -42,7 +42,7 @@ const productColumns: MwColumnDef<Product>[] = [
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-        <span className="text-sm text-[var(--mw-mirage)] font-medium">{p.name}</span>
+        <span className="text-sm text-foreground font-medium">{p.name}</span>
       </div>
     ),
   },
@@ -60,18 +60,18 @@ const productColumns: MwColumnDef<Product>[] = [
   },
   {
     key: 'cost', header: 'Cost', headerClassName: 'text-right', className: 'text-right tabular-nums', tooltip: 'Unit cost price',
-    cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '\u2014'}</span>,
+    cell: (p) => <span className="text-sm font-medium text-foreground">{p.costPrice > 0 ? `$${p.costPrice.toFixed(2)}` : '\u2014'}</span>,
   },
   {
     key: 'sell', header: 'Sell', headerClassName: 'text-right', className: 'text-right tabular-nums', tooltip: 'Unit sell price',
-    cell: (p) => <span className="text-sm font-medium text-[var(--mw-mirage)]">{p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '\u2014'}</span>,
+    cell: (p) => <span className="text-sm font-medium text-foreground">{p.sellPrice > 0 ? `$${p.sellPrice.toFixed(2)}` : '\u2014'}</span>,
   },
   {
     key: 'bom', header: 'BOM', headerClassName: 'text-center', tooltip: 'Has a Bill of Materials',
     cell: (p) => (
       <div className="flex justify-center">
         {p.hasBOM
-          ? <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
+          ? <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-xs rounded-full px-2 py-0.5">Yes</Badge>
           : <span className="text-xs text-[var(--neutral-400)]">{'\u2014'}</span>
         }
       </div>
@@ -105,12 +105,12 @@ export function ControlProducts() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Product master</h1>
+          <h1 className="text-3xl tracking-tight text-foreground">Product master</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">
             {activeCount} active products
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New product coming soon')}>
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New product coming soon')}>
           <Plus className="w-4 h-4" /> New product
         </Button>
       </div>

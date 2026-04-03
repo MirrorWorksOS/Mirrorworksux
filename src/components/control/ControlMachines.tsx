@@ -41,7 +41,7 @@ const machineColumns: MwColumnDef<Machine>[] = [
     cell: (m) => (
       <div className="flex items-center gap-2">
         <Cog className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-        <span className="text-sm text-[var(--mw-mirage)] font-medium">{m.name}</span>
+        <span className="text-sm text-foreground font-medium">{m.name}</span>
       </div>
     ),
   },
@@ -96,12 +96,12 @@ export function ControlMachines() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">Machines</h1>
+          <h1 className="text-3xl tracking-tight text-foreground">Machines</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">
             {activeCount} active · {maintenanceCount} in maintenance
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2" onClick={() => toast('New machine coming soon')}>
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New machine coming soon')}>
           <Plus className="w-4 h-4" /> New machine
         </Button>
       </div>

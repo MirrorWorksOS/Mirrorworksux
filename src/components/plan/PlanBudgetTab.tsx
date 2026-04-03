@@ -114,9 +114,9 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       <div className="p-6">
         <Card className="border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-[var(--mw-mirage)]" />
+            <AlertCircle className="h-5 w-5 text-foreground" />
             <div>
-              <h3 className="text-sm font-medium text-[var(--mw-mirage)]">
+              <h3 className="text-sm font-medium text-foreground">
                 Access Restricted
               </h3>
               <p className="mt-1 text-xs text-[var(--neutral-600)]">
@@ -152,19 +152,19 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Budget */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={DollarSign} surface="onLight" />
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Budget
             </h3>
-            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-foreground">
               ${mockBudgetData.totalBudget.toLocaleString()}
             </p>
             <p className=" text-xs text-[var(--neutral-500)] mt-2">
               from quote{' '}
-              <a href={`/sell/quotes/${quoteId || mockBudgetData.quoteReference}`} className="text-[var(--mw-mirage)] hover:underline">
+              <a href={`/sell/quotes/${quoteId || mockBudgetData.quoteReference}`} className="text-foreground hover:underline">
                 {mockBudgetData.quoteReference}
               </a>
             </p>
@@ -173,17 +173,17 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Total Spent */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200 relative group">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200 relative group">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={Receipt} surface="onLight" />
-              <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2 py-0.5 text-xs text-[var(--mw-mirage)]">
+              <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2 py-0.5 text-xs text-foreground">
                 <span className="tabular-nums">{utilizationPercent.toFixed(0)}% used</span>
               </Badge>
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Total Spent
             </h3>
-            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-foreground">
               ${mockBudgetData.totalSpent.toLocaleString()}
             </p>
             <div className="mt-3">
@@ -220,14 +220,14 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Remaining */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={Clock} surface="onLight" />
             </div>
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Remaining
             </h3>
-            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-foreground">
               ${mockBudgetData.remaining.toLocaleString()}
             </p>
             <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
@@ -238,14 +238,14 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Margin */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={BarChart3} surface="onLight" />
               <div className="flex items-center gap-1">
                 {mockBudgetData.currentMargin > mockBudgetData.targetMargin ? (
                   <>
-                    <AnimatedTrendingUp className="w-4 h-4 text-[var(--mw-mirage)]" />
-                    <span className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">
+                    <AnimatedTrendingUp className="w-4 h-4 text-foreground" />
+                    <span className="text-xs font-medium tabular-nums text-foreground">
                       +{(mockBudgetData.currentMargin - mockBudgetData.targetMargin).toFixed(1)}%
                     </span>
                   </>
@@ -262,7 +262,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
             <h3 className=" text-xs font-medium text-[var(--neutral-500)] mb-1">
               Margin
             </h3>
-            <p className=" text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">
+            <p className=" text-2xl font-medium tabular-nums text-foreground">
               {mockBudgetData.currentMargin.toFixed(1)}%
             </p>
             <p className=" text-xs tabular-nums text-[var(--neutral-500)] mt-2">
@@ -295,9 +295,9 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
       {/* Spend vs Plan Chart */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-foreground">
               Spend vs Plan
             </h3>
             <div className="flex items-center gap-2">

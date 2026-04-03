@@ -248,7 +248,7 @@ const FilterBadge = ({ label, active, onClick }: { label: string, active: boolea
       "px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
       active 
         ? "bg-[var(--neutral-800)] text-white border-[var(--neutral-800)] shadow-sm" 
-        : "bg-white text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
+        : "bg-card text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
     )}
   >
     {label}
@@ -265,7 +265,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
    };
 
    return (
-      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-[var(--shape-lg)] bg-white transition-shadow hover:shadow-[var(--elevation-2)]">
+      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-[var(--shape-lg)] bg-card transition-shadow hover:shadow-[var(--elevation-2)]">
          <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--neutral-200)]">
             <div className="flex items-center gap-3">
                <div className={cn("flex items-center justify-center w-8 h-8 rounded-full bg-[var(--neutral-100)]", headerIconColors[insight.severity])}>
@@ -292,7 +292,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
                   className={cn(
                     "h-9 font-medium rounded-sm", 
                     action.variant === 'destructive' ? "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]" :
-                    action.variant === 'outline' ? "border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)] text-[var(--neutral-800)]" :
+                    action.variant === 'outline' ? "border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)]" :
                     action.variant === 'ghost' ? "text-[var(--neutral-500)] hover:text-[var(--neutral-800)] ml-auto" :
                     "bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
                   )}
@@ -456,7 +456,7 @@ export function IntelligenceHubTab() {
                       </div>
                       
                       <Button 
-                         className="w-20 h-20 rounded-full bg-white text-black hover:bg-[var(--neutral-100)] transition-all shadow-xs flex flex-col items-center justify-center gap-1 animate-pulse hover:animate-none"
+                         className="w-20 h-20 rounded-full bg-card text-foreground hover:bg-[var(--neutral-100)] transition-all shadow-xs flex flex-col items-center justify-center gap-1 animate-pulse hover:animate-none"
                          onClick={() => setIsRecording(true)}
                       >
                          <Mic className="w-8 h-8" />

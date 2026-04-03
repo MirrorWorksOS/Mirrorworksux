@@ -47,8 +47,8 @@ const columns: { key: MOStatus; label: string; color: string; icon: typeof Clock
 const getPriorityStyle = (priority: string) => {
   switch (priority) {
     case 'urgent': return 'bg-[var(--mw-mirage)] text-white';
-    case 'high':   return 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]';
-    case 'medium': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
+    case 'high':   return 'bg-[var(--mw-yellow-400)]/20 text-foreground';
+    case 'medium': return 'bg-[var(--neutral-100)] text-foreground';
     case 'low':    return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
     default:       return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
@@ -119,7 +119,7 @@ export function MakeShopFloorKanban() {
                       {/* Card Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">
+                          <p className="text-xs font-medium tabular-nums text-foreground">
                             {mo.moNumber}
                           </p>
                           <p className="text-xs tabular-nums text-[var(--neutral-500)] mt-0.5">
@@ -132,7 +132,7 @@ export function MakeShopFloorKanban() {
                       </div>
 
                       {/* Part Name */}
-                      <h4 className="text-sm font-medium text-[var(--mw-mirage)] mb-4">
+                      <h4 className="text-sm font-medium text-foreground mb-4">
                         {mo.partName}
                       </h4>
 
@@ -140,16 +140,16 @@ export function MakeShopFloorKanban() {
                       <div className="space-y-1.5 mb-4 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="text-[var(--neutral-500)]">Qty</span>
-                          <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{mo.quantity}</span>
+                          <span className="font-medium tabular-nums text-foreground">{mo.quantity}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[var(--neutral-500)]">Work centre</span>
-                          <span className="text-[var(--mw-mirage)]">{mo.workCenter}</span>
+                          <span className="text-foreground">{mo.workCenter}</span>
                         </div>
                         {mo.operator && (
                           <div className="flex items-center justify-between">
                             <span className="text-[var(--neutral-500)]">Operator</span>
-                            <span className="text-[var(--mw-mirage)]">{mo.operator}</span>
+                            <span className="text-foreground">{mo.operator}</span>
                           </div>
                         )}
                       </div>
@@ -159,7 +159,7 @@ export function MakeShopFloorKanban() {
                         <span className="text-[var(--neutral-500)]">Due</span>
                         <span className={cn(
                           'font-medium tabular-nums',
-                          mo.status === 'overdue' ? 'text-[var(--mw-error)]' : 'text-[var(--mw-mirage)]'
+                          mo.status === 'overdue' ? 'text-[var(--mw-error)]' : 'text-foreground'
                         )}>
                           {new Date(mo.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}
                         </span>

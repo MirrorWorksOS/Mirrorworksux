@@ -18,13 +18,13 @@ const segmentBase =
   'inline-flex items-center justify-center gap-2 h-12 min-h-[48px] px-6 text-sm font-medium transition-[background-color,color,opacity] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
 
 const primaryEnabled =
-  'bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-400)]';
+  'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-400)]';
 
 const primaryDisabled =
   'bg-[var(--mw-yellow-100)] text-[var(--neutral-500)] cursor-not-allowed';
 
 const secondarySegment =
-  'bg-white text-[#2C2C2C] hover:bg-[var(--neutral-50)] active:bg-[var(--neutral-100)]';
+  'bg-card text-foreground hover:bg-[var(--neutral-50)] active:bg-[var(--neutral-100)]';
 
 const divider = 'w-px shrink-0 bg-[var(--mw-yellow-400)]';
 

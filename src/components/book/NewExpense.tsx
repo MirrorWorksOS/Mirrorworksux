@@ -26,7 +26,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
   const total = taxMode === 'exclusive' ? amtNum + gst : amtNum;
 
   return (
-    <PageShell className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="New expense"
         breadcrumbs={[{ label: 'Book', href: '/book' }, { label: 'New expense' }]}
@@ -34,7 +34,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-11 gap-4">
         {/* Left - Form */}
-        <Card className="lg:col-span-6 bg-white shadow-xs border border-[var(--border)] p-6 space-y-4">
+        <Card className="lg:col-span-6 bg-card shadow-xs border border-[var(--border)] p-6 space-y-4">
           {/* Vendor */}
           <div>
             <Label className="text-sm mb-2 block font-medium">Vendor / Supplier</Label>
@@ -66,7 +66,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
             <div className="flex items-center gap-2 mt-2">
               {['exclusive', 'inclusive'].map(m => (
                 <button key={m} onClick={() => setTaxMode(m as any)}
-                  className={cn("px-4 py-2 text-xs rounded border transition-colors font-medium", taxMode === m ? 'bg-[var(--mw-yellow-400)] border-[var(--mw-yellow-400)] text-[var(--mw-mirage)]' : 'border-[var(--border)] text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]')}>
+                  className={cn("px-4 py-2 text-xs rounded border transition-colors font-medium", taxMode === m ? 'bg-[var(--mw-yellow-400)] border-[var(--mw-yellow-400)] text-foreground' : 'border-[var(--border)] text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]')}>
                   Tax {m}
                 </button>
               ))}
@@ -102,7 +102,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
             <div className="flex gap-0 border border-[var(--border)] rounded overflow-hidden">
               {['Cash', 'Credit Card', 'Bank Transfer', 'Petty Cash'].map(m => (
                 <button key={m} onClick={() => setPaymentMethod(m)}
-                  className={cn("flex-1 py-3 text-xs transition-colors font-medium", paymentMethod === m ? 'bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]')}>
+                  className={cn("flex-1 py-3 text-xs transition-colors font-medium", paymentMethod === m ? 'bg-[var(--mw-yellow-400)] text-primary-foreground' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]')}>
                   {m}
                 </button>
               ))}
@@ -139,14 +139,14 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-[var(--mw-mirage)] rounded" onClick={() => toast.success('Expense saved as draft')}>Save as Draft</Button>
-            <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] rounded" onClick={() => toast.success('Expense submitted for approval')}>Submit for Approval</Button>
+            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-foreground rounded" onClick={() => toast.success('Expense saved as draft')}>Save as Draft</Button>
+            <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground rounded" onClick={() => toast.success('Expense submitted for approval')}>Submit for Approval</Button>
           </div>
         </Card>
 
         {/* Right - Receipt */}
         <div className="lg:col-span-5 space-y-4">
-          <Card className="bg-white shadow-xs border border-[var(--border)] p-6">
+          <Card className="bg-card shadow-xs border border-[var(--border)] p-6">
             {!uploaded ? (
               <div
                 onClick={() => setUploaded(true)}
@@ -160,7 +160,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
               <>
                 <div className="relative rounded-[var(--shape-lg)] overflow-hidden bg-[var(--neutral-100)] min-h-[200px] flex items-center justify-center">
                   <div className="text-center text-[var(--neutral-400)] text-sm p-8">
-                    <p className="text-lg text-[var(--mw-mirage)] mb-1 font-medium">Blackwoods_receipt_25Feb.jpg</p>
+                    <p className="text-lg text-foreground mb-1 font-medium">Blackwoods_receipt_25Feb.jpg</p>
                     <p className="text-xs">Receipt image preview</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-[var(--mw-mirage)]/80 backdrop-blur-sm flex items-center justify-center gap-4 py-2">
@@ -174,8 +174,8 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                 {/* OCR Results */}
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-[var(--mw-mirage)]" />
-                    <span className="text-sm text-[var(--mw-mirage)] font-medium">Extracted data:</span>
+                    <CheckCircle className="w-4 h-4 text-foreground" />
+                    <span className="text-sm text-foreground font-medium">Extracted data:</span>
                   </div>
                   {[
                     { label: 'Vendor', value: 'Blackwoods', confidence: 'green' },
@@ -186,12 +186,12 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                     <div key={row.label} className="flex items-center justify-between">
                       <span className="text-xs text-[var(--neutral-500)]">{row.label}</span>
                       <div className="flex items-center gap-2">
-                        <span className={cn("text-sm text-[var(--mw-mirage)]", row.mono && "")}>{row.value}</span>
+                        <span className={cn("text-sm text-foreground", row.mono && "")}>{row.value}</span>
                         <div className={cn("w-2 h-2 rounded-full", row.confidence === 'green' ? 'bg-[var(--mw-mirage)]' : row.confidence === 'yellow' ? 'bg-[var(--mw-warning)]' : 'bg-[var(--mw-error)]')} />
                       </div>
                     </div>
                   ))}
-                  <Button className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] mt-3">Apply to Form</Button>
+                  <Button className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground mt-3">Apply to Form</Button>
                 </div>
               </>
             )}
@@ -202,11 +202,11 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
             <ModuleInfoCallout
               icon={<AlertTriangle className="w-5 h-5 text-[var(--mw-warning)]" />}
               title="Possible duplicate"
-              descriptionClassName="text-[var(--mw-mirage)]"
+              descriptionClassName="text-foreground"
               description={
                 <>
                   <p>$2,450.00 from Blackwoods on 23 Feb 2026</p>
-                  <Button variant="ghost" className="mt-2 h-auto p-0 text-sm font-medium text-[var(--mw-mirage)] underline">
+                  <Button variant="ghost" className="mt-2 h-auto p-0 text-sm font-medium text-foreground underline">
                     View existing
                   </Button>
                 </>

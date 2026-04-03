@@ -488,7 +488,7 @@ export function StepManualEntry() {
                   If this machine will send data to MirrorWorks (network, OEM cloud, or shop-floor device), capture
                   details now or add them later in Control → Machines.
                 </p>
-                <div className="flex items-start gap-3 rounded-lg border border-[var(--neutral-200)] bg-white p-4">
+                <div className="flex items-start gap-3 rounded-lg border border-[var(--neutral-200)] bg-card p-4">
                   <Checkbox
                     id="network_planned"
                     checked={formData.network_planned === 'yes'}

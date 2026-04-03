@@ -21,20 +21,20 @@ interface DefectReportModalProps {
 export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectReportModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-white/95 backdrop-blur-xl">
+      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden bg-popover/95 backdrop-blur-xl">
         <DialogDescription className="sr-only">
           Form to report a defect for the current part.
         </DialogDescription>
         <div className="p-6">
           <DialogHeader className="mb-4">
-            <DialogTitle className="text-xl font-bold text-[var(--mw-mirage)]">
+            <DialogTitle className="text-xl font-bold text-foreground">
               Report Defect - Part {partNumber}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="space-y-3">
-              <Label className="text-base font-medium text-[var(--neutral-900)]">Select defect type:</Label>
+              <Label className="text-base font-medium text-foreground">Select defect type:</Label>
               <RadioGroup defaultValue="dimensional" className="flex flex-col gap-3">
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem value="dimensional" id="r1" className="w-5 h-5 border-2" />
@@ -60,7 +60,7 @@ export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectRe
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes" className="text-base font-medium text-[var(--neutral-900)]">Additional notes (optional)</Label>
+              <Label htmlFor="notes" className="text-base font-medium text-foreground">Additional notes (optional)</Label>
               <Textarea 
                 id="notes" 
                 placeholder="Describe the issue..." 

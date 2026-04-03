@@ -140,7 +140,7 @@ export function AiCommandBar({
         />
         <Button
           type="submit"
-          className="h-12 min-h-[48px] w-12 shrink-0 rounded-full bg-[var(--mw-yellow-400)] p-0 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+          className="h-12 min-h-[48px] w-12 shrink-0 rounded-full bg-[var(--mw-yellow-400)] p-0 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
         >
           <Send className="mx-auto h-5 w-5" strokeWidth={1.5} aria-hidden />
           <span className="sr-only">Send</span>

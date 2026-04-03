@@ -24,7 +24,7 @@ export function MirrorWorksBridge() {
 
   return (
     <DataImportWizardLayout>
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">MirrorWorks Bridge</h1>
+      <h1 className="text-3xl tracking-tight text-foreground">MirrorWorks Bridge</h1>
 
       <ModuleInfoCallout
         showIcon={false}
@@ -40,7 +40,7 @@ export function MirrorWorksBridge() {
           return (
             <Card
               key={type.key}
-              className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-6 shadow-xs"
+              className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs"
             >
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export function MirrorWorksBridge() {
                     <Icon className="h-5 w-5 text-[var(--mw-blue)]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{type.label}</h3>
+                    <h3 className="text-sm font-medium text-foreground">{type.label}</h3>
                     <p className="mt-1 text-xs text-[var(--neutral-500)]">
                       <span className="tabular-nums">
                         {type.imported} / {type.total}
@@ -57,7 +57,7 @@ export function MirrorWorksBridge() {
                     </p>
                   </div>
                 </div>
-                {type.status === 'complete' && <CheckCircle2 className="h-5 w-5 text-[var(--mw-mirage)]" />}
+                {type.status === 'complete' && <CheckCircle2 className="h-5 w-5 text-foreground" />}
                 {type.status === 'pending' && <AlertCircle className="h-5 w-5 text-[var(--mw-yellow-400)]" />}
               </div>
 
@@ -117,7 +117,7 @@ export function MirrorWorksBridge() {
           ))}
         </div>
         <Button
-          className="h-12 min-h-[48px] rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)]"
+          className="h-12 min-h-[48px] rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
           onClick={() => setActiveStep(s => Math.min(3, s + 1))}
         >
           Next →

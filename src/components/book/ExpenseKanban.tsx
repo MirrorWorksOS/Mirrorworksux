@@ -20,8 +20,8 @@ const KANBAN_ITEM_TYPE = 'book-expense';
 type ExpenseCategory = 'Materials' | 'Utilities' | 'Maintenance' | 'Consumables' | 'Subcontractor';
 
 const categoryStyles: Record<ExpenseCategory, string> = {
-  Materials: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
-  Utilities: 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+  Materials: 'bg-[var(--neutral-100)] text-foreground',
+  Utilities: 'bg-[var(--neutral-100)] text-foreground',
   Maintenance: 'bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)]',
   Consumables: 'bg-[var(--mw-purple-100)] text-[var(--mw-purple)]',
   Subcontractor: 'bg-[var(--neutral-100)] text-[var(--mw-error)]',
@@ -101,7 +101,7 @@ const ExpenseCardBody = ({ expense }: { expense: Expense }) => (
       <GripVertical className={cn('w-4 h-4 shrink-0 mt-0.5', DRAG_HANDLE_STYLE)} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-[var(--mw-mirage)] truncate font-medium">{expense.vendor}</span>
+          <span className="text-sm text-foreground truncate font-medium">{expense.vendor}</span>
           <span className="text-sm shrink-0 tabular-nums font-medium">
             ${expense.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </span>
@@ -225,7 +225,7 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
             onClick={() => setShowNewExpense(false)}
           />
           {/* Panel */}
-          <div className="absolute top-0 right-0 bottom-0 w-1/2 bg-white border-l border-[var(--border)] shadow-xl z-50 overflow-y-auto animate-in slide-in-from-right duration-200">
+          <div className="absolute top-0 right-0 bottom-0 w-1/2 bg-card border-l border-[var(--border)] shadow-xl z-50 overflow-y-auto animate-in slide-in-from-right duration-200">
             <div className="absolute top-4 right-4 z-10">
               <button
                 type="button"

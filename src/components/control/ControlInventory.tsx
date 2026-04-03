@@ -51,7 +51,7 @@ const inventoryColumns: MwColumnDef<InventoryItem>[] = [
     header: 'Name',
     tooltip: 'Item description',
     cell: (item) => item.name,
-    className: 'font-medium text-[var(--mw-mirage)]',
+    className: 'font-medium text-foreground',
   },
   {
     key: 'category',

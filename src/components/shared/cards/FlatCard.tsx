@@ -36,7 +36,7 @@ export function FlatCard({
           )}
         >
           {title !== undefined ? (
-            <h3 className="text-base font-medium text-[var(--neutral-900)]">{title}</h3>
+            <h3 className="text-base font-medium text-foreground">{title}</h3>
           ) : (
             <span />
           )}

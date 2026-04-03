@@ -32,7 +32,7 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-        <span className="font-medium text-[var(--mw-mirage)]">{p.name}</span>
+        <span className="font-medium text-foreground">{p.name}</span>
       </div>
     ),
   },

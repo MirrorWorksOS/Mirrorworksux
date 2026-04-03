@@ -96,7 +96,7 @@ export function PlanActivities() {
         key: 'title',
         header: 'Title',
         tooltip: 'Event name or description',
-        cell: (row) => <span className="font-medium text-[var(--mw-mirage)]">{row.title}</span>,
+        cell: (row) => <span className="font-medium text-foreground">{row.title}</span>,
       },
       {
         key: 'type',

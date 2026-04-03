@@ -24,6 +24,8 @@ import { cn } from '../../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
+import { PlanUsageCard } from './PlanUsageCard';
+import { CURRENT_SUBSCRIPTION, type TierName } from '@/lib/subscription';
 
 
 // ---------------------------------------------------------------------------
@@ -86,7 +88,7 @@ function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
       <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10 rounded-xl" onClick={() => toast('Changes discarded')}>Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }
@@ -139,12 +141,12 @@ function AccessPermissionsPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-medium text-[var(--mw-mirage)]">Access Groups</h3>
+          <h3 className="text-base font-medium text-foreground">Access Groups</h3>
           <p className="text-sm text-[var(--neutral-500)] mt-0.5">
             Manage who can do what in the {moduleName} module. Permissions are additive across groups.
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 rounded-xl">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-xl">
           <Plus className="w-4 h-4" /> New group
         </Button>
       </div>
@@ -170,7 +172,7 @@ function AccessPermissionsPanel({
             <Card
               key={group.name}
               className={cn(
-                'bg-white border rounded-[var(--shape-lg)] overflow-hidden transition-all',
+                'bg-card border rounded-[var(--shape-lg)] overflow-hidden transition-all',
                 isExpanded ? 'border-[var(--mw-yellow-400)]/50 shadow-sm' : 'border-[var(--border)]'
               )}
             >
@@ -182,7 +184,7 @@ function AccessPermissionsPanel({
                 <GripVertical className="w-4 h-4 text-[var(--neutral-400)] cursor-grab" />
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-[var(--mw-mirage)]">{group.name}</span>
+                    <span className="text-sm font-medium text-foreground">{group.name}</span>
                     {group.isDefault && (
                       <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-[10px] rounded-full px-2">
                         Default
@@ -219,14 +221,14 @@ function AccessPermissionsPanel({
                             return (
                               <div key={pk.key} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
                                 <div>
-                                  <span className="text-sm text-[var(--mw-mirage)]">{pk.label}</span>
+                                  <span className="text-sm text-foreground">{pk.label}</span>
                                   {pk.description && <p className="text-xs text-[var(--neutral-500)] mt-0.5">{pk.description}</p>}
                                 </div>
                                 <div className="flex items-center gap-1 bg-[var(--neutral-100)] rounded-full p-0.5">
                                   <button
                                     className={cn(
                                       'px-3 py-1 text-xs rounded-full transition-colors',
-                                      currentValue === 'own' ? 'bg-white text-[var(--mw-mirage)] shadow-sm font-medium' : 'text-[var(--neutral-500)]'
+                                      currentValue === 'own' ? 'bg-card text-foreground shadow-sm font-medium' : 'text-muted-foreground'
                                     )}
                                   >
                                     Own
@@ -234,7 +236,7 @@ function AccessPermissionsPanel({
                                   <button
                                     className={cn(
                                       'px-3 py-1 text-xs rounded-full transition-colors',
-                                      currentValue === 'all' ? 'bg-white text-[var(--mw-mirage)] shadow-sm font-medium' : 'text-[var(--neutral-500)]'
+                                      currentValue === 'all' ? 'bg-card text-foreground shadow-sm font-medium' : 'text-muted-foreground'
                                     )}
                                   >
                                     All
@@ -246,7 +248,7 @@ function AccessPermissionsPanel({
                           return (
                             <div key={pk.key} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
                               <div>
-                                <span className="text-sm text-[var(--mw-mirage)]">{pk.label}</span>
+                                <span className="text-sm text-foreground">{pk.label}</span>
                                 {pk.description && <p className="text-xs text-[var(--neutral-500)] mt-0.5">{pk.description}</p>}
                               </div>
                               <Switch defaultChecked={currentValue === 'true'} />
@@ -277,7 +279,7 @@ function AccessPermissionsPanel({
                                 {m.initials}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm text-[var(--mw-mirage)] font-medium truncate">{m.name}</p>
+                                <p className="text-sm text-foreground font-medium truncate">{m.name}</p>
                                 <p className="text-xs text-[var(--neutral-500)] truncate">{m.email}</p>
                               </div>
                               <button className="opacity-0 group-hover/member:opacity-100 transition-opacity text-[var(--neutral-400)] hover:text-[var(--mw-error)]">
@@ -303,7 +305,7 @@ function AccessPermissionsPanel({
                       confirmLabel="Delete group"
                       onConfirm={() => {}}
                     />
-                    <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] text-xs rounded-lg">
+                    <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs rounded-lg">
                       Save permissions
                     </Button>
                   </div>
@@ -352,7 +354,7 @@ export function ModuleSettingsLayout({
     <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8">
       <div className="max-w-[1200px] mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">{title}</h1>
+          <h1 className="text-3xl tracking-tight text-foreground">{title}</h1>
           <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-3 py-1">
             {tierName} plan
           </Badge>
@@ -361,7 +363,7 @@ export function ModuleSettingsLayout({
         <div className="flex gap-6">
           {/* Left Navigation */}
           <div className="w-56 flex-shrink-0">
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 h-fit">
+            <Card className="bg-card border border-border rounded-[var(--shape-lg)] p-3 h-fit">
               <nav className="space-y-0.5">
                 {allPanels.map(panel => {
                   const Icon = panel.icon;
@@ -375,10 +377,10 @@ export function ModuleSettingsLayout({
                           'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors text-left',
                           activePanel === panel.key
                             ? isAccess
-                              ? 'bg-[var(--mw-yellow-400)]/10 text-[var(--mw-mirage)] font-medium'
-                              : 'bg-[var(--accent)] text-[var(--mw-mirage)] font-medium'
-                            : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-mirage)]',
-                          isAccess && 'text-[var(--mw-mirage)]'
+                              ? 'bg-[var(--mw-yellow-400)]/10 text-foreground font-medium'
+                              : 'bg-[var(--accent)] text-foreground font-medium'
+                            : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-foreground',
+                          isAccess && 'text-foreground'
                         )}
                       >
                         <Icon className={cn('w-4 h-4 shrink-0', isAccess && activePanel === panel.key && 'text-[var(--mw-yellow-400)]')} />
@@ -393,9 +395,10 @@ export function ModuleSettingsLayout({
 
           {/* Right Panel */}
           <div className="flex-1 min-w-0">
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card className="bg-card border border-border rounded-[var(--shape-lg)] p-6">
               <ActiveComponent />
             </Card>
+            <PlanUsageCard moduleName={moduleName} tierName={(tierName ?? CURRENT_SUBSCRIPTION.tier) as TierName} />
           </div>
         </div>
       </div>

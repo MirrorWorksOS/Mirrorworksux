@@ -38,7 +38,7 @@ function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
       <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10" onClick={() => toast('Changes discarded')}>Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }
@@ -95,21 +95,21 @@ function GeneralPanel() {
         <div className="space-y-4">
           <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[var(--mw-mirage)]">Auto-generate POs at reorder point</span>
+              <span className="text-sm text-foreground">Auto-generate POs at reorder point</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Create draft POs when stock reaches minimum level</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[var(--mw-mirage)]">Enable three-way matching</span>
+              <span className="text-sm text-foreground">Enable three-way matching</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Match PO, goods receipt, and invoice before payment</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between py-2">
             <div>
-              <span className="text-sm text-[var(--mw-mirage)]">Require goods receipt before invoice</span>
+              <span className="text-sm text-foreground">Require goods receipt before invoice</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Block invoice processing until GRN is confirmed</p>
             </div>
             <Switch defaultChecked />
@@ -135,7 +135,7 @@ function ApprovalPanel() {
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-3 border-b border-[var(--neutral-100)] last:border-0">
               <div>
-                <span className="text-sm text-[var(--mw-mirage)] font-medium">{r.label}</span>
+                <span className="text-sm text-foreground font-medium">{r.label}</span>
                 <p className="text-xs text-[var(--neutral-500)] mt-0.5">{r.sub}</p>
               </div>
               <div className="flex items-center gap-2">
@@ -156,7 +156,7 @@ function ApprovalPanel() {
             { label: 'Allow approver to edit PO before approving', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -183,7 +183,7 @@ function SuppliersPanel() {
                 { label: 'Reliability',    value: 15 },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-4">
-                  <span className="text-sm text-[var(--mw-mirage)] w-28">{s.label}</span>
+                  <span className="text-sm text-foreground w-28">{s.label}</span>
                   <div className="flex-1 h-1.5 bg-[var(--neutral-200)] rounded-full overflow-hidden">
                     <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${s.value}%` }} />
                   </div>
@@ -233,7 +233,7 @@ function NotificationsPanel() {
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-3 border-b border-[var(--neutral-100)] last:border-0">
               <div>
-                <span className="text-sm text-[var(--mw-mirage)] font-medium">{r.label}</span>
+                <span className="text-sm text-foreground font-medium">{r.label}</span>
                 <p className="text-xs text-[var(--neutral-500)] mt-0.5">{r.sub}</p>
               </div>
               <Switch defaultChecked={r.checked} />
@@ -263,12 +263,12 @@ export function ControlPurchase() {
       variants={staggerContainer}
       className="p-6"
     >
-      <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)] mb-6">Purchase settings</h1>
+      <h1 className="text-3xl tracking-tight text-foreground mb-6">Purchase settings</h1>
 
       <div className="flex gap-6">
         {/* Left nav */}
         <div className="w-56 flex-shrink-0">
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3 h-fit">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 h-fit">
             <nav className="space-y-0.5">
               {NAV.map(n => {
                 const Icon = n.icon;
@@ -279,8 +279,8 @@ export function ControlPurchase() {
                     className={cn(
                       'w-full flex items-center gap-4 px-3 py-2 rounded-[var(--shape-lg)] text-sm transition-colors text-left',
                       active === n.key
-                        ? 'bg-[var(--accent)] text-[var(--mw-mirage)] font-medium'
-                        : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-mirage)]'
+                        ? 'bg-[var(--accent)] text-foreground font-medium'
+                        : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-foreground'
                     )}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -294,7 +294,7 @@ export function ControlPurchase() {
 
         {/* Right panel */}
         <div className="flex-1 min-w-0">
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <PanelComponent />
           </Card>
         </div>

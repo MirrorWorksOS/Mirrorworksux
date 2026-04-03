@@ -73,7 +73,7 @@ export function SellInvoices() {
       header: 'Invoice #',
       tooltip: 'Unique invoice reference number',
       cell: (inv) => (
-        <span className="text-[var(--neutral-900)] text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
+        <span className="text-foreground text-sm font-medium tabular-nums hover:underline flex items-center gap-1">
           {inv.invoiceNumber}
           <ExternalLink className="w-4 h-4" />
         </span>
@@ -221,7 +221,7 @@ export function SellInvoices() {
           onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           striped
         />
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-white rounded-b-[var(--shape-lg)]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-card rounded-b-[var(--shape-lg)]">
           <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredInvoices.length} of {filteredInvoices.length}</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled>Previous</Button>

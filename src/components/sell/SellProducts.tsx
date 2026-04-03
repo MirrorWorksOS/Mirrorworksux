@@ -71,7 +71,7 @@ export function SellProducts() {
       header: 'Product',
       tooltip: 'Product name and description',
       cell: (p) => (
-        <a href={`/sell/products/${p.id}`} className="text-sm font-medium text-[var(--neutral-900)] hover:underline">
+        <a href={`/sell/products/${p.id}`} className="text-sm font-medium text-foreground hover:underline">
           {p.name}
         </a>
       ),
@@ -137,7 +137,7 @@ export function SellProducts() {
             const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
-                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
@@ -145,7 +145,7 @@ export function SellProducts() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
                         <p className="text-xs text-[var(--neutral-500)] tabular-nums">{product.sku}</p>
@@ -160,13 +160,13 @@ export function SellProducts() {
                     <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
                       <div>
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Stock Level</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-foreground">
                           {product.stockLevel} units
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Unit Price</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-foreground">
                           ${product.unitPrice.toFixed(2)}
                         </p>
                       </div>
@@ -178,7 +178,7 @@ export function SellProducts() {
                         toast.success(`Sales order started for ${product.name}`);
                         navigate('/sell/orders/new');
                       }}
-                      className="w-full mt-4 h-10 gap-2 text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[#2C2C2C]"
+                      className="w-full mt-4 h-10 gap-2 text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
                     >
                       <ShoppingCart className="w-4 h-4" />
                       Sell

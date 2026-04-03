@@ -49,8 +49,8 @@ const stages: { key: OpportunityStage; label: string; summaryColor: string }[] =
 const getPriorityBadge = (priority: Priority) => {
   switch (priority) {
     case 'urgent': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', label: 'Urgent' };
-    case 'high': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-[var(--neutral-900)]', label: 'High' };
-    case 'medium': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-900)]', label: 'Medium' };
+    case 'high': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-foreground', label: 'High' };
+    case 'medium': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Medium' };
     case 'low': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Low' };
   }
 };
@@ -140,7 +140,7 @@ export function SellOpportunities() {
                         }}
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <h4 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
+                          <h4 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
                             {opp.title}
                           </h4>
                           <Badge className={cn("rounded-full text-xs px-2.5 py-0.5 border-0 flex-shrink-0 ml-2", priorityBadge.bg, priorityBadge.text)}>
@@ -151,8 +151,8 @@ export function SellOpportunities() {
                         <p className="text-xs text-[var(--neutral-500)] mb-4">{opp.customer}</p>
 
                         <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-1 text-xs text-[var(--neutral-900)]">
-                            <DollarSign className="w-4 h-4 text-[var(--neutral-900)]" />
+                          <div className="flex items-center gap-1 text-xs text-foreground">
+                            <DollarSign className="w-4 h-4 text-foreground" />
                             <span className="font-medium tabular-nums">${opp.value.toLocaleString()}</span>
                           </div>
                           <div className="flex items-center gap-1 text-xs text-[var(--neutral-500)]">

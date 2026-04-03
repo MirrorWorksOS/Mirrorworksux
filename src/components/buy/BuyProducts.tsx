@@ -31,7 +31,7 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'name',
     header: 'PRODUCT',
-    cell: (row) => <span className="text-[var(--mw-mirage)]">{row.name}</span>,
+    cell: (row) => <span className="text-foreground">{row.name}</span>,
   },
   {
     key: 'sku',
@@ -69,7 +69,7 @@ const productColumns: MwColumnDef<Product>[] = [
             Low Stock
           </Badge>
         ) : (
-          <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0">In Stock</Badge>
+          <Badge className="bg-[var(--neutral-100)] text-foreground border-0">In Stock</Badge>
         )}
       </div>
     ),

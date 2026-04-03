@@ -119,9 +119,9 @@ const accountStatusVariant = (s: string) => {
 
 const typeStyle = (t: string) => {
   switch (t) {
-    case 'Customer': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
-    case 'Vendor': return 'bg-[var(--neutral-100)] text-[var(--neutral-900)]';
-    case 'Subcontractor': return 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)]';
+    case 'Customer': return 'bg-[var(--neutral-100)] text-foreground';
+    case 'Vendor': return 'bg-[var(--neutral-100)] text-foreground';
+    case 'Subcontractor': return 'bg-[var(--mw-yellow-400)]/20 text-foreground';
     default: return 'bg-[var(--neutral-100)] text-[var(--neutral-500)]';
   }
 };
@@ -196,9 +196,9 @@ export function SellCustomerDetail() {
   ];
 
   const contactColumns: MwColumnDef<any>[] = [
-    { key: 'name', header: 'Name', cell: (c) => <span className="font-medium text-[var(--neutral-900)]">{c.name}</span> },
+    { key: 'name', header: 'Name', cell: (c) => <span className="font-medium text-foreground">{c.name}</span> },
     { key: 'role', header: 'Role', tooltip: 'Contact role at company', cell: (c) => <span className="text-[var(--neutral-500)]">{c.role}</span> },
-    { key: 'email', header: 'Email', cell: (c) => <a href={`mailto:${c.email}`} className="text-[var(--neutral-900)] hover:underline">{c.email}</a> },
+    { key: 'email', header: 'Email', cell: (c) => <a href={`mailto:${c.email}`} className="text-foreground hover:underline">{c.email}</a> },
     { key: 'phone', header: 'Phone', cell: (c) => <span className="text-[var(--neutral-500)]">{c.phone}</span> },
     { key: 'primary', header: 'Primary', tooltip: 'Primary contact for this account', headerClassName: 'text-center', className: 'text-center', cell: (c) => c.isPrimary ? <span className="w-2 h-2 bg-[var(--mw-mirage)] rounded-full inline-block" /> : '—' },
   ];
@@ -223,10 +223,10 @@ export function SellCustomerDetail() {
   return (
     <PageShell className="p-0 space-y-0 min-h-screen bg-[var(--neutral-100)] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4">
+      <div className="bg-card border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={() => navigate('/sell/crm')} className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[var(--neutral-900)]" />
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
           <Avatar className="w-10 h-10">
             <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
@@ -234,7 +234,7 @@ export function SellCustomerDetail() {
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl font-medium text-[var(--neutral-900)]">
+            <h1 className="text-xl font-medium text-foreground">
               {customer.company}
             </h1>
             {customer.types.map((t: string) => (
@@ -305,7 +305,7 @@ export function SellCustomerDetail() {
               onClick={() => setActiveTab(tab.key)}
               className={cn(
                 "px-4 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
-                activeTab === tab.key ? 'bg-[var(--neutral-100)] text-[var(--neutral-900)] font-medium' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
+                activeTab === tab.key ? 'bg-[var(--neutral-100)] text-foreground font-medium' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
               )}
             >
               {tab.label}
@@ -327,8 +327,8 @@ export function SellCustomerDetail() {
             {/* Left Column - 2/3 */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Company information</h2>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
                   <Field label="ABN" value={customer.abn} mono />
@@ -342,26 +342,26 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Primary Contact */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Primary contact</h2>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h2 className="text-lg font-medium text-foreground mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
                   <Field label="Job title" value={customer.primaryContact.title} />
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
-                    <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                    <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
                       <Mail className="w-4 h-4" /> {customer.primaryContact.email}
                     </a>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
-                    <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                    <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
                       <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
                     </a>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
-                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1.5">
+                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
                       <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
                     </a>
                   </div>
@@ -370,19 +370,19 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Address */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-medium text-[var(--neutral-900)]">Address</h2>
+                  <h2 className="text-lg font-medium text-foreground">Address</h2>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1"
+                    className="text-sm text-foreground hover:underline flex items-center gap-1"
                   >
                     <MapPin className="w-4 h-4" /> Open in maps
                   </a>
                 </div>
-                <div className="text-sm text-[var(--neutral-900)] leading-relaxed">
+                <div className="text-sm text-foreground leading-relaxed">
                   <p>{customer.address.street}</p>
                   <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
                   <p>{customer.address.country}</p>
@@ -390,12 +390,12 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Additional Contacts */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <button
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
                 >
-                  <h2 className="text-lg font-medium text-[var(--neutral-900)]">
+                  <h2 className="text-lg font-medium text-foreground">
                     Additional contacts (<span className="tabular-nums">{customer.additionalContacts.length}</span>)
                   </h2>
                   {additionalContactsOpen ? <ChevronUp className="w-5 h-5 text-[var(--neutral-500)]" /> : <ChevronDown className="w-5 h-5 text-[var(--neutral-500)]" />}
@@ -410,14 +410,14 @@ export function SellCustomerDetail() {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[var(--neutral-900)]">{c.name}</p>
+                          <p className="text-sm font-medium text-foreground">{c.name}</p>
                           <p className="text-xs text-[var(--neutral-500)]">{c.role}</p>
                         </div>
-                        <a href={`mailto:${c.email}`} className="text-xs text-[var(--neutral-900)] hover:underline">{c.email}</a>
+                        <a href={`mailto:${c.email}`} className="text-xs text-foreground hover:underline">{c.email}</a>
                         <span className="text-xs text-[var(--neutral-500)]">{c.phone}</span>
                       </div>
                     ))}
-                    <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1 mt-2">
+                    <button className="text-xs text-foreground hover:underline flex items-center gap-1 mt-2">
                       <Plus className="w-4 h-4" /> Add contact
                     </button>
                   </div>
@@ -425,41 +425,41 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Financial Summary */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-6">Financial summary</h2>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h2 className="text-lg font-medium text-foreground mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Lifetime revenue</span>
-                    <p className="text-xl font-medium tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.lifetimeRevenue)}</p>
+                    <p className="text-xl font-medium tabular-nums text-foreground">{fmt(customer.financial.lifetimeRevenue)}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Outstanding</span>
-                    <p className="text-xl font-medium tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.outstanding)}</p>
+                    <p className="text-xl font-medium tabular-nums text-foreground">{fmt(customer.financial.outstanding)}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Payment terms</span>
-                    <p className="text-base font-medium text-[var(--neutral-900)]">{customer.financial.avgPaymentTerms}</p>
+                    <p className="text-base font-medium text-foreground">{customer.financial.avgPaymentTerms}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Credit limit</span>
-                    <p className="text-base font-medium tabular-nums text-[var(--neutral-900)]">{fmt(customer.financial.creditLimit)}</p>
+                    <p className="text-base font-medium tabular-nums text-foreground">{fmt(customer.financial.creditLimit)}</p>
                   </div>
                 </div>
               </Card>
 
               {/* Tags & Notes */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h2 className="text-lg font-medium text-[var(--neutral-900)] mb-4">Tags & notes</h2>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h2 className="text-lg font-medium text-foreground mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
                     <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-[var(--neutral-800)] border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
-                  <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                  <button className="text-xs text-foreground hover:underline flex items-center gap-1">
                     <Plus className="w-4 h-4" /> Add tag
                   </button>
                 </div>
                 <div className="bg-[var(--neutral-100)] rounded-lg p-4">
-                  <p className="text-sm text-[var(--neutral-900)] leading-relaxed">{customer.notes}</p>
+                  <p className="text-sm text-foreground leading-relaxed">{customer.notes}</p>
                   <p className="text-xs text-[var(--neutral-500)] mt-2">Last updated 2 days ago by Jill Wright</p>
                 </div>
               </Card>
@@ -468,10 +468,10 @@ export function SellCustomerDetail() {
             {/* Right Column - 1/3 */}
             <div className="space-y-6">
               {/* Activity Timeline */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Recent activity</h3>
-                  <button className="text-xs text-[var(--neutral-900)] hover:underline">View all</button>
+                  <h3 className="text-base font-medium text-foreground">Recent activity</h3>
+                  <button className="text-xs text-foreground hover:underline">View all</button>
                 </div>
                 <div className="space-y-4">
                   {customer.activity.slice(0, 5).map((a: any, i: number) => (
@@ -480,7 +480,7 @@ export function SellCustomerDetail() {
                         {activityIcon(a.type)}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--neutral-900)] leading-snug">{a.desc}</p>
+                        <p className="text-xs text-foreground leading-snug">{a.desc}</p>
                         <p className="text-xs text-[var(--neutral-500)] mt-0.5">{a.time} · {a.user}</p>
                       </div>
                     </div>
@@ -492,10 +492,10 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Active Opportunities */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Active opportunities</h3>
-                  <button className="text-xs text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+                  <h3 className="text-base font-medium text-foreground">Active opportunities</h3>
+                  <button className="text-xs text-foreground hover:underline flex items-center gap-1">
                     <Plus className="w-4 h-4" /> New
                   </button>
                 </div>
@@ -503,12 +503,12 @@ export function SellCustomerDetail() {
                   {customer.opportunities.map((opp: any) => (
                     <div key={opp.id} className="p-3 bg-[var(--neutral-100)] rounded-lg hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">{opp.id}</span>
+                        <span className="text-xs font-medium tabular-nums text-foreground">{opp.id}</span>
                         <StatusBadge variant={recordStatusVariant(opp.stage)}>{opp.stage}</StatusBadge>
                       </div>
-                      <p className="text-xs font-medium text-[var(--neutral-900)] mb-1">{opp.name}</p>
+                      <p className="text-xs font-medium text-foreground mb-1">{opp.name}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs tabular-nums text-[var(--neutral-900)]">{fmt(opp.value)}</span>
+                        <span className="text-xs tabular-nums text-foreground">{fmt(opp.value)}</span>
                         <span className="text-xs text-[var(--neutral-500)]">{opp.closeDate}</span>
                       </div>
                     </div>
@@ -517,30 +517,30 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Recent Quotes & Orders */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <h3 className="text-base font-medium text-[var(--neutral-900)] mb-4">Recent quotes & orders</h3>
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+                <h3 className="text-base font-medium text-foreground mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0">
                       <div>
-                        <span className="text-xs font-medium tabular-nums text-[var(--neutral-900)]">{item.ref}</span>
+                        <span className="text-xs font-medium tabular-nums text-foreground">{item.ref}</span>
                         <p className="text-xs text-[var(--neutral-500)]">{item.date}</p>
                       </div>
                       <div className="text-right flex items-center gap-2">
-                        <span className="text-xs tabular-nums text-[var(--neutral-900)]">{fmt(item.value)}</span>
+                        <span className="text-xs tabular-nums text-foreground">{fmt(item.value)}</span>
                         <StatusBadge variant={recordStatusVariant(item.status)} className="text-[10px] px-1.5 py-0">{item.status}</StatusBadge>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button className="text-xs text-[var(--neutral-900)] hover:underline mt-3">View all →</button>
+                <button className="text-xs text-foreground hover:underline mt-3">View all →</button>
               </Card>
 
               {/* Intelligence Hub */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
-                  <h3 className="text-base font-medium text-[var(--neutral-900)]">Intelligence Hub</h3>
+                  <h3 className="text-base font-medium text-foreground">Intelligence Hub</h3>
                 </div>
                 <p className="text-xs text-[var(--neutral-500)] leading-relaxed">
                   TechCorp's order frequency has increased 40% this quarter. Consider offering volume pricing on 5052 aluminium enclosures to lock in Q2 demand.
@@ -555,7 +555,7 @@ export function SellCustomerDetail() {
         {activeTab === 'sales' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Quotes & orders</h2>
+              <h2 className="text-lg font-medium text-foreground">Quotes & orders</h2>
               <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
@@ -566,7 +566,7 @@ export function SellCustomerDetail() {
               columns={opportunityColumns}
               data={customer.opportunities}
               keyExtractor={(opp: any) => opp.id}
-              filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Active opportunities</h3>}
+              filterBar={<h3 className="text-base font-medium text-foreground">Active opportunities</h3>}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
@@ -577,7 +577,7 @@ export function SellCustomerDetail() {
               columns={quoteOrderColumns}
               data={customer.recentQuotes}
               keyExtractor={(q: any) => q.ref}
-              filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Quotes</h3>}
+              filterBar={<h3 className="text-base font-medium text-foreground">Quotes</h3>}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
@@ -588,7 +588,7 @@ export function SellCustomerDetail() {
               columns={quoteOrderColumns}
               data={customer.recentOrders}
               keyExtractor={(o: any) => o.ref}
-              filterBar={<h3 className="text-base font-medium text-[var(--neutral-900)]">Sales orders</h3>}
+              filterBar={<h3 className="text-base font-medium text-foreground">Sales orders</h3>}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
@@ -609,7 +609,7 @@ export function SellCustomerDetail() {
 
             {/* Invoices */}
             <div>
-              <h3 className="text-base font-medium text-[var(--neutral-900)] mb-3">Invoices</h3>
+              <h3 className="text-base font-medium text-foreground mb-3">Invoices</h3>
               <FinancialTable<any>
                 columns={invoiceColumns}
                 data={customer.invoices}
@@ -623,7 +623,7 @@ export function SellCustomerDetail() {
         {activeTab === 'contacts' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-[var(--neutral-900)]">All contacts at {customer.company}</h2>
+              <h2 className="text-lg font-medium text-foreground">All contacts at {customer.company}</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
             </div>
             <MwDataTable<any>
@@ -641,7 +641,7 @@ export function SellCustomerDetail() {
         {activeTab === 'documents' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Documents</h2>
+              <h2 className="text-lg font-medium text-foreground">Documents</h2>
               <Button variant="outline" className="border-[var(--border)]"><Upload className="w-4 h-4 mr-2" /> Upload</Button>
             </div>
             {/* Drop zone */}
@@ -665,7 +665,7 @@ export function SellCustomerDetail() {
         {activeTab === 'activity' && (
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-[var(--neutral-900)]">Activity log</h2>
+              <h2 className="text-lg font-medium text-foreground">Activity log</h2>
               <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Log activity</Button>
             </div>
             {/* Filter chips */}
@@ -677,7 +677,7 @@ export function SellCustomerDetail() {
                 )}>{f}</button>
               ))}
             </div>
-            <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <div className="space-y-6">
                 {customer.activity.map((a: any, i: number) => (
                   <div key={i} className="flex gap-4">
@@ -685,7 +685,7 @@ export function SellCustomerDetail() {
                       {activityIcon(a.type)}
                     </div>
                     <div className="flex-1 min-w-0 pb-6 border-b border-[var(--border)] last:border-0">
-                      <p className="text-sm text-[var(--neutral-900)] leading-relaxed">{a.desc}</p>
+                      <p className="text-sm text-foreground leading-relaxed">{a.desc}</p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs text-[var(--neutral-500)]">{a.time}</span>
                         <span className="text-xs text-[var(--neutral-500)]">· {a.user}</span>
@@ -711,11 +711,11 @@ function Field({ label, value, mono, link }: { label: string; value: string; mon
     <div>
       <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">{label}</span>
       {link ? (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--neutral-900)] hover:underline flex items-center gap-1">
+        <a href={value} target="_blank" rel="noopener noreferrer" className="text-sm text-foreground hover:underline flex items-center gap-1">
           <Globe className="w-4 h-4" /> {value.replace('https://', '')}
         </a>
       ) : (
-        <p className={cn('text-sm text-[var(--neutral-900)]', mono && 'tabular-nums')}>{value}</p>
+        <p className={cn('text-sm text-foreground', mono && 'tabular-nums')}>{value}</p>
       )}
     </div>
   );

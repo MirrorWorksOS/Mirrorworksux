@@ -153,7 +153,7 @@ export function BookDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">
+              <h3 className="text-base font-medium text-foreground">
                 Approval Queue
               </h3>
               <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]">
@@ -166,18 +166,18 @@ export function BookDashboard() {
                 <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-xs font-medium text-[var(--mw-mirage)]">
+                      <span className="font-medium text-xs font-medium text-foreground">
                         {item.type}
                       </span>
                       <span className="text-xs text-[var(--neutral-500)] tabular-nums">
                         {item.id}
                       </span>
                     </div>
-                    <p className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">
+                    <p className="text-sm font-medium tabular-nums text-foreground">
                       ${item.amount.toLocaleString()}
                     </p>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} aria-hidden />
+                  <CheckCircle2 className="w-5 h-5 text-foreground" strokeWidth={1.5} aria-hidden />
                 </div>
               ))}
             </div>
@@ -193,7 +193,7 @@ export function BookDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">
+              <h3 className="text-base font-medium text-foreground">
                 Xero Sync Status
               </h3>
               <div className="w-3 h-3 bg-[var(--mw-yellow-400)] rounded-full" />
@@ -204,7 +204,7 @@ export function BookDashboard() {
                 <span className="font-normal text-xs text-[var(--neutral-500)]">
                   Last synced
                 </span>
-                <span className="font-medium text-xs font-medium text-[var(--mw-mirage)]">
+                <span className="font-medium text-xs font-medium text-foreground">
                   2 minutes ago
                 </span>
               </div>
@@ -212,7 +212,7 @@ export function BookDashboard() {
                 <span className="font-normal text-xs text-[var(--neutral-500)]">
                   Invoices synced
                 </span>
-                <span className="font-medium text-xs font-medium text-[var(--mw-mirage)]">
+                <span className="font-medium text-xs font-medium text-foreground">
                   147 / 147
                 </span>
               </div>
@@ -247,7 +247,7 @@ export function BookDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-medium text-[var(--mw-mirage)]">
+              <h3 className="text-base font-medium text-foreground">
                 Overdue Actions
               </h3>
               <Badge className="bg-[var(--mw-error-100)] text-[var(--mw-error)] border-transparent">
@@ -267,7 +267,7 @@ export function BookDashboard() {
                         {item.daysOverdue}d
                       </Badge>
                     </div>
-                    <p className="font-normal text-xs text-[var(--mw-mirage)] mb-1">
+                    <p className="font-normal text-xs text-foreground mb-1">
                       {item.type === 'Invoice' ? item.customer : item.vendor}
                     </p>
                     <p className="text-xs font-medium tabular-nums text-[var(--mw-error)]">
@@ -290,7 +290,7 @@ export function BookDashboard() {
       {/* Revenue vs Expenses Chart Placeholder */}
       <motion.div variants={staggerItem}>
         <Card className="p-6">
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">
+          <h3 className="text-base font-medium text-foreground mb-4">
             Revenue vs Expenses
           </h3>
           <div className="h-[300px] bg-[var(--neutral-100)] rounded-[var(--shape-lg)] flex items-center justify-center">

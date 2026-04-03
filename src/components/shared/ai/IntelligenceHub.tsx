@@ -33,7 +33,7 @@ interface Props {
 }
 
 const TYPE_CONFIG: Record<InsightType, { icon: any; bg: string; text: string; label: string }> = {
-  opportunity: { icon: TrendingUp,    bg: 'bg-[var(--mw-mirage)]/10', text: 'text-[var(--mw-mirage)]', label: 'Opportunity' },
+  opportunity: { icon: TrendingUp,    bg: 'bg-[var(--mw-mirage)]/10', text: 'text-foreground', label: 'Opportunity' },
   risk:        { icon: AlertTriangle, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Risk' },
   info:        { icon: Info,          bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-info)]', label: 'Info' },
   action:      { icon: ChevronRight,  bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-warning)]', label: 'Action' },
@@ -57,7 +57,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
         <div className="flex items-center gap-2">
           <IconWell icon={Sparkles} surface="key" shape="squircle" size="sm" />
           <div>
-            <h3 className="text-sm font-medium text-[var(--mw-mirage)]">AI insights</h3>
+            <h3 className="text-sm font-medium text-foreground">AI insights</h3>
             {context && <p className="text-xs text-[var(--neutral-500)]">{context}</p>}
           </div>
         </div>
@@ -66,7 +66,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
           size="sm"
           onClick={handleRefresh}
           disabled={loading}
-          className="h-8 gap-1 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]"
+          className="h-8 gap-1 text-xs text-[var(--neutral-500)] hover:text-foreground"
         >
           <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
           {loading ? 'Refreshing…' : 'Refresh'}
@@ -102,7 +102,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-[var(--mw-mirage)]">{insight.title}</span>
+                        <span className="text-xs font-medium text-foreground">{insight.title}</span>
                         {insight.confidence !== undefined && (
                           <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence

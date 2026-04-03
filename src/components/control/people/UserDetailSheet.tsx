@@ -51,7 +51,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2">
-                <h3 className="text-2xl font-bold text-[var(--mw-mirage)]">{user.name}</h3>
+                <h3 className="text-2xl font-bold text-foreground">{user.name}</h3>
                 <Badge
                   className={
                     user.role === 'lead'
@@ -99,7 +99,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </div>
           </div>
 
-          <Collapsible className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-4">
+          <Collapsible className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"

@@ -116,10 +116,10 @@ export function PlanProductionTab() {
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
       {/* ---- Products Table (§4.6 extended) ---- */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)] mb-1">Products</h2>
+            <h2 className="text-lg font-medium text-foreground mb-1">Products</h2>
             <p className="text-sm text-[var(--neutral-500)]">
               {products.length} Products · {products.reduce((s, p) => s + p.toProduce, 0).toLocaleString()} units total
             </p>
@@ -163,13 +163,13 @@ export function PlanProductionTab() {
             >
               <div className="grid grid-cols-12 gap-3 items-center">
                 <div className="col-span-2">
-                  <p className="text-xs font-medium text-[var(--mw-mirage)]">{p.name}</p>
+                  <p className="text-xs font-medium text-foreground">{p.name}</p>
                   <p className="text-[10px] text-[var(--neutral-500)]">{p.partNumber}</p>
                 </div>
                 <div className="col-span-1">
                   <Badge variant="outline" className="text-[10px] border-[var(--border)]">{p.route}</Badge>
                 </div>
-                <div className="col-span-1 text-xs tabular-nums text-[var(--mw-mirage)]">{p.toProduce.toLocaleString()}</div>
+                <div className="col-span-1 text-xs tabular-nums text-foreground">{p.toProduce.toLocaleString()}</div>
                 <div className="col-span-1 text-xs tabular-nums text-[var(--neutral-500)]">{p.inventory.toLocaleString()}</div>
                 <div className="col-span-1">
                   {p.hasBOM
@@ -211,10 +211,10 @@ export function PlanProductionTab() {
       </div>
 
       {/* ---- MirrorView 3D (§4.6.2) ---- */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">MirrorView</h2>
+            <h2 className="text-lg font-medium text-foreground">MirrorView</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">3D part visualisation</p>
           </div>
           <div className="flex items-center gap-2">
@@ -232,8 +232,8 @@ export function PlanProductionTab() {
               className={cn(
                 'px-4 py-2.5 text-xs font-medium transition-colors relative',
                 activeProduct === p.id
-                  ? 'text-[var(--mw-mirage)]'
-                  : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]',
+                  ? 'text-foreground'
+                  : 'text-[var(--neutral-500)] hover:text-foreground',
               )}
               onClick={() => setActiveProduct(p.id)}
             >
@@ -299,10 +299,10 @@ export function PlanProductionTab() {
       </div>
 
       {/* ---- Instructions & Activities Table (§4.6.3) ---- */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Instructions & Activities</h2>
+            <h2 className="text-lg font-medium text-foreground">Instructions & Activities</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">
               Manufacturing instructions · {instructions.length} operations
             </p>
@@ -325,8 +325,8 @@ export function PlanProductionTab() {
               className={cn(
                 'px-4 py-2.5 text-xs font-medium transition-colors relative',
                 activeProduct === p.id
-                  ? 'text-[var(--mw-mirage)]'
-                  : 'text-[var(--neutral-500)] hover:text-[var(--mw-mirage)]',
+                  ? 'text-foreground'
+                  : 'text-[var(--neutral-500)] hover:text-foreground',
               )}
               onClick={() => setActiveProduct(p.id)}
             >
@@ -363,7 +363,7 @@ export function PlanProductionTab() {
                 </div>
                 {/* Operation */}
                 <div className="col-span-3">
-                  <span className="text-xs font-medium text-[var(--mw-mirage)]">{row.operation}</span>
+                  <span className="text-xs font-medium text-foreground">{row.operation}</span>
                 </div>
                 {/* Work Centre */}
                 <div className="col-span-2">
@@ -375,7 +375,7 @@ export function PlanProductionTab() {
                 </div>
                 {/* Minutes */}
                 <div className="col-span-1">
-                  <span className="text-xs tabular-nums text-[var(--mw-mirage)]">{row.minutes}</span>
+                  <span className="text-xs tabular-nums text-foreground">{row.minutes}</span>
                 </div>
                 {/* QC */}
                 <div className="col-span-1">
@@ -419,10 +419,10 @@ export function PlanProductionTab() {
       </div>
 
       {/* ---- 2D Drawing Viewer (§4.6.4) ---- */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">2D Drawing</h2>
+            <h2 className="text-lg font-medium text-foreground">2D Drawing</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">Manufacturing drawing for operator reference</p>
           </div>
           <div className="flex items-center gap-2">

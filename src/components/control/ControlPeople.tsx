@@ -33,7 +33,7 @@ export function ControlPeople() {
     <div className="space-y-8 bg-[var(--neutral-100)] p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--mw-mirage)]">People</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">People</h1>
           <p className="mt-1 text-sm text-[var(--neutral-500)]">
             Manage team members, module access, and group permissions
           </p>
@@ -65,7 +65,7 @@ export function ControlPeople() {
       </div>
 
       <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
-        <TabsList className="h-auto w-full justify-start rounded-[var(--shape-lg)] bg-white p-1">
+        <TabsList className="h-auto w-full justify-start rounded-[var(--shape-lg)] bg-card p-1">
           <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[var(--neutral-500)]">
             Users
             {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" /> : null}

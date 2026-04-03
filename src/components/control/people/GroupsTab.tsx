@@ -43,12 +43,12 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
   return (
     <div className="space-y-6">
       <Tabs value={activeModule} onValueChange={value => setActiveModule(value as ModuleKey)}>
-        <TabsList className="h-auto rounded-[var(--shape-lg)] bg-white p-1 shadow-none">
+        <TabsList className="h-auto rounded-[var(--shape-lg)] bg-card p-1 shadow-none">
           {moduleOrder.map(moduleKey => (
             <TabsTrigger
               key={moduleKey}
               value={moduleKey}
-              className="relative h-10 rounded-xl data-[state=active]:bg-[var(--accent)] data-[state=active]:text-[var(--mw-mirage)]"
+              className="relative h-10 rounded-xl data-[state=active]:bg-[var(--accent)] data-[state=active]:text-foreground"
             >
               {moduleLabels[moduleKey]} ({grouped[moduleKey].length})
               {activeModule === moduleKey ? (
@@ -64,7 +64,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
         <div className="flex items-start gap-3 rounded-[var(--shape-lg)] border border-[var(--border)] bg-[var(--neutral-100)] p-4">
           <Shield className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--mw-yellow-400)]" />
           <div className="text-sm text-[var(--neutral-600)]">
-            <p className="mb-1 font-medium text-[var(--mw-mirage)]">Control module permissions</p>
+            <p className="mb-1 font-medium text-foreground">Control module permissions</p>
             <p>
               Control groups manage master data (products, BOMs, locations, machines) and people administration.
               <strong> People Admin</strong> can onboard users but cannot create or delete groups.
@@ -88,7 +88,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
           const open = expandedId === group.id;
 
           return (
-            <div key={group.id} className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--border)] bg-white shadow-sm">
+            <div key={group.id} className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--border)] bg-card shadow-sm">
               <button
                 type="button"
                 className="flex w-full items-center justify-between gap-4 p-6 text-left"
@@ -99,9 +99,9 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="text-base font-medium text-[var(--mw-mirage)]">{group.name}</h4>
+                    <h4 className="text-base font-medium text-foreground">{group.name}</h4>
                     {group.isDefault ? (
-                      <Badge className="rounded-full border border-[var(--border)] bg-white px-2 py-0.5 text-xs text-[var(--neutral-500)]">
+                      <Badge className="rounded-full border border-[var(--border)] bg-card px-2 py-0.5 text-xs text-[var(--neutral-500)]">
                         Default
                       </Badge>
                     ) : null}
@@ -209,7 +209,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                     ))}
                     <Button
                       variant="outline"
-                      className="h-10 w-full rounded-xl border-[var(--border)] bg-white text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                      className="h-10 w-full rounded-xl border-[var(--border)] bg-card text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
                     >
                       <Plus className="h-4 w-4" />
                       Add member
@@ -241,7 +241,7 @@ function PermissionSection({
     <div className="space-y-2">
       <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">{section}</p>
       {sectionRows.map(row => (
-        <div key={row.key} className="flex items-center justify-between rounded-[var(--shape-lg)] bg-white p-2">
+        <div key={row.key} className="flex items-center justify-between rounded-[var(--shape-lg)] bg-card p-2">
           <span className="text-sm text-[var(--neutral-800)]">{row.label}</span>
           <Switch checked={group.permissions[row.key] === true} className="h-7 w-12" />
         </div>

@@ -222,12 +222,12 @@ export function ToolbarSummaryBar({
                       className="inline-block h-2 w-2 shrink-0 rounded-full"
                       style={{ backgroundColor: seg.color }}
                     />
-                    <span className="text-xs font-medium text-[var(--neutral-900)]">
+                    <span className="text-xs font-medium text-foreground">
                       {seg.label}
                     </span>
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="text-sm font-semibold tabular-nums text-[var(--mw-mirage)]">
+                    <span className="text-sm font-semibold tabular-nums text-foreground">
                       {fullCurrency(seg.value)}
                     </span>
                     <span className="text-[10px] tabular-nums text-[var(--neutral-500)]">
@@ -254,7 +254,7 @@ export function ToolbarSummaryBar({
               style={{ backgroundColor: seg.color }}
             />
             <span className="text-[var(--neutral-500)]">{seg.label}</span>
-            <span className="font-medium text-[var(--mw-mirage)]">
+            <span className="font-medium text-foreground">
               {formatValue(seg.value)}
             </span>
           </div>

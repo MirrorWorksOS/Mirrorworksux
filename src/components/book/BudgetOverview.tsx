@@ -268,7 +268,7 @@ export function BudgetOverview() {
         cell: (budget) => (
           <Link
             to={`/book/job-costs/${budget.id}`}
-            className="text-sm font-medium text-[var(--neutral-900)] hover:underline"
+            className="text-sm font-medium text-foreground hover:underline"
           >
             {budget.name}
           </Link>
@@ -339,7 +339,7 @@ export function BudgetOverview() {
         className: 'text-right',
         headerClassName: 'text-right',
         cell: (budget) => (
-          <span className="tabular-nums text-sm font-medium text-[var(--neutral-900)]">
+          <span className="tabular-nums text-sm font-medium text-foreground">
             {budget.variance < 0 ? '-' : '+'}${Math.abs(budget.variance).toLocaleString()}
           </span>
         ),
@@ -391,7 +391,7 @@ export function BudgetOverview() {
   );
 
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Budgets"
         subtitle={`Showing ${statusFilter} budgets`}
@@ -402,7 +402,7 @@ export function BudgetOverview() {
               Type: All
               <ChevronDown className="h-4 w-4" />
             </Button>
-            <Button className="group h-10 rounded bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
+            <Button className="group h-10 rounded bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New Budget
             </Button>
@@ -419,8 +419,8 @@ export function BudgetOverview() {
             className={cn(
               'rounded-[var(--shape-lg)] px-4 py-2 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]',
               statusFilter === status
-                ? 'bg-[var(--mw-yellow-400)] text-[#2C2C2C]'
-                : 'border border-[var(--neutral-200)] bg-white text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]',
+                ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
+                : 'border border-[var(--neutral-200)] bg-card text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]',
             )}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -480,7 +480,7 @@ export function BudgetOverview() {
 
       <motion.div variants={staggerItem}>
         <Card variant="flat" className="border border-[var(--neutral-200)] p-6 shadow-xs">
-          <h3 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">Budget breakdown</h3>
+          <h3 className="mb-4 text-base font-medium text-foreground">Budget breakdown</h3>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div>
               <h4 className="mb-3 text-xs font-medium tracking-wider text-[var(--neutral-500)]">BY TYPE</h4>

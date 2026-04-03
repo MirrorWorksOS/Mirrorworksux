@@ -29,7 +29,7 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
         className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
-          <SheetTitle className="text-2xl font-bold text-[var(--mw-mirage)]">{group.name}</SheetTitle>
+          <SheetTitle className="text-2xl font-bold text-foreground">{group.name}</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-5">
           <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-[var(--neutral-100)] p-6">
@@ -40,7 +40,7 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
             <p className="mt-3 text-sm text-[var(--neutral-600)]">{group.description}</p>
           </div>
 
-          <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6">
+          <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6">
             <p className="mb-4 text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Members</p>
             <div className="space-y-2">
               {members.map(member => (
@@ -49,7 +49,7 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
                     <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">{initials(member.name)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm text-[var(--mw-mirage)]">{member.name}</p>
+                    <p className="text-sm text-foreground">{member.name}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{member.email}</p>
                   </div>
                 </div>

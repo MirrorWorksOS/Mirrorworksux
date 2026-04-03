@@ -66,7 +66,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 backdrop-blur-xl p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-[var(--mw-mirage)]">Invite team member</DialogTitle>
+          <DialogTitle className="text-xl font-medium text-foreground">Invite team member</DialogTitle>
           <DialogDescription className="text-xs text-[var(--neutral-500)]">
             They&apos;ll receive an email to join your organisation.
           </DialogDescription>
@@ -95,7 +95,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                   <label
                     key={moduleKey}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${
-                      checked ? 'border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-white'
+                      checked ? 'border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-card'
                     }`}
                   >
                     <Checkbox
@@ -130,7 +130,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                         className={`rounded-full border px-3 py-1 text-xs ${
                           selected
                             ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]'
-                            : 'border-[var(--border)] bg-white text-[var(--neutral-600)]'
+                            : 'border-[var(--border)] bg-card text-[var(--neutral-600)]'
                         }`}
                       >
                         {groupName}

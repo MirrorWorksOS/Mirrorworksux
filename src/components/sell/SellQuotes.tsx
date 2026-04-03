@@ -118,7 +118,7 @@ const quoteColumns: MwColumnDef<Quote>[] = [
     key: 'quoteNumber',
     header: 'Quote #',
     tooltip: 'Unique quote reference number',
-    className: 'font-medium tabular-nums text-[var(--neutral-900)]',
+    className: 'font-medium tabular-nums text-foreground',
     cell: (row) => row.quoteNumber,
   },
   {
@@ -132,7 +132,7 @@ const quoteColumns: MwColumnDef<Quote>[] = [
     key: 'customer',
     header: 'Customer',
     tooltip: 'Quoting customer name',
-    className: 'text-[var(--neutral-900)]',
+    className: 'text-foreground',
     cell: (row) => row.customer,
   },
   {
@@ -140,7 +140,7 @@ const quoteColumns: MwColumnDef<Quote>[] = [
     header: 'Value',
     tooltip: 'Total quoted value incl. tax',
     headerClassName: 'text-right',
-    className: 'text-right tabular-nums font-medium text-[var(--neutral-900)]',
+    className: 'text-right tabular-nums font-medium text-foreground',
     cell: (row) => `$${row.value.toLocaleString()}`,
   },
   {

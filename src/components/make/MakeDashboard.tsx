@@ -44,10 +44,10 @@ const mockMachines: Machine[] = [
 const getStatusColor = (status: MachineStatus) => {
   switch (status) {
     case 'running': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
-    case 'idle': return { bg: 'bg-[var(--mw-warning)]', text: 'text-[var(--neutral-800)]', icon: Clock, label: 'Idle' };
+    case 'idle': return { bg: 'bg-[var(--mw-warning)]', text: 'text-[#1A1A1A]', icon: Clock, label: 'Idle' };
     case 'down': return { bg: 'bg-[var(--mw-error)]', text: 'text-white', icon: AlertTriangle, label: 'Down' };
     case 'maintenance': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: Wrench, label: 'Maintenance' };
-    case 'setup': return { bg: 'bg-[var(--mw-amber)]', text: 'text-white', icon: Zap, label: 'Setup' };
+    case 'setup': return { bg: 'bg-[var(--mw-amber)]', text: 'text-[#1A1A1A]', icon: Zap, label: 'Setup' };
   }
 };
 
@@ -157,7 +157,7 @@ export function MakeDashboard() {
                     <div className="flex items-center gap-4">
                       <div className="flex-1 h-3 bg-black bg-opacity-20 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-white rounded-full transition-all duration-[var(--duration-medium1)]"
+                          className="h-full bg-card rounded-full transition-all duration-[var(--duration-medium1)]"
                           style={{ width: `${machine.utilizationToday}%` }}
                         />
                       </div>
@@ -180,7 +180,7 @@ export function MakeDashboard() {
       </div>
 
       {/* Legend */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <h3 className="text-sm font-medium text-[var(--neutral-500)] mb-4">Status legend</h3>
         <div className="flex flex-wrap gap-4">
           {(['running', 'idle', 'setup', 'down', 'maintenance'] as MachineStatus[]).map(status => {
@@ -188,7 +188,7 @@ export function MakeDashboard() {
             return (
               <div key={status} className="flex items-center gap-2">
                 <div className={cn("w-6 h-6 rounded", config.bg)} />
-                <span className="text-sm text-[var(--mw-mirage)]">{config.label}</span>
+                <span className="text-sm text-foreground">{config.label}</span>
               </div>
             );
           })}
@@ -197,9 +197,9 @@ export function MakeDashboard() {
 
       {/* §4.1.5 Quality Alerts */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)]">Quality Alerts</h3>
+            <h3 className="text-base font-medium text-foreground">Quality Alerts</h3>
             <Badge className="bg-[var(--mw-warning)]/10 text-[var(--mw-warning)] border-0">3 Active</Badge>
           </div>
           <div className="space-y-3">
@@ -211,10 +211,10 @@ export function MakeDashboard() {
               <div key={i} className="flex items-start gap-3 py-2 border-b border-[var(--border)] last:border-0">
                 <AlertTriangle className="w-5 h-5 text-[var(--mw-warning)] mt-0.5 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[var(--mw-mirage)]">{alert.desc}</p>
+                  <p className="text-sm text-foreground">{alert.desc}</p>
                   <p className="text-xs text-[var(--neutral-500)] mt-0.5">{alert.time}</p>
                 </div>
-                <button className="text-xs font-medium text-[var(--mw-mirage)] hover:underline shrink-0">View</button>
+                <button className="text-xs font-medium text-foreground hover:underline shrink-0">View</button>
               </div>
             ))}
           </div>
@@ -229,8 +229,8 @@ export function MakeDashboard() {
 
       {/* §4.1.6 Today's Schedule Gantt Strip */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Today's Schedule</h3>
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <h3 className="text-base font-medium text-foreground mb-4">Today's Schedule</h3>
           <div className="overflow-x-auto">
             {/* Time header */}
             <div className="flex items-end mb-2 ml-[100px]">
@@ -251,7 +251,7 @@ export function MakeDashboard() {
                 { name: 'Pack-01',  blocks: [{ start: 22, width: 33, color: 'var(--mw-warning)', label: 'WO-009' }, { start: 60, width: 28, color: 'var(--neutral-300)', label: 'Idle' }] },
               ]).map((row) => (
                 <div key={row.name} className="flex items-center gap-2">
-                  <span className="w-[92px] text-xs font-medium text-[var(--mw-mirage)] truncate shrink-0">{row.name}</span>
+                  <span className="w-[92px] text-xs font-medium text-foreground truncate shrink-0">{row.name}</span>
                   <div className="flex-1 h-7 bg-[var(--neutral-100)] rounded relative overflow-hidden">
                     {row.blocks.map((block, j) => (
                       <div
@@ -294,8 +294,8 @@ export function MakeDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Quick Actions</h3>
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+            <h3 className="text-base font-medium text-foreground mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-3">
               {([
                 { label: 'Start New Job', icon: Play },
@@ -305,7 +305,7 @@ export function MakeDashboard() {
                 { label: 'Log Downtime', icon: TimerOff },
               ]).map((action) => (
                 <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto min-h-14 py-4 text-xs font-medium" onClick={() => toast(`${action.label} coming soon`)}>
-                  <action.icon className="w-5 h-5 text-[var(--mw-mirage)]" />
+                  <action.icon className="w-5 h-5 text-foreground" />
                   {action.label}
                 </Button>
               ))}
@@ -315,8 +315,8 @@ export function MakeDashboard() {
 
         {/* Real-time OEE Trend */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Real-time OEE Trend</h3>
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+            <h3 className="text-base font-medium text-foreground mb-4">Real-time OEE Trend</h3>
             <div className="flex items-end gap-1 h-[140px]">
               {[62, 68, 71, 65, 74, 78, 72, 80, 76, 82, 79, 85].map((val, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
@@ -353,8 +353,8 @@ export function MakeDashboard() {
 
         {/* Throughput vs Target */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-4">Throughput vs Target</h3>
+          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+            <h3 className="text-base font-medium text-foreground mb-4">Throughput vs Target</h3>
             <div className="space-y-3">
               {([
                 { label: 'Cutting', actual: 42, target: 50 },
@@ -368,7 +368,7 @@ export function MakeDashboard() {
                 return (
                   <div key={row.label}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium text-[var(--mw-mirage)]">{row.label}</span>
+                      <span className="text-xs font-medium text-foreground">{row.label}</span>
                       <span className="text-xs text-[var(--neutral-500)]">{row.actual}/{row.target} units</span>
                     </div>
                     <div className="h-2.5 bg-[var(--neutral-100)] rounded-full overflow-hidden relative">

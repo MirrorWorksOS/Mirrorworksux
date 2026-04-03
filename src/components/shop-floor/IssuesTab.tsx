@@ -91,7 +91,7 @@ const IssueCard = ({
   <div 
     onClick={onClick}
     className={cn(
-      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-[var(--shape-lg)] border transition-all duration-200 cursor-pointer hover:shadow-[var(--elevation-2)] hover:scale-[1.01] group bg-white",
+      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-[var(--shape-lg)] border transition-all duration-200 cursor-pointer hover:shadow-[var(--elevation-2)] hover:scale-[1.01] group bg-card",
       colorConfig.border,
       colorConfig.hover
     )}
@@ -125,7 +125,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
   return (
     <div className={cn("p-4 rounded-md border mb-3 flex items-center justify-between", styles[alert.status])}>
       <div className="flex items-center gap-4">
-        <div className="p-2.5 bg-white rounded-full shadow-sm border border-black/5">
+        <div className="p-2.5 bg-card rounded-full shadow-sm border border-black/5">
            <Icon className="w-5 h-5 text-[var(--neutral-800)]" />
         </div>
         <div>
@@ -139,7 +139,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
            </div>
         </div>
       </div>
-      <Button variant="outline" size="sm" className="bg-white border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-14">
+      <Button variant="outline" size="sm" className="bg-card border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-14">
          View Details
       </Button>
     </div>
@@ -193,7 +193,7 @@ export function IssuesTab() {
            className={cn(
              "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-xs transition-all duration-[450ms] ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden cursor-pointer",
              isRecording 
-               ? "w-[480px] cursor-default bg-white border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
+               ? "w-[480px] cursor-default bg-card border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
                : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-[var(--elevation-3)] active:scale-95 border border-[var(--mw-yellow-400)]"
            )}
         >
@@ -210,7 +210,7 @@ export function IssuesTab() {
                    </button>
                    
                    {/* Time */}
-                   <span className="text-3xl font-bold text-[var(--mw-mirage)] tabular-nums tracking-tight">0:12</span>
+                   <span className="text-3xl font-bold text-foreground tabular-nums tracking-tight">0:12</span>
                    
                    {/* Waveform - Black */}
                    <div className="flex items-center gap-[3px] h-8 ml-2">
@@ -225,7 +225,7 @@ export function IssuesTab() {
                 </div>
 
                 {/* Right Side - White */}
-                <div className="w-[140px] bg-white flex items-center justify-center h-full relative z-10 border-l border-[var(--neutral-200)]">
+                <div className="w-[140px] bg-card flex items-center justify-center h-full relative z-10 border-l border-[var(--neutral-200)]">
                    <div className="text-xs font-bold text-[var(--neutral-500)] uppercase tracking-wide">Recording</div>
                 </div>
              </div>
@@ -245,41 +245,41 @@ export function IssuesTab() {
                  icon={Package} label="MATERIAL" sublabel="Shortage / Defect" 
                  onClick={() => setActiveModal('material')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--mw-info)]", circle: "bg-[var(--mw-blue-50)]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-card", text: "text-[var(--mw-info)]", circle: "bg-[var(--mw-blue-50)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
                <IssueCard 
                  icon={Settings} label="MACHINE" sublabel="Breakdown / Error" 
                  onClick={() => setActiveModal('machine')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--mw-warning)]", circle: "bg-[var(--mw-yellow-50)]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-card", text: "text-[var(--mw-warning)]", circle: "bg-[var(--mw-yellow-50)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
                <IssueCard 
                  icon={XCircle} label="QUALITY" sublabel="Out of Spec" 
                  onClick={() => setActiveModal('quality')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--neutral-500)]", circle: "bg-[var(--mw-purple-100)]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-card", text: "text-[var(--neutral-500)]", circle: "bg-[var(--mw-purple-100)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
                <IssueCard 
                  icon={Recycle} label="SCRAP" sublabel="Report Waste" 
                  onClick={() => setActiveModal('scrap')}
                  colorConfig={{ 
-                    bg: "bg-white", text: "text-[var(--neutral-600)]", circle: "bg-[var(--neutral-100)]", border: "border-[var(--neutral-200)]", hover: "" 
+                    bg: "bg-card", text: "text-[var(--neutral-600)]", circle: "bg-[var(--neutral-100)]", border: "border-[var(--neutral-200)]", hover: "" 
                  }}
                />
             </div>
 
             {/* Active Issues Panel */}
-            <div className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
+            <div className="bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
                <div className="p-6 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)] flex items-center justify-between">
                   <h3 className="font-bold text-[var(--neutral-800)] text-lg flex items-center gap-2">
                      <AlertTriangle className="w-5 h-5 text-[var(--neutral-500)]" /> ACTIVE ISSUES
                   </h3>
-                  <Badge variant="secondary" className="bg-white border border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium rounded-sm">3 Open</Badge>
+                  <Badge variant="secondary" className="bg-card border border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium rounded-sm">3 Open</Badge>
                </div>
-               <div className="p-6 bg-white max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+               <div className="p-6 bg-card max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
                   {MOCK_ALERTS.map(alert => (
                      <ActiveAlertRow key={alert.id} alert={alert} />
                   ))}
@@ -291,7 +291,7 @@ export function IssuesTab() {
          <div className="w-[340px] shrink-0 space-y-6 hidden lg:block overflow-y-auto pb-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
             
             {/* Andon Status Widget */}
-            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] overflow-hidden rounded-[var(--shape-lg)] bg-white">
+            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] overflow-hidden rounded-[var(--shape-lg)] bg-card">
                <div className="bg-[var(--neutral-800)] text-white p-4 font-bold text-center uppercase tracking-wider text-sm">
                   Machine Status
                </div>
@@ -310,7 +310,7 @@ export function IssuesTab() {
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-yellow-50)] border border-[#FEF3C7]">
                      <span className="font-bold text-[var(--neutral-800)]">Haeger Press</span>
-                     <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-black border-0 rounded-xs font-bold">ATTENTION</Badge>
+                     <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-foreground border-0 rounded-xs font-bold">ATTENTION</Badge>
                   </div>
                </div>
                <div className="bg-[var(--neutral-100)] p-3 text-center border-t border-[var(--neutral-200)]">
@@ -319,17 +319,17 @@ export function IssuesTab() {
             </Card>
 
             {/* Intelligence Hub Integration */}
-            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-white rounded-[var(--shape-lg)]">
+            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-card rounded-[var(--shape-lg)]">
                <div className="p-6">
                   <div className="flex items-center gap-2 mb-4 text-[var(--neutral-500)] font-bold text-lg">
                      <Bot className="w-5 h-5" /> AI Troubleshoot
                   </div>
                   
-                  <Button className="w-full bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group rounded-sm font-bold">
+                  <Button className="w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group rounded-sm font-bold">
                      Ask Intelligence Hub <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   
-                  <div className="flex items-center gap-2 text-sm text-[var(--mw-mirage)] bg-white/60 p-3 rounded-sm border border-[var(--mw-purple)]/20">
+                  <div className="flex items-center gap-2 text-sm text-foreground bg-white/60 p-3 rounded-sm border border-[var(--mw-purple)]/20">
                      <Mic className="w-4 h-4" /> 
                      <span className="italic font-medium">"Why is Amada Ensis stopped?"</span>
                   </div>

@@ -91,7 +91,7 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
     key: 'target',
     header: 'Target',
     tooltip: 'Target name',
-    cell: (t) => <span className="font-medium text-[var(--mw-mirage)]">{t.target}</span>,
+    cell: (t) => <span className="font-medium text-foreground">{t.target}</span>,
   },
   {
     key: 'metric',
@@ -109,7 +109,7 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
     key: 'value',
     header: 'Value',
     tooltip: 'Target threshold',
-    cell: (t) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{t.value}</span>,
+    cell: (t) => <span className="font-medium tabular-nums text-foreground">{t.value}</span>,
   },
   {
     key: 'status',
@@ -192,7 +192,7 @@ export function ControlGamification() {
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Team Targets</h2>
+              <h2 className="text-lg font-medium text-foreground">Team Targets</h2>
               <p className="text-sm text-[var(--neutral-500)]">Set measurable goals for your team to track and achieve</p>
             </div>
             <Button
@@ -228,7 +228,7 @@ export function ControlGamification() {
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Achievement Badges</h2>
+              <h2 className="text-lg font-medium text-foreground">Achievement Badges</h2>
               <p className="text-sm text-[var(--neutral-500)]">Reward milestones and outstanding performance</p>
             </div>
             <Button
@@ -250,7 +250,7 @@ export function ControlGamification() {
                       {badge.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{badge.name}</h3>
+                      <h3 className="text-sm font-medium text-foreground">{badge.name}</h3>
                       <p className="text-xs text-[var(--neutral-500)] mt-0.5">{badge.description}</p>
                     </div>
                   </div>
@@ -286,7 +286,7 @@ export function ControlGamification() {
         {/* ── Section 3: Leaderboard Settings ─────────────────────────── */}
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="mb-4">
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Leaderboard Settings</h2>
+            <h2 className="text-lg font-medium text-foreground">Leaderboard Settings</h2>
             <p className="text-sm text-[var(--neutral-500)]">Control how leaderboards appear across the platform</p>
           </div>
 
@@ -294,7 +294,7 @@ export function ControlGamification() {
             {/* Toggle: Show leaderboard */}
             <motion.div variants={staggerItem} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[var(--mw-mirage)]">Show leaderboard on dashboards</p>
+                <p className="text-sm font-medium text-foreground">Show leaderboard on dashboards</p>
                 <p className="text-xs text-[var(--neutral-500)]">Display team rankings on module dashboards</p>
               </div>
               <Switch checked={showLeaderboard} onCheckedChange={setShowLeaderboard} />
@@ -305,7 +305,7 @@ export function ControlGamification() {
             {/* Toggle: Show badges */}
             <motion.div variants={staggerItem} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[var(--mw-mirage)]">Show achievement badges</p>
+                <p className="text-sm font-medium text-foreground">Show achievement badges</p>
                 <p className="text-xs text-[var(--neutral-500)]">Display earned badges on user profiles and leaderboard</p>
               </div>
               <Switch checked={showBadges} onCheckedChange={setShowBadges} />
@@ -316,7 +316,7 @@ export function ControlGamification() {
             {/* Toggle: Anonymous mode */}
             <motion.div variants={staggerItem} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[var(--mw-mirage)]">Anonymous mode</p>
+                <p className="text-sm font-medium text-foreground">Anonymous mode</p>
                 <p className="text-xs text-[var(--neutral-500)]">Hide names, show only initials</p>
               </div>
               <Switch checked={anonymousMode} onCheckedChange={setAnonymousMode} />
@@ -327,7 +327,7 @@ export function ControlGamification() {
             {/* Default time range */}
             <motion.div variants={staggerItem} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[var(--mw-mirage)]">Default time range</p>
+                <p className="text-sm font-medium text-foreground">Default time range</p>
                 <p className="text-xs text-[var(--neutral-500)]">Time period shown by default on leaderboards</p>
               </div>
               <div className="flex items-center gap-1">
@@ -351,7 +351,7 @@ export function ControlGamification() {
 
             {/* Visible metrics */}
             <motion.div variants={staggerItem}>
-              <p className="text-sm font-medium text-[var(--mw-mirage)] mb-1">Visible metrics</p>
+              <p className="text-sm font-medium text-foreground mb-1">Visible metrics</p>
               <p className="text-xs text-[var(--neutral-500)] mb-3">Choose which metrics appear on the leaderboard</p>
               <div className="space-y-2.5">
                 {LEADERBOARD_METRICS.map(m => (
@@ -360,9 +360,9 @@ export function ControlGamification() {
                       type="checkbox"
                       checked={visibleMetrics[m.key] ?? false}
                       onChange={() => toggleMetric(m.key)}
-                      className="h-4 w-4 rounded border-[var(--border)] text-[var(--mw-mirage)] accent-[var(--mw-mirage)]"
+                      className="h-4 w-4 rounded border-[var(--border)] text-foreground accent-[var(--mw-mirage)]"
                     />
-                    <span className="text-sm text-[var(--neutral-600)] group-hover:text-[var(--mw-mirage)] transition-colors">
+                    <span className="text-sm text-[var(--neutral-600)] group-hover:text-foreground transition-colors">
                       {m.label}
                     </span>
                   </label>
@@ -375,7 +375,7 @@ export function ControlGamification() {
         {/* ── Section 4: Group Targets ─────────────────────────────────── */}
         <motion.section variants={staggerContainer} initial="hidden" animate="show">
           <div className="mb-4">
-            <h2 className="text-lg font-medium text-[var(--mw-mirage)]">Group Targets</h2>
+            <h2 className="text-lg font-medium text-foreground">Group Targets</h2>
             <p className="text-sm text-[var(--neutral-500)]">Configure specific targets per team or department</p>
           </div>
 
@@ -391,10 +391,10 @@ export function ControlGamification() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)]">
-                          <Target className="w-4 h-4 text-[var(--mw-mirage)]" />
+                          <Target className="w-4 h-4 text-foreground" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{group.name}</h3>
+                          <h3 className="text-sm font-medium text-foreground">{group.name}</h3>
                           <p className="text-xs text-[var(--neutral-500)]">{group.targetCount} targets configured</p>
                         </div>
                       </div>

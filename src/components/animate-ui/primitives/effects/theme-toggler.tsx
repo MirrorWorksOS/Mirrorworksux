@@ -1,21 +1,28 @@
 'use client';
 
 import * as React from 'react';
+import { flushSync } from 'react-dom';
 import { motion, AnimatePresence, type Transition } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 
-type ThemeTogglerProps = {
-  theme: 'light' | 'dark' | 'system';
-  resolvedTheme: 'light' | 'dark';
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
-  direction?: 'btt' | 'ttb' | 'ltr' | 'rtl';
-  transition?: Transition;
-  as?: 'button' | 'div';
-  className?: string;
-  iconClassName?: string;
-  children?: React.ReactNode;
-};
+type Resolved = 'light' | 'dark';
+type Direction = 'btt' | 'ttb' | 'ltr' | 'rtl';
+
+function getClipKeyframes(direction: Direction): [string, string] {
+  switch (direction) {
+    case 'ltr':
+      return ['inset(0 100% 0 0)', 'inset(0 0 0 0)'];
+    case 'rtl':
+      return ['inset(0 0 0 100%)', 'inset(0 0 0 0)'];
+    case 'ttb':
+      return ['inset(0 0 100% 0)', 'inset(0 0 0 0)'];
+    case 'btt':
+      return ['inset(100% 0 0 0)', 'inset(0 0 0 0)'];
+    default:
+      return ['inset(0 100% 0 0)', 'inset(0 0 0 0)'];
+  }
+}
 
 const directionMap = {
   ltr: { enter: { x: -20, y: 0 }, exit: { x: 20, y: 0 } },
@@ -30,7 +37,6 @@ const defaultTransition: Transition = {
   damping: 25,
 };
 
-// Sun icon with animating rays
 function SunIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -56,7 +62,6 @@ function SunIcon({ className }: { className?: string }) {
   );
 }
 
-// Moon icon
 function MoonIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -74,75 +79,112 @@ function MoonIcon({ className }: { className?: string }) {
   );
 }
 
+type ThemeTogglerProps = {
+  resolvedTheme: Resolved;
+  setTheme: (theme: Resolved) => void;
+  direction?: Direction;
+  transition?: Transition;
+  className?: string;
+  iconClassName?: string;
+};
+
 function ThemeToggler({
-  theme,
   resolvedTheme,
   setTheme,
-  direction = 'ltr',
+  direction = 'btt',
   transition = defaultTransition,
-  as = 'button',
   className,
   iconClassName,
-  children,
 }: ThemeTogglerProps) {
   const dir = directionMap[direction];
-  const Component = motion.create(as);
+  const [fromClip, toClip] = getClipKeyframes(direction);
 
-  const toggleTheme = React.useCallback(() => {
-    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
-  }, [resolvedTheme, setTheme]);
+  const toggleTheme = React.useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
 
-  if (children) {
-    return <>{children}</>;
-  }
+      const next: Resolved = resolvedTheme === 'light' ? 'dark' : 'light';
+
+      if (!document.startViewTransition) {
+        flushSync(() => {
+          document.documentElement.classList.toggle('dark', next === 'dark');
+        });
+        setTheme(next);
+        return;
+      }
+
+      try {
+        const vt = document.startViewTransition(() => {
+          flushSync(() => {
+            document.documentElement.classList.toggle('dark', next === 'dark');
+          });
+        });
+
+        await vt.ready;
+
+        document.documentElement
+          .animate(
+            { clipPath: [fromClip, toClip] },
+            {
+              duration: 700,
+              easing: 'ease-in-out',
+              pseudoElement: '::view-transition-new(root)',
+            },
+          )
+          .finished.finally(() => {
+            setTheme(next);
+          });
+      } catch {
+        setTheme(next);
+      }
+    },
+    [resolvedTheme, setTheme, fromClip, toClip],
+  );
 
   return (
-    <Component
-      {...(as === 'button' ? { type: 'button' } : { role: 'button', tabIndex: 0 })}
-      onClick={toggleTheme}
-      className={cn(
-        'relative flex h-8 w-8 items-center justify-center rounded-md cursor-pointer',
-        'hover:bg-[var(--neutral-200)] dark:hover:bg-[var(--neutral-700)]',
-        'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        className,
-      )}
-      whileTap={{ scale: 0.9 }}
-      aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={resolvedTheme}
-          initial={{
-            opacity: 0,
-            ...dir.enter,
-            scale: 0.6,
-            rotate: resolvedTheme === 'dark' ? -90 : 90,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
-            rotate: 0,
-          }}
-          exit={{
-            opacity: 0,
-            ...dir.exit,
-            scale: 0.6,
-            rotate: resolvedTheme === 'dark' ? 90 : -90,
-          }}
-          transition={transition}
-          className="flex items-center justify-center"
-        >
-          {resolvedTheme === 'dark' ? (
-            <MoonIcon className={cn('h-4 w-4', iconClassName)} />
-          ) : (
-            <SunIcon className={cn('h-4 w-4', iconClassName)} />
-          )}
-        </motion.span>
-      </AnimatePresence>
-    </Component>
+    <>
+      <motion.button
+        type="button"
+        onClick={toggleTheme}
+        className={cn(
+          'relative flex items-center justify-center cursor-pointer',
+          'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          className,
+        )}
+        whileTap={{ scale: 0.9 }}
+        aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={resolvedTheme}
+            initial={{
+              opacity: 0,
+              ...dir.enter,
+              scale: 0.6,
+              rotate: resolvedTheme === 'dark' ? -90 : 90,
+            }}
+            animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
+            exit={{
+              opacity: 0,
+              ...dir.exit,
+              scale: 0.6,
+              rotate: resolvedTheme === 'dark' ? 90 : -90,
+            }}
+            transition={transition}
+            className="flex items-center justify-center"
+          >
+            {resolvedTheme === 'dark' ? (
+              <MoonIcon className={cn('h-4 w-4', iconClassName)} />
+            ) : (
+              <SunIcon className={cn('h-4 w-4', iconClassName)} />
+            )}
+          </motion.span>
+        </AnimatePresence>
+      </motion.button>
+      <style>{`::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal;}`}</style>
+    </>
   );
 }
 
-export { ThemeToggler, type ThemeTogglerProps };
+export { ThemeToggler, SunIcon, MoonIcon, type ThemeTogglerProps, type Resolved };

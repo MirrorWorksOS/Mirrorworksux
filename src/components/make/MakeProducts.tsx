@@ -56,7 +56,7 @@ const productColumns: MwColumnDef<Product>[] = [
     header: 'SKU',
     tooltip: 'Stock keeping unit identifier',
     cell: (p) => (
-      <span className="font-medium text-[var(--mw-mirage)] tabular-nums inline-flex items-center gap-1.5">
+      <span className="font-medium text-foreground tabular-nums inline-flex items-center gap-1.5">
         <Package className="w-3.5 h-3.5 text-[var(--neutral-400)]" />
         {p.sku}
       </span>
@@ -98,7 +98,7 @@ const productColumns: MwColumnDef<Product>[] = [
     header: 'Unit Cost',
     tooltip: 'Standard manufacturing cost per unit',
     headerClassName: 'text-right',
-    className: 'text-right font-medium text-[var(--neutral-900)] tabular-nums',
+    className: 'text-right font-medium text-foreground tabular-nums',
     cell: (p) => p.unitCost > 0 ? `$${p.unitCost.toLocaleString()}` : '—',
   },
 ];
@@ -134,12 +134,12 @@ export function MakeProducts() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Total Products', value: PRODUCTS.length, sub: `${filtered.length} shown`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-mirage)]' },
-          { label: 'BOM Complete', value: completeCount, sub: 'Ready to manufacture', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Total Products', value: PRODUCTS.length, sub: `${filtered.length} shown`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'BOM Complete', value: completeCount, sub: 'Ready to manufacture', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'BOM Draft', value: draftCount, sub: 'In progress', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'BOM Missing', value: missingCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -171,7 +171,7 @@ export function MakeProducts() {
             const canMake = product.bomStatus === 'complete';
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
-                <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 group">
+                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 group">
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
@@ -179,7 +179,7 @@ export function MakeProducts() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-[var(--neutral-900)] group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
                           {product.name}
                         </h3>
                         <p className="text-xs text-[var(--neutral-500)] tabular-nums">{product.sku}</p>
@@ -194,13 +194,13 @@ export function MakeProducts() {
                     <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
                       <div>
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Routing</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-foreground">
                           {product.routingSteps > 0 ? `${product.routingSteps} steps` : '—'}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-[var(--neutral-500)] mb-1">Unit Cost</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                        <p className="text-sm font-medium tabular-nums text-foreground">
                           {product.unitCost > 0 ? `$${product.unitCost.toLocaleString()}` : '—'}
                         </p>
                       </div>

@@ -189,13 +189,13 @@ export function MakeManufacturingOrderDetail() {
                         'rounded-[var(--shape-lg)] border p-6 text-left transition-colors',
                         active
                           ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 shadow-xs'
-                          : 'border-[var(--neutral-200)] bg-white shadow-xs hover:bg-[var(--neutral-50)]',
+                          : 'border-[var(--neutral-200)] bg-card shadow-xs hover:bg-[var(--neutral-50)]',
                       )}
                     >
                       <p className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">
                         {card.label}
                       </p>
-                      <p className="mt-2 text-lg font-medium text-[var(--neutral-900)] tabular-nums">
+                      <p className="mt-2 text-lg font-medium text-foreground tabular-nums">
                         {card.value}
                       </p>
                       <p className="mt-1 text-xs text-[var(--neutral-500)]">{card.hint}</p>
@@ -205,8 +205,8 @@ export function MakeManufacturingOrderDetail() {
               </div>
 
               {/* MO Details */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="text-base font-medium text-[var(--neutral-900)] mb-4">Manufacturing Order Details</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="text-base font-medium text-foreground mb-4">Manufacturing Order Details</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">MO Number</Label>
@@ -240,16 +240,16 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Work Orders summary */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">Work Orders</h2>
+                  <h2 className="text-base font-medium text-foreground">Work Orders</h2>
                   <Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{WORK_ORDERS.length}</Badge>
                 </div>
                 <div className="space-y-3">
                   {WORK_ORDERS.slice(0, 3).map((wo) => (
                     <div key={wo.id} className="flex items-center gap-3 py-2 border-b border-[var(--border)] last:border-0">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[var(--neutral-900)]">{wo.woNumber} — {wo.partName}</p>
+                        <p className="text-sm font-medium text-foreground">{wo.woNumber} — {wo.partName}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="border-[var(--border)] text-xs">{wo.workstation}</Badge>
                           <span className="text-xs text-[var(--neutral-500)] tabular-nums">{wo.unitsComplete}/{wo.unitsTotal} units</span>
@@ -272,8 +272,8 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Schedule */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="text-base font-medium text-[var(--neutral-900)] mb-4">Schedule</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="text-base font-medium text-foreground mb-4">Schedule</h2>
                 <div className="space-y-3">
                   {WORK_ORDERS.map((wo) => (
                     <div key={wo.id} className="flex items-center gap-3">
@@ -288,7 +288,7 @@ export function MakeManufacturingOrderDetail() {
                           )}
                           style={{ width: `${wo.progress}%` }}
                         />
-                        <span className="absolute inset-0 flex items-center px-3 text-xs font-medium text-[var(--neutral-900)]">{wo.partName}</span>
+                        <span className="absolute inset-0 flex items-center px-3 text-xs font-medium text-foreground">{wo.partName}</span>
                       </div>
                       <span className="text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">{wo.progress}%</span>
                     </div>
@@ -300,15 +300,15 @@ export function MakeManufacturingOrderDetail() {
             {/* Right column */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Progress */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="text-base font-medium text-[var(--neutral-900)] mb-4">Overall Progress</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="text-base font-medium text-foreground mb-4">Overall Progress</h2>
                 <div className="text-center mb-4">
-                  <span className="text-3xl font-medium tabular-nums text-[var(--neutral-900)]">{overallProgress}%</span>
+                  <span className="text-3xl font-medium tabular-nums text-foreground">{overallProgress}%</span>
                 </div>
                 <ProgressBar value={overallProgress} />
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-lg font-medium tabular-nums text-[var(--neutral-900)]">{WORK_ORDERS.filter((w) => w.status === 'complete').length}</p>
+                    <p className="text-lg font-medium tabular-nums text-foreground">{WORK_ORDERS.filter((w) => w.status === 'complete').length}</p>
                     <p className="text-xs text-[var(--neutral-500)]">Complete</p>
                   </div>
                   <div>
@@ -323,9 +323,9 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Issues */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-medium text-[var(--neutral-900)]">Active Issues</h2>
+                  <h2 className="text-base font-medium text-foreground">Active Issues</h2>
                   <Badge variant="secondary" className="border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)] text-xs tabular-nums">
                     {ISSUES.filter((i) => i.status !== 'resolved').length}
                   </Badge>
@@ -333,7 +333,7 @@ export function MakeManufacturingOrderDetail() {
                 <ul className="space-y-3">
                   {ISSUES.filter((i) => i.status !== 'resolved').map((issue) => (
                     <li key={issue.id} className="text-sm border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                      <p className="font-medium text-[var(--neutral-900)]">{issue.title}</p>
+                      <p className="font-medium text-foreground">{issue.title}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <StatusBadge priority={issue.severity === 'critical' ? 'urgent' : issue.severity} />
                         <span className="text-xs text-[var(--neutral-500)]">{issue.timestamp}</span>
@@ -357,11 +357,11 @@ export function MakeManufacturingOrderDetail() {
               </AIInsightCard>
 
               {/* Cross-module link: Book */}
-              <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h2 className="text-base font-medium text-[var(--neutral-900)] mb-2">Invoicing</h2>
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <h2 className="text-base font-medium text-foreground mb-2">Invoicing</h2>
                 <p className="text-xs text-[var(--neutral-500)] mb-4">Create an invoice in the Book module for this manufacturing order.</p>
                 <Button
-                  className="w-full h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+                  className="w-full h-14 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
                   onClick={() => navigate('/book/invoices')}
                 >
                   <Receipt className="h-4 w-4 mr-2" />
@@ -392,12 +392,12 @@ export function MakeManufacturingOrderDetail() {
               </Button>
             </div>
 
-            <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
               {/* MO group header */}
               <div className="border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ChevronDown className="h-4 w-4 text-[var(--neutral-500)]" />
-                  <span className="text-sm font-medium text-[var(--neutral-900)]">{mo.moNumber}</span>
+                  <span className="text-sm font-medium text-foreground">{mo.moNumber}</span>
                   <span className="text-sm text-[var(--neutral-600)]">{mo.product}</span>
                   <Badge variant="secondary" className="border-0 bg-[var(--neutral-200)] text-xs tabular-nums">{WORK_ORDERS.length} units</Badge>
                 </div>
@@ -420,7 +420,7 @@ export function MakeManufacturingOrderDetail() {
                   )}
                   <div className="flex-1 min-w-0 ml-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--neutral-900)] tabular-nums">{wo.woNumber}</span>
+                      <span className="text-sm font-medium text-foreground tabular-nums">{wo.woNumber}</span>
                       <span className="text-sm text-[var(--neutral-600)]">{wo.partName}</span>
                       <Badge variant="outline" className="border-[var(--border)] text-xs">{wo.workstation}</Badge>
                     </div>
@@ -446,17 +446,17 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-[var(--neutral-500)]">Issues reported against this manufacturing order</p>
-              <Button className="h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              <Button className="h-14 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
                 <Plus className="h-4 w-4 mr-2" />
                 Report Issue
               </Button>
             </div>
             <div className="space-y-3">
               {ISSUES.map((issue) => (
-                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm font-medium text-[var(--neutral-900)]">{issue.title}</p>
+                      <p className="text-sm font-medium text-foreground">{issue.title}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <StatusBadge priority={issue.severity === 'critical' ? 'urgent' : issue.severity} />
                         <StatusBadge status={issue.status === 'investigating' ? 'progress' : issue.status === 'resolved' ? 'completed' : 'open'} />
@@ -477,10 +477,10 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-medium text-[var(--neutral-900)]">AI Suggestions</h2>
+                <h2 className="text-base font-medium text-foreground">AI Suggestions</h2>
                 <p className="text-xs text-[var(--neutral-500)]">Actionable recommendations based on production data</p>
               </div>
-              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-900)] text-xs">3 new suggestions</Badge>
+              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground text-xs">3 new suggestions</Badge>
             </div>
 
             <AISuggestion
@@ -519,8 +519,8 @@ export function MakeManufacturingOrderDetail() {
               CNC-01 utilisation at 92%. Consider shifting WO-004 to CNC-02 (currently idle) to avoid bottleneck. Estimated time saving: <strong>2.5 hours</strong>.
             </AISuggestion>
 
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-4">MO Timeline</h3>
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <h3 className="text-sm font-medium text-foreground mb-4">MO Timeline</h3>
               <div className="relative pl-8 space-y-4">
                 <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-[var(--border)]" />
                 {[
@@ -532,7 +532,7 @@ export function MakeManufacturingOrderDetail() {
                 ].map((ev, i) => (
                   <div key={i} className="relative">
                     <div className={cn('absolute left-[-29px] w-4 h-4 rounded-full border-2 border-white', ev.dot)} />
-                    <p className="text-sm font-medium text-[var(--neutral-900)]">{ev.label}</p>
+                    <p className="text-sm font-medium text-foreground">{ev.label}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{ev.time}</p>
                   </div>
                 ))}
@@ -547,12 +547,12 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-[var(--neutral-500)]">Drawings, BOMs, and traveller documents for this manufacturing order</p>
-              <Button className="h-14 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+              <Button className="h-14 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Document
               </Button>
             </div>
-            <Card className="border border-[var(--neutral-200)] bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
               {/* Documents list */}
               {[
                 { name: 'Mounting Bracket Assembly.pdf', type: 'Drawing', size: '2.4 MB', date: 'Dec 5, 2025', icon: FileText },
@@ -564,7 +564,7 @@ export function MakeManufacturingOrderDetail() {
                 <div key={doc.name} className="flex items-center gap-4 px-4 py-3 border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] transition-colors">
                   <IconWell icon={doc.icon} surface="onDark" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[var(--neutral-900)] truncate">{doc.name}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{doc.type} · {doc.size} · {doc.date}</p>
                   </div>
                   <Button variant="ghost" size="sm" className="h-14 text-xs text-[var(--neutral-500)]">
@@ -584,10 +584,10 @@ export function MakeManufacturingOrderDetail() {
 
   /* ── Communication Sidebar ── */
   const communicationSidebar = (
-    <div className="w-80 border-l border-[var(--border)] bg-white flex flex-col h-full overflow-hidden shrink-0">
+    <div className="w-80 border-l border-[var(--border)] bg-card flex flex-col h-full overflow-hidden shrink-0">
       {/* Quick Access */}
       <div className="p-4 border-b border-[var(--border)]">
-        <h3 className="text-sm font-medium text-[var(--neutral-900)] mb-3">Quick Access</h3>
+        <h3 className="text-sm font-medium text-foreground mb-3">Quick Access</h3>
         <div className="space-y-2">
           {[
             { name: 'SOP-001 Setup Procedure', type: 'SOP', color: 'bg-[var(--mw-blue)]' },
@@ -600,7 +600,7 @@ export function MakeManufacturingOrderDetail() {
                 <FileText className="h-4 w-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-[var(--neutral-900)] truncate">{doc.name}</p>
+                <p className="text-xs font-medium text-foreground truncate">{doc.name}</p>
               </div>
               <Badge variant="outline" className="border-[var(--border)] text-[10px] shrink-0">{doc.type}</Badge>
             </div>
@@ -630,10 +630,10 @@ export function MakeManufacturingOrderDetail() {
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-[var(--neutral-900)]">M. Johnson</span>
+              <span className="text-xs font-medium text-foreground">M. Johnson</span>
               <span className="text-xs text-[var(--neutral-500)]">10:30 AM</span>
             </div>
-            <p className="text-xs text-[var(--neutral-900)]">
+            <p className="text-xs text-foreground">
               WO-001 Base Plate complete. Moving to Side Panel L on CNC-01 now. @D.Lee heads up on material staging.
             </p>
           </div>
@@ -662,10 +662,10 @@ export function MakeManufacturingOrderDetail() {
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-[var(--neutral-900)]">D. Lee</span>
+              <span className="text-xs font-medium text-foreground">D. Lee</span>
               <span className="text-xs text-[var(--neutral-500)]">4:15 PM</span>
             </div>
-            <p className="text-xs text-[var(--neutral-900)]">
+            <p className="text-xs text-foreground">
               Materials staged for WO-001. All 304SS sheets verified against cert. Good to go for morning shift.
             </p>
           </div>
@@ -687,10 +687,10 @@ export function MakeManufacturingOrderDetail() {
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-[var(--neutral-900)]">E. Williams</span>
+              <span className="text-xs font-medium text-foreground">E. Williams</span>
               <span className="text-xs text-[var(--neutral-500)]">2:00 PM</span>
             </div>
-            <p className="text-xs text-[var(--neutral-900)]">
+            <p className="text-xs text-foreground">
               Uploaded updated drawing rev B. Please confirm before we start cutting.
             </p>
             <div className="mt-2 border border-[var(--border)] rounded-[var(--shape-lg)] p-2 flex items-center gap-2 hover:bg-[var(--neutral-50)] cursor-pointer">
@@ -698,7 +698,7 @@ export function MakeManufacturingOrderDetail() {
                 <FileText className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <p className="text-xs font-medium text-[var(--neutral-900)]">Drawing-RevB.pdf</p>
+                <p className="text-xs font-medium text-foreground">Drawing-RevB.pdf</p>
                 <p className="text-[10px] text-[var(--neutral-500)]">1.2 MB</p>
               </div>
             </div>
@@ -718,7 +718,7 @@ export function MakeManufacturingOrderDetail() {
                 'rounded-lg px-3 py-2 text-xs max-w-[85%]',
                 m.role === 'user'
                   ? 'bg-[var(--mw-mirage)] text-white'
-                  : 'bg-[var(--neutral-100)] text-[var(--neutral-900)]',
+                  : 'bg-[var(--neutral-100)] text-foreground',
               )}>
                 {m.text}
               </div>
@@ -739,7 +739,7 @@ export function MakeManufacturingOrderDetail() {
           onChange={(e) => setChatInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
         />
-        <Button size="sm" className="h-14 px-3 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
+        <Button size="sm" className="h-14 px-3 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
           <Send className="w-4 h-4" />
         </Button>
       </div>
@@ -762,7 +762,7 @@ export function MakeManufacturingOrderDetail() {
             <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{mo.moNumber}</span>
             <span>{mo.customer}</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-[var(--mw-mirage)]">{mo.operator.split(' ').map(n => n[0]).join('')}</span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-primary-foreground">{mo.operator.split(' ').map(n => n[0]).join('')}</span>
               {mo.operator}
             </span>
             <span>{mo.startDate}</span>
@@ -788,7 +788,7 @@ export function MakeManufacturingOrderDetail() {
               <Printer className="mr-2 h-4 w-4" />
               Print Traveler
             </Button>
-            <Button className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               <Plus className="mr-2 h-4 w-4" />
               Add Work Order
             </Button>
@@ -797,7 +797,7 @@ export function MakeManufacturingOrderDetail() {
               className={cn(
                 'h-12',
                 showChat
-                  ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]'
+                  ? 'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]'
                   : 'border-[var(--border)]'
               )}
               onClick={() => setShowChat((v) => !v)}

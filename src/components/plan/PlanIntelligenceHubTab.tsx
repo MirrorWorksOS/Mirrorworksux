@@ -59,8 +59,8 @@ export function PlanIntelligenceHubTab() {
       </AISuggestion>
 
       {/* Customer Engagement Timeline */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className=" text-base font-medium text-[var(--mw-mirage)] mb-6">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <h3 className=" text-base font-medium text-foreground mb-6">
           Customer Engagement
         </h3>
 
@@ -74,7 +74,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Quote #QT-2026-145 sent by email
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
@@ -93,7 +93,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Quote #QT-2026-145 opened by customer
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
@@ -112,7 +112,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Phone className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Follow-up call with James Hartley
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
@@ -131,7 +131,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Upload className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Revised drawing set uploaded
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
@@ -147,10 +147,10 @@ export function PlanIntelligenceHubTab() {
           {/* Event 5 — Quote confirmed (highlighted) */}
           <div className="relative">
             <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-yellow-400)] border-2 border-white" />
-            <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+            <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Quote #QT-2026-145 confirmed
                 </span>
                 <Badge className="bg-[var(--mw-mirage)] text-white text-xs">
@@ -169,7 +169,7 @@ export function PlanIntelligenceHubTab() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
-                <span className=" text-sm font-medium text-[var(--mw-mirage)]">
+                <span className=" text-sm font-medium text-foreground">
                   Order confirmation email sent
                 </span>
                 <Badge variant="outline" className="bg-[var(--neutral-100)] border-transparent text-[var(--neutral-500)] text-xs">
@@ -185,10 +185,10 @@ export function PlanIntelligenceHubTab() {
       </div>
 
       {/* Budget Tracker with AI Insight */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
+            <h3 className=" text-base font-medium text-foreground">
               Budget Tracker
             </h3>
             <p className=" text-xs text-[var(--neutral-500)]">
@@ -209,28 +209,28 @@ export function PlanIntelligenceHubTab() {
         <div className="space-y-4 mb-6">
           {/* Materials */}
           <div className="grid grid-cols-5 gap-4 items-center">
-            <div className=" text-xs font-medium text-[var(--mw-mirage)]">Materials</div>
+            <div className=" text-xs font-medium text-foreground">Materials</div>
             <div className=" text-xs tabular-nums text-[var(--neutral-500)]">$20,000</div>
-            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">$500</div>
-            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">$19,500</div>
+            <div className=" text-xs tabular-nums text-foreground">$500</div>
+            <div className=" text-xs tabular-nums text-foreground">$19,500</div>
             <ProgressBar value={2.5} size="sm" />
           </div>
 
           {/* Labour */}
           <div className="grid grid-cols-5 gap-4 items-center">
-            <div className=" text-xs font-medium text-[var(--mw-mirage)]">Labour</div>
+            <div className=" text-xs font-medium text-foreground">Labour</div>
             <div className=" text-xs tabular-nums text-[var(--neutral-500)]">$20,000</div>
-            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">$10,000</div>
+            <div className=" text-xs tabular-nums text-foreground">$10,000</div>
             <div className=" text-xs tabular-nums text-[var(--mw-amber)]">$10,000</div>
             <ProgressBar value={50} size="sm" />
           </div>
 
           {/* Purchase */}
           <div className="grid grid-cols-5 gap-4 items-center">
-            <div className=" text-xs font-medium text-[var(--mw-mirage)]">Purchase</div>
+            <div className=" text-xs font-medium text-foreground">Purchase</div>
             <div className=" text-xs tabular-nums text-[var(--neutral-500)]">$10,000</div>
-            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">$3,000</div>
-            <div className=" text-xs tabular-nums text-[var(--mw-mirage)]">$7,000</div>
+            <div className=" text-xs tabular-nums text-foreground">$3,000</div>
+            <div className=" text-xs tabular-nums text-foreground">$7,000</div>
             <ProgressBar value={30} size="sm" />
           </div>
         </div>
@@ -262,9 +262,9 @@ export function PlanIntelligenceHubTab() {
       </div>
 
       {/* Files Section */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
+          <h3 className=" text-base font-medium text-foreground">
             Files
           </h3>
           <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
@@ -289,7 +289,7 @@ export function PlanIntelligenceHubTab() {
               <div className={cn('w-10 h-10 rounded flex items-center justify-center mb-3', file.color)}>
                 <FileText className="w-5 h-5 text-white" />
               </div>
-              <h4 className=" text-xs font-medium text-[var(--mw-mirage)] mb-1 truncate">
+              <h4 className=" text-xs font-medium text-foreground mb-1 truncate">
                 {file.name}
               </h4>
               <div className="flex items-center gap-2">
@@ -317,8 +317,8 @@ export function PlanIntelligenceHubTab() {
       </div>
 
       {/* Chatter - Full View */}
-      <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className=" text-base font-medium text-[var(--mw-mirage)] mb-6">
+      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <h3 className=" text-base font-medium text-foreground mb-6">
           Chatter
         </h3>
 
@@ -335,7 +335,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Intelligence Hub Message */}
           <AIInsightMessage timestamp="10:24 AM" actions={
-            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-[var(--mw-mirage)]">
+            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-foreground">
               View Details
             </Button>
           }>
@@ -350,14 +350,14 @@ export function PlanIntelligenceHubTab() {
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className=" text-xs font-medium text-[var(--mw-mirage)]">
+                <span className=" text-xs font-medium text-foreground">
                   David Miller
                 </span>
                 <span className=" text-xs text-[var(--neutral-500)]">
                   9:15 AM
                 </span>
               </div>
-              <p className=" text-xs text-[var(--mw-mirage)]">
+              <p className=" text-xs text-foreground">
                 BOM has been finalized. All materials are in stock. We can proceed with scheduling the laser cutting operations for tomorrow morning.
               </p>
             </div>
@@ -371,21 +371,21 @@ export function PlanIntelligenceHubTab() {
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className=" text-xs font-medium text-[var(--mw-mirage)]">
+                <span className=" text-xs font-medium text-foreground">
                   Jill Wright
                 </span>
                 <span className=" text-xs text-[var(--neutral-500)]">
                   8:45 AM
                 </span>
               </div>
-              <p className=" text-xs text-[var(--mw-mirage)] mb-3">
+              <p className=" text-xs text-foreground mb-3">
                 Uploaded BOM and NC files for review
               </p>
               <div className="flex gap-2">
                 <div className="border border-[var(--border)] rounded-[var(--shape-lg)] p-3 flex items-center gap-3 hover:bg-[var(--neutral-100)] cursor-pointer">
                   <IconWell icon={FileText} size="sm" />
                   <div>
-                    <p className=" text-xs font-medium text-[var(--mw-mirage)]">
+                    <p className=" text-xs font-medium text-foreground">
                       BOM_MW001_v2.xlsx
                     </p>
                     <p className=" text-xs text-[var(--neutral-500)]">
@@ -427,7 +427,7 @@ export function PlanIntelligenceHubTab() {
                   'rounded-lg px-3 py-2 text-xs max-w-[85%]',
                   m.role === 'user'
                     ? 'bg-[var(--mw-mirage)] text-white'
-                    : 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]',
+                    : 'bg-[var(--neutral-100)] text-foreground',
                 )}>
                   {m.text}
                 </div>

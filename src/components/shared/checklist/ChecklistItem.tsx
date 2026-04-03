@@ -37,7 +37,7 @@ export function ChecklistItem({
       <span className="min-w-0 flex-1">
         <span
           className={cn(
-            "block text-sm font-medium text-[var(--neutral-900)] transition-[color,text-decoration] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+            "block text-sm font-medium text-foreground transition-[color,text-decoration] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
             checked && "text-muted-foreground line-through",
           )}
         >

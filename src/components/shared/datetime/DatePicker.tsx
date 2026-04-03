@@ -76,7 +76,7 @@ export function DatePicker({
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+          <span className="text-sm font-medium tabular-nums text-foreground">
             {format(visibleMonth, "MMMM yyyy")}
           </span>
           <Button
@@ -114,7 +114,7 @@ export function DatePicker({
                 className={cn(
                   "flex h-9 w-9 items-center justify-center rounded-[var(--shape-md)] text-sm transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                   !inMonth && "text-muted-foreground opacity-40",
-                  inMonth && "text-[var(--neutral-900)] hover:bg-[var(--neutral-100)]",
+                  inMonth && "text-foreground hover:bg-[var(--neutral-100)]",
                   selected && "bg-[var(--mw-yellow-400)] font-medium text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-400)]",
                   today && !selected && "font-medium",
                 )}

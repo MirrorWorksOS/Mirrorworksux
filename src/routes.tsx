@@ -46,6 +46,7 @@ import { PlanSchedule } from './components/plan/PlanSchedule';
 import { PlanPurchase } from './components/plan/PlanPurchase';
 import { PlanQCPlanning } from './components/plan/PlanQCPlanning';
 import { PlanProducts } from './components/plan/PlanProducts';
+import { PlanProductDetail } from './components/plan/PlanProductDetail';
 import { PlanSettings } from './components/plan/PlanSettings';
 import { PlanNCConnect } from './components/plan/PlanNCConnect';
 
@@ -57,6 +58,7 @@ import { MakeManufacturingOrderDetail } from './components/make/MakeManufacturin
 import { MakeTimeClock } from './components/make/MakeTimeClock';
 import { MakeQuality } from './components/make/MakeQuality';
 import { MakeProducts } from './components/make/MakeProducts';
+import { MakeProductDetail } from './components/make/MakeProductDetail';
 import { MakeSettings } from './components/make/MakeSettings';
 import { MakeShopFloor } from './components/make/MakeShopFloor';
 
@@ -172,6 +174,7 @@ export const router = createBrowserRouter([
           { path: 'purchase', element: <PlanPurchase /> },
           { path: 'qc-planning', element: <PlanQCPlanning /> },
           { path: 'products', element: <PlanProducts /> },
+          { path: 'products/:id', element: <PlanProductDetail /> },
           { path: 'settings', element: <PlanSettings /> },
         ],
       },
@@ -188,6 +191,7 @@ export const router = createBrowserRouter([
           { path: 'time-clock', element: <MakeTimeClock /> },
           { path: 'quality', element: <MakeQuality /> },
           { path: 'products', element: <MakeProducts /> },
+          { path: 'products/:id', element: <MakeProductDetail /> },
           { path: 'settings', element: <MakeSettings /> },
         ],
       },

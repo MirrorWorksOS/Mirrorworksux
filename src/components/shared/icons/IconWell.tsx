@@ -19,10 +19,10 @@ const wellVariants = cva(
     variants: {
       surface: {
         onLight:
-          "bg-[var(--icon-well-on-light-bg)] text-white [&_svg]:text-white",
+          "bg-[var(--icon-well-on-light-bg)] text-white dark:text-[var(--mw-mirage)] [&_svg]:text-white dark:[&_svg]:text-[var(--mw-mirage)]",
         onDark:
-          "bg-[var(--icon-well-on-dark-bg)] text-[var(--mw-mirage)] [&_svg]:text-[var(--mw-mirage)]",
-        key: "bg-[var(--icon-well-key-bg)] text-[var(--mw-mirage)] [&_svg]:text-[var(--mw-mirage)]",
+          "bg-[var(--icon-well-on-dark-bg)] text-foreground [&_svg]:text-foreground",
+        key: "bg-[var(--icon-well-key-bg)] text-foreground [&_svg]:text-foreground",
       },
       shape: {
         squircle: "rounded-[var(--shape-md)]",

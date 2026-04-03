@@ -37,11 +37,11 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
       <div className="p-4">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 mt-0.5">
-            <Sparkles className="h-4 w-4 text-[var(--neutral-900)]" />
+            <Sparkles className="h-4 w-4 text-foreground" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-sm font-medium text-[var(--neutral-900)]">{title}</h4>
+              <h4 className="text-sm font-medium text-foreground">{title}</h4>
               <Badge className="border-0 text-[10px] px-1.5 py-0" style={{ backgroundColor: `${confidenceColor}20`, color: confidenceColor }}>
                 {confidence}% confidence
               </Badge>
@@ -60,7 +60,7 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
                 <>
                   <Button
                     size="sm"
-                    className="h-8 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] text-xs"
+                    className="h-8 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] text-xs"
                     onClick={() => { setApplied(true); onApply?.(); }}
                   >
                     <Check className="h-3.5 w-3.5 mr-1" />

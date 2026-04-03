@@ -76,7 +76,7 @@ export function BuyReceipts() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">{po.poNumber}</h3>
+                    <h3 className="text-lg font-medium tabular-nums text-foreground">{po.poNumber}</h3>
                     <p className="text-sm text-[var(--neutral-500)]">{po.supplier}</p>
                   </div>
                   <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-0">Pending</Badge>
@@ -84,7 +84,7 @@ export function BuyReceipts() {
                 <p className="text-xs text-[var(--neutral-600)] mb-3">Expected: {new Date(po.expectedDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                   <span className="text-sm text-[var(--neutral-500)]">{po.items.length} items</span>
-                  <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] h-10 px-5">
+                  <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground h-10 px-5">
                     Start Receipt →
                   </Button>
                 </div>
@@ -97,7 +97,7 @@ export function BuyReceipts() {
         <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">{selectedPO.poNumber}</h2>
+              <h2 className="text-2xl font-medium tabular-nums text-foreground">{selectedPO.poNumber}</h2>
               <p className="text-sm text-[var(--neutral-500)]">{selectedPO.supplier}</p>
             </div>
             <Button variant="outline" onClick={() => setSelectedPO(null)} className="h-12 px-6 text-base">
@@ -121,11 +121,11 @@ export function BuyReceipts() {
           <div className="space-y-4">
             {selectedPO.items.map((item, idx) => (
               <div key={idx} className="p-6 bg-[var(--neutral-100)] rounded-lg border border-[var(--border)]">
-                <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{item.name}</h3>
+                <h3 className="text-base font-medium text-foreground mb-2">{item.name}</h3>
                 <div className="flex items-center gap-4 mb-4">
                   <div>
                     <p className="text-xs text-[var(--neutral-500)] mb-1">Ordered</p>
-                    <p className="text-lg font-medium tabular-nums text-[var(--mw-mirage)]">
+                    <p className="text-lg font-medium tabular-nums text-foreground">
                       {item.ordered} {item.unit}
                     </p>
                   </div>
@@ -145,7 +145,7 @@ export function BuyReceipts() {
 
                 {/* Touch-optimized quantity input */}
                 <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-[var(--mw-mirage)] min-w-[120px]">Receiving now:</label>
+                  <label className="text-sm font-medium text-foreground min-w-[120px]">Receiving now:</label>
                   <Input
                     type="number"
                     min="0"
@@ -158,7 +158,7 @@ export function BuyReceipts() {
                   <span className="text-sm text-[var(--neutral-500)]">{item.unit}</span>
                   <Button
                     onClick={() => setQuantities({ ...quantities, [idx]: item.ordered - item.received })}
-                    className="ml-auto h-12 bg-[var(--border)] hover:bg-[var(--neutral-300)] text-[var(--mw-mirage)]"
+                    className="ml-auto h-12 bg-[var(--border)] hover:bg-[var(--neutral-300)] text-foreground"
                   >
                     Receive All
                   </Button>
@@ -172,7 +172,7 @@ export function BuyReceipts() {
             <Button
               onClick={handleReceive}
               disabled={Object.values(quantities).every(q => q === 0)}
-              className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-[var(--mw-mirage)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-[var(--neutral-900)]/[0.38]"
+              className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]"
             >
               <CheckCircle2 className="w-6 h-6 mr-3" />
               Confirm Receipt

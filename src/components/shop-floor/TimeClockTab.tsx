@@ -131,11 +131,11 @@ export function TimeClockTab() {
         <div className="flex-1 flex flex-col items-center max-w-[480px] mx-auto w-full gap-8 pb-12">
           
           {/* Main Card */}
-          <div className="w-full bg-white rounded-xl shadow-sm p-8 text-center border border-[var(--neutral-200)] flex flex-col items-center relative overflow-hidden">
+          <div className="w-full bg-card rounded-xl shadow-sm p-8 text-center border border-[var(--neutral-200)] flex flex-col items-center relative overflow-hidden">
             
             {/* PIN Entry Overlay */}
             {showPinDialog && (
-              <div className="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 animate-in fade-in slide-in-from-bottom-4 duration-200">
+              <div className="absolute inset-0 z-50 bg-card flex flex-col items-center justify-center p-6 animate-in fade-in slide-in-from-bottom-4 duration-200">
                 <h3 className="text-xl font-medium text-[var(--neutral-800)] mb-2">Enter PIN</h3>
                 <p className="text-[var(--neutral-500)] text-sm mb-8">Enter your 4-digit PIN to clock in</p>
                 
@@ -180,7 +180,7 @@ export function TimeClockTab() {
                 <AvatarFallback>DM</AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-bold text-[var(--neutral-900)]">David Miller</h3>
+                <h3 className="text-xl font-bold text-foreground">David Miller</h3>
                 <p className="text-sm font-medium text-[var(--neutral-600)]">Senior Operator • Amada Ensis Laser</p>
               </div>
             </div>
@@ -211,7 +211,7 @@ export function TimeClockTab() {
             </div>
 
             {/* Time Display */}
-            <div className=" text-6xl font-medium text-[var(--neutral-900)] leading-none mb-2 tracking-tight">
+            <div className=" text-6xl font-medium text-foreground leading-none mb-2 tracking-tight">
               {formatTime(currentTime)}
             </div>
             <div className="text-[var(--neutral-600)] text-base font-medium mb-10">
@@ -226,7 +226,7 @@ export function TimeClockTab() {
                   "w-full h-16 rounded-full text-lg font-medium transition-all duration-[250ms] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
                     ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-[var(--elevation-2)]" 
-                    : "bg-white border-2 border-[var(--mw-error-light)] text-[var(--mw-error)] hover:bg-[var(--mw-error)]/10 hover:border-[var(--mw-error)]"
+                    : "bg-card border-2 border-[var(--mw-error-light)] text-[var(--mw-error)] hover:bg-[var(--mw-error)]/10 hover:border-[var(--mw-error)]"
                 )}
               >
                 {!isClockedIn && <Clock className="w-5 h-5" />}
@@ -240,8 +240,8 @@ export function TimeClockTab() {
                   "w-full h-14 rounded-full text-lg font-medium transition-all duration-[250ms] active:scale-[0.98] flex items-center justify-center gap-2",
                   isOnBreak
                     ? "bg-[var(--mw-info-light)] text-[var(--mw-info)] border-2 border-[var(--mw-info)] hover:bg-[var(--mw-info-light)]"
-                    : "bg-white border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-100)]",
-                  !isClockedIn && "opacity-[0.38] cursor-not-allowed hover:bg-white"
+                    : "bg-card border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-100)]",
+                  !isClockedIn && "opacity-[0.38] cursor-not-allowed hover:bg-card"
                 )}
               >
                 <Coffee className="w-5 h-5" />
@@ -252,7 +252,7 @@ export function TimeClockTab() {
             {/* Today's Summary */}
             <div className="w-full bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
                <div className="flex flex-col gap-1">
-                  <div className="text-sm font-medium text-[var(--neutral-900)]">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
+                  <div className="text-sm font-medium text-foreground">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
                   {isClockedIn && startTime && (
                      <div className="text-xs text-[var(--neutral-600)]">Started at {formatTime(startTime)}</div>
                   )}
@@ -266,7 +266,7 @@ export function TimeClockTab() {
           {/* Recent Entries */}
           <div className="w-full">
              <h3 className="text-xl font-medium text-[var(--neutral-800)] mb-4 pl-1">This Week</h3>
-             <div className="bg-white rounded-xl shadow-sm border border-[var(--neutral-200)] overflow-hidden">
+             <div className="bg-card rounded-xl shadow-sm border border-[var(--neutral-200)] overflow-hidden">
                 {history.map((entry, i) => (
                    <div key={i} className={cn(
                       "flex items-center justify-between h-12 px-4 hover:bg-[var(--neutral-100)] transition-colors",

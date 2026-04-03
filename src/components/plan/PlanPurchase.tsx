@@ -30,9 +30,9 @@ const MRP_ROWS = [
 type MrpRow = (typeof MRP_ROWS)[number];
 
 const mrpColumns: MwColumnDef<MrpRow>[] = [
-  { key: 'product', header: 'Material', tooltip: 'Material name', cell: (row) => <span className="text-[var(--mw-mirage)] font-medium">{row.product}</span> },
+  { key: 'product', header: 'Material', tooltip: 'Material name', cell: (row) => <span className="text-foreground font-medium">{row.product}</span> },
   { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (row) => row.sku },
-  { key: 'job', header: 'Job', tooltip: 'Associated job number', cell: (row) => <span className="tabular-nums font-medium text-[var(--mw-mirage)]">{row.job}</span> },
+  { key: 'job', header: 'Job', tooltip: 'Associated job number', cell: (row) => <span className="tabular-nums font-medium text-foreground">{row.job}</span> },
   { key: 'due', header: 'Due', tooltip: 'Required by date', className: 'tabular-nums text-[var(--neutral-500)]', cell: (row) => row.due },
   { key: 'required', header: 'Required', tooltip: 'Total quantity required', headerClassName: 'text-right', className: 'text-right tabular-nums font-medium', cell: (row) => row.required },
   { key: 'available', header: 'Available', tooltip: 'Current stock on hand', headerClassName: 'text-right', className: 'text-right tabular-nums', cell: (row) => row.available },
@@ -99,11 +99,11 @@ export function PlanPurchase() {
         {[
           { label: 'Critical shortages', count: countCritical, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', icon: AlertTriangle },
           { label: 'Active shortages',   count: countShortage, bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', icon: AlertTriangle },
-          { label: 'Items available',    count: countOk,        bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', icon: CheckCircle },
+          { label: 'Items available',    count: countOk,        bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', icon: CheckCircle },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
               <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
                 <Icon className={cn('w-4 h-4', s.text)} />
               </div>

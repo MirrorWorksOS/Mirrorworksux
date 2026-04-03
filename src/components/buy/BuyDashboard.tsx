@@ -240,19 +240,19 @@ export function BuyDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">Approval Queue</h3>
-              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)]">{approvalQueue.length}</Badge>
+              <h3 className="text-base font-medium text-foreground">Approval Queue</h3>
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-primary-foreground">{approvalQueue.length}</Badge>
             </div>
             <div className="space-y-3">
               {approvalQueue.map((item, i) => (
                 <div key={i} className="flex cursor-pointer items-center justify-between rounded-lg bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-xs font-medium text-[var(--neutral-900)]">{item.type}</span>
+                      <span className="text-xs font-medium text-foreground">{item.type}</span>
                       <span className="text-xs tabular-nums text-[var(--neutral-500)]">{item.id}</span>
                     </div>
                     <p className="text-xs text-[var(--neutral-600)]">{item.requestor || item.supplier}</p>
-                    <p className="mt-1 text-sm font-medium text-[var(--neutral-900)] tabular-nums">${item.value.toLocaleString()}</p>
+                    <p className="mt-1 text-sm font-medium text-foreground tabular-nums">${item.value.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
@@ -264,7 +264,7 @@ export function BuyDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">Goods Awaiting Receipt</h3>
+              <h3 className="text-base font-medium text-foreground">Goods Awaiting Receipt</h3>
               <Badge className={badgeNeutral}>3</Badge>
             </div>
             <p className="mb-4 text-sm text-[var(--neutral-500)]">3 purchase orders ready for goods receipt</p>
@@ -275,7 +275,7 @@ export function BuyDashboard() {
         <motion.div variants={staggerItem}>
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[var(--neutral-900)]">Bills Needing Matching</h3>
+              <h3 className="text-base font-medium text-foreground">Bills Needing Matching</h3>
               <Badge className={badgeNeutral}>5</Badge>
             </div>
             <p className="mb-4 text-sm text-[var(--neutral-500)]">5 bills awaiting three-way match</p>

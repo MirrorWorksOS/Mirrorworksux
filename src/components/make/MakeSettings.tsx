@@ -120,7 +120,7 @@ function GeneralPanel() {
             { label: 'Auto-print job travellers on release', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -154,7 +154,7 @@ function GeneralPanel() {
             { label: 'Notify supervisor on shift changeover', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -201,7 +201,7 @@ function QualityPanel() {
             { label: 'Block shipment on open NCRs', checked: true },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -230,8 +230,8 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Make dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--mw-mirage)]">{w.label}</span>
+            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
             </div>
           ))}

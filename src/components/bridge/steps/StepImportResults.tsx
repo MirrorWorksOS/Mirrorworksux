@@ -125,7 +125,7 @@ export function StepImportResults() {
             <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] p-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--mw-yellow-400)_22%,transparent)]">
-                  <Users className="w-5 h-5 text-[var(--neutral-900)]" />
+                  <Users className="w-5 h-5 text-foreground" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-sm">Set up your team</p>

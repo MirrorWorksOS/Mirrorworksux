@@ -133,21 +133,21 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
   };
 
   return (
-    <div className="flex flex-col bg-white rounded-[var(--shape-lg)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] overflow-hidden mx-6 mt-6" style={{ height: 'calc(100vh - 48px)' }}>
+    <div className="flex flex-col bg-card rounded-[var(--shape-lg)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] overflow-hidden mx-6 mt-6" style={{ height: 'calc(100vh - 48px)' }}>
       {/* List Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[var(--neutral-200)] bg-white">
+      <div className="flex items-center justify-between p-4 border-b border-[var(--neutral-200)] bg-card">
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--neutral-500)]" />
           <Input 
             placeholder="Search work orders..." 
-            className="pl-10 bg-[var(--neutral-100)] border-transparent focus:bg-white focus:border-[var(--mw-yellow-400)] h-10 rounded-sm text-[var(--neutral-800)]"
+            className="pl-10 bg-[var(--neutral-100)] border-transparent focus:bg-card focus:border-[var(--mw-yellow-400)] h-10 rounded-sm text-[var(--neutral-800)]"
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
             <Filter className="w-4 h-4 mr-2" /> Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-white border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
             View
           </Button>
         </div>
@@ -156,7 +156,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
       {/* List Content */}
       <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] bg-[var(--neutral-100)] p-4 space-y-4">
           {MOCK_DATA.filter(mo => mo.id === "MO-26-401").map(mo => (
-            <div key={mo.id} className="bg-white rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden shadow-sm">
+            <div key={mo.id} className="bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden shadow-sm">
               {/* MO Header Row */}
               <div 
                 className="flex items-center gap-4 p-6 cursor-pointer transition-colors hover:bg-[var(--neutral-100)]"
@@ -201,7 +201,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                       {mo.workOrders.map(wo => (
                         <div 
                           key={wo.id}
-                          className="group relative pl-16 pr-6 py-4 flex items-center gap-6 hover:bg-white cursor-pointer transition-all border-b border-[var(--neutral-200)]/50 last:border-0"
+                          className="group relative pl-16 pr-6 py-4 flex items-center gap-6 hover:bg-card cursor-pointer transition-all border-b border-[var(--neutral-200)]/50 last:border-0"
                           onClick={() => onSelectWO(wo, mo)}
                         >
                           {/* Active Indicator Line */}
@@ -214,7 +214,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                             <div className="col-span-4">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className=" text-sm font-medium text-[var(--neutral-500)]">{wo.id}</span>
-                                <Badge variant="outline" className="bg-white text-[var(--neutral-800)] border-[var(--neutral-200)]  text-[10px] px-1.5 py-0 h-5 rounded-xs">
+                                <Badge variant="outline" className="bg-card text-[var(--neutral-800)] border-[var(--neutral-200)]  text-[10px] px-1.5 py-0 h-5 rounded-xs">
                                   {wo.station}
                                 </Badge>
                               </div>

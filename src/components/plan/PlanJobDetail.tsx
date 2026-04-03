@@ -99,7 +99,7 @@ export function PlanJobDetail() {
                 onClick={() => setCurrentStage(stage.id)}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
                   currentStage === stage.id
-                    ? 'bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
+                    ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
                     : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
                 }`}
               >
@@ -112,7 +112,7 @@ export function PlanJobDetail() {
           <div className="flex items-center gap-2">
             <Link
               to="/sell/quotes"
-              className="inline-flex items-center rounded-full border border-[var(--border)] text-xs tabular-nums px-2.5 py-0.5 font-medium text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)] transition-colors"
+              className="inline-flex items-center rounded-full border border-[var(--border)] text-xs tabular-nums px-2.5 py-0.5 font-medium text-foreground hover:bg-[var(--neutral-50)] transition-colors"
             >
               {quoteId}
             </Link>
@@ -130,7 +130,7 @@ export function PlanJobDetail() {
             Save
           </Button>
           <Button
-            className="h-12 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+            className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
             onClick={() => navigate('/make/manufacturing-orders')}
           >
             <Plus className="mr-2 h-4 w-4" />

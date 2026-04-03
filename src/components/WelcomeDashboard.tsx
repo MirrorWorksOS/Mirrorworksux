@@ -154,7 +154,7 @@ export function WelcomeDashboard() {
   return (
     <PageShell className="mx-auto max-w-[1400px]">
       <header className="space-y-1">
-        <h1 className="mb-2 text-4xl font-bold tracking-tight text-[var(--mw-mirage)]">
+        <h1 className="mb-2 text-4xl font-bold tracking-tight text-foreground">
           Welcome, {user.displayName}
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -180,33 +180,33 @@ export function WelcomeDashboard() {
         <>
           {/* KPI strip — persona snapshot */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <p className="text-xs font-medium text-muted-foreground">
                 My open approvals
               </p>
-              <p className="mt-1 text-3xl font-medium tabular-nums text-[var(--mw-mirage)]">
+              <p className="mt-1 text-3xl font-medium tabular-nums text-foreground">
                 4
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
                 Quotes, expenses, POs
               </p>
             </Card>
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <p className="text-xs font-medium text-muted-foreground">
                 Exceptions / SLA
               </p>
-              <p className="mt-1 text-3xl font-bold tabular-nums text-[var(--mw-mirage)]">
+              <p className="mt-1 text-3xl font-bold tabular-nums text-foreground">
                 3
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
                 Ship delays, QC holds
               </p>
             </Card>
-            <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <p className="text-xs font-medium text-muted-foreground">
                 Primary module
               </p>
-              <p className="mt-1 text-lg font-medium capitalize text-[var(--mw-mirage)]">
+              <p className="mt-1 text-lg font-medium capitalize text-foreground">
                 {user.primaryModule}
               </p>
               <p className="mt-2 text-xs text-[var(--neutral-500)]">
@@ -222,31 +222,31 @@ export function WelcomeDashboard() {
                 variants={staggerItem}
                 className="lg:col-span-5"
               >
-                <Card className="h-full border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <Card className="h-full border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-base font-medium text-[var(--mw-mirage)]">
+                    <h2 className="text-base font-medium text-foreground">
                       My open approvals
                     </h2>
-                    <Badge className="border-0 bg-[var(--mw-yellow-400)]/25 text-[var(--neutral-900)]">
+                    <Badge className="border-0 bg-[var(--mw-yellow-400)]/25 text-foreground">
                       4
                     </Badge>
                   </div>
                   <ul className="space-y-3 text-sm">
                     <li className="flex justify-between border-b border-[var(--neutral-100)] pb-2">
                       <span className="text-muted-foreground">REQ-2026-0089</span>
-                      <span className="tabular-nums font-medium text-[var(--mw-mirage)]">
+                      <span className="tabular-nums font-medium text-foreground">
                         $8,500
                       </span>
                     </li>
                     <li className="flex justify-between border-b border-[var(--neutral-100)] pb-2">
                       <span className="text-muted-foreground">EXP-2026-0142</span>
-                      <span className="tabular-nums font-medium text-[var(--mw-mirage)]">
+                      <span className="tabular-nums font-medium text-foreground">
                         $1,250
                       </span>
                     </li>
                     <li className="flex justify-between">
                       <span className="text-muted-foreground">QT-2026-0142</span>
-                      <span className="tabular-nums font-medium text-[var(--mw-mirage)]">
+                      <span className="tabular-nums font-medium text-foreground">
                         $12,500
                       </span>
                     </li>
@@ -267,13 +267,13 @@ export function WelcomeDashboard() {
                 variants={staggerItem}
                 className="lg:col-span-4"
               >
-                <Card className="h-full border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                  <h2 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">
+                <Card className="h-full border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                  <h2 className="mb-4 text-base font-medium text-foreground">
                     Exceptions / SLA
                   </h2>
                   <div className="space-y-3 text-sm">
                     <div className="rounded-[var(--shape-md)] bg-[var(--neutral-50)] p-3">
-                      <p className="font-medium text-[var(--mw-mirage)]">
+                      <p className="font-medium text-foreground">
                         SP270226001
                       </p>
                       <p className="text-xs text-[var(--neutral-500)]">
@@ -281,7 +281,7 @@ export function WelcomeDashboard() {
                       </p>
                     </div>
                     <div className="rounded-[var(--shape-md)] bg-[var(--neutral-50)] p-3">
-                      <p className="font-medium text-[var(--mw-mirage)]">
+                      <p className="font-medium text-foreground">
                         JOB-2026-0012
                       </p>
                       <p className="text-xs text-[var(--neutral-500)]">
@@ -305,8 +305,8 @@ export function WelcomeDashboard() {
                 variants={staggerItem}
                 className="lg:col-span-3"
               >
-                <Card className="h-full border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                  <h2 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">
+                <Card className="h-full border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                  <h2 className="mb-4 text-base font-medium text-foreground">
                     Sync / integration health
                   </h2>
                   <div className="space-y-2 text-sm">
@@ -339,7 +339,7 @@ export function WelcomeDashboard() {
                 className="lg:col-span-6"
               >
                 <div className="space-y-4">
-                  <h2 className="text-base font-medium text-[var(--mw-mirage)]">
+                  <h2 className="text-base font-medium text-foreground">
                     Recent jobs / orders
                   </h2>
                   <MwDataTable
@@ -363,8 +363,8 @@ export function WelcomeDashboard() {
                 variants={staggerItem}
                 className="lg:col-span-6"
               >
-                <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-                  <h2 className="mb-4 text-base font-medium text-[var(--mw-mirage)]">
+                <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                  <h2 className="mb-4 text-base font-medium text-foreground">
                     Shortcuts
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -394,7 +394,7 @@ export function WelcomeDashboard() {
 
           {/* Modules — secondary */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-sm font-medium text-[var(--mw-mirage)]">
+            <h2 className="text-sm font-medium text-foreground">
               More modules
             </h2>
             <Sheet>
@@ -428,7 +428,7 @@ export function WelcomeDashboard() {
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-[var(--mw-mirage)]">
+                            <p className="font-medium text-foreground">
                               {module.name}
                             </p>
                             <p className="text-xs text-muted-foreground">

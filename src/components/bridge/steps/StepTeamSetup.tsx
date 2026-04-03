@@ -28,12 +28,12 @@ import {
 
 const MODULE_META: Record<string, { icon: React.ReactNode; color: string }> = {
   sell: { icon: <BarChart3 className="w-4 h-4" />, color: 'text-[var(--mw-info)]' },
-  plan: { icon: <ClipboardList className="w-4 h-4" />, color: 'text-[var(--mw-mirage)]' },
+  plan: { icon: <ClipboardList className="w-4 h-4" />, color: 'text-foreground' },
   make: { icon: <Wrench className="w-4 h-4" />, color: 'text-[var(--mw-warning)]' },
   ship: { icon: <Truck className="w-4 h-4" />, color: 'text-[var(--mw-success)]' },
   book: { icon: <Calculator className="w-4 h-4" />, color: 'text-[var(--mw-error)]' },
   buy: { icon: <ShoppingCart className="w-4 h-4" />, color: 'text-teal-600' },
-  control: { icon: <Settings className="w-4 h-4" />, color: 'text-gray-600' },
+  control: { icon: <Settings className="w-4 h-4" />, color: 'text-muted-foreground' },
 };
 
 export function StepTeamSetup() {

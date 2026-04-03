@@ -53,7 +53,7 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-3">
+      <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-3">
         <div className="flex flex-wrap gap-2 md:flex-nowrap">
           <div className="relative w-full md:max-w-[320px]">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--neutral-500)]" />
@@ -117,11 +117,11 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
             tooltip: 'Name and email',
             cell: (user) => (
               <div className="flex min-h-[48px] items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[var(--mw-yellow-50)] flex items-center justify-center text-xs font-medium text-[var(--mw-mirage)]">
+                <div className="w-8 h-8 rounded-full bg-[var(--mw-yellow-50)] flex items-center justify-center text-xs font-medium text-foreground">
                   {user.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--mw-mirage)]">{user.name}</p>
+                  <p className="text-sm font-medium text-foreground">{user.name}</p>
                   <p className="text-xs text-[var(--neutral-500)]">{user.email}</p>
                 </div>
               </div>

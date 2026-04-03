@@ -130,8 +130,8 @@ export function SellNewInvoice() {
       />
 
       <div className="space-y-6 px-6 pb-6">
-        <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
-          <h2 className="text-base font-medium text-[var(--neutral-900)] mb-4">
+        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+          <h2 className="text-base font-medium text-foreground mb-4">
             Header
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -182,9 +182,9 @@ export function SellNewInvoice() {
           </div>
         </Card>
 
-        <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-medium text-[var(--neutral-900)]">
+            <h2 className="text-base font-medium text-foreground">
               Line items
             </h2>
             <Button
@@ -274,7 +274,7 @@ export function SellNewInvoice() {
                           }
                         />
                       </TableCell>
-                      <TableCell className="text-right text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+                      <TableCell className="text-right text-sm font-medium tabular-nums text-foreground">
                         ${lineTotal.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -312,7 +312,7 @@ export function SellNewInvoice() {
                 ${tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex w-full max-w-xs justify-between text-base font-medium text-[var(--neutral-900)]">
+            <div className="flex w-full max-w-xs justify-between text-base font-medium text-foreground">
               <span>Total</span>
               <span className="tabular-nums">
                 ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -321,7 +321,7 @@ export function SellNewInvoice() {
           </div>
         </Card>
 
-        <Card className="border border-[var(--neutral-200)] bg-white p-6 shadow-xs rounded-[var(--shape-lg)]">
+        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
           <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
           <Textarea
             className="mt-1 min-h-[88px] border-[var(--border)]"
@@ -341,7 +341,7 @@ export function SellNewInvoice() {
             Save draft
           </Button>
           <Button
-            className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)]"
+            className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
             onClick={handleIssue}
             disabled={!canSubmit}
           >

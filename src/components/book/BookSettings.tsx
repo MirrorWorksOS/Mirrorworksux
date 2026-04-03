@@ -156,7 +156,7 @@ function GeneralPanel() {
             { label: 'Show budget utilisation card', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.checked} />
             </div>
           ))}
@@ -200,10 +200,10 @@ function InvoicingPanel() {
             { name: 'Credit Note', active: true },
             { name: 'Proforma', active: false },
           ].map(t => (
-            <div key={t.name} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <div key={t.name} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
               <div className="flex items-center gap-3">
                 <FileText className="w-4 h-4 text-[var(--neutral-500)]" />
-                <span className="text-sm text-[var(--mw-mirage)] font-medium">{t.name}</span>
+                <span className="text-sm text-foreground font-medium">{t.name}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Switch defaultChecked={t.active} />
@@ -231,14 +231,14 @@ function InvoicingPanel() {
           </div>
           <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[var(--mw-mirage)]">Auto-send invoice on creation</span>
+              <span className="text-sm text-foreground">Auto-send invoice on creation</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Email invoice PDF to customer immediately</p>
             </div>
             <Switch defaultChecked={false} />
           </div>
           <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
             <div>
-              <span className="text-sm text-[var(--mw-mirage)]">Send overdue reminders</span>
+              <span className="text-sm text-foreground">Send overdue reminders</span>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Automatically remind customers of overdue invoices</p>
             </div>
             <Switch defaultChecked />
@@ -270,14 +270,14 @@ function XeroPanel() {
       </Card>
 
       {/* Connection Card */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--mw-info)] text-sm font-bold text-white">X</div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-[var(--mw-mirage)]">Xero</h3>
-                <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
+                <h3 className="text-sm font-medium text-foreground">Xero</h3>
+                <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-xs rounded-full px-2 py-0.5">Connected</Badge>
               </div>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">Connected to Alliance Metal Pty Ltd since 15 Jan 2026</p>
             </div>
@@ -295,15 +295,15 @@ function XeroPanel() {
       </Card>
 
       {/* Sync Entities */}
-      <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-4">Sync entities</h3>
+      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <h3 className="text-sm font-medium text-foreground mb-4">Sync entities</h3>
         <div className="space-y-2">
           {syncEntities.map(e => (
             <div key={e.name} className="flex items-center gap-4 py-2 border-b border-[var(--neutral-100)] last:border-0">
-              <span className="flex-1 text-sm text-[var(--mw-mirage)]">{e.name}</span>
+              <span className="flex-1 text-sm text-foreground">{e.name}</span>
               <div className="flex items-center gap-4 text-xs text-[var(--neutral-500)]">
-                {e.push && <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-2">Push</Badge>}
-                {e.pull && <Badge className="bg-[var(--neutral-100)] text-[var(--mw-mirage)] border-0 text-[10px] rounded-full px-2">Pull</Badge>}
+                {e.push && <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-[10px] rounded-full px-2">Push</Badge>}
+                {e.pull && <Badge className="bg-[var(--neutral-100)] text-foreground border-0 text-[10px] rounded-full px-2">Pull</Badge>}
                 <span className="w-24 text-right">{e.lastSync}</span>
                 <div className={cn('w-2 h-2 rounded-full', e.ok ? 'bg-[var(--mw-mirage)]' : 'bg-[var(--mw-warning)]')} />
               </div>
@@ -311,7 +311,7 @@ function XeroPanel() {
           ))}
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 rounded-xl">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-xl">
             <RefreshCw className="w-4 h-4" /> Sync now
           </Button>
           <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Full re-sync</Button>
@@ -323,7 +323,7 @@ function XeroPanel() {
       <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-sm font-medium text-[var(--mw-mirage)]">Account mapping</h4>
+            <h4 className="text-sm font-medium text-foreground">Account mapping</h4>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
           <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm" onClick={() => toast('Xero mapping configuration coming soon')}>Configure mapping</Button>
@@ -354,8 +354,8 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which reports appear in the Book reports gallery.</p>
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.label} className="flex items-center justify-between bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
-              <span className="text-sm text-[var(--mw-mirage)]">{r.label}</span>
+            <div key={r.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
             </div>
           ))}

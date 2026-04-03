@@ -74,8 +74,8 @@ const JOBS: JobRow[] = [
 ];
 
 const getBarPattern = (m: number) => getChartScalePattern(marginToScalePercent(m));
-const marginBadgeClass = 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
-const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
+const marginBadgeClass = 'bg-[var(--neutral-100)] text-foreground';
+const statusBadge = (s: string) => s === 'Complete' ? 'text-foreground' : s === 'In Production' ? 'text-foreground' : 'text-foreground';
 
 const jobTableColumns: FinancialColumn<JobRow>[] = [
   { key: 'id', header: 'JOB #', accessor: (r) => r.id, format: 'text', align: 'left' },
@@ -102,7 +102,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
-    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6">
       <PageHeader
         title="Job profitability"
         subtitle="Actual costs vs quoted amounts across all jobs"
@@ -137,7 +137,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
           label="Average Margin"
           value="31.6%"
           footer={
-            <Badge className={cn("rounded-full text-xs mt-2 border-0", "bg-[var(--neutral-100)] text-[var(--mw-mirage)]")}>+2.3% vs last month</Badge>
+            <Badge className={cn("rounded-full text-xs mt-2 border-0", "bg-[var(--neutral-100)] text-foreground")}>+2.3% vs last month</Badge>
           }
         />
         <KpiStatCard

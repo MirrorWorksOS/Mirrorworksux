@@ -42,7 +42,7 @@ const mockSuppliers: Supplier[] = [
 ];
 
 const getPerformanceBadge = (onTimeRate: number) => {
-  if (onTimeRate >= 95) return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Excellent' };
+  if (onTimeRate >= 95) return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Excellent' };
   if (onTimeRate >= 85) return { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-yellow-900)]', label: 'Good' };
   if (onTimeRate >= 75) return { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', label: 'Fair' };
   return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Poor' };
@@ -67,7 +67,7 @@ export function BuySuppliers() {
         header: 'Supplier',
         tooltip: 'Supplier company name',
         cell: (row) => (
-          <a href={`/buy/suppliers/${row.id}`} className="flex items-center gap-1 text-sm font-medium text-[var(--mw-mirage)] hover:underline">
+          <a href={`/buy/suppliers/${row.id}`} className="flex items-center gap-1 text-sm font-medium text-foreground hover:underline">
             {row.company}
             <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
           </a>
@@ -105,7 +105,7 @@ export function BuySuppliers() {
         tooltip: 'On-time delivery rate',
         className: 'text-center',
         headerClassName: 'text-center',
-        cell: (row) => <span className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{row.onTimeRate}%</span>,
+        cell: (row) => <span className="text-sm font-medium tabular-nums text-foreground">{row.onTimeRate}%</span>,
       },
       {
         key: 'spend',
@@ -181,7 +181,7 @@ export function BuySuppliers() {
           title="Suppliers"
           subtitle={`${filteredSuppliers.length} total suppliers`}
           actions={
-            <Button className="group h-12 min-h-[48px] rounded-xl bg-[var(--mw-yellow-400)] px-5 text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-600)]">
+            <Button className="group h-12 min-h-[48px] rounded-xl bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New Supplier
             </Button>
@@ -205,7 +205,7 @@ export function BuySuppliers() {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <h3 className="text-sm font-medium text-[var(--mw-mirage)] transition-colors group-hover:underline">
+                          <h3 className="text-sm font-medium text-foreground transition-colors group-hover:underline">
                             {supplier.company}
                           </h3>
                           <p className="text-xs text-[var(--neutral-500)]">{supplier.contact}</p>
@@ -238,15 +238,15 @@ export function BuySuppliers() {
                     <div className="grid grid-cols-3 gap-6 border-t border-[var(--border)] pt-4">
                       <div>
                         <p className="mb-1 text-xs text-[var(--neutral-500)]">Active POs</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{supplier.activePOs}</p>
+                        <p className="text-sm font-medium tabular-nums text-foreground">{supplier.activePOs}</p>
                       </div>
                       <div>
                         <p className="mb-1 text-xs text-[var(--neutral-500)]">On-Time</p>
-                        <p className="text-sm font-medium tabular-nums text-[var(--mw-mirage)]">{supplier.onTimeRate}%</p>
+                        <p className="text-sm font-medium tabular-nums text-foreground">{supplier.onTimeRate}%</p>
                       </div>
                       <div>
                         <p className="mb-1 text-xs text-[var(--neutral-500)]">Total Spend</p>
-                        <p className="text-xs font-medium tabular-nums text-[var(--mw-mirage)]">
+                        <p className="text-xs font-medium tabular-nums text-foreground">
                           ${(supplier.totalSpend / 1000).toFixed(0)}k
                         </p>
                       </div>

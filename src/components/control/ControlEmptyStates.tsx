@@ -154,12 +154,12 @@ export function ControlEmptyStates() {
         <div className="flex items-start gap-3 bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-4 mb-6">
           <Info className="w-5 h-5 text-[var(--neutral-500)] mt-0.5 shrink-0" />
           <div className="text-sm text-[var(--neutral-600)]">
-            <p className="font-medium text-[var(--mw-mirage)] mb-1">Implementation Notes</p>
+            <p className="font-medium text-foreground mb-1">Implementation Notes</p>
             <ul className="list-disc pl-4 space-y-1">
               <li>These empty states should display when a module has <strong>zero records</strong> (no customers, no orders, etc.).</li>
-              <li>Currently, demo data is always shown. Wire the <code className="text-xs bg-white px-1 py-0.5 rounded border border-[var(--border)]">EmptyState</code> component with <code className="text-xs bg-white px-1 py-0.5 rounded border border-[var(--border)]">variant="illustrated"</code> when the data array is empty.</li>
-              <li>SVG artwork lives in <code className="text-xs bg-white px-1 py-0.5 rounded border border-[var(--border)]">src/art/empty-states/</code>. Plan and Control modules need artwork designed.</li>
-              <li>The "Import" button navigates to <code className="text-xs bg-white px-1 py-0.5 rounded border border-[var(--border)]">/control/mirrorworks-bridge</code> (MirrorWorks Bridge).</li>
+              <li>Currently, demo data is always shown. Wire the <code className="text-xs bg-card px-1 py-0.5 rounded border border-[var(--border)]">EmptyState</code> component with <code className="text-xs bg-card px-1 py-0.5 rounded border border-[var(--border)]">variant="illustrated"</code> when the data array is empty.</li>
+              <li>SVG artwork lives in <code className="text-xs bg-card px-1 py-0.5 rounded border border-[var(--border)]">src/art/empty-states/</code>. Plan and Control modules need artwork designed.</li>
+              <li>The "Import" button navigates to <code className="text-xs bg-card px-1 py-0.5 rounded border border-[var(--border)]">/control/mirrorworks-bridge</code> (MirrorWorks Bridge).</li>
             </ul>
           </div>
         </div>
@@ -168,7 +168,7 @@ export function ControlEmptyStates() {
           {/* Left: state selector */}
           <div className="col-span-4">
             <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-              <h3 className="text-sm font-medium text-[var(--mw-mirage)] mb-3">Available Empty States</h3>
+              <h3 className="text-sm font-medium text-foreground mb-3">Available Empty States</h3>
               <div className="space-y-1">
                 {EMPTY_STATES.map((es, i) => (
                   <button
@@ -176,8 +176,8 @@ export function ControlEmptyStates() {
                     onClick={() => setSelectedIdx(i)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition-colors ${
                       i === selectedIdx
-                        ? 'bg-[var(--accent)] text-[var(--mw-mirage)] font-medium'
-                        : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-mirage)]'
+                        ? 'bg-[var(--accent)] text-foreground font-medium'
+                        : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-foreground'
                     }`}
                   >
                     <es.icon className="w-4 h-4 shrink-0" />
@@ -250,7 +250,7 @@ export function ControlEmptyStates() {
             {/* Usage snippet */}
             <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 mt-4">
               <h4 className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2">Usage</h4>
-              <pre className="text-xs bg-[var(--neutral-50)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-[var(--mw-mirage)]">
+              <pre className="text-xs bg-[var(--neutral-50)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-foreground">
 {`<EmptyState
   variant="illustrated"
   illustration="${selected.illustration}"

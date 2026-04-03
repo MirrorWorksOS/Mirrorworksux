@@ -35,7 +35,7 @@ const BILLS: Bill[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { text: string; label: string; icon: any }> = {
-  matched:  { text: 'text-[var(--mw-mirage)]', label: 'Matched',  icon: CheckCircle2 },
+  matched:  { text: 'text-foreground', label: 'Matched',  icon: CheckCircle2 },
   pending:  { text: 'text-[var(--mw-amber)]',  label: 'Pending',  icon: AlertTriangle },
   mismatch: { text: 'text-[var(--mw-error)]',  label: 'Mismatch', icon: AlertTriangle },
   overdue:  { text: 'text-[var(--mw-error)]',  label: 'Overdue',  icon: AlertTriangle },
@@ -76,15 +76,15 @@ export function BuyBills() {
   };
 
   const columns: MwColumnDef<Bill>[] = [
-    { key: 'billNumber', header: 'Bill #', tooltip: 'Bill reference number', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.billNumber}</span> },
-    { key: 'supplier', header: 'Supplier', tooltip: 'Supplier company name', cell: (bill) => <span className="font-medium text-[var(--mw-mirage)]">{bill.supplier}</span> },
+    { key: 'billNumber', header: 'Bill #', tooltip: 'Bill reference number', cell: (bill) => <span className="font-medium text-foreground">{bill.billNumber}</span> },
+    { key: 'supplier', header: 'Supplier', tooltip: 'Supplier company name', cell: (bill) => <span className="font-medium text-foreground">{bill.supplier}</span> },
     { key: 'invoiceDate', header: 'Invoice date', tooltip: 'Date invoice was received', cell: (bill) => <span className="tabular-nums text-[var(--neutral-500)]">{bill.invoiceDate}</span> },
     { key: 'dueDate', header: 'Due', tooltip: 'Payment due date', cell: (bill) => (
       <span className={cn('tabular-nums', bill.status === 'overdue' ? 'text-[var(--mw-error)] font-medium' : 'text-[var(--neutral-500)] font-normal')}>
         {bill.dueDate}
       </span>
     )},
-    { key: 'poNumber', header: 'PO #', tooltip: 'Linked purchase order', cell: (bill) => <span className="font-medium tabular-nums text-[var(--mw-mirage)]">{bill.poNumber}</span> },
+    { key: 'poNumber', header: 'PO #', tooltip: 'Linked purchase order', cell: (bill) => <span className="font-medium tabular-nums text-foreground">{bill.poNumber}</span> },
     { key: 'matchStatus', header: '3-way match', tooltip: 'PO, GRN and invoice match status', cell: (bill) => <MatchDots ms={bill.matchStatus} /> },
     { key: 'amount', header: 'Amount', tooltip: 'Invoice total amount', headerClassName: 'text-right', className: 'text-right', cell: (bill) => (
       <span className="font-medium tabular-nums">${bill.amount.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
@@ -109,7 +109,7 @@ export function BuyBills() {
         title="Bills"
         subtitle={`$${totals.matched.toLocaleString()} matched${totals.issues > 0 ? ` · ${totals.issues} require attention` : ''}`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] gap-2 h-10" onClick={() => toast('New bill coming soon')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => toast('New bill coming soon')}>
             <Plus className="w-4 h-4" /> New bill
           </Button>
         }
@@ -118,7 +118,7 @@ export function BuyBills() {
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Matched',         value: BILLS.filter(b => b.status === 'matched').length,  sub: `$${totals.matched.toLocaleString()}`, bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
+          { label: 'Matched',         value: BILLS.filter(b => b.status === 'matched').length,  sub: `$${totals.matched.toLocaleString()}`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Pending GRN',     value: BILLS.filter(b => b.status === 'pending').length,  sub: `$${totals.pending.toLocaleString()}`, bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'Amount mismatch', value: BILLS.filter(b => b.status === 'mismatch').length, sub: 'Needs review',                        bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
           { label: 'Overdue',         value: BILLS.filter(b => b.status === 'overdue').length,  sub: 'Past due date',                       bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
@@ -152,7 +152,7 @@ export function BuyBills() {
         <Sheet open onOpenChange={() => setSelected(null)}>
           <SheetContent className="w-[480px] sm:max-w-[480px] p-0 overflow-y-auto border-l border-[var(--border)]">
             <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
-              <SheetTitle className="text-lg font-medium  text-[var(--mw-mirage)]">{selected.billNumber}</SheetTitle>
+              <SheetTitle className="text-lg font-medium  text-foreground">{selected.billNumber}</SheetTitle>
               <SheetDescription className="text-[var(--neutral-500)]">{selected.supplier}</SheetDescription>
             </SheetHeader>
             <div className="p-6 space-y-6">
@@ -176,11 +176,11 @@ export function BuyBills() {
                       <div className="flex items-center gap-3">
                         <div className={cn('w-6 h-6 rounded-full flex items-center justify-center', row.ok ? 'bg-[var(--neutral-100)]' : 'bg-[var(--mw-error-100)]')}>
                           {row.ok
-                            ? <CheckCircle2 className="w-4 h-4 text-[var(--mw-mirage)]" />
+                            ? <CheckCircle2 className="w-4 h-4 text-foreground" />
                             : <X className="w-4 h-4 text-[var(--mw-error)]" />
                           }
                         </div>
-                        <span className="text-sm text-[var(--mw-mirage)] font-medium">{row.label}</span>
+                        <span className="text-sm text-foreground font-medium">{row.label}</span>
                       </div>
                       <span className="text-sm  text-[var(--neutral-500)]">{row.ref}</span>
                     </div>
@@ -203,7 +203,7 @@ export function BuyBills() {
               </div>
 
               {selected.status === 'matched' && (
-                <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] h-11" onClick={() => toast.success('Bill approved for payment')}>
+                <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-11" onClick={() => toast.success('Bill approved for payment')}>
                   Approve for payment
                 </Button>
               )}

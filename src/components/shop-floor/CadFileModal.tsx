@@ -16,7 +16,7 @@ function IconFileCog() {
 
 function IconWrapper() {
   return (
-    <div className="bg-white content-stretch flex items-center justify-center p-2 relative rounded-sm shrink-0 size-[48px]" data-name="Icon Wrapper">
+    <div className="bg-card content-stretch flex items-center justify-center p-2 relative rounded-sm shrink-0 size-[48px]" data-name="Icon Wrapper">
       <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
       <IconFileCog />
     </div>
@@ -90,7 +90,7 @@ function Button1() {
 
 function Button2() {
   return (
-    <div className="bg-white content-stretch flex gap-2 h-[36px] items-center justify-center px-4 py-2 relative rounded-sm shrink-0" data-name="Button">
+    <div className="bg-card content-stretch flex gap-2 h-[36px] items-center justify-center px-4 py-2 relative rounded-sm shrink-0" data-name="Button">
       <div aria-hidden="true" className="absolute border border-neutral-200 border-solid inset-0 pointer-events-none rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
       <div className="flex flex-col font-medium justify-center leading-[0] relative shrink-0 text-sm text-neutral-950 text-nowrap">
         <p className="leading-[20px] whitespace-pre">Learn more</p>
@@ -147,7 +147,7 @@ export function CadFileModal({ isOpen, onClose }: CadFileModalProps) {
       <DialogContent className="max-w-[600px] w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-none rounded-xl">
         <DialogTitle className="sr-only">CAD File</DialogTitle>
         <DialogDescription className="sr-only">Upload or view CAD files</DialogDescription>
-        <div className="bg-white content-stretch flex flex-col items-start relative size-full" data-name="Bill of materials empty state">
+        <div className="bg-card content-stretch flex flex-col items-start relative size-full" data-name="Bill of materials empty state">
           <Div />
         </div>
       </DialogContent>

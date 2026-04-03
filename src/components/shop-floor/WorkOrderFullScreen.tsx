@@ -102,7 +102,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
       )}
     >
       {/* --- Fixed Header (72px) --- */}
-      <div className="h-[72px] bg-white border-b border-[var(--neutral-200)] flex items-center shadow-sm shrink-0 sticky top-0 z-10">
+      <div className="h-[72px] bg-card border-b border-[var(--neutral-200)] flex items-center shadow-sm shrink-0 sticky top-0 z-10">
         <div className="flex items-center px-6 xl:w-[360px] shrink-0 justify-start">
            <button 
              onClick={handleClose}
@@ -145,7 +145,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
         <div className="w-[360px] shrink-0 flex flex-col gap-6 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
            
            {/* Operator Card */}
-           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-white rounded-[var(--shape-lg)]">
+           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-card rounded-[var(--shape-lg)]">
              <CardContent className="p-6 flex items-center gap-4">
                <Avatar className="w-16 h-16 border-2 border-[var(--neutral-200)]">
                   <AvatarImage src={operatorAvatar} className="object-cover" />
@@ -159,7 +159,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            </Card>
 
            {/* Timer & Pause Control */}
-           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-white flex flex-col items-center justify-center py-10 rounded-[var(--shape-lg)]">
+           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-card flex flex-col items-center justify-center py-10 rounded-[var(--shape-lg)]">
               <button 
                 onClick={() => setIsRunning(!isRunning)}
                 className={cn(
@@ -190,7 +190,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            </Card>
 
            {/* Circular Parts Counter */}
-           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-white rounded-[var(--shape-lg)]">
+           <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-card rounded-[var(--shape-lg)]">
               <CardContent className="p-6 flex flex-col items-center">
                  <div className="flex items-center justify-between w-full mb-6 gap-4">
                     <Button 
@@ -267,7 +267,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            {/* Machine Performance Banner (Solid Yellow) */}
            <div className="bg-[var(--mw-yellow-400)] rounded-[var(--shape-lg)] p-4 shadow-sm z-20 relative flex items-center justify-between text-[var(--neutral-800)]">
               <div className="flex items-center gap-4">
-                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                 <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-sm">
                     <img src={amadaLogo} className="w-8 h-8 object-contain" alt="Amada" />
                  </div>
                  <div>
@@ -325,7 +325,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                        </div>
                     </div>
                  ) : (
-                    <div className="relative w-full h-full bg-white flex items-center justify-center">
+                    <div className="relative w-full h-full bg-card flex items-center justify-center">
                        <iframe 
                          src="https://player.vimeo.com/video/1146463353?autoplay=1&loop=1&muted=1&background=1" 
                          className="absolute top-1/2 left-1/2 w-[170%] h-[170%] -translate-x-1/2 -translate-y-1/2 pointer-events-none" 
@@ -335,9 +335,9 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                        />
                        
                        <div className="absolute bottom-6 right-6 flex gap-2">
-                          <Button size="icon" variant="outline" className="h-10 w-10 bg-white shadow-sm rounded-full"><RotateCcw className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
-                          <Button size="icon" variant="outline" className="h-10 w-10 bg-white shadow-sm rounded-full"><ZoomIn className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
-                          <Button size="icon" variant="outline" className="h-10 w-10 bg-white shadow-sm rounded-full"><ZoomOut className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
+                          <Button size="icon" variant="outline" className="h-10 w-10 bg-card shadow-sm rounded-full"><RotateCcw className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
+                          <Button size="icon" variant="outline" className="h-10 w-10 bg-card shadow-sm rounded-full"><ZoomIn className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
+                          <Button size="icon" variant="outline" className="h-10 w-10 bg-card shadow-sm rounded-full"><ZoomOut className="w-4 h-4 text-[var(--neutral-800)]"/></Button>
                        </div>
                     </div>
                  )}
@@ -345,7 +345,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            </div>
            
            {/* Bottom Action Bar */}
-           <div className="h-[80px] bg-white rounded-[var(--shape-lg)] shadow-sm border border-[var(--neutral-200)] flex items-center px-6 gap-4">
+           <div className="h-[80px] bg-card rounded-[var(--shape-lg)] shadow-sm border border-[var(--neutral-200)] flex items-center px-6 gap-4">
               <Button 
                 onClick={() => setActiveModal('materials')}
                 variant="outline"
@@ -370,7 +370,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
         </div>
 
         {/* RIGHT PANEL: Checklist (400px fixed) */}
-        <div className="w-[400px] shrink-0 bg-white border border-[var(--neutral-200)] rounded-[var(--shape-lg)] flex flex-col z-20 shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden">
+        <div className="w-[400px] shrink-0 bg-card border border-[var(--neutral-200)] rounded-[var(--shape-lg)] flex flex-col z-20 shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden">
            
            {/* Header */}
            <div className="p-6 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)]">
@@ -395,7 +395,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               {/* Active Step */}
               <div className="relative border-b border-[var(--neutral-200)]">
                  <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[var(--mw-yellow-400)]" />
-                 <div className="p-6 bg-white">
+                 <div className="p-6 bg-card">
                     <div className="flex gap-3 mb-4 items-start">
                        <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 text-[var(--neutral-800)] font-bold text-xs mt-0.5">
                           2
@@ -414,13 +414,13 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
                     {/* Substep B (Active) */}
                     <div className="bg-[var(--neutral-100)] rounded-md border border-[var(--neutral-200)] overflow-hidden ml-9 mb-6">
-                       <div className="p-3 border-b border-[var(--neutral-200)] flex items-center gap-2 bg-white">
+                       <div className="p-3 border-b border-[var(--neutral-200)] flex items-center gap-2 bg-card">
                           <div className="w-2 h-2 rounded-full bg-[var(--mw-yellow-400)] animate-pulse" />
                           <span className="font-bold text-sm text-[var(--neutral-800)]">B. Run cutting program</span>
                        </div>
                        <div className="p-4">
                           {/* Instruction Image */}
-                          <div className="bg-white rounded-sm h-[160px] w-full mb-4 border border-[var(--neutral-200)] overflow-hidden cursor-pointer hover:border-[var(--mw-yellow-400)] transition-colors group relative flex items-center justify-center">
+                          <div className="bg-card rounded-sm h-[160px] w-full mb-4 border border-[var(--neutral-200)] overflow-hidden cursor-pointer hover:border-[var(--mw-yellow-400)] transition-colors group relative flex items-center justify-center">
                              <img src={instructionImage} alt="Instruction" className="h-full object-contain" />
                              <div className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-xs shadow-sm">
                                 <Maximize2 className="w-4 h-4 text-[var(--neutral-800)]" />

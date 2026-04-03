@@ -98,7 +98,7 @@ export function SellOrders() {
               header: 'Order #',
               tooltip: 'Unique sales order reference',
               cell: (order) => (
-                <a href={`/sell/orders/${order.id}`} className="text-[var(--neutral-900)] font-medium tabular-nums hover:underline flex items-center gap-1">
+                <a href={`/sell/orders/${order.id}`} className="text-foreground font-medium tabular-nums hover:underline flex items-center gap-1">
                   {order.orderNumber}
                   <ExternalLink className="w-4 h-4" />
                 </a>
@@ -108,7 +108,7 @@ export function SellOrders() {
               key: 'customer',
               header: 'Customer',
               tooltip: 'Customer company name',
-              cell: (order) => <span className="text-[var(--neutral-900)]">{order.customer}</span>,
+              cell: (order) => <span className="text-foreground">{order.customer}</span>,
             },
             {
               key: 'date',
@@ -147,7 +147,7 @@ export function SellOrders() {
               header: 'Job Ref',
               tooltip: 'Linked production job reference',
               cell: (order) => order.jobReference ? (
-                <a href={`/plan/jobs/${order.jobReference}`} className="text-[var(--neutral-900)] text-xs tabular-nums hover:underline">
+                <a href={`/plan/jobs/${order.jobReference}`} className="text-foreground text-xs tabular-nums hover:underline">
                   {order.jobReference}
                 </a>
               ) : (

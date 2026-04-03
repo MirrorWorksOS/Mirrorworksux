@@ -274,7 +274,7 @@ export function WidgetDrawer({
                         </div>
                       ) : null}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-medium text-[var(--neutral-900)]">
+                        <p className="truncate text-xs font-medium text-foreground">
                           {tpl.label}
                         </p>
                       </div>
@@ -316,7 +316,7 @@ export function WidgetDrawer({
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--mw-yellow-400)]/10">
                       <Sparkles className="h-5 w-5 text-[var(--mw-yellow-400)]" />
                     </div>
-                    <p className="text-sm font-medium text-[var(--neutral-900)]">
+                    <p className="text-sm font-medium text-foreground">
                       AI Widget Builder
                     </p>
                     <p className="text-xs text-[var(--neutral-500)]">
@@ -368,7 +368,7 @@ export function WidgetDrawer({
                                 ) : null;
                               })()}
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs font-medium text-[var(--neutral-900)]">
+                                <p className="text-xs font-medium text-foreground">
                                   {msg.suggestedWidget.label}
                                 </p>
                                 <p className="text-[11px] text-[var(--neutral-500)]">

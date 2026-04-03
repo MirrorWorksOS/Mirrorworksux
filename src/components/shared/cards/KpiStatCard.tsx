@@ -49,7 +49,7 @@ export function KpiStatCard({
   iconWellShape = "round",
 }: KpiStatCardProps) {
   const valueClasses = cn(
-    "tabular-nums tracking-tight text-[var(--neutral-900)]",
+    "tabular-nums tracking-tight text-foreground",
     layout === "compact"
       ? "text-2xl font-light"
       : "text-2xl font-light",

@@ -62,7 +62,7 @@ export function PageHeader({
             })}
           </nav>
         )}
-        <h1 className="text-3xl tracking-tight text-[var(--mw-mirage)]">
+        <h1 className="text-3xl tracking-tight text-foreground">
           {title}
         </h1>
         {subtitle ? (

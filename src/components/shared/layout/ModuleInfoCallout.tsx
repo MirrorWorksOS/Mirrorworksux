@@ -40,13 +40,13 @@ export function ModuleInfoCallout({
       {showIcon ? (
         <div className="flex items-start gap-4">
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)] text-[var(--mw-mirage)]"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)] text-foreground"
             aria-hidden
           >
             {iconNode}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{title}</h3>
+            <h3 className="text-base font-medium text-foreground mb-2">{title}</h3>
             <div
               className={cn(
                 'text-sm leading-relaxed text-muted-foreground',
@@ -59,7 +59,7 @@ export function ModuleInfoCallout({
         </div>
       ) : (
         <div>
-          <h3 className="text-base font-medium text-[var(--mw-mirage)] mb-2">{title}</h3>
+          <h3 className="text-base font-medium text-foreground mb-2">{title}</h3>
           <div
             className={cn(
               'text-sm leading-relaxed text-muted-foreground',

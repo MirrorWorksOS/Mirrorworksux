@@ -41,7 +41,7 @@ export function PermissionGrid({ module, resolved, grantedBy }: PermissionGridPr
   ];
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-white p-4">
+    <div className="rounded-xl border border-[var(--border)] bg-card p-4">
       <div className="grid grid-cols-1 gap-1 md:grid-cols-2 md:gap-0">
         {rows.map((row, idx) => {
           const value = resolved[row.key];
@@ -64,8 +64,8 @@ export function PermissionGrid({ module, resolved, grantedBy }: PermissionGridPr
                         <span>{formatScopeValue(row.key, value as ScopeValue)}</span>
                       ) : value ? (
                         <>
-                          <CheckCircle2 className="h-4 w-4 text-[var(--mw-mirage)]" />
-                          <span className="text-[var(--mw-mirage)]">Enabled</span>
+                          <CheckCircle2 className="h-4 w-4 text-foreground" />
+                          <span className="text-foreground">Enabled</span>
                         </>
                       ) : (
                         <>
