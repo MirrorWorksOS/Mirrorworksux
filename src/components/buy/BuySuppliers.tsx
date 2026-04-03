@@ -33,13 +33,20 @@ interface Supplier {
   totalSpend: number;
 }
 
-const mockSuppliers: Supplier[] = [
-  { id: '1', company: 'Hunter Steel Co', contact: 'Emma Wilson', email: 'emma@huntersteel.com.au', phone: '+61 2 4567 8901', categories: ['Raw Materials', 'Metals'], activePOs: 3, onTimeRate: 98, totalSpend: 156000 },
-  { id: '2', company: 'Pacific Metals', contact: 'Mike Anderson', email: 'mike@pacificmetals.com.au', phone: '+61 3 8765 4321', categories: ['Raw Materials'], activePOs: 2, onTimeRate: 95, totalSpend: 89000 },
-  { id: '3', company: 'Sydney Welding Supply', contact: 'Sarah Chen', email: 'sarah@sydneywelding.com.au', phone: '+61 2 9876 5432', categories: ['Consumables'], activePOs: 1, onTimeRate: 88, totalSpend: 45000 },
-  { id: '4', company: 'BHP Suppliers', contact: 'David Lee', email: 'david@bhpsuppliers.com.au', phone: '+61 8 2345 6789', categories: ['Raw Materials', 'Equipment'], activePOs: 4, onTimeRate: 82, totalSpend: 128000 },
-  { id: '5', company: 'Generic Parts Co', contact: 'Jessica Brown', email: 'jess@genericparts.com.au', phone: '+61 7 3456 7890', categories: ['Components'], activePOs: 0, onTimeRate: 65, totalSpend: 22000 },
-];
+import { suppliers as centralSuppliers, purchaseOrders } from '@/services/mock';
+
+const SPEND_LOOKUP = [156000, 89000, 45000, 128000, 22000];
+const mockSuppliers: Supplier[] = centralSuppliers.map((s, i) => ({
+  id: s.id,
+  company: s.company,
+  contact: s.contact,
+  email: s.email,
+  phone: s.phone,
+  categories: [s.category],
+  activePOs: purchaseOrders.filter((po) => po.supplierId === s.id && po.status !== 'received' && po.status !== 'cancelled').length,
+  onTimeRate: s.onTimePercent,
+  totalSpend: SPEND_LOOKUP[i] ?? 0,
+}));
 
 const getPerformanceBadge = (onTimeRate: number) => {
   if (onTimeRate >= 95) return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Excellent' };

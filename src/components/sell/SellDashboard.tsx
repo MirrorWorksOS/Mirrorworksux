@@ -5,6 +5,20 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, LineChart, BarChart2, Users, Target, Trophy, Download, Sparkles, PieChart as PieChartIcon } from 'lucide-react';
+import {
+  sellKpis as kpiData,
+  revenueByMonth as revenueData,
+  jobProfitabilityData,
+  sellApprovalQueue as approvalQueue,
+  sellOverdueItems as overdueActions,
+  pipelineFunnel,
+  winLossData,
+  revenueTrend as revenueTrendData,
+  topPerformers,
+  forecastChartData,
+  quarterlyTargets,
+  sellReportTemplates as reportTemplatesData,
+} from '@/services/mock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -45,87 +59,8 @@ import {
   Legend,
 } from 'recharts';
 
-const kpiData = {
-  monthlyRevenue: { value: 287500, change: 12.5, trend: 'up' },
-  outstandingInvoices: { count: 12, value: 45800, trend: 'neutral' },
-  profitMargin: { value: 18.3, change: 2.1, trend: 'up' },
-  cashFlow: { value: 156200, change: -5.2, trend: 'down' },
-  overdueInvoices: { count: 3, value: 18500, trend: 'warning' },
-  expensesThisMonth: { value: 42300, budget: 50000, trend: 'neutral' },
-};
-
-const revenueData = [
-  { month: 'Mar', revenue: 245000, expenses: 198000 },
-  { month: 'Apr', revenue: 268000, expenses: 205000 },
-  { month: 'May', revenue: 291000, expenses: 218000 },
-  { month: 'Jun', revenue: 278000, expenses: 212000 },
-  { month: 'Jul', revenue: 255000, expenses: 195000 },
-  { month: 'Aug', revenue: 282000, expenses: 208000 },
-  { month: 'Sep', revenue: 269000, expenses: 201000 },
-  { month: 'Oct', revenue: 298000, expenses: 225000 },
-  { month: 'Nov', revenue: 275000, expenses: 210000 },
-  { month: 'Dec', revenue: 260000, expenses: 200000 },
-  { month: 'Jan', revenue: 283000, expenses: 215000 },
-  { month: 'Feb', revenue: 287500, expenses: 220000 },
-];
-
-const jobProfitabilityData = [
-  { job: 'JOB-0012', margin: 23.1 },
-  { job: 'JOB-0010', margin: 15.1 },
-  { job: 'JOB-0008', margin: 18.4 },
-  { job: 'JOB-0007', margin: 21.2 },
-  { job: 'JOB-0006', margin: 12.8 },
-  { job: 'JOB-0003', margin: 16.5 },
-  { job: 'JOB-0011', margin: 6.5 },
-  { job: 'JOB-0005', margin: 3.2 },
-  { job: 'JOB-0004', margin: 8.9 },
-  { job: 'JOB-0009', margin: -7.8 },
-];
-
 const badgeNeutral =
   'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
-
-const approvalQueue = [
-  { type: 'Quote', id: 'QT-2026-0142', amount: 12500, customer: 'TechCorp Industries' },
-  { type: 'Order', id: 'SO-2026-0089', amount: 8900, customer: 'Pacific Fab' },
-  { type: 'Quote', id: 'QT-2026-0143', amount: 3500, customer: 'Hunter Steel' },
-];
-
-const overdueActions = [
-  { type: 'Invoice', id: 'INV-2026-0234', customer: 'TechCorp Industries', amount: 12400, daysOverdue: 14 },
-  { type: 'Invoice', id: 'INV-2026-0198', customer: 'AeroSpace Ltd', amount: 4800, daysOverdue: 7 },
-  { type: 'Follow-up', id: 'OPP-0156', customer: 'BHP Contractors', value: 28000, daysOverdue: 3 },
-];
-
-/* ── Analysis tab data ── */
-
-const pipelineFunnel = [
-  { stage: 'Opportunity', count: 48, value: 1420000 },
-  { stage: 'Qualified', count: 32, value: 980000 },
-  { stage: 'Proposal', count: 18, value: 620000 },
-  { stage: 'Negotiation', count: 9, value: 385000 },
-  { stage: 'Closed Won', count: 6, value: 287500 },
-];
-
-const winLossData = { wins: 62, losses: 38 };
-
-const revenueTrendData = [
-  { month: 'Sep', revenue: 269000 },
-  { month: 'Oct', revenue: 298000 },
-  { month: 'Nov', revenue: 275000 },
-  { month: 'Dec', revenue: 260000 },
-  { month: 'Jan', revenue: 283000 },
-  { month: 'Feb', revenue: 287500 },
-];
-
-const topPerformers = [
-  { name: 'Sarah Chen', initials: 'SC', revenue: 98500, deals: 14 },
-  { name: 'Mike Thompson', initials: 'MT', revenue: 82300, deals: 11 },
-  { name: 'Jessica Park', initials: 'JP', revenue: 64200, deals: 9 },
-  { name: 'David Lee', initials: 'DL', revenue: 42500, deals: 7 },
-];
-
-/* ── Reports tab data ── */
 
 const reportTemplates = [
   { icon: BarChart3, title: 'Sales Summary', description: 'Monthly overview of revenue, margins, and order volumes across all channels.' },
@@ -134,27 +69,6 @@ const reportTemplates = [
   { icon: DollarSign, title: 'Revenue by Product', description: 'Revenue breakdown by product line with year-over-year comparisons.' },
   { icon: Users, title: 'Customer Analysis', description: 'Customer segmentation, lifetime value, and retention metrics.' },
   { icon: TrendingUp, title: 'Forecast Accuracy', description: 'Comparison of forecasted vs actual revenue with variance analysis.' },
-];
-
-/* ── Forecasts tab data ── */
-
-const forecastChartData = [
-  { month: 'Sep', actual: 269000, forecast: null },
-  { month: 'Oct', actual: 298000, forecast: null },
-  { month: 'Nov', actual: 275000, forecast: null },
-  { month: 'Dec', actual: 260000, forecast: null },
-  { month: 'Jan', actual: 283000, forecast: null },
-  { month: 'Feb', actual: 287500, forecast: null },
-  { month: 'Mar', actual: null, forecast: 295000 },
-  { month: 'Apr', actual: null, forecast: 310000 },
-  { month: 'May', actual: null, forecast: 328000 },
-];
-
-const quarterlyTargets = [
-  { quarter: 'Q1', target: 850000, current: 830500, status: 'complete' },
-  { quarter: 'Q2', target: 920000, current: 287500, status: 'active' },
-  { quarter: 'Q3', target: 980000, current: 0, status: 'upcoming' },
-  { quarter: 'Q4', target: 1050000, current: 0, status: 'upcoming' },
 ];
 
 const sellTabs = [

@@ -18,6 +18,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { toast } from 'sonner';
+import { machines as centralMachines } from '@/services/mock';
 
 
 type MachineStatus = 'running' | 'idle' | 'down' | 'maintenance' | 'setup';
@@ -32,14 +33,15 @@ interface Machine {
   utilizationToday: number;
 }
 
-const mockMachines: Machine[] = [
-  { id: '1', name: 'Laser Cutter #1', workCenter: 'Cutting', status: 'running', currentJob: 'JOB-2026-0012', operator: 'Sarah Chen', utilizationToday: 85 },
-  { id: '2', name: 'Press Brake #2', workCenter: 'Forming', status: 'idle', utilizationToday: 42 },
-  { id: '3', name: 'Welding Station A', workCenter: 'Welding', status: 'running', currentJob: 'JOB-2026-0011', operator: 'Mike Thompson', utilizationToday: 92 },
-  { id: '4', name: 'CNC Mill #3', workCenter: 'Machining', status: 'setup', currentJob: 'JOB-2026-0010', operator: 'David Lee', utilizationToday: 67 },
-  { id: '5', name: 'Powder Coat Line', workCenter: 'Finishing', status: 'down', utilizationToday: 28 },
-  { id: '6', name: 'Laser Cutter #2', workCenter: 'Cutting', status: 'maintenance', utilizationToday: 0 },
-];
+const mockMachines: Machine[] = centralMachines.map((m) => ({
+  id: m.id,
+  name: m.name,
+  workCenter: m.workCenter,
+  status: m.status as MachineStatus,
+  currentJob: m.currentJobNumber,
+  operator: m.operatorName,
+  utilizationToday: m.utilizationToday,
+}));
 
 const getStatusColor = (status: MachineStatus) => {
   switch (status) {

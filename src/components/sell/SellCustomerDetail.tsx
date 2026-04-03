@@ -30,77 +30,145 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { customers, opportunities, quotes, salesOrders, sellInvoices, sellActivities, employees } from '@/services/mock';
 
 // ============================================================
-// Mock Data
+// Mock Data — built from centralised @/services/mock exports
 // ============================================================
 
-const mockCustomers: Record<string, any> = {
-  '1': {
-    id: '1', company: 'TechCorp Industries', abn: '51 824 753 556', industry: 'Automotive',
-    website: 'https://techcorp.com.au', annualRevenue: 2400000, employeeCount: 85,
-    accountOwner: 'Jill Wright', status: 'active', types: ['Customer'],
-    primaryContact: { name: 'Sarah Chen', title: 'Procurement Manager', email: 'sarah@techcorp.com', phone: '+61 2 9876 5432', mobile: '+61 412 345 678', preferred: 'email' },
-    address: { street: '42 Industrial Drive', city: 'Roseberry', state: 'NSW', postcode: '2018', country: 'Australia' },
-    additionalContacts: [
-      { name: 'Tom Harris', role: 'Engineering Lead', email: 'tom@techcorp.com', phone: '+61 2 9876 5433' },
-      { name: 'Priya Patel', role: 'Accounts Payable', email: 'priya@techcorp.com', phone: '+61 2 9876 5434' },
-    ],
-    financial: { lifetimeRevenue: 245000, outstanding: 18500, avgPaymentTerms: 'Net 30', creditLimit: 50000, paymentRating: 'green' },
-    tags: ['Tier 1', 'Automotive', 'Repeat buyer'],
-    source: 'Referral',
-    notes: 'Key account — supplies chassis components for their EV line. Sarah prefers email for quotes, phone for urgent changes.',
-    opportunities: [
-      { id: 'OPP-042', name: 'EV Battery Enclosures x200', stage: 'Proposal', value: 48000, closeDate: '15 Apr 2026' },
-      { id: 'OPP-039', name: 'Mounting Bracket Redesign', stage: 'Negotiation', value: 12500, closeDate: '28 Mar 2026' },
-    ],
-    recentQuotes: [
-      { ref: 'MW-Q-0055', date: '12 Mar 2026', value: 48000, status: 'Sent' },
-      { ref: 'MW-Q-0048', date: '28 Feb 2026', value: 12500, status: 'Accepted' },
-      { ref: 'MW-Q-0041', date: '15 Feb 2026', value: 8200, status: 'Declined' },
-    ],
-    recentOrders: [
-      { ref: 'SO-0089', date: '01 Mar 2026', value: 24500, status: 'In Progress' },
-      { ref: 'SO-0072', date: '10 Feb 2026', value: 18200, status: 'Completed' },
-    ],
-    activity: [
-      { type: 'email', desc: 'Quote MW-Q-0055 sent to Sarah Chen', time: '2 hours ago', user: 'Jill Wright' },
-      { type: 'call', desc: 'Discussed EV enclosure specs — confirmed 3mm 5052 aluminium', time: '1 day ago', user: 'Jill Wright' },
-      { type: 'note', desc: 'Customer requested expedited delivery for next order', time: '3 days ago', user: 'Mark Stevens' },
-      { type: 'order', desc: 'Sales order SO-0089 created ($24,500.00)', time: '5 days ago', user: 'Jill Wright' },
-      { type: 'email', desc: 'Quote MW-Q-0048 accepted by Sarah Chen', time: '1 week ago', user: 'System' },
-      { type: 'meeting', desc: 'Site visit — reviewed production capacity for Q2', time: '2 weeks ago', user: 'Jill Wright' },
-    ],
-    invoices: [
-      { ref: 'INV-2026-0047', date: '01 Mar 2026', amount: 24500, status: 'Sent', due: '31 Mar 2026' },
-      { ref: 'INV-2026-0032', date: '10 Feb 2026', amount: 18200, status: 'Paid', due: '12 Mar 2026' },
-      { ref: 'INV-2026-0018', date: '15 Jan 2026', amount: 9800, status: 'Paid', due: '14 Feb 2026' },
-    ],
-    documents: [
-      { name: 'TechCorp_Purchase_Order_2026.pdf', category: 'Purchase orders', uploadedBy: 'Sarah Chen', date: '12 Mar 2026', size: '245 KB' },
-      { name: 'EV_Enclosure_Drawing_v3.dxf', category: 'Drawings/CAD files', uploadedBy: 'Tom Harris', date: '10 Mar 2026', size: '1.2 MB' },
-      { name: 'Material_Spec_5052_Aluminium.pdf', category: 'Specifications', uploadedBy: 'Jill Wright', date: '28 Feb 2026', size: '89 KB' },
-    ],
-  },
+/** Map an employee id to a display name (fallback to id). */
+const empName = (empId: string) => employees.find(e => e.id === empId)?.name ?? empId;
+
+/** Capitalise the first letter and title-case status strings for display. */
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ');
+
+/** Format an ISO date string (yyyy-mm-dd) to "dd Mon yyyy". */
+const fmtDate = (iso: string) => {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
-// Fill remaining IDs with variants of the first
-['2','3','4','5','6'].forEach((id, i) => {
-  const names = [
-    { company: 'Pacific Fabrication', contact: 'Mike Thompson', email: 'mike@pacificfab.com.au' },
-    { company: 'Hunter Steel Co', contact: 'Emma Wilson', email: 'emma@huntersteel.com.au' },
-    { company: 'BHP Contractors', contact: 'David Lee', email: 'david@bhpcontractors.com' },
-    { company: 'Sydney Rail Corp', contact: 'Jessica Brown', email: 'jbrown@sydneyrail.gov.au' },
-    { company: 'Kemppi Australia', contact: 'Tom Anderson', email: 'tom@kemppi.com.au' },
-  ];
-  mockCustomers[id] = {
-    ...mockCustomers['1'],
-    id,
-    company: names[i].company,
-    primaryContact: { ...mockCustomers['1'].primaryContact, name: names[i].contact, email: names[i].email },
-    status: id === '5' ? 'prospect' : 'active',
-    types: id === '4' ? ['Customer', 'Vendor'] : ['Customer'],
+/** Format an ISO datetime to a relative-time string. */
+const relativeTime = (iso: string) => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} minutes ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} hour${hrs > 1 ? 's' : ''} ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+  const weeks = Math.floor(days / 7);
+  return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+};
+
+/**
+ * Build the mockCustomers Record from centralised data.
+ * Each entry is shaped exactly as the rendering code expects.
+ */
+const mockCustomers: Record<string, any> = {};
+
+customers.forEach((c, idx) => {
+  // Derive related records for this customer
+  const custOpps = opportunities.filter(o => o.customerId === c.id);
+  const custQuotes = quotes.filter(q => q.customerId === c.id);
+  const custOrders = salesOrders.filter(so => so.customerId === c.id);
+  const custInvoices = sellInvoices.filter(inv => inv.customerId === c.id);
+  const custActivities = sellActivities.filter(a => a.customerId === c.id);
+
+  // Compute financial aggregates from centralised invoices
+  const lifetimeRevenue = c.totalRevenue;
+  const outstanding = custInvoices
+    .filter(inv => inv.status !== 'paid')
+    .reduce((sum, inv) => sum + (inv.amount - inv.paidAmount), 0);
+
+  // Use the simple numeric index (1-based) as the key so existing routes work
+  const key = String(idx + 1);
+
+  mockCustomers[key] = {
+    id: key,
+    company: c.company,
+    abn: '51 824 753 556', // placeholder — not in centralised Customer type
+    industry: 'Manufacturing',
+    website: `https://${c.company.toLowerCase().replace(/[^a-z0-9]/g, '')}.com.au`,
+    annualRevenue: c.totalRevenue * 10,
+    employeeCount: 50 + idx * 15,
+    accountOwner: 'Sarah Chen',
+    status: c.status,
+    types: idx === 3 ? ['Customer', 'Vendor'] : ['Customer'],
+    primaryContact: {
+      name: c.contact,
+      title: 'Account Contact',
+      email: c.email,
+      phone: c.phone,
+      mobile: c.phone, // re-use phone as mobile placeholder
+      preferred: 'email',
+    },
+    address: {
+      street: c.address,
+      city: c.city,
+      state: c.state,
+      postcode: c.postcode,
+      country: 'Australia',
+    },
+    additionalContacts: [] as any[],
+    financial: {
+      lifetimeRevenue,
+      outstanding,
+      avgPaymentTerms: 'Net 30',
+      creditLimit: 50000,
+      paymentRating: outstanding > 10000 ? 'amber' : 'green',
+    },
+    tags: ['Fabrication'],
+    source: 'Direct',
+    notes: c.notes,
+
+    // Related records bridged to the shapes the rendering code expects
+    opportunities: custOpps.map(o => ({
+      id: o.id.toUpperCase(),
+      name: o.title,
+      stage: titleCase(o.stage),
+      value: o.value,
+      closeDate: fmtDate(o.expectedClose),
+    })),
+
+    recentQuotes: custQuotes.map(q => ({
+      ref: q.ref,
+      date: fmtDate(q.date),
+      value: q.value,
+      status: titleCase(q.status),
+    })),
+
+    recentOrders: custOrders.map(so => ({
+      ref: so.orderNumber,
+      date: fmtDate(so.date),
+      value: so.total,
+      status: titleCase(so.status),
+    })),
+
+    activity: custActivities.map(a => ({
+      type: a.type,
+      desc: a.description,
+      time: a.dueDate ? relativeTime(a.dueDate) : '',
+      user: empName(a.assignedTo),
+    })),
+
+    invoices: custInvoices.map(inv => ({
+      ref: inv.invoiceNumber,
+      date: fmtDate(inv.date),
+      amount: inv.amount,
+      status: titleCase(inv.status),
+      due: fmtDate(inv.dueDate),
+    })),
+
+    documents: [
+      { name: `${c.company.replace(/\s+/g, '_')}_Purchase_Order.pdf`, category: 'Purchase orders', uploadedBy: c.contact, date: fmtDate(c.createdAt), size: '245 KB' },
+    ],
   };
+});
+
+// Also support lookup by centralised id (e.g. "cust-001") so either key scheme works
+customers.forEach((c, idx) => {
+  mockCustomers[c.id] = mockCustomers[String(idx + 1)];
 });
 
 // ============================================================

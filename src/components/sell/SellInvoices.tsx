@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
+import { sellInvoices } from '@/services/mock';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -35,15 +36,17 @@ interface Invoice {
   balanceDue: number;
 }
 
-const mockInvoices: Invoice[] = [
-  { id: '1', invoiceNumber: 'INV-2026-0234', customer: 'TechCorp Industries', issueDate: '2026-03-15', dueDate: '2026-04-14', status: 'sent', total: 45000, balanceDue: 45000 },
-  { id: '2', invoiceNumber: 'INV-2026-0233', customer: 'Pacific Fabrication', issueDate: '2026-03-12', dueDate: '2026-04-11', status: 'paid', total: 8500, balanceDue: 0 },
-  { id: '3', invoiceNumber: 'INV-2026-0232', customer: 'Sydney Rail Corp', issueDate: '2026-03-08', dueDate: '2026-04-07', status: 'sent', total: 67000, balanceDue: 67000 },
-  { id: '4', invoiceNumber: 'INV-2026-0231', customer: 'Hunter Steel Co', issueDate: '2026-03-05', dueDate: '2026-04-04', status: 'paid', total: 22000, balanceDue: 0 },
-  { id: '5', invoiceNumber: 'INV-2026-0230', customer: 'BHP Contractors', issueDate: '2026-02-28', dueDate: '2026-03-30', status: 'overdue', total: 128000, balanceDue: 128000 },
-  { id: '6', invoiceNumber: 'INV-2026-0229', customer: 'Kemppi Australia', issueDate: '2026-02-25', dueDate: '2026-03-25', status: 'overdue', total: 12000, balanceDue: 12000 },
-  { id: '7', invoiceNumber: 'INV-2026-DRAFT-01', customer: 'TechCorp Industries', issueDate: '2026-03-19', dueDate: '2026-04-18', status: 'draft', total: 15500, balanceDue: 15500 },
-];
+/** Bridge centralized SellInvoice data to the local Invoice shape */
+const mockInvoices: Invoice[] = sellInvoices.map((si) => ({
+  id: si.id,
+  invoiceNumber: si.invoiceNumber,
+  customer: si.customerName,
+  issueDate: si.date,
+  dueDate: si.dueDate,
+  status: si.status as InvoiceStatus,
+  total: si.amount,
+  balanceDue: si.amount - si.paidAmount,
+}));
 
 export function SellInvoices() {
   const navigate = useNavigate();

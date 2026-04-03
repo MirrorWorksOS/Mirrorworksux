@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Grid3x3, List, Package, ShoppingCart } from 'lucide-react';
+import { products as centralProducts } from '@/services/mock';
 import { useNavigate } from 'react-router';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -34,14 +35,20 @@ interface Product {
   image?: string;
 }
 
-const mockProducts: Product[] = [
-  { id: '1', name: 'Mild Steel Sheet 1200x2400x3mm', sku: 'MAT-MS-001', category: 'Raw Materials', stockLevel: 45, reorderPoint: 20, unitPrice: 285.50 },
-  { id: '2', name: 'Aluminium Angle 50x50x5mm', sku: 'MAT-AL-042', category: 'Raw Materials', stockLevel: 12, reorderPoint: 15, unitPrice: 42.80 },
-  { id: '3', name: 'Server Rack Chassis - Custom', sku: 'PROD-SR-001', category: 'Finished Goods', stockLevel: 3, reorderPoint: 5, unitPrice: 1250.00 },
-  { id: '4', name: 'Structural I-Beam 150mm', sku: 'MAT-STL-156', category: 'Raw Materials', stockLevel: 28, reorderPoint: 10, unitPrice: 385.00 },
-  { id: '5', name: 'Welding Rod ER70S-6 4mm', sku: 'CONS-WR-001', category: 'Consumables', stockLevel: 150, reorderPoint: 50, unitPrice: 8.50 },
-  { id: '6', name: 'Powder Coat - Black Matt', sku: 'CONS-PC-BLK', category: 'Consumables', stockLevel: 35, reorderPoint: 20, unitPrice: 65.00 },
-];
+// Bridge centralized Product data to the local shape expected by rendering code.
+// stockLevel and reorderPoint are synthesized from weightKg as a deterministic seed
+// until real inventory data is available.
+const mockProducts: Product[] = centralProducts
+  .filter((p) => p.isActive)
+  .map((p) => ({
+    id: p.id,
+    name: p.description,
+    sku: p.partNumber,
+    category: p.category,
+    stockLevel: Math.round(p.weightKg * 10),
+    reorderPoint: Math.round(p.weightKg * 3),
+    unitPrice: p.unitPrice,
+  }));
 
 const getStockBadgeProps = (stockLevel: number, reorderPoint: number) => {
   if (stockLevel === 0) return { variant: 'error' as const, label: 'Out of stock' };

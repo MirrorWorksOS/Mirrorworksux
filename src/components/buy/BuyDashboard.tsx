@@ -23,36 +23,12 @@ import {
 import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
-
-const kpiData = {
-  openPOs: { count: 18, value: 156800 },
-  pendingRequisitions: { count: 7 },
-  overdueDeliveries: { count: 4, value: 28500 },
-  avgLeadTime: { days: 12 },
-  spendThisMonth: { value: 89400, budget: 100000 },
-  pendingBills: { count: 5, value: 42300 },
-};
-
-const spendByCategory = [
-  { category: 'Materials', amount: 45000 },
-  { category: 'Subcontract', amount: 28000 },
-  { category: 'Consumables', amount: 12400 },
-  { category: 'Equipment', amount: 4000 },
-];
-
-const supplierPerformance = [
-  { supplier: 'Hunter Steel Co', onTime: 98 },
-  { supplier: 'Pacific Metals', onTime: 95 },
-  { supplier: 'Sydney Welding', onTime: 88 },
-  { supplier: 'BHP Suppliers', onTime: 82 },
-  { supplier: 'Generic Parts Co', onTime: 65 },
-];
-
-const approvalQueue = [
-  { type: 'Requisition', id: 'REQ-2026-0089', requestor: 'Sarah Chen', value: 8500 },
-  { type: 'PO', id: 'PO-2026-0234', supplier: 'Hunter Steel Co', value: 12400 },
-  { type: 'Requisition', id: 'REQ-2026-0088', requestor: 'Mike Thompson', value: 3200 },
-];
+import {
+  buyKpis as kpiData,
+  spendByCategory,
+  supplierPerformance,
+  buyApprovalQueue as approvalQueue,
+} from '@/services/mock';
 
 const buyTabs = [{ key: 'overview', label: 'Overview' }];
 
@@ -131,7 +107,7 @@ export function BuyDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Avg Lead Time"
-            value={`${kpiData.avgLeadTime.days} days`}
+            value={`${kpiData.avgLeadTime.value} days`}
             icon={Clock}
             hint="Last 30 days"
           />

@@ -22,6 +22,7 @@ import {
 import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
+import { shipKpis, shipPipeline, carriers, shippingExceptions } from '@/services/mock';
 
 const KPI: {
   label: string;
@@ -29,36 +30,29 @@ const KPI: {
   icon: LucideIcon;
   iconSurface: IconSurface;
 }[] = [
-  { label: 'Active Shipments', value: '47', icon: Package, iconSurface: 'onLight' },
-  { label: 'Pending Orders', value: '18', icon: Clock, iconSurface: 'onLight' },
-  { label: 'On-Time Rate', value: '96.2%', icon: Truck, iconSurface: 'key' },
-  { label: 'Avg Transit', value: '2.4d', icon: Clock, iconSurface: 'onLight' },
-  { label: 'Exceptions', value: '3', icon: AlertTriangle, iconSurface: 'onLight' },
-  { label: 'Returns', value: '5', icon: RotateCcw, iconSurface: 'onLight' },
+  { label: 'Active Shipments', value: String(shipKpis.activeShipments), icon: Package, iconSurface: 'onLight' },
+  { label: 'Pending Orders', value: String(shipKpis.pendingOrders), icon: Clock, iconSurface: 'onLight' },
+  { label: 'On-Time Rate', value: `${shipKpis.onTimeRate}%`, icon: Truck, iconSurface: 'key' },
+  { label: 'Avg Transit', value: `${shipKpis.avgTransit}d`, icon: Clock, iconSurface: 'onLight' },
+  { label: 'Exceptions', value: String(shipKpis.exceptions), icon: AlertTriangle, iconSurface: 'onLight' },
+  { label: 'Returns', value: String(shipKpis.returns), icon: RotateCcw, iconSurface: 'onLight' },
 ];
 
-const PIPELINE = [
-  { label: 'Pick',      count: 6 },
-  { label: 'Pack',      count: 3 },
-  { label: 'Ship',      count: 5 },
-  { label: 'Transit',   count: 9 },
-  { label: 'Delivered', count: 8 },
-];
+const PIPELINE = shipPipeline;
 
-const CARRIER_DATA = [
-  { carrier: 'Aus Post',  onTime: 97 },
-  { carrier: 'StarTrack', onTime: 95 },
-  { carrier: 'Toll',      onTime: 93 },
-  { carrier: 'TNT',       onTime: 91 },
-  { carrier: 'DHL',       onTime: 98 },
-  { carrier: 'Sendle',    onTime: 94 },
-];
+const CARRIER_DATA = carriers.map((c) => ({ carrier: c.name, onTime: c.onTimePercent }));
 
-const EXCEPTIONS = [
-  { id: 'SP270226001', customer: 'Con-form Group', type: 'Delay',   time: '2h ago' },
-  { id: 'SP260226003', customer: 'Acme Steel',     type: 'Damage',  time: '5h ago' },
-  { id: 'SP250226008', customer: 'Hunter Steel',   type: 'Refused', time: '1d ago' },
-];
+const EXCEPTIONS = shippingExceptions.map((e) => {
+  const ms = Date.now() - new Date(e.createdAt).getTime();
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const time = hours < 24 ? `${hours}h ago` : `${Math.floor(hours / 24)}d ago`;
+  return {
+    id: e.shipmentNumber,
+    customer: e.customerName,
+    type: e.type.charAt(0).toUpperCase() + e.type.slice(1),
+    time,
+  };
+});
 
 const shipTabs = [{ key: 'overview', label: 'Overview' }];
 

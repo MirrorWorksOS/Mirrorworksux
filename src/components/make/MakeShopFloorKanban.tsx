@@ -12,6 +12,7 @@ import { KanbanColumn, type KanbanDragItem } from '@/components/shared/kanban/Ka
 import { KanbanCard } from '@/components/shared/kanban/KanbanCard';
 import { cn } from '../ui/utils';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
+import { manufacturingOrders, workOrders } from '@/services/mock';
 
 const KANBAN_ITEM_TYPE = 'shop-floor-mo';
 
@@ -30,13 +31,34 @@ interface ManufacturingOrder {
   priority: 'low' | 'medium' | 'high' | 'urgent';
 }
 
-const mockMOs: ManufacturingOrder[] = [
-  { id: '1', moNumber: 'MO-2026-0042', jobNumber: 'JOB-2026-0009', partName: 'Chassis Frame', quantity: 5, dueDate: '2026-03-18', workCenter: 'Welding', status: 'overdue', priority: 'urgent' },
-  { id: '2', moNumber: 'MO-2026-0045', jobNumber: 'JOB-2026-0012', partName: 'Side Panel', quantity: 10, dueDate: '2026-03-22', workCenter: 'Cutting', operator: 'Sarah Chen', status: 'in_progress', priority: 'high' },
-  { id: '3', moNumber: 'MO-2026-0044', jobNumber: 'JOB-2026-0011', partName: 'Bracket Assembly', quantity: 20, dueDate: '2026-03-23', workCenter: 'Welding', operator: 'Mike Thompson', status: 'in_progress', priority: 'medium' },
-  { id: '4', moNumber: 'MO-2026-0046', jobNumber: 'JOB-2026-0012', partName: 'Top Cover', quantity: 10, dueDate: '2026-03-24', workCenter: 'Forming', status: 'not_started', priority: 'medium' },
-  { id: '5', moNumber: 'MO-2026-0047', jobNumber: 'JOB-2026-0010', partName: 'Custom Bracket', quantity: 15, dueDate: '2026-03-25', workCenter: 'Machining', status: 'not_started', priority: 'low' },
-];
+const deriveShopFloorStatus = (moStatus: string, dueDate: string): MOStatus => {
+  if (moStatus === 'in_progress' && new Date(dueDate) < new Date()) return 'overdue';
+  if (moStatus === 'in_progress') return 'in_progress';
+  return 'not_started';
+};
+
+const WORK_CENTER_LOOKUP: Record<string, string> = {
+  'mach-001': 'Cutting', 'mach-002': 'Forming', 'mach-003': 'Welding',
+  'mach-004': 'Machining', 'mach-005': 'Finishing', 'mach-006': 'Cutting',
+};
+
+const mockMOs: ManufacturingOrder[] = manufacturingOrders
+  .filter((mo) => mo.status !== 'done')
+  .map((mo) => {
+    const firstWO = workOrders.find((wo) => wo.manufacturingOrderId === mo.id);
+    return {
+      id: mo.id,
+      moNumber: mo.moNumber,
+      jobNumber: mo.jobNumber,
+      partName: mo.productName,
+      quantity: mo.workOrders * 5,
+      dueDate: mo.dueDate,
+      workCenter: firstWO ? WORK_CENTER_LOOKUP[firstWO.machineId] ?? firstWO.machineName.split(' ')[0] : 'General',
+      operator: mo.operatorName || undefined,
+      status: deriveShopFloorStatus(mo.status, mo.dueDate),
+      priority: mo.priority as ManufacturingOrder['priority'],
+    };
+  });
 
 const columns: { key: MOStatus; label: string; color: string; icon: typeof Clock }[] = [
   { key: 'overdue', label: 'Overdue', color: 'var(--mw-error)', icon: Clock },

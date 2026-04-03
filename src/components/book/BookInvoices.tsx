@@ -20,6 +20,7 @@ import {
   AnimatedSend,
   AnimatedEye
 } from '../ui/animated-icons';
+import { sellInvoices, salesOrders, jobs } from '@/services/mock';
 
 
 type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'partiallyPaid' | 'paid' | 'overdue' | 'cancelled';
@@ -38,46 +39,27 @@ interface Invoice {
 }
 
 const MOCK_INVOICES: Invoice[] = [
-  {
-    id: 'INV-2026-0234',
-    customer: 'TechCorp Industries',
-    customerLogo: 'https://i.pravatar.cc/150?img=1',
-    issueDate: '2026-03-01',
-    dueDate: '2026-03-15',
-    status: 'overdue',
-    total: 12400,
-    balanceDue: 12400,
-    jobReference: 'MW-001',
-  },
-  {
-    id: 'INV-2026-0235',
-    customer: 'AeroSpace Ltd',
-    customerLogo: 'https://i.pravatar.cc/150?img=2',
-    issueDate: '2026-03-10',
-    dueDate: '2026-04-10',
-    status: 'sent',
-    total: 24800,
-    balanceDue: 24800,
-    jobReference: 'MW-003',
-  },
-  {
-    id: 'INV-2026-0236',
-    customer: 'Industrial Solutions',
-    customerLogo: 'https://i.pravatar.cc/150?img=3',
-    issueDate: '2026-03-12',
-    dueDate: '2026-04-12',
-    status: 'paid',
-    total: 18900,
-    balanceDue: 0,
-    jobReference: 'MW-006',
-  },
+  ...sellInvoices.map((inv) => {
+    const so = inv.salesOrderId ? salesOrders.find((s) => s.id === inv.salesOrderId) : undefined;
+    const job = so?.jobId ? jobs.find((j) => j.id === so.jobId) : undefined;
+    return {
+      id: inv.invoiceNumber,
+      customer: inv.customerName,
+      issueDate: inv.date,
+      dueDate: inv.dueDate,
+      status: inv.status as InvoiceStatus,
+      total: inv.amount,
+      balanceDue: inv.amount - inv.paidAmount,
+      jobReference: job?.jobNumber,
+    };
+  }),
+  // Extra entries for status variety (viewed, partiallyPaid)
   {
     id: 'INV-2026-0237',
     customer: 'Climate Systems',
-    customerLogo: 'https://i.pravatar.cc/150?img=4',
     issueDate: '2026-03-15',
     dueDate: '2026-04-15',
-    status: 'viewed',
+    status: 'viewed' as InvoiceStatus,
     total: 45200,
     balanceDue: 45200,
     jobReference: 'MW-004',
@@ -85,10 +67,9 @@ const MOCK_INVOICES: Invoice[] = [
   {
     id: 'INV-2026-0238',
     customer: 'Construction Pro',
-    customerLogo: 'https://i.pravatar.cc/150?img=5',
     issueDate: '2026-03-18',
     dueDate: '2026-04-18',
-    status: 'partiallyPaid',
+    status: 'partiallyPaid' as InvoiceStatus,
     total: 89500,
     balanceDue: 44750,
     jobReference: 'MW-005',

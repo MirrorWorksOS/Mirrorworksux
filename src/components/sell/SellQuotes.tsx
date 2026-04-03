@@ -14,6 +14,7 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '../ui/button';
+import { quotes as centralQuotes } from '@/services/mock';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'expired';
 
@@ -28,68 +29,16 @@ interface Quote {
   validUntil: string;
 }
 
-const mockQuotes: Quote[] = [
-  {
-    id: '1',
-    quoteNumber: 'QT-2026-0142',
-    opportunity: 'OPP-0156',
-    customer: 'TechCorp Industries',
-    value: 12500,
-    status: 'sent',
-    created: '2026-03-20',
-    validUntil: '2026-04-20',
-  },
-  {
-    id: '2',
-    quoteNumber: 'QT-2026-0143',
-    opportunity: 'OPP-0159',
-    customer: 'Hunter Steel Co',
-    value: 3500,
-    status: 'draft',
-    created: '2026-03-22',
-    validUntil: '2026-04-22',
-  },
-  {
-    id: '3',
-    quoteNumber: 'QT-2026-0139',
-    opportunity: 'OPP-0148',
-    customer: 'BHP Contractors',
-    value: 87000,
-    status: 'accepted',
-    created: '2026-03-10',
-    validUntil: '2026-04-10',
-  },
-  {
-    id: '4',
-    quoteNumber: 'QT-2026-0135',
-    opportunity: 'OPP-0138',
-    customer: 'Sydney Rail Corp',
-    value: 45000,
-    status: 'expired',
-    created: '2026-02-15',
-    validUntil: '2026-03-15',
-  },
-  {
-    id: '5',
-    quoteNumber: 'QT-2026-0144',
-    opportunity: 'OPP-0162',
-    customer: 'Pacific Fabrication',
-    value: 22800,
-    status: 'sent',
-    created: '2026-03-25',
-    validUntil: '2026-04-25',
-  },
-  {
-    id: '6',
-    quoteNumber: 'QT-2026-0145',
-    opportunity: 'OPP-0165',
-    customer: 'AeroSpace Ltd',
-    value: 64000,
-    status: 'draft',
-    created: '2026-03-28',
-    validUntil: '2026-04-28',
-  },
-];
+const mockQuotes: Quote[] = centralQuotes.map((q) => ({
+  id: q.id,
+  quoteNumber: q.ref,
+  opportunity: q.opportunityId,
+  customer: q.customerName,
+  value: q.value,
+  status: q.status as QuoteStatus,
+  created: q.date,
+  validUntil: q.expiryDate,
+}));
 
 const STATUS_VARIANT: Record<QuoteStatus, { variant: 'neutral' | 'info' | 'success' | 'error'; label: string }> = {
   draft: { variant: 'neutral', label: 'Draft' },
@@ -99,11 +48,11 @@ const STATUS_VARIANT: Record<QuoteStatus, { variant: 'neutral' | 'info' | 'succe
 };
 
 const TABS = [
-  { label: 'All', count: 6 },
-  { label: 'Draft', count: 2 },
-  { label: 'Sent', count: 2 },
-  { label: 'Accepted', count: 1 },
-  { label: 'Expired', count: 1 },
+  { label: 'All', count: mockQuotes.length },
+  { label: 'Draft', count: mockQuotes.filter((q) => q.status === 'draft').length },
+  { label: 'Sent', count: mockQuotes.filter((q) => q.status === 'sent').length },
+  { label: 'Accepted', count: mockQuotes.filter((q) => q.status === 'accepted').length },
+  { label: 'Expired', count: mockQuotes.filter((q) => q.status === 'expired').length },
 ];
 
 const STATUS_MAP: Record<string, QuoteStatus> = {

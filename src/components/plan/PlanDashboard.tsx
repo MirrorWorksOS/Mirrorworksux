@@ -26,35 +26,35 @@ import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { useNavigate } from 'react-router';
+import {
+  planKpis as kpiData,
+  weeklyCapacity,
+  planTasks,
+  jobs,
+} from '@/services/mock';
 
-const kpiData = {
-  activeJobs: 12,
-  tasksToday: 8,
-  avgLeadTime: 8.5,
-  onTimeRate: 92,
-};
+const upcomingTasks = planTasks.map((t) => ({
+  id: t.id,
+  title: t.title,
+  time: t.time,
+  type: t.type as 'review' | 'schedule' | 'qc' | 'purchase' | 'external',
+}));
 
-const weeklyCapacity = [
-  { week: 'Wk 12', planned: 85, actual: 72 },
-  { week: 'Wk 13', planned: 90, actual: 88 },
-  { week: 'Wk 14', planned: 80, actual: 75 },
-  { week: 'Wk 15', planned: 95, actual: 92 },
-  { week: 'Wk 16', planned: 85, actual: 0 },
-];
-
-const upcomingTasks = [
-  { id: 1, title: 'Review BOM for Job MW-015', time: '9:00 AM', type: 'review' as const },
-  { id: 2, title: 'Schedule laser cutting — MW-012', time: '10:30 AM', type: 'schedule' as const },
-  { id: 3, title: 'QC sign-off pending — MW-009', time: '11:00 AM', type: 'qc' as const },
-  { id: 4, title: 'Material order follow-up — MW-014', time: '1:00 PM', type: 'purchase' as const },
-  { id: 5, title: 'Subcontractor call — Powder Coat', time: '2:30 PM', type: 'external' as const },
-];
-
-const priorityJobs = [
-  { id: 'MW-009', name: 'Mounting Bracket Assy', customer: 'TechCorp', due: 'Apr 3', priority: 'high' as const, value: '$24,500' },
-  { id: 'MW-012', name: 'Gear Housing Assembly', customer: 'Precision Ltd', due: 'Apr 5', priority: 'high' as const, value: '$18,200' },
-  { id: 'MW-015', name: 'Control Panel Enclosure', customer: 'AutoDrive', due: 'Apr 8', priority: 'medium' as const, value: '$31,000' },
-];
+const priorityJobs = jobs
+  .filter((j) => j.status === 'in_progress' || j.status === 'planned')
+  .sort((a, b) => {
+    const p = { urgent: 0, high: 1, medium: 2, low: 3 };
+    return p[a.priority] - p[b.priority];
+  })
+  .slice(0, 3)
+  .map((j) => ({
+    id: j.jobNumber,
+    name: j.title,
+    customer: j.customerName.split(' ')[0],
+    due: new Date(j.dueDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' }),
+    priority: j.priority as 'high' | 'medium' | 'low' | 'urgent',
+    value: `$${j.value.toLocaleString()}`,
+  }));
 
 const taskTypeColors: Record<string, string> = {
   review: 'bg-[var(--mw-blue)]',

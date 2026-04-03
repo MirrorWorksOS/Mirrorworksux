@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { bookKpis as kpiData, bookApprovalQueue as approvalQueue, bookOverdueItems as overdueActions } from '@/services/mock';
 
 const bookTabs = [{ key: 'overview', label: 'Overview' }];
 
@@ -15,28 +16,6 @@ const badgeNeutral =
 
 export function BookDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-
-  // Mock data
-  const kpiData = {
-    monthlyRevenue: { value: 287500, change: 12.5, trend: 'up' },
-    outstandingInvoices: { count: 12, value: 45800, trend: 'neutral' },
-    profitMargin: { value: 18.3, change: 2.1, trend: 'up' },
-    cashFlow: { value: 156200, change: -5.2, trend: 'down' },
-    overdueInvoices: { count: 3, value: 18500, trend: 'warning' },
-    expensesThisMonth: { value: 42300, budget: 50000, trend: 'neutral' },
-  };
-
-  const approvalQueue = [
-    { type: 'Expense', id: 'EXP-2026-0142', amount: 1250, status: 'pending' },
-    { type: 'PO', id: 'PO-2026-0089', amount: 8900, status: 'pending' },
-    { type: 'Expense', id: 'EXP-2026-0143', amount: 350, status: 'pending' },
-  ];
-
-  const overdueActions = [
-    { type: 'Invoice', id: 'INV-2026-0234', customer: 'TechCorp Industries', amount: 12400, daysOverdue: 14 },
-    { type: 'Invoice', id: 'INV-2026-0198', customer: 'AeroSpace Ltd', amount: 4800, daysOverdue: 7 },
-    { type: 'Bill', id: 'BILL-789', vendor: 'Steel Suppliers Co', amount: 1300, daysOverdue: 3 },
-  ];
 
   return (
     <ModuleDashboard

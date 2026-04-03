@@ -19,82 +19,9 @@ import { Card } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
+import { customers } from '@/services/mock';
 
-
-interface Customer {
-  id: string;
-  company: string;
-  contact: string;
-  email: string;
-  phone: string;
-  totalRevenue: number;
-  activeOpportunities: number;
-  status: 'active' | 'prospect' | 'inactive';
-  avatar?: string;
-}
-
-const mockCustomers: Customer[] = [
-  {
-    id: '1',
-    company: 'TechCorp Industries',
-    contact: 'Sarah Chen',
-    email: 'sarah@techcorp.com',
-    phone: '+61 2 9876 5432',
-    totalRevenue: 245000,
-    activeOpportunities: 3,
-    status: 'active'
-  },
-  {
-    id: '2',
-    company: 'Pacific Fabrication',
-    contact: 'Mike Thompson',
-    email: 'mike@pacificfab.com.au',
-    phone: '+61 3 8765 4321',
-    totalRevenue: 189000,
-    activeOpportunities: 2,
-    status: 'active'
-  },
-  {
-    id: '3',
-    company: 'Hunter Steel Co',
-    contact: 'Emma Wilson',
-    email: 'emma@huntersteel.com.au',
-    phone: '+61 2 4567 8901',
-    totalRevenue: 156000,
-    activeOpportunities: 1,
-    status: 'active'
-  },
-  {
-    id: '4',
-    company: 'BHP Contractors',
-    contact: 'David Lee',
-    email: 'david@bhpcontractors.com',
-    phone: '+61 8 2345 6789',
-    totalRevenue: 98000,
-    activeOpportunities: 4,
-    status: 'active'
-  },
-  {
-    id: '5',
-    company: 'Sydney Rail Corp',
-    contact: 'Jessica Brown',
-    email: 'jbrown@sydneyrail.gov.au',
-    phone: '+61 2 8765 4321',
-    totalRevenue: 67000,
-    activeOpportunities: 1,
-    status: 'prospect'
-  },
-  {
-    id: '6',
-    company: 'Kemppi Australia',
-    contact: 'Tom Anderson',
-    email: 'tom@kemppi.com.au',
-    phone: '+61 3 5678 9012',
-    totalRevenue: 52000,
-    activeOpportunities: 0,
-    status: 'active'
-  },
-];
+const mockCustomers = customers;
 
 const renderStatusBadge = (status: Customer['status']) => {
   if (status === 'prospect') return <StatusBadge variant="info">Prospect</StatusBadge>;

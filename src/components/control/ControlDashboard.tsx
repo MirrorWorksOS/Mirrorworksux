@@ -10,16 +10,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
-
-const systemHealth = {
-  totalUsers: 24,
-  activeUsers: 18,
-  totalProducts: 156,
-  totalMachines: 12,
-  totalSuppliers: 28,
-  openIssues: 3,
-  systemStatus: 'healthy' as const,
-};
+import { systemHealth } from '@/services/mock';
 
 const controlTabs = [{ key: 'overview', label: 'Overview' }];
 

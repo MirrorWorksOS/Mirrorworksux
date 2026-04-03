@@ -16,6 +16,7 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { toast } from 'sonner';
+import { jobs, employees, quotes } from '@/services/mock';
 
 const KANBAN_ITEM_TYPE = 'plan-job';
 
@@ -37,116 +38,42 @@ interface Job {
   progress?: number;
 }
 
-const MOCK_JOBS: Record<string, Job[]> = {
-  backlog: [
-    {
-      id: 'MW001',
-      name: 'Server Rack Chassis',
-      description: 'Custom sheet metal enclosure for data center deployment',
-      quoteCount: 1,
-      value: 77030,
-      assignedUser: { name: 'David Miller', avatar: 'https://i.pravatar.cc/150?img=12' },
-      customer: 'TechCorp Industries',
-      priority: 'high',
-      dueDate: '2026-04-15',
-      progress: 0
-    },
-    {
-      id: 'MW002',
-      name: 'Laser Cut Panels',
-      description: 'Precision aluminum panels for aerospace application',
-      quoteCount: 0,
-      value: 12500,
-      assignedUser: { name: 'Sarah Chen', avatar: 'https://i.pravatar.cc/150?img=5' },
-      customer: 'AeroSpace Ltd',
-      priority: 'medium',
-      dueDate: '2026-04-20',
-      progress: 0
-    }
-  ],
-  planning: [
-    {
-      id: 'MW003',
-      name: 'Press Brake Assembly',
-      description: 'Multi-bend bracket assembly with powder coating',
-      quoteCount: 1,
-      value: 24800,
-      assignedUser: { name: 'Mike Johnson', avatar: 'https://i.pravatar.cc/150?img=8' },
-      customer: 'Industrial Solutions',
-      priority: 'urgent',
-      dueDate: '2026-04-10',
-      progress: 15
-    }
-  ],
-  materials: [
-    {
-      id: 'MW004',
-      name: 'Turret Punch Parts',
-      description: 'High-volume punched components for HVAC units',
-      quoteCount: 1,
-      value: 45200,
-      assignedUser: { name: 'Elena Rodriguez', avatar: 'https://i.pravatar.cc/150?img=9' },
-      customer: 'Climate Systems',
-      priority: 'medium',
-      dueDate: '2026-04-25',
-      progress: 30
-    }
-  ],
-  scheduled: [
-    {
-      id: 'MW005',
-      name: 'Welded Frame Assembly',
-      description: 'Structural steel frame with MIG welding',
-      quoteCount: 1,
-      value: 89500,
-      assignedUser: { name: 'James Lee', avatar: 'https://i.pravatar.cc/150?img=11' },
-      customer: 'Construction Pro',
-      priority: 'high',
-      dueDate: '2026-04-18',
-      progress: 45
-    },
-    {
-      id: 'MW006',
-      name: 'CNC Machined Brackets',
-      description: 'Precision machined mounting brackets',
-      quoteCount: 2,
-      value: 18900,
-      assignedUser: { name: 'Lisa Wong', avatar: 'https://i.pravatar.cc/150?img=10' },
-      customer: 'AutoTech',
-      priority: 'low',
-      dueDate: '2026-05-01',
-      progress: 60
-    }
-  ],
-  inProduction: [
-    {
-      id: 'MW007',
-      name: 'Manifold Block',
-      description: 'Complex hydraulic manifold with multiple ports',
-      quoteCount: 1,
-      value: 156000,
-      assignedUser: { name: 'Robert Kim', avatar: 'https://i.pravatar.cc/150?img=13' },
-      customer: 'Hydraulics Co',
-      priority: 'urgent',
-      dueDate: '2026-04-08',
-      progress: 75
-    }
-  ],
-  reviewClose: [
-    {
-      id: 'MW008',
-      name: 'Sheet Metal Enclosure',
-      description: 'Electrical cabinet with powder coat finish',
-      quoteCount: 1,
-      value: 32400,
-      assignedUser: { name: 'Anna Martinez', avatar: 'https://i.pravatar.cc/150?img=6' },
-      customer: 'ElectroCorp',
-      priority: 'medium',
-      dueDate: '2026-04-05',
-      progress: 95
-    }
-  ]
+const STATUS_TO_STAGE: Record<string, string> = {
+  draft: 'backlog',
+  planned: 'scheduled',
+  in_progress: 'inProduction',
+  completed: 'reviewClose',
 };
+
+const EXTRA_KANBAN_JOBS: { stage: string; job: Job }[] = [
+  { stage: 'backlog', job: { id: 'MW-EXT-01', name: 'Laser Cut Panels', description: 'Precision aluminum panels for aerospace application', quoteCount: 0, value: 12500, assignedUser: { name: 'Sarah Chen' }, customer: 'AeroSpace Ltd', priority: 'medium', dueDate: '2026-04-20', progress: 0 } },
+  { stage: 'planning', job: { id: 'MW-EXT-02', name: 'Press Brake Assembly', description: 'Multi-bend bracket assembly with powder coating', quoteCount: 1, value: 24800, assignedUser: { name: 'James Murray' }, customer: 'Industrial Solutions', priority: 'urgent', dueDate: '2026-04-10', progress: 15 } },
+  { stage: 'materials', job: { id: 'MW-EXT-03', name: 'Turret Punch Parts', description: 'High-volume punched components for HVAC units', quoteCount: 1, value: 45200, assignedUser: { name: 'Emma Wilson' }, customer: 'Climate Systems', priority: 'medium', dueDate: '2026-04-25', progress: 30 } },
+];
+
+const buildKanbanJobs = (): Record<string, Job[]> => {
+  const stages: Record<string, Job[]> = { backlog: [], planning: [], materials: [], scheduled: [], inProduction: [], reviewClose: [] };
+  jobs.forEach((j) => {
+    const emp = employees.find((e) => e.id === j.assignedTo);
+    const quoteCount = quotes.filter((q) => q.customerId === j.customerId).length;
+    stages[STATUS_TO_STAGE[j.status] ?? 'backlog'].push({
+      id: j.jobNumber,
+      name: j.title,
+      description: `${j.customerName} — ${j.title}`,
+      quoteCount,
+      value: j.value,
+      assignedUser: { name: emp?.name ?? 'Unassigned' },
+      customer: j.customerName,
+      priority: j.priority as Job['priority'],
+      dueDate: j.dueDate,
+      progress: j.progress,
+    });
+  });
+  EXTRA_KANBAN_JOBS.forEach(({ stage, job }) => stages[stage].push(job));
+  return stages;
+};
+
+const MOCK_JOBS: Record<string, Job[]> = buildKanbanJobs();
 
 const STAGES = [
   { id: 'backlog', label: 'Backlog', description: 'Jobs created but not yet planned' },

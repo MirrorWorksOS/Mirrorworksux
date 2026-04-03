@@ -25,27 +25,21 @@ interface POForReceipt {
   items: { name: string; ordered: number; received: number; unit: string }[];
 }
 
-const mockPOs: POForReceipt[] = [
-  {
-    id: '1',
-    poNumber: 'PO-2026-0089',
-    supplier: 'Hunter Steel Co',
-    expectedDate: '2026-03-25',
+import { purchaseOrders } from '@/services/mock';
+
+const mockPOs: POForReceipt[] = purchaseOrders
+  .filter((po) => po.status !== 'received' && po.status !== 'cancelled' && po.status !== 'draft')
+  .slice(0, 2)
+  .map((po) => ({
+    id: po.id,
+    poNumber: po.poNumber,
+    supplier: po.supplierName,
+    expectedDate: po.deliveryDate,
     items: [
-      { name: 'Mild Steel Sheet 1200x2400x3mm', ordered: 50, received: 0, unit: 'sheets' },
-      { name: 'Aluminium Angle 50x50x5mm', ordered: 20, received: 0, unit: 'lengths' },
-    ]
-  },
-  {
-    id: '2',
-    poNumber: 'PO-2026-0088',
-    supplier: 'Pacific Metals',
-    expectedDate: '2026-03-22',
-    items: [
-      { name: 'Structural I-Beam 150mm', ordered: 15, received: 10, unit: 'lengths' },
-    ]
-  },
-];
+      { name: 'Mild Steel Sheet 1200x2400x3mm', ordered: 50, received: po.received > 0 ? 10 : 0, unit: 'sheets' },
+      ...(po.total > 10000 ? [{ name: 'Aluminium Angle 50x50x5mm', ordered: 20, received: 0, unit: 'lengths' }] : []),
+    ],
+  }));
 
 export function BuyReceipts() {
   const [selectedPO, setSelectedPO] = useState<POForReceipt | null>(null);

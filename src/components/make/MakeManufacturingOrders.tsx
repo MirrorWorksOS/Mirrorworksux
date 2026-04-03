@@ -18,6 +18,7 @@ import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/l
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
+import { manufacturingOrders } from '@/services/mock';
 
 interface ManufacturingOrder {
   id: string;
@@ -33,13 +34,19 @@ interface ManufacturingOrder {
   operator: string;
 }
 
-const MO_DATA: ManufacturingOrder[] = [
-  { id: '1', moNumber: 'MO-2026-001', product: 'Mounting Bracket Assembly', jobNumber: 'JOB-1210', customer: 'TechCorp Industries', status: 'in_progress', priority: 'high', dueDate: '15 Apr 2026', progress: 45, workOrders: 4, operator: 'M. Johnson' },
-  { id: '2', moNumber: 'MO-2026-002', product: 'Server Rack Chassis', jobNumber: 'JOB-1211', customer: 'Pacific Fab', status: 'in_progress', priority: 'urgent', dueDate: '20 Apr 2026', progress: 22, workOrders: 6, operator: 'D. Lee' },
-  { id: '3', moNumber: 'MO-2026-003', product: 'Cable Tray Support', jobNumber: 'JOB-1212', customer: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '28 Apr 2026', progress: 0, workOrders: 3, operator: 'E. Williams' },
-  { id: '4', moNumber: 'MO-2026-004', product: 'Machine Guard Assembly', jobNumber: 'JOB-1213', customer: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '10 Apr 2026', progress: 100, workOrders: 2, operator: 'M. Thompson' },
-  { id: '5', moNumber: 'MO-2026-005', product: 'Aluminium Enclosure Panel', jobNumber: 'JOB-1214', customer: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '05 May 2026', progress: 0, workOrders: 5, operator: 'S. Chen' },
-];
+const MO_DATA: ManufacturingOrder[] = manufacturingOrders.map((mo) => ({
+  id: mo.id,
+  moNumber: mo.moNumber,
+  product: mo.productName,
+  jobNumber: mo.jobNumber,
+  customer: mo.customerName,
+  status: mo.status as ManufacturingOrder['status'],
+  priority: mo.priority as ManufacturingOrder['priority'],
+  dueDate: new Date(mo.dueDate).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }),
+  progress: mo.progress,
+  workOrders: mo.workOrders,
+  operator: mo.operatorName.split(' ').map((n, i) => i === 0 ? `${n[0]}.` : n).join(' '),
+}));
 
 const STATUS_MAP: Record<string, string> = {
   draft: 'Draft',

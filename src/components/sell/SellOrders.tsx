@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
+import { salesOrders } from '@/services/mock';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -35,14 +36,15 @@ interface Order {
   jobReference?: string;
 }
 
-const mockOrders: Order[] = [
-  { id: '1', orderNumber: 'SO-2026-0089', customer: 'TechCorp Industries', date: '2026-03-15', status: 'in_production', total: 45000, jobReference: 'JOB-2026-0012' },
-  { id: '2', orderNumber: 'SO-2026-0088', customer: 'BHP Contractors', date: '2026-03-12', status: 'confirmed', total: 128000, jobReference: 'JOB-2026-0011' },
-  { id: '3', orderNumber: 'SO-2026-0087', customer: 'Pacific Fabrication', date: '2026-03-10', status: 'shipped', total: 8500, jobReference: 'JOB-2026-0010' },
-  { id: '4', orderNumber: 'SO-2026-0086', customer: 'Sydney Rail Corp', date: '2026-03-08', status: 'invoiced', total: 67000, jobReference: 'JOB-2026-0009' },
-  { id: '5', orderNumber: 'SO-2026-0085', customer: 'Hunter Steel Co', date: '2026-03-05', status: 'complete', total: 22000, jobReference: 'JOB-2026-0008' },
-  { id: '6', orderNumber: 'SO-2026-0084', customer: 'Kemppi Australia', date: '2026-03-03', status: 'draft', total: 12000 },
-];
+const mockOrders: Order[] = salesOrders.map((so) => ({
+  id: so.id,
+  orderNumber: so.orderNumber,
+  customer: so.customerName,
+  date: so.date,
+  status: so.status as OrderStatus,
+  total: so.total,
+  jobReference: so.jobId,
+}));
 
 const ORDER_STATUS_MAP: Record<OrderStatus, { status: StatusKey; label?: string }> = {
   draft:         { status: 'draft' },

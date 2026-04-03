@@ -13,15 +13,18 @@ import { TextSegmentedControl } from '@/components/shared/layout/TextSegmentedCo
 import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { carriers as centralCarriers } from '@/services/mock';
 
+const SHIP_COUNTS = [12, 8, 5, 6, 3, 4];
 const CARRIERS = [
-  { name: 'Australia Post', ships: 12, avg: 3.2, onTime: 97, ok: true },
-  { name: 'StarTrack',      ships: 8,  avg: 2.1, onTime: 95, ok: true },
-  { name: 'Toll/IPEC',      ships: 5,  avg: 2.8, onTime: 93, ok: true },
-  { name: 'TNT Express',    ships: 6,  avg: 2.4, onTime: 91, ok: true },
-  { name: 'DHL Express',    ships: 3,  avg: 1.5, onTime: 98, ok: true },
-  { name: 'Aramex',         ships: 0,  avg: 3.8, onTime: 88, ok: false },
-  { name: 'Sendle',         ships: 4,  avg: 3.5, onTime: 94, ok: true },
+  ...centralCarriers.map((c, i) => ({
+    name: c.name === 'Aus Post' ? 'Australia Post' : c.name === 'Toll' ? 'Toll/IPEC' : c.name === 'TNT' ? 'TNT Express' : c.name === 'DHL' ? 'DHL Express' : c.name,
+    ships: SHIP_COUNTS[i] ?? 0,
+    avg: c.avgTransitDays,
+    onTime: c.onTimePercent,
+    ok: c.onTimePercent >= 90,
+  })),
+  { name: 'Aramex', ships: 0, avg: 3.8, onTime: 88, ok: false },
 ];
 
 const RATES = [

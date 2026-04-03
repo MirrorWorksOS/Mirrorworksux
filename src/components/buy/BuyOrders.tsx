@@ -20,7 +20,7 @@ import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryB
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { toast } from 'sonner';
-
+import { purchaseOrders } from '@/services/mock';
 
 type POStatus = 'draft' | 'sent' | 'acknowledged' | 'partial' | 'received' | 'cancelled';
 type TabFilter = 'all' | POStatus;
@@ -36,13 +36,16 @@ interface PurchaseOrder {
   received: number;
 }
 
-const mockPOs: PurchaseOrder[] = [
-  { id: '1', poNumber: 'PO-2026-0089', supplier: 'Hunter Steel Co', date: '2026-03-15', deliveryDate: '2026-03-25', status: 'acknowledged', total: 12400, received: 0 },
-  { id: '2', poNumber: 'PO-2026-0088', supplier: 'Pacific Metals', date: '2026-03-12', deliveryDate: '2026-03-22', status: 'partial', total: 8500, received: 4200 },
-  { id: '3', poNumber: 'PO-2026-0087', supplier: 'Sydney Welding Supply', date: '2026-03-10', deliveryDate: '2026-03-20', status: 'received', total: 3200, received: 3200 },
-  { id: '4', poNumber: 'PO-2026-0086', supplier: 'BHP Suppliers', date: '2026-03-08', deliveryDate: '2026-03-18', status: 'sent', total: 28000, received: 0 },
-  { id: '5', poNumber: 'PO-2026-DRAFT-01', supplier: 'Generic Parts Co', date: '2026-03-19', deliveryDate: '2026-03-29', status: 'draft', total: 4500, received: 0 },
-];
+const mockPOs: PurchaseOrder[] = purchaseOrders.map((po) => ({
+  id: po.id,
+  poNumber: po.poNumber,
+  supplier: po.supplierName,
+  date: po.date,
+  deliveryDate: po.deliveryDate,
+  status: po.status,
+  total: po.total,
+  received: po.received,
+}));
 
 const getStatusBadge = (status: POStatus) => {
   switch (status) {

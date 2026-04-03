@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/components/ui/utils";
 import type { Opportunity } from "./sell-opportunity-types";
+import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services/mock';
 
 type Stage = Opportunity["stage"];
 
@@ -54,80 +55,24 @@ const TAG_OPTIONS = [
   "Export",
 ] as const;
 
-const MOCK_BY_ID: Record<string, Opportunity> = {
-  "1": {
-    id: "1",
-    title: "Server Rack Fabrication",
-    customer: "TechCorp Industries",
-    value: 45000,
-    expectedClose: "2026-04-15",
-    assignedTo: "SC",
-    priority: "high",
-    stage: "proposal",
-    probabilityPercent: 68,
-    tags: ["Strategic", "Urgent"],
-  },
-  "2": {
-    id: "2",
-    title: "Structural Steel Package",
-    customer: "BHP Contractors",
-    value: 128000,
-    expectedClose: "2026-04-30",
-    assignedTo: "MT",
-    priority: "urgent",
-    stage: "negotiation",
-    probabilityPercent: 55,
-    tags: ["Export"],
-  },
-  "3": {
-    id: "3",
-    title: "Custom Brackets (50 units)",
-    customer: "Pacific Fab",
-    value: 8500,
-    expectedClose: "2026-03-25",
-    assignedTo: "EW",
-    priority: "medium",
-    stage: "qualified",
-    probabilityPercent: 40,
-    tags: ["Repeat customer"],
-  },
-  "4": {
-    id: "4",
-    title: "Rail Platform Components",
-    customer: "Sydney Rail Corp",
-    value: 67000,
-    expectedClose: "2026-05-10",
-    assignedTo: "DL",
-    priority: "high",
-    stage: "proposal",
-    probabilityPercent: 62,
-    tags: ["Strategic"],
-  },
-  "5": {
-    id: "5",
-    title: "Machine Guards",
-    customer: "Kemppi Australia",
-    value: 12000,
-    expectedClose: "2026-03-30",
-    assignedTo: "SC",
-    priority: "low",
-    stage: "new",
-    probabilityPercent: 25,
-    tags: [],
-  },
-  "6": {
-    id: "6",
-    title: "Aluminium Enclosures",
-    customer: "Hunter Steel Co",
-    value: 22000,
-    expectedClose: "2026-04-05",
-    assignedTo: "MT",
-    priority: "medium",
-    stage: "new",
-    probabilityPercent: 30,
-    tags: ["Design assist"],
-  },
-};
+// Bridge centralized data to the shape this component expects (keyed by sequential id)
+const MOCK_BY_ID: Record<string, Opportunity> = Object.fromEntries(
+  mockOpportunities.map((opp, i) => [
+    String(i + 1),
+    {
+      id: String(i + 1),
+      title: opp.title,
+      customer: opp.customerName,
+      value: opp.value,
+      expectedClose: opp.expectedClose,
+      assignedTo: opp.assignedToInitials,
+      priority: opp.priority,
+      stage: opp.stage,
+      probabilityPercent: opp.probabilityPercent,
+      tags: opp.tags,
+    },
+  ]),
+);
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: "new", label: "New", color: "var(--neutral-500)" },
@@ -138,88 +83,38 @@ const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: "lost", label: "Lost", color: "var(--mw-error)" },
 ];
 
+// Build customer contact lookup from centralized data
 const MOCK_CUSTOMER: Record<
   string,
   { contact: string; phone: string; email: string; address: string }
-> = {
-  "TechCorp Industries": {
-    contact: "James Hartley",
-    phone: "+61 2 9001 2345",
-    email: "james@techcorp.com.au",
-    address: "12 Tech Park Dr, Macquarie Park NSW",
-  },
-  "BHP Contractors": {
-    contact: "Anika Patel",
-    phone: "+61 7 3100 0982",
-    email: "anika.p@bhp.com.au",
-    address: "1 BHP Way, Brisbane QLD",
-  },
-  "Pacific Fab": {
-    contact: "Dale Nguyen",
-    phone: "+61 3 9422 1100",
-    email: "dale@pacificfab.com.au",
-    address: "44 Fabrication Rd, Dandenong VIC",
-  },
-  "Sydney Rail Corp": {
-    contact: "Rebecca O'Brien",
-    phone: "+61 2 8000 4400",
-    email: "robrien@sydneyrail.gov.au",
-    address: "130 Elizabeth St, Sydney NSW",
-  },
-  "Kemppi Australia": {
-    contact: "Lars Knutsen",
-    phone: "+61 2 9765 4321",
-    email: "lars@kemppi.com.au",
-    address: "22 Welding Ln, Seven Hills NSW",
-  },
-  "Hunter Steel Co": {
-    contact: "Mark Thompson",
-    phone: "+61 2 4000 1234",
-    email: "mark@huntersteel.com.au",
-    address: "88 Steel St, Newcastle NSW",
-  },
-};
+> = Object.fromEntries(
+  mockCustomersData.map((c) => [
+    c.company,
+    {
+      contact: c.contact,
+      phone: c.phone,
+      email: c.email,
+      address: `${c.address}, ${c.city} ${c.state}`,
+    },
+  ]),
+);
 
-const MOCK_ACTIVITIES: TimelineEvent[] = [
-  {
-    id: "a1",
-    title: "Email",
-    description: "Sent revised quote v2 — updated material costs (SC)",
-    timestamp: "2h ago",
-    status: "completed",
-  },
-  {
-    id: "a2",
-    title: "Phone call",
-    description: "Discussed lead time concerns re: steel delivery (SC)",
-    timestamp: "1d ago",
-    status: "completed",
-  },
-  {
-    id: "a3",
-    title: "Meeting",
-    description: "Site visit to review installation requirements (MT)",
-    timestamp: "3d ago",
-    status: "completed",
-  },
-  {
-    id: "a4",
-    title: "Follow-up",
-    description: "Follow up on quote acceptance (SC)",
-    timestamp: "Tomorrow",
-    status: "upcoming",
-  },
-];
+// Build timeline events from centralized activities
+const MOCK_ACTIVITIES: TimelineEvent[] = sellActivities.slice(0, 4).map((a, i) => ({
+  id: a.id,
+  title: a.type.charAt(0).toUpperCase() + a.type.slice(1),
+  description: a.description,
+  timestamp: i === 0 ? '2h ago' : i === 1 ? '1d ago' : i === 2 ? '3d ago' : 'Tomorrow',
+  status: a.status === 'completed' ? ('completed' as const) : ('upcoming' as const),
+}));
 
-const MOCK_QUOTES = [
-  {
-    ref: "MW-Q-0055",
-    date: "12 Mar 2026",
-    value: 42000,
-    status: "Sent",
-  },
-  { ref: "MW-Q-0048", date: "28 Feb 2026", value: 12500, status: "Draft" },
-];
+// Build quotes list from centralized data
+const MOCK_QUOTES = mockQuotesData.slice(0, 2).map((q) => ({
+  ref: q.ref,
+  date: new Date(q.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }),
+  value: q.value,
+  status: q.status.charAt(0).toUpperCase() + q.status.slice(1),
+}));
 
 /** Sell opportunity tab ids — passed to JobWorkspaceLayout. */
 const DEFAULT_SELL_OPPORTUNITY_TABS: JobWorkspaceTabConfig[] = [

@@ -33,12 +33,29 @@ interface Requisition {
   items: number;
 }
 
+import { requisitions as centralReqs, employees } from '@/services/mock';
+
+const DEPT_LOOKUP: Record<string, string> = { Sales: 'Sales', Planning: 'Planning', Production: 'Fabrication', QC: 'QC', Purchasing: 'Purchasing', Logistics: 'Logistics' };
+const EXTRA_REQS: Requisition[] = [
+  { id: 'req-extra-1', reqNumber: 'REQ-2026-0087', requestor: 'Emma Wilson', department: 'Finishing', date: '2026-03-15', status: 'converted', total: 12400, items: 5 },
+  { id: 'req-extra-2', reqNumber: 'REQ-2026-0086', requestor: 'David Lee', department: 'Fabrication', date: '2026-03-14', status: 'rejected', total: 28000, items: 1 },
+  { id: 'req-extra-3', reqNumber: 'REQ-2026-DRAFT-01', requestor: 'Sarah Chen', department: 'Fabrication', date: '2026-03-19', status: 'draft', total: 1500, items: 2 },
+];
 const mockRequisitions: Requisition[] = [
-  { id: '1', reqNumber: 'REQ-2026-0089', requestor: 'Sarah Chen', department: 'Fabrication', date: '2026-03-18', status: 'submitted', total: 8500, items: 3 },
-  { id: '2', reqNumber: 'REQ-2026-0088', requestor: 'Mike Thompson', department: 'Welding', date: '2026-03-17', status: 'approved', total: 3200, items: 2 },
-  { id: '3', reqNumber: 'REQ-2026-0087', requestor: 'Emma Wilson', department: 'Finishing', date: '2026-03-15', status: 'converted', total: 12400, items: 5 },
-  { id: '4', reqNumber: 'REQ-2026-0086', requestor: 'David Lee', department: 'Fabrication', date: '2026-03-14', status: 'rejected', total: 28000, items: 1 },
-  { id: '5', reqNumber: 'REQ-2026-DRAFT-01', requestor: 'Sarah Chen', department: 'Fabrication', date: '2026-03-19', status: 'draft', total: 1500, items: 2 },
+  ...centralReqs.map((r) => {
+    const emp = employees.find((e) => e.id === r.requestorId);
+    return {
+      id: r.id,
+      reqNumber: r.reqNumber,
+      requestor: r.requestorName,
+      department: DEPT_LOOKUP[emp?.department ?? ''] ?? emp?.department ?? 'General',
+      date: r.date,
+      status: (r.status === 'pending_approval' ? 'submitted' : r.status === 'ordered' ? 'converted' : r.status) as ReqStatus,
+      total: r.total,
+      items: r.items.length,
+    };
+  }),
+  ...EXTRA_REQS,
 ];
 
 const getStatusBadge = (status: ReqStatus) => {

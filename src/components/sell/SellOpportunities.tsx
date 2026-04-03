@@ -21,6 +21,7 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { opportunities as centralOpportunities } from '@/services/mock';
 import type { Opportunity } from './sell-opportunity-types';
 
 const KANBAN_ITEM_TYPE = 'sell-opportunity';
@@ -28,14 +29,18 @@ const KANBAN_ITEM_TYPE = 'sell-opportunity';
 type OpportunityStage = 'new' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
 type Priority = 'low' | 'medium' | 'high' | 'urgent';
 
-const mockOpportunities: Opportunity[] = [
-  { id: '1', title: 'Server Rack Fabrication', customer: 'TechCorp Industries', value: 45000, expectedClose: '2026-04-15', assignedTo: 'SC', priority: 'high', stage: 'proposal' },
-  { id: '2', title: 'Structural Steel Package', customer: 'BHP Contractors', value: 128000, expectedClose: '2026-04-30', assignedTo: 'MT', priority: 'urgent', stage: 'negotiation' },
-  { id: '3', title: 'Custom Brackets (50 units)', customer: 'Pacific Fab', value: 8500, expectedClose: '2026-03-25', assignedTo: 'EW', priority: 'medium', stage: 'qualified' },
-  { id: '4', title: 'Rail Platform Components', customer: 'Sydney Rail Corp', value: 67000, expectedClose: '2026-05-10', assignedTo: 'DL', priority: 'high', stage: 'proposal' },
-  { id: '5', title: 'Machine Guards', customer: 'Kemppi Australia', value: 12000, expectedClose: '2026-03-30', assignedTo: 'SC', priority: 'low', stage: 'new' },
-  { id: '6', title: 'Aluminium Enclosures', customer: 'Hunter Steel Co', value: 22000, expectedClose: '2026-04-05', assignedTo: 'MT', priority: 'medium', stage: 'new' },
-];
+const mockOpportunities: Opportunity[] = centralOpportunities.map((o) => ({
+  id: o.id,
+  title: o.title,
+  customer: o.customerName,
+  value: o.value,
+  expectedClose: o.expectedClose,
+  assignedTo: o.assignedToInitials,
+  priority: o.priority,
+  stage: o.stage,
+  probabilityPercent: o.probabilityPercent,
+  tags: o.tags,
+}));
 
 const stages: { key: OpportunityStage; label: string; summaryColor: string }[] = [
   { key: 'new', label: 'New', summaryColor: 'var(--neutral-300)' },

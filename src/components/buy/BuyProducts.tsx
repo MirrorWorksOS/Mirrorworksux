@@ -21,11 +21,16 @@ interface Product {
   preferredSupplier: string;
 }
 
-const mockProducts: Product[] = [
-  { id: '1', name: 'Mild Steel Sheet 1200x2400x3mm', sku: 'MAT-MS-001', stock: 15, reorder: 20, preferredSupplier: 'Hunter Steel Co' },
-  { id: '2', name: 'Aluminium Angle 50x50x5mm', sku: 'MAT-AL-042', stock: 8, reorder: 15, preferredSupplier: 'Pacific Metals' },
-  { id: '3', name: 'Welding Rod ER70S-6 4mm', sku: 'CONS-WR-001', stock: 45, reorder: 50, preferredSupplier: 'Sydney Welding' },
-];
+import { products as centralProducts, suppliers } from '@/services/mock';
+
+const mockProducts: Product[] = centralProducts.slice(0, 3).map((p, i) => ({
+  id: p.id,
+  name: p.description,
+  sku: p.partNumber,
+  stock: [15, 8, 45][i],
+  reorder: [20, 15, 50][i],
+  preferredSupplier: suppliers[i]?.company ?? 'TBD',
+}));
 
 const productColumns: MwColumnDef<Product>[] = [
   {
