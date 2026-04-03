@@ -22,6 +22,13 @@ import { motion } from "motion/react";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/components/ui/utils";
+import {
+  TooltipProvider as AnimateTooltipProvider,
+  Tooltip as AnimateTooltip,
+  TooltipTrigger as AnimateTooltipTrigger,
+  TooltipContent as AnimateTooltipContent,
+  TooltipArrow as AnimateTooltipArrow,
+} from "@/components/animate-ui/primitives/animate/tooltip";
 
 /* ------------------------------------------------------------------ */
 /*  PageToolbar — flex row with standard gap                          */
@@ -174,7 +181,12 @@ function defaultFormat(v: number): string {
   return `$${v.toLocaleString()}`;
 }
 
-/** Animated stacked horizontal bar with legend — shows data breakdown at a glance. */
+function fullCurrency(v: number): string {
+  return `$${v.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+/** Animated stacked horizontal bar with legend — shows data breakdown at a glance.
+ *  Each segment has a context-aware Animate UI tooltip that glides between segments. */
 export function ToolbarSummaryBar({
   segments,
   className,
@@ -185,23 +197,54 @@ export function ToolbarSummaryBar({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {/* Stacked bar */}
-      <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[var(--neutral-100)]">
-        {segments.map((seg) => {
-          const pct = (seg.value / total) * 100;
-          if (pct === 0) return null;
-          return (
-            <motion.div
-              key={seg.key}
-              className="h-full"
-              style={{ backgroundColor: seg.color }}
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.65, ease: [0.2, 0, 0, 1] }}
-            />
-          );
-        })}
-      </div>
+      {/* Stacked bar with context-aware tooltips */}
+      <AnimateTooltipProvider openDelay={0} closeDelay={150}>
+        <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[var(--neutral-100)]">
+          {segments.map((seg) => {
+            const pct = (seg.value / total) * 100;
+            if (pct === 0) return null;
+            return (
+              <AnimateTooltip key={seg.key} side="top" sideOffset={8}>
+                <AnimateTooltipTrigger asChild>
+                  <motion.div
+                    className="h-full cursor-default"
+                    style={{ backgroundColor: seg.color }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.65, ease: [0.2, 0, 0, 1] }}
+                  />
+                </AnimateTooltipTrigger>
+                <AnimateTooltipContent
+                  className="z-50 rounded-lg border border-[var(--neutral-200)] bg-white/95 px-3 py-2 shadow-lg backdrop-blur-md"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="inline-block h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: seg.color }}
+                    />
+                    <span className="text-xs font-medium text-[var(--neutral-900)]">
+                      {seg.label}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="text-sm font-semibold tabular-nums text-[var(--mw-mirage)]">
+                      {fullCurrency(seg.value)}
+                    </span>
+                    <span className="text-[10px] tabular-nums text-[var(--neutral-500)]">
+                      {pct.toFixed(1)}%
+                    </span>
+                  </div>
+                  <AnimateTooltipArrow
+                    className="fill-white/95"
+                    width={10}
+                    height={5}
+                  />
+                </AnimateTooltipContent>
+              </AnimateTooltip>
+            );
+          })}
+        </div>
+      </AnimateTooltipProvider>
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
         {segments.map((seg) => (

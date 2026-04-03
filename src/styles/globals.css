@@ -27,6 +27,17 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
+/* Dark mode scrollbars */
+.dark *:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.dark *:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 :root {
   /* Font Family — Roboto only, M3 */
   --font-sans: 'Roboto', sans-serif;
@@ -245,40 +256,105 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  /* ── MW Dark Palette ──
+     60% dark surfaces (mirage-derived) / 30% light text / 10% MW Yellow accent
+     Yellow-on-dark is the hero pairing per VisualLanguage.md */
+
+  /* MW Yellow Scale — unchanged, high-contrast on dark */
+  --mw-yellow-50: #3D3520;
+  --mw-yellow-100: #4A3F1E;
+  --mw-yellow-200: #5C4E1F;
+  --mw-yellow-300: #7A6820;
+  --mw-yellow-400: #FFCF4B;
+  --mw-yellow-500: #F2BF30;
+  --mw-yellow-600: #E6A600;
+  --mw-yellow-700: #CC8E00;
+  --mw-yellow-800: #FFE8AD;
+  --mw-yellow-900: #FFF3D6;
+
+  /* Neutral Scale — inverted for dark UI */
+  --neutral-50: #0F1419;
+  --neutral-100: #1A2732;
+  --neutral-200: #243442;
+  --neutral-300: #2C3E4F;
+  --neutral-400: #526678;
+  --neutral-500: #738899;
+  --neutral-600: #94A3B3;
+  --neutral-700: #B0BCC8;
+  --neutral-800: #D4DCE4;
+  --neutral-900: #E5E5E5;
+
+  /* Dark Accent — shifts for dark surfaces */
+  --mw-mirage: #243442;
+  --mw-off-white: #1A2732;
+
+  /* Status Light Backgrounds — darkened for dark UI */
+  --mw-success-light: #0D2E1F;
+  --mw-error-light: #2E1410;
+  --mw-warning-light: #2E2A0D;
+  --mw-info-light: #0D1A2E;
+
+  /* App canvas */
+  --app-canvas: #0F1419;
+
+  /* Icon wells — inverted */
+  --icon-well-on-light-bg: #E5E5E5;
+  --icon-well-on-dark-bg: #94A3B3;
+
+  /* Chart scale */
+  --chart-scale-low: #2C3E4F;
+  --chart-scale-mid: #94A3B3;
+  --chart-scale-high: #FFCF4B;
+
+  /* M3 Elevation — lighter glow on dark surfaces */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --elevation-2: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --elevation-3: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --elevation-4: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --elevation-5: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+
+  /* ── Semantic Tokens ── */
+  --background: var(--app-canvas);
+  --foreground: #E5E5E5;
+  --card: #1A2732;
+  --card-foreground: #E5E5E5;
+  --popover: #1A2732;
+  --popover-foreground: #E5E5E5;
+  --primary: #FFCF4B;
+  --primary-foreground: #0A0A0A;
+  --secondary: #243442;
+  --secondary-foreground: #E5E5E5;
+  --muted: #1F2D3A;
+  --muted-foreground: #738899;
+  --accent: #243442;
+  --accent-foreground: #E5E5E5;
+  --destructive: #DE350B;
+  --destructive-foreground: #FFFFFF;
+  --border: #2C3E4F;
+  --input: #243442;
+  --input-background: #1F2D3A;
+  --switch-background: #2C3E4F;
+  --ring: #FFCF4B;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+
+  /* Charts — yellow hero, mirage-derived supporting */
+  --chart-1: #FFCF4B;
+  --chart-2: #94A3B3;
+  --chart-3: #526678;
+  --chart-4: #B0BCC8;
+  --chart-5: #738899;
+
+  /* Sidebar */
+  --sidebar: #0F1419;
+  --sidebar-foreground: #E5E5E5;
+  --sidebar-primary: #FFCF4B;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #1F2D3A;
+  --sidebar-accent-foreground: #E5E5E5;
+  --sidebar-border: #2C3E4F;
+  --sidebar-ring: #FFCF4B;
 }
 
 @theme inline {
@@ -524,6 +600,31 @@
 /* Entry shimmer — plays once on mount then stops */
 .mw-shine-once::after {
   animation: mw-shine 1.5s ease-in-out 1 forwards;
+}
+
+/* Dark mode: lighter sweep on dark surfaces */
+.dark .mw-shine::after {
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.04) 37%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.04) 63%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+}
+
+.dark .mw-shine-subtle::after {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.02) 42%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 58%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
 }
 
 /* ─── MW transition utility ─── */

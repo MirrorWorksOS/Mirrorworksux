@@ -12,8 +12,6 @@ import {
   Search,
   Plus,
   ChevronRight,
-  Moon,
-  Sun,
   LogOut,
   Bell,
   User,
@@ -23,6 +21,8 @@ import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
 import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
+import { useTheme } from '@/components/theme-provider';
+import { ThemeToggler } from '@/components/animate-ui/primitives/effects/theme-toggler';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -380,40 +380,28 @@ function KbdPill({
 }
 
 // ---------------------------------------------------------------------------
-// Dark mode toggle
+// Dark mode toggle (animated, powered by ThemeProvider)
 // ---------------------------------------------------------------------------
 
 function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
-  }, []);
-
-  const toggle = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
   };
 
   return (
-    <button
-      onClick={toggle}
-      className="relative flex items-center w-11 h-6 rounded-full bg-[var(--neutral-200)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-300)]"
-      aria-label="Toggle dark mode"
-    >
-      <div
-        className="absolute w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
-        style={{ transform: isDark ? 'translateX(22px)' : 'translateX(2px)' }}
-      >
-        {isDark ? (
-          <Moon className="w-3 h-3 text-[var(--neutral-600)]" />
-        ) : (
-          <Sun className="w-3 h-3 text-[var(--neutral-600)]" />
-        )}
-      </div>
-    </button>
+    <div onClick={handleClick}>
+      <ThemeToggler
+        theme={theme}
+        resolvedTheme={resolvedTheme}
+        setTheme={setTheme}
+        direction="ttb"
+        as="div"
+        iconClassName="text-muted-foreground"
+      />
+    </div>
   );
 }
 

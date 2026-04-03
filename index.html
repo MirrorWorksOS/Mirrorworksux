@@ -8,9 +8,21 @@
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
       <title>MirrorWorks — Smart FactoryOS</title>
+      <script>
+        (function () {
+          var t = localStorage.getItem('mw-ui-theme');
+          if (
+            t === 'dark' ||
+            ((!t || t === 'system') &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark');
+          }
+        })();
+      </script>
     </head>
 
-    <body style="background-color: #F5F5F5;">
+    <body>
       <div id="root"></div>
       <script type="module" src="/src/main.tsx"></script>
     </body>
