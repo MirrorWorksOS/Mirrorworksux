@@ -1,7 +1,7 @@
 /**
  * Guided manual data entry (PLAT 01). Machines include optional connectivity for shop-floor / networking setup.
  */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { Button } from '@/components/ui/button';
 import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
@@ -13,15 +13,178 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { cn } from '@/components/ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
-import { ChevronDown, Plus, Trash2, CheckCircle } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, CheckCircle, Check, ChevronsUpDown } from 'lucide-react';
+
+type FieldDef = {
+  name: string;
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  type?: 'input' | 'combobox';
+  options?: { value: string; label: string }[];
+  /** Returns a dynamic placeholder based on current form state */
+  dynamicPlaceholder?: (formData: Record<string, string>) => string;
+};
 
 type EntityFormDef = {
   key: string;
   label: string;
-  fields: { name: string; label: string; required?: boolean; placeholder?: string }[];
+  fields: FieldDef[];
 };
+
+// ─── Material categories with profile-specific dimension hints ────────────────
+
+type MaterialCategory = {
+  value: string;
+  label: string;
+  dimensionHint: string;
+};
+
+const MATERIAL_CATEGORIES: MaterialCategory[] = [
+  { value: 'sheet_metal',        label: 'Sheet metal',              dimensionHint: 'e.g. 3mm × 1200 × 2400mm' },
+  { value: 'coil',               label: 'Coil',                     dimensionHint: 'e.g. 1.6mm × 1200mm wide' },
+  { value: 'plate',              label: 'Plate',                    dimensionHint: 'e.g. 10mm × 2400 × 6000mm' },
+  { value: 'rhs',                label: 'RHS (Rectangular Hollow)', dimensionHint: 'e.g. 75 × 50 × 3mm × 6.5m' },
+  { value: 'shs',                label: 'SHS (Square Hollow)',      dimensionHint: 'e.g. 50 × 50 × 3mm × 6.5m' },
+  { value: 'chs',                label: 'CHS (Circular Hollow)',    dimensionHint: 'e.g. 48.3 OD × 3.2mm × 6.5m' },
+  { value: 'flat_bar',           label: 'Flat bar',                 dimensionHint: 'e.g. 50 × 5mm × 6m' },
+  { value: 'round_bar',          label: 'Round bar',                dimensionHint: 'e.g. 20mm dia × 6m' },
+  { value: 'angle',              label: 'Angle',                    dimensionHint: 'e.g. 50 × 50 × 5mm × 6m' },
+  { value: 'channel',            label: 'Channel (PFC)',            dimensionHint: 'e.g. 100 PFC × 6m' },
+  { value: 'ub',                 label: 'UB (Universal Beam)',      dimensionHint: 'e.g. 200UB25.4 × 12m' },
+  { value: 'uc',                 label: 'UC (Universal Column)',    dimensionHint: 'e.g. 150UC23.4 × 12m' },
+  { value: 'pipe',               label: 'Pipe',                     dimensionHint: 'e.g. DN50 × 3.2mm × 6m' },
+  { value: 'tube',               label: 'Tube',                     dimensionHint: 'e.g. 25.4 OD × 1.6mm × 6m' },
+  { value: 'mesh',               label: 'Mesh',                     dimensionHint: 'e.g. 5mm wire × 100mm centres' },
+  { value: 'grating',            label: 'Grating',                  dimensionHint: 'e.g. 32 × 5mm bar × 40mm pitch' },
+  { value: 'fasteners',          label: 'Fasteners',                dimensionHint: 'e.g. M12 × 50mm' },
+  { value: 'welding_consumables',label: 'Welding consumables',      dimensionHint: 'e.g. 1.0mm × 15kg spool' },
+  { value: 'abrasives',          label: 'Abrasives',                dimensionHint: 'e.g. 125mm × 6mm' },
+  { value: 'paint_coatings',     label: 'Paint & coatings',         dimensionHint: 'e.g. 20L' },
+  { value: 'other',              label: 'Other',                    dimensionHint: 'e.g. size, weight, or spec' },
+];
+
+const CATEGORY_OPTIONS = MATERIAL_CATEGORIES.map((c) => ({ value: c.value, label: c.label }));
+
+// ─── Employee groups / departments ────────────────────────────────────────────
+
+const EMPLOYEE_GROUPS: { value: string; label: string }[] = [
+  { value: 'production',    label: 'Production' },
+  { value: 'fabrication',   label: 'Fabrication' },
+  { value: 'welding',       label: 'Welding' },
+  { value: 'cnc_machining', label: 'CNC / Machining' },
+  { value: 'laser_cutting', label: 'Laser cutting' },
+  { value: 'finishing',     label: 'Finishing & painting' },
+  { value: 'quality',       label: 'Quality control' },
+  { value: 'engineering',   label: 'Engineering / Design' },
+  { value: 'maintenance',   label: 'Maintenance' },
+  { value: 'dispatch',      label: 'Dispatch / Shipping' },
+  { value: 'purchasing',    label: 'Purchasing' },
+  { value: 'sales',         label: 'Sales' },
+  { value: 'estimating',    label: 'Estimating' },
+  { value: 'admin',         label: 'Office / Admin' },
+  { value: 'management',    label: 'Management' },
+  { value: 'other',         label: 'Other' },
+];
+
+function getDimensionPlaceholder(formData: Record<string, string>): string {
+  const match = MATERIAL_CATEGORIES.find((c) => c.value === formData.category);
+  return match?.dimensionHint ?? 'Select a category first';
+}
+
+// ─── Combobox field (Popover + Command) ───────────────────────────────────────
+
+function ComboboxField({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [triggerWidth, setTriggerWidth] = useState<number | undefined>();
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      setTriggerWidth(triggerRef.current.offsetWidth);
+    }
+  }, [open]);
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          ref={triggerRef}
+          type="button"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            'flex h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs',
+            'hover:bg-[var(--neutral-50)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+            !selected && 'text-muted-foreground'
+          )}
+        >
+          <span className="truncate">{selected ? selected.label : (placeholder ?? 'Select…')}</span>
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="p-0"
+        align="start"
+        style={triggerWidth ? { width: triggerWidth } : undefined}
+      >
+        <Command>
+          <CommandInput placeholder="Search categories…" />
+          <CommandList>
+            <CommandEmpty>No match found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.label}
+                  onSelect={() => {
+                    onChange(option.value === value ? '' : option.value);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-3.5 w-3.5',
+                      value === option.value ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 /** Optional fields aligned with shop-floor connectivity (see Confluence machine networking spec). */
 const MACHINE_CONNECTIVITY_FIELDS: {
@@ -64,7 +227,8 @@ const ENTITY_FORMS: EntityFormDef[] = [
     fields: [
       { name: 'name', label: 'Material name', required: true, placeholder: 'e.g. Mild Steel 3mm sheet' },
       { name: 'unit_of_measure', label: 'Unit of measure', required: true, placeholder: 'e.g. sheet, metre, kg' },
-      { name: 'category', label: 'Category', placeholder: 'e.g. Sheet metal, Fasteners' },
+      { name: 'category', label: 'Category', type: 'combobox', options: CATEGORY_OPTIONS, placeholder: 'Search categories…' },
+      { name: 'dimensions', label: 'Dimensions', dynamicPlaceholder: getDimensionPlaceholder },
       { name: 'reorder_point', label: 'Reorder point', placeholder: 'e.g. 10' },
     ],
   },
@@ -105,6 +269,7 @@ const ENTITY_FORMS: EntityFormDef[] = [
       { name: 'first_name', label: 'First name', required: true, placeholder: 'e.g. Mike' },
       { name: 'last_name', label: 'Last name', required: true, placeholder: 'e.g. Torres' },
       { name: 'role', label: 'Job title / role', placeholder: 'e.g. CNC Operator' },
+      { name: 'group', label: 'Group', type: 'combobox', options: EMPLOYEE_GROUPS, placeholder: 'Search groups…' },
       { name: 'email', label: 'Email', placeholder: 'e.g. mike@company.com' },
     ],
   },
@@ -213,20 +378,35 @@ export function StepManualEntry() {
 
         <div className="flex-1 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            {entity.fields.map((field) => (
-              <div key={field.name} className="space-y-1.5">
-                <Label className="text-sm">
-                  {field.label}
-                  {field.required && <span className="text-[var(--mw-error)] ml-0.5">*</span>}
-                </Label>
-                <Input
-                  value={formData[field.name] || ''}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  className="h-10"
-                />
-              </div>
-            ))}
+            {entity.fields.map((field) => {
+              const placeholder = field.dynamicPlaceholder
+                ? field.dynamicPlaceholder(formData)
+                : field.placeholder;
+
+              return (
+                <div key={field.name} className="space-y-1.5">
+                  <Label className="text-sm">
+                    {field.label}
+                    {field.required && <span className="text-[var(--mw-error)] ml-0.5">*</span>}
+                  </Label>
+                  {field.type === 'combobox' && field.options ? (
+                    <ComboboxField
+                      value={formData[field.name] || ''}
+                      onChange={(val) => setFormData((prev) => ({ ...prev, [field.name]: val }))}
+                      options={field.options}
+                      placeholder={placeholder}
+                    />
+                  ) : (
+                    <Input
+                      value={formData[field.name] || ''}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                      placeholder={placeholder}
+                      className="h-10"
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {isMachines && (
@@ -289,10 +469,20 @@ export function StepManualEntry() {
                 key: f.name,
                 header: f.label,
                 className: 'whitespace-nowrap max-w-[12rem] truncate',
-                cell: (record: Record<string, string>) =>
-                  f.name === 'network_planned'
-                    ? record.network_planned === 'yes' ? 'Yes' : '—'
-                    : record[f.name] || '—',
+                cell: (record: Record<string, string>) => {
+                  if (f.name === 'network_planned') {
+                    return record.network_planned === 'yes' ? 'Yes' : '—';
+                  }
+                  if (f.name === 'category' && entity.key === 'materials') {
+                    const cat = MATERIAL_CATEGORIES.find((c) => c.value === record.category);
+                    return cat?.label || record[f.name] || '—';
+                  }
+                  if (f.name === 'group' && entity.key === 'employees') {
+                    const grp = EMPLOYEE_GROUPS.find((g) => g.value === record.group);
+                    return grp?.label || record[f.name] || '—';
+                  }
+                  return record[f.name] || '—';
+                },
               })),
               {
                 key: '_delete',
