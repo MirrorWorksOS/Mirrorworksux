@@ -64,7 +64,7 @@ export function ToolbarFilterButton({
           type="button"
           variant="outline"
           className={cn(
-            "h-12 min-h-[48px] gap-2 rounded-full border-[var(--neutral-200)] bg-white px-5 text-sm font-medium text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)]",
+            "h-12 min-h-[48px] gap-2 rounded-full border-[var(--neutral-200)] bg-background px-5 text-sm font-medium text-[var(--mw-mirage)] hover:bg-[var(--neutral-50)]",
             className,
           )}
           {...props}
@@ -74,7 +74,7 @@ export function ToolbarFilterButton({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-72 rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-4 shadow-lg"
+        className="w-72 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-4 shadow-lg"
         align="start"
       >
         <div className="space-y-4">

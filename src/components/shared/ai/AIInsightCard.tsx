@@ -38,7 +38,7 @@ export function AIInsightCard({
   return (
     <div
       className={cn(
-        'bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-4',
+        'bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-4',
         className
       )}
     >

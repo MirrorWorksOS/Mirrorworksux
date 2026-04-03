@@ -31,7 +31,7 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
 
   return (
     <Card className={cn(
-      "border bg-white shadow-xs rounded-[var(--shape-lg)] overflow-hidden transition-all",
+      "border bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden transition-all",
       applied ? "border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5" : "border-[var(--neutral-200)]"
     )}>
       <div className="p-4">

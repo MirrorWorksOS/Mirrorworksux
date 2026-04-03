@@ -84,7 +84,7 @@ export function BuyAgreements() {
           { label: 'Total spent YTD',  value: `$${totalSpent.toLocaleString()}`,     sub: `${((totalSpent / totalCommitted) * 100).toFixed(0)}% utilised` },
           { label: 'Remaining',        value: `$${(totalCommitted - totalSpent).toLocaleString()}`, sub: 'Available to spend' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className="text-xl font-medium tabular-nums text-[var(--mw-mirage)]">{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -107,7 +107,7 @@ export function BuyAgreements() {
 
           return (
             <motion.div key={agr.id} variants={staggerItem}>
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">

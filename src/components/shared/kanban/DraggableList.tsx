@@ -55,7 +55,7 @@ function DraggableRow<T>({
     <div
       ref={drop}
       className={cn(
-        "flex min-h-[48px] items-stretch gap-2 rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-white",
+        "flex min-h-[48px] items-stretch gap-2 rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-card",
         isDragging && "opacity-60",
       )}
     >

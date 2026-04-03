@@ -121,7 +121,7 @@ export function AiCommandBar({
       <form
         onSubmit={onSubmit}
         className={cn(
-          "flex w-full items-center gap-3 rounded-full border border-[var(--neutral-200)] bg-white p-2 pl-4 shadow-xs transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
+          "flex w-full items-center gap-3 rounded-full border border-[var(--neutral-200)] bg-card p-2 pl-4 shadow-xs transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
           className,
         )}
         role="search"

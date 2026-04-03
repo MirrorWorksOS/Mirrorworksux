@@ -123,7 +123,7 @@ export function BuyBills() {
           { label: 'Amount mismatch', value: BILLS.filter(b => b.status === 'mismatch').length, sub: 'Needs review',                        bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
           { label: 'Overdue',         value: BILLS.filter(b => b.status === 'overdue').length,  sub: 'Past due date',                       bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>

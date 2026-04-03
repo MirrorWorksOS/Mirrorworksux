@@ -95,7 +95,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <Card className={cn('border rounded-[var(--shape-lg)] p-4', insight.type === 'risk' ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)]' : 'border-[var(--border)] bg-white hover:shadow-sm transition-shadow')}>
+                <Card className={cn('border rounded-[var(--shape-lg)] p-4', insight.type === 'risk' ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)]' : 'border-[var(--border)] bg-card hover:shadow-sm transition-shadow')}>
                   <div className="flex items-start gap-3">
                     <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5', cfg.bg)}>
                       <Icon className={cn('w-4 h-4', cfg.text)} />

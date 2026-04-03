@@ -33,7 +33,7 @@ export function ModuleInfoCallout({
   return (
     <Card
       className={cn(
-        'bg-white border border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] p-6',
+        'bg-card border border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] p-6',
         className
       )}
     >

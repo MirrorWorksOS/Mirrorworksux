@@ -22,7 +22,7 @@ export function ToolbarPrimaryButton({
     <Button
       type="button"
       className={cn(
-        "h-12 min-h-[48px] gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-sm font-medium text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)]",
+        "h-12 min-h-[48px] gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-sm font-medium text-foreground hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)]",
         className,
       )}
       {...props}

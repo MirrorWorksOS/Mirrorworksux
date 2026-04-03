@@ -570,7 +570,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <DialogPrimitive.Content
           className={cn(
             "fixed top-[12%] left-[50%] z-[1050] w-full max-w-[640px] translate-x-[-50%]",
-            "rounded-[var(--shape-xl)] border border-[var(--neutral-200)] bg-white",
+            "rounded-[var(--shape-xl)] border border-[var(--neutral-200)] bg-card",
             "shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)]",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -781,19 +781,19 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <div className="flex items-center justify-between border-t border-[var(--neutral-100)] px-5 py-2.5 text-[10px] text-[var(--neutral-400)] bg-[var(--neutral-50)]/50">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px]">↑↓</kbd>
+                <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px]">↑↓</kbd>
                 <span className="text-[var(--neutral-400)]">navigate</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px]">↵</kbd>
+                <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px]">↵</kbd>
                 <span className="text-[var(--neutral-400)]">open</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px]">tab</kbd>
+                <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px]">tab</kbd>
                 <span className="text-[var(--neutral-400)]">filter</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px]">esc</kbd>
+                <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px]">esc</kbd>
                 <span className="text-[var(--neutral-400)]">close</span>
               </span>
             </div>

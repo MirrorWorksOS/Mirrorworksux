@@ -190,7 +190,7 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
           align="start"
           sideOffset={6}
           className={cn(
-            "z-[1050] w-[280px] rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white",
+            "z-[1050] w-[280px] rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-popover",
             "shadow-[0_16px_48px_-8px_rgba(0,0,0,0.15)]",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -267,9 +267,9 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
           {/* Footer */}
           <div className="border-t border-[var(--neutral-100)] px-4 py-2 flex items-center justify-between">
             <span className="text-[10px] text-[var(--neutral-400)]">
-              <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px]">↑↓</kbd>
+              <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px]">↑↓</kbd>
               {' '}navigate{' '}
-              <kbd className="rounded border border-[var(--neutral-200)] bg-white px-1 py-0.5 font-medium text-[9px] ml-1">↵</kbd>
+              <kbd className="rounded border border-[var(--neutral-200)] bg-background px-1 py-0.5 font-medium text-[9px] ml-1">↵</kbd>
               {' '}create
             </span>
           </div>

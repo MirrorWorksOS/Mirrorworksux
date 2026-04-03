@@ -250,7 +250,7 @@ export function SellNewQuote() {
   return (
     <div className="h-full flex flex-col overflow-hidden bg-[var(--neutral-100)]">
       {/* Top bar */}
-      <div className="bg-white border-b border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
+      <div className="bg-card border-b border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-[var(--neutral-100)] rounded-lg transition-colors">
             <ArrowLeft className="w-4 h-4 text-[var(--neutral-500)]" />
@@ -342,7 +342,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Line items */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                   <h3 className="text-sm font-medium text-[var(--neutral-900)]">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
@@ -381,7 +381,7 @@ export function SellNewQuote() {
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus-visible:outline-none focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
+                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus-visible:outline-none focus:bg-background focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
                   placeholder="Add notes, special instructions, or delivery requirements…"
                 />
               </Card>
@@ -441,7 +441,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">Quote number</p>
                   <p className="text-sm font-medium tabular-nums">{quoteNumber}</p>

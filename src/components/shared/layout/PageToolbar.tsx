@@ -84,7 +84,7 @@ export function ToolbarSearch({
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="h-12 rounded-full border-[var(--neutral-200)] bg-white pl-10 text-sm"
+        className="h-12 rounded-full border-[var(--neutral-200)] bg-background pl-10 text-sm"
       />
     </div>
   );
@@ -215,7 +215,7 @@ export function ToolbarSummaryBar({
                   />
                 </AnimateTooltipTrigger>
                 <AnimateTooltipContent
-                  className="z-50 rounded-lg border border-[var(--neutral-200)] bg-white/95 px-3 py-2 shadow-lg backdrop-blur-md"
+                  className="z-50 rounded-lg border border-[var(--neutral-200)] bg-popover/95 px-3 py-2 shadow-lg backdrop-blur-md"
                 >
                   <div className="flex items-center gap-2">
                     <span

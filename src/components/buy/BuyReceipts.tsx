@@ -71,7 +71,7 @@ export function BuyReceipts() {
           {mockPOs.map((po) => (
             <motion.div key={po.id} variants={staggerItem}>
               <Card
-                className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
+                className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
                 onClick={() => setSelectedPO(po)}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -94,7 +94,7 @@ export function BuyReceipts() {
         </div>
       ) : (
         /* Receipt Entry Form - TOUCH OPTIMIZED */
-        <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
+        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-medium tabular-nums text-[var(--mw-mirage)]">{selectedPO.poNumber}</h2>

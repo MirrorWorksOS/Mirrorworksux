@@ -196,7 +196,7 @@ export function BuySuppliers() {
               const perfBadge = getPerformanceBadge(supplier.onTimeRate);
               return (
                 <motion.div key={supplier.id} variants={staggerItem} custom={idx}>
-                  <Card className="group cursor-pointer rounded-[var(--shape-lg)] border border-[var(--border)] bg-white p-6 transition-all duration-200 hover:shadow-md">
+                  <Card className="group cursor-pointer rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6 transition-all duration-200 hover:shadow-md">
                     <div className="mb-4 flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">

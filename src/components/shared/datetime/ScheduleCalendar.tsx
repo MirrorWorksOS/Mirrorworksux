@@ -71,7 +71,7 @@ export function ScheduleCalendar({
   return (
     <div
       className={cn(
-        "rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white p-4 shadow-xs",
+        "rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-4 shadow-xs",
         className,
       )}
     >
@@ -117,7 +117,7 @@ export function ScheduleCalendar({
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[104px] bg-white p-1",
+                "min-h-[104px] bg-card p-1",
                 !inMonth && "bg-[var(--neutral-50)] opacity-60",
               )}
             >

@@ -45,7 +45,7 @@ export function DetailSheet({
         </SheetHeader>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">{children}</div>
         {footer ? (
-          <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--neutral-200)] bg-white px-6 py-4">
+          <div className="sticky bottom-0 z-10 shrink-0 border-t border-[var(--neutral-200)] bg-background px-6 py-4">
             {footer}
           </div>
         ) : null}

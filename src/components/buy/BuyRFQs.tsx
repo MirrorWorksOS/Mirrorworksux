@@ -108,7 +108,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
               </p>
               <div className="space-y-3">
                 {sorted.map((q, i) => (
-                  <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-white')}>
+                  <div key={q.supplier} className={cn('rounded-lg p-4 border', q.aiPick ? 'border-2 border-[var(--mw-yellow-400)] bg-[var(--accent)]' : 'border-[var(--border)] bg-card')}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-[var(--mw-mirage)]">{q.supplier}</span>

@@ -148,7 +148,7 @@ function InlineEmpty({ message = "No items", className }: InlineEmptyProps) {
   return (
     <div
       className={cn(
-        "bg-white border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] p-6 text-center",
+        "bg-card border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] p-6 text-center",
         className,
       )}
     >

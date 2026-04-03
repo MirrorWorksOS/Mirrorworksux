@@ -15,6 +15,9 @@ import {
   LogOut,
   Bell,
   User,
+  Sun,
+  Moon,
+  Monitor,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from './ui/utils';
@@ -22,7 +25,7 @@ import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
 import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
 import { useTheme } from '@/components/theme-provider';
-import { ThemeToggler } from '@/components/animate-ui/primitives/effects/theme-toggler';
+import { motion } from 'motion/react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -380,27 +383,55 @@ function KbdPill({
 }
 
 // ---------------------------------------------------------------------------
-// Dark mode toggle (animated, powered by ThemeProvider)
+// Segmented theme switcher (light / system / dark)
 // ---------------------------------------------------------------------------
 
-function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+const themeOptions = [
+  { value: 'light' as const, icon: Sun, label: 'Light' },
+  { value: 'system' as const, icon: Monitor, label: 'System' },
+  { value: 'dark' as const, icon: Moon, label: 'Dark' },
+];
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
+function ThemeSegmentedControl() {
+  const { theme, setTheme } = useTheme();
 
   return (
-    <div onClick={handleClick}>
-      <ThemeToggler
-        theme={theme}
-        resolvedTheme={resolvedTheme}
-        setTheme={setTheme}
-        direction="ttb"
-        as="div"
-        iconClassName="text-muted-foreground"
-      />
+    <div
+      className="relative flex items-center gap-0.5 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] p-0.5"
+      role="radiogroup"
+      aria-label="Theme preference"
+    >
+      {themeOptions.map(({ value, icon: Icon, label }) => {
+        const isActive = theme === value;
+        return (
+          <button
+            key={value}
+            role="radio"
+            aria-checked={isActive}
+            aria-label={label}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setTheme(value);
+            }}
+            className={cn(
+              'relative z-10 flex h-6 w-7 items-center justify-center rounded-full transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+              isActive
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground/70',
+            )}
+          >
+            {isActive && (
+              <motion.span
+                layoutId="theme-segment-pill"
+                className="absolute inset-0 rounded-full bg-card shadow-xs"
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
+            <Icon className="relative z-10 h-3.5 w-3.5" strokeWidth={1.5} />
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -485,7 +516,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
+          className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-border bg-card px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
         >
           <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
           <span className="flex-1 text-left text-sm text-muted-foreground">
@@ -565,7 +596,10 @@ export function Sidebar() {
       </div>
 
       {/* User Profile Footer */}
-      <div className="p-3 border-t border-[var(--neutral-200)]">
+      <div className="p-3 border-t border-border space-y-2">
+        <div className="flex items-center justify-between px-2">
+          <ThemeSegmentedControl />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-full flex items-center gap-2.5 p-2 rounded-full hover:bg-[var(--neutral-200)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
@@ -576,7 +610,6 @@ export function Sidebar() {
                 <p className="text-sm text-foreground truncate">Matt Quigley</p>
                 <p className="text-xs text-muted-foreground truncate">Admin</p>
               </div>
-              <ThemeToggle />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
