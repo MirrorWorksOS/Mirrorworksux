@@ -119,7 +119,7 @@ export function PurchaseOrders() {
   ];
 
   return (
-    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
       <PageHeader
         title="Purchase orders"
         actions={

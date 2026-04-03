@@ -21,7 +21,7 @@ import {
   MW_FILL,
   getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -267,7 +267,7 @@ export function PlanDashboard() {
         <ChartCard title="Weekly Capacity (% Utilisation)" subtitle="Planned vs actual output">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={weeklyCapacity} barGap={4}>
-              <ChartPatternDefs />
+              {mwChartPatternDefs()}
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="week" tick={MW_AXIS_TICK} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />

@@ -13,7 +13,7 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { MW_BAR_TOOLTIP_CURSOR, MW_RECHARTS_ANIMATION_BAR, MW_TOOLTIP_STYLE, MW_BAR_RADIUS_H, MW_FILL } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -143,7 +143,7 @@ export function ShipReturns() {
                 <XAxis type="number" hide />
                 <YAxis dataKey="reason" type="category" tick={{ fontSize: 10, fill: 'var(--neutral-500)' }} width={70} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} />
-                <ChartPatternDefs />
+                {mwChartPatternDefs()}
                 <Bar key="count" dataKey="count" fill={MW_FILL.HATCH_DARK} radius={MW_BAR_RADIUS_H} barSize={10} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>

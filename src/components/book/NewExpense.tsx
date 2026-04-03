@@ -26,7 +26,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
   const total = taxMode === 'exclusive' ? amtNum + gst : amtNum;
 
   return (
-    <PageShell className="overflow-y-auto max-w-[1200px] mx-auto">
+    <PageShell className="p-6 space-y-6 overflow-y-auto max-w-[1200px] mx-auto">
       <PageHeader
         title="New expense"
         breadcrumbs={[{ label: 'Book', href: '/book' }, { label: 'New expense' }]}

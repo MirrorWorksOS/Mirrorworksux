@@ -28,7 +28,7 @@ import {
   getChartScalePattern,
   marginToScalePercent,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import {
   BarChart,
   Bar,
@@ -312,7 +312,7 @@ export function SellDashboard() {
           <ChartCard title="Top 10 Jobs by Profit Margin">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={jobProfitabilityData} layout="vertical">
-                <ChartPatternDefs />
+                {mwChartPatternDefs()}
                 <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
                 <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />

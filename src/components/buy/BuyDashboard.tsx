@@ -20,7 +20,7 @@ import {
   getChartScaleColour,
   getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
@@ -220,7 +220,7 @@ export function BuyDashboard() {
           <ChartCard title="Supplier Performance (On-Time %)">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={supplierPerformance} layout="vertical">
-                <ChartPatternDefs />
+                {mwChartPatternDefs()}
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" vertical={false} />
                 <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                 <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={120} />

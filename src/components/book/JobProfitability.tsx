@@ -21,7 +21,7 @@ import {
   getChartScalePattern,
   marginToScalePercent,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
@@ -102,7 +102,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
-    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
       <PageHeader
         title="Job profitability"
         subtitle="Actual costs vs quoted amounts across all jobs"
@@ -152,7 +152,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         <ChartCard title="Top 10 Jobs by Profit Margin">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={marginData} layout="vertical" margin={{ left: 20 }}>
-              <ChartPatternDefs />
+              {mwChartPatternDefs()}
               <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
               <XAxis type="number" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <YAxis dataKey="job" type="category" tick={MW_AXIS_TICK} width={80} />

@@ -36,7 +36,7 @@ import {
 } from "recharts";
 
 import { MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, MW_RECHARTS_ANIMATION_BAR, MW_CHART_COLOURS, MW_BAR_RADIUS_V, MW_BAR_RADIUS_H, MW_FILL } from "@/components/shared/charts/chart-theme";
-import { ChartPatternDefs } from "@/components/shared/charts/ChartPatternDefs";
+import { mwChartPatternDefs } from "@/components/shared/charts/ChartPatternDefs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
@@ -244,7 +244,7 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={FUNNEL_DATA} layout="vertical">
-            <ChartPatternDefs />
+            {mwChartPatternDefs()}
             <XAxis type="number" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis dataKey="stage" type="category" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" width={80} />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
@@ -257,7 +257,7 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={BAR_DATA}>
-            <ChartPatternDefs />
+            {mwChartPatternDefs()}
             <XAxis dataKey="reason" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
@@ -294,11 +294,11 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={QUOTE_CASH_DATA}>
-            <ChartPatternDefs />
+            {mwChartPatternDefs()}
             <XAxis dataKey="step" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" label={{ value: "Days", angle: -90, position: "insideLeft", style: { fontSize: 11 } }} />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
-            <Bar dataKey="days" fill={MW_FILL.DOTS_YELLOW} radius={MW_BAR_RADIUS_V} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="days" fill={MW_FILL.HATCH_YELLOW} radius={MW_BAR_RADIUS_V} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );

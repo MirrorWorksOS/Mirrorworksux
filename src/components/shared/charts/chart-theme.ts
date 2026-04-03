@@ -23,7 +23,7 @@ export { getChartScaleColour, marginToScalePercent } from "@/components/shared/c
 export function getChartScalePattern(value0to100: number): string {
   const v = Math.max(0, Math.min(100, value0to100));
   if (v <= 33) return "url(#mw-hatch-scale-low)";
-  if (v <= 66) return "url(#mw-dots-scale-mid)";
+  if (v <= 66) return "url(#mw-hatch-scale-mid)";
   return "url(#mw-hatch-scale-high)";
 }
 
@@ -35,9 +35,7 @@ export const MW_BAR_RADIUS_V = [10, 10, 0, 0] as const;
 /** Pattern fill constants for single-colour bars */
 export const MW_FILL = {
   HATCH_YELLOW: "url(#mw-hatch-yellow)",
-  DOTS_YELLOW: "url(#mw-dots-yellow)",
   HATCH_DARK: "url(#mw-hatch-dark)",
-  DOTS_DARK: "url(#mw-dots-dark)",
   HATCH_NEUTRAL: "url(#mw-hatch-neutral)",
 } as const;
 

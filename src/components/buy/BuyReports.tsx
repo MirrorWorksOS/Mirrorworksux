@@ -20,7 +20,7 @@ import {
   MW_FILL,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 
 const spendBySupplier = [
   { name: 'Hunter Steel Co', spend: 156000 },
@@ -87,7 +87,7 @@ export function BuyReports() {
             <ChartCard title="Monthly Spend Trend">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={monthlySpend}>
-                  <ChartPatternDefs />
+                  {mwChartPatternDefs()}
                   <CartesianGrid {...MW_CARTESIAN_GRID} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                   <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />

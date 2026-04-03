@@ -24,7 +24,7 @@ import {
   MW_FILL,
   getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -124,7 +124,7 @@ export function ShipReports() {
                 <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toFixed(2)}`} />
-                <ChartPatternDefs />
+                {mwChartPatternDefs()}
                 <Bar key="v" dataKey="v" radius={MW_BAR_RADIUS_V} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {carrierCost.map((e, i) => (
                     <Cell
@@ -173,8 +173,8 @@ export function ShipReports() {
                 <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} />
-                <ChartPatternDefs />
-                <Bar key="v" dataKey="v" fill={MW_FILL.DOTS_DARK} radius={MW_BAR_RADIUS_H} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
+                {mwChartPatternDefs()}
+                <Bar key="v" dataKey="v" fill={MW_FILL.HATCH_DARK} radius={MW_BAR_RADIUS_H} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

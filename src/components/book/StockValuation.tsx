@@ -75,7 +75,7 @@ export function StockValuation() {
   const [activeTab, setActiveTab] = useState('Raw Materials');
 
   return (
-    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
       <PageHeader
         title="Stock valuation"
         actions={

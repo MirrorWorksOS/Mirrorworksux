@@ -27,7 +27,7 @@ import {
   getChartScaleColour,
   getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
-import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
+import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
@@ -391,7 +391,7 @@ export function BudgetOverview() {
   );
 
   return (
-    <PageShell className="mx-auto max-w-[1200px] overflow-y-auto">
+    <PageShell className="p-6 space-y-6 mx-auto max-w-[1200px] overflow-y-auto">
       <PageHeader
         title="Budgets"
         subtitle={`Showing ${statusFilter} budgets`}
@@ -591,7 +591,7 @@ export function BudgetOverview() {
         <ChartCard title="Monthly budget vs actual">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
-              <ChartPatternDefs />
+              {mwChartPatternDefs()}
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="month" tick={MW_AXIS_TICK} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />

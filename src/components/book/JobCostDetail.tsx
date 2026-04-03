@@ -101,7 +101,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
   const detailTabs = ['Materials', 'Labour', 'Overhead', 'Subcontract'];
 
   return (
-    <PageShell className="max-w-[1200px] mx-auto overflow-y-auto">
+    <PageShell className="p-6 space-y-6 max-w-[1200px] mx-auto overflow-y-auto">
       <PageHeader
         title="JOB-2026-0012"
         subtitle={
