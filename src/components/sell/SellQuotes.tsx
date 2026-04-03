@@ -179,7 +179,7 @@ export function SellQuotes() {
         columns={quoteColumns}
         data={filtered}
         keyExtractor={(row) => row.id}
-        onRowClick={() => navigate('/sell/quotes/new')}
+        onRowClick={(q) => navigate(`/sell/quotes/${q.id}`)}
         selectable
         onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
         onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}

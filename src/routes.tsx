@@ -23,6 +23,7 @@ import { SellCustomerDetail } from './components/sell/SellCustomerDetail';
 import { SellOrderDetail } from './components/sell/SellOrderDetail';
 import { SellInvoiceDetail } from './components/sell/SellInvoiceDetail';
 import { SellNewInvoice } from './components/sell/SellNewInvoice';
+import { SellQuoteDetail } from './components/sell/SellQuoteDetail';
 
 // Buy Module
 import { BuyDashboard } from './components/buy/BuyDashboard';
@@ -36,6 +37,8 @@ import { BuyProducts } from './components/buy/BuyProducts';
 import { BuyAgreements } from './components/buy/BuyAgreements';
 import { BuyReports } from './components/buy/BuyReports';
 import { BuySettings } from './components/buy/BuySettings';
+import { BuyRequisitionDetail } from './components/buy/BuyRequisitionDetail';
+import { BuySupplierDetail } from './components/buy/BuySupplierDetail';
 
 // Plan Module
 import { PlanDashboard } from './components/plan/PlanDashboard';
@@ -90,6 +93,7 @@ import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
 import { ControlGamification } from './components/control/ControlGamification';
 import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
 import { BridgeWizard } from './components/bridge/BridgeWizard';
+import { Notifications } from './components/Notifications';
 
 // Book Module (existing)
 import { BudgetOverview } from './components/book/BudgetOverview';
@@ -139,6 +143,7 @@ export const router = createBrowserRouter([
           { path: 'products/:id', element: <SellProductDetail /> },
           { path: 'quotes', element: <SellQuotes /> },
           { path: 'quotes/new', element: <SellNewQuote /> },
+          { path: 'quotes/:id', element: <SellQuoteDetail /> },
           { path: 'settings', element: <SellSettings /> },
         ],
       },
@@ -150,8 +155,10 @@ export const router = createBrowserRouter([
           { index: true, element: <BuyDashboard /> },
           { path: 'orders', element: <BuyOrders /> },
           { path: 'requisitions', element: <BuyRequisitions /> },
+          { path: 'requisitions/:id', element: <BuyRequisitionDetail /> },
           { path: 'receipts', element: <BuyReceipts /> },
           { path: 'suppliers', element: <BuySuppliers /> },
+          { path: 'suppliers/:id', element: <BuySupplierDetail /> },
           { path: 'rfqs', element: <BuyRFQs /> },
           { path: 'bills', element: <BuyBills /> },
           { path: 'products', element: <BuyProducts /> },
@@ -246,6 +253,12 @@ export const router = createBrowserRouter([
           { path: 'gamification', element: <ControlGamification /> },
           { path: 'empty-states', element: <ControlEmptyStates /> },
         ],
+      },
+
+      // Notifications
+      {
+        path: 'notifications',
+        element: <Notifications />,
       },
 
       // Legacy /design URLs → Control (bookmarks)

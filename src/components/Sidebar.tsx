@@ -23,6 +23,7 @@ import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
 import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
+import { useCommandPaletteStore } from '@/store/commandPaletteStore';
 import { useTheme } from '@/components/theme-provider';
 import { motion } from 'motion/react';
 import {
@@ -517,7 +518,7 @@ function UsageBanner() {
 export function Sidebar() {
   const location = useLocation();
 
-  const [commandOpen, setCommandOpen] = useState(false);
+  const { open: commandOpen, initialQuery, setOpen: setCommandOpen } = useCommandPaletteStore();
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
 
   const [expandedModule, setExpandedModule] = useState<string | null>(
@@ -677,7 +678,7 @@ export function Sidebar() {
         <UserProfileSplitButton />
       </div>
 
-      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} initialQuery={initialQuery} />
     </div>
   );
 }

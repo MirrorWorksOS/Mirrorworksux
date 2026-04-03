@@ -261,9 +261,10 @@ function getSuggestedSearches(role: UserRole): string[] {
 interface CommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialQuery?: string;
 }
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, initialQuery = '' }: CommandPaletteProps) {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
@@ -311,15 +312,24 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   // Reset state on open
   useEffect(() => {
     if (open) {
-      setQuery('');
+      setQuery(initialQuery);
       setActiveFilter('all');
       setActiveIndex(0);
       setAiQuery('');
       setAiResponse(null);
       setIsClosing(false);
-      requestAnimationFrame(() => inputRef.current?.focus());
+      requestAnimationFrame(() => {
+        const input = inputRef.current;
+        if (input) {
+          input.focus();
+          // Place cursor at end of pre-filled text
+          if (initialQuery) {
+            input.setSelectionRange(initialQuery.length, initialQuery.length);
+          }
+        }
+      });
     }
-  }, [open]);
+  }, [open, initialQuery]);
 
   // ---- Filter results ----
   const recentItems = useMemo(() => getRecentItems(), [open]);
