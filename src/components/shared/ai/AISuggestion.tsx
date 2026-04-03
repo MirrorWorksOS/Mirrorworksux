@@ -36,8 +36,8 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
     )}>
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 mt-0.5">
-            <Sparkles className="h-4 w-4 text-foreground" />
+          <div className="w-8 h-8 rounded-full bg-[var(--mw-purple)]/15 flex items-center justify-center shrink-0 mt-0.5">
+            <Sparkles className="h-4 w-4 text-[var(--mw-purple)]" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">

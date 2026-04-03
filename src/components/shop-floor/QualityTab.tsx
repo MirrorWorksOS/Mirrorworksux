@@ -189,7 +189,7 @@ export function QualityTab() {
         </div>
         <Button 
           onClick={() => setShowLogModal(true)}
-          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded-xl px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
+          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
         >
           <Plus className="w-5 h-5 mr-2" /> Log Issue
         </Button>
@@ -574,7 +574,7 @@ export function QualityTab() {
                  <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">
                     Log Issue Only
                  </Button>
-                 <Button className="flex-1 h-12 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-medium shadow-sm">
+                 <Button className="flex-1 h-12 bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white font-medium shadow-sm">
                     Create Hold
                  </Button>
               </div>

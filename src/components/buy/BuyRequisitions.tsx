@@ -132,7 +132,7 @@ export function BuyRequisitions() {
               <AnimatedFilter className="w-4 h-4" />
               Filter
             </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground rounded-xl group" onClick={() => toast('New requisition coming soon')}>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-primary-foreground group" onClick={() => toast('New requisition coming soon')}>
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Requisition
             </Button>

@@ -182,7 +182,7 @@ export function ShipPackaging() {
             className="h-full rounded-full transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
             style={{
               width: `${(checked.size / ITEMS.length) * 100}%`,
-              backgroundColor: allPacked ? 'var(--mw-success)' : 'var(--mw-yellow-400)',
+              backgroundColor: allPacked ? 'var(--mw-mirage)' : 'var(--mw-yellow-400)',
             }}
           />
         </div>
@@ -190,7 +190,7 @@ export function ShipPackaging() {
           <Button
             type="button"
             variant="outline"
-            className="h-12 min-h-[48px] rounded-[var(--shape-lg)] border-[var(--border)] px-6 font-medium text-foreground"
+            className="h-12 min-h-[48px] border-[var(--border)] px-6 font-medium text-foreground"
           >
             Park
           </Button>
@@ -198,7 +198,7 @@ export function ShipPackaging() {
             type="button"
             disabled={!allPacked}
             className={cn(
-              'h-12 min-h-[48px] rounded-[var(--shape-lg)] px-8 font-medium',
+              'h-12 min-h-[48px] px-8 font-medium',
               allPacked
                 ? 'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]'
                 : 'cursor-not-allowed bg-[var(--neutral-100)] text-[var(--neutral-400)]',

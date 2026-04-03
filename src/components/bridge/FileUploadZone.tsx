@@ -48,7 +48,7 @@ export function FileUploadZone({ onFilesSelected, disabled }: FileUploadZoneProp
       className={cn(
         'relative flex flex-col items-center justify-center min-h-[200px] rounded-xl border-2 border-dashed transition-all cursor-pointer',
         isDragOver
-          ? 'border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)]'
+          ? 'border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] dark:bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,var(--card))]'
           : 'border-muted-foreground/25 hover:border-muted-foreground/40',
         disabled && 'opacity-[0.38] cursor-not-allowed'
       )}

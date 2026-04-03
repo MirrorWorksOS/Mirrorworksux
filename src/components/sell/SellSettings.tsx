@@ -325,7 +325,7 @@ function PaymentsPanel() {
                 variant={integ.connected ? 'outline' : 'default'}
                 size="sm"
                 className={cn(
-                  'h-9 text-xs rounded-[var(--shape-md)]',
+                  'h-9 text-xs',
                   integ.connected
                     ? 'border-[var(--border)] text-[var(--neutral-500)]'
                     : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
@@ -351,7 +351,7 @@ function PaymentsPanel() {
           </div>
         </div>
         <div className="mt-4 flex justify-end">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-[var(--shape-md)]" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
         </div>
       </Card>
     </div>
@@ -457,8 +457,8 @@ function AnalyticsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]" onClick={() => toast.success('Pipeline CSV exported')}>Export pipeline CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-[var(--shape-md)]" onClick={() => toast.success('Activities CSV exported')}>Export activities CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Pipeline CSV exported')}>Export pipeline CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Activities CSV exported')}>Export activities CSV</Button>
         </div>
       </div>
     </div>
@@ -497,7 +497,7 @@ function IntegrationsPanel() {
               variant={integ.connected ? 'outline' : 'default'}
               size="sm"
               className={cn(
-                'h-9 text-xs rounded-[var(--shape-md)]',
+                'h-9 text-xs',
                 integ.connected
                   ? 'border-[var(--border)] text-[var(--neutral-500)]'
                   : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'

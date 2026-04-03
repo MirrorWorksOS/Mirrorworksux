@@ -122,7 +122,7 @@ export function StepImportResults() {
 
           {/* Team setup CTA */}
           {hasEmployees && (
-            <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] p-6">
+            <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] dark:bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,var(--card))] p-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--mw-yellow-400)_22%,transparent)]">
                   <Users className="w-5 h-5 text-foreground" />

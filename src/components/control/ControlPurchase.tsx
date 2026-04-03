@@ -38,7 +38,7 @@ function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
       <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10" onClick={() => toast('Changes discarded')}>Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }

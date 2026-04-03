@@ -73,7 +73,7 @@ export function ControlRoleDesigner() {
                 <p className="text-xs text-muted-foreground">{role.description}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="h-10 w-full rounded-[var(--shape-lg)] border-[var(--neutral-200)]" onClick={() => toast('Role configuration coming soon')}>
+            <Button variant="outline" size="sm" className="h-10 w-full border-[var(--neutral-200)]" onClick={() => toast('Role configuration coming soon')}>
               Configure
             </Button>
           </Card>

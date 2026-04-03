@@ -123,7 +123,7 @@ export function PurchaseOrders() {
       <PageHeader
         title="Purchase orders"
         actions={
-          <Button className="h-12 gap-2 rounded-md bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
+          <Button className="h-12 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
             <PlusCircle className="h-5 w-5" /> New PO
           </Button>
         }
@@ -134,8 +134,8 @@ export function PurchaseOrders() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
           <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-card border-[var(--border)] rounded text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-md border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-md border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 
       <div className="flex gap-0 border-b border-[var(--border)]">

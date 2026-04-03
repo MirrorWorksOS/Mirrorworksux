@@ -235,7 +235,7 @@ export function ToolbarSummaryBar({
                     </span>
                   </div>
                   <AnimateTooltipArrow
-                    className="fill-white/95"
+                    className="fill-white/95 dark:fill-card"
                     width={10}
                     height={5}
                   />

@@ -533,7 +533,7 @@ export function SellInvoiceDetail() {
                 <div className="absolute left-[15px] top-4 bottom-4 w-[2px] bg-[var(--neutral-200)]" />
                 {MOCK_PAYMENT_HISTORY.map((evt) => (
                   <div key={evt.id} className="flex items-start gap-4 relative">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[var(--neutral-100)] z-10">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-card bg-[var(--neutral-100)] z-10">
                       {EVENT_ICON[evt.icon]}
                     </div>
                     <div className="flex-1 pt-0.5">

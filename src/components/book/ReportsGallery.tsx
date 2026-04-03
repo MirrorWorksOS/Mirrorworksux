@@ -67,11 +67,11 @@ const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) =>
     <Icon className="w-8 h-8 text-foreground mb-3" />
     <div className="flex items-center gap-2 mb-1">
       <h3 className="text-sm text-foreground font-medium">{title}</h3>
-      {ai && <Badge className="rounded-full text-[10px] px-2 py-0 border-0 bg-[var(--mw-purple-100)] text-[var(--mw-purple)]">AI</Badge>}
+      {ai && <Badge className="rounded-full text-[10px] px-2 py-0 border-0 bg-[var(--mw-purple)]/15 text-[var(--mw-purple)]">AI</Badge>}
     </div>
     <p className="text-xs text-[var(--neutral-500)] mb-4">{desc}</p>
     <div className="flex items-center justify-between">
-      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-foreground rounded" onClick={() => toast('Generating report…')}>Generate</Button>
+      <Button variant="outline" size="sm" className="h-10 border-[var(--border)] text-foreground rounded-full" onClick={() => toast('Generating report…')}>Generate</Button>
       {badge && <span className="text-xs text-[var(--neutral-400)]">{badge}</span>}
     </div>
   </Card>

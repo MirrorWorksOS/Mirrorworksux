@@ -19,6 +19,7 @@ import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
 
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
+import { getChartScaleColour } from '@/components/shared/charts/chart-theme';
 
 // ── Types ─────────────────────────────────────────────────
 interface LineItem {
@@ -432,7 +433,7 @@ export function SellNewQuote() {
                       className="h-full rounded-full transition-all duration-[250ms]"
                       style={{
                         width: `${Math.min(100, margin * 2)}%`,
-                        backgroundColor: margin < 15 ? 'var(--mw-error)' : margin >= 25 ? 'var(--mw-success)' : 'var(--mw-warning)',
+                        backgroundColor: getChartScaleColour(Math.min(100, margin * 2)),
                       }}
                     />
                   </div>

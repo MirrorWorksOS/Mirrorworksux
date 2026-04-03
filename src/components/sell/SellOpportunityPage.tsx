@@ -42,6 +42,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/components/ui/utils";
+import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 import type { Opportunity } from "./sell-opportunity-types";
 import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services/mock';
 
@@ -637,7 +638,7 @@ export function SellOpportunityPage() {
             <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-foreground">Win Probability</h3>
-                <Badge className="border-0 bg-[var(--mw-green)]/15 text-[var(--mw-green)] text-xs">AI-powered</Badge>
+                <Badge className="border-0 bg-[var(--mw-purple)]/15 text-[var(--mw-purple)] text-xs">AI-powered</Badge>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-center">
@@ -646,15 +647,15 @@ export function SellOpportunityPage() {
                 </div>
                 <div className="flex-1 space-y-2">
                   {[
-                    { label: "Customer engagement", pct: 82, color: "var(--mw-green)" },
-                    { label: "Quote competitiveness", pct: 71, color: "var(--mw-green)" },
-                    { label: "Decision timeline", pct: 55, color: "var(--mw-yellow-400)" },
-                    { label: "Competitor activity", pct: 40, color: "var(--mw-error)" },
+                    { label: "Customer engagement", pct: 82 },
+                    { label: "Quote competitiveness", pct: 71 },
+                    { label: "Decision timeline", pct: 55 },
+                    { label: "Competitor activity", pct: 40 },
                   ].map((f) => (
                     <div key={f.label} className="flex items-center gap-3 text-xs">
                       <span className="w-[140px] shrink-0 text-[var(--neutral-700)]">{f.label}</span>
                       <div className="flex-1 h-1.5 rounded-full bg-[var(--neutral-100)]">
-                        <div className="h-full rounded-full" style={{ width: `${f.pct}%`, backgroundColor: f.color }} />
+                        <div className="h-full rounded-full" style={{ width: `${f.pct}%`, backgroundColor: getChartScaleColour(f.pct) }} />
                       </div>
                       <span className="w-8 text-right tabular-nums text-[var(--neutral-700)]">{f.pct}%</span>
                     </div>
@@ -767,7 +768,7 @@ export function SellOpportunityPage() {
               <div className="flex items-center gap-4 mb-5">
                 <div className="text-3xl font-bold tabular-nums text-foreground">8.4<span className="text-lg text-[var(--neutral-400)]"> / 10</span></div>
                 <div className="flex-1 h-2 rounded-full bg-[var(--neutral-100)]">
-                  <div className="h-full rounded-full bg-[var(--mw-green)]" style={{ width: "84%" }} />
+                  <div className="h-full rounded-full" style={{ width: "84%", backgroundColor: getChartScaleColour(84) }} />
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -916,7 +917,7 @@ export function SellOpportunityPage() {
             New quote
           </Button>
           <Button
-            className="h-12 bg-[var(--mw-green)] text-white hover:bg-[var(--mw-green)]/90"
+            className="h-12 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
             onClick={() => navigate("/sell/orders")}
           >
             <ArrowRight className="mr-2 h-4 w-4" />

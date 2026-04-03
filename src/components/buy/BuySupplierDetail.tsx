@@ -281,7 +281,7 @@ export function BuySupplierDetail() {
             <Mail className="mr-2 h-4 w-4" /> Email
           </Button>
           <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             onClick={() => toast.success('New PO created')}
           >
             <FileText className="mr-2 h-4 w-4" /> New PO

@@ -209,7 +209,7 @@ export function BuyBills() {
               )}
               {selected.status === 'mismatch' && (
                 <div className="flex gap-3">
-                  <Button className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white h-11 text-sm" onClick={() => toast.success('Bill rejected')}>Reject</Button>
+                  <Button className="flex-1 bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white h-11 text-sm" onClick={() => toast.success('Bill rejected')}>Reject</Button>
                   <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm" onClick={() => toast('Supplier query coming soon')}>Query supplier</Button>
                 </div>
               )}

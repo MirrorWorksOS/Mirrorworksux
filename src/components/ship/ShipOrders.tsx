@@ -220,10 +220,10 @@ export function ShipOrders() {
                   <DetailTimeline current={selected.stage} />
                 </div>
                 <div className="flex gap-4">
-                  <button className="flex-1 h-14 min-h-[56px] rounded-[var(--shape-lg)] text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
                     Advance stage
                   </button>
-                  <button className="flex-1 h-14 min-h-[56px] rounded-[var(--shape-lg)] text-sm font-medium border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
                     Flag issue
                   </button>
                 </div>

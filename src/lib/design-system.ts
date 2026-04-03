@@ -84,7 +84,7 @@ export const radius = {
   none: '0px',
   xs: '4px',       // Checkboxes, small chips
   sm: '8px',       // Toggle tracks
-  md: '12px',      // Buttons, inputs (rounded-xl in Tailwind)
+  md: '12px',      // Inputs, action icon wells (rounded-xl in Tailwind); buttons use rounded-full
   lg: '16px',      // Cards, modals (rounded-2xl in Tailwind)
   xl: '24px',      // Sheets, expanded containers
   full: '9999px',  // Badges, pills, avatars
@@ -179,11 +179,11 @@ export const componentClasses = {
   },
 
   button: {
-    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium rounded-md`,
-    outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)] rounded-md`,
-    ghost: `hover:bg-[var(--neutral-100)] active:bg-[var(--neutral-200)] rounded-md`,
-    dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-md`,
-    destructive: `bg-[var(--mw-error)] text-white hover:bg-[var(--mw-error)]/90 rounded-md`,
+    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium rounded-full`,
+    outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)] rounded-full`,
+    ghost: `hover:bg-[var(--neutral-100)] active:bg-[var(--neutral-200)] rounded-full`,
+    dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-full`,
+    destructive: `bg-[var(--mw-error)] text-white hover:bg-[var(--mw-error)]/90 rounded-full`,
   },
 
   input: {

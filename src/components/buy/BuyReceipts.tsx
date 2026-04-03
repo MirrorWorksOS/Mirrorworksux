@@ -78,7 +78,7 @@ export function BuyReceipts() {
                 <p className="text-xs text-[var(--neutral-600)] mb-3">Expected: {new Date(po.expectedDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
                   <span className="text-sm text-[var(--neutral-500)]">{po.items.length} items</span>
-                  <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground h-10 px-5">
+                  <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-primary-foreground h-10 px-5">
                     Start Receipt →
                   </Button>
                 </div>
@@ -166,7 +166,7 @@ export function BuyReceipts() {
             <Button
               onClick={handleReceive}
               disabled={Object.values(quantities).every(q => q === 0)}
-              className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]"
+              className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-primary-foreground disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]"
             >
               <CheckCircle2 className="w-6 h-6 mr-3" />
               Confirm Receipt

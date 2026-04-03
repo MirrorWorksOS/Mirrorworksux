@@ -201,7 +201,7 @@ function SuppliersPanel() {
             <div key={c} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
               <span className="text-sm text-foreground font-medium">{c}</span>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-lg" onClick={() => toast('Edit approval level coming soon')}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)]" onClick={() => toast('Edit approval level coming soon')}>Edit</Button>
                 <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -280,8 +280,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting POs CSV...')}>Export POs CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting suppliers CSV...')}>Export suppliers CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting POs CSV...')}>Export POs CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting suppliers CSV...')}>Export suppliers CSV</Button>
         </div>
       </div>
     </div>

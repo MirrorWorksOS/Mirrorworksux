@@ -11,6 +11,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { getChartScaleColour } from '@/components/shared/charts/chart-theme';
 
 
 const MACHINES = [
@@ -51,7 +52,7 @@ const machineColumns: MwColumnDef<Machine>[] = [
   {
     key: 'utilisation', header: 'Utilisation', tooltip: 'Current utilisation rate', headerClassName: 'w-36',
     cell: (m) => {
-      const utilColour = m.utilisation > 85 ? 'var(--mw-success)' : m.utilisation > 60 ? 'var(--mw-yellow-400)' : 'var(--neutral-200)';
+      const utilColour = getChartScaleColour(m.utilisation);
       return (
         <div className="flex items-center gap-2">
           <div className="flex-1 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">

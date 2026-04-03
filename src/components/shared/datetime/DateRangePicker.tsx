@@ -71,7 +71,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 rounded-[var(--shape-md)]"
+          className="h-8 w-8 shrink-0"
           onClick={() => onMonthChange(addMonths(month, -1))}
           aria-label="Previous month"
         >
@@ -84,7 +84,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 shrink-0 rounded-[var(--shape-md)]"
+          className="h-8 w-8 shrink-0"
           onClick={() => onMonthChange(addMonths(month, 1))}
           aria-label="Next month"
         >
@@ -185,7 +185,7 @@ export function DateRangePicker({
           type="button"
           variant="outline"
           className={cn(
-            "h-12 min-h-[48px] w-full justify-start gap-2 rounded-[var(--shape-md)] border-[var(--neutral-200)] font-normal tabular-nums",
+            "h-12 min-h-[48px] w-full justify-start gap-2 border-[var(--neutral-200)] font-normal tabular-nums",
             className,
           )}
         >

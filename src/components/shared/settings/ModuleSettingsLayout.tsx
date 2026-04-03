@@ -87,8 +87,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function SaveRow() {
   return (
     <div className="flex justify-end gap-3">
-      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10 rounded-xl" onClick={() => toast('Changes discarded')}>Discard</Button>
-      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground rounded-xl" onClick={() => toast.success('Settings saved')}>Save changes</Button>
+      <Button variant="ghost" className="text-[var(--neutral-500)] text-sm h-10" onClick={() => toast('Changes discarded')}>Discard</Button>
+      <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={() => toast.success('Settings saved')}>Save changes</Button>
     </div>
   );
 }
@@ -101,14 +101,14 @@ function MemberAvatarStack({ members, max = 4 }: { members: GroupMember[]; max?:
       {shown.map((m, i) => (
         <div
           key={m.email}
-          className="w-7 h-7 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center text-white text-[10px] font-medium border-2 border-white"
+          className="w-7 h-7 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center text-white text-[10px] font-medium border-2 border-card"
           title={m.name}
         >
           {m.initials}
         </div>
       ))}
       {overflow > 0 && (
-        <div className="w-7 h-7 rounded-full bg-[var(--neutral-200)] flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)] border-2 border-white">
+        <div className="w-7 h-7 rounded-full bg-[var(--neutral-200)] flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)] border-2 border-card">
           +{overflow}
         </div>
       )}
@@ -146,7 +146,7 @@ function AccessPermissionsPanel({
             Manage who can do what in the {moduleName} module. Permissions are additive across groups.
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-xl">
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2">
           <Plus className="w-4 h-4" /> New group
         </Button>
       </div>
@@ -262,7 +262,7 @@ function AccessPermissionsPanel({
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Members</h4>
-                        <Button variant="ghost" size="sm" className="h-12 text-xs text-[var(--neutral-500)] gap-1 rounded-lg">
+                        <Button variant="ghost" size="sm" className="h-12 text-xs text-[var(--neutral-500)] gap-1">
                           <Plus className="w-4 h-4" /> Add
                         </Button>
                       </div>
@@ -296,7 +296,7 @@ function AccessPermissionsPanel({
                   <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--neutral-50)] flex items-center justify-between">
                     <ConfirmDialog
                       trigger={
-                        <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive hover:bg-[var(--mw-error-light)] rounded-lg gap-1">
+                        <Button variant="ghost" size="sm" className="text-xs text-destructive hover:text-destructive hover:bg-[var(--mw-error-light)] gap-1">
                           <Trash2 className="w-4 h-4" /> Delete group
                         </Button>
                       }
@@ -305,7 +305,7 @@ function AccessPermissionsPanel({
                       confirmLabel="Delete group"
                       onConfirm={() => {}}
                     />
-                    <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs rounded-lg">
+                    <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs">
                       Save permissions
                     </Button>
                   </div>

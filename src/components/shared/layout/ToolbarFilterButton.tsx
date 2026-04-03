@@ -141,14 +141,14 @@ export function ToolbarFilterButton({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs text-[var(--neutral-500)] rounded-xl"
+              className="h-8 text-xs text-[var(--neutral-500)]"
               onClick={handleClear}
             >
               Clear
             </Button>
             <Button
               size="sm"
-              className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs rounded-xl px-4"
+              className="h-8 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs px-4"
               onClick={handleApply}
             >
               Apply Filters

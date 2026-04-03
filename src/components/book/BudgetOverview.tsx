@@ -402,7 +402,7 @@ export function BudgetOverview() {
               Type: All
               <ChevronDown className="h-4 w-4" />
             </Button>
-            <Button className="group h-10 rounded bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
+            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New Budget
             </Button>

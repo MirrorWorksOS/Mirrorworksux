@@ -72,7 +72,7 @@ export const MW_CARTESIAN_GRID = {
 } as const;
 
 export const MW_TOOLTIP_STYLE = {
-  backgroundColor: "rgba(255, 255, 255, 0.95)",
+  backgroundColor: "color-mix(in srgb, var(--popover) 95%, transparent)",
   backdropFilter: "blur(12px)",
   border: "1px solid var(--neutral-200)",
   borderRadius: "var(--shape-md)",

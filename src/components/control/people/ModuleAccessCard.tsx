@@ -138,7 +138,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 rounded-xl border-[var(--border)] bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                  className="h-10 border-[var(--border)] bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
                 >
                   <Plus className="h-4 w-4" />
                   Add to group
@@ -158,7 +158,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               trigger={
                 <Button
                   variant="ghost"
-                  className="h-10 rounded-xl px-4 text-muted-foreground hover:bg-[var(--mw-error-light)] hover:text-destructive"
+                  className="h-10 px-4 text-muted-foreground hover:bg-[var(--mw-error-light)] hover:text-destructive"
                 >
                   Remove from module
                 </Button>
@@ -183,7 +183,7 @@ export function UnassignedModuleCard({
   return (
     <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-4 opacity-60">
       <span className="text-sm text-[var(--neutral-800)]">{moduleLabels[moduleKey]}</span>
-      <Button variant="outline" className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-transparent px-3 text-xs">
+      <Button variant="outline" className="h-12 border-[var(--border)] bg-transparent px-3 text-xs">
         + Assign
       </Button>
     </div>

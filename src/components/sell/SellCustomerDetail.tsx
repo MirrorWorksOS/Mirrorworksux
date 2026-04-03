@@ -310,7 +310,7 @@ export function SellCustomerDetail() {
             </StatusBadge>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => navigate('/sell/quotes/new')}>
               New quote
             </Button>
             <DropdownMenu>
@@ -621,7 +621,7 @@ export function SellCustomerDetail() {
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-foreground">Quotes & orders</h2>
-              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium rounded" onClick={() => navigate('/sell/quotes/new')}>
+              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
             </div>

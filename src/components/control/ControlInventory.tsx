@@ -146,7 +146,7 @@ export function ControlInventory() {
           options={CATEGORIES.map(c => ({ key: c, label: c }))}
         />
         <ToolbarSpacer />
-        <Button variant="outline" className="h-12 gap-2 rounded-md border-[var(--neutral-200)] px-5" onClick={() => toast.success('Exporting inventory...')}>
+        <Button variant="outline" className="h-12 gap-2 border-[var(--neutral-200)] px-5" onClick={() => toast.success('Exporting inventory...')}>
           <Download className="w-4 h-4" /> Export
         </Button>
         <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New inventory item coming soon')}>

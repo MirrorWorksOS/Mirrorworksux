@@ -245,7 +245,7 @@ export function MakeManufacturingOrderDetail() {
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">Status</Label>
                     <div className="mt-1 h-12 flex items-center">
-                      <Badge className="bg-[var(--mw-green)] text-white">{mo.status}</Badge>
+                      <StatusBadge status={mo.status === 'In Progress' ? 'progress' : mo.status === 'Done' ? 'completed' : mo.status === 'Confirmed' ? 'confirmed' : 'draft'} />
                     </div>
                   </div>
                 </div>
@@ -294,8 +294,8 @@ export function MakeManufacturingOrderDetail() {
                         <div
                           className={cn(
                             'h-full rounded-full transition-all',
-                            wo.status === 'complete' ? 'bg-[var(--mw-green)]' :
-                            wo.status === 'in_progress' ? 'bg-[var(--mw-yellow-400)]' :
+                            wo.status === 'complete' ? 'bg-[var(--mw-yellow-400)]' :
+                            wo.status === 'in_progress' ? 'bg-[var(--mw-mirage)]' :
                             'bg-[var(--neutral-300)]'
                           )}
                           style={{ width: `${wo.progress}%` }}
@@ -536,14 +536,14 @@ export function MakeManufacturingOrderDetail() {
               <div className="relative pl-8 space-y-4">
                 <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-[var(--border)]" />
                 {[
-                  { label: 'MO created', time: mo.startDate, dot: 'bg-[var(--mw-blue)]' },
-                  { label: 'Materials confirmed in stock', time: '2 days later', dot: 'bg-[var(--mw-green)]' },
-                  { label: 'WO-001 (Base Plate) completed', time: '5 days later', dot: 'bg-[var(--mw-green)]' },
+                  { label: 'MO created', time: mo.startDate, dot: 'bg-[var(--neutral-400)]' },
+                  { label: 'Materials confirmed in stock', time: '2 days later', dot: 'bg-[var(--mw-mirage)]' },
+                  { label: 'WO-001 (Base Plate) completed', time: '5 days later', dot: 'bg-[var(--mw-mirage)]' },
                   { label: 'AI: Schedule optimisation suggested', time: '6 days later', dot: 'bg-[var(--mw-yellow-400)]' },
                   { label: 'WO-002 started on CNC-01', time: 'Current', dot: 'bg-[var(--mw-yellow-400)]' },
                 ].map((ev, i) => (
                   <div key={i} className="relative">
-                    <div className={cn('absolute left-[-29px] w-4 h-4 rounded-full border-2 border-white', ev.dot)} />
+                    <div className={cn('absolute left-[-29px] w-4 h-4 rounded-full border-2 border-card', ev.dot)} />
                     <p className="text-sm font-medium text-foreground">{ev.label}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{ev.time}</p>
                   </div>
@@ -602,10 +602,10 @@ export function MakeManufacturingOrderDetail() {
         <h3 className="text-sm font-medium text-foreground mb-3">Quick Access</h3>
         <div className="space-y-2">
           {[
-            { name: 'SOP-001 Setup Procedure', type: 'SOP', color: 'bg-[var(--mw-blue)]' },
-            { name: 'Safety Brief — Laser', type: 'Safety', color: 'bg-[var(--mw-error)]' },
-            { name: 'QC Checklist MO-001', type: 'Quality', color: 'bg-[var(--mw-green)]' },
-            { name: 'Weld Procedure Spec', type: 'SOP', color: 'bg-[var(--mw-blue)]' },
+            { name: 'SOP-001 Setup Procedure', type: 'SOP', color: 'bg-[var(--mw-mirage)]' },
+            { name: 'Safety Brief — Laser', type: 'Safety', color: 'bg-[var(--mw-mirage)]' },
+            { name: 'QC Checklist MO-001', type: 'Quality', color: 'bg-[var(--mw-mirage)]' },
+            { name: 'Weld Procedure Spec', type: 'SOP', color: 'bg-[var(--mw-mirage)]' },
           ].map((doc) => (
             <div key={doc.name} className="flex items-center gap-3 p-2 rounded-[var(--shape-md)] hover:bg-[var(--neutral-50)] cursor-pointer transition-colors">
               <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center', doc.color)}>
@@ -782,7 +782,7 @@ export function MakeManufacturingOrderDetail() {
         }
         metaRow={
           <>
-            <Badge className="bg-[var(--mw-green)] text-white rounded-full px-2 py-0.5 text-xs">{mo.status}</Badge>
+            <StatusBadge status={mo.status === 'In Progress' ? 'progress' : mo.status === 'Done' ? 'completed' : mo.status === 'Confirmed' ? 'confirmed' : 'draft'} />
             <Badge variant="outline" className="rounded-full border-[var(--border)] text-xs tabular-nums" asChild>
               <Link to={`/plan/jobs/${mo.jobNumber.replace('JOB-', '')}`}>{mo.jobNumber}</Link>
             </Badge>

@@ -255,8 +255,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export production CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export QC results CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting CSV...')}>Export production CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting CSV...')}>Export QC results CSV</Button>
         </div>
       </div>
     </div>

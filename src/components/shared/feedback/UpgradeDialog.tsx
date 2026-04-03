@@ -162,13 +162,13 @@ export function UpgradeDialog({
             <Button
               variant="ghost"
               onClick={() => onOpenChange(false)}
-              className="text-[var(--neutral-500)] rounded-xl"
+              className="text-[var(--neutral-500)]"
             >
               {phase === 'grace_period' ? 'Continue with limits' : 'Not now'}
             </Button>
           )}
           <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-xl"
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
           >
             Upgrade now
             <ExternalLink className="w-4 h-4" />

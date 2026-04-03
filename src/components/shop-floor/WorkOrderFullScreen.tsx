@@ -195,7 +195,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                  <div className="flex items-center justify-between w-full mb-6 gap-4">
                     <Button 
                       variant="ghost" 
-                      className="w-[64px] h-[64px] rounded-[var(--shape-lg)] bg-[var(--neutral-100)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] p-0 active:scale-95 transition-transform border border-[var(--neutral-200)]"
+                      className="w-[64px] h-[64px] bg-[var(--neutral-100)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] p-0 active:scale-95 transition-transform border border-[var(--neutral-200)]"
                       onClick={() => setCompletedParts(Math.max(0, completedParts - 1))}
                     >
                        <Minus className="w-8 h-8" />
@@ -240,7 +240,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
                     <Button 
                       variant="ghost" 
-                      className="w-[64px] h-[64px] rounded-[var(--shape-lg)] bg-[var(--neutral-100)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] p-0 active:scale-95 transition-transform border border-[var(--neutral-200)]"
+                      className="w-[64px] h-[64px] bg-[var(--neutral-100)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] p-0 active:scale-95 transition-transform border border-[var(--neutral-200)]"
                       onClick={handlePartsIncrement}
                     >
                        <Plus className="w-8 h-8" />
@@ -349,7 +349,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <Button 
                 onClick={() => setActiveModal('materials')}
                 variant="outline"
-                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-sm gap-2 font-medium"
+                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] gap-2 font-medium"
               >
                  <Box className="w-5 h-5 text-[var(--neutral-500)]" />
                  Bill of Materials
@@ -357,7 +357,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <Button 
                 onClick={() => setActiveModal('cad')}
                 variant="outline"
-                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] rounded-sm gap-2 font-medium"
+                className="h-[48px] px-6 bg-[var(--neutral-100)] border-[var(--neutral-200)] hover:bg-[var(--neutral-200)] text-[var(--neutral-800)] gap-2 font-medium"
               >
                  <FileText className="w-5 h-5 text-[var(--neutral-500)]" />
                  CAD File
@@ -437,7 +437,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                           <div className="space-y-3">
                              <Button 
                                className={cn(
-                                 "w-full bg-[var(--mw-green)] hover:bg-[var(--mw-success)] text-white font-bold h-[56px] text-base rounded-sm shadow-sm transition-transform border-b-4 border-[var(--mw-success)] active:border-b-0 active:translate-y-1",
+                                 "w-full bg-[var(--mw-green)] hover:bg-[var(--mw-success)] text-white font-bold h-[56px] text-base shadow-sm transition-transform border-b-4 border-[var(--mw-success)] active:border-b-0 active:translate-y-1",
                                  isAnimatingButton && "scale-95"
                                )}
                                onClick={handlePartsIncrement}
@@ -447,13 +447,13 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                              
                              <div className="flex gap-3">
                                <Button 
-                                 className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-bold h-[48px] text-sm rounded-sm shadow-sm border-b-4 border-[var(--mw-error-600)] active:border-b-0 active:translate-y-1"
+                                 className="flex-1 bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)] text-white font-bold h-[48px] text-sm shadow-sm border-b-4 border-[var(--mw-error-600)] active:border-b-0 active:translate-y-1"
                                  onClick={() => setActiveModal('defect')}
                                >
                                   <X className="w-4 h-4 mr-2" /> FAIL
                                </Button>
                                <Button 
-                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-bold h-[48px] text-sm rounded-sm shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
+                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-bold h-[48px] text-sm shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
                                >
                                   <Pause className="w-4 h-4 mr-2" /> HOLD
                                </Button>

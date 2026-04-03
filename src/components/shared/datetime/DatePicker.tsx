@@ -54,7 +54,7 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-12 min-h-[48px] w-full justify-start gap-2 rounded-[var(--shape-md)] border-[var(--neutral-200)] font-normal tabular-nums",
+            "h-12 min-h-[48px] w-full justify-start gap-2 border-[var(--neutral-200)] font-normal tabular-nums",
             className,
           )}
         >
@@ -70,7 +70,7 @@ export function DatePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-9 w-9 shrink-0 rounded-[var(--shape-md)]"
+            className="h-9 w-9 shrink-0"
             onClick={() => setVisibleMonth((m) => addMonths(m, -1))}
             aria-label="Previous month"
           >
@@ -83,7 +83,7 @@ export function DatePicker({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-9 w-9 shrink-0 rounded-[var(--shape-md)]"
+            className="h-9 w-9 shrink-0"
             onClick={() => setVisibleMonth((m) => addMonths(m, 1))}
             aria-label="Next month"
           >

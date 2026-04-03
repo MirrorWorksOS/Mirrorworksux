@@ -68,10 +68,10 @@ const manifestColumns: MwColumnDef<Manifest>[] = [
     header: '',
     cell: () => (
       <div className="flex gap-1">
-        <button className="size-12 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast.success('Downloading shipping document…'); }}>
+        <button className="size-12 rounded-full flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast.success('Downloading shipping document…'); }}>
           <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
         </button>
-        <button className="size-12 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast('Printing label…'); }}>
+        <button className="size-12 rounded-full flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast('Printing label…'); }}>
           <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
         </button>
       </div>
@@ -178,7 +178,7 @@ export function ShipShipping() {
                     <span className="text-sm text-foreground font-medium">{r.carrier}</span>
                     <span className="text-xs text-[var(--neutral-500)]">{r.service}</span>
                     {r.ai && (
-                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[var(--mw-yellow-400)] text-primary-foreground font-medium flex items-center gap-1">
+                      <span className="text-[10px] tracking-widest uppercase px-2 py-0.5 rounded bg-[var(--mw-purple)]/15 text-[var(--mw-purple)] font-medium flex items-center gap-1">
                         <Sparkles className="w-4 h-4" /> AI pick
                       </span>
                     )}
@@ -188,7 +188,7 @@ export function ShipShipping() {
                 <span className="text-xl text-foreground font-medium tabular-nums">${r.cost.toFixed(2)}</span>
                 <button
                   className={cn(
-                    'h-14 px-5 rounded-[var(--shape-lg)] text-sm transition-colors font-medium',
+                    'h-14 px-5 rounded-full text-sm transition-colors font-medium',
                     i === 0 || r.ai
                       ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
                       : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]'
@@ -206,7 +206,7 @@ export function ShipShipping() {
       {tab === 'manifests' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="h-12 min-h-[48px] px-6 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium" onClick={() => toast.success('Shipping manifest generated')}>
+            <button className="h-12 min-h-[48px] px-6 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium" onClick={() => toast.success('Shipping manifest generated')}>
               Generate manifest
             </button>
           </div>

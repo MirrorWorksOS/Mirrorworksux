@@ -207,7 +207,7 @@ function InvoicingPanel() {
               </div>
               <div className="flex items-center gap-3">
                 <Switch defaultChecked={t.active} />
-                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-[var(--shape-lg)]" onClick={() => toast('Edit account form coming soon')}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-full" onClick={() => toast('Edit account form coming soon')}>Edit</Button>
               </div>
             </div>
           ))}
@@ -284,7 +284,7 @@ function XeroPanel() {
           </div>
           <ConfirmDialog
             trigger={
-              <Button variant="outline" size="sm" className="h-9 text-xs rounded-xl border-[var(--border)] text-destructive">Disconnect</Button>
+              <Button variant="outline" size="sm" className="h-9 text-xs rounded-full border-[var(--border)] text-destructive">Disconnect</Button>
             }
             title="Disconnect Xero?"
             description="Syncing will stop immediately. Historical data will be preserved but no new transactions will flow between systems."
@@ -311,10 +311,10 @@ function XeroPanel() {
           ))}
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-xl">
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-full">
             <RefreshCw className="w-4 h-4" /> Sync now
           </Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl">Full re-sync</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-full">Full re-sync</Button>
           <span className="text-xs text-[var(--neutral-500)] ml-auto">Last full sync: 20 Feb 2026, 09:00 AM</span>
         </div>
       </Card>
@@ -326,7 +326,7 @@ function XeroPanel() {
             <h4 className="text-sm font-medium text-foreground">Account mapping</h4>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
-          <Button variant="outline" className="border-[var(--border)] rounded-xl text-sm" onClick={() => toast('Xero mapping configuration coming soon')}>Configure mapping</Button>
+          <Button variant="outline" className="border-[var(--border)] rounded-full text-sm" onClick={() => toast('Xero mapping configuration coming soon')}>Configure mapping</Button>
         </div>
       </Card>
     </div>
@@ -381,8 +381,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting invoices CSV…')}>Export invoices CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting expenses CSV…')}>Export expenses CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-full" onClick={() => toast.success('Exporting invoices CSV…')}>Export invoices CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-full" onClick={() => toast.success('Exporting expenses CSV…')}>Export expenses CSV</Button>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/components/ui/utils";
+import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 
 export interface ChecklistProps {
   title?: string;
@@ -31,8 +32,8 @@ export function Checklist({ title, progress, children, className }: ChecklistPro
           {progress ?
             <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--neutral-100)]">
               <div
-                className="h-full rounded-full bg-[var(--mw-yellow-400)] transition-[width] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
-                style={{ width: `${pct}%` }}
+                className="h-full rounded-full transition-[width] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                style={{ width: `${pct}%`, backgroundColor: getChartScaleColour(pct) }}
               />
             </div>
           : null}

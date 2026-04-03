@@ -103,7 +103,7 @@ export function ShipTracking() {
           <button
             onClick={() => setExceptionsOnly(!exceptionsOnly)}
             className={cn(
-              'h-14 px-4 rounded-[var(--shape-lg)] text-sm flex items-center gap-2 transition-colors font-medium',
+              'h-14 px-4 rounded-full text-sm flex items-center gap-2 transition-colors font-medium',
               exceptionsOnly
                 ? 'bg-[var(--mw-error-100)] text-[var(--mw-error)]'
                 : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]'
@@ -185,10 +185,10 @@ export function ShipTracking() {
                   </div>
 
                   <div className="space-y-2">
-                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2">
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
-                    <button className="w-full h-14 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
                       <ExternalLink className="w-4 h-4" /> Carrier portal
                     </button>
                   </div>

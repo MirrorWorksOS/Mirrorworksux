@@ -230,7 +230,7 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
               <button
                 type="button"
                 onClick={() => setShowNewExpense(false)}
-                className="p-2 hover:bg-[var(--neutral-100)] rounded-lg transition-colors"
+                className="p-2 hover:bg-[var(--neutral-100)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-[var(--neutral-500)]" />
               </button>

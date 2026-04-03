@@ -80,7 +80,7 @@ export function ScheduleCalendar({
           type="button"
           variant="outline"
           size="icon"
-          className="h-12 min-h-[48px] w-12 shrink-0 rounded-[var(--shape-md)]"
+          className="h-12 min-h-[48px] w-12 shrink-0"
           onClick={() => onMonthChange(addMonths(month, -1))}
           aria-label="Previous month"
         >
@@ -93,7 +93,7 @@ export function ScheduleCalendar({
           type="button"
           variant="outline"
           size="icon"
-          className="h-12 min-h-[48px] w-12 shrink-0 rounded-[var(--shape-md)]"
+          className="h-12 min-h-[48px] w-12 shrink-0"
           onClick={() => onMonthChange(addMonths(month, 1))}
           aria-label="Next month"
         >

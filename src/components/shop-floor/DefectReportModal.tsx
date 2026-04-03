@@ -78,7 +78,7 @@ export function DefectReportModal({ isOpen, onClose, partNumber = 78 }: DefectRe
               </Button>
               <Button 
                 onClick={onClose}
-                className="flex-1 h-[44px] text-base font-bold bg-[var(--mw-error-600)] hover:bg-[#B91C1C] text-white border-0"
+                className="flex-1 h-[44px] text-base font-bold bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white border-0"
               >
                 Submit Defect Report
               </Button>

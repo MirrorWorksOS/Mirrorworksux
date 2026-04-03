@@ -111,7 +111,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                 <div className="hidden items-center gap-4 md:flex">
                   <div className="flex -space-x-2">
                     {members.slice(0, 3).map(member => (
-                      <Avatar key={member.id} className="h-8 w-8 border-2 border-white">
+                      <Avatar key={member.id} className="h-8 w-8 border-2 border-white dark:border-card">
                         <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-600)]">
                           {initials(member.name)}
                         </AvatarFallback>
@@ -195,21 +195,21 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                     {members.map(member => (
                       <div key={member.id} className="flex items-center justify-between rounded-xl bg-[var(--neutral-100)] p-2.5">
                         <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8 ring-1 ring-white">
+                          <Avatar className="h-8 w-8 ring-1 ring-white dark:ring-card">
                             <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">
                               {initials(member.name)}
                             </AvatarFallback>
                           </Avatar>
                           <span className="text-sm text-[var(--neutral-800)]">{member.name}</span>
                         </div>
-                        <Button variant="ghost" className="h-12 w-12 rounded-[var(--shape-md)] p-0 text-[var(--neutral-500)]">
+                        <Button variant="ghost" className="h-12 w-12 p-0 text-[var(--neutral-500)]">
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
                     <Button
                       variant="outline"
-                      className="h-10 w-full rounded-xl border-[var(--border)] bg-card text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                      className="h-10 w-full border-[var(--border)] bg-card text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
                     >
                       <Plus className="h-4 w-4" />
                       Add member

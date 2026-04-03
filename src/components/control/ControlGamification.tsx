@@ -197,7 +197,7 @@ export function ControlGamification() {
             </div>
             <Button
               size="sm"
-              className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-[var(--shape-lg)]"
+              className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
               onClick={() => toast('Add target form coming soon')}
             >
               <Plus className="w-4 h-4 mr-1.5" />
@@ -233,7 +233,7 @@ export function ControlGamification() {
             </div>
             <Button
               size="sm"
-              className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-[var(--shape-lg)]"
+              className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
               onClick={() => toast('Create badge form coming soon')}
             >
               <Plus className="w-4 h-4 mr-1.5" />
@@ -425,7 +425,7 @@ export function ControlGamification() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="mt-3 rounded-[var(--shape-lg)] border-[var(--border)]"
+                          className="mt-3 border-[var(--border)]"
                           onClick={() => toast(`Add target to ${group.name} — coming soon`)}
                         >
                           <Plus className="w-3.5 h-3.5 mr-1.5" />

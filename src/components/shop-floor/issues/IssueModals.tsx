@@ -207,7 +207,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
       <div className="p-6 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)] flex gap-3">
          <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
-         <Button className="flex-1 bg-[var(--mw-error)] text-white hover:bg-[var(--mw-error)]/90" onClick={() => { toast.success('Machine issue reported — maintenance notified'); onClose(); }}>Stop & Submit</Button>
+         <Button className="flex-1 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90" onClick={() => { toast.success('Machine issue reported — maintenance notified'); onClose(); }}>Stop & Submit</Button>
       </div>
     </div>
   );

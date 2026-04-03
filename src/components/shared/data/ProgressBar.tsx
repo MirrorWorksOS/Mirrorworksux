@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/components/ui/utils";
+import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 
 interface ProgressBarProps {
   value: number;
@@ -35,8 +36,8 @@ export function ProgressBar({
       >
         {variant === "linear" ? (
           <div
-            className="h-full rounded-full bg-[var(--mw-yellow-400)] transition-[width] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
-            style={{ width: `${pct}%` }}
+            className="h-full rounded-full transition-[width] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+            style={{ width: `${pct}%`, backgroundColor: getChartScaleColour(pct) }}
           />
         ) : (
           <div className="flex h-full w-full rounded-full overflow-hidden">

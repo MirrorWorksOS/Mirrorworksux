@@ -26,7 +26,7 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 dark:bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="text-2xl font-bold text-foreground">{group.name}</SheetTitle>
@@ -45,7 +45,7 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
             <div className="space-y-2">
               {members.map(member => (
                 <div key={member.id} className="flex items-center gap-3 rounded-xl bg-[var(--neutral-100)] p-2">
-                  <Avatar className="h-8 w-8 ring-1 ring-white">
+                  <Avatar className="h-8 w-8 ring-1 ring-white dark:ring-card">
                     <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">{initials(member.name)}</AvatarFallback>
                   </Avatar>
                   <div>

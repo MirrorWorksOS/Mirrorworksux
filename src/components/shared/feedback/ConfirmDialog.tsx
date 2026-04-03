@@ -54,7 +54,7 @@ function ConfirmDialog({
               variant === "destructive" &&
                 "bg-destructive text-white hover:bg-destructive/90",
               variant === "warning" &&
-                "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]",
+                "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]",
             )}
           >
             {confirmLabel}

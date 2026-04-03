@@ -290,8 +290,8 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
                   variant={action.variant as any || 'default'} 
                   size="sm"
                   className={cn(
-                    "h-9 font-medium rounded-sm", 
-                    action.variant === 'destructive' ? "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]" :
+                    "h-9 font-medium",
+                    action.variant === 'destructive' ? "bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white" :
                     action.variant === 'outline' ? "border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)]" :
                     action.variant === 'ghost' ? "text-[var(--neutral-500)] hover:text-[var(--neutral-800)] ml-auto" :
                     "bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
@@ -426,13 +426,13 @@ export function IntelligenceHubTab() {
                       </div>
                       <div className="flex gap-4 w-full">
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--neutral-800)] hover:bg-[var(--neutral-700)] text-white rounded-md"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--neutral-800)] hover:bg-[var(--neutral-700)] text-white"
                             onClick={() => setIsRecording(false)}
                          >
                             CANCEL
                          </Button>
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] rounded-md"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
                             onClick={() => setIsRecording(false)}
                          >
                             DONE

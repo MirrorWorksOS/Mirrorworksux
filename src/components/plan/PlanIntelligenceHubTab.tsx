@@ -70,7 +70,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 1 — Quote sent */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-card" />
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
@@ -89,7 +89,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 2 — Quote opened */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-card" />
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
@@ -108,7 +108,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 3 — Phone call */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-card" />
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Phone className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
@@ -127,7 +127,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 4 — Document uploaded */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-blue)] border-2 border-card" />
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Upload className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
@@ -146,7 +146,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 5 — Quote confirmed (highlighted) */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-yellow-400)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-yellow-400)] border-2 border-card" />
             <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
@@ -165,7 +165,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Event 6 — Email confirmation sent */}
           <div className="relative">
-            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-green)] border-2 border-white" />
+            <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-green)] border-2 border-card" />
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-3.5 h-3.5 text-[var(--neutral-500)]" />

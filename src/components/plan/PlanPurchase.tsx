@@ -75,10 +75,10 @@ export function PlanPurchase() {
         subtitle={`${countCritical > 0 ? `${countCritical} critical shortage \u00B7 ` : ''}${countShortage} shortages \u00B7 ${countOk} items available`}
         actions={
           <div className="flex gap-4">
-            <Button variant="outline" className="border-[var(--border)] gap-2 h-12 rounded-md">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-12">
               <RefreshCw className="w-4 h-4" /> Recalculate MRP
             </Button>
-            <Button variant="outline" className="border-[var(--border)] gap-2 h-12 rounded-md">
+            <Button variant="outline" className="border-[var(--border)] gap-2 h-12">
               <Download className="w-4 h-4" /> Export
             </Button>
           </div>

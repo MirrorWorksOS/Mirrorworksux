@@ -64,7 +64,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 backdrop-blur-xl p-6">
+      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">Invite team member</DialogTitle>
           <DialogDescription className="text-xs text-[var(--neutral-500)]">
@@ -143,10 +143,10 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
           </div>
 
           <div className="space-y-2 pt-1">
-            <Button className="h-12 w-full rounded-xl bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="h-12 w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
               Send invite
             </Button>
-            <Button variant="ghost" className="h-10 w-full rounded-[var(--shape-lg)] text-[var(--neutral-500)]" onClick={() => onOpenChange(false)}>
+            <Button variant="ghost" className="h-10 w-full text-[var(--neutral-500)]" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
           </div>

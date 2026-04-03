@@ -381,7 +381,7 @@ export function WelcomeDashboard() {
                       <Button
                         asChild
                         size="sm"
-                        className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
+                        className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
                       >
                         <Link to="/control/mirrorworks-bridge">MirrorWorks Bridge</Link>
                       </Button>

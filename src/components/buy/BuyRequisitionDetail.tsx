@@ -138,7 +138,7 @@ export function BuyRequisitionDetail() {
 
               <div className="pt-4 border-t border-[var(--border)] space-y-2">
                 <Button
-                  className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+                  className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
                   onClick={() => toast.success('Requisition approved')}
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -262,7 +262,7 @@ export function BuyRequisitionDetail() {
             <Printer className="mr-2 h-4 w-4" /> Print
           </Button>
           <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             onClick={() => toast.success('Converting to PO…')}
           >
             <Send className="mr-2 h-4 w-4" /> Convert to PO

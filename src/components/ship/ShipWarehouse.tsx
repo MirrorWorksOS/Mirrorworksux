@@ -191,7 +191,7 @@ export function ShipWarehouse() {
             onSearchChange={setInvSearch}
             searchPlaceholder="Search inventory…"
             actions={
-              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Download className="w-4 h-4" /> Export
               </button>
             }
@@ -216,7 +216,7 @@ export function ShipWarehouse() {
                 <span className="text-sm text-foreground font-medium tabular-nums">CC-2026-012</span>
                 <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
-              <button className="h-14 px-4 rounded-[var(--shape-lg)] text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
                 <Play className="w-4 h-4" /> New count
               </button>
             </div>
@@ -235,7 +235,7 @@ export function ShipWarehouse() {
           />
 
           <div className="flex justify-end">
-            <button className="h-12 px-8 rounded-[var(--shape-lg)] text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
+            <button className="h-12 px-8 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
               Submit count
             </button>
           </div>

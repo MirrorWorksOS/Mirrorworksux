@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/utils';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { DataImportWizardLayout } from '@/components/shared/onboarding/DataImportWizardLayout';
+import { getChartScaleColour } from '@/components/shared/charts/chart-theme';
 
 const dataTypes = [
   { key: 'customers', label: 'Customers', icon: Database, imported: 45, total: 45, status: 'complete' as const },
@@ -67,12 +68,7 @@ export function MirrorWorksBridge() {
                     className="h-full rounded-full transition-all duration-300"
                     style={{
                       width: `${progress}%`,
-                      backgroundColor:
-                        type.status === 'complete'
-                          ? 'var(--mw-success)'
-                          : type.status === 'partial'
-                            ? 'var(--mw-warning)'
-                            : 'var(--neutral-200)',
+                      backgroundColor: getChartScaleColour(progress),
                     }}
                   />
                 </div>
@@ -81,7 +77,7 @@ export function MirrorWorksBridge() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-10 w-full rounded-[var(--shape-lg)] border-[var(--border)]"
+                className="h-10 w-full border-[var(--border)]"
                 disabled={type.status === 'complete'}
               >
                 <Upload className="mr-2 h-4 w-4" />
@@ -95,7 +91,7 @@ export function MirrorWorksBridge() {
       <div className="flex items-center justify-between border-t border-[var(--border)] pt-6">
         <Button
           variant="outline"
-          className="h-12 min-h-[48px] rounded-[var(--shape-lg)] border-[var(--border)]"
+          className="h-12 min-h-[48px] border-[var(--border)]"
           disabled={activeStep === 1}
           onClick={() => setActiveStep(s => Math.max(1, s - 1))}
         >
@@ -117,7 +113,7 @@ export function MirrorWorksBridge() {
           ))}
         </div>
         <Button
-          className="h-12 min-h-[48px] rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+          className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
           onClick={() => setActiveStep(s => Math.min(3, s + 1))}
         >
           Next →

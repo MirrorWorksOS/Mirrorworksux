@@ -144,10 +144,10 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]">
             <Filter className="w-4 h-4 mr-2" /> Filter
           </Button>
-          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)] rounded-sm">
+          <Button variant="outline" size="sm" className="h-10 px-4 bg-card border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]">
             View
           </Button>
         </div>
@@ -229,7 +229,7 @@ const WorkOrderList = ({ onSelectWO }: { onSelectWO: (wo: WorkOrder, mo: Manufac
                               </div>
                               <div className="w-full h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
                                 <div 
-                                  className={`h-full rounded-full ${wo.status === 'progress' ? 'bg-[var(--neutral-800)]' : wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--neutral-500)]'}`}
+                                  className={`h-full rounded-full ${wo.status === 'progress' ? 'bg-[var(--neutral-800)]' : wo.status === 'completed' ? 'bg-[var(--neutral-800)]' : 'bg-[var(--neutral-500)]'}`}
                                   style={{ width: `${wo.progress}%` }}
                                 />
                               </div>

@@ -129,7 +129,7 @@ function EmptyState({
       {action && (
         <Button
           onClick={action.onClick}
-          className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+          className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
         >
           {action.icon && <action.icon className="w-4 h-4 mr-2" />}
           {action.label}

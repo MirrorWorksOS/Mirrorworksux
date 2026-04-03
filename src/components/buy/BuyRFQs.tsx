@@ -113,7 +113,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-foreground">{q.supplier}</span>
                         {q.aiPick && (
-                          <span className="text-[10px] bg-[var(--mw-yellow-400)] text-primary-foreground px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                          <span className="text-[10px] bg-[var(--mw-purple)]/15 text-[var(--mw-purple)] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                             <Sparkles className="w-2.5 h-2.5" /> AI pick
                           </span>
                         )}

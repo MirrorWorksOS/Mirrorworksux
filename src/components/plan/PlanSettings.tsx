@@ -237,8 +237,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export schedule CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting CSV...')}>Export BOM report CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting CSV...')}>Export schedule CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting CSV...')}>Export BOM report CSV</Button>
         </div>
       </div>
     </div>

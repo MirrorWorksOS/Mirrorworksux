@@ -528,7 +528,7 @@ export function ControlWorkflowDesigner() {
               onClick={() => toast.success('Workflow duplicated')}>
               <Copy className="w-4 h-4" /> Duplicate
             </Button>
-            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[var(--mw-success)] text-white text-xs"
+            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white text-xs"
               onClick={() => toast.success('Workflow run started')}>
               <Play className="w-4 h-4" /> Run
             </Button>

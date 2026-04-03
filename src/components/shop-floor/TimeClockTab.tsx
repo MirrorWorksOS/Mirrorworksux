@@ -175,7 +175,7 @@ export function TimeClockTab() {
 
             {/* Operator Info - Material 3 Style */}
             <div className="flex flex-col items-center gap-3 mb-8">
-              <Avatar className="w-24 h-24 border-4 border-white shadow-[var(--elevation-2)]">
+              <Avatar className="w-24 h-24 border-4 border-white dark:border-card shadow-[var(--elevation-2)]">
                 <AvatarImage src={operatorImage} className="object-cover" />
                 <AvatarFallback>DM</AvatarFallback>
               </Avatar>

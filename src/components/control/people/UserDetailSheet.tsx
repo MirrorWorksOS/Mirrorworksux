@@ -36,7 +36,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 dark:bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="sr-only">User details</SheetTitle>
@@ -44,7 +44,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
 
         <div className="space-y-6">
           <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16 ring-2 ring-white shadow-md">
+            <Avatar className="h-16 w-16 ring-2 ring-white dark:ring-card shadow-md">
               <AvatarFallback className="bg-[var(--neutral-100)] text-base font-medium text-[var(--neutral-800)]">
                 {initials(user.name)}
               </AvatarFallback>
@@ -103,7 +103,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-10 w-full justify-between rounded-xl px-0 text-left text-sm font-medium text-[var(--neutral-800)]"
+                className="h-10 w-full justify-between px-0 text-left text-sm font-medium text-[var(--neutral-800)]"
               >
                 Activity log
                 <ChevronDown className="h-4 w-4 text-[var(--neutral-500)]" />
@@ -114,7 +114,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
                 {mockActivity.map(item => (
                   <div key={item.id} className="relative flex gap-3 pl-1">
                     <div className="relative flex flex-col items-center">
-                      <Avatar className="h-6 w-6 ring-1 ring-white">
+                      <Avatar className="h-6 w-6 ring-1 ring-white dark:ring-card">
                         <AvatarFallback className="bg-[var(--neutral-100)] text-[10px] text-[var(--neutral-600)]">
                           {initials(item.actorName)}
                         </AvatarFallback>

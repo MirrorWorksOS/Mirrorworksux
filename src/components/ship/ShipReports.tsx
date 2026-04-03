@@ -76,10 +76,10 @@ export function ShipReports() {
         title="Reports"
         actions={
           <>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]">
+            <button type="button" className="flex h-14 items-center gap-2 rounded-full border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]">
               <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
             </button>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
+            <button type="button" className="flex h-14 items-center gap-2 rounded-full border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
               <Download className="h-4 w-4" strokeWidth={1.5} /> Export
             </button>
           </>

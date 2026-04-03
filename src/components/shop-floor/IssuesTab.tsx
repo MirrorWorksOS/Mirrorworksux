@@ -139,7 +139,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
            </div>
         </div>
       </div>
-      <Button variant="outline" size="sm" className="bg-card border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-14">
+      <Button variant="outline" size="sm" className="bg-card border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] h-14">
          View Details
       </Button>
     </div>
@@ -325,11 +325,11 @@ export function IssuesTab() {
                      <Bot className="w-5 h-5" /> AI Troubleshoot
                   </div>
                   
-                  <Button className="w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group rounded-sm font-bold">
+                  <Button className="w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group font-bold">
                      Ask Intelligence Hub <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   
-                  <div className="flex items-center gap-2 text-sm text-foreground bg-white/60 p-3 rounded-sm border border-[var(--mw-purple)]/20">
+                  <div className="flex items-center gap-2 text-sm text-foreground bg-white/60 dark:bg-card/60 p-3 rounded-sm border border-[var(--mw-purple)]/20">
                      <Mic className="w-4 h-4" /> 
                      <span className="italic font-medium">"Why is Amada Ensis stopped?"</span>
                   </div>
@@ -341,7 +341,7 @@ export function IssuesTab() {
 
       {/* Modals */}
       <Dialog open={!!activeModal} onOpenChange={(open) => !open && setActiveModal(null)}>
-         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white/95 backdrop-blur-xl sm:rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
+         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white/95 dark:bg-card/95 backdrop-blur-xl sm:rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
             <DialogTitle className="sr-only">Issue Reporting</DialogTitle>
             <DialogDescription className="sr-only">
                Form to report an issue on the shop floor.

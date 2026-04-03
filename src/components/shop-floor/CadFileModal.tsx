@@ -144,7 +144,7 @@ interface CadFileModalProps {
 export function CadFileModal({ isOpen, onClose }: CadFileModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[600px] w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-none rounded-xl">
+      <DialogContent className="max-w-[600px] w-full p-0 overflow-hidden bg-white/95 dark:bg-card/95 backdrop-blur-xl border-none rounded-xl">
         <DialogTitle className="sr-only">CAD File</DialogTitle>
         <DialogDescription className="sr-only">Upload or view CAD files</DialogDescription>
         <div className="bg-card content-stretch flex flex-col items-start relative size-full" data-name="Bill of materials empty state">

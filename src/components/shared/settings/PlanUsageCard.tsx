@@ -94,7 +94,7 @@ export function PlanUsageCard({ moduleName, tierName }: PlanUsageCardProps) {
       {nextTier && (
         <div className="px-6 pb-6">
           <Button
-            className="bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white gap-2 rounded-xl"
+            className="bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white gap-2"
           >
             Upgrade plan
             <ExternalLink className="w-4 h-4" />

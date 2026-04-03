@@ -181,7 +181,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
                 { text: 'Pushed to Xero', time: '24 Feb, 10:33 AM', mono: 'XeroID: abc123...' },
               ].map((evt, i) => (
                 <div key={i} className="flex items-start gap-3 relative">
-                  <div className="w-4 h-4 rounded-full bg-[var(--neutral-200)] border-2 border-white shrink-0 z-10" />
+                  <div className="w-4 h-4 rounded-full bg-[var(--neutral-200)] border-2 border-card shrink-0 z-10" />
                   <div>
                     <p className="text-sm text-foreground">{evt.text}</p>
                     {evt.mono && <p className="text-xs text-[var(--neutral-500)] tabular-nums">{evt.mono}</p>}

@@ -190,7 +190,7 @@ function CarriersPanel() {
                   variant={c.connected ? 'outline' : 'default'}
                   size="sm"
                   className={cn(
-                    'h-9 text-xs rounded-xl',
+                    'h-9 text-xs',
                     c.connected
                       ? 'border-[var(--border)] text-[var(--neutral-500)]'
                       : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
@@ -267,8 +267,8 @@ function ReportsPanel() {
       <div>
         <SectionLabel>Export</SectionLabel>
         <div className="flex gap-4">
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting dispatch log CSV…')}>Export dispatch log CSV</Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-xl" onClick={() => toast.success('Exporting returns CSV…')}>Export returns CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting dispatch log CSV…')}>Export dispatch log CSV</Button>
+          <Button variant="outline" className="border-[var(--border)] gap-2" onClick={() => toast.success('Exporting returns CSV…')}>Export returns CSV</Button>
         </div>
       </div>
     </div>

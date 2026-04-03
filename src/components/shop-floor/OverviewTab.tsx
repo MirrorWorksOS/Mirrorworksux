@@ -308,13 +308,13 @@ export function OverviewTab() {
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium">
               Status <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium">
               Priority <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
-            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium rounded-sm">
+            <Button variant="outline" className="h-14 px-4 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] font-medium">
               Machine <ChevronDown className="w-4 h-4 ml-2 text-[var(--neutral-500)]" />
             </Button>
           </div>
@@ -385,11 +385,11 @@ export function OverviewTab() {
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex -space-x-2">
                       {[1,2,3,4].map(i => (
-                        <Avatar key={i} className="w-8 h-8 border-2 border-white">
+                        <Avatar key={i} className="w-8 h-8 border-2 border-white dark:border-card">
                           <AvatarFallback className="bg-[var(--border)] text-[var(--neutral-500)] text-[10px]">OP</AvatarFallback>
                         </Avatar>
                       ))}
-                      <div className="w-8 h-8 rounded-full bg-[var(--neutral-100)] border-2 border-white flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)]">
+                      <div className="w-8 h-8 rounded-full bg-[var(--neutral-100)] border-2 border-white dark:border-card flex items-center justify-center text-[10px] font-medium text-[var(--neutral-500)]">
                         +8
                       </div>
                     </div>
@@ -506,7 +506,7 @@ export function OverviewTab() {
                               </div>
                               <div className="col-span-2 pr-4">
                                 <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden w-24">
-                                   <div className={`h-full rounded-full ${wo.status === 'completed' ? 'bg-[var(--mw-green)]' : 'bg-[var(--mw-yellow-400)]'}`} style={{ width: `${wo.progress}%` }} />
+                                   <div className={`h-full rounded-full ${wo.status === 'completed' ? 'bg-[var(--neutral-800)]' : 'bg-[var(--mw-yellow-400)]'}`} style={{ width: `${wo.progress}%` }} />
                                 </div>
                               </div>
                               <div className="col-span-1 text-right">
@@ -644,14 +644,14 @@ export function OverviewTab() {
              <div className="px-4 py-2">
                <h3 className="font-medium text-[var(--neutral-800)] mb-3 text-sm">Quick Access</h3>
                <div className="space-y-2">
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] rounded-sm">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)]">
                    <FileText className="w-4 h-4 mr-3 text-[var(--mw-yellow-400)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">SOP-001 Assembly</div>
                      <div className="text-xs text-[var(--neutral-500)]">Updated 2 days ago</div>
                    </div>
                  </Button>
-                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] rounded-sm">
+                 <Button variant="outline" className="w-full justify-start text-left h-auto py-3 border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)]">
                    <ShieldAlert className="w-4 h-4 mr-3 text-[var(--mw-error)]" />
                    <div>
                      <div className="text-sm font-medium text-[var(--neutral-800)]">Safety Protocol</div>

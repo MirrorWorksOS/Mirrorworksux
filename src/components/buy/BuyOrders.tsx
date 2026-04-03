@@ -144,7 +144,7 @@ export function BuyOrders() {
         />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <Button variant="outline" className="h-12 gap-2 rounded-md border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting purchase orders...')}>
+        <Button variant="outline" className="h-12 gap-2 border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting purchase orders...')}>
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
