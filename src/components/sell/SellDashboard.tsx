@@ -24,9 +24,11 @@ import {
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
-  getChartScaleColour,
+  MW_BAR_RADIUS_H,
+  getChartScalePattern,
   marginToScalePercent,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import {
   BarChart,
   Bar,
@@ -310,15 +312,16 @@ export function SellDashboard() {
           <ChartCard title="Top 10 Jobs by Profit Margin">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={jobProfitabilityData} layout="vertical">
+                <ChartPatternDefs />
                 <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
                 <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
                 <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />
                 <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
-                <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
+                <Bar dataKey="margin" radius={MW_BAR_RADIUS_H} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {jobProfitabilityData.map((entry, i) => (
                     <Cell
                       key={`cell-${entry.job}-${i}`}
-                      fill={getChartScaleColour(marginToScalePercent(entry.margin))}
+                      fill={getChartScalePattern(marginToScalePercent(entry.margin))}
                     />
                   ))}
                 </Bar>

@@ -91,7 +91,7 @@ const IssueCard = ({
   <div 
     onClick={onClick}
     className={cn(
-      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-[var(--shape-lg)] border transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-[1.01] group bg-white",
+      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-[var(--shape-lg)] border transition-all duration-200 cursor-pointer hover:shadow-[var(--elevation-2)] hover:scale-[1.01] group bg-white",
       colorConfig.border,
       colorConfig.hover
     )}
@@ -123,7 +123,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
   const Icon = icons[alert.type];
 
   return (
-    <div className={cn("p-4 rounded-[12px] border mb-3 flex items-center justify-between", styles[alert.status])}>
+    <div className={cn("p-4 rounded-md border mb-3 flex items-center justify-between", styles[alert.status])}>
       <div className="flex items-center gap-4">
         <div className="p-2.5 bg-white rounded-full shadow-sm border border-black/5">
            <Icon className="w-5 h-5 text-[var(--neutral-800)]" />
@@ -139,7 +139,7 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
            </div>
         </div>
       </div>
-      <Button variant="outline" size="sm" className="bg-white border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-9">
+      <Button variant="outline" size="sm" className="bg-white border-[var(--neutral-200)] hover:bg-[var(--neutral-100)] text-[var(--neutral-800)] rounded-sm h-14">
          View Details
       </Button>
     </div>
@@ -165,7 +165,7 @@ export function IssuesTab() {
         <button
           onClick={handleCallSupervisor}
           className={cn(
-            "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-300 shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
+            "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-[250ms] shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
             isSupervisorCalled 
               ? "bg-[var(--mw-error-600)]" 
               : "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]"
@@ -191,14 +191,14 @@ export function IssuesTab() {
         <div 
            onClick={() => !isRecording && setIsRecording(true)}
            className={cn(
-             "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-xs transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden cursor-pointer",
+             "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-xs transition-all duration-[450ms] ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden cursor-pointer",
              isRecording 
                ? "w-[480px] cursor-default bg-white border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
-               : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-lg active:scale-95 border border-[var(--mw-yellow-400)]"
+               : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-[var(--elevation-3)] active:scale-95 border border-[var(--mw-yellow-400)]"
            )}
         >
            {isRecording ? (
-             <div className="flex w-full h-full animate-in fade-in zoom-in-95 duration-300">
+             <div className="flex w-full h-full animate-in fade-in zoom-in-95 duration-[250ms]">
                 {/* Left Side - Yellow */}
                 <div className="flex-1 bg-[var(--mw-yellow-400)] flex items-center px-6 gap-5 relative h-full">
                    {/* Play Button */}
@@ -277,7 +277,7 @@ export function IssuesTab() {
                   <h3 className="font-bold text-[var(--neutral-800)] text-lg flex items-center gap-2">
                      <AlertTriangle className="w-5 h-5 text-[var(--neutral-500)]" /> ACTIVE ISSUES
                   </h3>
-                  <Badge variant="secondary" className="bg-white border border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium rounded-[6px]">3 Open</Badge>
+                  <Badge variant="secondary" className="bg-white border border-[var(--neutral-200)] text-[var(--neutral-800)] font-medium rounded-sm">3 Open</Badge>
                </div>
                <div className="p-6 bg-white max-h-[240px] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
                   {MOCK_ALERTS.map(alert => (

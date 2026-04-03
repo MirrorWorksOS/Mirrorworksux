@@ -5,7 +5,6 @@
 import React, { useState } from 'react';
 import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer } from '@/components/shared/motion/motion-variants';
@@ -79,12 +78,6 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
   obsolete: { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
 };
 
-const LINE_TYPE_CONFIG: Record<string, { bg: string; text: string }> = {
-  material:  { bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]' },
-  purchased: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]' },
-  labour:    { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
-};
-
 /* Column definitions for the nested BOM-lines sub-table */
 const bomLineColumns: MwColumnDef<BOMLine>[] = [
   { key: 'sku',         header: 'SKU',         tooltip: 'Component SKU', cell: (line) => <span className="text-xs font-medium text-[var(--neutral-500)]">{line.sku}</span> },
@@ -94,11 +87,15 @@ const bomLineColumns: MwColumnDef<BOMLine>[] = [
   {
     key: 'type', header: 'Type', tooltip: 'Line type',
     cell: (line) => {
-      const ltcfg = LINE_TYPE_CONFIG[line.type];
+      const variantMap: Record<string, 'accent' | 'info' | 'neutral'> = {
+        material: 'accent',
+        purchased: 'info',
+        labour: 'neutral',
+      };
       return (
-        <Badge className={cn('border-0 text-[10px] rounded-full px-1.5 py-0.5 capitalize', ltcfg.bg, ltcfg.text)}>
+        <StatusBadge variant={variantMap[line.type] ?? 'neutral'}>
           {line.type}
-        </Badge>
+        </StatusBadge>
       );
     },
   },

@@ -21,9 +21,11 @@ import {
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 // --- Types & Mock Data ---
 
@@ -154,18 +156,6 @@ const REPORTS = [
 
 // --- Components ---
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const isPassed = status === 'passed';
-  return (
-    <div className={cn(
-      "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
-      isPassed ? "bg-[var(--mw-success-light)] text-[var(--mw-success)]" : "bg-[var(--mw-error-light)] text-[var(--mw-error)]"
-    )}>
-      <div className={cn("w-1.5 h-1.5 rounded-full", isPassed ? "bg-[var(--mw-success)]" : "bg-[var(--mw-error)]")} />
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </div>
-  );
-};
 
 const PriorityBadge = ({ priority }: { priority: string }) => {
   const styles = {
@@ -233,7 +223,7 @@ export function QualityTab() {
 
       {/* Overview Content */}
       {activeTab === 'overview' && (
-        <div className="space-y-8 animate-in fade-in-50 duration-300 pb-12">
+        <div className="space-y-8 animate-in fade-in-50 duration-[250ms] pb-12">
           
           {/* KPI Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -331,7 +321,11 @@ export function QualityTab() {
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <div className="text-xs text-[var(--neutral-500)]">{insp.time}</div>
-                        <StatusBadge status={insp.status} />
+                        {insp.status === 'passed' ? (
+                          <StatusBadge variant="success" withDot>Passed</StatusBadge>
+                        ) : (
+                          <StatusBadge variant="error" withDot>Failed</StatusBadge>
+                        )}
                       </div>
                    </div>
                  ))}
@@ -389,7 +383,7 @@ export function QualityTab() {
 
       {/* Active Issues Tab */}
       {activeTab === 'active-issues' && (
-        <div className="space-y-6 animate-in fade-in-50 duration-300 pb-12">
+        <div className="space-y-6 animate-in fade-in-50 duration-[250ms] pb-12">
           {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-6">
              <div className="relative flex-1 min-w-[300px]">
@@ -447,7 +441,7 @@ export function QualityTab() {
 
       {/* Inspections Tab */}
       {activeTab === 'inspections' && (
-        <div className="space-y-8 animate-in fade-in-50 duration-300 pb-12">
+        <div className="space-y-8 animate-in fade-in-50 duration-[250ms] pb-12">
           {/* Filter Pills */}
           <div className="flex flex-wrap gap-2">
              {['All Types', 'First Article', 'In-Process', 'Final', 'Receiving'].map((type, i) => (
@@ -477,7 +471,7 @@ export function QualityTab() {
 
       {/* Reports Tab */}
       {activeTab === 'reports' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50 duration-300 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50 duration-[250ms] pb-12">
            {REPORTS.map((report, i) => (
               <Card key={i} className="p-6 border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)]">
                   <div className="flex items-start justify-between mb-4">
@@ -555,7 +549,7 @@ export function QualityTab() {
                  {/* Description */}
                  <div className="space-y-3">
                     <label className="text-sm font-medium text-[var(--neutral-800)]">Description <span className="text-[var(--mw-error)]">*</span></label>
-                    <textarea 
+                    <Textarea
                       className="w-full min-h-[100px] p-3 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--mw-yellow-400)] resize-none"
                       placeholder="Describe what happened..."
                     />

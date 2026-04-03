@@ -11,13 +11,13 @@ export const moduleLabels: Record<ModuleKey, string> = {
 };
 
 export const moduleColors: Record<ModuleKey, { bg: string; text: string; dot: string }> = {
-  sell: { bg: '#EEF2FF', text: '#4338CA', dot: '#6366F1' },
-  plan: { bg: '#FEF9C3', text: '#854D0E', dot: '#CA8A04' },
-  make: { bg: '#DCFCE7', text: '#166534', dot: '#22C55E' },
-  ship: { bg: '#E0E7FF', text: '#3730A3', dot: '#6366F1' },
-  book: { bg: '#FCE7F3', text: '#9D174D', dot: '#EC4899' },
-  buy: { bg: '#FFEDD5', text: '#9A3412', dot: '#F97316' },
-  control: { bg: '#F3F4F6', text: '#374151', dot: '#6B7280' },
+  sell: { bg: 'var(--mw-purple-50)', text: 'var(--mw-purple)', dot: 'var(--mw-purple)' },
+  plan: { bg: 'var(--mw-yellow-50)', text: 'var(--mw-yellow-800)', dot: 'var(--mw-yellow-400)' },
+  make: { bg: 'var(--mw-success-light)', text: 'var(--mw-success)', dot: 'var(--mw-success)' },
+  ship: { bg: 'var(--mw-info-light)', text: 'var(--mw-info)', dot: 'var(--mw-info)' },
+  book: { bg: 'var(--mw-error-100)', text: 'var(--mw-error)', dot: 'var(--mw-error)' },
+  buy: { bg: 'var(--mw-warning-light)', text: 'var(--mw-warning)', dot: 'var(--mw-warning)' },
+  control: { bg: 'var(--neutral-100)', text: 'var(--neutral-600)', dot: 'var(--neutral-500)' },
 };
 
 export const mockUsers: User[] = [

@@ -12,7 +12,8 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { MW_BAR_TOOLTIP_CURSOR, MW_RECHARTS_ANIMATION_BAR, MW_TOOLTIP_STYLE } from '@/components/shared/charts/chart-theme';
+import { MW_BAR_TOOLTIP_CURSOR, MW_RECHARTS_ANIMATION_BAR, MW_TOOLTIP_STYLE, MW_BAR_RADIUS_H, MW_FILL } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -131,31 +132,32 @@ export function ShipReturns() {
 
         {/* Sidebar Stats */}
         <div className="space-y-4">
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">This month</span>
             <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">12</div>
-          </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          </Card>
+          <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium block mb-4">Top reasons</span>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart data={REASONS} layout="vertical" margin={{ left: 0 }}>
                 <XAxis type="number" hide />
                 <YAxis dataKey="reason" type="category" tick={{ fontSize: 10, fill: 'var(--neutral-500)' }} width={70} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} />
-                <Bar key="count" dataKey="count" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} barSize={10} {...MW_RECHARTS_ANIMATION_BAR} />
+                <ChartPatternDefs />
+                <Bar key="count" dataKey="count" fill={MW_FILL.HATCH_DARK} radius={MW_BAR_RADIUS_H} barSize={10} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          </Card>
+          <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Avg processing</span>
             <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">
               4.2<span className="text-sm text-[var(--neutral-500)] ml-1">days</span>
             </div>
-          </div>
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          </Card>
+          <Card className="p-6">
             <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Return rate</span>
             <div className="text-3xl text-[var(--mw-mirage)] mt-1 font-medium tabular-nums">2.8%</div>
-          </div>
+          </Card>
         </div>
       </div>
 

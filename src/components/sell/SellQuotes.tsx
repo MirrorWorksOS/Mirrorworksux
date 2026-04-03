@@ -241,8 +241,8 @@ export function SellQuotes() {
       <div className="flex items-center justify-between px-4 py-3">
         <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filtered.length} of {filtered.length}</p>
         <div className="flex gap-2">
-          <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:opacity-40" disabled>Previous</button>
-          <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:opacity-40" disabled>Next</button>
+          <Button variant="outline" size="sm" disabled>Previous</Button>
+          <Button variant="outline" size="sm" disabled>Next</Button>
         </div>
       </div>
     </PageShell>

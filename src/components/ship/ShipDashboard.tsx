@@ -16,8 +16,10 @@ import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
-  getChartScaleColour,
+  MW_BAR_RADIUS_H,
+  getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
 
@@ -139,9 +141,10 @@ export function ShipDashboard() {
                   tickLine={false}
                 />
                 <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
-                <Bar key="onTime" dataKey="onTime" radius={[0, 6, 6, 0]} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
+                <ChartPatternDefs />
+                <Bar key="onTime" dataKey="onTime" radius={MW_BAR_RADIUS_H} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
                   {CARRIER_DATA.map((e, i) => (
-                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={getChartScaleColour(e.onTime)} />
+                    <Cell key={`carrier-cell-${e.carrier}-${i}`} fill={getChartScalePattern(e.onTime)} />
                   ))}
                 </Bar>
               </BarChart>

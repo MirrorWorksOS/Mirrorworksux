@@ -101,16 +101,6 @@ const mockSpendData = [
   { week: 6, planned: 18500, actual: null, label: 'Wk 6' }, // Future weeks
 ];
 
-const getStatusColor = (status: 'on_track' | 'monitor' | 'over_budget') => {
-  switch (status) {
-    case 'on_track':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
-    case 'monitor':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
-    case 'over_budget':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)' };
-  }
-};
 
 const getProgressColor = (pct: number) => getChartScaleColour(Math.min(100, pct));
 
@@ -206,7 +196,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 "absolute top-full left-1/2 -translate-x-1/2 mt-2 z-20",
                 "pointer-events-none",
                 "opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0",
-                "transition-all duration-150 ease-out"
+                "transition-all duration-100 ease-[cubic-bezier(0,0,0,1)]"
               )}
             >
               {/* Arrow */}

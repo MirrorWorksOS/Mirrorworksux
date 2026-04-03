@@ -52,7 +52,7 @@ export function FieldMappingRow({ mapping, targetFields, onUpdate }: FieldMappin
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs h-7"
+              className="text-xs h-12"
               onClick={() => onUpdate({ mappingStatus: 'suggested', targetColumn: null })}
             >
               Undo
@@ -101,7 +101,7 @@ export function FieldMappingRow({ mapping, targetFields, onUpdate }: FieldMappin
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs h-7 text-muted-foreground"
+                className="text-xs h-12 text-muted-foreground"
                 onClick={() => onUpdate({ mappingStatus: 'skipped' })}
               >
                 Skip this column

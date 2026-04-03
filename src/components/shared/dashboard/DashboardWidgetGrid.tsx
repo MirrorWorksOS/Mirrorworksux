@@ -35,7 +35,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, MW_RECHARTS_ANIMATION_BAR } from "@/components/shared/charts/chart-theme";
+import { MW_TOOLTIP_STYLE, MW_RECHARTS_ANIMATION, MW_RECHARTS_ANIMATION_BAR, MW_CHART_COLOURS, MW_BAR_RADIUS_V, MW_BAR_RADIUS_H, MW_FILL } from "@/components/shared/charts/chart-theme";
+import { ChartPatternDefs } from "@/components/shared/charts/ChartPatternDefs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
@@ -97,13 +98,6 @@ const PIE_DATA = [
   { name: "Commercial", value: 30 },
   { name: "Residential", value: 20 },
   { name: "Government", value: 10 },
-];
-
-const PIE_COLORS = [
-  "var(--mw-mirage)",
-  "var(--mw-yellow-400)",
-  "var(--neutral-400)",
-  "var(--neutral-200)",
 ];
 
 const BAR_DATA = [
@@ -250,10 +244,11 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={FUNNEL_DATA} layout="vertical">
+            <ChartPatternDefs />
             <XAxis type="number" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis dataKey="stage" type="category" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" width={80} />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
-            <Bar dataKey="value" fill="var(--mw-mirage)" radius={[0, 4, 4, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="value" fill={MW_FILL.HATCH_DARK} radius={MW_BAR_RADIUS_H} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -262,11 +257,12 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={BAR_DATA}>
+            <ChartPatternDefs />
             <XAxis dataKey="reason" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
-            <Bar dataKey="won" fill="var(--mw-mirage)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
-            <Bar dataKey="lost" fill="var(--neutral-300)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="won" fill={MW_FILL.HATCH_DARK} radius={MW_BAR_RADIUS_V} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="lost" fill={MW_FILL.HATCH_NEUTRAL} radius={MW_BAR_RADIUS_V} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -286,7 +282,7 @@ function ChartWidgetContent({ type }: { type: string }) {
               {...MW_RECHARTS_ANIMATION}
             >
               {PIE_DATA.map((_, i) => (
-                <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                <Cell key={i} fill={MW_CHART_COLOURS[i % MW_CHART_COLOURS.length]} />
               ))}
             </Pie>
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
@@ -298,10 +294,11 @@ function ChartWidgetContent({ type }: { type: string }) {
       return (
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={QUOTE_CASH_DATA}>
+            <ChartPatternDefs />
             <XAxis dataKey="step" tick={{ fontSize: 11 }} stroke="var(--neutral-300)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--neutral-300)" label={{ value: "Days", angle: -90, position: "insideLeft", style: { fontSize: 11 } }} />
             <Tooltip contentStyle={MW_TOOLTIP_STYLE} />
-            <Bar dataKey="days" fill="var(--mw-yellow-400)" radius={[4, 4, 0, 0]} {...MW_RECHARTS_ANIMATION_BAR} />
+            <Bar dataKey="days" fill={MW_FILL.DOTS_YELLOW} radius={MW_BAR_RADIUS_V} {...MW_RECHARTS_ANIMATION_BAR} />
           </BarChart>
         </ResponsiveContainer>
       );

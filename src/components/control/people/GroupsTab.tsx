@@ -202,7 +202,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                           </Avatar>
                           <span className="text-sm text-[var(--neutral-800)]">{member.name}</span>
                         </div>
-                        <Button variant="ghost" className="h-8 w-8 rounded-[var(--shape-md)] p-0 text-[var(--neutral-500)]">
+                        <Button variant="ghost" className="h-12 w-12 rounded-[var(--shape-md)] p-0 text-[var(--neutral-500)]">
                           <X className="h-4 w-4" />
                         </Button>
                       </div>

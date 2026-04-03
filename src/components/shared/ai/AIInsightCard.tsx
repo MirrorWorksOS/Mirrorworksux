@@ -84,7 +84,7 @@ export function AIInsightCard({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]"
+              className="h-12 px-2 text-xs text-[var(--neutral-500)] hover:text-[var(--mw-mirage)] hover:bg-[var(--neutral-100)]"
               onClick={onAction}
             >
               {actionLabel} →

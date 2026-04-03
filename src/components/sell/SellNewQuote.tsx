@@ -14,6 +14,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Separator } from '../ui/separator';
+import { Textarea } from '../ui/textarea';
 import { cn } from '../ui/utils';
 import { useNavigate } from 'react-router';
 
@@ -376,11 +377,11 @@ export function SellNewQuote() {
               {/* Notes */}
               <Card className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
-                <textarea
+                <Textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus:outline-none focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
+                  className="w-full p-3 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm text-[var(--neutral-900)] resize-none focus-visible:outline-none focus:bg-white focus:border-[var(--mw-mirage)] focus:ring-1 focus:ring-[var(--mw-mirage)] transition-all"
                   placeholder="Add notes, special instructions, or delivery requirements…"
                 />
               </Card>
@@ -428,7 +429,7 @@ export function SellNewQuote() {
                   </div>
                   <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all duration-300"
+                      className="h-full rounded-full transition-all duration-[250ms]"
                       style={{
                         width: `${Math.min(100, margin * 2)}%`,
                         backgroundColor: margin < 15 ? 'var(--mw-error)' : margin >= 25 ? 'var(--mw-success)' : 'var(--mw-warning)',

@@ -19,8 +19,12 @@ import {
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
-  getChartScaleColour,
+  MW_BAR_RADIUS_V,
+  MW_BAR_RADIUS_H,
+  MW_FILL,
+  getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
@@ -120,11 +124,12 @@ export function ShipReports() {
                 <XAxis dataKey="c" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${v}`} tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toFixed(2)}`} />
-                <Bar key="v" dataKey="v" radius={[4, 4, 0, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
+                <ChartPatternDefs />
+                <Bar key="v" dataKey="v" radius={MW_BAR_RADIUS_V} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {carrierCost.map((e, i) => (
                     <Cell
                       key={`carrier-cost-${e.c}-${i}`}
-                      fill={getChartScaleColour((e.v / carrierCostMax) * 100)}
+                      fill={getChartScalePattern((e.v / carrierCostMax) * 100)}
                     />
                   ))}
                 </Bar>
@@ -168,7 +173,8 @@ export function ShipReports() {
                 <XAxis type="number" tick={MW_AXIS_TICK} axisLine={false} tickLine={false} />
                 <YAxis dataKey="s" type="category" tick={{ ...MW_AXIS_TICK, fill: 'var(--mw-mirage)', fontWeight: 500 }} width={30} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} />
-                <Bar key="v" dataKey="v" fill="var(--chart-scale-mid)" radius={[0, 4, 4, 0]} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
+                <ChartPatternDefs />
+                <Bar key="v" dataKey="v" fill={MW_FILL.DOTS_DARK} radius={MW_BAR_RADIUS_H} barSize={12} {...MW_RECHARTS_ANIMATION_BAR} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

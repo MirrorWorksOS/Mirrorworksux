@@ -567,7 +567,7 @@ export function MakeManufacturingOrderDetail() {
                     <p className="text-sm font-medium text-[var(--neutral-900)] truncate">{doc.name}</p>
                     <p className="text-xs text-[var(--neutral-500)]">{doc.type} · {doc.size} · {doc.date}</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="h-8 text-xs text-[var(--neutral-500)]">
+                  <Button variant="ghost" size="sm" className="h-14 text-xs text-[var(--neutral-500)]">
                     <Download className="h-3.5 w-3.5 mr-1" />
                     Download
                   </Button>
@@ -729,17 +729,17 @@ export function MakeManufacturingOrderDetail() {
 
       {/* Input Bar */}
       <div className="p-3 border-t border-[var(--border)] flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="h-9 w-9 p-0 shrink-0">
+        <Button variant="ghost" size="sm" className="h-14 w-14 p-0 shrink-0">
           <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
         </Button>
         <Input
           placeholder="Type a message..."
-          className="flex-1 h-9 text-xs"
+          className="flex-1 h-14 text-xs"
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
         />
-        <Button size="sm" className="h-9 px-3 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
+        <Button size="sm" className="h-14 px-3 bg-[var(--mw-yellow-400)] text-[var(--neutral-900)] hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
           <Send className="w-4 h-4" />
         </Button>
       </div>

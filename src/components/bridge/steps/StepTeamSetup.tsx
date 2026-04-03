@@ -174,12 +174,12 @@ export function StepTeamSetup() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs h-7"
+                        className="text-xs h-12"
                         onClick={() => handleAccept(suggestion.employeeId)}
                       >
                         Accept
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-xs h-7">
+                      <Button variant="ghost" size="sm" className="text-xs h-12">
                         Edit
                       </Button>
                     </>

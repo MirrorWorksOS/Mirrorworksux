@@ -4,12 +4,12 @@
 import React, { useState } from 'react';
 import { Plus, Search, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 
@@ -113,7 +113,7 @@ export function BuyAgreements() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-sm  font-medium text-[var(--neutral-500)]">{agr.agreementNumber}</span>
 
-                      <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
+                      <StatusBadge variant={agr.status === 'active' ? 'success' : agr.status === 'near-limit' ? 'warning' : agr.status === 'exhausted' ? 'error' : 'neutral'}>{cfg.label}</StatusBadge>
                     </div>
                     <h3 className="text-sm font-medium text-[var(--mw-mirage)]">{agr.supplier}</h3>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{agr.category} · {agr.startDate} – {agr.endDate} · {agr.discount} discount · {agr.terms}</p>

@@ -260,7 +260,7 @@ function AccessPermissionsPanel({
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-xs tracking-wider text-[var(--neutral-500)] font-medium uppercase">Members</h4>
-                        <Button variant="ghost" size="sm" className="h-7 text-xs text-[var(--neutral-500)] gap-1 rounded-lg">
+                        <Button variant="ghost" size="sm" className="h-12 text-xs text-[var(--neutral-500)] gap-1 rounded-lg">
                           <Plus className="w-4 h-4" /> Add
                         </Button>
                       </div>

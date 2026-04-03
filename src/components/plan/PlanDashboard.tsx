@@ -17,10 +17,14 @@ import {
   MW_CARTESIAN_GRID,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
-  getChartScaleColour,
+  MW_BAR_RADIUS_V,
+  MW_FILL,
+  getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { useNavigate } from 'react-router';
 
 const kpiData = {
@@ -60,11 +64,6 @@ const taskTypeColors: Record<string, string> = {
   external: 'bg-[var(--neutral-400)]',
 };
 
-const priorityColors: Record<string, string> = {
-  high: 'bg-[var(--mw-error)] text-white',
-  medium: 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]',
-  low: 'bg-[var(--mw-green)] text-white',
-};
 
 const planTabs = [{ key: 'overview', label: 'Overview' }];
 
@@ -199,9 +198,7 @@ export function PlanDashboard() {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs tabular-nums font-medium text-[var(--mw-mirage)]">{job.id}</span>
-                      <Badge className={`text-[10px] px-1.5 py-0 ${priorityColors[job.priority]}`}>
-                        {job.priority.toUpperCase()}
-                      </Badge>
+                      <StatusBadge priority={job.priority.toLowerCase()}>{job.priority}</StatusBadge>
                     </div>
                     <span className="text-xs tabular-nums font-medium text-[var(--mw-mirage)]">{job.value}</span>
                   </div>
@@ -270,15 +267,16 @@ export function PlanDashboard() {
         <ChartCard title="Weekly Capacity (% Utilisation)" subtitle="Planned vs actual output">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={weeklyCapacity} barGap={4}>
+              <ChartPatternDefs />
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="week" tick={MW_AXIS_TICK} />
               <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} contentStyle={MW_TOOLTIP_STYLE} formatter={(v: number) => `${v}%`} />
               <Legend />
-              <Bar key="planned" dataKey="planned" radius={[4, 4, 0, 0]} name="Planned" fill="var(--mw-yellow-400)" {...MW_RECHARTS_ANIMATION_BAR} />
-              <Bar key="actual" dataKey="actual" radius={[4, 4, 0, 0]} name="Actual" {...MW_RECHARTS_ANIMATION_BAR}>
+              <Bar key="planned" dataKey="planned" radius={MW_BAR_RADIUS_V} name="Planned" fill={MW_FILL.HATCH_YELLOW} {...MW_RECHARTS_ANIMATION_BAR} />
+              <Bar key="actual" dataKey="actual" radius={MW_BAR_RADIUS_V} name="Actual" {...MW_RECHARTS_ANIMATION_BAR}>
                 {weeklyCapacity.map((e, i) => (
-                  <Cell key={`actual-${i}`} fill={getChartScaleColour(e.actual)} />
+                  <Cell key={`actual-${i}`} fill={getChartScalePattern(e.actual)} />
                 ))}
               </Bar>
             </BarChart>

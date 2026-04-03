@@ -154,7 +154,7 @@ export function ShipWarehouse() {
 
       {/* Map */}
       {tab === 'map' && (
-        <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+        <Card className="p-6">
           <div className="relative bg-[var(--neutral-100)] rounded-[var(--shape-lg)]" style={{ paddingBottom: '55%' }}>
             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
               {ZONES.map((z) => (
@@ -180,7 +180,7 @@ export function ShipWarehouse() {
               <div className="w-3 h-3 rounded bg-[var(--neutral-100)] border border-[var(--border)]" /> Normal
             </div>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Inventory */}
@@ -210,7 +210,7 @@ export function ShipWarehouse() {
       {/* Cycle Count */}
       {tab === 'count' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <span className="text-sm text-[var(--mw-mirage)] font-medium tabular-nums">CC-2026-012</span>
@@ -223,7 +223,7 @@ export function ShipWarehouse() {
             <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
               <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: '50%' }} />
             </div>
-          </div>
+          </Card>
 
           <MwDataTable
             columns={cycleColumns}

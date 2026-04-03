@@ -19,6 +19,28 @@ export const MW_CHART_PURPLE = "var(--chart-scale-mid)";
 
 export { getChartScaleColour, marginToScalePercent } from "@/components/shared/charts/chart-scale";
 
+/** Normalised 0-100 → SVG pattern fill for bar charts (pairs with getChartScaleColour) */
+export function getChartScalePattern(value0to100: number): string {
+  const v = Math.max(0, Math.min(100, value0to100));
+  if (v <= 33) return "url(#mw-hatch-scale-low)";
+  if (v <= 66) return "url(#mw-dots-scale-mid)";
+  return "url(#mw-hatch-scale-high)";
+}
+
+/** Standard bar corner radii — horizontal bars (layout="vertical") */
+export const MW_BAR_RADIUS_H = [0, 10, 10, 0] as const;
+/** Standard bar corner radii — vertical bars (default layout) */
+export const MW_BAR_RADIUS_V = [10, 10, 0, 0] as const;
+
+/** Pattern fill constants for single-colour bars */
+export const MW_FILL = {
+  HATCH_YELLOW: "url(#mw-hatch-yellow)",
+  DOTS_YELLOW: "url(#mw-dots-yellow)",
+  HATCH_DARK: "url(#mw-hatch-dark)",
+  DOTS_DARK: "url(#mw-dots-dark)",
+  HATCH_NEUTRAL: "url(#mw-hatch-neutral)",
+} as const;
+
 /** Default Recharts motion — smooth, ease-in-out */
 export const MW_RECHARTS_ANIMATION = {
   isAnimationActive: true,

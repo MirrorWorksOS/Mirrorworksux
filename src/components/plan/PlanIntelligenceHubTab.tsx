@@ -335,7 +335,7 @@ export function PlanIntelligenceHubTab() {
 
           {/* Intelligence Hub Message */}
           <AIInsightMessage timestamp="10:24 AM" actions={
-            <Button size="sm" variant="outline" className="h-7 text-xs border-[var(--border)] text-[var(--mw-mirage)]">
+            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-[var(--mw-mirage)]">
               View Details
             </Button>
           }>

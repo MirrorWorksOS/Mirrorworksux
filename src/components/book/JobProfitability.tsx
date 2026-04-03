@@ -17,9 +17,11 @@ import {
   MW_RECHARTS_ANIMATION_BAR,
   MW_RECHARTS_ANIMATION,
   MW_TOOLTIP_STYLE,
-  getChartScaleColour,
+  MW_BAR_RADIUS_H,
+  getChartScalePattern,
   marginToScalePercent,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
@@ -71,7 +73,7 @@ const JOBS: JobRow[] = [
   { id: 'JOB-2026-0005', customer: 'Oberon Eng', product: 'Mounting Plate', quoted: 4100, actual: 3969, margin: 3.2, marginDollar: 131, status: 'On Hold' },
 ];
 
-const getBarColor = (m: number) => getChartScaleColour(marginToScalePercent(m));
+const getBarPattern = (m: number) => getChartScalePattern(marginToScalePercent(m));
 const marginBadgeClass = 'bg-[var(--neutral-100)] text-[var(--mw-mirage)]';
 const statusBadge = (s: string) => s === 'Complete' ? 'text-[var(--mw-mirage)]' : s === 'In Production' ? 'text-[var(--mw-mirage)]' : 'text-[var(--mw-mirage)]';
 
@@ -150,12 +152,13 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         <ChartCard title="Top 10 Jobs by Profit Margin">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={marginData} layout="vertical" margin={{ left: 20 }}>
+              <ChartPatternDefs />
               <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
               <XAxis type="number" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
               <YAxis dataKey="job" type="category" tick={MW_AXIS_TICK} width={80} />
               <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
-              <Bar dataKey="margin" radius={[0, 4, 4, 0]} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
-                {marginData.map((e, i) => <Cell key={`margin-${e.job}-${i}`} fill={getBarColor(e.margin)} />)}
+              <Bar dataKey="margin" radius={MW_BAR_RADIUS_H} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
+                {marginData.map((e, i) => <Cell key={`margin-${e.job}-${i}`} fill={getBarPattern(e.margin)} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>

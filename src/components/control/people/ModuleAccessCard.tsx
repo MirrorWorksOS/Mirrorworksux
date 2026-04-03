@@ -183,7 +183,7 @@ export function UnassignedModuleCard({
   return (
     <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-white p-4 opacity-60">
       <span className="text-sm text-[var(--neutral-800)]">{moduleLabels[moduleKey]}</span>
-      <Button variant="outline" className="h-9 rounded-[var(--shape-lg)] border-[var(--border)] bg-transparent px-3 text-xs">
+      <Button variant="outline" className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-transparent px-3 text-xs">
         + Assign
       </Button>
     </div>

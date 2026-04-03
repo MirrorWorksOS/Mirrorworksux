@@ -310,7 +310,7 @@ export const WORKFLOW_DATA: Record<string, WorkflowData> = {
 // ─── Visual styles per kind ───────────────────────────────────────────────────
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: string }> = {
-  trigger:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-emerald-500',          borderLeft: 'border-l-emerald-500' },
+  trigger:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-success)]',          borderLeft: 'border-l-[var(--mw-success)]' },
   ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-[var(--mw-mirage)]', borderLeft: 'border-l-[var(--mw-purple)]' },
   action:       { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-info)]',     borderLeft: 'border-l-[var(--mw-info)]' },
   notification: { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
@@ -318,9 +318,9 @@ const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: st
   hold:         { card: 'bg-white border-[var(--mw-error)]/30',                         iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
   email:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
   purchase:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-error)]',    borderLeft: 'border-l-[var(--mw-error)]' },
-  schedule:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-indigo-500',           borderLeft: 'border-l-indigo-500' },
+  schedule:     { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
   machine:      { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
-  delay:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-slate-500',            borderLeft: 'border-l-slate-500' },
+  delay:        { card: 'bg-white border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-500)]',            borderLeft: 'border-l-[var(--neutral-500)]' },
 };
 
 // ─── SVG Connection layer ────────────────────────────────────────────────────
@@ -445,7 +445,7 @@ function NodeCard({
       {/* Condition branch indicators */}
       {node.kind === 'condition' && (
         <div className="absolute -bottom-0.5 left-0 right-0 flex justify-between px-6">
-          <span className="text-[9px] font-medium text-emerald-400 bg-[var(--mw-mirage)] px-1 rounded">Yes</span>
+          <span className="text-[9px] font-medium text-[var(--mw-success)] bg-[var(--mw-mirage)] px-1 rounded">Yes</span>
           <span className="text-[9px] font-medium text-[var(--mw-error)] bg-[var(--mw-mirage)] px-1 rounded">No</span>
         </div>
       )}

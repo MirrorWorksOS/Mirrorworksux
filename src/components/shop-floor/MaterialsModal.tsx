@@ -20,8 +20,8 @@ function Icon() {
 
 function Container() {
   return (
-    <div className="bg-white relative rounded-[14px] shrink-0 size-[48px]" data-name="Container">
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]" />
+    <div className="bg-white relative rounded-md shrink-0 size-[48px]" data-name="Container">
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-md shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]" />
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center p-px relative size-[48px]">
         <Icon />
       </div>
@@ -51,7 +51,7 @@ function Paragraph() {
 
 function Container1() {
   return (
-    <div className="content-stretch flex flex-col gap-[16px] h-[216px] items-center justify-center pb-[16px] pt-0 px-0 relative shrink-0 w-full" data-name="Container">
+    <div className="content-stretch flex flex-col gap-4 h-[216px] items-center justify-center pb-4 pt-0 px-0 relative shrink-0 w-full" data-name="Container">
       <Container />
       <Heading />
       <Paragraph />
@@ -125,7 +125,7 @@ function Button1() {
 
 function Container2() {
   return (
-    <div className="absolute content-stretch flex gap-[12px] h-[40px] items-center left-[952.02px] top-px w-[199.977px]" data-name="Container">
+    <div className="absolute content-stretch flex gap-3 h-[40px] items-center left-[952.02px] top-px w-[199.977px]" data-name="Container">
       <Button />
       <Button1 />
     </div>
@@ -134,19 +134,19 @@ function Container2() {
 
 function Button2() {
   return (
-    <div className="absolute h-[32px] left-[4px] rounded-[1.67772e+07px] top-[4px] w-[56.492px]" data-name="Button">
+    <div className="absolute h-[32px] left-[4px] rounded-full top-[4px] w-[56.492px]" data-name="Button">
       <p className="absolute font-medium leading-[20px] left-[28.5px] not-italic text-[var(--neutral-500)] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Flat</p>
     </div>
   );
 }
 
 function Container3() {
-  return <div className="absolute bg-[var(--mw-yellow-400)] border border-[rgba(15,23,43,0.1)] border-solid h-[32px] left-0 rounded-[1.67772e+07px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-0 w-[101.563px]" data-name="Container" />;
+  return <div className="absolute bg-[var(--mw-yellow-400)] border border-[rgba(15,23,43,0.1)] border-solid h-[32px] left-0 rounded-full shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] top-0 w-[101.563px]" data-name="Container" />;
 }
 
 function Button3() {
   return (
-    <div className="absolute h-[32px] left-[60.49px] rounded-[1.67772e+07px] top-[4px] w-[101.563px]" data-name="Button">
+    <div className="absolute h-[32px] left-[60.49px] rounded-full top-[4px] w-[101.563px]" data-name="Button">
       <Container3 />
       <p className="absolute font-medium leading-[20px] left-[51.5px] not-italic text-[var(--neutral-900)] text-sm text-center text-nowrap top-[6.5px] tracking-[-0.1504px] translate-x-[-50%] whitespace-pre">Multi-level</p>
     </div>
@@ -155,7 +155,7 @@ function Button3() {
 
 function SegmentedControl() {
   return (
-    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[42px] left-0 rounded-[1.67772e+07px] top-0 w-[168.055px]" data-name="SegmentedControl">
+    <div className="absolute bg-white border border-[var(--neutral-200)] border-solid h-[42px] left-0 rounded-full top-0 w-[168.055px]" data-name="SegmentedControl">
       <Button2 />
       <Button3 />
     </div>
@@ -1615,14 +1615,14 @@ function Container72() {
 
 function BomTable() {
   return (
-    <div className="bg-white h-[382px] relative rounded-[10px] shrink-0 w-full" data-name="BOMTable">
+    <div className="bg-white h-[382px] relative rounded-sm shrink-0 w-full" data-name="BOMTable">
       <div className="overflow-clip rounded-[inherit] size-full">
         <div className="content-stretch flex flex-col h-[382px] items-start p-px relative w-full">
           <Container16 />
           <Container72 />
         </div>
       </div>
-      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-[10px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]" />
+      <div aria-hidden="true" className="absolute border border-[var(--neutral-200)] border-solid inset-0 pointer-events-none rounded-sm shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]" />
     </div>
   );
 }
@@ -1694,7 +1694,7 @@ function Button23() {
 function Container73() {
   return (
     <div className="h-[36px] relative shrink-0 w-[80px]" data-name="Container">
-      <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex gap-[8px] h-[36px] items-start relative w-[80px]">
+      <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex gap-2 h-[36px] items-start relative w-[80px]">
         <Button22 />
         <Button23 />
       </div>
@@ -1714,7 +1714,7 @@ function Container74() {
 function Container75() {
   return (
     <div className="h-[761px] relative shrink-0 w-[1152px]" data-name="Container">
-      <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-[24px] h-[761px] items-start relative w-[1152px]">
+      <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-6 h-[761px] items-start relative w-[1152px]">
         <Container1 />
         <Container4 />
         <BomTable />

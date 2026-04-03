@@ -16,8 +16,11 @@ import {
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
+  MW_BAR_RADIUS_H,
   getChartScaleColour,
+  getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 
@@ -217,13 +220,14 @@ export function BuyDashboard() {
           <ChartCard title="Supplier Performance (On-Time %)">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={supplierPerformance} layout="vertical">
+                <ChartPatternDefs />
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--neutral-100)" vertical={false} />
                 <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                 <YAxis dataKey="supplier" type="category" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} width={120} />
                 <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} />
-                <Bar dataKey="onTime" radius={[0, 4, 4, 0]} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION_BAR}>
+                <Bar dataKey="onTime" radius={MW_BAR_RADIUS_H} barSize={16} name="On-time %" {...MW_RECHARTS_ANIMATION_BAR}>
                   {supplierPerformance.map((entry, i) => (
-                    <Cell key={`perf-${i}`} fill={getChartScaleColour(entry.onTime)} />
+                    <Cell key={`perf-${i}`} fill={getChartScalePattern(entry.onTime)} />
                   ))}
                 </Bar>
               </BarChart>

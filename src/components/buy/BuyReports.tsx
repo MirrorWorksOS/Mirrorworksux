@@ -16,8 +16,11 @@ import {
   MW_RECHARTS_ANIMATION,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
+  MW_BAR_RADIUS_V,
+  MW_FILL,
   getChartScaleColour,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 
 const spendBySupplier = [
   { name: 'Hunter Steel Co', spend: 156000 },
@@ -84,14 +87,15 @@ export function BuyReports() {
             <ChartCard title="Monthly Spend Trend">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={monthlySpend}>
+                  <ChartPatternDefs />
                   <CartesianGrid {...MW_CARTESIAN_GRID} />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                   <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ fontSize: 11, fill: 'var(--neutral-500)' }} />
                   <Tooltip contentStyle={MW_TOOLTIP_STYLE} cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `$${v.toLocaleString()}`} />
                   <Bar
                     dataKey="spend"
-                    fill="var(--mw-yellow-400)"
-                    radius={[4, 4, 0, 0]}
+                    fill={MW_FILL.HATCH_YELLOW}
+                    radius={MW_BAR_RADIUS_V}
                     {...MW_RECHARTS_ANIMATION_BAR}
                   />
                 </BarChart>

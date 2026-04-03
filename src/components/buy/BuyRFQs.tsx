@@ -89,7 +89,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
         <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm  font-medium text-[var(--mw-mirage)]">{rfq.rfqNumber}</span>
-            <Badge className={cn('border-0 text-xs rounded-full px-2 py-0.5', cfg.bg, cfg.text)}>{cfg.label}</Badge>
+            <StatusBadge variant={rfq.status === 'open' ? 'info' : rfq.status === 'awarded' ? 'success' : 'neutral'}>{cfg.label}</StatusBadge>
           </div>
           <SheetTitle className="text-base font-medium text-[var(--mw-mirage)]">{rfq.title}</SheetTitle>
           <SheetDescription className="text-[var(--neutral-500)]  text-xs">{rfq.sku} · Qty: {rfq.qty} {rfq.unit}</SheetDescription>
@@ -132,7 +132,7 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                     </div>
                     {q.notes && <p className="text-xs text-[var(--mw-amber)] mt-1">⚠ {q.notes}</p>}
                     {rfq.status === 'open' && (
-                      <Button size="sm" className={cn('w-full mt-3 h-9 text-xs gap-1', q.aiPick
+                      <Button size="sm" className={cn('w-full mt-3 h-12 text-xs gap-1', q.aiPick
                         ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]'
                         : 'bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white'
                       )} onClick={() => toast.success(`Awarded to ${q.supplier}`)}>

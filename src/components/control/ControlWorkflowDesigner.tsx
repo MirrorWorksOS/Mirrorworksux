@@ -50,17 +50,17 @@ const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
 // ─── Node palette ─────────────────────────────────────────────────────────────
 
 const NODE_PALETTE = [
-  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-emerald-500',          icon: Zap         },
+  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[var(--mw-success)]',          icon: Zap         },
   { kind: 'ai',           label: 'AI action',      bg: 'bg-[var(--mw-purple)]',   icon: Sparkles    },
   { kind: 'action',       label: 'Update record',  bg: 'bg-[var(--mw-info)]',     icon: RefreshCw   },
   { kind: 'notification', label: 'Notification',   bg: 'bg-[var(--mw-yellow-400)]', icon: Bell      },
   { kind: 'condition',    label: 'Condition',       bg: 'bg-[var(--mw-warning)]',  icon: GitBranch   },
   { kind: 'email',        label: 'Send email',     bg: 'bg-[var(--mw-purple)]',   icon: Mail        },
   { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[var(--mw-error)]',    icon: ShoppingCart },
-  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-indigo-500',            icon: Calendar    },
+  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[var(--mw-purple)]',            icon: Calendar    },
   { kind: 'machine',      label: 'Assign machine', bg: 'bg-[var(--neutral-600)]', icon: Settings2   },
   { kind: 'hold',         label: 'Hold job',       bg: 'bg-[var(--mw-warning)]',  icon: Pause       },
-  { kind: 'delay',        label: 'Delay / Wait',   bg: 'bg-slate-500',            icon: Timer       },
+  { kind: 'delay',        label: 'Delay / Wait',   bg: 'bg-[var(--neutral-500)]',            icon: Timer       },
 ];
 
 // ─── Type-specific config fields ─────────────────────────────────────────────
@@ -329,7 +329,7 @@ function NodeDetailPanel({
         <div className="pt-2 space-y-2 border-t border-[var(--border)]">
           <Button
             size="sm"
-            className="w-full h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
+            className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
             onClick={() => toast.success('Changes applied')}
           >
             Apply changes
@@ -337,14 +337,14 @@ function NodeDetailPanel({
           <Button
             size="sm"
             variant="outline"
-            className="w-full h-9 border-[var(--border)] text-xs"
+            className="w-full h-12 border-[var(--border)] text-xs"
             onClick={() => toast.success('Node duplicated')}
           >
             <Copy className="w-4 h-4 mr-1.5" /> Duplicate node
           </Button>
           <ConfirmDialog
             trigger={
-              <Button size="sm" variant="outline" className="w-full h-9 border-destructive text-destructive hover:bg-[var(--mw-error-light)] text-xs">
+              <Button size="sm" variant="outline" className="w-full h-12 border-destructive text-destructive hover:bg-[var(--mw-error-light)] text-xs">
                 <Trash2 className="w-4 h-4 mr-1.5" /> Delete node
               </Button>
             }
@@ -421,7 +421,7 @@ export function ControlWorkflowDesigner() {
               <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
               <span className="text-xs font-medium text-[var(--mw-purple)]">Generate with AI</span>
             </div>
-            <textarea
+            <Textarea
               className="w-full bg-white border border-[var(--border)] rounded-md text-xs px-2.5 py-2 text-[var(--mw-mirage)] resize-none focus:outline-none focus:border-[var(--mw-purple)] transition-colors leading-relaxed"
               rows={2}
               placeholder="e.g. When a job is overdue, notify the manager and reschedule the machine..."

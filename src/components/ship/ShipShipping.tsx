@@ -65,10 +65,10 @@ const manifestColumns: MwColumnDef<Manifest>[] = [
     header: '',
     cell: () => (
       <div className="flex gap-1">
-        <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast.success('Downloading shipping document…'); }}>
+        <button className="size-12 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast.success('Downloading shipping document…'); }}>
           <Download className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
         </button>
-        <button className="w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast('Printing label…'); }}>
+        <button className="size-12 rounded-[var(--shape-md)] flex items-center justify-center hover:bg-[var(--neutral-100)] transition-colors" onClick={(e) => { e.stopPropagation(); toast('Printing label…'); }}>
           <Printer className="w-4 h-4 text-[var(--neutral-500)]" strokeWidth={1.5} />
         </button>
       </div>
@@ -119,7 +119,7 @@ export function ShipShipping() {
       {tab === 'carriers' && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {CARRIERS.map(c => (
-            <div key={c.name} className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)] hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
+            <Card key={c.name} className="p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <Truck className="w-5 h-5 text-[var(--mw-mirage)]" strokeWidth={1.5} />
@@ -139,7 +139,7 @@ export function ShipShipping() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
@@ -147,7 +147,7 @@ export function ShipShipping() {
       {/* Rates */}
       {tab === 'rates' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-[var(--shape-lg)] p-6 border border-[var(--border)]">
+          <Card className="p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { l: 'FROM', v: '2787' }, { l: 'TO', v: '2128' },
@@ -159,15 +159,15 @@ export function ShipShipping() {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
 
           <div className="space-y-2">
             {[...RATES].sort((a, b) => a.cost - b.cost).map((r, i) => (
-              <div
+              <Card
                 key={`${r.carrier}-${r.service}`}
                 className={cn(
-                  'flex items-center gap-4 bg-white rounded-[var(--shape-lg)] p-6 transition-colors duration-[var(--duration-short2)] cursor-pointer',
-                  r.ai ? 'border-2 border-[var(--mw-yellow-400)]' : 'border border-[var(--border)] hover:border-[var(--neutral-400)]'
+                  'flex items-center gap-4 p-6 transition-colors duration-[var(--duration-short2)] cursor-pointer',
+                  r.ai ? 'border-2 border-[var(--mw-yellow-400)]' : 'hover:border-[var(--neutral-400)]'
                 )}
               >
                 <div className="flex-1 min-w-0">
@@ -193,7 +193,7 @@ export function ShipShipping() {
                 >
                   Select
                 </button>
-              </div>
+              </Card>
             ))}
           </div>
         </div>

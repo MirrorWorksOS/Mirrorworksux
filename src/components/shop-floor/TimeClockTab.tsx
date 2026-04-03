@@ -3,6 +3,7 @@ import { Clock, History, Calendar, CheckCircle2, AlertCircle, Coffee } from 'luc
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import {
   Dialog,
   DialogContent,
@@ -113,17 +114,12 @@ export function TimeClockTab() {
     return 'Clocked Out';
   };
 
-  const getStatusColor = () => {
-    if (isOnBreak) return 'text-[var(--mw-warning)]';
-    if (isClockedIn) return 'text-[var(--mw-success)]';
-    return 'text-[var(--neutral-800)]';
-  };
 
   return (
     <div className="flex flex-col h-full overflow-y-auto max-w-[1600px] mx-auto w-full p-6 bg-[var(--neutral-100)]">
       <div 
         className={cn(
-          "flex flex-col h-full flex-1 transition-all duration-300 ease-in-out",
+          "flex flex-col h-full flex-1 transition-all duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]",
         )}
       >
         {/* Header */}
@@ -135,7 +131,7 @@ export function TimeClockTab() {
         <div className="flex-1 flex flex-col items-center max-w-[480px] mx-auto w-full gap-8 pb-12">
           
           {/* Main Card */}
-          <div className="w-full bg-white rounded-[24px] shadow-sm p-8 text-center border border-[var(--neutral-200)] flex flex-col items-center relative overflow-hidden">
+          <div className="w-full bg-white rounded-xl shadow-sm p-8 text-center border border-[var(--neutral-200)] flex flex-col items-center relative overflow-hidden">
             
             {/* PIN Entry Overlay */}
             {showPinDialog && (
@@ -179,7 +175,7 @@ export function TimeClockTab() {
 
             {/* Operator Info - Material 3 Style */}
             <div className="flex flex-col items-center gap-3 mb-8">
-              <Avatar className="w-24 h-24 border-4 border-white shadow-md">
+              <Avatar className="w-24 h-24 border-4 border-white shadow-[var(--elevation-2)]">
                 <AvatarImage src={operatorImage} className="object-cover" />
                 <AvatarFallback>DM</AvatarFallback>
               </Avatar>
@@ -193,9 +189,13 @@ export function TimeClockTab() {
 
             {/* Status */}
             <div className="flex flex-col items-center justify-center gap-3 mb-6">
-               <span className={cn("text-2xl font-medium transition-colors", getStatusColor())}>
-                  {getStatusText()}
-               </span>
+               <StatusBadge
+                 variant={isOnBreak ? 'warning' : isClockedIn ? 'success' : 'neutral'}
+                 withDot
+                 className="text-base font-medium px-4 py-1.5"
+               >
+                 {getStatusText()}
+               </StatusBadge>
                {isClockedIn && !isOnBreak && (
                   <div className="flex items-center gap-2 text-[var(--mw-success)]  font-medium bg-[var(--mw-success-light)] px-3 py-1 rounded-full border border-[var(--mw-success)]">
                     <div className="w-2 h-2 rounded-full bg-[var(--mw-success)] animate-pulse" />
@@ -223,9 +223,9 @@ export function TimeClockTab() {
               <button
                 onClick={handleClockAction}
                 className={cn(
-                  "w-full h-16 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
+                  "w-full h-16 rounded-full text-lg font-medium transition-all duration-[250ms] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-md" 
+                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-[var(--elevation-2)]" 
                     : "bg-white border-2 border-[var(--mw-error-light)] text-[var(--mw-error)] hover:bg-[var(--mw-error)]/10 hover:border-[var(--mw-error)]"
                 )}
               >
@@ -237,7 +237,7 @@ export function TimeClockTab() {
                 onClick={handleBreakAction}
                 disabled={!isClockedIn}
                 className={cn(
-                  "w-full h-14 rounded-[100px] text-lg font-medium transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2",
+                  "w-full h-14 rounded-full text-lg font-medium transition-all duration-[250ms] active:scale-[0.98] flex items-center justify-center gap-2",
                   isOnBreak
                     ? "bg-[var(--mw-info-light)] text-[var(--mw-info)] border-2 border-[var(--mw-info)] hover:bg-[var(--mw-info-light)]"
                     : "bg-white border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-100)]",

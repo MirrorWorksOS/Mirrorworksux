@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ChevronDown, Layers, Wallet, CreditCard, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -24,14 +23,18 @@ import {
   MW_CHART_COLOURS,
   MW_RECHARTS_ANIMATION_BAR,
   MW_TOOLTIP_STYLE,
+  MW_BAR_RADIUS_V,
   getChartScaleColour,
+  getChartScalePattern,
 } from '@/components/shared/charts/chart-theme';
+import { ChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { toast } from 'sonner';
 
@@ -157,28 +160,24 @@ const mockBudgets: Budget[] = [
   },
 ];
 
-const getStatusBadgeColors = (status: BudgetHealthStatus) => {
-  switch (status) {
-    case 'on_track':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'On track' };
-    case 'monitor':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'Monitor' };
-    case 'over_budget':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', dot: 'var(--neutral-500)', label: 'Over budget' };
-    case 'draft':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', dot: 'var(--neutral-500)', label: 'Draft' };
-  }
+const HEALTH_VARIANT_MAP: Record<BudgetHealthStatus, 'success' | 'warning' | 'error' | 'neutral'> = {
+  on_track: 'success',
+  monitor: 'warning',
+  over_budget: 'error',
+  draft: 'neutral',
 };
 
-const getTypeBadgeColors = (type: BudgetType) => {
-  switch (type) {
-    case 'job':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Job' };
-    case 'department':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Department' };
-    case 'annual':
-      return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Annual' };
-  }
+const HEALTH_LABEL_MAP: Record<BudgetHealthStatus, string> = {
+  on_track: 'On track',
+  monitor: 'Monitor',
+  over_budget: 'Over budget',
+  draft: 'Draft',
+};
+
+const TYPE_LABEL_MAP: Record<BudgetType, string> = {
+  job: 'Job',
+  department: 'Department',
+  annual: 'Annual',
 };
 
 function SortableHead({
@@ -285,14 +284,9 @@ export function BudgetOverview() {
             onSort={() => handleSort('type')}
           />
         ),
-        cell: (budget) => {
-          const typeColors = getTypeBadgeColors(budget.type);
-          return (
-            <Badge className={cn('rounded border-0 px-2 py-0.5 text-xs', typeColors.bg, typeColors.text)}>
-              {typeColors.label}
-            </Badge>
-          );
-        },
+        cell: (budget) => (
+          <StatusBadge variant="neutral">{TYPE_LABEL_MAP[budget.type]}</StatusBadge>
+        ),
       },
       {
         key: 'period',
@@ -384,26 +378,13 @@ export function BudgetOverview() {
         header: <span className="text-center">Status</span>,
         className: 'text-center',
         headerClassName: 'text-center',
-        cell: (budget) => {
-          const statusColors = getStatusBadgeColors(budget.status);
-          return (
-            <div className="flex justify-center">
-              <Badge
-                className={cn(
-                  'flex items-center gap-1.5 rounded-full border-0 px-2 py-0.5 text-xs',
-                  statusColors.bg,
-                  statusColors.text
-                )}
-              >
-                <span
-                  className="inline-block h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: statusColors.dot }}
-                />
-                {statusColors.label}
-              </Badge>
-            </div>
-          );
-        },
+        cell: (budget) => (
+          <div className="flex justify-center">
+            <StatusBadge variant={HEALTH_VARIANT_MAP[budget.status]} withDot>
+              {HEALTH_LABEL_MAP[budget.status]}
+            </StatusBadge>
+          </div>
+        ),
       },
     ],
     [sortColumn, sortDirection, handleSort],
@@ -610,6 +591,7 @@ export function BudgetOverview() {
         <ChartCard title="Monthly budget vs actual">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyData} barGap={4}>
+              <ChartPatternDefs />
               <CartesianGrid {...MW_CARTESIAN_GRID} />
               <XAxis dataKey="month" tick={MW_AXIS_TICK} />
               <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
@@ -619,15 +601,15 @@ export function BudgetOverview() {
                 fill="none"
                 stroke="var(--neutral-200)"
                 strokeWidth={1}
-                radius={[4, 4, 0, 0]}
+                radius={MW_BAR_RADIUS_V}
                 barSize={16}
                 {...MW_RECHARTS_ANIMATION_BAR}
               />
-              <Bar dataKey="actual" radius={[4, 4, 0, 0]} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
+              <Bar dataKey="actual" radius={MW_BAR_RADIUS_V} barSize={16} {...MW_RECHARTS_ANIMATION_BAR}>
                 {monthlyData.map((e, i) => (
                   <Cell
                     key={`budget-${i}`}
-                    fill={getChartScaleColour(
+                    fill={getChartScalePattern(
                       e.budget > 0 ? Math.min(100, (e.actual / e.budget) * 100) : 0,
                     )}
                   />

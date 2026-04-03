@@ -220,7 +220,7 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1.5 flex flex-col gap-[5px]"
+          className="ml-6 mt-1.5 flex flex-col gap-1"
           style={{
             opacity: isOpen ? 1 : 0,
             transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
@@ -366,7 +366,7 @@ function KbdPill({
         <kbd
           key={i}
           className={cn(
-            'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-[11px] font-medium leading-none select-none',
+            'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-xs font-medium leading-none select-none',
             isYellow
               ? 'bg-[#E6A600]/20 text-[#2C2C2C]/60 border border-[#E6A600]/30'
               : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] border border-[var(--neutral-200)]'
@@ -519,7 +519,7 @@ export function Sidebar() {
               {/* Section heading */}
               {item.section && (
                 <div className="pt-4 pb-1.5 px-2 first:pt-0">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--neutral-400)]">
+                  <span className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-400)]">
                     {item.section}
                   </span>
                 </div>
@@ -545,7 +545,7 @@ export function Sidebar() {
                             onPointerLeave={handleSubItemPointerLeave}
                             className={cn(
                               'relative h-12 flex items-center px-4 rounded-full',
-                              'transition-[background-color,color] duration-200 ease-out',
+                              'transition-[background-color,color] duration-200 ease-[cubic-bezier(0,0,0,1)]',
                               isSubActive
                                 ? 'bg-[var(--mw-mirage)] text-white'
                                 : 'bg-transparent text-foreground'
@@ -556,8 +556,8 @@ export function Sidebar() {
                                 className={cn(
                                   'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
                                   isSubHovered
-                                    ? 'opacity-100 -inset-y-[2px] duration-200 ease-in'
-                                    : 'opacity-0 inset-y-0 duration-700 ease-out'
+                                    ? 'opacity-100 -inset-y-[2px] duration-200 ease-[cubic-bezier(0.3,0,1,1)]'
+                                    : 'opacity-0 inset-y-0 duration-[550ms] ease-[cubic-bezier(0,0,0,1)]'
                                 )}
                               />
                             )}
@@ -586,7 +586,7 @@ export function Sidebar() {
               </div>
               <div className="flex-1 text-left min-w-0">
                 <p className="text-sm text-foreground truncate">Matt Quigley</p>
-                <p className="text-[11px] text-muted-foreground truncate">Admin</p>
+                <p className="text-xs text-muted-foreground truncate">Admin</p>
               </div>
               <ThemeToggle />
             </button>

@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/components/ui/utils';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -61,18 +62,6 @@ const TYPE_CONFIG: Record<EventType, { icon: LucideIcon; label: string; border: 
   demo:       { icon: Monitor,    label: 'Demo',      border: 'border-t-[var(--neutral-500)]', bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-700)]' },
 };
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  scheduled: { label: 'Scheduled', className: 'border-0 bg-[var(--mw-info)]/10 text-[var(--mw-info)]' },
-  completed: { label: 'Completed', className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]' },
-  cancelled: { label: 'Cancelled', className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]' },
-};
-
-const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
-  low:    { label: 'Low',    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]' },
-  medium: { label: 'Medium', className: 'border-0 bg-[var(--mw-warning)]/10 text-[var(--mw-warning)]' },
-  high:   { label: 'High',   className: 'border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)]' },
-};
-
 // ─── Helper ──────────────────────────────────────────────────────────────────
 
 function getDuration(start: Date, end?: Date): string {
@@ -103,8 +92,6 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
 
   const cfg = TYPE_CONFIG[event.type];
   const Icon = cfg.icon;
-  const statusCfg = event.status ? STATUS_CONFIG[event.status] : null;
-  const priorityCfg = event.priority ? PRIORITY_CONFIG[event.priority] : null;
   const duration = getDuration(event.start, event.end);
 
   return (
@@ -122,7 +109,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
               </SheetTitle>
               <SheetDescription className="mt-1 flex items-center gap-2 text-sm">
                 <Badge className={cn('text-xs', cfg.bg, cfg.text, 'border-0')}>{cfg.label}</Badge>
-                {statusCfg && <Badge className={cn('text-xs', statusCfg.className)}>{statusCfg.label}</Badge>}
+                {event.status && <StatusBadge status={event.status} className="text-xs" />}
               </SheetDescription>
             </div>
           </div>
@@ -155,10 +142,10 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
                   <span className="text-[var(--neutral-700)]">{event.location}</span>
                 </div>
               )}
-              {priorityCfg && (
+              {event.priority && (
                 <div className="flex items-center gap-3 text-sm">
                   <Flag className="w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
-                  <Badge className={cn('text-xs', priorityCfg.className)}>{priorityCfg.label} priority</Badge>
+                  <StatusBadge priority={event.priority} className="text-xs" />
                 </div>
               )}
             </div>

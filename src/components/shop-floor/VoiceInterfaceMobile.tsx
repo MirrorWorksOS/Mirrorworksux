@@ -78,7 +78,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
-                  className="mb-4 flex h-20 w-20 items-center justify-center rounded-[24px] bg-[var(--mw-mirage)]"
+                  className="mb-4 flex h-20 w-20 items-center justify-center rounded-xl bg-[var(--mw-mirage)]"
                 >
                   <Sparkles className="w-10 h-10 text-white" />
                 </motion.div>
@@ -181,7 +181,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
 
             <motion.button
                className={cn(
-                  "relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-all duration-300",
+                  "relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-[var(--elevation-3)] transition-all duration-[250ms]",
                   isRecording 
                      ? "bg-[var(--mw-error)] text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
                      : "bg-white text-[var(--neutral-900)] hover:bg-[var(--neutral-100)] shadow-[0_0_20px_rgba(255,255,255,0.2)]"

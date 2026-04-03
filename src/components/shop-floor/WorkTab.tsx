@@ -102,7 +102,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   };
 
   return (
-    <span className={`text-xs font-medium px-3 py-1.5 rounded-[20px] border ${styles[status]}`}>
+    <span className={`text-xs font-medium px-3 py-1.5 rounded-xl border ${styles[status]}`}>
       {labels[status] || status}
     </span>
   );

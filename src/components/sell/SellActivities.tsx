@@ -171,7 +171,7 @@ const TYPE_CALENDAR_COLOR: Record<ActivityType, string> = {
   email: 'var(--mw-info)',
   call: 'var(--mw-success)',
   meeting: 'var(--mw-warning)',
-  task: '#737373',
+  task: 'var(--neutral-500)',
 };
 
 const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }> = {

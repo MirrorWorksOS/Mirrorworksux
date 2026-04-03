@@ -265,7 +265,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
    };
 
    return (
-      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-[var(--shape-lg)] bg-white transition-shadow hover:shadow-md">
+      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-[var(--shape-lg)] bg-white transition-shadow hover:shadow-[var(--elevation-2)]">
          <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--neutral-200)]">
             <div className="flex items-center gap-3">
                <div className={cn("flex items-center justify-center w-8 h-8 rounded-full bg-[var(--neutral-100)]", headerIconColors[insight.severity])}>
@@ -344,7 +344,7 @@ export function IntelligenceHubTab() {
              </div>
              <Button 
                 size="lg" 
-                className="rounded-full h-12 px-8 shadow-md bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] gap-2 border-0 font-medium transition-transform active:scale-95"
+                className="rounded-full h-12 px-8 shadow-[var(--elevation-2)] bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] gap-2 border-0 font-medium transition-transform active:scale-95"
                 onClick={() => setIsVoiceActive(true)}
              >
                 <Sparkles className="w-5 h-5 fill-white/20" /> Ask AI Assistant
@@ -373,7 +373,7 @@ export function IntelligenceHubTab() {
           <DialogPortal>
              <DialogOverlay className="bg-black/30 backdrop-blur-sm" />
              <DialogPrimitive.Content 
-                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[var(--neutral-900)] border border-[var(--neutral-800)] text-white rounded-[24px] shadow-xs focus:outline-none"
+                className="fixed left-[50%] top-[50%] z-[1050] w-full max-w-[500px] translate-x-[-50%] translate-y-[-50%] p-0 overflow-hidden bg-[var(--neutral-900)] border border-[var(--neutral-800)] text-white rounded-xl shadow-xs focus:outline-none"
              >
                 <DialogTitle className="sr-only">Voice Interface</DialogTitle>
                 <DialogDescription className="sr-only">Voice command interface for shop floor</DialogDescription>
@@ -426,13 +426,13 @@ export function IntelligenceHubTab() {
                       </div>
                       <div className="flex gap-4 w-full">
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--neutral-800)] hover:bg-[var(--neutral-700)] text-white rounded-[12px]"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--neutral-800)] hover:bg-[var(--neutral-700)] text-white rounded-md"
                             onClick={() => setIsRecording(false)}
                          >
                             CANCEL
                          </Button>
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] rounded-[12px]"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] rounded-md"
                             onClick={() => setIsRecording(false)}
                          >
                             DONE

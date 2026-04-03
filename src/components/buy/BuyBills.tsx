@@ -4,7 +4,6 @@
  */
 import React, { useState } from 'react';
 import { Plus, Search, CheckCircle2, AlertTriangle, X } from 'lucide-react';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -35,11 +34,11 @@ const BILLS: Bill[] = [
   { id: '6', billNumber: 'BILL-2026-088', supplier: 'Fasteners Plus',       invoiceDate: 'Mar 05', dueDate: 'Apr 04', poNumber: 'PO-0084', grnNumber: 'GRN-0106', amount: 450.00,   status: 'matched',  matchStatus: { po: true, receipt: true, bill: true, amountOk: true } },
 ];
 
-const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; icon: any }> = {
-  matched:  { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--mw-mirage)]', label: 'Matched',  icon: CheckCircle2 },
-  pending:  { bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]', label: 'Pending',  icon: AlertTriangle },
-  mismatch: { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Mismatch', icon: AlertTriangle },
-  overdue:  { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Overdue',  icon: AlertTriangle },
+const STATUS_CONFIG: Record<string, { text: string; label: string; icon: any }> = {
+  matched:  { text: 'text-[var(--mw-mirage)]', label: 'Matched',  icon: CheckCircle2 },
+  pending:  { text: 'text-[var(--mw-amber)]',  label: 'Pending',  icon: AlertTriangle },
+  mismatch: { text: 'text-[var(--mw-error)]',  label: 'Mismatch', icon: AlertTriangle },
+  overdue:  { text: 'text-[var(--mw-error)]',  label: 'Overdue',  icon: AlertTriangle },
 };
 
 function MatchDots({ ms }: { ms: Bill['matchStatus'] }) {

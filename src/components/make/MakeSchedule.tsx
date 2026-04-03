@@ -5,10 +5,10 @@
 import React, { useMemo, useState } from 'react';
 import { Calendar as CalendarIcon, ChartGantt, Factory, List, Plus } from 'lucide-react';
 import { addDays } from 'date-fns';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
@@ -142,14 +142,9 @@ const listColumns: MwColumnDef<MO>[] = [
     key: 'status',
     header: 'Status',
     tooltip: 'Current schedule status',
-    cell: (mo) => {
-      const cfg = STATUS_CONFIG[mo.status];
-      return (
-        <Badge className={cn('rounded-full border-0 px-2 py-0.5 text-xs', cfg.badge, cfg.text)}>
-          {cfg.label}
-        </Badge>
-      );
-    },
+    cell: (mo) => (
+      <StatusBadge status={mo.status} />
+    ),
   },
 ];
 

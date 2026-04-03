@@ -6,6 +6,7 @@ import { Textarea } from '../ui/textarea';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { AIInsightMessage } from '../shared/ai/AIInsightCard';
 import { MwDataTable, type MwColumnDef } from '../shared/data/MwDataTable';
@@ -194,7 +195,7 @@ export function PlanOverviewTab() {
       {/* Left Column - 2/3 width */}
       <div className="lg:col-span-2 space-y-6">
         {/* Job Metadata Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className=" text-lg font-medium text-[var(--mw-mirage)]">
               Job Details
@@ -367,10 +368,10 @@ export function PlanOverviewTab() {
               />
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Products Table */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="mb-4">
             <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Products
@@ -401,10 +402,10 @@ export function PlanOverviewTab() {
               Share
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Budget Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="mb-4">
             <h3 className=" text-base font-medium text-[var(--mw-mirage)]">
               Budget
@@ -478,13 +479,13 @@ export function PlanOverviewTab() {
               Share
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Right Column - 1/3 width */}
       <div className="space-y-6">
         {/* Schedule Mini-Calendar */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
               Schedule
@@ -543,10 +544,10 @@ export function PlanOverviewTab() {
               Create
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Intelligence Hub Preview */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className=" text-sm font-medium text-[var(--mw-mirage)]">
               Intelligence Hub
@@ -581,10 +582,10 @@ export function PlanOverviewTab() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Files Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
             Files
           </h3>
@@ -615,10 +616,10 @@ export function PlanOverviewTab() {
               Download
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Chatter Section */}
-        <div className="bg-white border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <h3 className=" text-sm font-medium text-[var(--mw-mirage)] mb-3">
             Chatter
           </h3>
@@ -687,7 +688,7 @@ export function PlanOverviewTab() {
               Send
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

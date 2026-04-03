@@ -97,7 +97,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-[1000] bg-[var(--neutral-100)] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans",
+        "fixed inset-0 z-[1000] bg-[var(--neutral-100)] flex flex-col transition-transform duration-[550ms] ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans",
         isVisible ? "translate-y-0" : "translate-y-full"
       )}
     >
@@ -163,7 +163,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
               <button 
                 onClick={() => setIsRunning(!isRunning)}
                 className={cn(
-                  "w-[160px] h-[160px] rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xs active:scale-95 group relative overflow-hidden mb-8",
+                  "w-[160px] h-[160px] rounded-full flex flex-col items-center justify-center transition-all duration-[250ms] shadow-xs active:scale-95 group relative overflow-hidden mb-8",
                   isRunning 
                     ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:scale-105 hover:bg-[var(--mw-yellow-500)]" 
                     : "bg-[var(--neutral-800)] text-white hover:scale-105 hover:bg-[var(--neutral-900)]"
@@ -225,7 +225,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                              strokeDasharray={2 * Math.PI * 64}
                              strokeDashoffset={(2 * Math.PI * 64) * ((100 - completedParts) / 100)}
                              strokeLinecap="round"
-                             className="transition-all duration-300 ease-in-out"
+                             className="transition-all duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]"
                           />
                        </svg>
 
@@ -255,7 +255,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            </Card>
 
            {/* Emergency Stop Button (56px) */}
-           <button className="w-full h-[56px] bg-[var(--mw-error)] text-white text-base font-bold uppercase tracking-wider rounded-sm border-2 border-[var(--mw-error-600)] hover:bg-[var(--mw-error-600)] transition-colors shadow-md emergency-stop mt-auto">
+           <button className="w-full h-[56px] bg-[var(--mw-error)] text-white text-base font-bold uppercase tracking-wider rounded-sm border-2 border-[var(--mw-error-600)] hover:bg-[var(--mw-error-600)] transition-colors shadow-[var(--elevation-2)] emergency-stop mt-auto">
               EMERGENCY STOP
            </button>
 
@@ -289,7 +289,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                  <button 
                    onClick={() => setViewMode('camera')}
                    className={cn(
-                     "h-[40px] px-6 rounded-full text-sm font-bold transition-all duration-300 ease-out",
+                     "h-[40px] px-6 rounded-full text-sm font-bold transition-all duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]",
                      viewMode === 'camera' ? "bg-[var(--neutral-800)] text-white shadow-sm" : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
                    )}
                  >
@@ -298,7 +298,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                  <button 
                    onClick={() => setViewMode('3d')}
                    className={cn(
-                     "h-[40px] px-6 rounded-full text-sm font-bold transition-all duration-300 ease-out",
+                     "h-[40px] px-6 rounded-full text-sm font-bold transition-all duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]",
                      viewMode === '3d' ? "bg-[var(--neutral-800)] text-white shadow-sm" : "text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]"
                    )}
                  >
@@ -319,7 +319,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                        />
                        <div className="absolute bottom-6 left-6 z-10">
                           <div className="bg-black/60 text-white px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 border border-white/10">
-                             <span className="w-2 h-2 rounded-full bg-[var(--mw-green)] animate-[pulse_2s_ease-in-out_infinite]" />
+                             <span className="w-2 h-2 rounded-full bg-[var(--mw-green)] animate-[pulse_2s_cubic-bezier(0.2,0,0,1)_infinite]" />
                              Live Feed
                           </div>
                        </div>
@@ -413,7 +413,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                     </div>
 
                     {/* Substep B (Active) */}
-                    <div className="bg-[var(--neutral-100)] rounded-[12px] border border-[var(--neutral-200)] overflow-hidden ml-9 mb-6">
+                    <div className="bg-[var(--neutral-100)] rounded-md border border-[var(--neutral-200)] overflow-hidden ml-9 mb-6">
                        <div className="p-3 border-b border-[var(--neutral-200)] flex items-center gap-2 bg-white">
                           <div className="w-2 h-2 rounded-full bg-[var(--mw-yellow-400)] animate-pulse" />
                           <span className="font-bold text-sm text-[var(--neutral-800)]">B. Run cutting program</span>

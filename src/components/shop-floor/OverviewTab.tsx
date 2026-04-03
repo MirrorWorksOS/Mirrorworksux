@@ -32,6 +32,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Separator } from '../ui/separator';
 import {
   Tooltip,
@@ -48,7 +49,7 @@ const ACTIVE_JOBS_SUMMARY = {
   moNumber: "MO-26-401",
   dueDate: "2025-12-08T17:00:00",
   priority: "High",
-  status: "progress"
+  status: "in_progress"
 };
 
 const TIME_TRACKING_SUMMARY = {
@@ -70,14 +71,14 @@ const MANUFACTURING_ORDERS = [
     customer: "Global Systems",
     partName: "Server Rack Chassis",
     dueDate: "Dec 8, 2025",
-    status: "progress",
+    status: "in_progress",
     priority: "High",
     progress: 65,
     totalQty: 400,
     completedQty: 260,
     workOrders: [
       { id: "MO-26-401-01", name: "Base Plate", station: "Amada Ensis Laser", status: "completed", progress: 100 },
-      { id: "MO-26-401-02", name: "Support Arm", station: "Trumpf TruBend 5000", status: "progress", progress: 45 },
+      { id: "MO-26-401-02", name: "Support Arm", station: "Trumpf TruBend 5000", status: "in_progress", progress: 45 },
       { id: "MO-26-401-03", name: "Assembly Kit", station: "Assembly", status: "pending", progress: 0 }
     ]
   },
@@ -92,7 +93,7 @@ const MANUFACTURING_ORDERS = [
     totalQty: 200,
     completedQty: 30,
     workOrders: [
-      { id: "MO-26-402-01", name: "Frame Rails", station: "Mitsubishi 3015", status: "progress", progress: 30 },
+      { id: "MO-26-402-01", name: "Frame Rails", station: "Mitsubishi 3015", status: "in_progress", progress: 30 },
       { id: "MO-26-402-02", name: "Weldments", station: "Miller Tig Weld 3", status: "pending", progress: 0 }
     ]
   },
@@ -101,7 +102,7 @@ const MANUFACTURING_ORDERS = [
     customer: "Delta Mfg",
     partName: "Control Panel Box",
     dueDate: "Dec 15, 2025",
-    status: "hold",
+    status: "on_hold",
     priority: "Low",
     progress: 0,
     totalQty: 50,
@@ -112,32 +113,11 @@ const MANUFACTURING_ORDERS = [
 
 // --- Helper Components ---
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const styles: Record<string, string> = {
-    progress: "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent",
-    pending: "bg-[var(--neutral-100)] text-[var(--neutral-800)] border-[var(--neutral-200)]",
-    completed: "bg-[var(--mw-green)] text-white border-transparent",
-    hold: "bg-[var(--mw-error)] text-white border-transparent"
-  };
-  
-  const labels: Record<string, string> = {
-    progress: "In Progress",
-    pending: "Pending",
-    completed: "Completed",
-    hold: "Blocked"
-  };
-
-  return (
-    <Badge variant="outline" className={`${styles[status] || styles.pending} font-medium px-3 py-1.5 rounded-[20px] border`}>
-      {labels[status] || status}
-    </Badge>
-  );
-};
 
 const PriorityBadge = ({ priority }: { priority: string }) => {
   if (priority === 'High') {
     return (
-      <span className="text-xs px-3 py-1 rounded-[20px] font-medium bg-[var(--mw-error)] text-white">
+      <span className="text-xs px-3 py-1 rounded-xl font-medium bg-[var(--mw-error)] text-white">
         High
       </span>
     );
@@ -424,7 +404,7 @@ export function OverviewTab() {
               {/* Card C: Andon Alerts */}
               <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
-                  <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-[20px] px-3">
+                  <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-xl px-3">
                     {ANDON_ALERTS.length} Active
                   </Badge>
                 </div>
@@ -685,7 +665,7 @@ export function OverviewTab() {
       )}
       {!isSidebarOpen && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-           <Button variant="secondary" size="icon" className="h-14 w-14 rounded-l-lg rounded-r-none shadow-md border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
+           <Button variant="secondary" size="icon" className="h-14 w-14 rounded-l-lg rounded-r-none shadow-[var(--elevation-2)] border-y border-l border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(true)}>
              <ChevronDown className="w-4 h-4 rotate-90 text-[var(--neutral-500)]" />
            </Button>
         </div>
