@@ -584,7 +584,7 @@ export function OverviewTab() {
                          <span className="text-sm font-medium text-[var(--neutral-800)]">System</span>
                          <span className="text-xs text-[var(--neutral-500)]">1m</span>
                        </div>
-                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--mw-yellow-400)]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[var(--mw-yellow-400)]/30">
+                       <p className="text-sm text-foreground mt-0.5 bg-[var(--mw-yellow-400)]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[var(--mw-yellow-400)]/30">
                          Production speed increased by 15% after material arrival.
                        </p>
                      </div>
@@ -605,7 +605,7 @@ export function OverviewTab() {
                          </Avatar>
                          <div className="flex-1">
                            <span className="text-sm font-medium text-[var(--neutral-800)]">{m.from === 'ai' ? 'AI Assistant' : 'You'}</span>
-                           <p className={cn('text-sm text-[var(--neutral-800)] mt-0.5 p-3 rounded-[var(--shape-lg)] rounded-tl-none', m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 border border-[var(--mw-yellow-400)]/30' : 'bg-[var(--neutral-100)]')}>
+                           <p className={cn('text-sm text-foreground mt-0.5 p-3 rounded-[var(--shape-lg)] rounded-tl-none', m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 border border-[var(--mw-yellow-400)]/30' : 'bg-[var(--neutral-100)]')}>
                              {m.text}
                            </p>
                          </div>

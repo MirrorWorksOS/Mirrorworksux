@@ -189,7 +189,7 @@ export function QualityTab() {
         </div>
         <Button 
           onClick={() => setShowLogModal(true)}
-          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
+          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
         >
           <Plus className="w-5 h-5 mr-2" /> Log Issue
         </Button>
@@ -392,7 +392,7 @@ export function QualityTab() {
              </div>
              <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-card text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Status</Button>
              <Button variant="outline" className="h-10 border-[var(--neutral-200)] bg-card text-[var(--neutral-800)]"><Filter className="w-4 h-4 mr-2"/> Priority</Button>
-             <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">
+             <Button className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium border border-[var(--mw-yellow-400)]/20">
                <Plus className="w-4 h-4 mr-2"/> Log New Issue
              </Button>
           </div>
@@ -447,7 +447,7 @@ export function QualityTab() {
              {['All Types', 'First Article', 'In-Process', 'Final', 'Receiving'].map((type, i) => (
                 <button key={type} className={cn(
                    "px-4 py-2 rounded-full text-sm font-medium transition-colors border",
-                   i === 1 ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-[var(--mw-yellow-400)]" : "bg-card text-[var(--neutral-500)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
+                   i === 1 ? "bg-[var(--mw-yellow-400)] text-primary-foreground border-[var(--mw-yellow-400)]" : "bg-card text-[var(--neutral-500)] border-[var(--neutral-200)] hover:text-[var(--neutral-800)]"
                 )}>
                    {type}
                 </button>
@@ -571,7 +571,7 @@ export function QualityTab() {
                  <Button variant="outline" onClick={() => setShowLogModal(false)} className="flex-1 h-12 bg-card border-[var(--neutral-200)] text-[var(--neutral-500)] font-medium hover:text-[var(--neutral-800)]">
                     Cancel
                  </Button>
-                 <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium border border-[var(--mw-yellow-400)]/20">
+                 <Button className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium border border-[var(--mw-yellow-400)]/20">
                     Log Issue Only
                  </Button>
                  <Button className="flex-1 h-12 bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white font-medium shadow-sm">

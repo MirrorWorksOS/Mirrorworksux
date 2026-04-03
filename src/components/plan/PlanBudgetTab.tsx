@@ -306,7 +306,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 className={cn(
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'week'
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium"
+                    ? "bg-[var(--mw-yellow-400)] text-primary-foreground font-medium"
                     : "bg-[var(--neutral-100)] text-[var(--neutral-500)] hover:bg-[var(--border)]"
                 )}
               >
@@ -317,7 +317,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 className={cn(
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'month'
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium"
+                    ? "bg-[var(--mw-yellow-400)] text-primary-foreground font-medium"
                     : "bg-[var(--neutral-100)] text-[var(--neutral-500)] hover:bg-[var(--border)]"
                 )}
               >
@@ -328,7 +328,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
                 className={cn(
                   "px-3 py-1 text-xs rounded transition-all duration-200",
                   dateRange === 'all'
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium"
+                    ? "bg-[var(--mw-yellow-400)] text-primary-foreground font-medium"
                     : "bg-[var(--neutral-100)] text-[var(--neutral-500)] hover:bg-[var(--border)]"
                 )}
               >

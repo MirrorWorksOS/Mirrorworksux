@@ -267,7 +267,7 @@ export function PlanIntelligenceHubTab() {
           <h3 className=" text-base font-medium text-foreground">
             Files
           </h3>
-          <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
+          <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground">
             <Upload className="w-4 h-4 mr-2" />
             Upload
           </Button>
@@ -451,7 +451,7 @@ export function PlanIntelligenceHubTab() {
           <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
             <Camera className="w-5 h-5 text-[var(--neutral-500)]" />
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]" onClick={handleChatSubmit}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={handleChatSubmit}>
             Send
           </Button>
         </div>

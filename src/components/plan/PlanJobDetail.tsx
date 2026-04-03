@@ -91,7 +91,7 @@ export function PlanJobDetail() {
           <ProgressBar value={stageProgress(currentStage)} showLabel size="sm" />
 
           {/* Stage button group */}
-          <div className="flex items-center gap-0 border border-[var(--border)] rounded-lg overflow-hidden w-fit">
+          <div className="flex items-center gap-0 border border-[var(--border)] rounded-full overflow-hidden w-fit">
             {STAGES.map((stage) => (
               <button
                 key={stage.id}

@@ -176,7 +176,7 @@ export function SellQuoteDetail() {
 
               <div className="pt-4 border-t border-[var(--border)] space-y-2">
                 <Button
-                  className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+                  className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
                   onClick={() => toast.success('Quote sent to customer')}
                 >
                   <Send className="w-4 h-4 mr-2" />
@@ -269,7 +269,7 @@ export function SellQuoteDetail() {
             <Download className="mr-2 h-4 w-4" /> Download PDF
           </Button>
           <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             onClick={() => toast.success('Quote emailed to customer')}
           >
             <Mail className="mr-2 h-4 w-4" /> Email Quote

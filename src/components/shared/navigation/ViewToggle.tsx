@@ -46,7 +46,7 @@ export function ViewToggle({
             className={cn(
               "inline-flex h-12 min-h-[48px] shrink-0 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
               active
-                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                ? "bg-[var(--mw-yellow-400)] text-primary-foreground"
                 : "text-[var(--neutral-500)] hover:bg-[var(--neutral-50)] hover:text-[var(--neutral-800)]",
             )}
           >

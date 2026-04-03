@@ -115,7 +115,7 @@ export function DatePicker({
                   "flex h-9 w-9 items-center justify-center rounded-[var(--shape-md)] text-sm transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                   !inMonth && "text-muted-foreground opacity-40",
                   inMonth && "text-foreground hover:bg-[var(--neutral-100)]",
-                  selected && "bg-[var(--mw-yellow-400)] font-medium text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-400)]",
+                  selected && "bg-[var(--mw-yellow-400)] font-medium text-primary-foreground hover:bg-[var(--mw-yellow-400)]",
                   today && !selected && "font-medium",
                 )}
               >

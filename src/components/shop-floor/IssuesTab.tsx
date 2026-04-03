@@ -230,7 +230,7 @@ export function IssuesTab() {
                 </div>
              </div>
            ) : (
-             <Mic className="w-8 h-8 text-[var(--neutral-800)]" />
+             <Mic className="w-8 h-8 text-primary-foreground" />
            )}
         </div>
       </div>

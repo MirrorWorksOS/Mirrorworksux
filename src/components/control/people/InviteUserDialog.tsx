@@ -129,7 +129,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
                         onClick={() => toggleGroup(moduleKey, groupName)}
                         className={`rounded-full border px-3 py-1 text-xs ${
                           selected
-                            ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]'
+                            ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-primary-foreground'
                             : 'border-[var(--border)] bg-card text-[var(--neutral-600)]'
                         }`}
                       >
@@ -143,7 +143,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
           </div>
 
           <div className="space-y-2 pt-1">
-            <Button className="h-12 w-full bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
+            <Button className="h-12 w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               Send invite
             </Button>
             <Button variant="ghost" className="h-10 w-full text-[var(--neutral-500)]" onClick={() => onOpenChange(false)}>

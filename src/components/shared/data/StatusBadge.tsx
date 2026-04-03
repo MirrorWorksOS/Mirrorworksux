@@ -20,7 +20,7 @@ const statusBadgeVariants = cva(
         info: "bg-[var(--mw-info-light)] text-[var(--mw-info)]",
         neutral: "bg-[var(--neutral-100)] text-[var(--neutral-600)]",
         dark: "bg-[var(--mw-mirage)] text-white",
-        accent: "bg-[var(--mw-yellow-50)] text-[var(--neutral-800)]",
+        accent: "bg-[var(--mw-yellow-50)] text-foreground",
       },
       withDot: {
         true: "",

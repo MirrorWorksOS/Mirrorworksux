@@ -48,7 +48,7 @@ export function TextSegmentedControl({
             className={cn(
               "h-12 min-h-[48px] shrink-0 rounded-full px-4 text-sm font-medium transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
               active
-                ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]"
+                ? "bg-[var(--mw-yellow-400)] text-primary-foreground"
                 : "text-[var(--neutral-500)] hover:bg-[var(--neutral-50)] hover:text-[var(--neutral-800)]",
             )}
           >

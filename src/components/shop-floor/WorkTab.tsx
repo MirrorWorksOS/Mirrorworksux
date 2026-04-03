@@ -88,7 +88,7 @@ const MOCK_DATA: ManufacturingOrder[] = [
 
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    progress: "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] border-transparent", // Yellow
+    progress: "bg-[var(--mw-yellow-400)] text-primary-foreground border-transparent", // Yellow
     pending: "bg-[var(--neutral-100)] text-[var(--neutral-800)] border-[var(--neutral-200)]",   // Grey
     completed: "bg-[var(--mw-green)] text-white border-transparent",      // Green
     hold: "bg-[var(--mw-error)] text-white border-transparent"            // Red

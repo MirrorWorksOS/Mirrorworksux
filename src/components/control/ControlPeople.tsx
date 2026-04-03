@@ -39,7 +39,7 @@ export function ControlPeople() {
           </p>
         </div>
         <Button
-          className="h-11 bg-[var(--mw-yellow-400)] px-5 text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
+          className="h-11 bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
           onClick={() => {
             if (activeTab === 'users') {
               setInviteOpen(true);

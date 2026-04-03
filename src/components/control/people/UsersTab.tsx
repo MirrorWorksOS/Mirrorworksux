@@ -164,7 +164,7 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
               <Badge
                 className={
                   user.role === 'lead'
-                    ? 'rounded-full border-0 bg-[var(--mw-yellow-400)] px-3 py-1 text-[var(--neutral-800)]'
+                    ? 'rounded-full border-0 bg-[var(--mw-yellow-400)] px-3 py-1 text-primary-foreground'
                     : 'rounded-full border-0 bg-[var(--neutral-100)] px-3 py-1 text-[var(--neutral-600)]'
                 }
               >

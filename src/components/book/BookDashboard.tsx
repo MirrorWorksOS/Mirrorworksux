@@ -135,7 +135,7 @@ export function BookDashboard() {
               <h3 className="text-base font-medium text-foreground">
                 Approval Queue
               </h3>
-              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]">
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] text-primary-foreground">
                 {approvalQueue.length}
               </Badge>
             </div>
@@ -205,7 +205,7 @@ export function BookDashboard() {
               </div>
             </div>
             
-            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] group">
+            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground group">
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{ 

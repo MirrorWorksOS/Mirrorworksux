@@ -214,7 +214,7 @@ const INSIGHTS: Insight[] = [
              <div className="p-3 bg-[var(--neutral-100)] rounded-sm border border-[var(--neutral-200)]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[var(--neutral-800)]">David Miller (Amada Ensis) 
-                     <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[var(--mw-yellow-400)]/10 text-[var(--neutral-800)] border-transparent font-medium rounded-full">Below Target</Badge>
+                     <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[var(--mw-yellow-400)]/10 text-foreground border-transparent font-medium rounded-full">Below Target</Badge>
                    </div>
                    <div className="font-bold text-[var(--mw-error)] text-sm">82%</div>
                 </div>
@@ -294,7 +294,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
                     action.variant === 'destructive' ? "bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white" :
                     action.variant === 'outline' ? "border-[var(--neutral-200)] bg-card hover:bg-[var(--neutral-100)] text-[var(--neutral-800)]" :
                     action.variant === 'ghost' ? "text-[var(--neutral-500)] hover:text-[var(--neutral-800)] ml-auto" :
-                    "bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]"
+                    "bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
                   )}
                   onClick={action.onClick}
                >
@@ -344,7 +344,7 @@ export function IntelligenceHubTab() {
              </div>
              <Button 
                 size="lg" 
-                className="rounded-full h-12 px-8 shadow-[var(--elevation-2)] bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] gap-2 border-0 font-medium transition-transform active:scale-95"
+                className="rounded-full h-12 px-8 shadow-[var(--elevation-2)] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] gap-2 border-0 font-medium transition-transform active:scale-95"
                 onClick={() => setIsVoiceActive(true)}
              >
                 <Sparkles className="w-5 h-5 fill-white/20" /> Ask AI Assistant
@@ -432,7 +432,7 @@ export function IntelligenceHubTab() {
                             CANCEL
                          </Button>
                          <Button 
-                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]"
+                            className="flex-1 h-14 text-base font-bold bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
                             onClick={() => setIsRecording(false)}
                          >
                             DONE

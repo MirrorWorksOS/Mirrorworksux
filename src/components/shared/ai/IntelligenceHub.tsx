@@ -37,7 +37,7 @@ const TYPE_CONFIG: Record<InsightType, { icon: any; bg: string; text: string; la
   risk:        { icon: AlertTriangle, bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Risk' },
   info:        { icon: Info,          bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-info)]', label: 'Info' },
   action:      { icon: ChevronRight,  bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-warning)]', label: 'Action' },
-  trend:       { icon: TrendingUp,    bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--neutral-800)]', label: 'Trend' },
+  trend:       { icon: TrendingUp,    bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground', label: 'Trend' },
 };
 
 export function IntelligenceHub({ module, context, insights, onRefresh, compact = false }: Props) {

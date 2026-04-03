@@ -59,7 +59,7 @@ export function ShipPackaging() {
           <>
             <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white">Pack Station 1</span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-foreground">MQ</span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-primary-foreground">MQ</span>
               Matt Quigley
             </span>
           </>

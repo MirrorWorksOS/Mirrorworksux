@@ -95,13 +95,13 @@ const instructionData: Record<number, InstructionRow[]> = {
 
 const statusColor: Record<string, string> = {
   Produced: 'bg-[var(--mw-green)]/10 text-[var(--mw-green)]',
-  'In progress': 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-800)]',
+  'In progress': 'bg-[var(--mw-yellow-400)]/20 text-foreground',
   Scheduled: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
 };
 
 const qcColor: Record<string, string> = {
   Done: 'bg-[var(--mw-green)]/10 text-[var(--mw-green)]',
-  'In Progress': 'bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-800)]',
+  'In Progress': 'bg-[var(--mw-yellow-400)]/20 text-foreground',
   Pending: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
 };
 
@@ -412,7 +412,7 @@ export function PlanProductionTab() {
           <p className="text-xs text-[var(--neutral-500)]">
             {instructions.length} operations · Total: {instructions.reduce((s, r) => s + r.minutes, 0)} min
           </p>
-          <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs">
+          <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs">
             + Add Operation
           </Button>
         </div>

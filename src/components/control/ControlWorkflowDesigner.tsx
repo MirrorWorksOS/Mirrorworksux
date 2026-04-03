@@ -329,7 +329,7 @@ function NodeDetailPanel({
         <div className="pt-2 space-y-2 border-t border-[var(--border)]">
           <Button
             size="sm"
-            className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
+            className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs font-medium"
             onClick={() => toast.success('Changes applied')}
           >
             Apply changes
@@ -410,7 +410,7 @@ export function ControlWorkflowDesigner() {
             <h2 className="text-sm font-medium text-foreground">
               Workflows
             </h2>
-            <Button size="sm" className="h-10 w-10 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)]">
+            <Button size="sm" className="h-10 w-10 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground">
               <Plus className="w-4 h-4" />
             </Button>
           </div>
@@ -532,7 +532,7 @@ export function ControlWorkflowDesigner() {
               onClick={() => toast.success('Workflow run started')}>
               <Play className="w-4 h-4" /> Run
             </Button>
-            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs font-medium"
+            <Button size="sm" className="h-10 gap-1.5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs font-medium"
               onClick={() => toast.success('Workflow saved')}>
               <Save className="w-4 h-4" /> Save
             </Button>

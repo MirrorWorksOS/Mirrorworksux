@@ -163,7 +163,7 @@ export function TimeClockTab() {
                      Cancel
                    </Button>
                    <Button 
-                     className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium"
+                     className="flex-1 h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium"
                      onClick={handlePinSubmit}
                      disabled={pin.length !== 4}
                    >
@@ -225,7 +225,7 @@ export function TimeClockTab() {
                 className={cn(
                   "w-full h-16 rounded-full text-lg font-medium transition-all duration-[250ms] active:scale-[0.98] shadow-sm flex items-center justify-center gap-2",
                   !isClockedIn 
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)] hover:shadow-[var(--elevation-2)]" 
+                    ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] hover:shadow-[var(--elevation-2)]" 
                     : "bg-card border-2 border-[var(--mw-error-light)] text-[var(--mw-error)] hover:bg-[var(--mw-error)]/10 hover:border-[var(--mw-error)]"
                 )}
               >

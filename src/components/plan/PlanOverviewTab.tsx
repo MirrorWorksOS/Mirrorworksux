@@ -512,7 +512,7 @@ export function PlanOverviewTab() {
                   key={day}
                   className={cn(
                     'text-xs p-1 rounded',
-                    day === 15 ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] font-medium' :
+                    day === 15 ? 'bg-[var(--mw-yellow-400)] text-primary-foreground font-medium' :
                     day === 8 || day === 22 ? 'bg-[var(--neutral-100)] text-foreground' :
                     'text-[var(--neutral-500)]'
                   )}
@@ -539,7 +539,7 @@ export function PlanOverviewTab() {
               <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
-            <Button size="sm" className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] text-xs">
+            <Button size="sm" className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs">
               <Calendar className="w-4 h-4 mr-1" />
               Create
             </Button>
@@ -684,7 +684,7 @@ export function PlanOverviewTab() {
             <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
               <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] px-3" onClick={handleChatSubmit}>
+            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground px-3" onClick={handleChatSubmit}>
               Send
             </Button>
           </div>

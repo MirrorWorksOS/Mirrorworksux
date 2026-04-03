@@ -179,7 +179,7 @@ export const componentClasses = {
   },
 
   button: {
-    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-[var(--neutral-800)] font-medium rounded-full`,
+    primary: `bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)] text-primary-foreground font-medium rounded-full`,
     outline: `border border-[var(--neutral-200)] bg-white hover:bg-[var(--neutral-50)] rounded-full`,
     ghost: `hover:bg-[var(--neutral-100)] active:bg-[var(--neutral-200)] rounded-full`,
     dark: `bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 rounded-full`,

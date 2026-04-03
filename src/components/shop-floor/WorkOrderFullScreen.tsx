@@ -165,7 +165,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                 className={cn(
                   "w-[160px] h-[160px] rounded-full flex flex-col items-center justify-center transition-all duration-[250ms] shadow-xs active:scale-95 group relative overflow-hidden mb-8",
                   isRunning 
-                    ? "bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:scale-105 hover:bg-[var(--mw-yellow-500)]" 
+                    ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:scale-105 hover:bg-[var(--mw-yellow-500)]" 
                     : "bg-[var(--neutral-800)] text-white hover:scale-105 hover:bg-[var(--neutral-900)]"
                 )}
               >
@@ -265,7 +265,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
         <div className="flex-1 flex flex-col min-w-0 bg-[var(--neutral-100)] relative gap-4 h-full">
            
            {/* Machine Performance Banner (Solid Yellow) */}
-           <div className="bg-[var(--mw-yellow-400)] rounded-[var(--shape-lg)] p-4 shadow-sm z-20 relative flex items-center justify-between text-[var(--neutral-800)]">
+           <div className="bg-[var(--mw-yellow-400)] rounded-[var(--shape-lg)] p-4 shadow-sm z-20 relative flex items-center justify-between text-primary-foreground">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-sm">
                     <img src={amadaLogo} className="w-8 h-8 object-contain" alt="Amada" />
@@ -397,7 +397,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                  <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[var(--mw-yellow-400)]" />
                  <div className="p-6 bg-card">
                     <div className="flex gap-3 mb-4 items-start">
-                       <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 text-[var(--neutral-800)] font-bold text-xs mt-0.5">
+                       <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0 text-primary-foreground font-bold text-xs mt-0.5">
                           2
                        </div>
                        <div>
@@ -453,7 +453,7 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
                                   <X className="w-4 h-4 mr-2" /> FAIL
                                </Button>
                                <Button 
-                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-bold h-[48px] text-sm shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
+                                 className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-bold h-[48px] text-sm shadow-sm border-b-4 border-[var(--mw-yellow-700)] active:border-b-0 active:translate-y-1"
                                >
                                   <Pause className="w-4 h-4 mr-2" /> HOLD
                                </Button>

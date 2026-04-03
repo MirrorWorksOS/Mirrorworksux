@@ -102,7 +102,7 @@ export function PlanDashboard() {
             value={kpiData.tasksToday.value}
             icon={ClipboardList}
             trailing={
-              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-800)] text-xs">
+              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground text-xs">
                 2 overdue
               </Badge>
             }
@@ -219,7 +219,7 @@ export function PlanDashboard() {
             <p className="text-xs text-[var(--neutral-500)] mb-4">Common workflows</p>
             <div className="space-y-2">
               <Button
-                className="w-full justify-start bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] h-10"
+                className="w-full justify-start bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-10"
                 onClick={() => navigate('/plan/jobs')}
               >
                 <Plus className="w-4 h-4 mr-2" />

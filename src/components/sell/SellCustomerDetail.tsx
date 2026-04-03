@@ -310,7 +310,7 @@ export function SellCustomerDetail() {
             </StatusBadge>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => navigate('/sell/quotes/new')}>
+            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium" onClick={() => navigate('/sell/quotes/new')}>
               New quote
             </Button>
             <DropdownMenu>
@@ -336,7 +336,7 @@ export function SellCustomerDetail() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction className="bg-[var(--mw-yellow-400)] text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-500)]">
+                  <AlertDialogAction className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
                     Archive
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -517,7 +517,7 @@ export function SellCustomerDetail() {
                 <h2 className="text-lg font-medium text-foreground mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
-                    <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-[var(--neutral-800)] border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-foreground border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
                   <button className="text-xs text-foreground hover:underline flex items-center gap-1">
                     <Plus className="w-4 h-4" /> Add tag
@@ -621,7 +621,7 @@ export function SellCustomerDetail() {
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-foreground">Quotes & orders</h2>
-              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium" onClick={() => navigate('/sell/quotes/new')}>
+              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium" onClick={() => navigate('/sell/quotes/new')}>
                 New quote
               </Button>
             </div>

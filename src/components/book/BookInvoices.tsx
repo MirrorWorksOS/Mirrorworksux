@@ -289,7 +289,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               <AnimatedDownload className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--neutral-800)] font-medium">
+            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium">
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Invoice
             </Button>

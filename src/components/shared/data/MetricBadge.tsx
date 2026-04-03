@@ -12,7 +12,7 @@ const metricBadgeVariants = cva(
         warning: "bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)]",
         error: "bg-[var(--mw-error-light)] text-[var(--mw-error)]",
         info: "bg-[var(--mw-info-light)] text-[var(--mw-info)]",
-        accent: "bg-[var(--mw-yellow-50)] text-[var(--neutral-800)]",
+        accent: "bg-[var(--mw-yellow-50)] text-foreground",
       },
     },
     defaultVariants: {

@@ -162,7 +162,7 @@ export function BuySuppliers() {
           onClick={() => setViewMode('card')}
           className={cn(
             'rounded p-2 transition-all duration-200',
-            viewMode === 'card' ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]',
+            viewMode === 'card' ? 'bg-[var(--mw-yellow-400)] text-primary-foreground' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]',
           )}
         >
           <Grid3x3 className="h-4 w-4" strokeWidth={1.5} />
@@ -172,7 +172,7 @@ export function BuySuppliers() {
           onClick={() => setViewMode('list')}
           className={cn(
             'rounded p-2 transition-all duration-200',
-            viewMode === 'list' ? 'bg-[var(--mw-yellow-400)] text-[var(--neutral-800)]' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]',
+            viewMode === 'list' ? 'bg-[var(--mw-yellow-400)] text-primary-foreground' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]',
           )}
         >
           <List className="h-4 w-4" strokeWidth={1.5} />
