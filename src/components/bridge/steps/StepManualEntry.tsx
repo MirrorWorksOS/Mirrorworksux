@@ -37,6 +37,9 @@ type FieldDef = {
   placeholder?: string;
   type?: 'input' | 'combobox';
   options?: { value: string; label: string }[];
+  /** Allow user to create new options that aren't in the predefined list */
+  allowCreate?: boolean;
+  searchPlaceholder?: string;
   /** Returns a dynamic placeholder based on current form state */
   dynamicPlaceholder?: (formData: Record<string, string>) => string;
 };
@@ -76,7 +79,6 @@ const MATERIAL_CATEGORIES: MaterialCategory[] = [
   { value: 'welding_consumables',label: 'Welding consumables',      dimensionHint: 'e.g. 1.0mm × 15kg spool' },
   { value: 'abrasives',          label: 'Abrasives',                dimensionHint: 'e.g. 125mm × 6mm' },
   { value: 'paint_coatings',     label: 'Paint & coatings',         dimensionHint: 'e.g. 20L' },
-  { value: 'other',              label: 'Other',                    dimensionHint: 'e.g. size, weight, or spec' },
 ];
 
 const CATEGORY_OPTIONS = MATERIAL_CATEGORIES.map((c) => ({ value: c.value, label: c.label }));
@@ -99,8 +101,13 @@ const EMPLOYEE_GROUPS: { value: string; label: string }[] = [
   { value: 'estimating',    label: 'Estimating' },
   { value: 'admin',         label: 'Office / Admin' },
   { value: 'management',    label: 'Management' },
-  { value: 'other',         label: 'Other' },
 ];
+
+function formatCustomValue(val: string | undefined): string {
+  if (!val) return '';
+  if (!val.startsWith('custom_')) return val;
+  return val.slice(7).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 function getDimensionPlaceholder(formData: Record<string, string>): string {
   const match = MATERIAL_CATEGORIES.find((c) => c.value === formData.category);
@@ -112,17 +119,25 @@ function getDimensionPlaceholder(formData: Record<string, string>): string {
 function ComboboxField({
   value,
   onChange,
-  options,
+  options: defaultOptions,
   placeholder,
+  allowCreate = false,
+  searchPlaceholder,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  allowCreate?: boolean;
+  searchPlaceholder?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [customOptions, setCustomOptions] = useState<{ value: string; label: string }[]>([]);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [triggerWidth, setTriggerWidth] = useState<number | undefined>();
+
+  const allOptions = [...defaultOptions.filter((o) => o.value !== 'other'), ...customOptions];
 
   useEffect(() => {
     if (open && triggerRef.current) {
@@ -130,7 +145,23 @@ function ComboboxField({
     }
   }, [open]);
 
-  const selected = options.find((o) => o.value === value);
+  const selected = allOptions.find((o) => o.value === value);
+  const trimmed = search.trim();
+  const exactMatch = trimmed
+    ? allOptions.some((o) => o.label.toLowerCase() === trimmed.toLowerCase())
+    : true;
+  const showCreate = allowCreate && trimmed.length > 0 && !exactMatch;
+
+  const handleCreate = () => {
+    const newValue = `custom_${trimmed.toLowerCase().replace(/\s+/g, '_')}`;
+    setCustomOptions((prev) => {
+      if (prev.some((o) => o.value === newValue)) return prev;
+      return [...prev, { value: newValue, label: trimmed }];
+    });
+    onChange(newValue);
+    setSearch('');
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -155,17 +186,35 @@ function ComboboxField({
         align="start"
         style={triggerWidth ? { width: triggerWidth } : undefined}
       >
-        <Command>
-          <CommandInput placeholder="Search categories…" />
+        <Command shouldFilter={true}>
+          <CommandInput
+            placeholder={searchPlaceholder ?? 'Search…'}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList>
-            <CommandEmpty>No match found.</CommandEmpty>
+            <CommandEmpty>
+              {allowCreate ? (
+                <button
+                  type="button"
+                  className="w-full px-2 py-1.5 text-sm text-left hover:bg-accent rounded-sm flex items-center gap-2"
+                  onMouseDown={(e) => { e.preventDefault(); handleCreate(); }}
+                >
+                  <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+                  Create &ldquo;{trimmed}&rdquo;
+                </button>
+              ) : (
+                'No match found.'
+              )}
+            </CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
+              {allOptions.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.label}
                   onSelect={() => {
                     onChange(option.value === value ? '' : option.value);
+                    setSearch('');
                     setOpen(false);
                   }}
                 >
@@ -179,6 +228,18 @@ function ComboboxField({
                 </CommandItem>
               ))}
             </CommandGroup>
+            {showCreate && (
+              <CommandGroup forceMount>
+                <CommandItem
+                  value={`__create__${trimmed}`}
+                  onSelect={handleCreate}
+                  className="text-muted-foreground"
+                >
+                  <Plus className="mr-2 h-3.5 w-3.5" />
+                  Create &ldquo;{trimmed}&rdquo;
+                </CommandItem>
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
@@ -227,7 +288,7 @@ const ENTITY_FORMS: EntityFormDef[] = [
     fields: [
       { name: 'name', label: 'Material name', required: true, placeholder: 'e.g. Mild Steel 3mm sheet' },
       { name: 'unit_of_measure', label: 'Unit of measure', required: true, placeholder: 'e.g. sheet, metre, kg' },
-      { name: 'category', label: 'Category', type: 'combobox', options: CATEGORY_OPTIONS, placeholder: 'Search categories…' },
+      { name: 'category', label: 'Category', type: 'combobox', options: CATEGORY_OPTIONS, allowCreate: true, searchPlaceholder: 'Search or create category…', placeholder: 'Select category…' },
       { name: 'dimensions', label: 'Dimensions', dynamicPlaceholder: getDimensionPlaceholder },
       { name: 'reorder_point', label: 'Reorder point', placeholder: 'e.g. 10' },
     ],
@@ -269,7 +330,7 @@ const ENTITY_FORMS: EntityFormDef[] = [
       { name: 'first_name', label: 'First name', required: true, placeholder: 'e.g. Mike' },
       { name: 'last_name', label: 'Last name', required: true, placeholder: 'e.g. Torres' },
       { name: 'role', label: 'Job title / role', placeholder: 'e.g. CNC Operator' },
-      { name: 'group', label: 'Group', type: 'combobox', options: EMPLOYEE_GROUPS, placeholder: 'Search groups…' },
+      { name: 'group', label: 'Group', type: 'combobox', options: EMPLOYEE_GROUPS, allowCreate: true, searchPlaceholder: 'Search or create group…', placeholder: 'Select group…' },
       { name: 'email', label: 'Email', placeholder: 'e.g. mike@company.com' },
     ],
   },
@@ -395,6 +456,8 @@ export function StepManualEntry() {
                       onChange={(val) => setFormData((prev) => ({ ...prev, [field.name]: val }))}
                       options={field.options}
                       placeholder={placeholder}
+                      allowCreate={field.allowCreate}
+                      searchPlaceholder={field.searchPlaceholder}
                     />
                   ) : (
                     <Input
@@ -475,11 +538,11 @@ export function StepManualEntry() {
                   }
                   if (f.name === 'category' && entity.key === 'materials') {
                     const cat = MATERIAL_CATEGORIES.find((c) => c.value === record.category);
-                    return cat?.label || record[f.name] || '—';
+                    return cat?.label || formatCustomValue(record[f.name]) || '—';
                   }
                   if (f.name === 'group' && entity.key === 'employees') {
                     const grp = EMPLOYEE_GROUPS.find((g) => g.value === record.group);
-                    return grp?.label || record[f.name] || '—';
+                    return grp?.label || formatCustomValue(record[f.name]) || '—';
                   }
                   return record[f.name] || '—';
                 },
