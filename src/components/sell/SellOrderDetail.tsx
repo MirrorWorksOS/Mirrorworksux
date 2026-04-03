@@ -86,14 +86,14 @@ interface DocFile {
 /* ------------------------------------------------------------------ */
 
 const MOCK_ORDERS: Record<string, SellOrder> = {
-  "1": {
-    id: "1",
+  "so-001": {
+    id: "so-001",
     soNumber: "SO-0001",
     title: "Server Rack Fabrication",
     customer: "TechCorp Industries",
     value: 45000,
     status: "Confirmed",
-    opportunityId: "1",
+    opportunityId: "opp-001",
     jobId: "JOB-2026-0012",
     orderDate: "2026-03-10",
     expectedDelivery: "2026-04-14",
@@ -108,14 +108,14 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
     itemsShipped: 0,
     itemsTotal: 6,
   },
-  "2": {
-    id: "2",
+  "so-002": {
+    id: "so-002",
     soNumber: "SO-0002",
     title: "Structural Steel Package",
     customer: "BHP Contractors",
     value: 128000,
     status: "In Production",
-    opportunityId: "2",
+    opportunityId: "opp-002",
     jobId: "JOB-2026-0013",
     orderDate: "2026-03-05",
     expectedDelivery: "2026-04-28",
@@ -130,14 +130,14 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
     itemsShipped: 0,
     itemsTotal: 6,
   },
-  "3": {
-    id: "3",
+  "so-003": {
+    id: "so-003",
     soNumber: "SO-0003",
     title: "Custom Brackets (50 units)",
     customer: "Pacific Fab",
     value: 8500,
     status: "Shipped",
-    opportunityId: "3",
+    opportunityId: "opp-003",
     jobId: undefined,
     orderDate: "2026-02-20",
     expectedDelivery: "2026-03-25",
@@ -152,14 +152,14 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
     itemsShipped: 6,
     itemsTotal: 6,
   },
-  "4": {
-    id: "4",
+  "so-004": {
+    id: "so-004",
     soNumber: "SO-0004",
     title: "Rail Platform Components",
     customer: "Sydney Rail Corp",
     value: 67000,
     status: "Draft",
-    opportunityId: "4",
+    opportunityId: "opp-004",
     jobId: undefined,
     orderDate: "2026-03-28",
     expectedDelivery: "2026-05-15",

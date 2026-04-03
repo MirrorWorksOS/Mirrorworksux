@@ -85,7 +85,7 @@ export function PlanDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Active Jobs"
-            value={kpiData.activeJobs}
+            value={kpiData.activeJobs.value}
             icon={Calendar}
             iconSurface="key"
             trailing={
@@ -99,7 +99,7 @@ export function PlanDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Tasks Today"
-            value={kpiData.tasksToday}
+            value={kpiData.tasksToday.value}
             icon={ClipboardList}
             trailing={
               <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-[var(--neutral-800)] text-xs">
@@ -112,7 +112,7 @@ export function PlanDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Avg Lead Time"
-            value={`${kpiData.avgLeadTime} days`}
+            value={`${kpiData.avgLeadTime.value} days`}
             icon={Clock}
             trailing={
               <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
@@ -125,7 +125,7 @@ export function PlanDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="On-Time Rate"
-            value={`${kpiData.onTimeRate}%`}
+            value={`${kpiData.onTimeRate.value}%`}
             icon={TrendingUp}
             trailing={
               <Badge className="border-0 bg-[var(--mw-green)]/10 text-[var(--mw-green)] text-xs">

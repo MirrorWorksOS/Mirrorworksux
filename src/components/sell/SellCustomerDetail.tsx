@@ -81,8 +81,8 @@ customers.forEach((c, idx) => {
     .filter(inv => inv.status !== 'paid')
     .reduce((sum, inv) => sum + (inv.amount - inv.paidAmount), 0);
 
-  // Use the simple numeric index (1-based) as the key so existing routes work
-  const key = String(idx + 1);
+  // Use the centralised customer id as the key so routes match navigation
+  const key = c.id;
 
   mockCustomers[key] = {
     id: key,
@@ -166,10 +166,7 @@ customers.forEach((c, idx) => {
   };
 });
 
-// Also support lookup by centralised id (e.g. "cust-001") so either key scheme works
-customers.forEach((c, idx) => {
-  mockCustomers[c.id] = mockCustomers[String(idx + 1)];
-});
+// Primary key is now c.id (e.g. "cust-001") — no dual-keying needed
 
 // ============================================================
 // Helpers
@@ -233,7 +230,7 @@ export function SellCustomerDetail() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const customer = mockCustomers[id || '1'] || mockCustomers['1'];
+  const customer = mockCustomers[id || 'cust-001'] || mockCustomers['cust-001'];
 
   const allContacts = [
     { name: customer.primaryContact.name, role: customer.primaryContact.title, email: customer.primaryContact.email, phone: customer.primaryContact.phone, isPrimary: true },

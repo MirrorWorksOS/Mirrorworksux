@@ -83,8 +83,8 @@ interface PaymentEvent {
 /* ------------------------------------------------------------------ */
 
 const MOCK_INVOICES: Record<string, SellInvoice> = {
-  "1": {
-    id: "1",
+  "inv-001": {
+    id: "inv-001",
     invoiceNumber: "INV-2026-001",
     customer: "TechCorp Industries",
     issueDate: "2026-03-15",
@@ -99,8 +99,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 24500,
     notes: "Please reference INV-2026-001 on all remittances. Payment via EFT preferred.",
   },
-  "2": {
-    id: "2",
+  "inv-002": {
+    id: "inv-002",
     invoiceNumber: "INV-2026-0233",
     customer: "Pacific Fabrication",
     issueDate: "2026-03-12",
@@ -115,8 +115,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 0,
     notes: "Paid in full. Thank you.",
   },
-  "3": {
-    id: "3",
+  "inv-003": {
+    id: "inv-003",
     invoiceNumber: "INV-2026-0232",
     customer: "Sydney Rail Corp",
     issueDate: "2026-03-08",
@@ -131,8 +131,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 67000,
     notes: "Net 60 terms apply.",
   },
-  "4": {
-    id: "4",
+  "inv-004": {
+    id: "inv-004",
     invoiceNumber: "INV-2026-0231",
     customer: "Hunter Steel Co",
     issueDate: "2026-03-05",
@@ -147,8 +147,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 0,
     notes: "Paid in full.",
   },
-  "5": {
-    id: "5",
+  "inv-005": {
+    id: "inv-005",
     invoiceNumber: "INV-2026-0230",
     customer: "BHP Contractors",
     issueDate: "2026-02-28",
@@ -163,8 +163,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 128000,
     notes: "Payment overdue. Follow up required.",
   },
-  "6": {
-    id: "6",
+  "inv-006": {
+    id: "inv-006",
     invoiceNumber: "INV-2026-0229",
     customer: "Kemppi Australia",
     issueDate: "2026-02-25",
@@ -179,8 +179,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 12000,
     notes: "Second reminder sent.",
   },
-  "7": {
-    id: "7",
+  "inv-007": {
+    id: "inv-007",
     invoiceNumber: "INV-2026-DRAFT-01",
     customer: "TechCorp Industries",
     issueDate: "2026-03-19",
@@ -195,8 +195,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 15500,
     notes: "Draft — awaiting approval.",
   },
-  "8": {
-    id: "8",
+  "inv-008": {
+    id: "inv-008",
     invoiceNumber: "INV-2026-DRAFT-02",
     customer: "TechCorp Industries",
     issueDate: "2026-04-01",
@@ -211,8 +211,8 @@ const MOCK_INVOICES: Record<string, SellInvoice> = {
     balanceDue: 0,
     notes: "New draft from Sell — complete line items in Book if needed.",
   },
-  "9": {
-    id: "9",
+  "inv-009": {
+    id: "inv-009",
     invoiceNumber: "INV-2026-0235",
     customer: "TechCorp Industries",
     issueDate: "2026-04-01",

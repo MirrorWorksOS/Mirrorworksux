@@ -55,12 +55,12 @@ const TAG_OPTIONS = [
   "Export",
 ] as const;
 
-// Bridge centralized data to the shape this component expects (keyed by sequential id)
+// Bridge centralized data to the shape this component expects (keyed by centralized id)
 const MOCK_BY_ID: Record<string, Opportunity> = Object.fromEntries(
-  mockOpportunities.map((opp, i) => [
-    String(i + 1),
+  mockOpportunities.map((opp) => [
+    opp.id,
     {
-      id: String(i + 1),
+      id: opp.id,
       title: opp.title,
       customer: opp.customerName,
       value: opp.value,

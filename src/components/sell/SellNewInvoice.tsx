@@ -102,7 +102,7 @@ export function SellNewInvoice() {
       return;
     }
     toast.success("Draft saved.");
-    navigate("/sell/invoices/8");
+    navigate("/sell/invoices/inv-008");
   };
 
   const handleIssue = () => {
@@ -111,7 +111,7 @@ export function SellNewInvoice() {
       return;
     }
     toast.success("Invoice issued and sent to accounts contact.");
-    navigate("/sell/invoices/9");
+    navigate("/sell/invoices/inv-009");
   };
 
   return (

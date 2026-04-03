@@ -282,7 +282,7 @@ export function PlanOverviewTab() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => navigate('/sell/orders/1')}
+                  onClick={() => navigate('/sell/orders/so-001')}
                   className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
                 >
                   <span className="text-xs font-medium text-[var(--mw-blue)] tabular-nums">
@@ -297,7 +297,7 @@ export function PlanOverviewTab() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => navigate('/sell/opportunities/1')}
+                  onClick={() => navigate('/sell/opportunities/opp-001')}
                   className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
                 >
                   <span className="text-xs font-medium text-[var(--mw-blue)] line-clamp-2">

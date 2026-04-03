@@ -26,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
+import { manufacturingOrders } from '@/services/mock';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -51,13 +52,24 @@ interface Issue {
   timestamp: string;
 }
 
-const MO_BY_ID: Record<string, { moNumber: string; product: string; jobNumber: string; status: string; operator: string; startDate: string; customer: string }> = {
-  '1': { moNumber: 'MO-2026-001', product: 'Mounting Bracket Assembly', jobNumber: 'JOB-1210', status: 'In Progress', operator: 'M. Johnson', startDate: 'Dec 5, 2025', customer: 'TechCorp Industries' },
-  '2': { moNumber: 'MO-2026-002', product: 'Server Rack Chassis', jobNumber: 'JOB-1211', status: 'In Progress', operator: 'D. Lee', startDate: 'Jan 12, 2026', customer: 'Pacific Fab' },
-  '3': { moNumber: 'MO-2026-003', product: 'Cable Tray Support', jobNumber: 'JOB-1212', status: 'Confirmed', operator: 'E. Williams', startDate: 'Feb 1, 2026', customer: 'Sydney Rail Corp' },
-  '4': { moNumber: 'MO-2026-004', product: 'Machine Guard Assembly', jobNumber: 'JOB-1213', status: 'Done', operator: 'M. Thompson', startDate: 'Nov 20, 2025', customer: 'Kemppi Australia' },
-  '5': { moNumber: 'MO-2026-005', product: 'Aluminium Enclosure Panel', jobNumber: 'JOB-1214', status: 'Draft', operator: 'S. Chen', startDate: 'Mar 15, 2026', customer: 'Hunter Steel Co' },
+const STATUS_DISPLAY: Record<string, string> = {
+  draft: 'Draft', confirmed: 'Confirmed', in_progress: 'In Progress', done: 'Done',
 };
+
+const MO_BY_ID: Record<string, { moNumber: string; product: string; jobNumber: string; status: string; operator: string; startDate: string; customer: string }> = Object.fromEntries(
+  manufacturingOrders.map((mo) => [
+    mo.id,
+    {
+      moNumber: mo.moNumber,
+      product: mo.productName,
+      jobNumber: mo.jobNumber,
+      status: STATUS_DISPLAY[mo.status] ?? mo.status,
+      operator: mo.operatorName.split(' ').map((n, i) => i === 0 ? `${n[0]}.` : n).join(' '),
+      startDate: new Date(mo.dueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }),
+      customer: mo.customerName,
+    },
+  ]),
+);
 
 const WORK_ORDERS: WorkOrder[] = [
   { id: 'wo1', woNumber: 'WO-001', partName: 'Base Plate', workstation: 'Laser-01', progress: 100, unitsComplete: 100, unitsTotal: 100, status: 'complete' },
