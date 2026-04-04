@@ -14,6 +14,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
+import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import {
   AlertDialog,
@@ -363,26 +364,21 @@ export function SellCustomerDetail() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto">
-          {tabs.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "px-4 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap",
-                activeTab === tab.key ? 'bg-[var(--neutral-100)] text-foreground font-medium' : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
-              )}
-            >
-              {tab.label}
-              {tab.count !== undefined && (
-                <span className="flex items-center justify-center min-w-[20px] h-5 bg-[var(--mw-mirage)] text-white text-xs rounded-full font-medium px-1.5">
-                  {tab.count}
-                </span>
-              )}
-              {tab.icon}
-            </button>
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Tab)} className="overflow-x-auto">
+          <TabsList className="h-auto min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 w-fit">
+            {tabs.map(tab => (
+              <TabsTrigger key={tab.key} value={tab.key} className="gap-2 px-3 sm:px-4">
+                <span>{tab.label}</span>
+                {tab.count !== undefined && (
+                  <Badge variant="secondary" className="border-0 bg-[var(--neutral-200)] px-1.5 py-0 text-xs font-medium text-[var(--neutral-800)] tabular-nums">
+                    {tab.count}
+                  </Badge>
+                )}
+                {tab.icon}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* Tab Content */}

@@ -115,13 +115,8 @@ export const mockUsers: User[] = [
 
 const basePermissions: GroupPermissionSet = {
   'documents.scope': 'own',
-  'quotes.create': false,
-  'orders.create': false,
-  'jobs.assign': false,
-  'quality.approve': false,
-  'maintenance.schedule': false,
-  'reports.access': false,
   'settings.access': false,
+  'reports.access': false,
 };
 
 const permissions = (overrides: Partial<GroupPermissionSet>): GroupPermissionSet => ({
@@ -131,35 +126,35 @@ const permissions = (overrides: Partial<GroupPermissionSet>): GroupPermissionSet
 
 export const mockGroups: Group[] = [
   // ── Sell (ARCH 00 §4.3) ──
-  { id: 'g-sell-sales', module: 'sell', name: 'Sales', description: 'Quotes and order pipeline', isDefault: true, members: ['4', '8', '2'], permissions: permissions({ 'documents.scope': 'all', 'crm.access': true, 'pipeline.visibility': 'all', 'quotes.create': true, 'orders.create': true, 'reports.access': true }) },
-  { id: 'g-sell-estimating', module: 'sell', name: 'Estimating', description: 'Cost estimation and pricing', isDefault: true, members: ['1', '3'], permissions: permissions({ 'quotes.create': true, 'pricing.edit': true, 'crm.access': true, 'pipeline.visibility': 'own', 'reports.access': true }) },
-  { id: 'g-sell-cs', module: 'sell', name: 'Customer Service', description: 'Order updates and customer contact', isDefault: true, members: ['6'], permissions: permissions({ 'documents.scope': 'all', 'crm.access': true, 'pipeline.visibility': 'all', 'orders.create': true }) },
+  { id: 'g-sell-sales', module: 'sell', name: 'Sales', description: 'Account managers, sales reps, business development', isDefault: true, members: ['4', '8', '2'], permissions: permissions({ 'documents.scope': 'all', 'crm.access': true, 'pipeline.visibility': 'all', 'quotes.create': true }) },
+  { id: 'g-sell-estimating', module: 'sell', name: 'Estimating', description: 'Estimators, cost engineers, technical sales support', isDefault: true, members: ['1', '3'], permissions: permissions({ 'crm.access': true, 'pipeline.visibility': 'own', 'quotes.create': true, 'pricing.edit': true }) },
+  { id: 'g-sell-cs', module: 'sell', name: 'Customer Service', description: 'Order entry, customer queries, quote follow-up', isDefault: true, members: ['6'], permissions: permissions({ 'documents.scope': 'all', 'crm.access': true, 'pipeline.visibility': 'all' }) },
 
   // ── Plan (ARCH 00 §4.4) ──
-  { id: 'g-plan-scheduling', module: 'plan', name: 'Scheduling', description: 'Capacity and sequencing', isDefault: true, members: ['2', '3'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': true, 'budget.visibility': true, 'jobs.assign': true, 'reports.access': true }) },
-  { id: 'g-plan-engineering', module: 'plan', name: 'Engineering', description: 'Routing and process planning', isDefault: true, members: ['1', '7'], permissions: permissions({ 'documents.scope': 'all', 'bom.edit': true, 'jobs.assign': true, 'intelligence_hub.access': true }) },
-  { id: 'g-plan-costing', module: 'plan', name: 'Costing', description: 'Cost rollups and margin checks', isDefault: true, members: ['3'], permissions: permissions({ 'budget.visibility': true, 'reports.access': true }) },
+  { id: 'g-plan-scheduling', module: 'plan', name: 'Scheduling', description: 'Production schedulers, planners, workshop coordinators', isDefault: true, members: ['2', '3'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': true, 'budget.visibility': true, 'intelligence_hub.access': true, 'reports.access': true }) },
+  { id: 'g-plan-engineering', module: 'plan', name: 'Engineering', description: 'Design engineers, drafters, BOM maintainers', isDefault: true, members: ['1', '7'], permissions: permissions({ 'documents.scope': 'all', 'bom.edit': true, 'intelligence_hub.access': true }) },
+  { id: 'g-plan-costing', module: 'plan', name: 'Costing', description: 'Cost analysts, estimators reviewing job budgets', isDefault: true, members: ['3'], permissions: permissions({ 'documents.scope': 'all', 'budget.visibility': true, 'reports.access': true }) },
 
   // ── Make (ARCH 00 §4.5) ──
-  { id: 'g-make-production', module: 'make', name: 'Production', description: 'Daily production execution', isDefault: true, members: ['1', '2', '6', '7'], permissions: permissions({ 'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own', 'jobs.assign': true, 'orders.create': true }) },
-  { id: 'g-make-quality', module: 'make', name: 'Quality', description: 'Inspection and non-conformance', isDefault: true, members: ['1', '3'], permissions: permissions({ 'qc.record': true, 'quality.approve': true, 'reports.access': true }) },
-  { id: 'g-make-maintenance', module: 'make', name: 'Maintenance', description: 'Machine upkeep and service', isDefault: true, members: ['7'], permissions: permissions({ 'maintenance.schedule': true, 'andon.manage': true }) },
-  { id: 'g-make-office', module: 'make', name: 'Office', description: 'Admin support for make workflows', isDefault: true, members: ['5', '2'], permissions: permissions({ 'reports.access': true, 'settings.access': true }) },
+  { id: 'g-make-production', module: 'make', name: 'Production', description: 'Operators, welders, machinists, assemblers', isDefault: true, members: ['1', '2', '6', '7'], permissions: permissions({ 'workorders.scope': 'own', 'timers.scope': 'own', 'qc.record': true, 'scrap.report': true }) },
+  { id: 'g-make-quality', module: 'make', name: 'Quality', description: 'Quality inspectors, QA coordinators, NCR managers', isDefault: true, members: ['1', '3'], permissions: permissions({ 'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own', 'qc.record': true, 'scrap.report': true, 'andon.manage': true, 'reports.access': true }) },
+  { id: 'g-make-maintenance', module: 'make', name: 'Maintenance', description: 'Maintenance technicians, equipment managers', isDefault: true, members: ['7'], permissions: permissions({ 'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own', 'andon.manage': true, 'maintenance.manage': true }) },
+  { id: 'g-make-office', module: 'make', name: 'Office', description: 'Production managers, supervisors with read access', isDefault: true, members: ['5', '2'], permissions: permissions({ 'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'all', 'reports.access': true }) },
 
   // ── Ship (ARCH 00 §4.6) ──
-  { id: 'g-ship-warehouse', module: 'ship', name: 'Warehouse', description: 'Pick, pack, and stock flow', isDefault: true, members: ['6', '5'], permissions: permissions({ 'documents.scope': 'all', 'orders.scope': 'all', 'manifests.create': true, 'orders.create': true }) },
-  { id: 'g-ship-shipping', module: 'ship', name: 'Shipping', description: 'Carrier booking and dispatch', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'orders.scope': 'all', 'carrier.config': true, 'orders.create': true, 'reports.access': true }) },
-  { id: 'g-ship-cs', module: 'ship', name: 'Customer Service', description: 'Delivery updates and support', isDefault: true, members: ['1'], permissions: permissions({ 'documents.scope': 'all', 'orders.scope': 'own' }) },
+  { id: 'g-ship-warehouse', module: 'ship', name: 'Warehouse', description: 'Pick/pack staff, forklift operators, storemen', isDefault: true, members: ['6', '5'], permissions: permissions({ 'orders.scope': 'own' }) },
+  { id: 'g-ship-shipping', module: 'ship', name: 'Shipping', description: 'Shipping coordinators, dispatch, logistics planners', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'orders.scope': 'all', 'manifests.create': true }) },
+  { id: 'g-ship-cs', module: 'ship', name: 'Customer Service', description: 'Delivery queries, tracking updates, return requests', isDefault: true, members: ['1'], permissions: permissions({ 'documents.scope': 'all', 'orders.scope': 'all' }) },
 
-  // ── Book ──
-  { id: 'g-book-ar', module: 'book', name: 'Accounts Receivable', description: 'Invoices and receipts', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'invoices.create': true, 'reports.access': true }) },
-  { id: 'g-book-ap', module: 'book', name: 'Accounts Payable', description: 'Bills and payments', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'po.approve': true, 'reports.access': true }) },
-  { id: 'g-book-expenses', module: 'book', name: 'Expenses', description: 'Expense approvals and coding', isDefault: true, members: ['1', '3', '5'], permissions: permissions({ 'reports.access': true }) },
+  // ── Book (ARCH 00 §4.7) ──
+  { id: 'g-book-ar', module: 'book', name: 'Accounts Receivable', description: 'AR clerks, invoice processors, credit controllers', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'invoices.create': true, 'expenses.scope': 'own' }) },
+  { id: 'g-book-ap', module: 'book', name: 'Accounts Payable', description: 'AP clerks, bill matchers, payment processors', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'expenses.scope': 'all', 'po.approve': true }) },
+  { id: 'g-book-expenses', module: 'book', name: 'Expenses', description: 'All staff who submit expense claims', isDefault: true, members: ['1', '3', '5'], permissions: permissions({ 'expenses.scope': 'own' }) },
 
-  // ── Buy ──
-  { id: 'g-buy-purchasing', module: 'buy', name: 'Purchasing', description: 'Supplier ordering and terms', isDefault: true, members: ['5', '2'], permissions: permissions({ 'documents.scope': 'all', 'po.create': true, 'vendors.manage': true, 'goods_receipts.access': true, 'reports.access': true }) },
-  { id: 'g-buy-receiving', module: 'buy', name: 'Receiving', description: 'Goods receipt and checks', isDefault: true, members: ['6'], permissions: permissions({ 'goods_receipts.access': true }) },
-  { id: 'g-buy-accounts', module: 'buy', name: 'Accounts', description: 'Vendor bills and reconciliation', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'po.approve': true, 'reports.access': true }) },
+  // ── Buy (ARCH 00 §4.8) ──
+  { id: 'g-buy-purchasing', module: 'buy', name: 'Purchasing', description: 'Buyers, procurement officers, purchasing managers', isDefault: true, members: ['5', '2'], permissions: permissions({ 'documents.scope': 'all', 'requisitions.scope': 'all', 'po.create': true, 'vendors.manage': true, 'goods_receipts.access': true }) },
+  { id: 'g-buy-receiving', module: 'buy', name: 'Receiving', description: 'Warehouse/receiving staff who check deliveries against POs', isDefault: true, members: ['6'], permissions: permissions({ 'requisitions.scope': 'own', 'goods_receipts.access': true }) },
+  { id: 'g-buy-accounts', module: 'buy', name: 'Accounts', description: 'AP staff involved in procurement billing, three-way matching', isDefault: true, members: ['5'], permissions: permissions({ 'documents.scope': 'all', 'requisitions.scope': 'all', 'po.approve': true, 'reports.access': true }) },
 
   // ── Control (ARCH 00 §4.9) ──
   {
@@ -175,22 +170,20 @@ export const mockGroups: Group[] = [
       'boms.manage': true,
       'locations.manage': true,
       'machines.manage': true,
-      'people.view': false,
+      'people.view': true,
       'people.manage': false,
       'workflow.manage': false,
-      'settings.access': false,
-      'reports.access': true,
     }),
   },
   {
     id: 'g-control-people-admin',
     module: 'control',
     name: 'People Admin',
-    description: 'Office managers who onboard users',
+    description: 'Office managers who onboard users and manage group assignments',
     isDefault: true,
     members: ['4'],
     permissions: permissions({
-      'documents.scope': 'own',
+      'documents.scope': 'all',
       'products.manage': false,
       'boms.manage': false,
       'locations.manage': false,
@@ -198,8 +191,6 @@ export const mockGroups: Group[] = [
       'people.view': true,
       'people.manage': true,
       'workflow.manage': false,
-      'settings.access': false,
-      'reports.access': false,
     }),
   },
 ];
@@ -220,7 +211,6 @@ export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> =
     { key: 'budget.visibility', label: 'Budget visibility', section: 'actions', type: 'boolean' },
     { key: 'bom.edit', label: 'Edit BOMs', section: 'actions', type: 'boolean' },
     { key: 'intelligence_hub.access', label: 'Intelligence hub', section: 'actions', type: 'boolean' },
-    { key: 'jobs.assign', label: 'Assign jobs', section: 'actions', type: 'boolean' },
     { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
     { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
   ],
@@ -230,9 +220,7 @@ export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> =
     { key: 'qc.record', label: 'Record quality checks', section: 'actions', type: 'boolean' },
     { key: 'scrap.report', label: 'Report scrap', section: 'actions', type: 'boolean' },
     { key: 'andon.manage', label: 'Manage andon', section: 'actions', type: 'boolean' },
-    { key: 'jobs.assign', label: 'Assign jobs', section: 'actions', type: 'boolean' },
-    { key: 'quality.approve', label: 'Approve quality', section: 'actions', type: 'boolean' },
-    { key: 'maintenance.schedule', label: 'Schedule maintenance', section: 'actions', type: 'boolean' },
+    { key: 'maintenance.manage', label: 'Manage maintenance', section: 'actions', type: 'boolean' },
     { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
     { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
   ],
@@ -241,7 +229,6 @@ export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> =
     { key: 'manifests.create', label: 'Create manifests', section: 'actions', type: 'boolean' },
     { key: 'carrier.config', label: 'Configure carriers', section: 'actions', type: 'boolean' },
     { key: 'returns.approve', label: 'Approve returns', section: 'actions', type: 'boolean' },
-    { key: 'orders.create', label: 'Create orders', section: 'actions', type: 'boolean' },
     { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
     { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
   ],

@@ -124,6 +124,7 @@ export function ModuleDashboard({
                   "data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:font-medium data-[state=active]:shadow-none",
                   "after:absolute after:right-0 after:bottom-0 after:left-0 after:h-1 after:origin-center after:scale-x-0 after:bg-[var(--mw-yellow-400)] after:transition-transform after:duration-[var(--duration-medium1)] after:ease-[var(--ease-standard)]",
                   "data-[state=active]:after:scale-x-100",
+                  "[&>[data-slot=tab-indicator]]:hidden",
                 )}
               >
                 {Icon ? (

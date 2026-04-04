@@ -218,13 +218,13 @@ export function WidgetDrawer({
           <TabsList className="mx-4 mt-3 w-auto justify-start gap-4 bg-transparent p-0">
             <TabsTrigger
               value="widgets"
-              className="rounded-none border-b-2 border-transparent px-0 pb-2 text-sm data-[state=active]:border-[var(--mw-yellow-400)] data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              className="rounded-none border-b-2 border-transparent px-0 pb-2 text-sm data-[state=active]:border-[var(--mw-yellow-400)] data-[state=active]:bg-transparent data-[state=active]:shadow-none [&>[data-slot=tab-indicator]]:hidden"
             >
               Widgets
             </TabsTrigger>
             <TabsTrigger
               value="ai-builder"
-              className="rounded-none border-b-2 border-transparent px-0 pb-2 text-sm data-[state=active]:border-[var(--mw-yellow-400)] data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              className="rounded-none border-b-2 border-transparent px-0 pb-2 text-sm data-[state=active]:border-[var(--mw-yellow-400)] data-[state=active]:bg-transparent data-[state=active]:shadow-none [&>[data-slot=tab-indicator]]:hidden"
             >
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
               AI Builder

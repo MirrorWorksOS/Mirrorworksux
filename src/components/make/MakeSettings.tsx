@@ -29,6 +29,7 @@ const makePermissionKeys: PermissionKey[] = [
   { key: 'qc.record', label: 'Record quality checks', description: 'Record and submit quality inspections', type: 'boolean' },
   { key: 'scrap.report', label: 'Report scrap/waste', description: 'Log scrap and waste events', type: 'boolean' },
   { key: 'andon.manage', label: 'Manage andon alerts', description: 'Create and resolve andon alerts', type: 'boolean' },
+  { key: 'maintenance.manage', label: 'Manage maintenance', description: 'Schedule and manage equipment maintenance', type: 'boolean' },
   { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean' },
   { key: 'reports.access', label: 'Reports access', description: 'View analytics and reports', type: 'boolean' },
 ];
@@ -72,7 +73,7 @@ const makeDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'workorders.scope': 'all', 'timers.scope': 'own',
       'qc.record': 'false', 'scrap.report': 'false', 'andon.manage': 'true',
-      'settings.access': 'false', 'reports.access': 'false',
+      'maintenance.manage': 'true', 'settings.access': 'false', 'reports.access': 'false',
     },
   },
   {

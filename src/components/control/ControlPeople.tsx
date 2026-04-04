@@ -65,14 +65,12 @@ export function ControlPeople() {
       </div>
 
       <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
-        <TabsList className="h-auto w-full justify-start rounded-[var(--shape-lg)] bg-card p-1">
-          <TabsTrigger value="users" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[var(--neutral-500)]">
+        <TabsList className="h-auto w-fit justify-start gap-1 rounded-xl p-1">
+          <TabsTrigger value="users" className="px-5">
             Users
-            {activeTab === 'users' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" /> : null}
           </TabsTrigger>
-          <TabsTrigger value="groups" className="relative h-10 rounded-xl px-5 data-[state=active]:bg-[var(--accent)] data-[state=inactive]:text-[var(--neutral-500)]">
+          <TabsTrigger value="groups" className="px-5">
             Groups
-            {activeTab === 'groups' ? <span className="absolute -bottom-1 left-1/2 h-[3px] w-9 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" /> : null}
           </TabsTrigger>
         </TabsList>
 

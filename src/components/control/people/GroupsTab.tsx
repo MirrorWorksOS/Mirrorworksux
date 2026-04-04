@@ -43,17 +43,14 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
   return (
     <div className="space-y-6">
       <Tabs value={activeModule} onValueChange={value => setActiveModule(value as ModuleKey)}>
-        <TabsList className="h-auto rounded-[var(--shape-lg)] bg-card p-1 shadow-none">
+        <TabsList className="h-auto w-fit gap-1 rounded-xl p-1">
           {moduleOrder.map(moduleKey => (
             <TabsTrigger
               key={moduleKey}
               value={moduleKey}
-              className="relative h-10 rounded-xl data-[state=active]:bg-[var(--accent)] data-[state=active]:text-foreground"
+              className="px-4"
             >
               {moduleLabels[moduleKey]} ({grouped[moduleKey].length})
-              {activeModule === moduleKey ? (
-                <span className="absolute -bottom-1 left-1/2 h-[3px] w-10 -translate-x-1/2 rounded-full bg-[var(--mw-yellow-400)]" />
-              ) : null}
             </TabsTrigger>
           ))}
         </TabsList>

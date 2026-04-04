@@ -12,17 +12,14 @@ export type UserStatus = 'active' | 'invited' | 'deactivated';
 export type ScopeValue = 'own' | 'all';
 
 export type PermissionKey =
+  // Common keys (ARCH 00 §4.2) — present in every module
   | 'documents.scope'
-  | 'quotes.create'
-  | 'orders.create'
-  | 'jobs.assign'
-  | 'quality.approve'
-  | 'maintenance.schedule'
-  | 'reports.access'
   | 'settings.access'
+  | 'reports.access'
   // Sell (ARCH 00 §4.3)
   | 'crm.access'
   | 'pipeline.visibility'
+  | 'quotes.create'
   | 'invoices.create'
   | 'pricing.edit'
   // Plan (ARCH 00 §4.4)
@@ -36,21 +33,22 @@ export type PermissionKey =
   | 'qc.record'
   | 'scrap.report'
   | 'andon.manage'
+  | 'maintenance.manage'
   // Ship (ARCH 00 §4.6)
   | 'orders.scope'
   | 'manifests.create'
   | 'carrier.config'
   | 'returns.approve'
-  // Book-specific (ARCH 00 §4.7)
+  // Book (ARCH 00 §4.7)
   | 'expenses.scope'
   | 'po.approve'
   | 'xero.access'
-  // Buy-specific (ARCH 00 §4.8)
+  // Buy (ARCH 00 §4.8)
   | 'requisitions.scope'
   | 'po.create'
   | 'vendors.manage'
   | 'goods_receipts.access'
-  // Control-specific (ARCH 00 §4.9)
+  // Control (ARCH 00 §4.9)
   | 'products.manage'
   | 'boms.manage'
   | 'locations.manage'
@@ -76,40 +74,43 @@ export interface User {
 }
 
 export interface GroupPermissionSet {
+  // Common keys (ARCH 00 §4.2) — required on every group
   'documents.scope': ScopeValue;
-  'quotes.create': boolean;
-  'orders.create': boolean;
-  'jobs.assign': boolean;
-  'quality.approve': boolean;
-  'maintenance.schedule': boolean;
-  'reports.access': boolean;
   'settings.access': boolean;
-  // Sell / Plan / Make / Ship — optional on groups; see ARCH 00 §4.3–§4.6
+  'reports.access': boolean;
+  // Sell (ARCH 00 §4.3) — optional, set only on Sell groups
   'crm.access'?: boolean;
   'pipeline.visibility'?: ScopeValue;
+  'quotes.create'?: boolean;
   'invoices.create'?: boolean;
   'pricing.edit'?: boolean;
+  // Plan (ARCH 00 §4.4) — optional, set only on Plan groups
   'schedule.edit'?: boolean;
   'budget.visibility'?: boolean;
   'bom.edit'?: boolean;
   'intelligence_hub.access'?: boolean;
+  // Make (ARCH 00 §4.5) — optional, set only on Make groups
   'workorders.scope'?: ScopeValue;
   'timers.scope'?: ScopeValue;
   'qc.record'?: boolean;
   'scrap.report'?: boolean;
   'andon.manage'?: boolean;
+  'maintenance.manage'?: boolean;
+  // Ship (ARCH 00 §4.6) — optional, set only on Ship groups
   'orders.scope'?: ScopeValue;
   'manifests.create'?: boolean;
   'carrier.config'?: boolean;
   'returns.approve'?: boolean;
-  // Book / Buy / Control — optional
+  // Book (ARCH 00 §4.7) — optional, set only on Book groups
   'expenses.scope'?: ScopeValue;
   'po.approve'?: boolean;
   'xero.access'?: boolean;
+  // Buy (ARCH 00 §4.8) — optional, set only on Buy groups
   'requisitions.scope'?: ScopeValue;
   'po.create'?: boolean;
   'vendors.manage'?: boolean;
   'goods_receipts.access'?: boolean;
+  // Control (ARCH 00 §4.9) — optional, set only on Control groups
   'products.manage'?: boolean;
   'boms.manage'?: boolean;
   'locations.manage'?: boolean;

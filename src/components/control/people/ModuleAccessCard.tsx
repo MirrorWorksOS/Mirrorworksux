@@ -33,13 +33,8 @@ const SCOPE_KEYS = new Set<string>([
 
 const defaultResolved: GroupPermissionSet = {
   'documents.scope': 'own',
-  'quotes.create': false,
-  'orders.create': false,
-  'jobs.assign': false,
-  'quality.approve': false,
-  'maintenance.schedule': false,
-  'reports.access': false,
   'settings.access': false,
+  'reports.access': false,
 };
 
 function resolvePermissions(groupRecords: Group[]) {
