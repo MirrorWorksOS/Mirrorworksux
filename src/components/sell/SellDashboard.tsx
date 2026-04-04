@@ -28,6 +28,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { IconWell } from '@/components/shared/icons/IconWell';
@@ -91,6 +92,11 @@ export function SellDashboard() {
     >
       {activeTab === 'overview' && (
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* AI Insight Feed */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="sell" />
+      </motion.div>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard

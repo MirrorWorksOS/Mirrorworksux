@@ -1,117 +1,182 @@
 /**
- * AIFeed — Shared AI Insight Feed component for all module dashboards.
+ * AIFeed — Personalised AI insight feed for module dashboards.
  *
- * Displays a vertical feed of personalised AI insight cards below the AI search bar.
- * Collapsible: shows 3 by default, "Show more" to expand.
+ * Shows a scrollable feed of contextual AI insights, signals, and
+ * recommendations relevant to the given module. Each card uses the
+ * AIInsightCard visual pattern (Sparkles icon, no yellow background).
  *
  * Usage:
  *   <AIFeed module="sell" />
  */
 
-import React, { useState, useCallback } from 'react';
-import { Sparkles, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/components/ui/utils';
-import { AIFeedCard } from './AIFeedCard';
-import { getInsightsForModule } from './ai-feed-mock-data';
-import type { AIFeedModule } from './ai-feed-types';
+import React, { useState } from "react";
+import { Sparkles, TrendingUp, AlertTriangle, Users, DollarSign, Package, Truck, Clock, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/components/ui/utils";
+import { motion, AnimatePresence } from "motion/react";
 
-const DEFAULT_VISIBLE = 3;
+type AIFeedModule = "sell" | "plan" | "make" | "ship" | "book" | "buy" | "control" | "all";
 
-interface AIFeedProps {
-  module: AIFeedModule;
-  className?: string;
+interface FeedItem {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+  tag?: string;
+  tagColor?: string;
+  timestamp: string;
 }
 
-export function AIFeed({ module, className }: AIFeedProps) {
-  const [insights, setInsights] = useState(() => getInsightsForModule(module));
+const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
+  sell: [
+    {
+      id: "sell-1",
+      icon: <TrendingUp className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Pipeline velocity increasing",
+      body: "Opportunities are moving through Proposal to Sales Order 18% faster this month. Three quotes are ready for follow-up within 48 hours.",
+      tag: "Pipeline",
+      tagColor: "bg-[var(--mw-yellow-400)]/15 text-foreground",
+      timestamp: "12 min ago",
+    },
+    {
+      id: "sell-2",
+      icon: <DollarSign className="h-4 w-4 text-[var(--mw-success)]" />,
+      title: "Invoice collection opportunity",
+      body: "Two invoices totalling $152,500 are approaching 30-day terms. Historical data suggests a reminder email today increases on-time payment by 34%.",
+      tag: "Revenue",
+      tagColor: "bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
+      timestamp: "38 min ago",
+    },
+    {
+      id: "sell-3",
+      icon: <AlertTriangle className="h-4 w-4 text-[var(--mw-error)]" />,
+      title: "At-risk opportunity detected",
+      body: "OPP-0004 (Sydney Rail Corp, $67,000) has had no activity for 12 days. Similar opportunities that stalled at this stage had a 42% lower close rate.",
+      tag: "Risk",
+      tagColor: "bg-[var(--mw-error)]/15 text-[var(--mw-error)]",
+      timestamp: "1h ago",
+    },
+    {
+      id: "sell-4",
+      icon: <Users className="h-4 w-4 text-[var(--mw-info)]" />,
+      title: "Customer re-engagement signal",
+      body: "Pacific Fab viewed your last quote 3 times this week. Consider scheduling a call to discuss scope adjustments before the expiry date.",
+      tag: "Signal",
+      tagColor: "bg-[var(--mw-info)]/15 text-[var(--mw-info)]",
+      timestamp: "2h ago",
+    },
+  ],
+  plan: [
+    {
+      id: "plan-1",
+      icon: <Clock className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Capacity bottleneck forecast",
+      body: "Laser cutting is projected to exceed 95% utilisation next week. Consider subcontracting or shifting 2 jobs to the following week.",
+      tag: "Capacity",
+      timestamp: "20 min ago",
+    },
+  ],
+  make: [
+    {
+      id: "make-1",
+      icon: <Package className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Quality trend detected",
+      body: "First-pass yield on powder coat line has dropped 4% over the last 5 days. Review recent calibration logs.",
+      tag: "Quality",
+      timestamp: "45 min ago",
+    },
+  ],
+  ship: [
+    {
+      id: "ship-1",
+      icon: <Truck className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Carrier delay pattern",
+      body: "StarTrack has been 1.2 days late on average this month. Consider switching to Allied Express for SLA-critical deliveries.",
+      tag: "Logistics",
+      timestamp: "30 min ago",
+    },
+  ],
+  book: [],
+  buy: [],
+  control: [],
+  all: [],
+};
+
+export interface AIFeedProps {
+  module: AIFeedModule;
+  className?: string;
+  /** Maximum number of items to show initially before "Show more" */
+  initialCount?: number;
+}
+
+export function AIFeed({ module, className, initialCount = 3 }: AIFeedProps) {
+  const items = FEED_DATA[module] ?? [];
   const [expanded, setExpanded] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const visibleInsights = expanded ? insights : insights.slice(0, DEFAULT_VISIBLE);
-  const hasMore = insights.length > DEFAULT_VISIBLE;
-  const hiddenCount = insights.length - DEFAULT_VISIBLE;
+  if (items.length === 0) return null;
 
-  const handleDismiss = useCallback((id: string) => {
-    setInsights((prev) => prev.filter((i) => i.id !== id));
-  }, []);
-
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    // Simulate refresh delay
-    await new Promise((r) => setTimeout(r, 1000));
-    setInsights(getInsightsForModule(module));
-    setRefreshing(false);
-  }, [module]);
+  const visible = expanded ? items : items.slice(0, initialCount);
+  const hasMore = items.length > initialCount;
 
   return (
-    <div className={cn('space-y-3', className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" strokeWidth={1.5} />
-          <span className="text-sm font-medium text-foreground">AI Insights</span>
-          <Badge
-            variant="secondary"
-            className="border-0 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] px-1.5 py-0"
-          >
-            {insights.length}
-          </Badge>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="h-8 gap-1 text-xs text-[var(--neutral-500)] hover:text-foreground"
-        >
-          <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />
-          {refreshing ? 'Refreshing...' : 'Refresh'}
-        </Button>
+    <div className={cn("space-y-3", className)}>
+      {/* Feed header */}
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-[var(--mw-yellow-400)]" />
+        <h3 className="text-sm font-medium text-foreground">AI Insights</h3>
+        <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] text-[10px] px-1.5 py-0 dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
+          {items.length} new
+        </Badge>
       </div>
 
-      {/* Feed */}
-      <div className="space-y-2">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {visibleInsights.map((insight, i) => (
-            <AIFeedCard
-              key={insight.id}
-              insight={insight}
-              onDismiss={handleDismiss}
-              index={i}
-            />
-          ))}
-        </AnimatePresence>
-      </div>
+      {/* Feed items */}
+      <AnimatePresence initial={false}>
+        {visible.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="flex gap-3 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-4 dark:border-[var(--neutral-700)]"
+          >
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+              {item.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {item.title}
+                </span>
+                {item.tag && (
+                  <Badge className={cn("border-0 text-[10px] px-1.5 py-0 rounded-full", item.tagColor ?? "bg-[var(--neutral-100)] text-[var(--neutral-600)]")}>
+                    {item.tag}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
+                {item.body}
+              </p>
+              <span className="mt-1.5 block text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
+                {item.timestamp}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       {/* Show more / less toggle */}
       {hasMore && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15 }}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-full text-xs text-[var(--neutral-500)]"
+          onClick={() => setExpanded((e) => !e)}
         >
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpanded(!expanded)}
-            className="w-full h-8 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 gap-1"
-          >
-            {expanded ? (
-              <>
-                Show less
-                <ChevronUp className="h-3.5 w-3.5" />
-              </>
-            ) : (
-              <>
-                Show {hiddenCount} more
-                <ChevronDown className="h-3.5 w-3.5" />
-              </>
-            )}
-          </Button>
-        </motion.div>
+          <ChevronDown className={cn("mr-1 h-3.5 w-3.5 transition-transform", expanded && "rotate-180")} />
+          {expanded ? "Show less" : `Show ${items.length - initialCount} more`}
+        </Button>
       )}
     </div>
   );

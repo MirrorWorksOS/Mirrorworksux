@@ -444,7 +444,7 @@ export const jobProfitabilityData = [
 
 export const sellApprovalQueue = [
   { type: 'Quote', id: 'QT-2026-0142', amount: 12500, customer: 'TechCorp Industries' },
-  { type: 'Order', id: 'SO-2026-0089', amount: 8900, customer: 'Pacific Fab' },
+  { type: 'Sales Order', id: 'SO-2026-0089', amount: 8900, customer: 'Pacific Fab' },
   { type: 'Quote', id: 'QT-2026-0143', amount: 3500, customer: 'Hunter Steel' },
 ];
 

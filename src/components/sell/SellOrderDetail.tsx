@@ -247,11 +247,11 @@ export function SellOrderDetail() {
         <Button variant="outline" className="border-[var(--border)]" asChild>
           <Link to="/sell/orders">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to orders
+            Back to sales orders
           </Link>
         </Button>
         <p className="text-sm text-muted-foreground">
-          Order not found. Open one from the orders list.
+          Sales order not found. Open one from the sales orders list.
         </p>
       </div>
     );
@@ -314,7 +314,7 @@ export function SellOrderDetail() {
                         to={`/sell/opportunities/${order.opportunityId}`}
                         className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
                       >
-                        OPP-{order.opportunityId.padStart(4, "0")}
+                        {order.opportunityId.toUpperCase()}
                       </Link>
                     </div>
                   </div>
@@ -625,7 +625,7 @@ export function SellOrderDetail() {
     <JobWorkspaceLayout
       breadcrumbs={[
         { label: "Sell", href: "/sell" },
-        { label: "Orders", href: "/sell/orders" },
+        { label: "Sales Orders", href: "/sell/orders" },
         { label: order.soNumber },
       ]}
       title={order.title}
@@ -643,7 +643,7 @@ export function SellOrderDetail() {
           </Badge>
           <Badge variant="outline" className="rounded-full border-[var(--border)]">
             <Link to={`/sell/opportunities/${order.opportunityId}`} className="hover:underline">
-              OPP-{order.opportunityId.padStart(4, "0")}
+              Opportunity
             </Link>
           </Badge>
         </>
