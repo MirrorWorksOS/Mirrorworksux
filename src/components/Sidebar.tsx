@@ -50,12 +50,19 @@ interface SubMenuItem {
   path: string;
 }
 
+interface SubMenuGroup {
+  heading: string;
+  items: SubMenuItem[];
+}
+
 interface MenuItem {
   label: string;
   icon?: LucideIcon;
   animatedIcon?: React.ComponentType<{ size?: number; animateOnHover?: boolean; className?: string }>;
   path?: string;
   subItems?: SubMenuItem[];
+  /** Grouped sub-items with collapsible section headings */
+  groupedSubItems?: SubMenuGroup[];
   section?: string; // section heading rendered before this item
 }
 
@@ -165,22 +172,47 @@ const menuConfig: MenuItem[] = [
     label: 'Control',
     animatedIcon: MODULE_ICONS.control,
     section: 'Settings',
-    subItems: [
-      { label: 'Dashboard', path: '/control' },
-      { label: 'MirrorWorks Bridge', path: '/control/mirrorworks-bridge' },
-      { label: 'Factory designer', path: '/control/factory-layout' },
-      { label: 'Process builder', path: '/control/process-builder' },
-      { label: 'Locations', path: '/control/locations' },
-      { label: 'Machines', path: '/control/machines' },
-      { label: 'Inventory', path: '/control/inventory' },
-      { label: 'Purchase', path: '/control/purchase' },
-      { label: 'People', path: '/control/people' },
-      { label: 'Products', path: '/control/products' },
-      { label: 'BOMs', path: '/control/boms' },
-      { label: 'Role designer', path: '/control/role-designer' },
-      { label: 'Workflow designer', path: '/control/workflow-designer' },
-      { label: 'Gamification', path: '/control/gamification' },
-      { label: 'Empty states', path: '/control/empty-states' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/control' },
+        ],
+      },
+      {
+        heading: 'Factory',
+        items: [
+          { label: 'Factory Designer', path: '/control/factory-layout' },
+          { label: 'Process Builder', path: '/control/process-builder' },
+          { label: 'Machines', path: '/control/machines' },
+          { label: 'Locations', path: '/control/locations' },
+        ],
+      },
+      {
+        heading: 'Inventory & Products',
+        items: [
+          { label: 'Inventory', path: '/control/inventory' },
+          { label: 'Products', path: '/control/products' },
+          { label: 'BOMs', path: '/control/boms' },
+          { label: 'Purchase', path: '/control/purchase' },
+        ],
+      },
+      {
+        heading: 'People & Roles',
+        items: [
+          { label: 'People', path: '/control/people' },
+          { label: 'Role Designer', path: '/control/role-designer' },
+          { label: 'Gamification', path: '/control/gamification' },
+        ],
+      },
+      {
+        heading: 'Configuration',
+        items: [
+          { label: 'Workflow Designer', path: '/control/workflow-designer' },
+          { label: 'MirrorWorks Bridge', path: '/control/mirrorworks-bridge' },
+          { label: 'Settings', path: '/control/settings' },
+        ],
+      },
     ],
   },
 ];
@@ -205,8 +237,24 @@ function getActiveModule(pathname: string): string | null {
         }
       }
     }
+    if (item.groupedSubItems) {
+      for (const group of item.groupedSubItems) {
+        for (const sub of group.items) {
+          if (pathname === sub.path || pathname.startsWith(sub.path + '/')) {
+            return item.label;
+          }
+        }
+      }
+    }
   }
   return null;
+}
+
+/** Flatten grouped sub-items for lookup convenience */
+function getAllSubItems(item: MenuItem): SubMenuItem[] {
+  if (item.subItems) return item.subItems;
+  if (item.groupedSubItems) return item.groupedSubItems.flatMap(g => g.items);
+  return [];
 }
 
 // ---------------------------------------------------------------------------
@@ -604,7 +652,7 @@ export function Sidebar() {
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5" style={{ scrollbarWidth: 'none' }}>
         {menuConfig.map((item) => {
-          const hasSubItems = item.subItems && item.subItems.length > 0;
+          const hasSubItems = (item.subItems && item.subItems.length > 0) || (item.groupedSubItems && item.groupedSubItems.length > 0);
           const isExpanded = expandedModule === item.label;
           const isActive = item.path ? isActiveRoute(item.path) : isExpanded;
 
@@ -621,15 +669,16 @@ export function Sidebar() {
 
               <MenuItemRow
                 item={item}
-                hasSubItems={hasSubItems}
+                hasSubItems={!!hasSubItems}
                 isActive={isActive}
                 isExpanded={isExpanded}
                 onToggle={() => hasSubItems && toggleModule(item.label)}
               >
 
-                {hasSubItems && (
+                {/* Flat sub-items (all modules except Control) */}
+                {item.subItems && item.subItems.length > 0 && (
                   <CollapsibleSubMenu isOpen={isExpanded}>
-                    {item.subItems!.map((subItem) => {
+                    {item.subItems.map((subItem) => {
                       const isSubActive = isActiveRoute(subItem.path);
                       const isSubHovered = hoveredSubPath === subItem.path;
                       return (
@@ -662,6 +711,56 @@ export function Sidebar() {
                         </Link>
                       );
                     })}
+                  </CollapsibleSubMenu>
+                )}
+
+                {/* Grouped sub-items (Control module) */}
+                {item.groupedSubItems && item.groupedSubItems.length > 0 && (
+                  <CollapsibleSubMenu isOpen={isExpanded}>
+                    {item.groupedSubItems.map((group) => (
+                      <div key={group.heading || '_dashboard'}>
+                        {group.heading && (
+                          <div className="px-4 pt-3 pb-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--neutral-500)]">
+                              {group.heading}
+                            </span>
+                          </div>
+                        )}
+                        {group.items.map((subItem) => {
+                          const isSubActive = isActiveRoute(subItem.path);
+                          const isSubHovered = hoveredSubPath === subItem.path;
+                          return (
+                            <Link key={subItem.path} to={subItem.path}>
+                              <div
+                                onPointerMove={() => handleSubItemPointerMove(subItem.path)}
+                                onPointerLeave={handleSubItemPointerLeave}
+                                className={cn(
+                                  'relative h-10 flex items-center px-4 rounded-full',
+                                  'transition-[background-color,color] duration-200 ease-[cubic-bezier(0,0,0,1)]',
+                                  isSubActive
+                                    ? 'bg-[var(--mw-mirage)] text-white'
+                                    : 'bg-transparent text-foreground'
+                                )}
+                              >
+                                {!isSubActive && (
+                                  <span
+                                    className={cn(
+                                      'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
+                                      isSubHovered
+                                        ? 'opacity-100 -inset-y-[2px] duration-200 ease-[cubic-bezier(0.3,0,1,1)]'
+                                        : 'opacity-0 inset-y-0 duration-[550ms] ease-[cubic-bezier(0,0,0,1)]'
+                                    )}
+                                  />
+                                )}
+                                <span className="relative text-sm">
+                                  {subItem.label}
+                                </span>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </CollapsibleSubMenu>
                 )}
               </MenuItemRow>
