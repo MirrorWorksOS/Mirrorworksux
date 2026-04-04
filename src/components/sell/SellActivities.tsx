@@ -1,10 +1,25 @@
 /**
  * Sell Activities - Track sales activities across all opportunities
+ * Redesigned with filtering, date grouping, on-brand checkmarks, and quick-add.
  */
 
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { List, Calendar, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  List,
+  Calendar,
+  Plus,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Phone,
+  Mail,
+  Users,
+  ClipboardList,
+  StickyNote,
+  Check,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
 import {
   addDays,
@@ -12,10 +27,14 @@ import {
   eachDayOfInterval,
   endOfWeek,
   format,
+  isToday,
+  isYesterday,
   parseISO,
   startOfWeek,
   subDays,
   subWeeks,
+  differenceInDays,
+  startOfDay,
 } from 'date-fns';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -24,8 +43,6 @@ import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterBut
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
-import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
-import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -50,7 +67,7 @@ import { cn } from '../ui/utils';
 
 type CalendarGranularity = 'month' | 'week' | 'day';
 
-type ActivityType = 'email' | 'call' | 'meeting' | 'task';
+type ActivityType = 'call' | 'email' | 'meeting' | 'task' | 'note';
 type ActivityStatus = 'completed' | 'scheduled' | 'overdue' | 'in_progress';
 
 interface Activity {
@@ -60,8 +77,10 @@ interface Activity {
   opportunity: string;
   opportunityPath: string;
   assignedTo: string;
+  contactName: string;
   dueDate: string;
   status: ActivityStatus;
+  notes?: string;
 }
 
 const initialActivities: Activity[] = [
@@ -72,8 +91,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0156',
     opportunityPath: '/sell/opportunities/OPP-0156',
     assignedTo: 'Sarah Chen',
+    contactName: 'Tom Williams',
     dueDate: '2026-04-02',
     status: 'scheduled',
+    notes: 'Include updated lead times and shipping terms.',
   },
   {
     id: '2',
@@ -82,8 +103,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0148',
     opportunityPath: '/sell/opportunities/OPP-0148',
     assignedTo: 'James Miller',
+    contactName: 'Karen Rhodes',
     dueDate: '2026-03-31',
     status: 'overdue',
+    notes: 'Key points: bulk discount threshold, payment terms.',
   },
   {
     id: '3',
@@ -92,8 +115,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0162',
     opportunityPath: '/sell/opportunities/OPP-0162',
     assignedTo: 'Sarah Chen',
+    contactName: 'Michael Torres',
     dueDate: '2026-04-05',
     status: 'scheduled',
+    notes: 'Bring sample materials and updated drawings.',
   },
   {
     id: '4',
@@ -102,8 +127,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0159',
     opportunityPath: '/sell/opportunities/OPP-0159',
     assignedTo: 'David Park',
+    contactName: 'Lisa Park',
     dueDate: '2026-04-01',
     status: 'in_progress',
+    notes: 'Need pricing from three suppliers.',
   },
   {
     id: '5',
@@ -112,8 +139,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0144',
     opportunityPath: '/sell/opportunities/OPP-0144',
     assignedTo: 'James Miller',
+    contactName: 'Mark Hunter',
     dueDate: '2026-03-28',
     status: 'completed',
+    notes: 'Amendment signed and filed.',
   },
   {
     id: '6',
@@ -122,6 +151,7 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0165',
     opportunityPath: '/sell/opportunities/OPP-0165',
     assignedTo: 'Sarah Chen',
+    contactName: 'James Bennett',
     dueDate: '2026-04-03',
     status: 'scheduled',
   },
@@ -132,8 +162,10 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0138',
     opportunityPath: '/sell/opportunities/OPP-0138',
     assignedTo: 'David Park',
+    contactName: 'Janet Liu',
     dueDate: '2026-04-07',
     status: 'scheduled',
+    notes: 'Prepare slides with KPI dashboard.',
   },
   {
     id: '8',
@@ -142,27 +174,57 @@ const initialActivities: Activity[] = [
     opportunity: 'OPP-0151',
     opportunityPath: '/sell/opportunities/OPP-0151',
     assignedTo: 'James Miller',
+    contactName: 'Steve Adams',
     dueDate: '2026-03-30',
     status: 'completed',
   },
+  {
+    id: '9',
+    type: 'note',
+    description: 'Competitor pricing intel from industry event',
+    opportunity: 'OPP-0156',
+    opportunityPath: '/sell/opportunities/OPP-0156',
+    assignedTo: 'Sarah Chen',
+    contactName: 'Tom Williams',
+    dueDate: '2026-04-04',
+    status: 'completed',
+    notes: 'Captured competitor base rates for steel fabrication. Prices 8-12% above ours.',
+  },
 ];
 
-const TYPE_BADGE: Record<ActivityType, { label: string; className: string }> = {
-  email: {
-    label: 'Email',
-    className: 'border-0 bg-[var(--mw-info-light)] text-[var(--mw-info)]',
-  },
+/* ------------------------------------------------------------------ */
+/*  Type config: icon + color per activity type                        */
+/* ------------------------------------------------------------------ */
+const TYPE_CONFIG: Record<ActivityType, { label: string; icon: typeof Phone; color: string; bgClass: string }> = {
   call: {
     label: 'Call',
-    className: 'border-0 bg-[var(--mw-success-light)] text-[var(--mw-success)]',
+    icon: Phone,
+    color: 'var(--mw-success)',
+    bgClass: 'bg-[var(--mw-success-light)] text-[var(--mw-success)]',
+  },
+  email: {
+    label: 'Email',
+    icon: Mail,
+    color: 'var(--mw-info)',
+    bgClass: 'bg-[var(--mw-info-light)] text-[var(--mw-info)]',
   },
   meeting: {
     label: 'Meeting',
-    className: 'border-0 bg-[var(--neutral-100)] text-foreground',
+    icon: Users,
+    color: 'var(--mw-warning)',
+    bgClass: 'bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)]',
   },
   task: {
     label: 'Task',
-    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)]',
+    icon: ClipboardList,
+    color: 'var(--neutral-500)',
+    bgClass: 'bg-[var(--neutral-100)] text-foreground',
+  },
+  note: {
+    label: 'Note',
+    icon: StickyNote,
+    color: 'var(--mw-purple, #7C3AED)',
+    bgClass: 'bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300',
   },
 };
 
@@ -172,24 +234,25 @@ const TYPE_CALENDAR_COLOR: Record<ActivityType, string> = {
   call: 'var(--mw-success)',
   meeting: 'var(--mw-warning)',
   task: 'var(--neutral-500)',
+  note: 'var(--mw-purple, #7C3AED)',
 };
 
 const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }> = {
   completed: {
     label: 'Completed',
-    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)]',
+    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-neutral-800 dark:text-neutral-300',
   },
   scheduled: {
     label: 'Scheduled',
-    className: 'border-0 bg-[var(--mw-info-light)] text-[var(--mw-info)]',
+    className: 'border-0 bg-[var(--mw-info-light)] text-[var(--mw-info)] dark:bg-blue-900/20 dark:text-blue-300',
   },
   overdue: {
     label: 'Overdue',
-    className: 'border-0 bg-[var(--mw-error-light)] text-[var(--mw-error)]',
+    className: 'border-0 bg-[var(--mw-error-light)] text-[var(--mw-error)] dark:bg-red-900/20 dark:text-red-300',
   },
   in_progress: {
     label: 'In Progress',
-    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)]',
+    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)] dark:bg-yellow-900/20 dark:text-yellow-300',
   },
 };
 
@@ -306,6 +369,163 @@ function activitiesOnDate(activities: Activity[], day: Date): Activity[] {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Helper: group activities by date label                             */
+/* ------------------------------------------------------------------ */
+function getDateGroup(dateStr: string): string {
+  const date = parseISO(dateStr);
+  const today = startOfDay(new Date());
+  if (isToday(date)) return 'Today';
+  if (isYesterday(date)) return 'Yesterday';
+  const diff = differenceInDays(today, date);
+  if (diff >= -7 && diff <= 7) return 'This Week';
+  return 'Earlier';
+}
+
+const DATE_GROUP_ORDER: Record<string, number> = {
+  Today: 0,
+  Yesterday: 1,
+  'This Week': 2,
+  Earlier: 3,
+};
+
+/* ------------------------------------------------------------------ */
+/*  On-brand Checkmark component                                       */
+/* ------------------------------------------------------------------ */
+function ActivityCheckmark({
+  completed,
+  onToggle,
+}: {
+  completed: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle();
+      }}
+      className={cn(
+        'flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all duration-200 ease-out',
+        completed
+          ? 'bg-yellow-400 dark:bg-yellow-400'
+          : 'border-2 border-neutral-300 dark:border-neutral-600 hover:border-neutral-400 dark:hover:border-neutral-500',
+      )}
+      aria-label={completed ? 'Mark as incomplete' : 'Mark as complete'}
+    >
+      <AnimatePresence mode="wait">
+        {completed && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
+            <Check className="h-3 w-3 text-white" strokeWidth={3} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Activity Card component for list view                              */
+/* ------------------------------------------------------------------ */
+function ActivityCard({
+  activity,
+  onToggleComplete,
+  onClick,
+}: {
+  activity: Activity;
+  onToggleComplete: (id: string) => void;
+  onClick: (activity: Activity) => void;
+}) {
+  const typeConfig = TYPE_CONFIG[activity.type];
+  const TypeIcon = typeConfig.icon;
+  const isOverdue = activity.status === 'overdue';
+  const isCompleted = activity.status === 'completed';
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card
+        className={cn(
+          'border bg-card p-4 shadow-xs rounded-[var(--shape-lg)] cursor-pointer transition-all duration-200 hover:shadow-md',
+          isOverdue && 'border-[var(--mw-error)]/30 dark:border-red-500/30',
+          isCompleted && 'opacity-75',
+        )}
+        onClick={() => onClick(activity)}
+      >
+        <div className="flex items-start gap-3">
+          <ActivityCheckmark
+            completed={isCompleted}
+            onToggle={() => onToggleComplete(activity.id)}
+          />
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <div
+                  className={cn(
+                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-full',
+                    typeConfig.bgClass,
+                  )}
+                >
+                  <TypeIcon className="h-3.5 w-3.5" />
+                </div>
+                <span
+                  className={cn(
+                    'text-sm font-medium text-foreground truncate',
+                    isCompleted && 'line-through text-[var(--neutral-500)]',
+                  )}
+                >
+                  {activity.description}
+                </span>
+              </div>
+              <Badge className={cn('shrink-0 text-[10px]', STATUS_BADGE[activity.status].className)}>
+                {STATUS_BADGE[activity.status].label}
+              </Badge>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-[var(--neutral-500)]">
+              <span className="flex items-center gap-1">
+                <span className="font-medium text-[var(--neutral-600)] dark:text-neutral-400">
+                  {activity.contactName}
+                </span>
+              </span>
+              <span className="tabular-nums">
+                {format(parseISO(activity.dueDate), 'd MMM yyyy')}
+              </span>
+              {activity.opportunity && (
+                <a
+                  href={activity.opportunityPath}
+                  className="text-[var(--mw-yellow-700)] dark:text-yellow-400 underline-offset-2 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {activity.opportunity}
+                </a>
+              )}
+            </div>
+
+            {activity.notes && (
+              <p className="mt-2 text-xs text-[var(--neutral-500)] dark:text-neutral-400 line-clamp-2">
+                {activity.notes}
+              </p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 export function SellActivities() {
@@ -321,29 +541,50 @@ export function SellActivities() {
   const [form, setForm] = useState<NewActivityForm>(emptyForm);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
-  const statusVariantMap: Record<ActivityStatus, 'neutral' | 'info' | 'error' | 'warning'> = {
-    completed: 'neutral',
-    scheduled: 'info',
-    overdue: 'error',
-    in_progress: 'warning',
+  // Filters
+  const [filterType, setFilterType] = useState<ActivityType | 'all'>('all');
+  const [filterStatus, setFilterStatus] = useState<ActivityStatus | 'all'>('all');
+
+  // Toggle complete/incomplete
+  const handleToggleComplete = (id: string) => {
+    setActivities((prev) =>
+      prev.map((a) =>
+        a.id === id
+          ? { ...a, status: a.status === 'completed' ? 'scheduled' : 'completed' }
+          : a,
+      ),
+    );
   };
 
-  const activityColumns: MwColumnDef<Activity>[] = [
-    { key: 'type', header: 'Type', tooltip: 'Activity type (email, call, meeting, task)', cell: (a) => <Badge className={TYPE_BADGE[a.type].className}>{TYPE_BADGE[a.type].label}</Badge> },
-    { key: 'description', header: 'Description', cell: (a) => <span className="font-medium text-foreground">{a.description}</span> },
-    { key: 'opportunity', header: 'Opportunity', tooltip: 'Linked sales opportunity', cell: (a) => <a href={a.opportunityPath} className="text-[var(--mw-yellow-700)] underline-offset-2 hover:underline">{a.opportunity}</a> },
-    { key: 'assignedTo', header: 'Assigned to', tooltip: 'Team member responsible', cell: (a) => <span className="text-[var(--neutral-600)]">{a.assignedTo}</span> },
-    { key: 'dueDate', header: 'Due date', className: 'tabular-nums', cell: (a) => <span className="text-[var(--neutral-600)]">{a.dueDate}</span> },
-    { key: 'status', header: 'Status', cell: (a) => <StatusBadge variant={statusVariantMap[a.status]}>{STATUS_BADGE[a.status].label}</StatusBadge> },
-  ];
+  // Filtered activities
+  const filtered = useMemo(() => {
+    return activities.filter((a) => {
+      const matchesSearch =
+        !searchQuery ||
+        a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.opportunity.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.contactName.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = filterType === 'all' || a.type === filterType;
+      const matchesStatus = filterStatus === 'all' || a.status === filterStatus;
+      return matchesSearch && matchesType && matchesStatus;
+    });
+  }, [activities, searchQuery, filterType, filterStatus]);
 
-  // Filtered activities for the list view
-  const filtered = activities.filter(
-    (a) =>
-      a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.opportunity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // Group filtered activities by date
+  const groupedActivities = useMemo(() => {
+    const groups: Record<string, Activity[]> = {};
+    for (const a of filtered) {
+      const group = getDateGroup(a.dueDate);
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(a);
+    }
+    // Sort groups by order
+    const sorted = Object.entries(groups).sort(
+      ([a], [b]) => (DATE_GROUP_ORDER[a] ?? 99) - (DATE_GROUP_ORDER[b] ?? 99),
+    );
+    return sorted;
+  }, [filtered]);
 
   // Calendar events
   const calendarEvents = useMemo(() => toCalendarEvents(activities), [activities]);
@@ -382,13 +623,16 @@ export function SellActivities() {
       opportunity: form.opportunity || '',
       opportunityPath: form.opportunity ? `/sell/opportunities/${form.opportunity}` : '',
       assignedTo: form.assignedTo || '',
+      contactName: '',
       dueDate: form.dueDate,
       status: 'scheduled',
+      notes: form.description || undefined,
     };
 
     setActivities((prev) => [newActivity, ...prev]);
     setForm(emptyForm);
     setShowNewActivity(false);
+    toast.success('Activity created');
   };
 
   const handleCancel = () => {
@@ -408,13 +652,13 @@ export function SellActivities() {
           { key: 'completed', label: 'Completed', value: activities.filter(a => a.status === 'completed').length, color: 'var(--mw-yellow-400)' },
           { key: 'scheduled', label: 'Scheduled', value: activities.filter(a => a.status === 'scheduled').length, color: 'var(--mw-mirage)' },
           { key: 'in_progress', label: 'In Progress', value: activities.filter(a => a.status === 'in_progress').length, color: 'var(--neutral-400)' },
-          { key: 'overdue', label: 'Overdue', value: activities.filter(a => a.status === 'overdue').length, color: 'var(--neutral-200)' },
+          { key: 'overdue', label: 'Overdue', value: activities.filter(a => a.status === 'overdue').length, color: 'var(--mw-error)' },
         ]}
         formatValue={(v) => String(v)}
       />
 
       <PageToolbar>
-        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search activities…" />
+        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search activities..." />
         <ToolbarSpacer />
         <ToolbarFilterButton />
         <IconViewToggle
@@ -430,31 +674,91 @@ export function SellActivities() {
         </ToolbarPrimaryButton>
       </PageToolbar>
 
+      {/* ---- FILTER BAR ---- */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)] mr-1">
+          Type
+        </span>
+        {(['all', 'call', 'email', 'meeting', 'task', 'note'] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setFilterType(t)}
+            className={cn(
+              'rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors',
+              filterType === t
+                ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
+                : 'border-[var(--border)] bg-card text-[var(--neutral-600)] dark:text-neutral-400 hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800',
+            )}
+          >
+            {t === 'all' ? 'All Types' : TYPE_CONFIG[t].label}
+          </button>
+        ))}
+
+        <div className="mx-2 h-4 w-px bg-[var(--border)]" />
+
+        <span className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)] mr-1">
+          Status
+        </span>
+        {(['all', 'scheduled', 'in_progress', 'overdue', 'completed'] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => setFilterStatus(s)}
+            className={cn(
+              'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+              filterStatus === s
+                ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
+                : 'border-[var(--border)] bg-card text-[var(--neutral-600)] dark:text-neutral-400 hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800',
+            )}
+          >
+            {s === 'all' ? 'All Statuses' : STATUS_BADGE[s].label}
+          </button>
+        ))}
+      </div>
+
       {/* ---- LIST VIEW ---- */}
       {viewMode === 'list' && (
-        <MwDataTable<Activity>
-          columns={activityColumns}
-          data={filtered}
-          keyExtractor={(a) => a.id}
-          onRowClick={(a) => setSelectedEvent(activityToEventDetail(a))}
-          selectable
-          onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
-          onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
-        />
+        <div className="space-y-6">
+          {groupedActivities.length === 0 && (
+            <div className="py-12 text-center text-sm text-[var(--neutral-500)]">
+              No activities match your filters.
+            </div>
+          )}
+          {groupedActivities.map(([group, acts]) => (
+            <div key={group}>
+              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">
+                {group}
+              </h3>
+              <div className="space-y-2">
+                <AnimatePresence mode="popLayout">
+                  {acts.map((activity) => (
+                    <ActivityCard
+                      key={activity.id}
+                      activity={activity}
+                      onToggleComplete={handleToggleComplete}
+                      onClick={(a) => setSelectedEvent(activityToEventDetail(a))}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* ---- CALENDAR VIEW ---- */}
       {viewMode === 'calendar' && (
-        <div className="px-6 pb-6 space-y-4">
+        <div className="space-y-4">
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-6">
             {(Object.keys(TYPE_CALENDAR_COLOR) as ActivityType[]).map((t) => (
               <div key={t} className="flex items-center gap-2">
                 <div
-                  className="h-3 w-3 rounded-sm border border-[var(--neutral-200)]"
+                  className="h-3 w-3 rounded-sm border border-[var(--neutral-200)] dark:border-neutral-600"
                   style={{ backgroundColor: `color-mix(in srgb, ${TYPE_CALENDAR_COLOR[t]} 35%, white)` }}
                 />
-                <span className="text-sm text-[var(--neutral-500)]">{TYPE_BADGE[t].label}</span>
+                <span className="text-sm text-[var(--neutral-500)]">{TYPE_CONFIG[t].label}</span>
               </div>
             ))}
           </div>
@@ -472,7 +776,7 @@ export function SellActivities() {
                   'rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors',
                   calendarGranularity === g
                     ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
-                    : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]',
+                    : 'border-[var(--border)] bg-card text-[var(--neutral-600)] dark:text-neutral-400 hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800',
                 )}
               >
                 {g}
@@ -491,7 +795,7 @@ export function SellActivities() {
 
           {calendarGranularity === 'week' && (
             <Card className="overflow-hidden border border-[var(--border)]">
-              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3">
+              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] dark:bg-neutral-900 px-4 py-3">
                 <Button
                   type="button"
                   variant="ghost"
@@ -503,7 +807,7 @@ export function SellActivities() {
                 </Button>
                 <span className="text-sm font-medium text-foreground tabular-nums">
                   {format(startOfWeek(weekAnchor, { weekStartsOn: 1 }), 'd MMM')}{' '}
-                  – {format(endOfWeek(weekAnchor, { weekStartsOn: 1 }), 'd MMM yyyy')}
+                  - {format(endOfWeek(weekAnchor, { weekStartsOn: 1 }), 'd MMM yyyy')}
                 </span>
                 <Button
                   type="button"
@@ -539,7 +843,7 @@ export function SellActivities() {
                         {dayActs.slice(0, 4).map((a) => (
                           <li
                             key={a.id}
-                            className="truncate rounded border-l-2 pl-1.5 text-[10px] leading-tight text-[var(--neutral-800)]"
+                            className="truncate rounded border-l-2 pl-1.5 text-[10px] leading-tight text-[var(--neutral-800)] dark:text-neutral-200"
                             style={{ borderColor: TYPE_CALENDAR_COLOR[a.type] }}
                           >
                             {a.description}
@@ -560,7 +864,7 @@ export function SellActivities() {
 
           {calendarGranularity === 'day' && (
             <Card className="overflow-hidden border border-[var(--border)]">
-              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3">
+              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] dark:bg-neutral-900 px-4 py-3">
                 <Button
                   type="button"
                   variant="ghost"
@@ -595,24 +899,26 @@ export function SellActivities() {
               ) : (
                 <div className="divide-y divide-[var(--border)]">
                   {dayViewActivities.map((activity) => {
-                    const typeBadge = TYPE_BADGE[activity.type];
-                    const statusBadge = STATUS_BADGE[activity.status];
+                    const typeConfig = TYPE_CONFIG[activity.type];
+                    const TypeIcon = typeConfig.icon;
                     return (
-                      <div key={activity.id} className="flex flex-wrap items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
-                        <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
+                      <div key={activity.id} className="flex flex-wrap items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800 transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
+                        <div className={cn('flex h-6 w-6 items-center justify-center rounded-full', typeConfig.bgClass)}>
+                          <TypeIcon className="h-3.5 w-3.5" />
+                        </div>
                         <span className="flex-1 min-w-[120px] text-sm font-medium text-foreground">
                           {activity.description}
                         </span>
                         {activity.opportunity && (
                           <a
                             href={activity.opportunityPath}
-                            className="text-sm text-[var(--mw-yellow-700)] underline-offset-2 hover:underline"
+                            className="text-sm text-[var(--mw-yellow-700)] dark:text-yellow-400 underline-offset-2 hover:underline"
                           >
                             {activity.opportunity}
                           </a>
                         )}
-                        <span className="text-sm text-[var(--neutral-600)]">{activity.assignedTo}</span>
-                        <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
+                        <span className="text-sm text-[var(--neutral-600)] dark:text-neutral-400">{activity.assignedTo}</span>
+                        <Badge className={STATUS_BADGE[activity.status].className}>{STATUS_BADGE[activity.status].label}</Badge>
                       </div>
                     );
                   })}
@@ -624,7 +930,7 @@ export function SellActivities() {
           {/* Selected-date detail panel (month + week) */}
           {selectedDate && calendarGranularity !== 'day' && (
             <Card className="overflow-hidden">
-              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3">
+              <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--neutral-50)] dark:bg-neutral-900 px-4 py-3">
                 <h3 className="text-sm font-medium text-foreground">
                   Activities for{' '}
                   {selectedDate.toLocaleDateString('en-AU', {
@@ -636,7 +942,7 @@ export function SellActivities() {
                 </h3>
                 <button
                   onClick={() => setSelectedDate(null)}
-                  className="rounded-[var(--shape-sm)] p-1 text-[var(--neutral-400)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--neutral-600)]"
+                  className="rounded-[var(--shape-sm)] p-1 text-[var(--neutral-400)] transition-colors hover:bg-[var(--neutral-100)] dark:hover:bg-neutral-800 hover:text-[var(--neutral-600)]"
                 >
                   <X className="h-4 w-4" strokeWidth={1.5} />
                 </button>
@@ -648,24 +954,26 @@ export function SellActivities() {
               ) : (
                 <div className="divide-y divide-[var(--border)]">
                   {selectedDateActivities.map((activity) => {
-                    const typeBadge = TYPE_BADGE[activity.type];
-                    const statusBadge = STATUS_BADGE[activity.status];
+                    const typeConfig = TYPE_CONFIG[activity.type];
+                    const TypeIcon = typeConfig.icon;
                     return (
-                      <div key={activity.id} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
-                        <Badge className={typeBadge.className}>{typeBadge.label}</Badge>
+                      <div key={activity.id} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800 transition-colors" onClick={() => setSelectedEvent(activityToEventDetail(activity))}>
+                        <div className={cn('flex h-6 w-6 items-center justify-center rounded-full', typeConfig.bgClass)}>
+                          <TypeIcon className="h-3.5 w-3.5" />
+                        </div>
                         <span className="flex-1 text-sm font-medium text-foreground">
                           {activity.description}
                         </span>
                         {activity.opportunity && (
                           <a
                             href={activity.opportunityPath}
-                            className="text-sm text-[var(--mw-yellow-700)] underline-offset-2 hover:underline"
+                            className="text-sm text-[var(--mw-yellow-700)] dark:text-yellow-400 underline-offset-2 hover:underline"
                           >
                             {activity.opportunity}
                           </a>
                         )}
-                        <span className="text-sm text-[var(--neutral-600)]">{activity.assignedTo}</span>
-                        <Badge className={statusBadge.className}>{statusBadge.label}</Badge>
+                        <span className="text-sm text-[var(--neutral-600)] dark:text-neutral-400">{activity.assignedTo}</span>
+                        <Badge className={STATUS_BADGE[activity.status].className}>{STATUS_BADGE[activity.status].label}</Badge>
                       </div>
                     );
                   })}
@@ -696,7 +1004,7 @@ export function SellActivities() {
           <div className="grid gap-4 py-2">
             {/* Title */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
                 Title <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Input
@@ -708,7 +1016,7 @@ export function SellActivities() {
 
             {/* Type */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
                 Type <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Select
@@ -719,17 +1027,18 @@ export function SellActivities() {
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="call">Call</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="meeting">Meeting</SelectItem>
                   <SelectItem value="task">Task</SelectItem>
+                  <SelectItem value="note">Note</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Assigned To */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">Assigned To</label>
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Assigned To</label>
               <Select
                 value={form.assignedTo}
                 onValueChange={(val) => setForm((f) => ({ ...f, assignedTo: val }))}
@@ -749,7 +1058,7 @@ export function SellActivities() {
 
             {/* Due Date */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
                 Due Date <span className="text-[var(--mw-error)]">*</span>
               </label>
               <Input
@@ -761,7 +1070,7 @@ export function SellActivities() {
 
             {/* Related Opportunity */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">Related Opportunity</label>
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Related Opportunity</label>
               <Select
                 value={form.opportunity}
                 onValueChange={(val) => setForm((f) => ({ ...f, opportunity: val }))}
@@ -781,7 +1090,7 @@ export function SellActivities() {
 
             {/* Description */}
             <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)]">Description</label>
+              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Description</label>
               <Textarea
                 placeholder="Add details about this activity..."
                 value={form.description}
