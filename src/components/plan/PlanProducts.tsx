@@ -11,6 +11,7 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
 
 const PRODUCTS = [
@@ -32,7 +33,7 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-        <span className="font-medium text-foreground">{p.name}</span>
+        <a href={`/plan/products/${p.id}`} className="font-medium text-foreground hover:underline">{p.name}</a>
       </div>
     ),
   },
@@ -66,6 +67,7 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
 ];
 
 export function PlanProducts() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
   const filtered = PRODUCTS.filter(p =>
@@ -103,6 +105,7 @@ export function PlanProducts() {
         columns={planProductColumns}
         data={filtered}
         keyExtractor={(p) => p.id}
+        onRowClick={(p) => navigate(`/plan/products/${p.id}`)}
         selectable
         onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
         onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}

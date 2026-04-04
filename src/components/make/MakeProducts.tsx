@@ -65,7 +65,7 @@ const productColumns: MwColumnDef<Product>[] = [
   {
     key: 'name',
     header: 'Product',
-    cell: (p) => <span className="text-[var(--neutral-700)]">{p.name}</span>,
+    cell: (p) => <a href={`/make/products/${p.id}`} className="text-sm font-medium text-foreground hover:underline">{p.name}</a>,
   },
   {
     key: 'category',
@@ -171,7 +171,9 @@ export function MakeProducts() {
             const canMake = product.bomStatus === 'complete';
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
-                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 group">
+                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group"
+                  onClick={() => navigate(`/make/products/${product.id}`)}
+                >
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
@@ -207,7 +209,7 @@ export function MakeProducts() {
                     </div>
 
                     <Button
-                      onClick={() => handleMake(product)}
+                      onClick={(e) => { e.stopPropagation(); handleMake(product); }}
                       disabled={!canMake}
                       className="w-full mt-4 h-14 min-h-[56px] gap-2 text-base font-medium bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
@@ -227,6 +229,7 @@ export function MakeProducts() {
           columns={productColumns}
           data={filtered}
           keyExtractor={(p) => p.id}
+          onRowClick={(p) => navigate(`/make/products/${p.id}`)}
           striped
           selectable
           onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}

@@ -144,7 +144,9 @@ export function SellProducts() {
             const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
             return (
               <motion.div key={product.id} variants={staggerItem} custom={idx}>
-                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group"
+                  onClick={() => navigate(`/sell/products/${product.id}`)}
+                >
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
                     <Package className="w-16 h-16 text-[var(--neutral-400)]" />
                   </div>
@@ -204,6 +206,7 @@ export function SellProducts() {
           columns={productColumns}
           data={filteredProducts}
           keyExtractor={(p) => p.id}
+          onRowClick={(p) => navigate(`/sell/products/${p.id}`)}
           selectable
           onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
           onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}

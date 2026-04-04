@@ -89,7 +89,6 @@ export function BuyProducts() {
         columns={productColumns}
         data={mockProducts}
         keyExtractor={(row) => row.id}
-        onRowClick={() => {}}
         striped
       />
     </PageShell>

@@ -14,6 +14,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus, AnimatedFilter, AnimatedSearch } from '../ui/animated-icons';
+import { useNavigate } from 'react-router';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -56,6 +57,7 @@ const getPerformanceBadge = (onTimeRate: number) => {
 };
 
 export function BuySuppliers() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -203,7 +205,9 @@ export function BuySuppliers() {
               const perfBadge = getPerformanceBadge(supplier.onTimeRate);
               return (
                 <motion.div key={supplier.id} variants={staggerItem} custom={idx}>
-                  <Card className="group cursor-pointer rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6 transition-all duration-200 hover:shadow-md">
+                  <Card className="group cursor-pointer rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6 transition-all duration-200 hover:shadow-md"
+                    onClick={() => navigate(`/buy/suppliers/${supplier.id}`)}
+                  >
                     <div className="mb-4 flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
