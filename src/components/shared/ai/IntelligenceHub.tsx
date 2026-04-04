@@ -145,7 +145,7 @@ export const SELL_INSIGHTS: Insight[] = [
   {
     id: 's3', type: 'risk',
     title: '3 quotes expire this week',
-    body: 'Quotes MW-Q-0041, MW-Q-0042, and MW-Q-0043 expire before Friday. Total value at risk: $67,500. Recommend following up with customers today.',
+    body: 'Quotes Q-2026-0041, Q-2026-0042, and Q-2026-0043 expire before Friday. Total value at risk: $67,500. Recommend following up with customers today.',
     action: 'View expiring quotes', updatedAt: '5h ago',
   },
   {
@@ -172,7 +172,7 @@ export const PLAN_INSIGHTS: Insight[] = [
   {
     id: 'p3', type: 'action',
     title: '2 jobs missing lead times',
-    body: 'MW-090 and MW-091 have no scheduled start dates. They are due Apr 5 and Apr 8. Recommend scheduling these now to avoid late delivery.',
+    body: 'JOB-2026-0015 and JOB-2026-0013 have no scheduled start dates. They are due Apr 5 and Apr 8. Recommend scheduling these now to avoid late delivery.',
     action: 'Open job scheduler', updatedAt: '3h ago',
   },
 ];

@@ -37,18 +37,18 @@ interface MO {
 const TODAY_OFFSET = 2;
 
 const MOs: MO[] = [
-  { id: '1', moNumber: 'MO-0045', job: 'MW-089', product: 'Server Rack Chassis', workCenter: 'Cutting', startDay: 0, durationDays: 2, status: 'completed', operator: 'DL' },
-  { id: '2', moNumber: 'MO-0046', job: 'MW-089', product: 'Server Rack Chassis', workCenter: 'Forming', startDay: 2, durationDays: 2, status: 'in_progress', operator: 'EW' },
-  { id: '3', moNumber: 'MO-0047', job: 'MW-089', product: 'Server Rack Chassis', workCenter: 'Welding', startDay: 4, durationDays: 3, status: 'scheduled', operator: 'MT' },
-  { id: '4', moNumber: 'MO-0048', job: 'MW-089', product: 'Server Rack Chassis', workCenter: 'Finishing', startDay: 7, durationDays: 1, status: 'scheduled', operator: 'SC' },
-  { id: '5', moNumber: 'MO-0044', job: 'MW-088', product: 'Rail Platform Components', workCenter: 'Cutting', startDay: 1, durationDays: 3, status: 'in_progress', operator: 'DL' },
-  { id: '6', moNumber: 'MO-0049', job: 'MW-088', product: 'Rail Platform Components', workCenter: 'Welding', startDay: 4, durationDays: 4, status: 'scheduled', operator: 'TB' },
-  { id: '7', moNumber: 'MO-0050', job: 'MW-087', product: 'Aluminium Enclosures', workCenter: 'Machining', startDay: 0, durationDays: 4, status: 'overdue', operator: 'EW' },
-  { id: '8', moNumber: 'MO-0051', job: 'MW-087', product: 'Aluminium Enclosures', workCenter: 'Forming', startDay: 5, durationDays: 2, status: 'scheduled', operator: 'SC' },
-  { id: '9', moNumber: 'MO-0052', job: 'MW-091', product: 'Structural Bracket Type A', workCenter: 'Cutting', startDay: 3, durationDays: 1, status: 'scheduled', operator: 'DL' },
-  { id: '10', moNumber: 'MO-0053', job: 'MW-091', product: 'Structural Bracket Type A', workCenter: 'Welding', startDay: 4, durationDays: 1, status: 'scheduled', operator: 'MT' },
-  { id: '11', moNumber: 'MO-0054', job: 'MW-091', product: 'Structural Bracket Type A', workCenter: 'Finishing', startDay: 6, durationDays: 1, status: 'scheduled', operator: 'SC' },
-  { id: '12', moNumber: 'MO-0055', job: 'MW-090', product: 'Machine Guards', workCenter: 'Machining', startDay: 5, durationDays: 3, status: 'scheduled', operator: 'TB' },
+  { id: '1', moNumber: 'MO-2026-0045', job: 'JOB-2026-0012', product: 'Server Rack Chassis', workCenter: 'Cutting', startDay: 0, durationDays: 2, status: 'completed', operator: 'DL' },
+  { id: '2', moNumber: 'MO-2026-0046', job: 'JOB-2026-0012', product: 'Server Rack Chassis', workCenter: 'Forming', startDay: 2, durationDays: 2, status: 'in_progress', operator: 'EW' },
+  { id: '3', moNumber: 'MO-2026-0047', job: 'JOB-2026-0012', product: 'Server Rack Chassis', workCenter: 'Welding', startDay: 4, durationDays: 3, status: 'scheduled', operator: 'MT' },
+  { id: '4', moNumber: 'MO-2026-0048', job: 'JOB-2026-0012', product: 'Server Rack Chassis', workCenter: 'Finishing', startDay: 7, durationDays: 1, status: 'scheduled', operator: 'SC' },
+  { id: '5', moNumber: 'MO-2026-0044', job: 'JOB-2026-0013', product: 'Rail Platform Components', workCenter: 'Cutting', startDay: 1, durationDays: 3, status: 'in_progress', operator: 'DL' },
+  { id: '6', moNumber: 'MO-2026-0049', job: 'JOB-2026-0013', product: 'Rail Platform Components', workCenter: 'Welding', startDay: 4, durationDays: 4, status: 'scheduled', operator: 'TB' },
+  { id: '7', moNumber: 'MO-2026-0050', job: 'JOB-2026-0015', product: 'Aluminium Enclosures', workCenter: 'Machining', startDay: 0, durationDays: 4, status: 'overdue', operator: 'EW' },
+  { id: '8', moNumber: 'MO-2026-0051', job: 'JOB-2026-0015', product: 'Aluminium Enclosures', workCenter: 'Forming', startDay: 5, durationDays: 2, status: 'scheduled', operator: 'SC' },
+  { id: '9', moNumber: 'MO-2026-0052', job: 'JOB-2026-0011', product: 'Structural Bracket Type A', workCenter: 'Cutting', startDay: 3, durationDays: 1, status: 'scheduled', operator: 'DL' },
+  { id: '10', moNumber: 'MO-2026-0053', job: 'JOB-2026-0011', product: 'Structural Bracket Type A', workCenter: 'Welding', startDay: 4, durationDays: 1, status: 'scheduled', operator: 'MT' },
+  { id: '11', moNumber: 'MO-2026-0054', job: 'JOB-2026-0011', product: 'Structural Bracket Type A', workCenter: 'Finishing', startDay: 6, durationDays: 1, status: 'scheduled', operator: 'SC' },
+  { id: '12', moNumber: 'MO-2026-0055', job: 'JOB-2026-0010', product: 'Machine Guards', workCenter: 'Machining', startDay: 5, durationDays: 3, status: 'scheduled', operator: 'TB' },
 ];
 
 const STATUS_CONFIG: Record<MOStatus, { bar: string; badge: string; text: string; label: string }> = {

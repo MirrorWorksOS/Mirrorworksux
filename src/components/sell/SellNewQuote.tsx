@@ -70,7 +70,7 @@ const fmtCurrency = (n: number) =>
 // ── Component ─────────────────────────────────────────────
 export function SellNewQuote() {
   const navigate = useNavigate();
-  const quoteNumber = 'MW-Q-0048';
+  const quoteNumber = 'Q-2026-0048';
 
   const [customer, setCustomer] = useState('');
   const [quoteDate, setQuoteDate] = useState('2026-03-20');

@@ -205,7 +205,7 @@ export const opportunities: Opportunity[] = [
 
 export const quotes: Quote[] = [
   {
-    id: 'qt-001', ref: 'MW-Q-0055', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    id: 'qt-001', ref: 'Q-2026-0055', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
     date: '2026-03-12', expiryDate: '2026-04-12', value: 42000, status: 'sent',
     lineItems: [
       { productId: 'prod-004', description: 'Server Rack Chassis 42U', qty: 8, unitPrice: 1250, total: 10000 },
@@ -214,7 +214,7 @@ export const quotes: Quote[] = [
     ],
   },
   {
-    id: 'qt-002', ref: 'MW-Q-0048', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    id: 'qt-002', ref: 'Q-2026-0048', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
     date: '2026-02-28', expiryDate: '2026-03-28', value: 12500, status: 'draft',
     lineItems: [
       { productId: 'prod-001', description: 'Mounting Bracket 90°', qty: 100, unitPrice: 24.50, total: 2450 },
@@ -302,18 +302,18 @@ export const goodsReceipts: GoodsReceipt[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 export const jobs: Job[] = [
-  { id: 'job-001', jobNumber: 'MW-009', title: 'Mounting Bracket Assembly', customerId: 'cust-001', customerName: 'TechCorp Industries', salesOrderId: 'so-001', status: 'in_progress', priority: 'high', startDate: '2026-03-10', dueDate: '2026-04-03', estimatedHours: 120, actualHours: 78, value: 24500, progress: 45, assignedTo: 'emp-003' },
-  { id: 'job-002', jobNumber: 'MW-010', title: 'Custom Brackets x50', customerId: 'cust-002', customerName: 'Pacific Fabrication', salesOrderId: 'so-002', status: 'in_progress', priority: 'medium', startDate: '2026-03-12', dueDate: '2026-04-01', estimatedHours: 40, actualHours: 32, value: 8500, progress: 72, assignedTo: 'emp-003' },
-  { id: 'job-003', jobNumber: 'MW-011', title: 'Cable Tray Supports — Rail', customerId: 'cust-005', customerName: 'Sydney Rail Corp', salesOrderId: 'so-003', status: 'planned', priority: 'high', startDate: '2026-03-20', dueDate: '2026-04-28', estimatedHours: 200, actualHours: 0, value: 35600, progress: 0, assignedTo: 'emp-003' },
-  { id: 'job-004', jobNumber: 'MW-012', title: 'Machine Guards — Kemppi', customerId: 'cust-006', customerName: 'Kemppi Australia', salesOrderId: 'so-004', status: 'completed', priority: 'low', startDate: '2026-02-20', dueDate: '2026-03-20', estimatedHours: 60, actualHours: 55, value: 12000, progress: 100, assignedTo: 'emp-003' },
-  { id: 'job-005', jobNumber: 'MW-015', title: 'Control Panel Enclosure', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'draft', priority: 'medium', startDate: '2026-04-05', dueDate: '2026-04-20', estimatedHours: 80, actualHours: 0, value: 31000, progress: 0, assignedTo: 'emp-003' },
+  { id: 'job-001', jobNumber: 'JOB-2026-0012', title: 'Mounting Bracket Assembly', customerId: 'cust-001', customerName: 'TechCorp Industries', salesOrderId: 'so-001', status: 'in_progress', priority: 'high', startDate: '2026-03-10', dueDate: '2026-04-03', estimatedHours: 120, actualHours: 78, value: 24500, progress: 45, assignedTo: 'emp-003' },
+  { id: 'job-002', jobNumber: 'JOB-2026-0011', title: 'Custom Brackets x50', customerId: 'cust-002', customerName: 'Pacific Fabrication', salesOrderId: 'so-002', status: 'in_progress', priority: 'medium', startDate: '2026-03-12', dueDate: '2026-04-01', estimatedHours: 40, actualHours: 32, value: 8500, progress: 72, assignedTo: 'emp-003' },
+  { id: 'job-003', jobNumber: 'JOB-2026-0013', title: 'Cable Tray Supports — Rail', customerId: 'cust-005', customerName: 'Sydney Rail Corp', salesOrderId: 'so-003', status: 'planned', priority: 'high', startDate: '2026-03-20', dueDate: '2026-04-28', estimatedHours: 200, actualHours: 0, value: 35600, progress: 0, assignedTo: 'emp-003' },
+  { id: 'job-004', jobNumber: 'JOB-2026-0010', title: 'Machine Guards — Kemppi', customerId: 'cust-006', customerName: 'Kemppi Australia', salesOrderId: 'so-004', status: 'completed', priority: 'low', startDate: '2026-02-20', dueDate: '2026-03-20', estimatedHours: 60, actualHours: 55, value: 12000, progress: 100, assignedTo: 'emp-003' },
+  { id: 'job-005', jobNumber: 'JOB-2026-0015', title: 'Control Panel Enclosure', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'draft', priority: 'medium', startDate: '2026-04-05', dueDate: '2026-04-20', estimatedHours: 80, actualHours: 0, value: 31000, progress: 0, assignedTo: 'emp-003' },
 ];
 
 export const planTasks: PlanTask[] = [
-  { id: 'task-001', title: 'Review BOM for Job MW-015', jobId: 'job-005', jobNumber: 'MW-015', time: '9:00 AM', type: 'review', assignedTo: 'emp-003', completed: false },
-  { id: 'task-002', title: 'Schedule laser cutting — MW-010', jobId: 'job-002', jobNumber: 'MW-010', time: '10:30 AM', type: 'schedule', assignedTo: 'emp-003', completed: false },
-  { id: 'task-003', title: 'QC sign-off pending — MW-009', jobId: 'job-001', jobNumber: 'MW-009', time: '11:00 AM', type: 'qc', assignedTo: 'emp-007', completed: false },
-  { id: 'task-004', title: 'Material order follow-up — MW-011', jobId: 'job-003', jobNumber: 'MW-011', time: '1:00 PM', type: 'purchase', assignedTo: 'emp-005', completed: false },
+  { id: 'task-001', title: 'Review BOM for Job JOB-2026-0015', jobId: 'job-005', jobNumber: 'JOB-2026-0015', time: '9:00 AM', type: 'review', assignedTo: 'emp-003', completed: false },
+  { id: 'task-002', title: 'Schedule laser cutting — JOB-2026-0011', jobId: 'job-002', jobNumber: 'JOB-2026-0011', time: '10:30 AM', type: 'schedule', assignedTo: 'emp-003', completed: false },
+  { id: 'task-003', title: 'QC sign-off pending — JOB-2026-0012', jobId: 'job-001', jobNumber: 'JOB-2026-0012', time: '11:00 AM', type: 'qc', assignedTo: 'emp-007', completed: false },
+  { id: 'task-004', title: 'Material order follow-up — JOB-2026-0013', jobId: 'job-003', jobNumber: 'JOB-2026-0013', time: '1:00 PM', type: 'purchase', assignedTo: 'emp-005', completed: false },
   { id: 'task-005', title: 'Subcontractor call — Powder Coat', time: '2:30 PM', type: 'external', assignedTo: 'emp-003', completed: false },
 ];
 
@@ -339,20 +339,20 @@ export const machines: Machine[] = [
 ];
 
 export const manufacturingOrders: ManufacturingOrder[] = [
-  { id: 'mo-001', moNumber: 'MO-2026-001', productId: 'prod-001', productName: 'Mounting Bracket Assembly', jobId: 'job-001', jobNumber: 'JOB-1210', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'in_progress', priority: 'high', dueDate: '2026-04-15', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray' },
-  { id: 'mo-002', moNumber: 'MO-2026-002', productId: 'prod-004', productName: 'Server Rack Chassis', jobId: 'job-001', jobNumber: 'JOB-1211', customerId: 'cust-002', customerName: 'Pacific Fabrication', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
-  { id: 'mo-003', moNumber: 'MO-2026-003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-1212', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson' },
-  { id: 'mo-004', moNumber: 'MO-2026-004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-1213', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson' },
-  { id: 'mo-005', moNumber: 'MO-2026-005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-1214', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'mo-001', moNumber: 'MO-2026-0001', productId: 'prod-001', productName: 'Mounting Bracket Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'in_progress', priority: 'high', dueDate: '2026-04-15', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray' },
+  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Server Rack Chassis', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-002', customerName: 'Pacific Fabrication', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
+  { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson' },
+  { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson' },
+  { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen' },
 ];
 
 export const workOrders: WorkOrder[] = [
-  { id: 'wo-001', woNumber: 'WO-001-A', manufacturingOrderId: 'mo-001', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser Cut blanks', sequence: 1, estimatedMinutes: 120, actualMinutes: 95, status: 'completed', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
-  { id: 'wo-002', woNumber: 'WO-001-B', manufacturingOrderId: 'mo-001', machineId: 'mach-002', machineName: 'Press Brake #2', operation: 'Bend to spec', sequence: 2, estimatedMinutes: 90, actualMinutes: 45, status: 'in_progress', operatorId: 'emp-004', operatorName: 'David Lee' },
-  { id: 'wo-003', woNumber: 'WO-001-C', manufacturingOrderId: 'mo-001', machineId: 'mach-003', machineName: 'Welding Station A', operation: 'MIG weld assembly', sequence: 3, estimatedMinutes: 180, actualMinutes: 0, status: 'pending', operatorId: 'emp-006', operatorName: 'James Murray' },
-  { id: 'wo-004', woNumber: 'WO-001-D', manufacturingOrderId: 'mo-001', machineId: 'mach-005', machineName: 'Powder Coat Line', operation: 'Powder coat — satin black', sequence: 4, estimatedMinutes: 60, actualMinutes: 0, status: 'pending' },
-  { id: 'wo-005', woNumber: 'WO-002-A', manufacturingOrderId: 'mo-002', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser Cut chassis panels', sequence: 1, estimatedMinutes: 240, actualMinutes: 120, status: 'in_progress', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
-  { id: 'wo-006', woNumber: 'WO-002-B', manufacturingOrderId: 'mo-002', machineId: 'mach-004', machineName: 'CNC Mill #3', operation: 'CNC machine mounting holes', sequence: 2, estimatedMinutes: 150, actualMinutes: 0, status: 'pending', operatorId: 'emp-004', operatorName: 'David Lee' },
+  { id: 'wo-001', woNumber: 'WO-2026-0001', manufacturingOrderId: 'mo-001', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser Cut blanks', sequence: 1, estimatedMinutes: 120, actualMinutes: 95, status: 'completed', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'wo-002', woNumber: 'WO-2026-0002', manufacturingOrderId: 'mo-001', machineId: 'mach-002', machineName: 'Press Brake #2', operation: 'Bend to spec', sequence: 2, estimatedMinutes: 90, actualMinutes: 45, status: 'in_progress', operatorId: 'emp-004', operatorName: 'David Lee' },
+  { id: 'wo-003', woNumber: 'WO-2026-0003', manufacturingOrderId: 'mo-001', machineId: 'mach-003', machineName: 'Welding Station A', operation: 'MIG weld assembly', sequence: 3, estimatedMinutes: 180, actualMinutes: 0, status: 'pending', operatorId: 'emp-006', operatorName: 'James Murray' },
+  { id: 'wo-004', woNumber: 'WO-2026-0004', manufacturingOrderId: 'mo-001', machineId: 'mach-005', machineName: 'Powder Coat Line', operation: 'Powder coat — satin black', sequence: 4, estimatedMinutes: 60, actualMinutes: 0, status: 'pending' },
+  { id: 'wo-005', woNumber: 'WO-2026-0005', manufacturingOrderId: 'mo-002', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser Cut chassis panels', sequence: 1, estimatedMinutes: 240, actualMinutes: 120, status: 'in_progress', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'wo-006', woNumber: 'WO-2026-0006', manufacturingOrderId: 'mo-002', machineId: 'mach-004', machineName: 'CNC Mill #3', operation: 'CNC machine mounting holes', sequence: 2, estimatedMinutes: 150, actualMinutes: 0, status: 'pending', operatorId: 'emp-004', operatorName: 'David Lee' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -387,16 +387,16 @@ export const shippingExceptions: ShippingException[] = [
 
 export const expenses: Expense[] = [
   { id: 'exp-001', expenseNumber: 'EXP-2026-0142', date: '2026-03-28', description: 'Grinding discs & cutting wheels (monthly)', category: 'consumables', amount: 1250, tax: 125, submittedBy: 'emp-006', status: 'submitted', reimbursable: false, billable: false },
-  { id: 'exp-002', expenseNumber: 'EXP-2026-0143', date: '2026-03-29', description: 'Site visit fuel — BHP Brisbane', category: 'travel', amount: 350, tax: 35, submittedBy: 'emp-002', status: 'submitted', reimbursable: true, billable: true, jobId: 'job-003', jobNumber: 'MW-011' },
+  { id: 'exp-002', expenseNumber: 'EXP-2026-0143', date: '2026-03-29', description: 'Site visit fuel — BHP Brisbane', category: 'travel', amount: 350, tax: 35, submittedBy: 'emp-002', status: 'submitted', reimbursable: true, billable: true, jobId: 'job-003', jobNumber: 'JOB-2026-0013' },
   { id: 'exp-003', expenseNumber: 'EXP-2026-0140', date: '2026-03-20', description: 'Replacement drill bits & taps', category: 'consumables', amount: 480, tax: 48, submittedBy: 'emp-004', status: 'approved', reimbursable: false, billable: false },
   { id: 'exp-004', expenseNumber: 'EXP-2026-0138', date: '2026-03-15', description: 'Monthly electricity', category: 'utilities', amount: 2800, tax: 280, submittedBy: 'emp-005', status: 'paid', reimbursable: false, billable: false },
 ];
 
 export const jobCosts: JobCost[] = [
-  { id: 'jc-001', jobId: 'job-001', jobNumber: 'MW-009', customerId: 'cust-001', customerName: 'TechCorp Industries', quotedValue: 24500, materialCost: 8200, labourCost: 5400, overheadCost: 2100, totalCost: 15700, margin: 8800, marginPercent: 35.9 },
-  { id: 'jc-002', jobId: 'job-002', jobNumber: 'MW-010', customerId: 'cust-002', customerName: 'Pacific Fabrication', quotedValue: 8500, materialCost: 3100, labourCost: 2200, overheadCost: 900, totalCost: 6200, margin: 2300, marginPercent: 27.1 },
-  { id: 'jc-003', jobId: 'job-003', jobNumber: 'MW-011', customerId: 'cust-005', customerName: 'Sydney Rail Corp', quotedValue: 35600, materialCost: 14200, labourCost: 8800, overheadCost: 3600, totalCost: 26600, margin: 9000, marginPercent: 25.3 },
-  { id: 'jc-004', jobId: 'job-004', jobNumber: 'MW-012', customerId: 'cust-006', customerName: 'Kemppi Australia', quotedValue: 12000, materialCost: 4800, labourCost: 3200, overheadCost: 1100, totalCost: 9100, margin: 2900, marginPercent: 24.2 },
+  { id: 'jc-001', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'TechCorp Industries', quotedValue: 24500, materialCost: 8200, labourCost: 5400, overheadCost: 2100, totalCost: 15700, margin: 8800, marginPercent: 35.9 },
+  { id: 'jc-002', jobId: 'job-002', jobNumber: 'JOB-2026-0011', customerId: 'cust-002', customerName: 'Pacific Fabrication', quotedValue: 8500, materialCost: 3100, labourCost: 2200, overheadCost: 900, totalCost: 6200, margin: 2300, marginPercent: 27.1 },
+  { id: 'jc-003', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', quotedValue: 35600, materialCost: 14200, labourCost: 8800, overheadCost: 3600, totalCost: 26600, margin: 9000, marginPercent: 25.3 },
+  { id: 'jc-004', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', quotedValue: 12000, materialCost: 4800, labourCost: 3200, overheadCost: 1100, totalCost: 9100, margin: 2900, marginPercent: 24.2 },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════

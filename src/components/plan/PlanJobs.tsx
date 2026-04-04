@@ -46,9 +46,9 @@ const STATUS_TO_STAGE: Record<string, string> = {
 };
 
 const EXTRA_KANBAN_JOBS: { stage: string; job: Job }[] = [
-  { stage: 'backlog', job: { id: 'MW-EXT-01', name: 'Laser Cut Panels', description: 'Precision aluminum panels for aerospace application', quoteCount: 0, value: 12500, assignedUser: { name: 'Sarah Chen' }, customer: 'AeroSpace Ltd', priority: 'medium', dueDate: '2026-04-20', progress: 0 } },
-  { stage: 'planning', job: { id: 'MW-EXT-02', name: 'Press Brake Assembly', description: 'Multi-bend bracket assembly with powder coating', quoteCount: 1, value: 24800, assignedUser: { name: 'James Murray' }, customer: 'Industrial Solutions', priority: 'urgent', dueDate: '2026-04-10', progress: 15 } },
-  { stage: 'materials', job: { id: 'MW-EXT-03', name: 'Turret Punch Parts', description: 'High-volume punched components for HVAC units', quoteCount: 1, value: 45200, assignedUser: { name: 'Emma Wilson' }, customer: 'Climate Systems', priority: 'medium', dueDate: '2026-04-25', progress: 30 } },
+  { stage: 'backlog', job: { id: 'JOB-2026-0016', name: 'Laser Cut Panels', description: 'Precision aluminum panels for aerospace application', quoteCount: 0, value: 12500, assignedUser: { name: 'Sarah Chen' }, customer: 'AeroSpace Ltd', priority: 'medium', dueDate: '2026-04-20', progress: 0 } },
+  { stage: 'planning', job: { id: 'JOB-2026-0017', name: 'Press Brake Assembly', description: 'Multi-bend bracket assembly with powder coating', quoteCount: 1, value: 24800, assignedUser: { name: 'James Murray' }, customer: 'Industrial Solutions', priority: 'urgent', dueDate: '2026-04-10', progress: 15 } },
+  { stage: 'materials', job: { id: 'JOB-2026-0018', name: 'Turret Punch Parts', description: 'High-volume punched components for HVAC units', quoteCount: 1, value: 45200, assignedUser: { name: 'Emma Wilson' }, customer: 'Climate Systems', priority: 'medium', dueDate: '2026-04-25', progress: 30 } },
 ];
 
 const buildKanbanJobs = (): Record<string, Job[]> => {

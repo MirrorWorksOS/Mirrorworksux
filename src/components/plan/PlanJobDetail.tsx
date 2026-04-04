@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, DollarSign, Plus, Save } from 'lucide-react';
+import { ArrowLeft, DollarSign, Plus, Save, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   JobWorkspaceLayout,
@@ -29,6 +29,16 @@ function stageProgress(stage: StageId): number {
   return Math.round(((idx + 1) / STAGES.length) * 100);
 }
 
+/** Document flow lineage for the current job */
+const DOCUMENT_FLOW = [
+  { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', type: 'OPP' },
+  { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', type: 'Q' },
+  { label: 'SO-2026-0085', href: '/sell/orders/so-001', type: 'SO' },
+  { label: 'JOB-2026-0012', href: '/plan/jobs/JOB-2026-0012', type: 'JOB' },
+  { label: 'WO-2026-0001', href: '#', type: 'WO' },
+  { label: 'MO-2026-0001', href: '#', type: 'MO' },
+];
+
 export function PlanJobDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -37,7 +47,7 @@ export function PlanJobDetail() {
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
 
   const jobId = 'JOB-2026-0012';
-  const quoteId = 'MW-Q-0042';
+  const quoteId = 'Q-2026-0055';
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
 
   const tabs = useMemo<JobWorkspaceTabConfig[]>(() => {
@@ -108,15 +118,26 @@ export function PlanJobDetail() {
             ))}
           </div>
 
-          {/* Quote badge — Sell quotes list */}
-          <div className="flex items-center gap-2">
-            <Link
-              to="/sell/quotes"
-              className="inline-flex items-center rounded-full border border-[var(--border)] text-xs tabular-nums px-2.5 py-0.5 font-medium text-foreground hover:bg-[var(--neutral-50)] transition-colors"
-            >
-              {quoteId}
-            </Link>
-          </div>
+          {/* Document flow breadcrumb */}
+          <nav aria-label="Document flow" className="flex flex-wrap items-center gap-1">
+            {DOCUMENT_FLOW.map((doc, idx) => (
+              <React.Fragment key={doc.label}>
+                {idx > 0 && (
+                  <ChevronRight className="h-3 w-3 shrink-0 text-[var(--neutral-400)]" aria-hidden />
+                )}
+                <Link
+                  to={doc.href}
+                  className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
+                    doc.label === jobId
+                      ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 text-foreground'
+                      : 'border-[var(--border)] text-foreground hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-800)]'
+                  }`}
+                >
+                  {doc.label}
+                </Link>
+              </React.Fragment>
+            ))}
+          </nav>
         </div>
       }
       headerActions={

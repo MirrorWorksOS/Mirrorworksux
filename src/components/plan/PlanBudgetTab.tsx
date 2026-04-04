@@ -49,7 +49,7 @@ const mockBudgetData = {
   currentMargin: 23.1,
   quotedMargin: 18.5,
   projectedMargin: 19.2,
-  quoteReference: 'MW-Q-0042',
+  quoteReference: 'Q-2026-0042',
 };
 
 const mockCategories = [

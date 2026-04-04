@@ -52,6 +52,7 @@ import { PlanProducts } from './components/plan/PlanProducts';
 import { PlanProductDetail } from './components/plan/PlanProductDetail';
 import { PlanSettings } from './components/plan/PlanSettings';
 import { PlanNCConnect } from './components/plan/PlanNCConnect';
+import { PlanCADImport } from './components/plan/PlanCADImport';
 
 // Make Module
 import { MakeDashboard } from './components/make/MakeDashboard';
@@ -178,6 +179,7 @@ export const router = createBrowserRouter([
           { path: 'activities', element: <PlanActivities /> },
           { path: 'schedule', element: <PlanSchedule /> },
           { path: 'nc-connect', element: <PlanNCConnect /> },
+          { path: 'cad-import', element: <PlanCADImport /> },
           { path: 'purchase', element: <PlanPurchase /> },
           { path: 'qc-planning', element: <PlanQCPlanning /> },
           { path: 'products', element: <PlanProducts /> },
