@@ -1,6 +1,6 @@
 /**
- * Shared Product Detail — 5-tab view used across Sell, Plan & Make modules
- * Tabs: Overview | Manufacturing | Inventory | Accounting | Documents
+ * Shared Product Detail — 6-tab view used across Sell, Plan & Make modules
+ * Tabs: Overview | Manufacturing | Inventory | Planning | Accounting | Documents
  * Figma: 484:251921, 519:290499, 519:295628, 519:332160
  */
 import React, { useState } from 'react';
@@ -10,12 +10,15 @@ import {
   Barcode, Plus, TrendingUp, Eye, Download, Upload, FileText,
   CheckCircle, Sparkles, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
-  RotateCcw, Star, BarChart3,
+  RotateCcw, Star, BarChart3, ChevronRight, Clock, MapPin,
+  RefreshCw,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -31,7 +34,17 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/components/ui/utils';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import {
+  PieChart, Pie, Cell, ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine,
+} from 'recharts';
+import {
+  MW_CHART_COLOURS,
+  MW_RECHARTS_ANIMATION,
+  MW_AXIS_TICK,
+  MW_CARTESIAN_GRID,
+  MW_TOOLTIP_STYLE,
+} from '@/components/shared/charts/chart-theme';
 
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
@@ -74,13 +87,31 @@ const TIERED_PRICING = [
 ];
 
 const ROUTING = [
-  { step: 1, name: 'CNC Laser Cutting', workCenter: 'Cutting', duration: 2, setup: 30 },
-  { step: 2, name: 'Press Brake Forming', workCenter: 'Forming', duration: 1.5, setup: 20 },
-  { step: 3, name: 'MIG Welding', workCenter: 'Welding', duration: 3, setup: 15 },
-  { step: 4, name: 'Grind & Deburr', workCenter: 'Finishing', duration: 0.5, setup: 0 },
-  { step: 5, name: 'Powder Coat', workCenter: 'Finishing', duration: 4, setup: 45 },
-  { step: 6, name: 'Assembly & QC', workCenter: 'Assembly', duration: 1, setup: 0 },
+  { step: 1, name: 'CNC Laser Cutting', workCenter: 'Cutting', duration: 2, setup: 30, status: 'complete' as const },
+  { step: 2, name: 'Press Brake Forming', workCenter: 'Forming', duration: 1.5, setup: 20, status: 'complete' as const },
+  { step: 3, name: 'MIG Welding', workCenter: 'Welding', duration: 3, setup: 15, status: 'in_progress' as const },
+  { step: 4, name: 'Grind & Deburr', workCenter: 'Finishing', duration: 0.5, setup: 0, status: 'not_started' as const },
+  { step: 5, name: 'Powder Coat', workCenter: 'Finishing', duration: 4, setup: 45, status: 'not_started' as const },
+  { step: 6, name: 'Assembly & QC', workCenter: 'Assembly', duration: 1, setup: 0, status: 'not_started' as const },
 ];
+
+type RoutingStatus = 'not_started' | 'in_progress' | 'complete';
+
+// ── MRP / Inventory Planning data ──────────────────────────
+const STOCK_PROJECTION = Array.from({ length: 30 }, (_, i) => {
+  const day = i + 1;
+  const base = 230;
+  // Simulate demand drawdown with a restock bump at day 18
+  const demand = Math.round(day * 6.5 + Math.sin(day * 0.5) * 15);
+  const restock = day >= 18 ? 150 : 0;
+  const projected = Math.max(0, base - demand + restock);
+  return {
+    day: `Day ${day}`,
+    stock: projected,
+    reorderPoint: 50,
+    safetyStock: 25,
+  };
+});
 
 const BOM_LINES = [
   { sku: 'MS-10-3678', description: '10mm MS Plate', qty: 4, unit: 'sheet', cost: 185.00 },
@@ -159,12 +190,13 @@ const TOP_CUSTOMERS = [
 ];
 
 // ── Tab definitions ─────────────────────────────────────
-const TABS = ['Overview', 'Manufacturing', 'Inventory', 'Accounting', 'Documents'] as const;
+const TABS = ['Overview', 'Manufacturing', 'Inventory', 'Planning', 'Accounting', 'Documents'] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_BADGES: Partial<Record<Tab, number | string>> = {
   Manufacturing: 6,
   Inventory: 4,
+  Planning: 'MRP',
   Documents: 3,
 };
 
@@ -542,39 +574,44 @@ function OverviewTab() {
   );
 }
 
+// ── Routing pill helpers ────────────────────────────────
+function routingStatusStyle(status: RoutingStatus) {
+  switch (status) {
+    case 'complete':
+      return 'bg-[var(--mw-success-light)] text-[var(--mw-success)] dark:bg-[var(--mw-success)]/20 dark:text-[var(--mw-success)]';
+    case 'in_progress':
+      return 'bg-[var(--mw-yellow-400)] text-neutral-900';
+    case 'not_started':
+    default:
+      return 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300';
+  }
+}
+
+function routingStatusLabel(status: RoutingStatus) {
+  switch (status) {
+    case 'complete': return 'Complete';
+    case 'in_progress': return 'In progress';
+    case 'not_started': return 'Not started';
+  }
+}
+
+/** SVG arrow connector between routing pills */
+function RoutingArrow() {
+  return (
+    <svg width="24" height="16" viewBox="0 0 24 16" fill="none" className="shrink-0 mx-0.5 hidden sm:block text-neutral-400 dark:text-neutral-500" aria-hidden="true">
+      <path d="M0 8h18" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M15 3l6 5-6 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════
 // MANUFACTURING TAB
 // ═══════════════════════════════════════════════════════════
 function ManufacturingTab() {
   const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
-
-  const routingColumns: MwColumnDef<(typeof ROUTING)[number]>[] = [
-    {
-      key: 'step',
-      header: 'Step',
-      cell: (row) => <span className="font-medium tabular-nums text-[var(--neutral-500)]">{String(row.step).padStart(2, '0')}</span>,
-    },
-    {
-      key: 'operation',
-      header: 'Operation',
-      cell: (row) => <span className="font-medium text-foreground">{row.name}</span>,
-    },
-    {
-      key: 'workCenter',
-      header: 'Work Centre',
-      cell: (row) => <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs">{row.workCenter}</Badge>,
-    },
-    {
-      key: 'cycle',
-      header: 'Cycle (hrs)',
-      cell: (row) => <span className="tabular-nums">{row.duration}</span>,
-    },
-    {
-      key: 'setup',
-      header: 'Setup (min)',
-      cell: (row) => <span className="tabular-nums text-[var(--neutral-500)]">{row.setup > 0 ? row.setup : '—'}</span>,
-    },
-  ];
+  const totalMaterial = BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0);
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
 
   const bomColumns: FinancialColumn<(typeof BOM_LINES)[number]>[] = [
     { key: 'sku', header: 'SKU', accessor: (row) => row.sku, format: 'text', align: 'left', className: 'text-xs text-[var(--neutral-500)]' },
@@ -586,32 +623,166 @@ function ManufacturingTab() {
   ];
 
   const bomTotals: Record<string, number> = {
-    lineTotal: BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0),
+    lineTotal: totalMaterial,
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <SubHeading actions={
-          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit routing coming soon')}>Edit routing</Button>
-        }>
-          Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time
-        </SubHeading>
-        <div className="mt-3">
-          <MwDataTable columns={routingColumns} data={ROUTING} keyExtractor={(row) => row.step} />
-        </div>
-      </div>
-
-      <div>
+    <div className="space-y-8">
+      {/* ── BOM Material Pills ────────────────────────── */}
+      <section className="space-y-4">
         <SubHeading actions={
           <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit BOM coming soon')}>Edit BOM</Button>
         }>
           Bill of Materials · v1.2
         </SubHeading>
-        <div className="mt-3">
-          <FinancialTable columns={bomColumns} data={BOM_LINES} keyExtractor={(row) => row.sku} totals={bomTotals} />
+
+        {/* Pill chips */}
+        <div className="flex flex-wrap gap-2">
+          {BOM_LINES.map((line) => (
+            <button
+              key={line.sku}
+              onClick={() => toast(`${line.description}: ${line.qty} ${line.unit} @ $${line.cost.toFixed(2)}`)}
+              className="inline-flex items-center gap-2 rounded-full bg-neutral-100 dark:bg-neutral-800 px-3 py-1 text-sm transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
+            >
+              <span className="font-medium text-foreground">{line.description}</span>
+              <span className="text-neutral-500 dark:text-neutral-400 tabular-nums">{line.qty} {line.unit}</span>
+            </button>
+          ))}
         </div>
-      </div>
+
+        {/* Expandable full BOM table */}
+        <details className="group">
+          <summary className="text-xs text-[var(--neutral-500)] cursor-pointer hover:text-foreground transition-colors flex items-center gap-1">
+            <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90" />
+            Show full BOM table — {BOM_LINES.length} lines, ${totalMaterial.toLocaleString('en-AU', { minimumFractionDigits: 2 })} total
+          </summary>
+          <div className="mt-3">
+            <FinancialTable columns={bomColumns} data={BOM_LINES} keyExtractor={(row) => row.sku} totals={bomTotals} />
+          </div>
+        </details>
+      </section>
+
+      {/* ── Routing Flow Pipeline ─────────────────────── */}
+      <section className="space-y-4">
+        <SubHeading actions={
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit routing coming soon')}>Edit routing</Button>
+        }>
+          Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time
+        </SubHeading>
+
+        {/* Pipeline pills with arrow connectors */}
+        <div className="flex flex-wrap items-center gap-y-3">
+          {ROUTING.map((op, idx) => (
+            <React.Fragment key={op.step}>
+              {idx > 0 && <RoutingArrow />}
+              <motion.button
+                layout
+                onClick={() => setExpandedStep(expandedStep === op.step ? null : op.step)}
+                className={cn(
+                  'inline-flex flex-col items-start rounded-full px-4 py-1.5 text-sm font-medium transition-shadow cursor-pointer',
+                  'border border-transparent',
+                  routingStatusStyle(op.status),
+                  expandedStep === op.step && 'ring-2 ring-[var(--mw-yellow-400)] ring-offset-1 ring-offset-background',
+                )}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.15 }}
+              >
+                <span className="leading-tight">{op.name}</span>
+                <span className="text-[10px] opacity-70 leading-tight">{op.workCenter} · {op.duration}h</span>
+              </motion.button>
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Expanded step detail */}
+        <AnimatePresence mode="wait">
+          {expandedStep !== null && (() => {
+            const op = ROUTING.find(r => r.step === expandedStep);
+            if (!op) return null;
+            return (
+              <motion.div
+                key={op.step}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+                className="overflow-hidden"
+              >
+                <Card variant="flat" className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="text-base font-medium text-foreground">{op.name}</h4>
+                      <p className="text-xs text-[var(--neutral-500)]">Step {op.step} of {ROUTING.length}</p>
+                    </div>
+                    <Badge className={cn('border-0 text-xs', routingStatusStyle(op.status))}>
+                      {routingStatusLabel(op.status)}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Work Centre</p>
+                      <p className="font-medium text-foreground flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-[var(--neutral-400)]" /> {op.workCenter}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Cycle Time</p>
+                      <p className="font-medium text-foreground tabular-nums flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[var(--neutral-400)]" /> {op.duration}h
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Setup Time</p>
+                      <p className="font-medium text-foreground tabular-nums">{op.setup > 0 ? `${op.setup} min` : 'None'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Total Duration</p>
+                      <p className="font-medium text-foreground tabular-nums">{(op.duration + op.setup / 60).toFixed(1)}h</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })()}
+        </AnimatePresence>
+
+        {/* Routing legend */}
+        <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--neutral-500)]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-[var(--mw-success-light)] border border-[var(--mw-success)]" /> Complete
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-[var(--mw-yellow-400)]" /> In progress
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600" /> Not started
+          </span>
+        </div>
+      </section>
+
+      {/* ── Cost Summary ──────────────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeading>Cost Summary</SectionHeading>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { label: 'Material', value: `$${totalMaterial.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`, pct: 65 },
+            { label: 'Labour', value: `$${(totalTime * 55).toFixed(2)}`, pct: 20 },
+            { label: 'Overhead', value: '$150.00', pct: 15 },
+            { label: 'Total Cost', value: '$1,000.00', pct: 100 },
+          ].map((c) => (
+            <Card key={c.label} variant="flat" className="p-4">
+              <p className="text-xs text-[var(--neutral-500)] mb-1">{c.label}</p>
+              <p className="text-lg font-medium tabular-nums text-foreground">{c.value}</p>
+              {c.pct < 100 && (
+                <div className="mt-2 h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                  <div className="h-full rounded-full bg-[var(--mw-yellow-400)]" style={{ width: `${c.pct}%` }} />
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
@@ -1187,11 +1358,308 @@ function DocumentsTab() {
   );
 }
 
+// ═══════════════════════════════════════════════════════════
+// PLANNING TAB (MRP / Reorder Rules)
+// ═══════════════════════════════════════════════════════════
+function PlanningTab() {
+  const [reorderPoint, setReorderPoint] = useState('50');
+  const [reorderQty, setReorderQty] = useState('150');
+  const [safetyStock, setSafetyStock] = useState('25');
+  const [leadTime, setLeadTime] = useState('12');
+  const [autoReorder, setAutoReorder] = useState(true);
+  const [lotSizing, setLotSizing] = useState('eoq');
+  const [abcClass] = useState<'A' | 'B' | 'C'>('A');
+  const currentStock = 230;
+
+  // Stock level color indicator
+  const stockColor = currentStock > Number(reorderPoint) * 2
+    ? 'text-[var(--mw-success)]'
+    : currentStock > Number(reorderPoint)
+      ? 'text-[var(--mw-yellow-400)]'
+      : 'text-[var(--mw-error)]';
+
+  const stockBg = currentStock > Number(reorderPoint) * 2
+    ? 'bg-[var(--mw-success-light)]'
+    : currentStock > Number(reorderPoint)
+      ? 'bg-[var(--mw-warning-light)]'
+      : 'bg-[var(--mw-error-light)]';
+
+  const stockLabel = currentStock > Number(reorderPoint) * 2
+    ? 'Healthy'
+    : currentStock > Number(reorderPoint)
+      ? 'Caution'
+      : 'Critical';
+
+  const abcColors: Record<string, string> = {
+    A: 'bg-[var(--mw-yellow-400)] text-neutral-900',
+    B: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
+    C: 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400',
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* ── Current Stock & Classification ─────────────── */}
+      <section className="space-y-4">
+        <SectionHeading>Current Stock Level</SectionHeading>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Card variant="flat" className={cn('p-5', stockBg)}>
+            <p className="text-xs font-medium text-[var(--neutral-500)] mb-1">Current Stock</p>
+            <p className={cn('text-3xl font-medium tabular-nums', stockColor)}>{currentStock}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <StatusBadge variant={currentStock > Number(reorderPoint) * 2 ? 'success' : currentStock > Number(reorderPoint) ? 'warning' : 'error'}>
+                {stockLabel}
+              </StatusBadge>
+              <span className="text-xs text-[var(--neutral-500)]">units on hand</span>
+            </div>
+          </Card>
+          <Card variant="flat" className="p-5">
+            <p className="text-xs font-medium text-[var(--neutral-500)] mb-1">ABC Classification</p>
+            <div className="flex items-center gap-3 mt-2">
+              {(['A', 'B', 'C'] as const).map((cls) => (
+                <span
+                  key={cls}
+                  className={cn(
+                    'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium',
+                    cls === abcClass ? abcColors[cls] : 'bg-neutral-100 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500',
+                  )}
+                >
+                  {cls}
+                </span>
+              ))}
+            </div>
+            <p className="text-xs text-[var(--neutral-500)] mt-2">
+              Class {abcClass} — {abcClass === 'A' ? 'High value, tight control' : abcClass === 'B' ? 'Moderate value' : 'Low value, loose control'}
+            </p>
+          </Card>
+          <Card variant="flat" className="p-5">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-[var(--neutral-500)]">Auto-Reorder</p>
+              <Switch checked={autoReorder} onCheckedChange={setAutoReorder} />
+            </div>
+            <p className="text-sm text-foreground font-medium">{autoReorder ? 'Enabled' : 'Disabled'}</p>
+            <p className="text-xs text-[var(--neutral-500)] mt-1">
+              {autoReorder
+                ? 'System will auto-generate POs when stock falls below reorder point'
+                : 'Manual purchase orders only'}
+            </p>
+            {autoReorder && (
+              <div className="flex items-center gap-1.5 mt-2 text-xs text-[var(--mw-success)]">
+                <RefreshCw className="w-3 h-3" /> Next check: daily at 06:00
+              </div>
+            )}
+          </Card>
+        </div>
+      </section>
+
+      {/* ── Reorder Rules ─────────────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeading>Reorder Rules</SectionHeading>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Reorder Point</label>
+            <div className="relative">
+              <Input
+                type="number"
+                value={reorderPoint}
+                onChange={(e) => setReorderPoint(e.target.value)}
+                className="h-10 bg-card border-[var(--border)] pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">units</span>
+            </div>
+            <p className="text-xs text-[var(--neutral-400)] mt-1">Trigger reorder at this level</p>
+          </div>
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Reorder Quantity (EOQ)</label>
+            <div className="relative">
+              <Input
+                type="number"
+                value={reorderQty}
+                onChange={(e) => setReorderQty(e.target.value)}
+                className="h-10 bg-card border-[var(--border)] pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">units</span>
+            </div>
+            <p className="text-xs text-[var(--neutral-400)] mt-1">Economic order quantity</p>
+          </div>
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Safety Stock</label>
+            <div className="relative">
+              <Input
+                type="number"
+                value={safetyStock}
+                onChange={(e) => setSafetyStock(e.target.value)}
+                className="h-10 bg-card border-[var(--border)] pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">units</span>
+            </div>
+            <p className="text-xs text-[var(--neutral-400)] mt-1">Buffer below reorder point</p>
+          </div>
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Lead Time</label>
+            <div className="relative">
+              <Input
+                type="number"
+                value={leadTime}
+                onChange={(e) => setLeadTime(e.target.value)}
+                className="h-10 bg-card border-[var(--border)] pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">days</span>
+            </div>
+            <p className="text-xs text-[var(--neutral-400)] mt-1">Avg. supplier lead time</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Preferred Supplier</label>
+            <Select defaultValue="acme">
+              <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                <SelectValue placeholder="Select supplier" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="acme">Acme Industries</SelectItem>
+                <SelectItem value="steel-co">Steel Co Australia</SelectItem>
+                <SelectItem value="metalworks">MetalWorks PTY</SelectItem>
+                <SelectItem value="bluescope">BlueScope Direct</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Lot Sizing Method</label>
+            <Select value={lotSizing} onValueChange={setLotSizing}>
+              <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="fixed">Fixed Quantity</SelectItem>
+                <SelectItem value="lot-for-lot">Lot-for-Lot</SelectItem>
+                <SelectItem value="eoq">Economic Order Quantity (EOQ)</SelectItem>
+                <SelectItem value="period">Period Order Quantity</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Visual reorder level indicator */}
+        <Card variant="flat" className="p-5">
+          <p className="text-xs font-medium text-[var(--neutral-500)] mb-3">Stock Level Thresholds</p>
+          <div className="relative h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+            {/* Safety stock zone */}
+            <div
+              className="absolute inset-y-0 left-0 bg-[var(--mw-error-light)] dark:bg-[var(--mw-error)]/20"
+              style={{ width: `${(Number(safetyStock) / (currentStock * 1.2)) * 100}%` }}
+            />
+            {/* Reorder zone */}
+            <div
+              className="absolute inset-y-0 left-0 bg-[var(--mw-warning-light)] dark:bg-[var(--mw-yellow-400)]/20"
+              style={{ width: `${(Number(reorderPoint) / (currentStock * 1.2)) * 100}%` }}
+            />
+            {/* Current stock marker */}
+            <div
+              className="absolute inset-y-0 w-1 bg-[var(--mw-success)] rounded-full"
+              style={{ left: `${Math.min((currentStock / (currentStock * 1.2)) * 100, 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-[10px] text-[var(--neutral-500)]">
+            <span>0</span>
+            <span className="text-[var(--mw-error)]">Safety: {safetyStock}</span>
+            <span className="text-[var(--mw-yellow-600)] dark:text-[var(--mw-yellow-400)]">Reorder: {reorderPoint}</span>
+            <span className="text-[var(--mw-success)]">Current: {currentStock}</span>
+          </div>
+        </Card>
+      </section>
+
+      {/* ── Stock Projection Chart ─────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeading>30-Day Stock Projection</SectionHeading>
+        <Card variant="flat" className="p-6">
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={STOCK_PROJECTION} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+              <CartesianGrid {...MW_CARTESIAN_GRID} />
+              <XAxis
+                dataKey="day"
+                tick={MW_AXIS_TICK}
+                axisLine={{ stroke: 'var(--neutral-200)' }}
+                tickLine={false}
+                interval={4}
+              />
+              <YAxis
+                tick={MW_AXIS_TICK}
+                axisLine={{ stroke: 'var(--neutral-200)' }}
+                tickLine={false}
+              />
+              <Tooltip
+                contentStyle={MW_TOOLTIP_STYLE}
+                labelStyle={{ color: 'var(--foreground)', fontWeight: 500, marginBottom: 4 }}
+              />
+              <ReferenceLine
+                y={Number(reorderPoint)}
+                stroke="var(--mw-yellow-400)"
+                strokeDasharray="6 4"
+                label={{ value: 'Reorder Point', position: 'insideTopRight', fill: 'var(--mw-yellow-600)', fontSize: 11 }}
+              />
+              <ReferenceLine
+                y={Number(safetyStock)}
+                stroke="var(--mw-error)"
+                strokeDasharray="4 4"
+                label={{ value: 'Safety Stock', position: 'insideBottomRight', fill: 'var(--mw-error)', fontSize: 11 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="stock"
+                name="Projected Stock"
+                stroke={MW_CHART_COLOURS[0]}
+                strokeWidth={2}
+                dot={false}
+                {...MW_RECHARTS_ANIMATION}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="flex flex-wrap gap-4 mt-3 text-xs text-[var(--neutral-500)]">
+            <span className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 rounded-full" style={{ backgroundColor: MW_CHART_COLOURS[0] }} /> Projected stock
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 rounded-full bg-[var(--mw-yellow-400)]" style={{ borderTop: '2px dashed' }} /> Reorder point
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 rounded-full bg-[var(--mw-error)]" style={{ borderTop: '2px dashed' }} /> Safety stock
+            </span>
+          </div>
+        </Card>
+      </section>
+
+      {/* ── AI Planning Insight ────────────────────────── */}
+      <div className="flex items-start gap-3 p-4 rounded-[var(--shape-lg)] bg-[var(--mw-yellow-50)] border border-[var(--mw-yellow-200)]">
+        <Sparkles className="w-5 h-5 text-[var(--mw-yellow-400)] mt-0.5 shrink-0" />
+        <div>
+          <p className="text-sm font-medium text-foreground">AI Planning Recommendation</p>
+          <p className="text-xs text-[var(--neutral-600)] mt-0.5">
+            Based on demand patterns, consider increasing safety stock to <strong>35 units</strong> ahead of the Sep-Nov peak season.
+            Current EOQ of {reorderQty} units is optimal for the current demand rate.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Save actions ──────────────────────────────── */}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <Button variant="outline" className="border-[var(--border)]" onClick={() => toast('Changes discarded')}>
+          Discard
+        </Button>
+        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={() => toast.success('Planning rules saved')}>
+          Save Planning Rules
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ── Tab component map ───────────────────────────────────
 const TAB_COMPONENTS: Record<Tab, () => JSX.Element> = {
   Overview: OverviewTab,
   Manufacturing: ManufacturingTab,
   Inventory: InventoryTab,
+  Planning: PlanningTab,
   Accounting: AccountingTab,
   Documents: DocumentsTab,
 };
