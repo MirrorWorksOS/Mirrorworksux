@@ -4,20 +4,19 @@
  */
 
 import React, { useState } from 'react';
-import { Plus, Filter, MoreVertical, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, MoreVertical, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
-import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import { AnimatedDownload } from '../ui/animated-icons';
 import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
-import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 
 
 type ReqStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'converted';
@@ -70,25 +69,42 @@ const getStatusBadge = (status: ReqStatus) => {
 
 export function BuyRequisitions() {
   const [activeTab, setActiveTab] = useState<'all' | ReqStatus>('all');
+  const [search, setSearch] = useState('');
 
-  const filteredReqs = activeTab === 'all' ? mockRequisitions : mockRequisitions.filter(r => r.status === activeTab);
+  const filteredReqs = (activeTab === 'all' ? mockRequisitions : mockRequisitions.filter(r => r.status === activeTab))
+    .filter(r => !search || r.reqNumber.toLowerCase().includes(search.toLowerCase()) || r.requestor.toLowerCase().includes(search.toLowerCase()));
+  const totalValue = filteredReqs.reduce((sum, r) => sum + r.total, 0);
 
-  const countSubmitted = mockRequisitions.filter(r => r.status === 'submitted').length;
-  const countApproved = mockRequisitions.filter(r => r.status === 'approved').length;
-  const countDraft = mockRequisitions.filter(r => r.status === 'draft').length;
-  const countOther = mockRequisitions.length - countSubmitted - countApproved - countDraft;
+  const tabCounts = {
+    all: mockRequisitions.length,
+    draft: mockRequisitions.filter(r => r.status === 'draft').length,
+    submitted: mockRequisitions.filter(r => r.status === 'submitted').length,
+    approved: mockRequisitions.filter(r => r.status === 'approved').length,
+    rejected: mockRequisitions.filter(r => r.status === 'rejected').length,
+    converted: mockRequisitions.filter(r => r.status === 'converted').length,
+  };
+
+  const summaryByStatus = {
+    submitted: mockRequisitions.filter(r => r.status === 'submitted').reduce((s, r) => s + r.total, 0),
+    approved: mockRequisitions.filter(r => r.status === 'approved').reduce((s, r) => s + r.total, 0),
+    draft: mockRequisitions.filter(r => r.status === 'draft').reduce((s, r) => s + r.total, 0),
+    other: mockRequisitions.filter(r => !['submitted', 'approved', 'draft'].includes(r.status)).reduce((s, r) => s + r.total, 0),
+  };
 
   const columns: MwColumnDef<Requisition>[] = [
     { key: 'reqNumber', header: 'REQ #', tooltip: 'Requisition number', cell: (req) => (
-      <a href={`/buy/requisitions/${req.id}`} className="text-foreground text-sm font-medium hover:underline flex items-center gap-1">
+      <a href={`/buy/requisitions/${req.id}`} className="text-foreground font-medium hover:underline flex items-center gap-1">
         {req.reqNumber}
         <ExternalLink className="w-4 h-4" />
       </a>
     )},
     { key: 'requestor', header: 'Requestor', tooltip: 'Person who raised the requisition', cell: (req) => <span className="text-foreground">{req.requestor}</span> },
-    { key: 'department', header: 'Department', tooltip: 'Requesting department', cell: (req) => <span className="text-[var(--neutral-600)]">{req.department}</span> },
-    { key: 'date', header: 'Date', tooltip: 'Requisition date', cell: (req) => <span className="tabular-nums text-[var(--neutral-600)]">{new Date(req.date).toLocaleDateString('en-AU', { year: 'numeric', month: 'short', day: 'numeric' })}</span> },
-    { key: 'status', header: 'Status', tooltip: 'Approval status', headerClassName: 'text-center', className: 'text-center', cell: (req) => {
+    { key: 'department', header: 'Department', tooltip: 'Requesting department', cell: (req) => <span className="text-[var(--neutral-500)]">{req.department}</span> },
+    { key: 'date', header: 'Date', tooltip: 'Requisition date', cell: (req) => {
+      const d = new Date(req.date);
+      return <span className="tabular-nums text-[var(--neutral-500)]">{d.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</span>;
+    }},
+    { key: 'status', header: 'Status', tooltip: 'Approval status', cell: (req) => {
       const variantMap: Record<ReqStatus, 'neutral' | 'info' | 'success' | 'error'> = {
         draft: 'neutral', submitted: 'info', approved: 'success', rejected: 'error', converted: 'neutral',
       };
@@ -99,7 +115,9 @@ export function BuyRequisitions() {
       );
     }},
     { key: 'items', header: 'Items', tooltip: 'Number of line items', headerClassName: 'text-right', className: 'text-right', cell: (req) => <span className="tabular-nums">{req.items}</span> },
-    { key: 'total', header: 'Total', tooltip: 'Requisition total value', headerClassName: 'text-right', className: 'text-right', cell: (req) => <span className="font-medium tabular-nums">${req.total.toLocaleString()}</span> },
+    { key: 'total', header: 'Total', tooltip: 'Requisition total value', headerClassName: 'text-right', className: 'text-right', cell: (req) => (
+      <span className="font-medium tabular-nums">${req.total.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</span>
+    )},
     { key: 'actions', header: '', cell: (req) => (
       <>
         {req.status === 'submitted' && (
@@ -122,55 +140,67 @@ export function BuyRequisitions() {
   ];
 
   return (
-    <PageShell>
+    <PageShell className="p-6 space-y-6">
+    <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
       <PageHeader
         title="Purchase Requisitions"
-        subtitle={`${filteredReqs.length} requisitions`}
-        actions={
-          <div className="flex gap-3">
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)] group" onClick={() => toast('Filter options coming soon')}>
-              <AnimatedFilter className="w-4 h-4" />
-              Filter
-            </Button>
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-primary-foreground group" onClick={() => toast('New requisition coming soon')}>
-              <AnimatedPlus className="w-4 h-4 mr-2" />
-              New Requisition
-            </Button>
-          </div>
-        }
+        subtitle={`${filteredReqs.length} requisitions • $${totalValue.toLocaleString()} total value`}
       />
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[var(--border)]">
-        {(['all', 'draft', 'submitted', 'approved', 'rejected', 'converted'] as const).map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={cn("px-4 py-2 text-sm border-b-2 transition-colors",
-              activeTab === tab ? 'border-[var(--mw-yellow-400)] text-foreground font-medium' : 'border-transparent text-[var(--neutral-500)] hover:text-foreground')}>
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
 
       <ToolbarSummaryBar
         segments={[
-          { key: 'submitted', label: 'Submitted', value: countSubmitted, color: 'var(--mw-yellow-400)' },
-          { key: 'approved', label: 'Approved', value: countApproved, color: 'var(--mw-mirage)' },
-          { key: 'draft', label: 'Draft', value: countDraft, color: 'var(--neutral-400)' },
-          { key: 'other', label: 'Other', value: countOther, color: 'var(--neutral-200)' },
+          { key: 'submitted', label: 'Submitted', value: summaryByStatus.submitted, color: 'var(--mw-yellow-400)' },
+          { key: 'approved', label: 'Approved', value: summaryByStatus.approved, color: 'var(--mw-mirage)' },
+          { key: 'draft', label: 'Draft', value: summaryByStatus.draft, color: 'var(--neutral-400)' },
+          { key: 'other', label: 'Other', value: summaryByStatus.other, color: 'var(--neutral-200)' },
         ]}
-        formatValue={(v) => String(v)}
       />
 
+      <PageToolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search requisitions…" />
+        <ToolbarFilterPills
+          value={activeTab}
+          onChange={(k) => setActiveTab(k as 'all' | ReqStatus)}
+          options={[
+            { key: 'all', label: 'All', count: tabCounts.all },
+            { key: 'draft', label: 'Draft', count: tabCounts.draft },
+            { key: 'submitted', label: 'Submitted', count: tabCounts.submitted },
+            { key: 'approved', label: 'Approved', count: tabCounts.approved },
+            { key: 'rejected', label: 'Rejected', count: tabCounts.rejected },
+            { key: 'converted', label: 'Converted', count: tabCounts.converted },
+          ]}
+        />
+        <ToolbarSpacer />
+        <ToolbarFilterButton />
+        <Button variant="outline" className="h-12 gap-2 border-[var(--neutral-200)] px-5 group" onClick={() => toast.success('Exporting requisitions...')}>
+          <AnimatedDownload className="w-4 h-4" />
+          Export
+        </Button>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New requisition coming soon')}>
+          New Requisition
+        </ToolbarPrimaryButton>
+      </PageToolbar>
+
       {/* Table */}
-      <MwDataTable
-        columns={columns}
-        data={filteredReqs}
-        keyExtractor={(req) => req.id}
-        striped
-        selectable
-        onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
-        onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
-      />
+      <motion.div variants={staggerItem}>
+        <MwDataTable
+          columns={columns}
+          data={filteredReqs}
+          keyExtractor={(req) => req.id}
+          striped
+          selectable
+          onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
+          onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
+        />
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--neutral-100)]">
+          <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredReqs.length} of {filteredReqs.length}</p>
+          <div className="flex gap-2">
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Previous</button>
+            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Next</button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
     </PageShell>
   );
 }

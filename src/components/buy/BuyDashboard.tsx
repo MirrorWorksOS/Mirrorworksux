@@ -11,6 +11,7 @@ import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import {
   MW_BAR_TOOLTIP_CURSOR,
   MW_RECHARTS_ANIMATION,
@@ -61,6 +62,11 @@ export function BuyDashboard() {
       aiScope="buy"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* AI Insight Feed — positioned below the AI command bar */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="buy" maxItems={3} />
+      </motion.div>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard

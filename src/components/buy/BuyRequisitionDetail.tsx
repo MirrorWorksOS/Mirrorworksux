@@ -163,21 +163,21 @@ export function BuyRequisitionDetail() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-xs">Item</TableHead>
-                  <TableHead className="text-xs">Description</TableHead>
-                  <TableHead className="text-xs text-right">Qty</TableHead>
-                  <TableHead className="text-xs text-right">Est. Cost</TableHead>
-                  <TableHead className="text-xs text-right">Total</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Item</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Qty</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Est. Cost</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {req.items.map((item, i) => (
                   <TableRow key={i}>
-                    <TableCell className="text-xs font-medium tabular-nums">{item.productId}</TableCell>
-                    <TableCell className="text-xs">{item.description}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{item.qty}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{fmtCurrency(item.estimatedCost)}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums font-medium">{fmtCurrency(item.qty * item.estimatedCost)}</TableCell>
+                    <TableCell className="text-sm font-medium tabular-nums">{item.productId}</TableCell>
+                    <TableCell className="text-sm">{item.description}</TableCell>
+                    <TableCell className="text-sm text-right tabular-nums">{item.qty}</TableCell>
+                    <TableCell className="text-sm text-right tabular-nums">{fmtCurrency(item.estimatedCost)}</TableCell>
+                    <TableCell className="text-sm text-right tabular-nums font-medium">{fmtCurrency(item.qty * item.estimatedCost)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
