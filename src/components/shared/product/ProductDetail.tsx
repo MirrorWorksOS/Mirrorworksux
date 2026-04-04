@@ -1201,7 +1201,7 @@ const TAB_COMPONENTS: Record<Tab, () => JSX.Element> = {
 // ═══════════════════════════════════════════════════════════
 export interface ProductDetailProps {
   /** Module context for breadcrumb and back navigation */
-  module?: 'sell' | 'plan' | 'make';
+  module?: 'sell' | 'buy' | 'plan' | 'make';
 }
 
 export function ProductDetail({ module = 'sell' }: ProductDetailProps) {

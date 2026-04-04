@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { Package, AlertTriangle } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
@@ -82,6 +83,8 @@ const productColumns: MwColumnDef<Product>[] = [
 ];
 
 export function BuyProducts() {
+  const navigate = useNavigate();
+
   return (
     <PageShell>
       <PageHeader title="Products" />
@@ -89,6 +92,7 @@ export function BuyProducts() {
         columns={productColumns}
         data={mockProducts}
         keyExtractor={(row) => row.id}
+        onRowClick={(row) => navigate(`/buy/products/${row.id}`)}
         striped
       />
     </PageShell>

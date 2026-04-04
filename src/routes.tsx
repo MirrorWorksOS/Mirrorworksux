@@ -39,6 +39,8 @@ import { BuyReports } from './components/buy/BuyReports';
 import { BuySettings } from './components/buy/BuySettings';
 import { BuyRequisitionDetail } from './components/buy/BuyRequisitionDetail';
 import { BuySupplierDetail } from './components/buy/BuySupplierDetail';
+import { BuyOrderDetail } from './components/buy/BuyOrderDetail';
+import { BuyProductDetail } from './components/buy/BuyProductDetail';
 
 // Plan Module
 import { PlanDashboard } from './components/plan/PlanDashboard';
@@ -154,6 +156,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <BuyDashboard /> },
           { path: 'orders', element: <BuyOrders /> },
+          { path: 'orders/:id', element: <BuyOrderDetail /> },
           { path: 'requisitions', element: <BuyRequisitions /> },
           { path: 'requisitions/:id', element: <BuyRequisitionDetail /> },
           { path: 'receipts', element: <BuyReceipts /> },
@@ -162,6 +165,7 @@ export const router = createBrowserRouter([
           { path: 'rfqs', element: <BuyRFQs /> },
           { path: 'bills', element: <BuyBills /> },
           { path: 'products', element: <BuyProducts /> },
+          { path: 'products/:id', element: <BuyProductDetail /> },
           { path: 'agreements', element: <BuyAgreements /> },
           { path: 'reports', element: <BuyReports /> },
           { path: 'settings', element: <BuySettings /> },

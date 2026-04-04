@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -86,6 +87,7 @@ const poColumns: MwColumnDef<PurchaseOrder>[] = [
 ];
 
 export function BuyOrders() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabFilter>('all');
   const [search, setSearch] = useState('');
 
@@ -159,6 +161,7 @@ export function BuyOrders() {
           columns={poColumns}
           data={filteredPOs}
           keyExtractor={(row) => row.id}
+          onRowClick={(row) => navigate(`/buy/orders/${row.id}`)}
           striped
           selectable
           onExport={(keys) => toast.success(`Exporting ${keys.size} items\u2026`)}
