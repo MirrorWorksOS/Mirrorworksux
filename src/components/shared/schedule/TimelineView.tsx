@@ -26,8 +26,8 @@ function StatusIcon({ event }: { event: TimelineEvent }) {
 
   if (status === "completed") {
     return (
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--mw-success)]/10 text-[var(--mw-success)]">
-        <Check className="h-4 w-4" strokeWidth={2.5} />
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-yellow-400 dark:bg-yellow-400 transition-all duration-200">
+        <Check className="h-4 w-4 text-white" strokeWidth={3} />
       </div>
     );
   }

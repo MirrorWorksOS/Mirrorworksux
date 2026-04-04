@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   DollarSign,
   Download,
+  ExternalLink,
   Mail,
   Plus,
   Send,
@@ -23,6 +24,7 @@ import {
   type JobWorkspaceTabConfig,
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -607,6 +609,15 @@ export function SellInvoiceDetail() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Syncing invoice to Xero...')}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Sync to Xero
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Sync this invoice to Xero accounting</TooltipContent>
+          </Tooltip>
           <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Invoice sent')}>
             <Mail className="mr-2 h-4 w-4" />
             Send Invoice

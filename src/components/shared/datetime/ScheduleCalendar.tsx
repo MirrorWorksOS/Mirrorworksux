@@ -53,6 +53,17 @@ function endOfDayMs(d: Date): number {
   return x.getTime();
 }
 
+/** CSS hatching background for days that have activities */
+const HATCH_STYLE: React.CSSProperties = {
+  backgroundImage: `repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    var(--hatch-color, rgba(250, 204, 21, 0.08)) 4px,
+    var(--hatch-color, rgba(250, 204, 21, 0.08)) 5px
+  )`,
+};
+
 export function ScheduleCalendar({
   events,
   month,
@@ -71,7 +82,7 @@ export function ScheduleCalendar({
   return (
     <div
       className={cn(
-        "rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-4 shadow-xs",
+        "rounded-[var(--shape-lg)] border border-[var(--neutral-200)] dark:border-neutral-700 bg-card p-4 shadow-xs",
         className,
       )}
     >
@@ -100,11 +111,11 @@ export function ScheduleCalendar({
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
-      <div className="grid grid-cols-7 gap-px rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-200)]">
+      <div className="grid grid-cols-7 gap-px rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-neutral-700 bg-[var(--neutral-200)] dark:bg-neutral-700">
         {weekLabels.map((d) => (
           <div
             key={d}
-            className="bg-[var(--neutral-50)] px-1 py-2 text-center text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
+            className="bg-[var(--neutral-50)] dark:bg-neutral-900 px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground"
           >
             {d}
           </div>
@@ -113,26 +124,51 @@ export function ScheduleCalendar({
           const inMonth = isSameMonth(day, month);
           const dayEvents = eventsForDay(day, events);
           const today = isSameDay(day, new Date());
+          const hasActivities = dayEvents.length > 0;
+          const isSelected = false; // Could track selection state here
+
           return (
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[104px] bg-card p-1",
-                !inMonth && "bg-[var(--neutral-50)] opacity-60",
+                "min-h-[104px] bg-card p-1 relative",
+                !inMonth && "bg-[var(--neutral-50)] dark:bg-neutral-900/50 opacity-60",
               )}
+              style={hasActivities && inMonth ? {
+                ...HATCH_STYLE,
+                // Use CSS custom property for dark mode compat
+                ['--hatch-color' as string]: 'rgba(250, 204, 21, 0.08)',
+              } : undefined}
             >
               <button
                 type="button"
                 onClick={() => onDateClick?.(day)}
                 className={cn(
-                  "mb-1 flex h-7 w-7 items-center justify-center rounded-[var(--shape-md)] text-xs tabular-nums transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-                  inMonth && "text-foreground hover:bg-[var(--neutral-100)]",
-                !inMonth && "text-muted-foreground",
-                  today && "font-medium ring-1 ring-[var(--mw-yellow-400)]",
+                  "mb-1 flex h-8 w-8 items-center justify-center rounded-full text-base tabular-nums transition-all duration-200 ease-out font-medium",
+                  inMonth && "text-foreground hover:bg-[var(--neutral-100)] dark:hover:bg-neutral-800",
+                  !inMonth && "text-muted-foreground",
+                  today && "ring-2 ring-yellow-400 ring-offset-1 ring-offset-card",
                 )}
               >
                 {format(day, "d")}
               </button>
+
+              {/* Activity dots indicator */}
+              {hasActivities && inMonth && (
+                <div className="flex items-center justify-center gap-0.5 mb-0.5">
+                  {dayEvents.slice(0, 4).map((ev, i) => (
+                    <div
+                      key={ev.id}
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: ev.color ?? 'var(--mw-yellow-400)' }}
+                    />
+                  ))}
+                  {dayEvents.length > 4 && (
+                    <span className="text-[8px] text-muted-foreground ml-0.5">+{dayEvents.length - 4}</span>
+                  )}
+                </div>
+              )}
+
               <div className="flex flex-col gap-0.5">
                 {dayEvents.slice(0, 3).map((ev) => (
                   <button
