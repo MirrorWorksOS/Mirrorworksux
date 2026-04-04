@@ -4,8 +4,9 @@
 
 import React, { useMemo, useState } from 'react';
 import { Calendar as CalendarIcon, ChartGantt, Factory, List, Plus } from 'lucide-react';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -79,10 +80,104 @@ function useGanttTasks(): { tasks: GanttTask[]; startDate: Date; endDate: Date }
       end: addDays(START_DATE, mo.startDay + mo.durationDays - 1),
       progress: STATUS_TO_PROGRESS[mo.status],
       color: STATUS_CONFIG[mo.status].bar,
+      meta: {
+        moNumber: mo.moNumber,
+        job: mo.job,
+        product: mo.product,
+        workCenter: mo.workCenter,
+        operator: mo.operator,
+        status: mo.status,
+        qty: 12 + Math.floor(Math.random() * 40), // mock qty
+      },
     }));
     const endDate = addDays(START_DATE, NUM_DAYS - 1);
     return { tasks, startDate: START_DATE, endDate };
   }, []);
+}
+
+const TOOLTIP_STATUS_STYLES: Record<MOStatus, { bg: string; text: string; label: string }> = {
+  completed: { bg: 'bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]', label: 'Completed' },
+  in_progress: { bg: 'bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10', text: 'text-foreground', label: 'In Progress' },
+  scheduled: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]', label: 'Scheduled' },
+  overdue: { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Overdue' },
+};
+
+function GanttTooltip({ task }: { task: GanttTask }) {
+  const meta = task.meta as {
+    moNumber: string;
+    job: string;
+    product: string;
+    workCenter: string;
+    operator: string;
+    status: MOStatus;
+    qty: number;
+  } | undefined;
+
+  if (!meta) return null;
+
+  const statusStyle = TOOLTIP_STATUS_STYLES[meta.status];
+  const progress = task.progress ?? 0;
+
+  return (
+    <div className="w-72 rounded-lg bg-white dark:bg-neutral-800 border border-[var(--border)] shadow-lg p-3 space-y-3 pointer-events-none">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground tabular-nums">{meta.moNumber}</span>
+        <Badge className={cn('border-0 text-[10px] px-1.5 py-0.5', statusStyle.bg, statusStyle.text)}>
+          {statusStyle.label}
+        </Badge>
+      </div>
+      {/* Product */}
+      <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{meta.product}</p>
+      {/* Detail grid */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+        <div>
+          <span className="text-[var(--neutral-500)]">Job</span>
+          <p className="font-medium text-foreground tabular-nums">{meta.job}</p>
+        </div>
+        <div>
+          <span className="text-[var(--neutral-500)]">Qty</span>
+          <p className="font-medium text-foreground tabular-nums">{meta.qty} units</p>
+        </div>
+        <div>
+          <span className="text-[var(--neutral-500)]">Operator</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[8px] font-medium text-white dark:bg-[var(--neutral-600)]">
+              {meta.operator}
+            </div>
+          </div>
+        </div>
+        <div>
+          <span className="text-[var(--neutral-500)]">Work Centre</span>
+          <p className="font-medium text-foreground">{meta.workCenter}</p>
+        </div>
+        <div>
+          <span className="text-[var(--neutral-500)]">Start</span>
+          <p className="font-medium text-foreground tabular-nums">{format(task.start, 'd MMM')}</p>
+        </div>
+        <div>
+          <span className="text-[var(--neutral-500)]">End</span>
+          <p className="font-medium text-foreground tabular-nums">{format(task.end, 'd MMM')}</p>
+        </div>
+      </div>
+      {/* Progress */}
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] text-[var(--neutral-500)]">Progress</span>
+          <span className="text-[10px] font-medium text-foreground tabular-nums">{progress}%</span>
+        </div>
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)]">
+          <div
+            className="h-full rounded-full"
+            style={{
+              width: `${progress}%`,
+              backgroundColor: progress >= 100 ? 'var(--mw-success)' : progress > 0 ? 'var(--mw-yellow-400)' : 'var(--neutral-300)',
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function useCalendarEvents(): CalendarEvent[] {
@@ -232,7 +327,13 @@ export function MakeSchedule() {
 
       {view === 'gantt' && (
         <motion.div className="w-full min-w-0" variants={staggerItem}>
-          <GanttChart tasks={tasks} startDate={startDate} endDate={endDate} today={DEMO_TODAY} />
+          <GanttChart
+            tasks={tasks}
+            startDate={startDate}
+            endDate={endDate}
+            today={DEMO_TODAY}
+            renderTooltip={(task) => <GanttTooltip task={task} />}
+          />
         </motion.div>
       )}
 
