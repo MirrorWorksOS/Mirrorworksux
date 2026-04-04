@@ -167,7 +167,7 @@ export function BuyRFQs() {
   const columns: MwColumnDef<RFQ>[] = [
     { key: 'rfqNumber', header: 'RFQ #', tooltip: 'Request for quotation number', cell: (rfq) => <span className="font-medium text-foreground">{rfq.rfqNumber}</span> },
     { key: 'title', header: 'Title', tooltip: 'RFQ description', cell: (rfq) => <span className="font-medium text-foreground">{rfq.title}</span> },
-    { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', cell: (rfq) => <span className="text-xs tabular-nums text-[var(--neutral-500)]">{rfq.sku}</span> },
+    { key: 'sku', header: 'SKU', tooltip: 'Stock keeping unit', cell: (rfq) => <span className="tabular-nums text-[var(--neutral-500)]">{rfq.sku}</span> },
     { key: 'qty', header: 'Qty', tooltip: 'Requested quantity', cell: (rfq) => <span className="tabular-nums">{rfq.qty}</span> },
     { key: 'suppliers', header: 'Suppliers', tooltip: 'Number of invited suppliers', cell: (rfq) => <span className="tabular-nums">{rfq.suppliers}</span> },
     { key: 'responses', header: 'Responses', tooltip: 'Quotes received from suppliers', cell: (rfq) => {
