@@ -220,8 +220,8 @@ function QuotingPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
-              <Input defaultValue="MW-Q-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
-              <span className="text-xs text-[var(--neutral-500)] ">Preview: MW-Q-0047</span>
+              <Input defaultValue="Q-2026-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
+              <span className="text-xs text-[var(--neutral-500)] ">Preview: Q-2026-0047</span>
             </div>
           </div>
           <div>

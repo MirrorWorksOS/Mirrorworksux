@@ -214,7 +214,7 @@ export function PlanOverviewTab() {
                   Job ID #
                 </label>
                 <Input
-                  value="MW-001"
+                  value="JOB-2026-0012"
                   readOnly
                   className="bg-[var(--neutral-100)] border-transparent tabular-nums"
                 />

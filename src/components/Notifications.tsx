@@ -24,13 +24,13 @@ interface Notification {
 }
 
 const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: 'n-001', title: 'Quote MW-Q-0055 expiring soon', description: 'TechCorp Industries quote expires in 3 days. Follow up recommended.', module: 'sell', type: 'warning', time: '10 min ago', read: false },
+  { id: 'n-001', title: 'Quote Q-2026-0055 expiring soon', description: 'TechCorp Industries quote expires in 3 days. Follow up recommended.', module: 'sell', type: 'warning', time: '10 min ago', read: false },
   { id: 'n-002', title: 'PO-2026-0088 partial delivery', description: 'Pacific Metals delivered 12 of 20 items. 8 outstanding.', module: 'buy', type: 'info', time: '25 min ago', read: false },
-  { id: 'n-003', title: 'MO-2026-001 ahead of schedule', description: 'Mounting Bracket Assembly is 15% ahead of planned progress.', module: 'make', type: 'success', time: '1h ago', read: false },
+  { id: 'n-003', title: 'MO-2026-0001 ahead of schedule', description: 'Mounting Bracket Assembly is 15% ahead of planned progress.', module: 'make', type: 'success', time: '1h ago', read: false },
   { id: 'n-004', title: 'Invoice INV-2026-0234 overdue', description: 'TechCorp Industries — $12,400 is 20 days past due.', module: 'book', type: 'error', time: '2h ago', read: false },
   { id: 'n-005', title: 'Shipment dispatched', description: 'Kemppi Australia order shipped via StarTrack. ETA 2 days.', module: 'ship', type: 'success', time: '3h ago', read: true },
   { id: 'n-006', title: 'Requisition REQ-2026-0089 pending', description: 'Priya Sharma submitted a requisition for $8,500 — awaiting approval.', module: 'buy', type: 'info', time: '4h ago', read: true },
-  { id: 'n-007', title: 'Job MW-009 materials ready', description: 'All materials received for Mounting Bracket job. Ready to schedule.', module: 'plan', type: 'success', time: '5h ago', read: true },
+  { id: 'n-007', title: 'Job JOB-2026-0012 materials ready', description: 'All materials received for Mounting Bracket job. Ready to schedule.', module: 'plan', type: 'success', time: '5h ago', read: true },
   { id: 'n-008', title: 'Quality alert: CNC-01 spindle wear', description: 'Tooling wear detected on CNC-01 spindle. Replacement recommended.', module: 'make', type: 'warning', time: '6h ago', read: true },
   { id: 'n-009', title: 'Xero sync completed', description: '147 invoices synced successfully. No discrepancies found.', module: 'book', type: 'info', time: '8h ago', read: true },
   { id: 'n-010', title: 'New opportunity created', description: 'Aluminium Enclosures — Hunter Steel Co, $22,000 estimated value.', module: 'sell', type: 'info', time: '1d ago', read: true },

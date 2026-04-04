@@ -62,7 +62,7 @@ const MOCK_INVOICES: Invoice[] = [
     status: 'viewed' as InvoiceStatus,
     total: 45200,
     balanceDue: 45200,
-    jobReference: 'MW-004',
+    jobReference: 'JOB-2026-0014',
   },
   {
     id: 'INV-2026-0238',
@@ -72,7 +72,7 @@ const MOCK_INVOICES: Invoice[] = [
     status: 'partiallyPaid' as InvoiceStatus,
     total: 89500,
     balanceDue: 44750,
-    jobReference: 'MW-005',
+    jobReference: 'JOB-2026-0015',
   },
 ];
 
