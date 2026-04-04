@@ -1,37 +1,1168 @@
 /**
- * Factory designer — canvas-based factory floor layout (ARCH 00 / Control).
- * @see src/guidelines/AccessRightsAndPermissions.md
+ * Factory Designer — interactive 2D factory layout canvas (ARCH 00 / Control).
+ *
+ * SVG-based canvas with drag-and-drop element placement, grid snapping,
+ * zoom controls, properties panel, and undo/redo history.
  */
 
-import { Layout } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import {
+  Layout, ZoomIn, ZoomOut, Undo2, Redo2, Save, Upload, Download,
+  Grid3x3, Magnet, Trash2, RotateCw, Copy,
+  // Machine icons
+  Cog, Zap, ArrowDownUp, CircleDot, Flame, Disc3,
+  // Zone icons
+  Factory, Warehouse, Truck, Building2, FlaskConical, Wrench,
+  // Infrastructure icons
+  Square, DoorOpen, MoveHorizontal, ArrowRightLeft,
+  // People icons
+  User, Shield,
+  // Misc
+  ChevronRight, GripVertical,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@/components/ui/resizable';
 import { toast } from 'sonner';
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type ElementCategory = 'machines' | 'zones' | 'infrastructure' | 'people';
+type MachineStatus = 'Active' | 'Maintenance' | 'Idle';
+
+interface FactoryElement {
+  id: string;
+  type: string;
+  category: ElementCategory;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+  rotation: number;
+  // Machine-specific
+  status?: MachineStatus;
+  operator?: string;
+}
+
+interface PaletteItem {
+  type: string;
+  label: string;
+  icon: React.ReactNode;
+  category: ElementCategory;
+  defaultWidth: number;
+  defaultHeight: number;
+  defaultColor: string;
+}
+
+interface HistoryState {
+  elements: FactoryElement[];
+  selectedId: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const GRID_SIZE = 20;
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 3;
+const ZOOM_STEP = 0.15;
+const CANVAS_WIDTH = 1600;
+const CANVAS_HEIGHT = 1000;
+
+const PALETTE_ITEMS: Record<ElementCategory, PaletteItem[]> = {
+  machines: [
+    { type: 'cnc', label: 'CNC Machine', icon: <Cog className="w-4 h-4" />, category: 'machines', defaultWidth: 120, defaultHeight: 80, defaultColor: '#a3a3a3' },
+    { type: 'laser', label: 'Laser Cutter', icon: <Zap className="w-4 h-4" />, category: 'machines', defaultWidth: 140, defaultHeight: 80, defaultColor: '#a3a3a3' },
+    { type: 'press', label: 'Press Brake', icon: <ArrowDownUp className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 80, defaultColor: '#a3a3a3' },
+    { type: 'lathe', label: 'Lathe', icon: <CircleDot className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 60, defaultColor: '#a3a3a3' },
+    { type: 'welder', label: 'Welder', icon: <Flame className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 80, defaultColor: '#a3a3a3' },
+    { type: 'grinder', label: 'Grinder', icon: <Disc3 className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 60, defaultColor: '#a3a3a3' },
+  ],
+  zones: [
+    { type: 'production', label: 'Production', icon: <Factory className="w-4 h-4" />, category: 'zones', defaultWidth: 300, defaultHeight: 200, defaultColor: '#3b82f6' },
+    { type: 'storage', label: 'Storage', icon: <Warehouse className="w-4 h-4" />, category: 'zones', defaultWidth: 200, defaultHeight: 150, defaultColor: '#f59e0b' },
+    { type: 'loading-dock', label: 'Loading Dock', icon: <Truck className="w-4 h-4" />, category: 'zones', defaultWidth: 200, defaultHeight: 100, defaultColor: '#10b981' },
+    { type: 'office', label: 'Office', icon: <Building2 className="w-4 h-4" />, category: 'zones', defaultWidth: 150, defaultHeight: 120, defaultColor: '#8b5cf6' },
+    { type: 'quality-lab', label: 'Quality Lab', icon: <FlaskConical className="w-4 h-4" />, category: 'zones', defaultWidth: 160, defaultHeight: 120, defaultColor: '#06b6d4' },
+    { type: 'maintenance', label: 'Maintenance', icon: <Wrench className="w-4 h-4" />, category: 'zones', defaultWidth: 140, defaultHeight: 100, defaultColor: '#ef4444' },
+  ],
+  infrastructure: [
+    { type: 'wall', label: 'Wall', icon: <Square className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 200, defaultHeight: 10, defaultColor: '#525252' },
+    { type: 'door', label: 'Door', icon: <DoorOpen className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 60, defaultHeight: 10, defaultColor: '#78716c' },
+    { type: 'aisle', label: 'Aisle', icon: <MoveHorizontal className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 200, defaultHeight: 40, defaultColor: '#d4d4d4' },
+    { type: 'conveyor', label: 'Conveyor', icon: <ArrowRightLeft className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 200, defaultHeight: 30, defaultColor: '#737373' },
+  ],
+  people: [
+    { type: 'operator', label: 'Operator Station', icon: <User className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: '#3b82f6' },
+    { type: 'supervisor', label: 'Supervisor Station', icon: <Shield className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: '#f59e0b' },
+  ],
+};
+
+const CATEGORY_LABELS: Record<ElementCategory, string> = {
+  machines: 'Machines',
+  zones: 'Zones',
+  infrastructure: 'Infrastructure',
+  people: 'People',
+};
+
+const OPERATORS = ['Unassigned', 'John Smith', 'Sarah Lee', 'Mike Chen', 'Emma Davis', 'Tom Wilson'];
+
+// ---------------------------------------------------------------------------
+// Mock factory layout
+// ---------------------------------------------------------------------------
+
+function createMockLayout(): FactoryElement[] {
+  return [
+    // Zones (placed first so they render behind)
+    { id: 'zone-raw', type: 'storage', category: 'zones', name: 'Raw Material Storage', x: 40, y: 40, width: 240, height: 180, color: '#f59e0b', rotation: 0 },
+    { id: 'zone-finished', type: 'storage', category: 'zones', name: 'Finished Goods', x: 1300, y: 40, width: 260, height: 200, color: '#10b981', rotation: 0 },
+    { id: 'zone-loading', type: 'loading-dock', category: 'zones', name: 'Loading Dock', x: 1300, y: 800, width: 260, height: 160, color: '#10b981', rotation: 0 },
+    { id: 'zone-qc', type: 'quality-lab', category: 'zones', name: 'Quality Lab', x: 1040, y: 40, width: 200, height: 160, color: '#06b6d4', rotation: 0 },
+    // Machines
+    { id: 'cnc-1', type: 'cnc', category: 'machines', name: 'CNC Machine #1', x: 400, y: 100, width: 120, height: 80, color: '#a3a3a3', rotation: 0, status: 'Active', operator: 'John Smith' },
+    { id: 'cnc-2', type: 'cnc', category: 'machines', name: 'CNC Machine #2', x: 400, y: 240, width: 120, height: 80, color: '#a3a3a3', rotation: 0, status: 'Active', operator: 'Sarah Lee' },
+    { id: 'laser-1', type: 'laser', category: 'machines', name: 'Laser Cutter #1', x: 600, y: 100, width: 140, height: 80, color: '#a3a3a3', rotation: 0, status: 'Active', operator: 'Mike Chen' },
+    { id: 'press-1', type: 'press', category: 'machines', name: 'Press Brake #1', x: 600, y: 240, width: 100, height: 80, color: '#a3a3a3', rotation: 0, status: 'Maintenance' },
+    // People
+    { id: 'op-1', type: 'operator', category: 'people', name: 'Station A', x: 380, y: 200, width: 40, height: 40, color: '#3b82f6', rotation: 0 },
+    { id: 'op-2', type: 'operator', category: 'people', name: 'Station B', x: 560, y: 200, width: 40, height: 40, color: '#3b82f6', rotation: 0 },
+    { id: 'op-3', type: 'operator', category: 'people', name: 'Station C', x: 740, y: 200, width: 40, height: 40, color: '#3b82f6', rotation: 0 },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Helper: snap to grid
+// ---------------------------------------------------------------------------
+
+function snapToGrid(value: number, gridSize: number): number {
+  return Math.round(value / gridSize) * gridSize;
+}
+
+let nextId = 100;
+function generateId(): string {
+  return `el-${Date.now()}-${nextId++}`;
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function ControlFactoryDesigner() {
+  // Canvas state
+  const [elements, setElements] = useState<FactoryElement[]>(createMockLayout);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(0.7);
+  const [showGrid, setShowGrid] = useState(true);
+  const [snapEnabled, setSnapEnabled] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<ElementCategory>('machines');
+
+  // Canvas panning
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+
+  // Drag state
+  const [dragging, setDragging] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
+
+  // Undo/Redo
+  const [history, setHistory] = useState<HistoryState[]>([{ elements: createMockLayout(), selectedId: null }]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+  const selectedElement = useMemo(
+    () => elements.find((el) => el.id === selectedId) ?? null,
+    [elements, selectedId],
+  );
+
+  // ------------------------------------------------------------------
+  // History helpers
+  // ------------------------------------------------------------------
+
+  const pushHistory = useCallback((newElements: FactoryElement[], newSelectedId: string | null) => {
+    setHistory((prev) => {
+      const trimmed = prev.slice(0, historyIndex + 1);
+      return [...trimmed, { elements: newElements, selectedId: newSelectedId }];
+    });
+    setHistoryIndex((prev) => prev + 1);
+  }, [historyIndex]);
+
+  const undo = useCallback(() => {
+    if (historyIndex <= 0) return;
+    const newIndex = historyIndex - 1;
+    setHistoryIndex(newIndex);
+    const state = history[newIndex];
+    setElements(state.elements);
+    setSelectedId(state.selectedId);
+  }, [history, historyIndex]);
+
+  const redo = useCallback(() => {
+    if (historyIndex >= history.length - 1) return;
+    const newIndex = historyIndex + 1;
+    setHistoryIndex(newIndex);
+    const state = history[newIndex];
+    setElements(state.elements);
+    setSelectedId(state.selectedId);
+  }, [history, historyIndex]);
+
+  // ------------------------------------------------------------------
+  // Element updates
+  // ------------------------------------------------------------------
+
+  const updateElement = useCallback((id: string, updates: Partial<FactoryElement>) => {
+    setElements((prev) => {
+      const next = prev.map((el) => (el.id === id ? { ...el, ...updates } : el));
+      pushHistory(next, selectedId);
+      return next;
+    });
+  }, [pushHistory, selectedId]);
+
+  const deleteSelected = useCallback(() => {
+    if (!selectedId) return;
+    setElements((prev) => {
+      const next = prev.filter((el) => el.id !== selectedId);
+      pushHistory(next, null);
+      return next;
+    });
+    setSelectedId(null);
+  }, [selectedId, pushHistory]);
+
+  const duplicateSelected = useCallback(() => {
+    if (!selectedElement) return;
+    const newEl: FactoryElement = {
+      ...selectedElement,
+      id: generateId(),
+      name: `${selectedElement.name} (copy)`,
+      x: selectedElement.x + 20,
+      y: selectedElement.y + 20,
+    };
+    setElements((prev) => {
+      const next = [...prev, newEl];
+      pushHistory(next, newEl.id);
+      return next;
+    });
+    setSelectedId(newEl.id);
+  }, [selectedElement, pushHistory]);
+
+  // ------------------------------------------------------------------
+  // SVG coordinate helpers
+  // ------------------------------------------------------------------
+
+  const clientToSvg = useCallback((clientX: number, clientY: number) => {
+    const container = canvasContainerRef.current;
+    if (!container) return { x: 0, y: 0 };
+    const rect = container.getBoundingClientRect();
+    return {
+      x: (clientX - rect.left - pan.x) / zoom,
+      y: (clientY - rect.top - pan.y) / zoom,
+    };
+  }, [zoom, pan]);
+
+  // ------------------------------------------------------------------
+  // Canvas drag (element move)
+  // ------------------------------------------------------------------
+
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    // Only pan on middle-click or if we clicked the background
+    if (e.button === 1 || (e.button === 0 && (e.target as SVGElement).getAttribute('data-canvas-bg') === 'true')) {
+      if (e.button === 0 && (e.target as SVGElement).getAttribute('data-canvas-bg') === 'true') {
+        setSelectedId(null);
+      }
+      setIsPanning(true);
+      panStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+      e.preventDefault();
+    }
+  }, [pan]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (isPanning) {
+      const dx = e.clientX - panStart.current.x;
+      const dy = e.clientY - panStart.current.y;
+      setPan({ x: panStart.current.panX + dx, y: panStart.current.panY + dy });
+      return;
+    }
+
+    if (dragging) {
+      const pos = clientToSvg(e.clientX, e.clientY);
+      let newX = pos.x - dragging.offsetX;
+      let newY = pos.y - dragging.offsetY;
+      if (snapEnabled) {
+        newX = snapToGrid(newX, GRID_SIZE);
+        newY = snapToGrid(newY, GRID_SIZE);
+      }
+      // Clamp to canvas
+      newX = Math.max(0, Math.min(CANVAS_WIDTH - 20, newX));
+      newY = Math.max(0, Math.min(CANVAS_HEIGHT - 20, newY));
+      setElements((prev) =>
+        prev.map((el) => (el.id === dragging.id ? { ...el, x: newX, y: newY } : el)),
+      );
+    }
+  }, [isPanning, dragging, clientToSvg, snapEnabled]);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    if (dragging) {
+      // Push history after drag completes
+      setElements((prev) => {
+        pushHistory(prev, selectedId);
+        return prev;
+      });
+    }
+    setIsPanning(false);
+    setDragging(null);
+  }, [dragging, pushHistory, selectedId]);
+
+  const handleElementMouseDown = useCallback((e: React.MouseEvent, el: FactoryElement) => {
+    e.stopPropagation();
+    if (e.button !== 0) return;
+    const pos = clientToSvg(e.clientX, e.clientY);
+    setSelectedId(el.id);
+    setDragging({ id: el.id, offsetX: pos.x - el.x, offsetY: pos.y - el.y });
+  }, [clientToSvg]);
+
+  // ------------------------------------------------------------------
+  // Drop from palette
+  // ------------------------------------------------------------------
+
+  const handleCanvasDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('application/factory-element');
+    if (!data) return;
+    const paletteItem: PaletteItem = JSON.parse(data);
+    const pos = clientToSvg(e.clientX, e.clientY);
+    let x = pos.x - paletteItem.defaultWidth / 2;
+    let y = pos.y - paletteItem.defaultHeight / 2;
+    if (snapEnabled) {
+      x = snapToGrid(x, GRID_SIZE);
+      y = snapToGrid(y, GRID_SIZE);
+    }
+
+    const newEl: FactoryElement = {
+      id: generateId(),
+      type: paletteItem.type,
+      category: paletteItem.category,
+      name: paletteItem.label,
+      x,
+      y,
+      width: paletteItem.defaultWidth,
+      height: paletteItem.defaultHeight,
+      color: paletteItem.defaultColor,
+      rotation: 0,
+      ...(paletteItem.category === 'machines' ? { status: 'Idle' as MachineStatus, operator: 'Unassigned' } : {}),
+    };
+
+    setElements((prev) => {
+      const next = [...prev, newEl];
+      pushHistory(next, newEl.id);
+      return next;
+    });
+    setSelectedId(newEl.id);
+  }, [clientToSvg, snapEnabled, pushHistory]);
+
+  const handleCanvasDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  }, []);
+
+  // ------------------------------------------------------------------
+  // Zoom
+  // ------------------------------------------------------------------
+
+  const zoomIn = useCallback(() => setZoom((z) => Math.min(MAX_ZOOM, z + ZOOM_STEP)), []);
+  const zoomOut = useCallback(() => setZoom((z) => Math.max(MIN_ZOOM, z - ZOOM_STEP)), []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      setZoom((z) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z + delta)));
+    }
+  }, []);
+
+  // ------------------------------------------------------------------
+  // Keyboard
+  // ------------------------------------------------------------------
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+        e.preventDefault();
+        deleteSelected();
+      }
+      if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.key === 'z' && (e.metaKey || e.ctrlKey) && e.shiftKey) || (e.key === 'y' && (e.metaKey || e.ctrlKey))) {
+        e.preventDefault();
+        redo();
+      }
+      if (e.key === 'd' && (e.metaKey || e.ctrlKey) && selectedId) {
+        e.preventDefault();
+        duplicateSelected();
+      }
+      if (e.key === 'Escape') {
+        setSelectedId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedId, deleteSelected, undo, redo, duplicateSelected]);
+
+  // ------------------------------------------------------------------
+  // Save / Load / Export
+  // ------------------------------------------------------------------
+
+  const handleSave = useCallback(() => {
+    const data = JSON.stringify({ elements, zoom, pan });
+    localStorage.setItem('mw-factory-layout', data);
+    toast.success('Layout saved to local storage');
+  }, [elements, zoom, pan]);
+
+  const handleLoad = useCallback(() => {
+    const raw = localStorage.getItem('mw-factory-layout');
+    if (!raw) {
+      toast.error('No saved layout found');
+      return;
+    }
+    try {
+      const data = JSON.parse(raw);
+      setElements(data.elements);
+      if (data.zoom) setZoom(data.zoom);
+      if (data.pan) setPan(data.pan);
+      pushHistory(data.elements, null);
+      setSelectedId(null);
+      toast.success('Layout loaded');
+    } catch {
+      toast.error('Failed to load layout');
+    }
+  }, [pushHistory]);
+
+  const handleExport = useCallback(() => {
+    const data = JSON.stringify({ elements }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'factory-layout.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Layout exported');
+  }, [elements]);
+
+  // ------------------------------------------------------------------
+  // Sorted elements: zones first (background), then others on top
+  // ------------------------------------------------------------------
+
+  const sortedElements = useMemo(() => {
+    const order: Record<ElementCategory, number> = { zones: 0, infrastructure: 1, machines: 2, people: 3 };
+    return [...elements].sort((a, b) => order[a.category] - order[b.category]);
+  }, [elements]);
+
+  // ------------------------------------------------------------------
+  // Render
+  // ------------------------------------------------------------------
+
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl tracking-tight text-foreground">Factory designer</h1>
-        <Button className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Factory layout designer coming soon')}>
-          <Layout className="mr-2 h-4 w-4" />
-          New layout
-        </Button>
+    <div className="flex h-[calc(100vh-64px)] flex-col bg-neutral-50 dark:bg-neutral-900">
+      {/* TOP TOOLBAR */}
+      <div className="flex h-12 items-center gap-2 border-b border-[var(--border)] bg-white px-3 dark:bg-neutral-800">
+        <h1 className="mr-2 text-sm font-semibold text-foreground">Factory Designer</h1>
+        <div className="h-5 w-px bg-[var(--border)]" />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" onClick={handleSave}><Save className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>Save layout</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" onClick={handleLoad}><Upload className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>Load layout</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" onClick={handleExport}><Download className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>Export JSON</TooltipContent>
+        </Tooltip>
+
+        <div className="h-5 w-px bg-[var(--border)]" />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex <= 0}><Undo2 className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>Undo (Cmd+Z)</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo2 className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>Redo (Cmd+Shift+Z)</TooltipContent>
+        </Tooltip>
+
+        <div className="h-5 w-px bg-[var(--border)]" />
+
+        {selectedId && (
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={duplicateSelected}><Copy className="h-4 w-4" /></Button>
+              </TooltipTrigger>
+              <TooltipContent>Duplicate (Cmd+D)</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={deleteSelected}><Trash2 className="h-4 w-4 text-[var(--mw-error)]" /></Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
+            <div className="h-5 w-px bg-[var(--border)]" />
+          </>
+        )}
+
+        <div className="flex items-center gap-1.5">
+          <Grid3x3 className="h-3.5 w-3.5 text-[var(--neutral-500)]" />
+          <span className="text-xs text-[var(--neutral-500)]">Grid</span>
+          <Switch checked={showGrid} onCheckedChange={setShowGrid} />
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <Magnet className="h-3.5 w-3.5 text-[var(--neutral-500)]" />
+          <span className="text-xs text-[var(--neutral-500)]">Snap</span>
+          <Switch checked={snapEnabled} onCheckedChange={setSnapEnabled} />
+        </div>
+
+        <div className="ml-auto flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={zoomOut}><ZoomOut className="h-4 w-4" /></Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom out</TooltipContent>
+          </Tooltip>
+          <span className="min-w-[3rem] text-center text-xs tabular-nums text-foreground">{Math.round(zoom * 100)}%</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={zoomIn}><ZoomIn className="h-4 w-4" /></Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom in</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
 
-      <ModuleInfoCallout
-        title="Canvas-based layout designer"
-        description="Drag-and-drop canvas for factory floor layouts, machines, work centres, and material flow. Implementation may use HTML5 Canvas or a library such as Konva or Fabric.js."
-      />
+      {/* MAIN LAYOUT */}
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* LEFT SIDEBAR — Element Palette */}
+        <ResizablePanel defaultSize={16} minSize={12} maxSize={25}>
+          <div className="flex h-full flex-col border-r border-[var(--border)] bg-white dark:bg-neutral-800">
+            <div className="border-b border-[var(--border)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Elements</p>
+            </div>
 
-      <Card className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-12 shadow-xs">
-        <div className="text-center">
-          <Layout className="mx-auto mb-4 h-16 w-16 text-[var(--neutral-500)]" />
-          <h3 className="mb-2 text-xl font-medium text-foreground">Factory designer</h3>
-          <p className="text-sm text-[var(--neutral-500)]">Placeholder canvas — connect routing and data when backend is available.</p>
+            {/* Category tabs */}
+            <div className="flex flex-wrap gap-1 border-b border-[var(--border)] p-2">
+              {(Object.keys(CATEGORY_LABELS) as ElementCategory[]).map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                    activeCategory === cat
+                      ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
+                      : 'bg-[var(--neutral-100)] text-[var(--neutral-600)] hover:bg-[var(--neutral-200)] dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-600'
+                  }`}
+                >
+                  {CATEGORY_LABELS[cat]}
+                </button>
+              ))}
+            </div>
+
+            {/* Draggable items */}
+            <div className="flex-1 overflow-y-auto p-2">
+              <div className="space-y-1">
+                {PALETTE_ITEMS[activeCategory].map((item) => (
+                  <PaletteItemCard key={item.type} item={item} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle />
+
+        {/* CENTER — SVG Canvas */}
+        <ResizablePanel defaultSize={62}>
+          <div
+            ref={canvasContainerRef}
+            className="relative h-full overflow-hidden bg-neutral-50 dark:bg-neutral-900"
+            onMouseDown={handleCanvasMouseDown}
+            onMouseMove={handleCanvasMouseMove}
+            onMouseUp={handleCanvasMouseUp}
+            onMouseLeave={handleCanvasMouseUp}
+            onDrop={handleCanvasDrop}
+            onDragOver={handleCanvasDragOver}
+            onWheel={handleWheel}
+            style={{ cursor: isPanning ? 'grabbing' : dragging ? 'move' : 'default' }}
+          >
+            <svg
+              ref={svgRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
+              style={{
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                transformOrigin: '0 0',
+              }}
+              className="select-none"
+            >
+              {/* Definitions */}
+              <defs>
+                {/* Grid pattern */}
+                <pattern id="grid-dots" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse">
+                  <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r="1" className="fill-neutral-300 dark:fill-neutral-600" />
+                </pattern>
+                {/* Selection highlight filter */}
+                <filter id="selection-glow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#facc15" floodOpacity="0.6" />
+                </filter>
+              </defs>
+
+              {/* Canvas background */}
+              <rect
+                x={0}
+                y={0}
+                width={CANVAS_WIDTH}
+                height={CANVAS_HEIGHT}
+                className="fill-neutral-50 dark:fill-neutral-900"
+                data-canvas-bg="true"
+                rx={8}
+              />
+
+              {/* Grid */}
+              {showGrid && (
+                <rect
+                  x={0}
+                  y={0}
+                  width={CANVAS_WIDTH}
+                  height={CANVAS_HEIGHT}
+                  fill="url(#grid-dots)"
+                  data-canvas-bg="true"
+                  rx={8}
+                />
+              )}
+
+              {/* Canvas border */}
+              <rect
+                x={0}
+                y={0}
+                width={CANVAS_WIDTH}
+                height={CANVAS_HEIGHT}
+                fill="none"
+                className="stroke-neutral-200 dark:stroke-neutral-700"
+                strokeWidth={2}
+                rx={8}
+                pointerEvents="none"
+              />
+
+              {/* Elements */}
+              {sortedElements.map((el) => (
+                <CanvasElement
+                  key={el.id}
+                  element={el}
+                  isSelected={el.id === selectedId}
+                  onMouseDown={handleElementMouseDown}
+                />
+              ))}
+            </svg>
+
+            {/* Drop hint overlay */}
+            {elements.length === 0 && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <Layout className="mx-auto mb-3 h-12 w-12 text-[var(--neutral-400)]" />
+                  <p className="text-sm font-medium text-[var(--neutral-500)]">Drag elements from the palette to get started</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle />
+
+        {/* RIGHT SIDEBAR — Properties */}
+        <ResizablePanel defaultSize={22} minSize={16} maxSize={30}>
+          <div className="flex h-full flex-col border-l border-[var(--border)] bg-white dark:bg-neutral-800">
+            <div className="border-b border-[var(--border)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Properties</p>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              {selectedElement ? (
+                <PropertiesPanel
+                  element={selectedElement}
+                  onUpdate={(updates) => updateElement(selectedElement.id, updates)}
+                  onDelete={deleteSelected}
+                  onDuplicate={duplicateSelected}
+                />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center text-center">
+                  <ChevronRight className="mx-auto mb-2 h-8 w-8 text-[var(--neutral-300)] dark:text-neutral-600" />
+                  <p className="text-sm text-[var(--neutral-500)]">Select an element to view properties</p>
+                  <p className="mt-1 text-xs text-[var(--neutral-400)]">{elements.length} elements on canvas</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Palette Item Card (draggable)
+// ---------------------------------------------------------------------------
+
+function PaletteItemCard({ item }: { item: PaletteItem }) {
+  const handleDragStart = useCallback((e: React.DragEvent) => {
+    // Serialize without the React icon node
+    const serializable = {
+      type: item.type,
+      label: item.label,
+      category: item.category,
+      defaultWidth: item.defaultWidth,
+      defaultHeight: item.defaultHeight,
+      defaultColor: item.defaultColor,
+    };
+    e.dataTransfer.setData('application/factory-element', JSON.stringify(serializable));
+    e.dataTransfer.effectAllowed = 'copy';
+  }, [item]);
+
+  return (
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      className="flex cursor-grab items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-2 transition-colors hover:border-[var(--border)] hover:bg-[var(--neutral-100)] active:cursor-grabbing dark:hover:bg-neutral-700"
+    >
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-neutral-700 dark:text-neutral-300">
+        {item.icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium text-foreground">{item.label}</p>
+        <p className="text-[10px] text-[var(--neutral-500)]">{item.defaultWidth} x {item.defaultHeight}</p>
+      </div>
+      <GripVertical className="h-3.5 w-3.5 shrink-0 text-[var(--neutral-400)]" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Canvas Element Renderer
+// ---------------------------------------------------------------------------
+
+interface CanvasElementProps {
+  element: FactoryElement;
+  isSelected: boolean;
+  onMouseDown: (e: React.MouseEvent, el: FactoryElement) => void;
+}
+
+function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps) {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => onMouseDown(e, element), [element, onMouseDown]);
+
+  const transform = element.rotation
+    ? `rotate(${element.rotation} ${element.x + element.width / 2} ${element.y + element.height / 2})`
+    : undefined;
+
+  if (element.category === 'people') {
+    // Render as circle
+    const cx = element.x + element.width / 2;
+    const cy = element.y + element.height / 2;
+    const r = element.width / 2;
+
+    return (
+      <g
+        onMouseDown={handleMouseDown}
+        style={{ cursor: 'move' }}
+        transform={transform}
+      >
+        {/* Selection ring */}
+        {isSelected && (
+          <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="#facc15" strokeWidth={2.5} strokeDasharray="6 3" filter="url(#selection-glow)" />
+        )}
+        {/* Circle body */}
+        <circle cx={cx} cy={cy} r={r} fill={element.color} fillOpacity={0.2} stroke={element.color} strokeWidth={1.5} />
+        {/* Icon placeholder */}
+        <text x={cx} y={cy - 4} textAnchor="middle" fontSize={14} fill={element.color}>
+          <tspan>&#x1F464;</tspan>
+        </text>
+        {/* Label */}
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={8} className="fill-foreground" fontWeight={500}>
+          {element.name}
+        </text>
+      </g>
+    );
+  }
+
+  if (element.category === 'zones') {
+    return (
+      <g
+        onMouseDown={handleMouseDown}
+        style={{ cursor: 'move' }}
+        transform={transform}
+      >
+        {/* Selection ring */}
+        {isSelected && (
+          <rect
+            x={element.x - 4}
+            y={element.y - 4}
+            width={element.width + 8}
+            height={element.height + 8}
+            fill="none"
+            stroke="#facc15"
+            strokeWidth={2.5}
+            strokeDasharray="8 4"
+            rx={8}
+            filter="url(#selection-glow)"
+          />
+        )}
+        {/* Zone rect */}
+        <rect
+          x={element.x}
+          y={element.y}
+          width={element.width}
+          height={element.height}
+          fill={element.color}
+          fillOpacity={0.08}
+          stroke={element.color}
+          strokeWidth={1.5}
+          strokeDasharray="8 4"
+          rx={6}
+        />
+        {/* Zone label */}
+        <text
+          x={element.x + 10}
+          y={element.y + 18}
+          fontSize={11}
+          fontWeight={600}
+          fill={element.color}
+        >
+          {element.name}
+        </text>
+        <text
+          x={element.x + 10}
+          y={element.y + 32}
+          fontSize={9}
+          className="fill-[var(--neutral-500)]"
+        >
+          {element.width} x {element.height}
+        </text>
+      </g>
+    );
+  }
+
+  if (element.category === 'infrastructure') {
+    return (
+      <g
+        onMouseDown={handleMouseDown}
+        style={{ cursor: 'move' }}
+        transform={transform}
+      >
+        {isSelected && (
+          <rect
+            x={element.x - 3}
+            y={element.y - 3}
+            width={element.width + 6}
+            height={element.height + 6}
+            fill="none"
+            stroke="#facc15"
+            strokeWidth={2.5}
+            rx={2}
+            filter="url(#selection-glow)"
+          />
+        )}
+        <rect
+          x={element.x}
+          y={element.y}
+          width={element.width}
+          height={element.height}
+          className="fill-neutral-200 dark:fill-neutral-700"
+          stroke={element.color}
+          strokeWidth={1}
+          rx={2}
+        />
+        {element.height > 15 && (
+          <text
+            x={element.x + element.width / 2}
+            y={element.y + element.height / 2 + 3}
+            textAnchor="middle"
+            fontSize={9}
+            className="fill-foreground"
+            fontWeight={500}
+          >
+            {element.name}
+          </text>
+        )}
+      </g>
+    );
+  }
+
+  // Machines (default): rounded rects
+  const statusColor =
+    element.status === 'Active' ? '#36B37E' :
+    element.status === 'Maintenance' ? '#DE350B' :
+    '#737373';
+
+  return (
+    <g
+      onMouseDown={handleMouseDown}
+      style={{ cursor: 'move' }}
+      transform={transform}
+    >
+      {/* Selection ring */}
+      {isSelected && (
+        <rect
+          x={element.x - 4}
+          y={element.y - 4}
+          width={element.width + 8}
+          height={element.height + 8}
+          fill="none"
+          stroke="#facc15"
+          strokeWidth={2.5}
+          rx={10}
+          filter="url(#selection-glow)"
+        />
+      )}
+      {/* Machine body */}
+      <rect
+        x={element.x}
+        y={element.y}
+        width={element.width}
+        height={element.height}
+        className="fill-neutral-200 dark:fill-neutral-700"
+        stroke={isSelected ? '#facc15' : 'var(--border)'}
+        strokeWidth={isSelected ? 0 : 1}
+        rx={8}
+      />
+      {/* Status indicator dot */}
+      {element.status && (
+        <circle cx={element.x + element.width - 10} cy={element.y + 10} r={4} fill={statusColor} />
+      )}
+      {/* Machine label */}
+      <text
+        x={element.x + element.width / 2}
+        y={element.y + element.height / 2 - 2}
+        textAnchor="middle"
+        fontSize={10}
+        className="fill-foreground"
+        fontWeight={600}
+      >
+        {element.name}
+      </text>
+      {/* Machine dimensions */}
+      <text
+        x={element.x + element.width / 2}
+        y={element.y + element.height / 2 + 12}
+        textAnchor="middle"
+        fontSize={8}
+        className="fill-[var(--neutral-500)]"
+      >
+        {element.status ?? element.type}
+      </text>
+    </g>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Properties Panel
+// ---------------------------------------------------------------------------
+
+interface PropertiesPanelProps {
+  element: FactoryElement;
+  onUpdate: (updates: Partial<FactoryElement>) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}
+
+function PropertiesPanel({ element, onUpdate, onDelete, onDuplicate }: PropertiesPanelProps) {
+  return (
+    <div className="space-y-4">
+      {/* Type badge */}
+      <div className="flex items-center gap-2">
+        <span className="inline-flex items-center rounded-full bg-[var(--neutral-100)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--neutral-600)] dark:bg-neutral-700 dark:text-neutral-300">
+          {element.category}
+        </span>
+        <span className="text-xs text-[var(--neutral-500)]">{element.type}</span>
+      </div>
+
+      {/* Name */}
+      <div className="space-y-1.5">
+        <Label className="text-xs text-[var(--neutral-500)]">Name</Label>
+        <Input
+          value={element.name}
+          onChange={(e) => onUpdate({ name: e.target.value })}
+          className="h-8 text-sm"
+        />
+      </div>
+
+      {/* Position */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[var(--neutral-500)]">X</Label>
+          <Input
+            type="number"
+            value={element.x}
+            onChange={(e) => onUpdate({ x: Number(e.target.value) })}
+            className="h-8 text-sm tabular-nums"
+          />
         </div>
-      </Card>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[var(--neutral-500)]">Y</Label>
+          <Input
+            type="number"
+            value={element.y}
+            onChange={(e) => onUpdate({ y: Number(e.target.value) })}
+            className="h-8 text-sm tabular-nums"
+          />
+        </div>
+      </div>
+
+      {/* Dimensions */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[var(--neutral-500)]">Width</Label>
+          <Input
+            type="number"
+            value={element.width}
+            onChange={(e) => onUpdate({ width: Math.max(10, Number(e.target.value)) })}
+            className="h-8 text-sm tabular-nums"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[var(--neutral-500)]">Height</Label>
+          <Input
+            type="number"
+            value={element.height}
+            onChange={(e) => onUpdate({ height: Math.max(10, Number(e.target.value)) })}
+            className="h-8 text-sm tabular-nums"
+          />
+        </div>
+      </div>
+
+      {/* Rotation */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs text-[var(--neutral-500)]">Rotation</Label>
+          <span className="text-xs tabular-nums text-[var(--neutral-500)]">{element.rotation}deg</span>
+        </div>
+        <Slider
+          value={[element.rotation]}
+          min={0}
+          max={360}
+          step={15}
+          onValueChange={([v]) => onUpdate({ rotation: v })}
+          className="py-1"
+        />
+      </div>
+
+      {/* Color */}
+      <div className="space-y-1.5">
+        <Label className="text-xs text-[var(--neutral-500)]">Color</Label>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={element.color}
+            onChange={(e) => onUpdate({ color: e.target.value })}
+            className="h-8 w-8 cursor-pointer rounded border border-[var(--border)] bg-transparent"
+          />
+          <Input
+            value={element.color}
+            onChange={(e) => onUpdate({ color: e.target.value })}
+            className="h-8 flex-1 text-sm font-mono"
+          />
+        </div>
+      </div>
+
+      {/* Machine-specific properties */}
+      {element.category === 'machines' && (
+        <>
+          <div className="h-px bg-[var(--border)]" />
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Machine Properties</p>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs text-[var(--neutral-500)]">Status</Label>
+            <Select
+              value={element.status ?? 'Idle'}
+              onValueChange={(v) => onUpdate({ status: v as MachineStatus })}
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Active">
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#36B37E]" /> Active
+                  </span>
+                </SelectItem>
+                <SelectItem value="Maintenance">
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#DE350B]" /> Maintenance
+                  </span>
+                </SelectItem>
+                <SelectItem value="Idle">
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#737373]" /> Idle
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs text-[var(--neutral-500)]">Assigned Operator</Label>
+            <Select
+              value={element.operator ?? 'Unassigned'}
+              onValueChange={(v) => onUpdate({ operator: v })}
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {OPERATORS.map((op) => (
+                  <SelectItem key={op} value={op}>{op}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </>
+      )}
+
+      {/* Actions */}
+      <div className="h-px bg-[var(--border)]" />
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={onDuplicate} className="flex-1 text-xs">
+          <Copy className="mr-1 h-3.5 w-3.5" /> Duplicate
+        </Button>
+        <Button variant="outline" size="sm" onClick={onDelete} className="flex-1 text-xs text-[var(--mw-error)]">
+          <Trash2 className="mr-1 h-3.5 w-3.5" /> Delete
+        </Button>
+      </div>
     </div>
   );
 }
