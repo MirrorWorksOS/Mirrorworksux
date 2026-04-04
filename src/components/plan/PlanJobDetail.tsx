@@ -44,12 +44,14 @@ export function PlanJobDetail() {
     const base: JobWorkspaceTabConfig[] = [
       { id: 'overview', label: 'Overview' },
       { id: 'production', label: 'Production', count: 4 },
-      { id: 'schedule', label: 'Schedule', count: 9 },
-      { id: 'intelligence', label: 'Intelligence Hub' },
     ];
     if (hasBudgetAccess) {
       base.push({ id: 'budget', label: 'Budget' });
     }
+    base.push(
+      { id: 'intelligence', label: 'Intelligence Hub' },
+      { id: 'schedule', label: 'Schedule', count: 9 },
+    );
     return base;
   }, [hasBudgetAccess]);
 

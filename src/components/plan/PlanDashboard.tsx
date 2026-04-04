@@ -26,6 +26,7 @@ import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { useNavigate } from 'react-router';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import {
   planKpis as kpiData,
   weeklyCapacity,
@@ -79,6 +80,9 @@ export function PlanDashboard() {
       onTabChange={setActiveTab}
       aiScope="plan"
     >
+      {/* AI Insight Feed — positioned below AI command bar */}
+      <AIFeed module="plan" />
+
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* KPI Cards — §4.1: Active Jobs, Tasks Today, Avg Lead Time, On-Time Rate */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">

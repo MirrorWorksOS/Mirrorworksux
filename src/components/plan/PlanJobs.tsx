@@ -1,7 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, LayoutGrid, List, KanbanSquare } from 'lucide-react';
+import { Plus, LayoutGrid, List, KanbanSquare, Pencil, Check, X } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -36,6 +39,15 @@ interface Job {
   priority?: 'low' | 'medium' | 'high' | 'urgent';
   dueDate?: string;
   progress?: number;
+  notes?: string;
+}
+
+/** Editable fields for inline row editing */
+interface EditingState {
+  priority: string;
+  assignedUser: string;
+  dueDate: string;
+  notes: string;
 }
 
 const STATUS_TO_STAGE: Record<string, string> = {
@@ -90,6 +102,42 @@ export function PlanJobs() {
   const [viewMode, setViewMode]         = useState<ViewMode>('kanban');
   const [searchQuery, setSearchQuery]   = useState('');
   const [jobsByStage, setJobsByStage]   = useState<Record<string, Job[]>>(MOCK_JOBS);
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [editState, setEditState]       = useState<EditingState>({ priority: '', assignedUser: '', dueDate: '', notes: '' });
+
+  const startEditing = (job: Job & { _stageId: string }) => {
+    setEditingRowId(job.id);
+    setEditState({
+      priority: job.priority ?? 'medium',
+      assignedUser: job.assignedUser.name,
+      dueDate: job.dueDate ?? '',
+      notes: job.notes ?? '',
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingRowId(null);
+  };
+
+  const saveEditing = (jobId: string, stageId: string) => {
+    setJobsByStage((prev) => {
+      const next = { ...prev };
+      next[stageId] = next[stageId].map((j) =>
+        j.id === jobId
+          ? {
+              ...j,
+              priority: editState.priority as Job['priority'],
+              assignedUser: { ...j.assignedUser, name: editState.assignedUser },
+              dueDate: editState.dueDate,
+              notes: editState.notes,
+            }
+          : j,
+      );
+      return next;
+    });
+    setEditingRowId(null);
+    toast.success('Job updated successfully');
+  };
 
   const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
     setJobsByStage(prev => {
@@ -202,45 +250,202 @@ export function PlanJobs() {
         const flatJobs = Object.entries(jobsByStage).flatMap(([stageId, jobs]) =>
           jobs.map((job) => ({ ...job, _stageId: stageId })),
         );
-        const listColumns: MwColumnDef<Job & { _stageId: string }>[] = [
-          { key: 'id', header: 'Job ID', tooltip: 'Unique job identifier', className: 'tabular-nums text-xs font-medium text-foreground', cell: (job) => job.id },
-          { key: 'name', header: 'Job Name', tooltip: 'Job description', className: 'text-xs font-medium text-foreground', cell: (job) => job.name },
-          { key: 'customer', header: 'Customer', tooltip: 'Assigned customer', className: 'text-xs text-[var(--neutral-500)]', cell: (job) => job.customer },
+        type FlatJob = Job & { _stageId: string };
+        const listColumns: MwColumnDef<FlatJob>[] = [
+          {
+            key: 'id',
+            header: 'Job ID',
+            tooltip: 'Unique job identifier',
+            className: 'w-[110px] tabular-nums text-xs font-medium text-foreground text-left',
+            headerClassName: 'w-[110px] text-left',
+            cell: (job) => job.id,
+          },
+          {
+            key: 'name',
+            header: 'Job Name',
+            tooltip: 'Job description',
+            className: 'min-w-[140px] text-xs font-medium text-foreground text-left',
+            headerClassName: 'text-left',
+            cell: (job) => job.name,
+          },
+          {
+            key: 'customer',
+            header: 'Customer',
+            tooltip: 'Assigned customer',
+            className: 'min-w-[120px] text-xs text-[var(--neutral-500)] text-left',
+            headerClassName: 'text-left',
+            cell: (job) => job.customer,
+          },
           {
             key: 'stage',
             header: 'Stage',
             tooltip: 'Current production stage',
+            className: 'w-[130px] text-center',
+            headerClassName: 'w-[130px] text-center',
             cell: (job) => {
               const stage = STAGES.find(s => s.id === job._stageId);
               return <StatusBadge variant="neutral">{stage?.label}</StatusBadge>;
             },
           },
-          { key: 'priority', header: 'Priority', tooltip: 'Job priority level', cell: (job) => job.priority ? <StatusBadge priority={job.priority} /> : null },
-          { key: 'value', header: 'Value', tooltip: 'Estimated job value', headerClassName: 'text-right', className: 'text-right tabular-nums text-xs text-foreground', cell: (job) => `$${job.value.toLocaleString()}` },
-          { key: 'dueDate', header: 'Due Date', tooltip: 'Expected completion date', className: 'text-xs tabular-nums text-[var(--neutral-500)]', cell: (job) => job.dueDate },
+          {
+            key: 'priority',
+            header: 'Priority',
+            tooltip: 'Job priority level',
+            className: 'w-[100px] text-center',
+            headerClassName: 'w-[100px] text-center',
+            cell: (job) => {
+              if (editingRowId === job.id) {
+                return (
+                  <Select
+                    value={editState.priority}
+                    onValueChange={(v) => setEditState((s) => ({ ...s, priority: v }))}
+                  >
+                    <SelectTrigger className="h-8 w-[90px] text-xs" onClick={(e) => e.stopPropagation()}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                );
+              }
+              return job.priority ? <StatusBadge priority={job.priority} /> : null;
+            },
+          },
+          {
+            key: 'value',
+            header: 'Value',
+            tooltip: 'Estimated job value',
+            headerClassName: 'w-[100px] text-right',
+            className: 'w-[100px] text-right tabular-nums text-xs text-foreground',
+            cell: (job) => `$${job.value.toLocaleString()}`,
+          },
+          {
+            key: 'dueDate',
+            header: 'Due Date',
+            tooltip: 'Expected completion date',
+            className: 'w-[120px] text-xs tabular-nums text-[var(--neutral-500)] text-left',
+            headerClassName: 'w-[120px] text-left',
+            cell: (job) => {
+              if (editingRowId === job.id) {
+                return (
+                  <Input
+                    type="date"
+                    value={editState.dueDate}
+                    onChange={(e) => setEditState((s) => ({ ...s, dueDate: e.target.value }))}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 w-[130px] text-xs"
+                  />
+                );
+              }
+              return job.dueDate;
+            },
+          },
           {
             key: 'assigned',
             header: 'Assigned',
             tooltip: 'Assigned team member',
-            cell: (job) => (
-              <Avatar className="w-6 h-6 border border-[var(--border)]">
-                <AvatarImage src={job.assignedUser.avatar} />
-                <AvatarFallback className="text-xs">{job.assignedUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-            ),
+            className: 'w-[120px] text-left',
+            headerClassName: 'w-[120px] text-left',
+            cell: (job) => {
+              if (editingRowId === job.id) {
+                return (
+                  <Input
+                    value={editState.assignedUser}
+                    onChange={(e) => setEditState((s) => ({ ...s, assignedUser: e.target.value }))}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 w-[110px] text-xs"
+                  />
+                );
+              }
+              return (
+                <Avatar className="w-6 h-6 border border-[var(--border)]">
+                  <AvatarImage src={job.assignedUser.avatar} />
+                  <AvatarFallback className="text-xs">{job.assignedUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                </Avatar>
+              );
+            },
           },
           {
             key: 'progress',
             header: 'Progress',
             tooltip: 'Completion percentage',
+            className: 'w-[130px]',
+            headerClassName: 'w-[130px] text-right',
             cell: (job) => (
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--mw-yellow-400)] transition-all duration-200 ease-[var(--ease-standard)]" style={{ width: `${job.progress}%` }} />
                 </div>
                 <span className="text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">{job.progress}%</span>
               </div>
             ),
+          },
+          {
+            key: 'notes',
+            header: 'Notes',
+            tooltip: 'Job notes',
+            className: 'min-w-[100px] text-xs text-[var(--neutral-500)] text-left',
+            headerClassName: 'text-left',
+            cell: (job) => {
+              if (editingRowId === job.id) {
+                return (
+                  <Input
+                    value={editState.notes}
+                    onChange={(e) => setEditState((s) => ({ ...s, notes: e.target.value }))}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Add notes..."
+                    className="h-8 w-full text-xs"
+                  />
+                );
+              }
+              return job.notes || <span className="text-[var(--neutral-400)]">--</span>;
+            },
+          },
+          {
+            key: 'actions',
+            header: '',
+            className: 'w-[100px] text-right',
+            headerClassName: 'w-[100px]',
+            cell: (job) => {
+              if (editingRowId === job.id) {
+                return (
+                  <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-[var(--mw-green)] hover:bg-[var(--mw-green)]/10"
+                      onClick={() => saveEditing(job.id, job._stageId)}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]"
+                      onClick={cancelEditing}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                );
+              }
+              return (
+                <div className="flex items-center justify-end" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-[var(--neutral-400)] hover:text-foreground"
+                    onClick={() => startEditing(job)}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              );
+            },
           },
         ];
         const countInProduction = flatJobs.filter(j => j._stageId === 'inProduction').length;
@@ -262,7 +467,9 @@ export function PlanJobs() {
               columns={listColumns}
               data={flatJobs}
               keyExtractor={(job) => job.id}
-              onRowClick={(job) => navigate(`/plan/jobs/${job.id}`)}
+              onRowClick={(job) => {
+                if (editingRowId !== job.id) navigate(`/plan/jobs/${job.id}`);
+              }}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
