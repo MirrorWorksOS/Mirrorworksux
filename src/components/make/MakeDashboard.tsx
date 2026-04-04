@@ -1,6 +1,10 @@
 /**
  * Make Dashboard - Andon Board with machine status grid
  * Touch-optimized for shop floor displays
+ *
+ * TASK 1: AI Feed integrated below command bar
+ * TASK 2: Schedule Gantt strip has rich hover tooltips
+ * TASK 3: Work orders elevated to top with larger cards
  */
 
 import React, { useState } from 'react';
@@ -19,6 +23,12 @@ import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { toast } from 'sonner';
 import { machines as centralMachines } from '@/services/mock';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from '../ui/hover-card';
 
 
 type MachineStatus = 'running' | 'idle' | 'down' | 'maintenance' | 'setup';
@@ -43,6 +53,47 @@ const mockMachines: Machine[] = centralMachines.map((m) => ({
   utilizationToday: m.utilizationToday,
 }));
 
+/** Mock work orders for the dashboard work-order cards and schedule tooltips */
+interface DashboardWorkOrder {
+  woNumber: string;
+  product: string;
+  qty: number;
+  operator: string;
+  operatorInitials: string;
+  machine: string;
+  status: 'in_progress' | 'scheduled' | 'completed' | 'pending';
+  progress: number;
+  startTime: string;
+  endTime: string;
+}
+
+const dashboardWorkOrders: DashboardWorkOrder[] = [
+  { woNumber: 'WO-001', product: 'Server Rack Chassis', qty: 12, operator: 'Sarah Chen', operatorInitials: 'SC', machine: 'Laser-01', status: 'in_progress', progress: 72, startTime: '08:00', endTime: '10:55' },
+  { woNumber: 'WO-002', product: 'Mounting Bracket Assy', qty: 50, operator: 'David Lee', operatorInitials: 'DL', machine: 'CNC-01', status: 'in_progress', progress: 45, startTime: '08:00', endTime: '12:30' },
+  { woNumber: 'WO-003', product: 'Cable Tray Support', qty: 24, operator: 'James Murray', operatorInitials: 'JM', machine: 'CNC-02', status: 'in_progress', progress: 33, startTime: '09:00', endTime: '12:50' },
+  { woNumber: 'WO-004', product: 'Server Rack Chassis', qty: 12, operator: 'Sarah Chen', operatorInitials: 'SC', machine: 'Laser-01', status: 'scheduled', progress: 0, startTime: '11:15', endTime: '13:55' },
+  { woNumber: 'WO-005', product: 'Machine Guard', qty: 8, operator: 'Mike Thompson', operatorInitials: 'MT', machine: 'Press-01', status: 'completed', progress: 100, startTime: '08:00', endTime: '10:10' },
+  { woNumber: 'WO-006', product: 'Rail Platform Comp.', qty: 6, operator: 'James Murray', operatorInitials: 'JM', machine: 'Weld-01', status: 'in_progress', progress: 58, startTime: '08:30', endTime: '13:00' },
+  { woNumber: 'WO-007', product: 'Aluminium Enclosure', qty: 18, operator: 'David Lee', operatorInitials: 'DL', machine: 'CNC-01', status: 'scheduled', progress: 0, startTime: '13:00', endTime: '15:15' },
+  { woNumber: 'WO-008', product: 'Structural Bracket A', qty: 36, operator: 'Emma Wilson', operatorInitials: 'EW', machine: 'Press-01', status: 'scheduled', progress: 0, startTime: '11:00', endTime: '14:00' },
+  { woNumber: 'WO-009', product: 'Cable Tray Support', qty: 24, operator: 'Emma Wilson', operatorInitials: 'EW', machine: 'Pack-01', status: 'scheduled', progress: 0, startTime: '10:10', endTime: '13:05' },
+];
+
+/** Look up a work order by WO label for schedule tooltips */
+const woByLabel: Record<string, DashboardWorkOrder> = {};
+dashboardWorkOrders.forEach((wo) => {
+  woByLabel[wo.woNumber] = wo;
+});
+
+const getWoStatusConfig = (status: DashboardWorkOrder['status']) => {
+  switch (status) {
+    case 'in_progress': return { bg: 'bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10', text: 'text-foreground', label: 'In Progress', dot: 'bg-[var(--mw-yellow-400)]' };
+    case 'scheduled': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]', label: 'Scheduled', dot: 'bg-[var(--neutral-400)]' };
+    case 'completed': return { bg: 'bg-[var(--mw-success-light)] dark:bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]', label: 'Completed', dot: 'bg-[var(--mw-success)]' };
+    case 'pending': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-500)]', label: 'Pending', dot: 'bg-[var(--neutral-400)]' };
+  }
+};
+
 const getStatusColor = (status: MachineStatus) => {
   switch (status) {
     case 'running': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
@@ -53,6 +104,127 @@ const getStatusColor = (status: MachineStatus) => {
   }
 };
 
+/** Schedule block with enriched tooltip data */
+interface ScheduleBlock {
+  start: number;
+  width: number;
+  color: string;
+  label: string;
+}
+
+interface ScheduleRow {
+  name: string;
+  blocks: ScheduleBlock[];
+}
+
+const scheduleRows: ScheduleRow[] = [
+  { name: 'Laser-01', blocks: [{ start: 0, width: 33, color: 'var(--mw-mirage)', label: 'WO-001' }, { start: 37, width: 30, color: 'var(--mw-warning)', label: 'WO-004' }] },
+  { name: 'CNC-01',   blocks: [{ start: 0, width: 55, color: 'var(--mw-mirage)', label: 'WO-002' }, { start: 60, width: 25, color: 'var(--mw-warning)', label: 'WO-007' }] },
+  { name: 'CNC-02',   blocks: [{ start: 11, width: 44, color: 'var(--mw-mirage)', label: 'WO-003' }] },
+  { name: 'Press-01', blocks: [{ start: 0, width: 22, color: 'var(--mw-mirage)', label: 'WO-005' }, { start: 33, width: 33, color: 'var(--mw-warning)', label: 'WO-008' }, { start: 78, width: 22, color: 'var(--neutral-300)', label: 'Idle' }] },
+  { name: 'Weld-01',  blocks: [{ start: 5, width: 50, color: 'var(--mw-mirage)', label: 'WO-006' }] },
+  { name: 'Pack-01',  blocks: [{ start: 22, width: 33, color: 'var(--mw-warning)', label: 'WO-009' }, { start: 60, width: 28, color: 'var(--neutral-300)', label: 'Idle' }] },
+];
+
+function ScheduleBlockTooltip({ block }: { block: ScheduleBlock }) {
+  const wo = woByLabel[block.label];
+  const isIdle = block.label === 'Idle';
+
+  if (isIdle || !wo) {
+    return (
+      <div
+        className="absolute top-0 h-full rounded flex items-center justify-center text-[10px] font-medium truncate px-1 transition-transform duration-150 hover:scale-y-[1.15] hover:z-10"
+        style={{
+          left: `${block.start}%`,
+          width: `${block.width}%`,
+          backgroundColor: block.color,
+          color: block.color === 'var(--neutral-300)' ? 'var(--neutral-600)' : 'white',
+        }}
+      >
+        {block.label}
+      </div>
+    );
+  }
+
+  const statusCfg = getWoStatusConfig(wo.status);
+
+  return (
+    <HoverCard openDelay={200} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <div
+          className="absolute top-0 h-full rounded flex items-center justify-center text-[10px] font-medium truncate px-1 cursor-pointer transition-transform duration-150 hover:scale-y-[1.15] hover:z-10"
+          style={{
+            left: `${block.start}%`,
+            width: `${block.width}%`,
+            backgroundColor: block.color,
+            color: 'white',
+          }}
+        >
+          {block.label}
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent
+        side="top"
+        sideOffset={8}
+        className="w-72 rounded-lg bg-white dark:bg-neutral-800 border border-[var(--border)] shadow-lg p-0 z-50"
+      >
+        <div className="p-3 space-y-3">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-foreground tabular-nums">{wo.woNumber}</span>
+            <Badge className={cn('border-0 text-[10px] px-1.5 py-0.5', statusCfg.bg, statusCfg.text)}>
+              {statusCfg.label}
+            </Badge>
+          </div>
+          {/* Product */}
+          <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{wo.product}</p>
+          {/* Details grid */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+            <div>
+              <span className="text-[var(--neutral-500)]">Qty</span>
+              <p className="font-medium text-foreground tabular-nums">{wo.qty} units</p>
+            </div>
+            <div>
+              <span className="text-[var(--neutral-500)]">Operator</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[8px] font-medium text-white dark:bg-[var(--neutral-600)]">
+                  {wo.operatorInitials}
+                </div>
+                <span className="font-medium text-foreground truncate">{wo.operator}</span>
+              </div>
+            </div>
+            <div>
+              <span className="text-[var(--neutral-500)]">Start</span>
+              <p className="font-medium text-foreground tabular-nums">{wo.startTime}</p>
+            </div>
+            <div>
+              <span className="text-[var(--neutral-500)]">End</span>
+              <p className="font-medium text-foreground tabular-nums">{wo.endTime}</p>
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] text-[var(--neutral-500)]">Progress</span>
+              <span className="text-[10px] font-medium text-foreground tabular-nums">{wo.progress}%</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)]">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width: `${wo.progress}%`,
+                  backgroundColor: wo.progress >= 100 ? 'var(--mw-success)' : wo.progress > 0 ? 'var(--mw-yellow-400)' : 'var(--neutral-300)',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  );
+}
+
+
 const makeTabs = [{ key: 'overview', label: 'Overview' }];
 
 export function MakeDashboard() {
@@ -60,6 +232,10 @@ export function MakeDashboard() {
   const runningCount = mockMachines.filter(m => m.status === 'running').length;
   const downCount = mockMachines.filter(m => m.status === 'down').length;
   const avgUtilization = Math.round(mockMachines.reduce((sum, m) => sum + m.utilizationToday, 0) / mockMachines.length);
+
+  const activeWOs = dashboardWorkOrders.filter((wo) => wo.status === 'in_progress');
+  const scheduledWOs = dashboardWorkOrders.filter((wo) => wo.status === 'scheduled');
+  const completedWOs = dashboardWorkOrders.filter((wo) => wo.status === 'completed');
 
   return (
     <ModuleDashboard
@@ -70,7 +246,121 @@ export function MakeDashboard() {
       aiScope="make"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-      {/* §4.1.2 KPI Cards */}
+
+      {/* TASK 1 — AI Feed below command bar */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="make" limit={3} />
+      </motion.div>
+
+      {/* TASK 3 — Work Orders elevated to top with larger cards */}
+      <motion.div variants={staggerItem}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium text-foreground">Active Work Orders</h2>
+          <Badge className="bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10 text-foreground border-0 text-xs">
+            {activeWOs.length} active
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {activeWOs.map((wo) => {
+            const statusCfg = getWoStatusConfig(wo.status);
+            return (
+              <motion.div
+                key={wo.woNumber}
+                variants={staggerItem}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Card className="bg-card border border-[var(--border)] rounded-lg p-5 cursor-pointer hover:shadow-md transition-shadow duration-[var(--duration-medium1)]">
+                  {/* Top row: WO number + status */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-base font-medium text-foreground tabular-nums">{wo.woNumber}</span>
+                    <Badge className={cn('border-0 text-xs px-2 py-0.5', statusCfg.bg, statusCfg.text)}>
+                      <span className={cn('inline-block h-1.5 w-1.5 rounded-full mr-1.5', statusCfg.dot)} />
+                      {statusCfg.label}
+                    </Badge>
+                  </div>
+
+                  {/* Product name */}
+                  <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)] mb-4">{wo.product}</p>
+
+                  {/* Progress indicator */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-[var(--neutral-500)]">Progress</span>
+                      <span className="text-sm font-medium text-foreground tabular-nums">{wo.progress}%</span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)]">
+                      <motion.div
+                        className="h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${wo.progress}%` }}
+                        transition={{ duration: 0.6, ease: [0.2, 0, 0, 1] }}
+                        style={{
+                          backgroundColor: wo.progress >= 100 ? 'var(--mw-success)' : 'var(--mw-yellow-400)',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Meta row: operator, machine, qty */}
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[10px] font-medium text-white dark:bg-[var(--neutral-600)]">
+                        {wo.operatorInitials}
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-foreground leading-tight">{wo.operator}</p>
+                        <p className="text-[10px] text-[var(--neutral-500)]">{wo.machine}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-medium text-foreground tabular-nums">{wo.qty} units</p>
+                      <p className="text-[10px] text-[var(--neutral-500)] tabular-nums">{wo.startTime} - {wo.endTime}</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Scheduled + Completed work order rows (compact) */}
+      {scheduledWOs.length > 0 && (
+        <motion.div variants={staggerItem}>
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-sm font-medium text-[var(--neutral-500)]">Scheduled</h3>
+            <span className="text-xs text-[var(--neutral-400)]">{scheduledWOs.length}</span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {scheduledWOs.map((wo) => {
+              const statusCfg = getWoStatusConfig(wo.status);
+              return (
+                <Card key={wo.woNumber} className="bg-card border border-[var(--border)] rounded-lg p-4 hover:shadow-sm transition-shadow duration-[var(--duration-medium1)]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-foreground tabular-nums">{wo.woNumber}</span>
+                    <Badge className={cn('border-0 text-[10px] px-1.5 py-0.5', statusCfg.bg, statusCfg.text)}>
+                      {statusCfg.label}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-[var(--neutral-500)] mb-2 truncate">{wo.product}</p>
+                  <div className="flex items-center justify-between text-[10px] text-[var(--neutral-500)]">
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-[8px] font-medium text-white dark:bg-[var(--neutral-600)]">
+                        {wo.operatorInitials}
+                      </div>
+                      <span>{wo.machine}</span>
+                    </div>
+                    <span className="tabular-nums">{wo.startTime} - {wo.endTime}</span>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
         <motion.div variants={staggerItem}>
           <KpiStatCard
@@ -197,7 +487,7 @@ export function MakeDashboard() {
         </div>
       </Card>
 
-      {/* §4.1.5 Quality Alerts */}
+      {/* Quality Alerts */}
       <motion.div variants={staggerItem}>
         <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
           <div className="flex items-center justify-between mb-4">
@@ -229,7 +519,7 @@ export function MakeDashboard() {
         </Card>
       </motion.div>
 
-      {/* §4.1.6 Today's Schedule Gantt Strip */}
+      {/* TASK 2 — Today's Schedule Gantt Strip with rich hover tooltips */}
       <motion.div variants={staggerItem}>
         <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
           <h3 className="text-base font-medium text-foreground mb-4">Today's Schedule</h3>
@@ -244,30 +534,12 @@ export function MakeDashboard() {
             </div>
             {/* Machine rows */}
             <div className="space-y-1.5">
-              {([
-                { name: 'Laser-01', blocks: [{ start: 0, width: 33, color: 'var(--mw-mirage)', label: 'WO-001' }, { start: 37, width: 30, color: 'var(--mw-warning)', label: 'WO-004' }] },
-                { name: 'CNC-01',   blocks: [{ start: 0, width: 55, color: 'var(--mw-mirage)', label: 'WO-002' }, { start: 60, width: 25, color: 'var(--mw-warning)', label: 'WO-007' }] },
-                { name: 'CNC-02',   blocks: [{ start: 11, width: 44, color: 'var(--mw-mirage)', label: 'WO-003' }] },
-                { name: 'Press-01', blocks: [{ start: 0, width: 22, color: 'var(--mw-mirage)', label: 'WO-005' }, { start: 33, width: 33, color: 'var(--mw-warning)', label: 'WO-008' }, { start: 78, width: 22, color: 'var(--neutral-300)', label: 'Idle' }] },
-                { name: 'Weld-01',  blocks: [{ start: 5, width: 50, color: 'var(--mw-mirage)', label: 'WO-006' }] },
-                { name: 'Pack-01',  blocks: [{ start: 22, width: 33, color: 'var(--mw-warning)', label: 'WO-009' }, { start: 60, width: 28, color: 'var(--neutral-300)', label: 'Idle' }] },
-              ]).map((row) => (
+              {scheduleRows.map((row) => (
                 <div key={row.name} className="flex items-center gap-2">
                   <span className="w-[92px] text-xs font-medium text-foreground truncate shrink-0">{row.name}</span>
-                  <div className="flex-1 h-7 bg-[var(--neutral-100)] rounded relative overflow-hidden">
+                  <div className="flex-1 h-7 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded relative overflow-visible">
                     {row.blocks.map((block, j) => (
-                      <div
-                        key={j}
-                        className="absolute top-0 h-full rounded flex items-center justify-center text-[10px] font-medium text-white truncate px-1"
-                        style={{
-                          left: `${block.start}%`,
-                          width: `${block.width}%`,
-                          backgroundColor: block.color,
-                          color: block.color === 'var(--neutral-300)' ? 'var(--neutral-600)' : 'white',
-                        }}
-                      >
-                        {block.label}
-                      </div>
+                      <ScheduleBlockTooltip key={j} block={block} />
                     ))}
                   </div>
                 </div>
@@ -292,7 +564,7 @@ export function MakeDashboard() {
         </Card>
       </motion.div>
 
-      {/* §4.1.7 Bottom Row — Quick Actions, OEE Trend, Throughput vs Target */}
+      {/* Bottom Row -- Quick Actions, OEE Trend, Throughput vs Target */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
@@ -373,7 +645,7 @@ export function MakeDashboard() {
                       <span className="text-xs font-medium text-foreground">{row.label}</span>
                       <span className="text-xs text-[var(--neutral-500)]">{row.actual}/{row.target} units</span>
                     </div>
-                    <div className="h-2.5 bg-[var(--neutral-100)] rounded-full overflow-hidden relative">
+                    <div className="h-2.5 bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)] rounded-full overflow-hidden relative">
                       {/* target marker */}
                       <div className="absolute top-0 h-full w-px bg-[var(--neutral-400)]" style={{ left: '100%' }} />
                       <div

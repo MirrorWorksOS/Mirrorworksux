@@ -19,6 +19,8 @@ export interface GanttTask {
   progress?: number;
   color?: string;
   dependencies?: string[];
+  /** Arbitrary metadata passed through to renderTooltip */
+  meta?: Record<string, unknown>;
 }
 
 export interface GanttChartProps {
@@ -28,6 +30,8 @@ export interface GanttChartProps {
   /** Defaults to current date. Set for prototypes with fixed timeline data. */
   today?: Date;
   onTaskClick?: (task: GanttTask) => void;
+  /** Render a custom rich tooltip for a hovered task. Return null to use the default <title>. */
+  renderTooltip?: (task: GanttTask) => React.ReactNode;
   className?: string;
 }
 
@@ -55,9 +59,10 @@ function clampTaskToWindow(
   };
 }
 
-export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTaskClick, className }: GanttChartProps) {
+export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTaskClick, renderTooltip, className }: GanttChartProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = React.useState(0);
+  const [hoveredTask, setHoveredTask] = React.useState<{ task: GanttTask; x: number; y: number } | null>(null);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -111,11 +116,31 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
     return out;
   }, [windowStart, totalDays]);
 
+  const handleBarMouseEnter = React.useCallback(
+    (task: GanttTask, e: React.MouseEvent<SVGRectElement>) => {
+      if (!renderTooltip) return;
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const svgRect = e.currentTarget.getBoundingClientRect();
+      setHoveredTask({
+        task,
+        x: svgRect.left + svgRect.width / 2 - rect.left,
+        y: svgRect.top - rect.top,
+      });
+    },
+    [renderTooltip],
+  );
+
+  const handleBarMouseLeave = React.useCallback(() => {
+    setHoveredTask(null);
+  }, []);
+
   return (
     <div
       ref={containerRef}
       className={cn(
-        "w-full min-w-0 overflow-x-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card shadow-xs",
+        "relative w-full min-w-0 overflow-x-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card shadow-xs",
         className,
       )}
     >
@@ -199,7 +224,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
           const barY = y + 8;
           const barH = ROW_H - 16;
           const defaultFill = "var(--mw-yellow-400)";
-          const labelShort = task.label.length > 28 ? `${task.label.slice(0, 26)}…` : task.label;
+          const labelShort = task.label.length > 28 ? `${task.label.slice(0, 26)}...` : task.label;
           let bar: React.ReactNode = null;
           if (clipped) {
             const offset = differenceInCalendarDays(clipped.start, windowStart);
@@ -208,6 +233,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
             const bw = span * dayW - 2;
             const pct = Math.min(100, Math.max(0, task.progress ?? 0));
             const fill = task.color ?? defaultFill;
+            const isHovered = hoveredTask?.task.id === task.id;
             bar = (
               <g>
                 <rect
@@ -219,9 +245,16 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                   fill={fill}
                   fillOpacity={0.2}
                   stroke={fill}
-                  strokeWidth={1}
-                  cursor={onTaskClick ? "pointer" : "default"}
+                  strokeWidth={isHovered ? 2 : 1}
+                  cursor={onTaskClick || renderTooltip ? "pointer" : "default"}
                   onClick={() => onTaskClick?.(task)}
+                  onMouseEnter={(e) => handleBarMouseEnter(task, e)}
+                  onMouseLeave={handleBarMouseLeave}
+                  style={{
+                    transform: isHovered ? 'scaleY(1.12)' : 'scaleY(1)',
+                    transformOrigin: `${bx + bw / 2}px ${barY + barH / 2}px`,
+                    transition: 'transform 150ms ease, stroke-width 150ms ease',
+                  }}
                 />
                 <rect
                   x={bx}
@@ -231,13 +264,19 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                   rx={4}
                   fill={fill}
                   pointerEvents="none"
+                  style={{
+                    transform: isHovered ? 'scaleY(1.12)' : 'scaleY(1)',
+                    transformOrigin: `${bx + bw / 2}px ${barY + barH / 2}px`,
+                    transition: 'transform 150ms ease',
+                  }}
                 />
               </g>
             );
           }
           return (
             <g key={task.id}>
-              <title>{task.label}</title>
+              {/* Only show native title when no custom tooltip */}
+              {!renderTooltip && <title>{task.label}</title>}
               <text x={12} y={y + ROW_H / 2 + 4} fill="var(--foreground)" fontSize={12} fontWeight={500}>
                 {labelShort}
               </text>
@@ -246,6 +285,20 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
           );
         })}
       </svg>
+
+      {/* Floating tooltip overlay */}
+      {renderTooltip && hoveredTask && (
+        <div
+          className="pointer-events-none absolute z-50"
+          style={{
+            left: hoveredTask.x,
+            top: hoveredTask.y - 8,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          {renderTooltip(hoveredTask.task)}
+        </div>
+      )}
     </div>
   );
 }
