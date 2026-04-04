@@ -181,13 +181,9 @@ export function QualityTab() {
   return (
     <div className="flex flex-col h-full bg-[var(--neutral-100)] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
       
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 flex-shrink-0">
-        <div>
-          <h1 className="text-3xl font-medium text-[var(--neutral-800)] tracking-tight">Quality</h1>
-          <p className="text-[var(--neutral-500)] mt-1 text-sm">Track inspections, defects, and quality metrics</p>
-        </div>
-        <Button 
+      {/* Action button row (heading provided by PageHeader in MakeQuality wrapper) */}
+      <div className="flex justify-end mb-8 flex-shrink-0">
+        <Button
           onClick={() => setShowLogModal(true)}
           className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
         >

@@ -5,11 +5,29 @@
  */
 
 import React, { useState } from 'react';
-import { Plus, Grid3x3, List, Package, Play } from 'lucide-react';
+import { Plus, Grid3x3, List, Package, Play, Layers } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../ui/dialog';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
@@ -42,6 +60,44 @@ const PRODUCTS: Product[] = [
   { id: '4', sku: 'PROD-MG-004', name: 'Machine Guard Panel', category: 'Sheet Metal', bomStatus: 'complete', routingSteps: 5, defaultWorkCentre: 'Laser → Bend → Weld → Coat → Pack', unitCost: 340 },
   { id: '5', sku: 'PROD-AE-005', name: 'Aluminium Enclosure Panel', category: 'Sheet Metal', bomStatus: 'missing', routingSteps: 0, defaultWorkCentre: '—', unitCost: 0 },
   { id: '6', sku: 'PROD-RP-006', name: 'Rail Platform Component', category: 'Structural', bomStatus: 'complete', routingSteps: 7, defaultWorkCentre: 'Cut → Drill → Weld → Blast → Coat → QC → Pack', unitCost: 1750 },
+];
+
+/* ── Mock BOM materials per product (keyed by product id) ── */
+const BOM_MATERIALS: Record<string, { material: string; qty: string; unit: string }[]> = {
+  '1': [
+    { material: '2mm Mild Steel Sheet', qty: '4', unit: 'sheets' },
+    { material: 'M6 Hex Bolts', qty: '24', unit: 'pcs' },
+    { material: 'Rubber Gasket Strip', qty: '3.2', unit: 'm' },
+    { material: 'Powder Coat — RAL 9005', qty: '0.8', unit: 'kg' },
+  ],
+  '2': [
+    { material: '3mm Galvanised Steel', qty: '1', unit: 'sheet' },
+    { material: 'M8 Flange Nuts', qty: '12', unit: 'pcs' },
+  ],
+  '3': [
+    { material: '50x50x3 SHS Mild Steel', qty: '6', unit: 'm' },
+    { material: 'Hot-Dip Galvanise', qty: '1', unit: 'batch' },
+  ],
+  '4': [
+    { material: '1.6mm Mild Steel Sheet', qty: '2', unit: 'sheets' },
+    { material: 'Weld Wire ER70S-6', qty: '0.5', unit: 'kg' },
+    { material: 'Powder Coat — RAL 7035', qty: '0.4', unit: 'kg' },
+  ],
+  '6': [
+    { material: '100x50x4 RHS Mild Steel', qty: '12', unit: 'm' },
+    { material: 'Base Plate 20mm', qty: '4', unit: 'pcs' },
+    { material: 'Primer Zinc-Rich', qty: '2', unit: 'L' },
+    { material: 'Topcoat — RAL 1023', qty: '1.5', unit: 'L' },
+    { material: 'M16 Anchor Bolts', qty: '16', unit: 'pcs' },
+  ],
+};
+
+const WORK_CENTRES = [
+  'Laser → CNC → Weld',
+  'Laser → Bend → Pack',
+  'Cut → Weld → Coat',
+  'Laser → Bend → Weld → Coat → Pack',
+  'Cut → Drill → Weld → Blast → Coat → QC → Pack',
 ];
 
 const getBomBadgeProps = (status: Product['bomStatus']) => {
@@ -120,9 +176,35 @@ export function MakeProducts() {
   const missingCount = PRODUCTS.filter((p) => p.bomStatus === 'missing').length;
   const avgCost = Math.round(PRODUCTS.filter((p) => p.unitCost > 0).reduce((s, p) => s + p.unitCost, 0) / PRODUCTS.filter((p) => p.unitCost > 0).length);
 
+  /* ── Create MO Dialog state ── */
+  const [moDialogOpen, setMoDialogOpen] = useState(false);
+  const [moProduct, setMoProduct] = useState<Product | null>(null);
+  const [moQty, setMoQty] = useState('100');
+  const [moDate, setMoDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().slice(0, 10);
+  });
+  const [moWorkCentre, setMoWorkCentre] = useState('');
+  const [moPriority, setMoPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
+  const [moNotes, setMoNotes] = useState('');
+
   const handleMake = (product: Product) => {
-    toast.success(`Manufacturing order started for ${product.name}`);
-    navigate('/make/manufacturing-orders/new');
+    setMoProduct(product);
+    setMoWorkCentre(product.defaultWorkCentre);
+    setMoQty('100');
+    setMoPriority('medium');
+    setMoNotes('');
+    setMoDialogOpen(true);
+  };
+
+  const handleCreateMO = () => {
+    if (!moProduct) return;
+    setMoDialogOpen(false);
+    toast.success(`Manufacturing order created for ${moProduct.name}`, {
+      description: `Qty ${moQty} — due ${new Date(moDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`,
+    });
+    navigate('/make/manufacturing-orders/mo-001');
   };
 
   return (
@@ -247,6 +329,169 @@ export function MakeProducts() {
           />
         </Card>
       )}
+
+      {/* ── Create Manufacturing Order Dialog ── */}
+      <Dialog open={moDialogOpen} onOpenChange={setMoDialogOpen}>
+        <DialogContent className="sm:max-w-[560px] rounded-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Manufacturing Order</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to start production.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            {/* Product (read-only) */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-foreground">Product</Label>
+              <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-muted/40 px-3 py-2">
+                <Package className="w-4 h-4 text-[var(--neutral-400)]" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{moProduct?.name}</p>
+                  <p className="text-xs text-muted-foreground tabular-nums">{moProduct?.sku}</p>
+                </div>
+                {moProduct && (
+                  <StatusBadge variant={getBomBadgeProps(moProduct.bomStatus).variant}>
+                    {getBomBadgeProps(moProduct.bomStatus).label}
+                  </StatusBadge>
+                )}
+              </div>
+            </div>
+
+            {/* Quantity + Target Date */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="mo-qty" className="text-sm font-medium text-foreground">Quantity</Label>
+                <Input
+                  id="mo-qty"
+                  type="number"
+                  min={1}
+                  value={moQty}
+                  onChange={(e) => setMoQty(e.target.value)}
+                  className="tabular-nums"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="mo-date" className="text-sm font-medium text-foreground">Target Date</Label>
+                <Input
+                  id="mo-date"
+                  type="date"
+                  value={moDate}
+                  onChange={(e) => setMoDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Work Centre */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-foreground">Work Centre</Label>
+              <Select value={moWorkCentre} onValueChange={setMoWorkCentre}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select work centre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {WORK_CENTRES.map((wc) => (
+                    <SelectItem key={wc} value={wc}>{wc}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Priority */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-foreground">Priority</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {(['low', 'medium', 'high', 'urgent'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setMoPriority(p)}
+                    className={cn(
+                      'h-9 rounded-full border text-sm font-medium capitalize transition-colors',
+                      moPriority === p
+                        ? p === 'urgent'
+                          ? 'border-[var(--mw-error)] bg-[var(--mw-error-light)] text-[var(--mw-error)]'
+                          : p === 'high'
+                            ? 'border-[var(--mw-yellow-600)] bg-[var(--mw-yellow-50)] text-[var(--mw-yellow-800)]'
+                            : p === 'medium'
+                              ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--mw-yellow-800)]'
+                              : 'border-[var(--border)] bg-muted text-foreground'
+                        : 'border-[var(--border)] text-muted-foreground hover:bg-muted/60',
+                    )}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-1.5">
+              <Label htmlFor="mo-notes" className="text-sm font-medium text-foreground">Notes</Label>
+              <Textarea
+                id="mo-notes"
+                placeholder="Special instructions, customer references, etc."
+                value={moNotes}
+                onChange={(e) => setMoNotes(e.target.value)}
+                className="min-h-[72px] resize-none"
+              />
+            </div>
+
+            {/* Linked BOM Materials */}
+            {moProduct && BOM_MATERIALS[moProduct.id] && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5" />
+                  Bill of Materials
+                </Label>
+                <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-muted/50 text-muted-foreground text-xs">
+                        <th className="text-left px-3 py-2 font-medium">Material</th>
+                        <th className="text-right px-3 py-2 font-medium">Qty</th>
+                        <th className="text-left px-3 py-2 font-medium">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {BOM_MATERIALS[moProduct.id].map((m, i) => (
+                        <tr
+                          key={i}
+                          className={cn(
+                            'text-foreground',
+                            i !== BOM_MATERIALS[moProduct.id].length - 1 && 'border-b border-[var(--border)]',
+                          )}
+                        >
+                          <td className="px-3 py-2">{m.material}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{m.qty}</td>
+                          <td className="px-3 py-2 text-muted-foreground">{m.unit}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setMoDialogOpen(false)}
+              className="rounded-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateMO}
+              className="rounded-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium gap-2"
+            >
+              <Play className="w-4 h-4" />
+              Create MO
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

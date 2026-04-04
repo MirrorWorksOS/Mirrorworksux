@@ -122,11 +122,8 @@ export function TimeClockTab() {
           "flex flex-col h-full flex-1 transition-all duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)]",
         )}
       >
-        {/* Header */}
-        <div className="mb-8 text-center pt-8 flex-shrink-0">
-          <h2 className="text-3xl font-medium tracking-tight text-[var(--neutral-800)] mb-1">Time Clock</h2>
-          <p className="text-[var(--neutral-500)] text-sm font-medium">Track your work hours</p>
-        </div>
+        {/* Spacer (heading provided by PageHeader in MakeTimeClock wrapper) */}
+        <div className="pt-4 flex-shrink-0" />
 
         <div className="flex-1 flex flex-col items-center max-w-[480px] mx-auto w-full gap-8 pb-12">
           
