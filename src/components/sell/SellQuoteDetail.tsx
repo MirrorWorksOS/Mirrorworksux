@@ -188,7 +188,7 @@ export function SellQuoteDetail() {
                   onClick={() => toast.success('Converting to order…')}
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  Convert to Order
+                  Convert to Sales Order
                 </Button>
               </div>
             </Card>
@@ -237,7 +237,7 @@ export function SellQuoteDetail() {
     <JobWorkspaceLayout
       breadcrumbs={[
         { label: 'Sell', href: '/sell' },
-        { label: 'Quotes', href: '/sell/quotes' },
+        ...(opp ? [{ label: 'Opportunities', href: '/sell/opportunities' }, { label: opp.title, href: `/sell/opportunities/${opp.id}` }] : [{ label: 'Quotes', href: '/sell/quotes' }]),
         { label: quote.ref },
       ]}
       title={`Quote ${quote.ref}`}
@@ -252,8 +252,10 @@ export function SellQuoteDetail() {
             {isExpired ? 'Expired' : STATUS_LABEL[quote.status] ?? quote.status}
           </StatusBadge>
           {opp && (
-            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
-              {opp.title}
+            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+              <Link to={`/sell/opportunities/${opp.id}`} className="hover:underline">
+                Opportunity: {opp.title}
+              </Link>
             </Badge>
           )}
         </div>
@@ -261,7 +263,7 @@ export function SellQuoteDetail() {
       headerActions={
         <>
           <Button variant="outline" className="border-[var(--border)]" asChild>
-            <Link to="/sell/quotes">
+            <Link to={opp ? `/sell/opportunities/${opp.id}` : '/sell/quotes'}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Link>
           </Button>

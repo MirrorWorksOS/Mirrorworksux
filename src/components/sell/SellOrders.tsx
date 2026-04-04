@@ -86,8 +86,8 @@ export function SellOrders() {
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New order form coming soon')}>
-          New Order
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New sales order form coming soon')}>
+          New Sales Order
         </ToolbarPrimaryButton>
       </PageToolbar>
 
@@ -195,7 +195,7 @@ export function SellOrders() {
             icon={Plus}
             title="No orders yet"
             description="Create your first sales order to get started"
-            action={{ label: "Create Order", onClick: () => toast('New order form coming soon'), icon: Plus }}
+            action={{ label: "Create Sales Order", onClick: () => toast('New sales order form coming soon'), icon: Plus }}
           />
         </Card>
       )}

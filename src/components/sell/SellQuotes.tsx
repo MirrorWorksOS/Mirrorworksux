@@ -75,7 +75,11 @@ const quoteColumns: MwColumnDef<Quote>[] = [
     header: 'Opportunity',
     tooltip: 'Linked sales opportunity',
     className: 'tabular-nums text-[var(--neutral-600)]',
-    cell: (row) => row.opportunity,
+    cell: (row) => (
+      <a href={`/sell/opportunities/${row.opportunity}`} className="text-[var(--mw-info)] hover:underline" onClick={(e) => e.stopPropagation()}>
+        {row.opportunity.toUpperCase()}
+      </a>
+    ),
   },
   {
     key: 'customer',

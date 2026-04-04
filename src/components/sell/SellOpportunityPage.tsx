@@ -111,6 +111,7 @@ const MOCK_ACTIVITIES: TimelineEvent[] = sellActivities.slice(0, 4).map((a, i) =
 
 // Build quotes list from centralized data
 const MOCK_QUOTES = mockQuotesData.slice(0, 2).map((q) => ({
+  id: q.id,
   ref: q.ref,
   date: new Date(q.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }),
   value: q.value,
@@ -552,8 +553,8 @@ export function SellOpportunityPage() {
               </TableHeader>
               <TableBody>
                 {MOCK_QUOTES.map((q) => (
-                  <TableRow key={q.ref} className="min-h-14">
-                    <TableCell className="text-sm font-medium tabular-nums">
+                  <TableRow key={q.ref} className="min-h-14 cursor-pointer hover:bg-[var(--neutral-50)]" onClick={() => navigate(`/sell/quotes/${q.id}`)}>
+                    <TableCell className="text-sm font-medium tabular-nums text-[var(--mw-info)] hover:underline">
                       {q.ref}
                     </TableCell>
                     <TableCell className="text-sm text-[var(--neutral-600)]">
@@ -874,7 +875,7 @@ export function SellOpportunityPage() {
       title={opp.title}
       subtitle={
         <>
-          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">OPP-{opp.id.padStart(4, "0")}</span>
+          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{opp.id.toUpperCase()}</span>
           <span>{opp.customer}</span>
           <span className="tabular-nums">${opp.value.toLocaleString()}</span>
         </>
@@ -921,7 +922,7 @@ export function SellOpportunityPage() {
             onClick={() => navigate("/sell/orders")}
           >
             <ArrowRight className="mr-2 h-4 w-4" />
-            Convert to Order
+            Convert to Sales Order
           </Button>
         </>
       }
