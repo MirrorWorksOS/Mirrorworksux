@@ -249,7 +249,7 @@ export function MakeDashboard() {
 
       {/* TASK 1 — AI Feed below command bar */}
       <motion.div variants={staggerItem}>
-        <AIFeed module="make" limit={3} />
+        <AIFeed module="make" initialCount={3} />
       </motion.div>
 
       {/* TASK 3 — Work Orders elevated to top with larger cards */}

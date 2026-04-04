@@ -98,7 +98,34 @@ const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
     },
   ],
   book: [],
-  buy: [],
+  buy: [
+    {
+      id: "buy-1",
+      icon: <Package className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Receiving window in 48 hours",
+      body: "PO-2026-0142 (BlueScope Steel, 12mm MS plate) is scheduled for Tuesday morning. Confirm forklift and receiving bay availability with the warehouse.",
+      tag: "Logistics",
+      timestamp: "15 min ago",
+    },
+    {
+      id: "buy-2",
+      icon: <AlertTriangle className="h-4 w-4 text-[var(--mw-warning)]" />,
+      title: "Supplier lead time slip",
+      body: "Southern Fasteners pushed delivery on PO-2026-0118 by 4 business days. Two jobs using those fixings may need schedule updates.",
+      tag: "Risk",
+      tagColor: "bg-[var(--mw-warning)]/15 text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)]",
+      timestamp: "1h ago",
+    },
+    {
+      id: "buy-3",
+      icon: <DollarSign className="h-4 w-4 text-[var(--mw-success)]" />,
+      title: "Volume discount opportunity",
+      body: "Consolidating next month's aluminium extrusion orders with Capral could unlock an extra 6% discount at 4+ tonnes. Current open requisitions total 3.2 tonnes.",
+      tag: "Savings",
+      tagColor: "bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
+      timestamp: "3h ago",
+    },
+  ],
   control: [],
   all: [],
 };
@@ -150,7 +177,13 @@ export function AIFeed({ module, className, initialCount = 3 }: AIFeedProps) {
                   {item.title}
                 </span>
                 {item.tag && (
-                  <Badge className={cn("border-0 text-[10px] px-1.5 py-0 rounded-full", item.tagColor ?? "bg-[var(--neutral-100)] text-[var(--neutral-600)]")}>
+                  <Badge
+                    className={cn(
+                      "border-0 text-[10px] px-1.5 py-0 rounded-full",
+                      item.tagColor ??
+                        "bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]",
+                    )}
+                  >
                     {item.tag}
                   </Badge>
                 )}

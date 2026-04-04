@@ -29,14 +29,14 @@ function stageProgress(stage: StageId): number {
   return Math.round(((idx + 1) / STAGES.length) * 100);
 }
 
-/** Document flow lineage for the current job */
+/** Document flow lineage for the current job — labels are IDs; docType is the full document name for tooltips */
 const DOCUMENT_FLOW = [
-  { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', type: 'OPP' },
-  { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', type: 'Q' },
-  { label: 'SO-2026-0085', href: '/sell/orders/so-001', type: 'SO' },
-  { label: 'JOB-2026-0012', href: '/plan/jobs/JOB-2026-0012', type: 'JOB' },
-  { label: 'WO-2026-0001', href: '#', type: 'WO' },
-  { label: 'MO-2026-0001', href: '#', type: 'MO' },
+  { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', docType: 'Opportunity' as const },
+  { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', docType: 'Quote' as const },
+  { label: 'SO-2026-0085', href: '/sell/orders/so-001', docType: 'Sales order' as const },
+  { label: 'JOB-2026-0012', href: '/plan/jobs/JOB-2026-0012', docType: 'Job' as const },
+  { label: 'WO-2026-0001', href: '#', docType: 'Work order' as const },
+  { label: 'MO-2026-0001', href: '#', docType: 'Manufacturing order' as const },
 ];
 
 export function PlanJobDetail() {
@@ -112,7 +112,7 @@ export function PlanJobDetail() {
                 className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
                   currentStage === stage.id
                     ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
-                    : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
+                    : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:text-[var(--neutral-400)] dark:hover:bg-[var(--neutral-800)]'
                 }`}
               >
                 {stage.label}
@@ -129,6 +129,7 @@ export function PlanJobDetail() {
                 )}
                 <Link
                   to={doc.href}
+                  title={doc.docType}
                   className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
                     doc.label === jobId
                       ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 text-foreground'
@@ -157,7 +158,7 @@ export function PlanJobDetail() {
             onClick={() => navigate('/make/manufacturing-orders')}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Create MO
+            Create manufacturing order
           </Button>
         </>
       }

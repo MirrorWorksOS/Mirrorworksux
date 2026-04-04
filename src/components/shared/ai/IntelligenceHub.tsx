@@ -76,7 +76,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Insights */}
       <div className={cn('space-y-3', compact && 'space-y-2')}>
         {insights.length === 0 ? (
-          <div className="bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-6">
+          <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] rounded-[var(--shape-lg)] p-6">
             <EmptyState
               variant="compact"
               icon={Brain}
@@ -95,7 +95,14 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <Card className={cn('border rounded-[var(--shape-lg)] p-4', insight.type === 'risk' ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)]' : 'border-[var(--border)] bg-card hover:shadow-sm transition-shadow')}>
+                <Card
+                  className={cn(
+                    'border rounded-[var(--shape-lg)] p-4',
+                    insight.type === 'risk'
+                      ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)] dark:border-[var(--mw-error)]/30 dark:bg-[var(--mw-error)]/10'
+                      : 'border-[var(--border)] bg-card hover:shadow-sm transition-shadow',
+                  )}
+                >
                   <div className="flex items-start gap-3">
                     <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5', cfg.bg)}>
                       <Icon className={cn('w-4 h-4', cfg.text)} />
@@ -104,7 +111,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xs font-medium text-foreground">{insight.title}</span>
                         {insight.confidence !== undefined && (
-                          <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-400)] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence
                           </span>
                         )}

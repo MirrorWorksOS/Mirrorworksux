@@ -301,8 +301,8 @@ export const router = createBrowserRouter([
         path: '*',
         element: (
           <div className="p-6">
-            <h1 className="text-2xl font-bold text-[#EF4444] mb-2">404 - Page Not Found</h1>
-            <p className="text-[#737373]">The page you're looking for doesn't exist.</p>
+            <h1 className="text-2xl font-bold text-destructive mb-2">404 - Page Not Found</h1>
+            <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
           </div>
         ),
       },

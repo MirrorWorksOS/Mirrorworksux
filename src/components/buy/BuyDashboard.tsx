@@ -34,7 +34,7 @@ import {
 const buyTabs = [{ key: 'overview', label: 'Overview' }];
 
 const badgeNeutral =
-  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]';
 
 export function BuyDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -64,7 +64,7 @@ export function BuyDashboard() {
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* AI Insight Feed — positioned below the AI command bar */}
       <motion.div variants={staggerItem}>
-        <AIFeed module="buy" maxItems={3} />
+        <AIFeed module="buy" initialCount={3} />
       </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

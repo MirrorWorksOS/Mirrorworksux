@@ -124,7 +124,7 @@ export function AIFeedCard({ insight, onDismiss, index = 0 }: AIFeedCardProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-700)] leading-relaxed pr-6">
+          <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-300)] leading-relaxed pr-6">
             {renderHighlightedMessage(insight.message)}
           </p>
           <span className="text-xs text-[var(--neutral-400)] dark:text-[var(--neutral-500)] mt-1 block">
