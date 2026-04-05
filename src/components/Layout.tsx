@@ -5,6 +5,7 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Sidebar } from './Sidebar';
+import { AgentFAB } from './shared/agent/AgentFAB';
 import { useCommandPaletteStore } from '@/store/commandPaletteStore';
 
 export function Layout() {
@@ -40,6 +41,7 @@ export function Layout() {
       <main className="flex-1 overflow-auto bg-[var(--app-canvas)]">
         <Outlet />
       </main>
+      <AgentFAB />
     </div>
   );
 }

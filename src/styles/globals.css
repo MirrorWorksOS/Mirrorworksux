@@ -695,3 +695,49 @@
 html {
   font-size: var(--font-size);
 }
+
+/* ─── Agent AI Chat System ─── */
+/* Agent-specific styles for the floating AI assistant.
+   Uses --mw-purple as primary with distinctive visual identity. */
+
+/* Agent FAB pulse animation — draws attention when proactive insights exist */
+@keyframes agent-fab-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.agent-fab-pulse {
+  animation: agent-fab-pulse 2.5s ease-out infinite;
+}
+
+/* Agent message bubble — subtle gradient border glow for Agent responses */
+.agent-message-bubble {
+  position: relative;
+}
+
+/* Agent markdown content — typography overrides for Agent response text */
+.agent-markdown-content p {
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.agent-markdown-content ul,
+.agent-markdown-content ol {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.agent-markdown-content table {
+  font-size: 12px;
+}
