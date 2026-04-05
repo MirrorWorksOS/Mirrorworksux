@@ -80,10 +80,12 @@ export function PlanDashboard() {
       onTabChange={setActiveTab}
       aiScope="plan"
     >
-      {/* AI Insight Feed — positioned below AI command bar */}
-      <AIFeed module="plan" />
-
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* AI Insight Feed — below AI command bar (inside space-y-6 with KPI row) */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="plan" />
+      </motion.div>
+
       {/* KPI Cards — §4.1: Active Jobs, Tasks Today, Avg Lead Time, On-Time Rate */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <motion.div variants={staggerItem}>

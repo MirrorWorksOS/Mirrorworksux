@@ -15,7 +15,7 @@ import {
   // Zone icons
   Factory, Warehouse, Truck, Building2, FlaskConical, Wrench,
   // Infrastructure icons
-  Square, DoorOpen, MoveHorizontal, ArrowRightLeft, ArrowRight,
+  Square, DoorOpen, MoveHorizontal, ArrowRightLeft, ArrowRight, LayoutGrid,
   // People icons
   User, Shield,
   // Text & Shape icons
@@ -136,6 +136,7 @@ const PALETTE_ITEMS: Record<ElementCategory, PaletteItem[]> = {
     { type: 'door', label: 'Door', icon: <DoorOpen className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 60, defaultHeight: 10, defaultColor: 'var(--neutral-500)' },
     { type: 'aisle', label: 'Aisle', icon: <MoveHorizontal className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 200, defaultHeight: 40, defaultColor: 'var(--neutral-300)' },
     { type: 'conveyor', label: 'Conveyor', icon: <ArrowRightLeft className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 200, defaultHeight: 30, defaultColor: 'var(--neutral-500)' },
+    { type: 'floor', label: 'Floor', icon: <LayoutGrid className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 400, defaultHeight: 400, defaultColor: 'var(--neutral-400)' },
   ],
   people: [
     { type: 'operator', label: 'Operator Station', icon: <User className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-blue)' },
@@ -520,8 +521,12 @@ export function ControlFactoryDesigner() {
   // ------------------------------------------------------------------
 
   const sortedElements = useMemo(() => {
-    const order: Record<ElementCategory, number> = { zones: 0, infrastructure: 1, 'text-shapes': 2, machines: 3, people: 4 };
-    return [...elements].sort((a, b) => order[a.category] - order[b.category]);
+    const categoryOrder: Record<ElementCategory, number> = { zones: 0, infrastructure: 1, 'text-shapes': 2, machines: 3, people: 4 };
+    const paintOrder = (el: FactoryElement): number => {
+      if (el.type === 'floor') return -1;
+      return categoryOrder[el.category];
+    };
+    return [...elements].sort((a, b) => paintOrder(a) - paintOrder(b) || a.id.localeCompare(b.id));
   }, [elements]);
 
   // ------------------------------------------------------------------
@@ -1096,6 +1101,7 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
   }
 
   if (element.category === 'infrastructure') {
+    const isFloor = element.type === 'floor';
     return (
       <g
         onMouseDown={handleMouseDown}
@@ -1111,7 +1117,7 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
             fill="none"
             stroke="var(--mw-yellow-400)"
             strokeWidth={2.5}
-            rx={2}
+            rx={isFloor ? 6 : 2}
             filter="url(#selection-glow)"
           />
         )}
@@ -1120,12 +1126,39 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
           y={element.y}
           width={element.width}
           height={element.height}
-          className="fill-neutral-200 dark:fill-neutral-700"
+          fill={isFloor ? element.color : undefined}
+          fillOpacity={isFloor ? 0.14 : undefined}
+          className={isFloor ? undefined : 'fill-neutral-200 dark:fill-neutral-700'}
           stroke={element.color}
-          strokeWidth={1}
-          rx={2}
+          strokeWidth={isFloor ? 1.5 : 1}
+          strokeOpacity={isFloor ? 0.45 : 1}
+          rx={isFloor ? 4 : 2}
         />
-        {element.height > 15 && (
+        {isFloor && (
+          <text
+            x={element.x + element.width / 2}
+            y={element.y + element.height / 2 - 4}
+            textAnchor="middle"
+            fontSize={10}
+            fontWeight={600}
+            fill={element.color}
+            fillOpacity={0.85}
+          >
+            {element.name}
+          </text>
+        )}
+        {isFloor && (
+          <text
+            x={element.x + element.width / 2}
+            y={element.y + element.height / 2 + 10}
+            textAnchor="middle"
+            fontSize={9}
+            className="fill-[var(--neutral-500)]"
+          >
+            {element.width} x {element.height}
+          </text>
+        )}
+        {!isFloor && element.height > 15 && (
           <text
             x={element.x + element.width / 2}
             y={element.y + element.height / 2 + 3}

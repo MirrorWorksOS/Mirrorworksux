@@ -2,14 +2,13 @@
  * Sidebar - Main navigation sidebar with all modules
  *
  * Uses Animate UI icons for module identifiers (animateOnHover),
- * Lucide icons for utility elements (Search, ChevronRight); Animate UI Plus for Quick Create.
+ * Lucide icons for utility elements (ChevronRight); Animate UI Plus and Search for Quick Create / command palette.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
-  Search,
   ChevronRight,
   LogOut,
   Bell,
@@ -35,6 +34,7 @@ import {
 } from './ui/dropdown-menu';
 import { ThemeToggler } from '@/components/animate-ui/primitives/effects/theme-toggler';
 import { Plus } from '@/components/animate-ui/icons/plus';
+import { Search } from '@/components/animate-ui/icons/search';
 import {
   getHighestUsageAcrossModules,
   getUsageStatus,
@@ -654,7 +654,13 @@ export function Sidebar() {
           onClick={() => setCommandOpen(true)}
           className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-border bg-card px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
         >
-          <Search className="h-5 w-5 shrink-0 text-foreground" strokeWidth={1.5} aria-hidden />
+          <Search
+            size={20}
+            animateOnHover
+            className="shrink-0 text-foreground"
+            strokeWidth={1.5}
+            aria-hidden
+          />
           <span className="flex-1 text-left text-sm text-muted-foreground">
             Search
           </span>

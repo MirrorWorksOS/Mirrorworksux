@@ -64,7 +64,7 @@ export function BuyDashboard() {
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* AI Insight Feed — positioned below the AI command bar */}
       <motion.div variants={staggerItem}>
-        <AIFeed module="buy" initialCount={3} />
+        <AIFeed module="buy" />
       </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

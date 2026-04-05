@@ -22,6 +22,7 @@ import {
 import { mwChartPatternDefs } from '@/components/shared/charts/ChartPatternDefs';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { KpiStatCard, type IconSurface } from '@/components/shared/cards/KpiStatCard';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { shipKpis, shipPipeline, carriers, shippingExceptions } from '@/services/mock';
 
 const KPI: {
@@ -68,6 +69,11 @@ export function ShipDashboard() {
       aiScope="ship"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* AI Insight Feed */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="ship" />
+      </motion.div>
+
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
         {KPI.map((k) => (
