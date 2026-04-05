@@ -42,6 +42,11 @@ import {
   CURRENT_SUBSCRIPTION,
 } from '@/lib/subscription';
 import mirrorworksLogomark from '@/art/empty-states/logo/mirrorworks_logomark.svg';
+import { NotificationBell } from './shared/notifications/NotificationBell';
+import {
+  seedNotificationsIfEmpty,
+  startNotificationSimulator,
+} from './shared/notifications/notification-mock-data';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -612,6 +617,12 @@ export function Sidebar() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Seed mock notifications on first visit & start demo simulator
+  useEffect(() => {
+    seedNotificationsIfEmpty();
+    startNotificationSimulator();
+  }, []);
+
   return (
     <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-64 border-r border-[var(--neutral-200)]">
       {/* Header */}
@@ -797,9 +808,12 @@ export function Sidebar() {
         Smart FactoryOS
       </p>
 
-      {/* Footer — M3 split button: user profile + theme toggle */}
-      <div className="p-3 border-t border-border">
-        <UserProfileSplitButton />
+      {/* Footer — notification bell + M3 split button: user profile + theme toggle */}
+      <div className="p-3 border-t border-border flex items-center gap-2">
+        <div className="flex-1 min-w-0">
+          <UserProfileSplitButton />
+        </div>
+        <NotificationBell />
       </div>
 
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} initialQuery={initialQuery} />

@@ -1,147 +1,429 @@
 /**
- * Notifications — Activity feed page.
+ * Notifications — Full notifications page with filtering, search, grouping, and bulk actions.
  * Route: /notifications
+ *
+ * Powered by the Zustand notificationStore for persisted state.
  */
 
-import React, { useState } from 'react';
-import { Bell, CheckCircle2, AlertTriangle, Package, FileText, DollarSign, Clock, Truck, Factory } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import {
+  Bell,
+  CheckCircle2,
+  Search,
+  Trash2,
+  CheckCheck,
+  Filter,
+  X,
+} from 'lucide-react';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import { Input } from './ui/input';
 import { cn } from './ui/utils';
 import { toast } from 'sonner';
+import { useNotificationStore } from '@/store/notificationStore';
+import type { AppNotification, NotificationModule, NotificationType } from '@/store/notificationStore';
+import { NotificationCardFull } from '@/components/shared/notifications/NotificationCard';
+import { seedNotificationsIfEmpty } from '@/components/shared/notifications/notification-mock-data';
 
-interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  module: 'sell' | 'buy' | 'plan' | 'make' | 'ship' | 'book' | 'system';
-  type: 'info' | 'warning' | 'success' | 'error';
-  time: string;
-  read: boolean;
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type FilterTab = 'all' | 'unread';
+type ModuleFilter = NotificationModule | 'all';
+type TypeFilter = NotificationType | 'all';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getDateGroup(timestamp: number): string {
+  const now = new Date();
+  const date = new Date(timestamp);
+
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const yesterdayStart = todayStart - 86_400_000;
+  const weekStart = todayStart - 6 * 86_400_000;
+
+  if (timestamp >= todayStart) return 'Today';
+  if (timestamp >= yesterdayStart) return 'Yesterday';
+  if (timestamp >= weekStart) return 'This Week';
+  return 'Older';
 }
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: 'n-001', title: 'Quote Q-2026-0055 expiring soon', description: 'TechCorp Industries quote expires in 3 days. Follow up recommended.', module: 'sell', type: 'warning', time: '10 min ago', read: false },
-  { id: 'n-002', title: 'PO-2026-0088 partial delivery', description: 'Pacific Metals delivered 12 of 20 items. 8 outstanding.', module: 'buy', type: 'info', time: '25 min ago', read: false },
-  { id: 'n-003', title: 'MO-2026-0001 ahead of schedule', description: 'Mounting Bracket Assembly is 15% ahead of planned progress.', module: 'make', type: 'success', time: '1h ago', read: false },
-  { id: 'n-004', title: 'Invoice INV-2026-0234 overdue', description: 'TechCorp Industries — $12,400 is 20 days past due.', module: 'book', type: 'error', time: '2h ago', read: false },
-  { id: 'n-005', title: 'Shipment dispatched', description: 'Kemppi Australia order shipped via StarTrack. ETA 2 days.', module: 'ship', type: 'success', time: '3h ago', read: true },
-  { id: 'n-006', title: 'Requisition REQ-2026-0089 pending', description: 'Priya Sharma submitted a requisition for $8,500 — awaiting approval.', module: 'buy', type: 'info', time: '4h ago', read: true },
-  { id: 'n-007', title: 'Job JOB-2026-0012 materials ready', description: 'All materials received for Mounting Bracket job. Ready to schedule.', module: 'plan', type: 'success', time: '5h ago', read: true },
-  { id: 'n-008', title: 'Quality alert: CNC-01 spindle wear', description: 'Tooling wear detected on CNC-01 spindle. Replacement recommended.', module: 'make', type: 'warning', time: '6h ago', read: true },
-  { id: 'n-009', title: 'Xero sync completed', description: '147 invoices synced successfully. No discrepancies found.', module: 'book', type: 'info', time: '8h ago', read: true },
-  { id: 'n-010', title: 'New opportunity created', description: 'Aluminium Enclosures — Hunter Steel Co, $22,000 estimated value.', module: 'sell', type: 'info', time: '1d ago', read: true },
+const DATE_GROUP_ORDER = ['Today', 'Yesterday', 'This Week', 'Older'];
+
+const MODULE_OPTIONS: { value: ModuleFilter; label: string }[] = [
+  { value: 'all', label: 'All Modules' },
+  { value: 'sell', label: 'Sell' },
+  { value: 'buy', label: 'Buy' },
+  { value: 'plan', label: 'Plan' },
+  { value: 'make', label: 'Make' },
+  { value: 'ship', label: 'Ship' },
+  { value: 'book', label: 'Book' },
+  { value: 'control', label: 'Control' },
+  { value: 'system', label: 'System' },
 ];
 
-const MODULE_ICONS: Record<string, typeof Bell> = {
-  sell: DollarSign,
-  buy: Package,
-  plan: Clock,
-  make: Factory,
-  ship: Truck,
-  book: FileText,
-  system: Bell,
-};
+const TYPE_OPTIONS: { value: TypeFilter; label: string }[] = [
+  { value: 'all', label: 'All Types' },
+  { value: 'info', label: 'Info' },
+  { value: 'warning', label: 'Warning' },
+  { value: 'success', label: 'Success' },
+  { value: 'error', label: 'Error' },
+  { value: 'system', label: 'System' },
+];
 
-const TYPE_STYLES: Record<string, string> = {
-  info: 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
-  warning: 'bg-[var(--mw-yellow-400)]/10 text-[var(--mw-yellow-600)]',
-  success: 'bg-[var(--mw-green)]/10 text-[var(--mw-green)]',
-  error: 'bg-[var(--mw-error-100)] text-[var(--mw-error)]',
-};
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function Notifications() {
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
-  const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  // Ensure store is seeded
+  React.useEffect(() => {
+    seedNotificationsIfEmpty();
+  }, []);
 
-  const filtered = filter === 'unread' ? notifications.filter((n) => !n.read) : notifications;
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const notifications = useNotificationStore((s) => s.notifications);
+  const markAsRead = useNotificationStore((s) => s.markAsRead);
+  const markAllAsRead = useNotificationStore((s) => s.markAllAsRead);
+  const dismissNotification = useNotificationStore((s) => s.dismissNotification);
+  const dismissMultiple = useNotificationStore((s) => s.dismissMultiple);
+  const markMultipleAsRead = useNotificationStore((s) => s.markMultipleAsRead);
 
-  const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  // Local UI state
+  const [filterTab, setFilterTab] = useState<FilterTab>('all');
+  const [moduleFilter, setModuleFilter] = useState<ModuleFilter>('all');
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Computed values
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.isRead).length,
+    [notifications]
+  );
+
+  const filtered = useMemo(() => {
+    let result = [...notifications];
+
+    // Tab filter
+    if (filterTab === 'unread') {
+      result = result.filter((n) => !n.isRead);
+    }
+
+    // Module filter
+    if (moduleFilter !== 'all') {
+      result = result.filter((n) => n.module === moduleFilter);
+    }
+
+    // Type filter
+    if (typeFilter !== 'all') {
+      result = result.filter((n) => n.type === typeFilter);
+    }
+
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (n) =>
+          n.title.toLowerCase().includes(q) ||
+          n.message.toLowerCase().includes(q) ||
+          n.module.toLowerCase().includes(q)
+      );
+    }
+
+    return result;
+  }, [notifications, filterTab, moduleFilter, typeFilter, searchQuery]);
+
+  // Group by date
+  const grouped = useMemo(() => {
+    const groups = new Map<string, AppNotification[]>();
+    for (const n of filtered) {
+      const group = getDateGroup(n.timestamp);
+      if (!groups.has(group)) groups.set(group, []);
+      groups.get(group)!.push(n);
+    }
+    // Sort groups by date order
+    const sorted: [string, AppNotification[]][] = [];
+    for (const label of DATE_GROUP_ORDER) {
+      const items = groups.get(label);
+      if (items && items.length > 0) {
+        sorted.push([label, items]);
+      }
+    }
+    return sorted;
+  }, [filtered]);
+
+  // Selection handlers
+  const toggleSelect = (id: string, checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    setSelectedIds(new Set(filtered.map((n) => n.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  // Bulk actions
+  const handleMarkAllRead = () => {
+    markAllAsRead();
     toast.success('All notifications marked as read');
   };
 
-  const markRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  const handleBulkMarkRead = () => {
+    if (selectedIds.size === 0) return;
+    markMultipleAsRead(Array.from(selectedIds));
+    setSelectedIds(new Set());
+    toast.success(`${selectedIds.size} notifications marked as read`);
   };
+
+  const handleBulkDismiss = () => {
+    if (selectedIds.size === 0) return;
+    dismissMultiple(Array.from(selectedIds));
+    setSelectedIds(new Set());
+    toast.success(`Notifications dismissed`);
+  };
+
+  const hasActiveFilters = moduleFilter !== 'all' || typeFilter !== 'all' || searchQuery.trim() !== '';
 
   return (
     <PageShell className="space-y-6">
       <PageHeader
         title="Notifications"
         subtitle={`${unreadCount} unread`}
+        actions={
+          <div className="flex items-center gap-2">
+            {selectedIds.size > 0 && (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  {selectedIds.size} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-[var(--border)] text-xs"
+                  onClick={handleBulkMarkRead}
+                >
+                  <CheckCheck className="w-3.5 h-3.5 mr-1.5" />
+                  Mark Read
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-[var(--border)] text-xs text-[var(--mw-error)]"
+                  onClick={handleBulkDismiss}
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                  Dismiss
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={clearSelection}
+                >
+                  <X className="w-3.5 h-3.5 mr-1" />
+                  Clear
+                </Button>
+              </>
+            )}
+          </div>
+        }
       />
 
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          {(['all', 'unread'] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={cn(
-                'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize',
-                filter === f
-                  ? 'bg-[var(--neutral-100)] text-foreground font-medium'
-                  : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]',
+      {/* Filter bar */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex gap-2">
+            {(['all', 'unread'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilterTab(f)}
+                className={cn(
+                  'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize',
+                  filterTab === f
+                    ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-foreground font-medium'
+                    : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]',
+                )}
+              >
+                {f} {f === 'unread' && unreadCount > 0 && `(${unreadCount})`}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Search notifications..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-8 w-48 text-xs"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               )}
+            </div>
+
+            {/* Filter toggle */}
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'border-[var(--border)] text-xs h-8',
+                hasActiveFilters && 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10',
+              )}
+              onClick={() => setShowFilters(!showFilters)}
             >
-              {f} {f === 'unread' && unreadCount > 0 && `(${unreadCount})`}
-            </button>
-          ))}
+              <Filter className="w-3.5 h-3.5 mr-1.5" />
+              Filters
+              {hasActiveFilters && (
+                <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[var(--mw-yellow-400)]" />
+              )}
+            </Button>
+
+            {/* Select all / Mark all read */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--border)] text-xs h-8"
+              onClick={selectAll}
+            >
+              Select All
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[var(--border)] text-xs h-8"
+              onClick={handleMarkAllRead}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+              Mark all read
+            </Button>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="border-[var(--border)] text-xs"
-          onClick={markAllRead}
-        >
-          <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-          Mark all read
-        </Button>
+
+        {/* Expanded filters */}
+        {showFilters && (
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] border border-border">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">Module:</label>
+              <select
+                value={moduleFilter}
+                onChange={(e) => setModuleFilter(e.target.value as ModuleFilter)}
+                className="h-7 rounded-lg border border-border bg-card text-xs px-2 text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--mw-yellow-400)]/30"
+              >
+                {MODULE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">Type:</label>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
+                className="h-7 rounded-lg border border-border bg-card text-xs px-2 text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--mw-yellow-400)]/30"
+              >
+                {TYPE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setModuleFilter('all');
+                  setTypeFilter('all');
+                  setSearchQuery('');
+                }}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="space-y-2">
-        {filtered.map((n) => {
-          const Icon = MODULE_ICONS[n.module] ?? Bell;
-          return (
-            <Card
-              key={n.id}
-              className={cn(
-                'p-4 flex items-start gap-4 cursor-pointer transition-colors hover:bg-[var(--accent)]',
-                !n.read && 'border-l-2 border-l-[var(--mw-yellow-400)]',
-              )}
-              onClick={() => markRead(n.id)}
-            >
-              <div className={cn('w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center flex-shrink-0', TYPE_STYLES[n.type])}>
-                <Icon className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className={cn('text-sm text-foreground', !n.read && 'font-medium')}>{n.title}</p>
-                  {!n.read && <div className="w-2 h-2 rounded-full bg-[var(--mw-yellow-400)] flex-shrink-0" />}
-                </div>
-                <p className="text-xs text-[var(--neutral-500)] line-clamp-1">{n.description}</p>
-              </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                <span className="text-xs text-[var(--neutral-500)] tabular-nums whitespace-nowrap">{n.time}</span>
-                <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-500)] text-[10px] capitalize">
-                  {n.module}
-                </Badge>
-              </div>
-            </Card>
-          );
-        })}
+      {/* Notification groups */}
+      <div className="space-y-6">
+        {grouped.map(([groupLabel, items]) => (
+          <div key={groupLabel}>
+            <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3 px-1">
+              {groupLabel}
+            </h3>
+            <div className="space-y-2">
+              {items.map((n) => (
+                <NotificationCardFull
+                  key={n.id}
+                  notification={n}
+                  onMarkRead={() => markAsRead(n.id)}
+                  onDismiss={() => dismissNotification(n.id)}
+                  selected={selectedIds.has(n.id)}
+                  onSelect={(checked) => toggleSelect(n.id, checked)}
+                  showCheckbox={selectedIds.size > 0}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
 
+        {/* Empty state */}
         {filtered.length === 0 && (
-          <Card className="p-12 flex flex-col items-center justify-center text-center">
-            <Bell className="w-8 h-8 text-[var(--neutral-300)] mb-3" />
-            <p className="text-sm font-medium text-foreground">All caught up</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-1">No unread notifications</p>
-          </Card>
+          <div className="py-16 flex flex-col items-center justify-center text-center rounded-xl border border-border bg-card">
+            <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center mb-4">
+              <Bell className="w-5 h-5 text-[var(--neutral-400)]" />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {filterTab === 'unread' ? 'All caught up' : 'No notifications'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+              {filterTab === 'unread'
+                ? 'You have no unread notifications. Great job staying on top of things.'
+                : hasActiveFilters
+                  ? 'No notifications match your current filters. Try adjusting them.'
+                  : 'Notifications about jobs, quotes, deliveries, and more will appear here.'
+              }
+            </p>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setModuleFilter('all');
+                  setTypeFilter('all');
+                  setSearchQuery('');
+                  setFilterTab('all');
+                }}
+                className="mt-3 text-xs text-[#0052CC] dark:text-[#4C9AFF] hover:underline"
+              >
+                Clear all filters
+              </button>
+            )}
+          </div>
         )}
       </div>
     </PageShell>
