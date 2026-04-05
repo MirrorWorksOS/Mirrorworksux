@@ -124,6 +124,7 @@ const menuConfig: MenuItem[] = [
       { label: 'Jobs', path: '/plan/jobs' },
       { label: 'Activities', path: '/plan/activities' },
       { label: 'Schedule', path: '/plan/schedule' },
+      { label: 'Product Studio', path: '/plan/product-studio' },
       { label: 'NC Connect', path: '/plan/nc-connect' },
       { label: 'Purchase', path: '/plan/purchase' },
       { label: 'Quality', path: '/plan/qc-planning' },
