@@ -28,6 +28,8 @@ import { cn } from '../ui/utils';
 import { WorkflowCanvas, WORKFLOW_DATA, type WFNode } from './WorkflowCanvas';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { IconWell } from '@/components/shared/icons/IconWell';
+import { Route as AnimatedRoute } from '@/components/animate-ui/icons/route';
+import { Progress } from '../ui/progress';
 
 // ─── Workflow list data ───────────────────────────────────────────────────────
 
@@ -50,17 +52,17 @@ const STATUS_CFG: Record<WFStatus, { bg: string; text: string }> = {
 // ─── Node palette ─────────────────────────────────────────────────────────────
 
 const NODE_PALETTE = [
-  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[var(--mw-success)]',          icon: Zap         },
-  { kind: 'ai',           label: 'AI action',      bg: 'bg-[var(--mw-purple)]',   icon: Sparkles    },
-  { kind: 'action',       label: 'Update record',  bg: 'bg-[var(--mw-info)]',     icon: RefreshCw   },
-  { kind: 'notification', label: 'Notification',   bg: 'bg-[var(--mw-yellow-400)]', icon: Bell      },
-  { kind: 'condition',    label: 'Condition',       bg: 'bg-[var(--mw-warning)]',  icon: GitBranch   },
-  { kind: 'email',        label: 'Send email',     bg: 'bg-[var(--mw-purple)]',   icon: Mail        },
-  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[var(--mw-error)]',    icon: ShoppingCart },
-  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[var(--mw-purple)]',            icon: Calendar    },
-  { kind: 'machine',      label: 'Assign machine', bg: 'bg-[var(--neutral-600)]', icon: Settings2   },
-  { kind: 'hold',         label: 'Hold job',       bg: 'bg-[var(--mw-warning)]',  icon: Pause       },
-  { kind: 'delay',        label: 'Delay / Wait',   bg: 'bg-[var(--neutral-500)]',            icon: Timer       },
+  { kind: 'trigger',      label: 'Trigger',        bg: 'bg-[var(--mw-success)]',    icon: Zap         },
+  { kind: 'ai',           label: 'AI action',      bg: 'bg-[var(--mw-purple)]',    icon: Sparkles    },
+  { kind: 'action',       label: 'Update record',  bg: 'bg-[var(--mw-info)]',      icon: RefreshCw   },
+  { kind: 'notification', label: 'Notification',   bg: 'bg-[var(--mw-yellow-400)]', icon: Bell       },
+  { kind: 'condition',    label: 'Condition',       bg: 'bg-[var(--mw-warning)]',   icon: GitBranch   },
+  { kind: 'email',        label: 'Send email',     bg: 'bg-[var(--mw-purple)]',    icon: Mail        },
+  { kind: 'purchase',     label: 'Create PO',      bg: 'bg-[var(--mw-error)]',     icon: ShoppingCart },
+  { kind: 'schedule',     label: 'Schedule',       bg: 'bg-[var(--mw-info)]',      icon: Calendar    },
+  { kind: 'machine',      label: 'Assign machine', bg: 'bg-[var(--mw-mirage)]',    icon: Settings2   },
+  { kind: 'hold',         label: 'Hold job',       bg: 'bg-[var(--mw-warning)]',   icon: Pause       },
+  { kind: 'delay',        label: 'Delay / Wait',   bg: 'bg-[var(--neutral-500)]',  icon: Timer       },
 ];
 
 // ─── Type-specific config fields ─────────────────────────────────────────────
@@ -325,6 +327,20 @@ function NodeDetailPanel({
           )}
         </div>
 
+        {/* Node completion indicator */}
+        <div className="border-t border-[var(--border)] pt-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">Configuration</p>
+            <span className="text-xs tabular-nums text-[var(--mw-success)]">
+              {node.props.length > 0 ? Math.min(100, Math.round((node.props.filter(([, v]) => v).length / Math.max(node.props.length, 1)) * 100)) : 0}%
+            </span>
+          </div>
+          <Progress
+            value={node.props.length > 0 ? Math.min(100, Math.round((node.props.filter(([, v]) => v).length / Math.max(node.props.length, 1)) * 100)) : 0}
+            className="h-1.5 bg-[var(--neutral-200)]"
+          />
+        </div>
+
         {/* Actions */}
         <div className="pt-2 space-y-2 border-t border-[var(--border)]">
           <Button
@@ -485,7 +501,7 @@ export function ControlWorkflowDesigner() {
               return (
                 <div
                   key={nt.kind}
-                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[var(--neutral-100)] border border-[var(--border)] cursor-grab active:cursor-grabbing hover:bg-[var(--neutral-100)] transition-colors"
+                  className="flex items-center gap-1.5 p-1.5 rounded-md bg-[var(--neutral-100)] border border-[var(--border)] cursor-grab active:cursor-grabbing transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] shadow-[var(--elevation-1)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5"
                   draggable
                 >
                   <div className={cn('w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0', nt.bg)}>
@@ -505,7 +521,9 @@ export function ControlWorkflowDesigner() {
         {/* Toolbar */}
         <div className="h-14 border-b border-[var(--border)] bg-card flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
-          <IconWell icon={Sparkles} size="sm" />
+          <div className="w-8 h-8 flex items-center justify-center rounded-[var(--shape-sm)] bg-[var(--mw-yellow-400)]/10">
+            <AnimatedRoute className="w-5 h-5 text-[var(--mw-yellow-600)]" />
+          </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate leading-tight">
               {selectedWF.name}

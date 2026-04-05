@@ -23,15 +23,16 @@ import {
   Trash2,
   ChevronDown,
   ChevronRight,
-  Trophy,
-  Zap,
   Target,
-  Flame,
-  Star,
-  Gem,
-  Shield,
-  BarChart3,
 } from 'lucide-react';
+import UilTrophy from '@iconscout/react-unicons/icons/uil-trophy';
+import UilBolt from '@iconscout/react-unicons/icons/uil-bolt';
+import UilCrosshair from '@iconscout/react-unicons/icons/uil-crosshair';
+import UilFire from '@iconscout/react-unicons/icons/uil-fire';
+import UilStar from '@iconscout/react-unicons/icons/uil-star';
+import UilDiamond from '@iconscout/react-unicons/icons/uil-diamond';
+import UilShield from '@iconscout/react-unicons/icons/uil-shield';
+import UilChartBar from '@iconscout/react-unicons/icons/uil-chart-bar';
 
 // ── Data ─────────────────────────────────────────────────────────────────
 
@@ -53,23 +54,28 @@ const INITIAL_TARGETS: TargetRow[] = [
   { id: '5', target: 'Log activities', metric: 'CRM activities', period: 'Daily', value: '5', status: 'Draft', enabled: false },
 ];
 
+type UniconIcon = React.ComponentType<{ color?: string; size?: string | number; className?: string }>;
+
 interface BadgeConfig {
   id: string;
-  emoji: string;
+  Icon: UniconIcon;
   name: string;
   description: string;
   earnedBy: number;
 }
 
+const BADGE_GOLD = '#ffcf4b';
+const BADGE_GOLD_SOFT = 'rgba(255, 207, 75, 0.2)';
+
 const BADGES: BadgeConfig[] = [
-  { id: 'b1', emoji: '\u{1F3C6}', name: 'Deal Closer', description: 'Close 10 deals in a month', earnedBy: 3 },
-  { id: 'b2', emoji: '\u26A1', name: 'Speed Demon', description: 'Complete 5 jobs ahead of schedule', earnedBy: 1 },
-  { id: 'b3', emoji: '\u{1F3AF}', name: 'Perfect Aim', description: 'Hit 100% quota for 3 consecutive months', earnedBy: 2 },
-  { id: 'b4', emoji: '\u{1F525}', name: 'Hot Streak', description: 'Log activities 5 days in a row', earnedBy: 7 },
-  { id: 'b5', emoji: '\u{1F31F}', name: 'Quality Star', description: 'Zero QC failures for 30 days', earnedBy: 4 },
-  { id: 'b6', emoji: '\u{1F48E}', name: 'Revenue King', description: 'Top revenue earner of the quarter', earnedBy: 1 },
-  { id: 'b7', emoji: '\u{1F6E1}\uFE0F', name: 'Reliability', description: '95%+ on-time delivery for 3 months', earnedBy: 5 },
-  { id: 'b8', emoji: '\u{1F4CA}', name: 'Data Champion', description: 'Most detailed job documentation', earnedBy: 2 },
+  { id: 'b1', Icon: UilTrophy, name: 'Deal Closer', description: 'Close 10 deals in a month', earnedBy: 3 },
+  { id: 'b2', Icon: UilBolt, name: 'Speed Demon', description: 'Complete 5 jobs ahead of schedule', earnedBy: 1 },
+  { id: 'b3', Icon: UilCrosshair, name: 'Perfect Aim', description: 'Hit 100% quota for 3 consecutive months', earnedBy: 2 },
+  { id: 'b4', Icon: UilFire, name: 'Hot Streak', description: 'Log activities 5 days in a row', earnedBy: 7 },
+  { id: 'b5', Icon: UilStar, name: 'Quality Star', description: 'Zero QC failures for 30 days', earnedBy: 4 },
+  { id: 'b6', Icon: UilDiamond, name: 'Revenue King', description: 'Top revenue earner of the quarter', earnedBy: 1 },
+  { id: 'b7', Icon: UilShield, name: 'Reliability', description: '95%+ on-time delivery for 3 months', earnedBy: 5 },
+  { id: 'b8', Icon: UilChartBar, name: 'Data Champion', description: 'Most detailed job documentation', earnedBy: 2 },
 ];
 
 interface GroupConfig {
@@ -246,8 +252,11 @@ export function ControlGamification() {
               <motion.div key={badge.id} variants={staggerItem}>
                 <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-3 mb-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)] text-xl shrink-0">
-                      {badge.emoji}
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-[var(--shape-lg)] shrink-0"
+                      style={{ backgroundColor: BADGE_GOLD_SOFT }}
+                    >
+                      <badge.Icon size={28} color={BADGE_GOLD} aria-hidden />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-foreground">{badge.name}</h3>

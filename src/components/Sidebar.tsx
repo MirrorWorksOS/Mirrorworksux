@@ -2,7 +2,7 @@
  * Sidebar - Main navigation sidebar with all modules
  *
  * Uses Animate UI icons for module identifiers (animateOnHover),
- * Lucide icons for utility elements (Search, Plus, ChevronRight).
+ * Lucide icons for utility elements (Search, ChevronRight); Animate UI Plus for Quick Create.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -10,7 +10,6 @@ import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
   Search,
-  Plus,
   ChevronRight,
   LogOut,
   Bell,
@@ -25,6 +24,7 @@ import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
 import { useCommandPaletteStore } from '@/store/commandPaletteStore';
 import { useTheme } from '@/components/theme-provider';
+import { mockUserContext, getUserInitials } from '@/lib/mock-user-context';
 import { motion } from 'motion/react';
 import {
   DropdownMenu,
@@ -34,12 +34,14 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { ThemeToggler } from '@/components/animate-ui/primitives/effects/theme-toggler';
+import { Plus } from '@/components/animate-ui/icons/plus';
 import {
   getHighestUsageAcrossModules,
   getUsageStatus,
   getNextTier,
   CURRENT_SUBSCRIPTION,
 } from '@/lib/subscription';
+import mirrorworksLogomark from '@/art/empty-states/logo/mirrorworks_logomark.svg';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -278,7 +280,7 @@ function CollapsibleSubMenu({
     >
       <div className="min-h-0">
         <div
-          className="ml-6 mt-1.5 flex flex-col gap-1"
+          className="ml-6 mt-1.5 flex flex-col gap-[5px]"
           style={{
             opacity: isOpen ? 1 : 0,
             transition: `opacity ${EXPAND_DURATION} ${EXPAND_EASING}`,
@@ -451,11 +453,13 @@ function UserProfileSplitButton() {
         <DropdownMenuTrigger asChild>
           <button className="flex flex-1 items-center gap-2.5 py-1.5 pl-1.5 pr-3 rounded-l-full min-w-0 hover:bg-[#0A0A0A]/[0.04] dark:hover:bg-white/[0.06] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none">
             <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-xs font-medium">MQ</span>
+              <span className="text-white text-xs font-medium">
+                {getUserInitials(mockUserContext.displayName)}
+              </span>
             </div>
             <div className="flex-1 text-left min-w-0">
-              <p className="text-sm text-foreground truncate">Matt Quigley</p>
-              <p className="text-xs text-muted-foreground truncate">Admin</p>
+              <p className="text-sm text-foreground truncate">{mockUserContext.displayName}</p>
+              <p className="text-xs text-muted-foreground truncate">{mockUserContext.role}</p>
             </div>
           </button>
         </DropdownMenuTrigger>
@@ -613,10 +617,13 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-3">
         <div className="h-[36px] flex items-center gap-2.5 px-2">
-          <div className="w-8 h-8 bg-[var(--mw-mirage)] rounded-[var(--shape-md)] flex items-center justify-center">
-            <span className="text-white font-bold text-sm">MW</span>
-          </div>
-          <p className="font-medium text-base text-foreground">
+          <img
+            src={mirrorworksLogomark}
+            alt=""
+            className="h-9 w-9 shrink-0 object-contain"
+            aria-hidden
+          />
+          <p className="text-lg font-bold tracking-tight text-foreground">
             Alliance Metal
           </p>
         </div>
@@ -629,7 +636,13 @@ export function Sidebar() {
             type="button"
             className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-yellow-500)]"
           >
-            <Plus className="h-5 w-5 shrink-0 text-primary-foreground" strokeWidth={1.5} aria-hidden />
+            <Plus
+              size={20}
+              animateOnHover
+              className="shrink-0 text-primary-foreground"
+              strokeWidth={1.5}
+              aria-hidden
+            />
             <span className="flex-1 text-left text-sm font-medium text-primary-foreground">
               Quick Create
             </span>
@@ -726,6 +739,7 @@ export function Sidebar() {
                             </span>
                           </div>
                         )}
+                        <div className="flex flex-col gap-[5px]">
                         {group.items.map((subItem) => {
                           const isSubActive = isActiveRoute(subItem.path);
                           const isSubHovered = hoveredSubPath === subItem.path;
@@ -759,6 +773,7 @@ export function Sidebar() {
                             </Link>
                           );
                         })}
+                        </div>
                       </div>
                     ))}
                   </CollapsibleSubMenu>
@@ -771,6 +786,10 @@ export function Sidebar() {
 
       {/* Usage Warning Banner */}
       <UsageBanner />
+
+      <p className="px-5 pb-2 text-center text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-400)]">
+        Smart FactoryOS
+      </p>
 
       {/* Footer — M3 split button: user profile + theme toggle */}
       <div className="p-3 border-t border-border">

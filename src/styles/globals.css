@@ -49,11 +49,15 @@
   --mw-yellow-200: #FFE8AD;
   --mw-yellow-300: #FFDB7A;
   --mw-yellow-400: #FFCF4B;
+  /* Single translucent primary wash (dashboard glass / gradients) */
+  --mw-yellow-400-20: color-mix(in srgb, var(--mw-yellow-400) 20%, transparent);
   --mw-yellow-500: #F2BF30;
   --mw-yellow-600: #E6A600;
   --mw-yellow-700: #CC8E00;
   --mw-yellow-800: #A67300;
   --mw-yellow-900: #805900;
+
+  /* Brand surfaces: large fills → --mw-mirage / card; accents → --mw-yellow-400 (#FFCF4B). No peach. */
 
   /* Neutral Scale — as per DesignSystem.md */
   --neutral-50: #FAFAFA;
@@ -112,13 +116,21 @@
   --mw-error-200: #FECACA;
   --mw-error-600: #DC2626;
 
-  /* M3 Shape Scale */
+  /* Process Builder / Factory Designer — canvas node fills */
+  --pb-process-fill: #FFF3D6;
+  --pb-people-fill: #DBEAFE;
+  --pb-resource-fill: var(--neutral-100);
+  --pb-custom-fill: var(--mw-purple-50);
+  --pb-text-shapes-fill: var(--neutral-50);
+
+  /* M3 Shape Scale — rounder defaults for SaaS cards / command surfaces */
   --shape-none: 0px;
   --shape-xs: 4px;
   --shape-sm: 8px;
-  --shape-md: 12px;
-  --shape-lg: 16px;
-  --shape-xl: 24px;
+  --shape-md: 14px;
+  --shape-lg: 22px;
+  --shape-xl: 30px;
+  --shape-2xl: 36px;
   --shape-full: 9999px;
 
   /* M3 Elevation */
@@ -253,6 +265,9 @@
   --sidebar-accent-foreground: #0A0A0A;
   --sidebar-border: #E5E5E5;
   --sidebar-ring: #737373;
+
+  --recharts-axis-tick: var(--neutral-500);
+  --recharts-grid-stroke: var(--neutral-200);
 }
 
 .dark {
@@ -306,6 +321,13 @@
   --chart-scale-mid: #94A3B3;
   --chart-scale-high: #FFCF4B;
 
+  /* Process Builder / Factory Designer — canvas node fills (dark) */
+  --pb-process-fill: rgba(133, 77, 14, 0.3);
+  --pb-people-fill: rgba(30, 64, 175, 0.3);
+  --pb-resource-fill: #404040;
+  --pb-custom-fill: rgba(107, 33, 168, 0.3);
+  --pb-text-shapes-fill: var(--neutral-100);
+
   /* M3 Elevation — lighter glow on dark surfaces */
   --elevation-0: none;
   --elevation-1: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -316,19 +338,21 @@
 
   /* ── Semantic Tokens ── */
   --background: var(--app-canvas);
-  --foreground: #E5E5E5;
+  /* Slightly warm off-white body text on dark canvas (readable on mirage cards) */
+  --foreground: #EEF1F4;
   --card: #1A2732;
-  --card-foreground: #E5E5E5;
+  --card-foreground: #EEF1F4;
   --popover: #1A2732;
-  --popover-foreground: #E5E5E5;
+  --popover-foreground: #EEF1F4;
   --primary: #FFCF4B;
   --primary-foreground: #0A0A0A;
   --secondary: #243442;
-  --secondary-foreground: #E5E5E5;
+  --secondary-foreground: #EEF1F4;
   --muted: #1F2D3A;
-  --muted-foreground: #738899;
+  /* Stronger secondary text on dark surfaces (contrast) */
+  --muted-foreground: #B8C5D0;
   --accent: #243442;
-  --accent-foreground: #E5E5E5;
+  --accent-foreground: #EEF1F4;
   --destructive: #DE350B;
   --destructive-foreground: #FFFFFF;
   --border: #2C3E4F;
@@ -355,6 +379,10 @@
   --sidebar-accent-foreground: #E5E5E5;
   --sidebar-border: #2C3E4F;
   --sidebar-ring: #FFCF4B;
+
+  /* Recharts — readable ticks/grid on mirage cards */
+  --recharts-axis-tick: #C8D2DC;
+  --recharts-grid-stroke: #33475a;
 }
 
 @theme inline {
@@ -395,6 +423,7 @@
   --radius-md: var(--shape-md);
   --radius-lg: var(--shape-lg);
   --radius-xl: var(--shape-xl);
+  --radius-2xl: var(--shape-2xl);
   --radius-full: var(--shape-full);
 
   /* M3 Elevation — shadow-{xs|sm|md|lg|xl} utilities */

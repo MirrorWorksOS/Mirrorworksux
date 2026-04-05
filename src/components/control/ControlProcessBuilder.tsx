@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -12,8 +13,9 @@ import {
   User, ShieldCheck, Search as SearchIcon, Settings2,
   Cog, PenTool, Anchor, Warehouse,
   Sparkles, Save, Upload, Trash2, X, ZoomIn, ZoomOut,
-  Eye, GripVertical, ArrowRight,
+  Eye, GripVertical, ArrowRight, Factory,
   LayoutGrid, type LucideIcon, Plus,
+  Type, Circle, Triangle, RectangleHorizontal,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -26,10 +28,22 @@ import {
   ResizableHandle,
 } from '../ui/resizable';
 import { cn } from '../ui/utils';
+import { Blocks as AnimatedBlocks } from '@/components/animate-ui/icons/blocks';
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetPortal,
+  SheetOverlay,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/animate-ui/primitives/radix/sheet';
+import { PanelRight } from 'lucide-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-export type NodeCategory = 'process' | 'people' | 'resource' | 'custom';
+export type NodeCategory = 'process' | 'people' | 'resource' | 'custom' | 'text-shapes';
 export type FlowType = 'material' | 'information' | 'people';
 
 export interface ProcessNode {
@@ -96,6 +110,12 @@ const ELEMENT_LIBRARY: Record<string, DragItem[]> = {
   Custom: [
     { category: 'custom', label: 'Custom Block', icon: Plus },
   ],
+  'Text': [
+    { category: 'text-shapes', label: 'Text Label', icon: Type },
+    { category: 'text-shapes', label: 'Rectangle', icon: RectangleHorizontal },
+    { category: 'text-shapes', label: 'Circle', icon: Circle },
+    { category: 'text-shapes', label: 'Triangle', icon: Triangle },
+  ],
 };
 
 // ─── AI Lean Suggestions ────────────────────────────────────────────────────
@@ -130,16 +150,17 @@ const AI_SUGGESTIONS: AILeanSuggestion[] = [
 // ─── Colour config ──────────────────────────────────────────────────────────
 
 const CATEGORY_STYLE: Record<NodeCategory, { bg: string; border: string; shape: string }> = {
-  process:  { bg: 'bg-yellow-100 dark:bg-yellow-900/30',   border: 'border-yellow-400',  shape: 'square' },
-  people:   { bg: 'bg-blue-100 dark:bg-blue-900/30',       border: 'border-blue-400',    shape: 'circle' },
-  resource: { bg: 'bg-neutral-100 dark:bg-neutral-700',    border: 'border-neutral-400', shape: 'diamond' },
-  custom:   { bg: 'bg-purple-100 dark:bg-purple-900/30',   border: 'border-purple-400',  shape: 'square' },
+  process:  { bg: 'bg-[var(--mw-yellow-100)] dark:bg-[var(--mw-yellow-50)]',  border: 'border-[var(--mw-yellow-400)]', shape: 'square' },
+  people:   { bg: 'bg-[var(--mw-blue-100)] dark:bg-[var(--mw-blue-50)]',      border: 'border-[var(--mw-blue)]',       shape: 'circle' },
+  resource: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)]',      border: 'border-[var(--neutral-400)]',   shape: 'diamond' },
+  custom:   { bg: 'bg-[var(--mw-purple-100)] dark:bg-[var(--mw-purple-50)]',  border: 'border-[var(--mw-purple)]',     shape: 'square' },
+  'text-shapes': { bg: 'bg-[var(--neutral-50)] dark:bg-[var(--neutral-700)]', border: 'border-[var(--neutral-300)]', shape: 'square' },
 };
 
 const FLOW_COLORS: Record<FlowType, string> = {
-  material: '#facc15',     // yellow-400
-  information: '#60a5fa',  // blue-400
-  people: '#4ade80',       // green-400
+  material: 'var(--mw-yellow-400)',
+  information: 'var(--mw-blue)',
+  people: 'var(--mw-success)',
 };
 
 const FLOW_LABELS: Record<FlowType, string> = {
@@ -219,7 +240,7 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
     <div
       className={cn(
         'flex items-center gap-2 p-2 rounded-[var(--shape-md)] border cursor-grab active:cursor-grabbing',
-        'hover:shadow-sm transition-shadow duration-[var(--duration-short2)]',
+        'shadow-[var(--elevation-1)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
         style.bg, style.border,
       )}
       draggable
@@ -257,19 +278,20 @@ function CanvasNode({
   const Icon = node.icon;
   const ports: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
 
-  // Compute border color for SVG
   const borderColorMap: Record<NodeCategory, string> = {
-    process: '#facc15',
-    people: '#60a5fa',
-    resource: '#a3a3a3',
-    custom: '#c084fc',
+    process: 'var(--mw-yellow-400)',
+    people: 'var(--mw-blue)',
+    resource: 'var(--neutral-400)',
+    custom: 'var(--mw-purple)',
+    'text-shapes': 'var(--neutral-300)',
   };
 
   const fillColorMap: Record<NodeCategory, string> = {
-    process: 'var(--pb-process-fill, #fef9c3)',
-    people: 'var(--pb-people-fill, #dbeafe)',
-    resource: 'var(--pb-resource-fill, #f5f5f5)',
-    custom: 'var(--pb-custom-fill, #f3e8ff)',
+    process: 'var(--pb-process-fill)',
+    people: 'var(--pb-people-fill)',
+    resource: 'var(--pb-resource-fill)',
+    custom: 'var(--pb-custom-fill)',
+    'text-shapes': 'var(--pb-text-shapes-fill)',
   };
 
   const half = NODE_SIZE / 2;
@@ -280,8 +302,9 @@ function CanvasNode({
       transform={`translate(${node.x}, ${node.y})`}
       onMouseDown={onMouseDown}
       className="cursor-move"
+      filter={selected ? 'url(#pb-elevation-3)' : 'url(#pb-elevation-1)'}
+      style={{ transition: 'filter 250ms ease' }}
     >
-      {/* Selection ring */}
       {selected && (
         <rect
           x={-4}
@@ -557,8 +580,8 @@ function AILeanPanel({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-        <span className="text-xs font-medium text-purple-600 dark:text-purple-400">AI Lean Suggestions</span>
+        <Sparkles className="w-4 h-4 text-[var(--mw-purple)] flex-shrink-0" />
+        <span className="text-xs font-medium text-[var(--mw-purple)]">AI Lean Suggestions</span>
       </div>
 
       <AnimatePresence>
@@ -569,18 +592,18 @@ function AILeanPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
             transition={{ duration: 0.2 }}
-            className="border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 rounded-[var(--shape-md)] p-3 space-y-2"
+            className="border border-[var(--mw-purple)]/20 bg-[var(--mw-purple-50)] rounded-[var(--shape-md)] p-3 space-y-2"
           >
             <p className="text-xs text-foreground leading-relaxed">{s.message}</p>
             <div className="flex items-center justify-between">
-              <Badge className="text-[10px] px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-700 rounded">
+              <Badge className="text-[10px] px-1.5 py-0.5 bg-[var(--mw-purple-100)] text-[var(--mw-purple)] border border-[var(--mw-purple)]/25 rounded">
                 {s.principleTag}
               </Badge>
               <div className="flex gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-[10px] text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                  className="h-6 px-2 text-[10px] text-[var(--mw-purple)] hover:bg-[var(--mw-purple-50)]"
                   onClick={() => onApply(s.id)}
                 >
                   Apply
@@ -610,7 +633,21 @@ function AILeanPanel({
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
+interface FactoryRefElement {
+  id: string;
+  type: string;
+  category: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+}
+
 export function ControlProcessBuilder() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // State
   const [nodes, setNodes] = useState<ProcessNode[]>(DEMO_NODES);
   const [connections, setConnections] = useState<ProcessConnection[]>(DEMO_CONNECTIONS);
@@ -622,6 +659,26 @@ export function ControlProcessBuilder() {
   const [activeTab, setActiveTab] = useState('Processes');
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [factoryLayer, setFactoryLayer] = useState<FactoryRefElement[] | null>(null);
+  const [showFactoryLayer, setShowFactoryLayer] = useState(true);
+
+  useEffect(() => {
+    if (searchParams.get('from') === 'factory') {
+      try {
+        const raw = sessionStorage.getItem('mw-factory-to-process');
+        if (raw) {
+          const parsed = JSON.parse(raw) as FactoryRefElement[];
+          setFactoryLayer(parsed);
+          sessionStorage.removeItem('mw-factory-to-process');
+          searchParams.delete('from');
+          setSearchParams(searchParams, { replace: true });
+          toast.success('Factory layout imported as reference layer');
+        }
+      } catch {
+        toast.error('Failed to import factory layout');
+      }
+    }
+  }, []);
 
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
@@ -857,7 +914,7 @@ export function ControlProcessBuilder() {
       {/* ── Top Toolbar ────────────────────────────────────────────────── */}
       <div className="h-12 border-b border-[var(--border)] bg-card flex items-center px-4 gap-3 flex-shrink-0">
         {/* Title */}
-        <LayoutGrid className="w-4 h-4 text-[var(--neutral-500)]" />
+        <AnimatedBlocks className="w-4 h-4 text-[var(--mw-yellow-600)]" />
         <span className="text-sm font-medium text-foreground whitespace-nowrap">Process builder</span>
 
         <div className="w-px h-6 bg-[var(--border)]" />
@@ -939,7 +996,7 @@ export function ControlProcessBuilder() {
         </Button>
         <Button
           size="sm"
-          className="h-8 gap-1.5 text-xs bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-600 dark:hover:bg-purple-500"
+          className="h-8 gap-1.5 text-xs bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white"
           onClick={handleAnalyzeAI}
         >
           <Sparkles className="w-3.5 h-3.5" /> Analyze with AI
@@ -987,20 +1044,24 @@ export function ControlProcessBuilder() {
               <div className="mt-2 space-y-1">
                 <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">Shapes</p>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded border border-yellow-400 bg-yellow-100 dark:bg-yellow-900/30" />
+                  <span className="w-4 h-4 rounded border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-100)]" />
                   <span className="text-xs text-[var(--neutral-500)]">Process</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full border border-blue-400 bg-blue-100 dark:bg-blue-900/30" />
+                  <span className="w-4 h-4 rounded-full border border-[var(--mw-blue)] bg-[var(--mw-blue-100)]" />
                   <span className="text-xs text-[var(--neutral-500)]">People</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rotate-45 border border-neutral-400 bg-neutral-100 dark:bg-neutral-700" style={{ borderRadius: 2 }} />
+                  <span className="w-4 h-4 rotate-45 border border-[var(--neutral-400)] bg-[var(--neutral-100)]" style={{ borderRadius: 2 }} />
                   <span className="text-xs text-[var(--neutral-500)]">Resource</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded border border-purple-400 bg-purple-100 dark:bg-purple-900/30" />
+                  <span className="w-4 h-4 rounded border border-[var(--mw-purple)] bg-[var(--mw-purple-100)]" />
                   <span className="text-xs text-[var(--neutral-500)]">Custom</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded border border-[var(--neutral-300)] bg-[var(--neutral-50)]" />
+                  <span className="text-xs text-[var(--neutral-500)]">Text</span>
                 </div>
               </div>
             </div>
@@ -1023,18 +1084,6 @@ export function ControlProcessBuilder() {
               }
               .animate-flow {
                 animation: flowDash 0.8s linear infinite;
-              }
-              :root {
-                --pb-process-fill: #fef9c3;
-                --pb-people-fill: #dbeafe;
-                --pb-resource-fill: #f5f5f5;
-                --pb-custom-fill: #f3e8ff;
-              }
-              .dark {
-                --pb-process-fill: rgba(133, 77, 14, 0.3);
-                --pb-people-fill: rgba(30, 64, 175, 0.3);
-                --pb-resource-fill: #404040;
-                --pb-custom-fill: rgba(107, 33, 168, 0.3);
               }
             `}</style>
 
@@ -1073,6 +1122,17 @@ export function ControlProcessBuilder() {
                 <marker id="arrow-drawing" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
                   <path d="M 0 0.5 L 6 3 L 0 5.5 Z" fill="var(--neutral-400)" />
                 </marker>
+
+                {/* MD3 Elevation filters */}
+                <filter id="pb-elevation-1" x="-10%" y="-10%" width="130%" height="140%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.08" />
+                </filter>
+                <filter id="pb-elevation-2" x="-10%" y="-10%" width="130%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.12" />
+                </filter>
+                <filter id="pb-elevation-3" x="-15%" y="-15%" width="140%" height="150%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000" floodOpacity="0.15" />
+                </filter>
               </defs>
 
               {/* Background rect for grid */}
@@ -1080,6 +1140,38 @@ export function ControlProcessBuilder() {
 
               {/* Transform group for zoom + pan */}
               <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+
+                {/* Factory reference layer */}
+                {factoryLayer && showFactoryLayer && (
+                  <g opacity={0.3}>
+                    {factoryLayer.map(el => {
+                      if (el.category === 'zones') {
+                        return (
+                          <g key={el.id}>
+                            <rect x={el.x} y={el.y} width={el.width} height={el.height} fill={el.color} fillOpacity={0.06} stroke={el.color} strokeWidth={1} strokeDasharray="8 4" rx={6} />
+                            <text x={el.x + 8} y={el.y + 16} fontSize={10} fill={el.color} fontWeight={500} opacity={0.7}>{el.name}</text>
+                          </g>
+                        );
+                      }
+                      if (el.category === 'people') {
+                        const cx = el.x + el.width / 2;
+                        const cy = el.y + el.height / 2;
+                        return <circle key={el.id} cx={cx} cy={cy} r={el.width / 2} fill={el.color} fillOpacity={0.1} stroke={el.color} strokeWidth={0.5} />;
+                      }
+                      if (el.category === 'machines') {
+                        return (
+                          <g key={el.id}>
+                            <rect x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--neutral-200)" fillOpacity={0.4} stroke="var(--neutral-400)" strokeWidth={0.5} rx={4} />
+                            <text x={el.x + el.width / 2} y={el.y + el.height / 2 + 3} textAnchor="middle" fontSize={8} fill="var(--neutral-500)" fontWeight={500}>{el.name}</text>
+                          </g>
+                        );
+                      }
+                      return (
+                        <rect key={el.id} x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--neutral-300)" fillOpacity={0.2} stroke="var(--neutral-400)" strokeWidth={0.5} rx={2} />
+                      );
+                    })}
+                  </g>
+                )}
 
                 {/* Connections */}
                 {visibleConnections.map(conn => (
@@ -1123,6 +1215,24 @@ export function ControlProcessBuilder() {
               </g>
             </svg>
 
+            {/* Factory layer imported banner */}
+            <AnimatePresence>
+              {factoryLayer && showFactoryLayer && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="absolute top-3 right-3 z-20 flex items-center gap-2 rounded-lg border border-[var(--border)] bg-white px-3 py-1.5 shadow-[var(--elevation-2)] dark:bg-neutral-800"
+                >
+                  <Factory className="h-3.5 w-3.5 text-[var(--mw-yellow-600)]" />
+                  <span className="text-xs text-[var(--neutral-600)]">Factory layout imported as reference</span>
+                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0 ml-1" onClick={() => setShowFactoryLayer(false)}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Canvas empty state hint */}
             {nodes.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -1138,12 +1248,74 @@ export function ControlProcessBuilder() {
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md"
+                className="absolute top-3 left-1/2 -translate-x-1/2 bg-[var(--mw-purple)] text-white text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md"
               >
                 <Eye className="w-3.5 h-3.5" />
                 Spaghetti diagram active
               </motion.div>
             )}
+
+            {/* Floating bottom toolbar for text-shapes */}
+            <AnimatePresence>
+              {selectedNodeId && (() => {
+                const selectedNode = nodes.find(n => n.id === selectedNodeId);
+                if (!selectedNode || selectedNode.category !== 'text-shapes') return null;
+                const isTextNode = selectedNode.label === 'Text Label';
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 16 }}
+                    transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-2 shadow-[var(--elevation-3)] dark:bg-neutral-800"
+                  >
+                    {isTextNode ? (
+                      <>
+                        <span className="text-[10px] font-medium text-[var(--neutral-500)]">Size</span>
+                        <ToggleGroup type="single" defaultValue="14" className="gap-0.5">
+                          <ToggleGroupItem value="11" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">S</ToggleGroupItem>
+                          <ToggleGroupItem value="14" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">M</ToggleGroupItem>
+                          <ToggleGroupItem value="18" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">L</ToggleGroupItem>
+                          <ToggleGroupItem value="24" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">XL</ToggleGroupItem>
+                        </ToggleGroup>
+                        <div className="h-4 w-px bg-[var(--border)]" />
+                        <span className="text-[10px] font-medium text-[var(--neutral-500)]">Weight</span>
+                        <ToggleGroup type="single" defaultValue="400" className="gap-0.5">
+                          <ToggleGroupItem value="300" className="h-7 px-2 text-[10px] rounded-full font-light data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">Light</ToggleGroupItem>
+                          <ToggleGroupItem value="400" className="h-7 px-2 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">Regular</ToggleGroupItem>
+                          <ToggleGroupItem value="700" className="h-7 px-2 text-[10px] rounded-full font-bold data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">Bold</ToggleGroupItem>
+                        </ToggleGroup>
+                        <div className="h-4 w-px bg-[var(--border)]" />
+                        <span className="text-[10px] font-medium text-[var(--neutral-500)]">Align</span>
+                        <ToggleGroup type="single" defaultValue="left" className="gap-0.5">
+                          <ToggleGroupItem value="left" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">L</ToggleGroupItem>
+                          <ToggleGroupItem value="center" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">C</ToggleGroupItem>
+                          <ToggleGroupItem value="right" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">R</ToggleGroupItem>
+                        </ToggleGroup>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[10px] font-medium text-[var(--neutral-500)]">Fill</span>
+                        <ToggleGroup type="single" defaultValue="25" className="gap-0.5">
+                          <ToggleGroupItem value="0" className="h-7 w-8 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">0%</ToggleGroupItem>
+                          <ToggleGroupItem value="25" className="h-7 w-8 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">25%</ToggleGroupItem>
+                          <ToggleGroupItem value="50" className="h-7 w-8 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">50%</ToggleGroupItem>
+                          <ToggleGroupItem value="100" className="h-7 w-9 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">100%</ToggleGroupItem>
+                        </ToggleGroup>
+                        <div className="h-4 w-px bg-[var(--border)]" />
+                        <span className="text-[10px] font-medium text-[var(--neutral-500)]">Stroke</span>
+                        <ToggleGroup type="single" defaultValue="1" className="gap-0.5">
+                          <ToggleGroupItem value="0" className="h-7 w-8 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">None</ToggleGroupItem>
+                          <ToggleGroupItem value="1" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">1</ToggleGroupItem>
+                          <ToggleGroupItem value="2" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">2</ToggleGroupItem>
+                          <ToggleGroupItem value="4" className="h-7 w-7 text-[10px] rounded-full data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]">4</ToggleGroupItem>
+                        </ToggleGroup>
+                      </>
+                    )}
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
           </div>
         </ResizablePanel>
 

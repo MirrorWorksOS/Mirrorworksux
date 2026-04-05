@@ -9,6 +9,10 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import {
+  mockUserContext,
+  type CommandPaletteUserRole,
+} from '@/lib/mock-user-context';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from '@/components/ui/utils';
 import {
@@ -53,7 +57,7 @@ import {
 // Role / Group system – determines which suggestions surface first
 // ---------------------------------------------------------------------------
 
-type UserRole = 'sales' | 'production' | 'purchasing' | 'finance' | 'shipping' | 'admin';
+type UserRole = CommandPaletteUserRole;
 
 interface UserProfile {
   name: string;
@@ -62,12 +66,12 @@ interface UserProfile {
   recentModules: string[];
 }
 
-// Simulated current user – in production this comes from auth context
+/** Prototype session — aligned with Welcome dashboard / Agent */
 const CURRENT_USER: UserProfile = {
-  name: 'Matt Quigley',
-  role: 'admin',
-  groups: ['Management', 'Sales', 'Production'],
-  recentModules: ['Sell', 'Plan', 'Make'],
+  name: mockUserContext.displayName,
+  role: mockUserContext.commandPaletteRole,
+  groups: mockUserContext.groups,
+  recentModules: mockUserContext.recentModules ?? ['Plan', 'Make', 'Sell'],
 };
 
 // Maps roles to their primary modules for priority sorting

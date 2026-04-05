@@ -42,8 +42,8 @@ export const MW_FILL = {
 /** Default Recharts motion — smooth, ease-in-out */
 export const MW_RECHARTS_ANIMATION = {
   isAnimationActive: true,
-  animationDuration: 550,
-  animationEasing: "ease-in-out" as const,
+  animationDuration: 1000,
+  animationEasing: "ease-out" as const,
 };
 
 /** Bar charts — slightly longer tween than lines/areas */
@@ -60,14 +60,15 @@ export const MW_RECHARTS_ANIMATION_BAR = {
 export const MW_BAR_TOOLTIP_CURSOR = { fill: "transparent" } as const;
 
 export const MW_AXIS_TICK = {
-  fontSize: 12,
+  fontSize: 13,
   fontFamily: "'Roboto', sans-serif",
-  fill: "var(--neutral-500)",
+  fontWeight: 300,
+  fill: "var(--recharts-axis-tick, var(--neutral-500))",
 } as const;
 
 export const MW_CARTESIAN_GRID = {
   strokeDasharray: "3 3",
-  stroke: "var(--neutral-200)",
+  stroke: "var(--recharts-grid-stroke, var(--neutral-200))",
   vertical: false,
 } as const;
 

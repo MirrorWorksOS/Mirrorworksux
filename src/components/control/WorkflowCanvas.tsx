@@ -310,17 +310,17 @@ export const WORKFLOW_DATA: Record<string, WorkflowData> = {
 // ─── Visual styles per kind ───────────────────────────────────────────────────
 
 const kindStyle: Record<NodeKind, { card: string; iconBg: string; borderLeft: string }> = {
-  trigger:      { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-success)]',          borderLeft: 'border-l-[var(--mw-success)]' },
-  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30',        iconBg: 'bg-[var(--mw-mirage)]', borderLeft: 'border-l-[var(--mw-purple)]' },
-  action:       { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-info)]',     borderLeft: 'border-l-[var(--mw-info)]' },
-  notification: { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
-  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',                iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
-  hold:         { card: 'bg-card border-[var(--mw-error)]/30',                         iconBg: 'bg-[var(--mw-warning)]',  borderLeft: 'border-l-[var(--mw-warning)]' },
-  email:        { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
-  purchase:     { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-error)]',    borderLeft: 'border-l-[var(--mw-error)]' },
-  schedule:     { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--mw-purple)]',   borderLeft: 'border-l-[var(--mw-purple)]' },
-  machine:      { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-600)]', borderLeft: 'border-l-[var(--neutral-600)]' },
-  delay:        { card: 'bg-card border-[var(--border)]',                              iconBg: 'bg-[var(--neutral-500)]',            borderLeft: 'border-l-[var(--neutral-500)]' },
+  trigger:      { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-success)]',    borderLeft: 'border-l-[var(--mw-success)]' },
+  ai:           { card: 'bg-[var(--mw-purple-50)] border-[var(--mw-purple)]/30', iconBg: 'bg-[var(--mw-mirage)]',    borderLeft: 'border-l-[var(--mw-purple)]' },
+  action:       { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-info)]',      borderLeft: 'border-l-[var(--mw-info)]' },
+  notification: { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-yellow-400)]', borderLeft: 'border-l-[var(--mw-yellow-400)]' },
+  condition:    { card: 'bg-[var(--mw-mirage)] border-[var(--mw-info)]',         iconBg: 'bg-[var(--mw-warning)]',   borderLeft: 'border-l-[var(--mw-warning)]' },
+  hold:         { card: 'bg-card border-[var(--mw-error)]/30',                   iconBg: 'bg-[var(--mw-warning)]',   borderLeft: 'border-l-[var(--mw-warning)]' },
+  email:        { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-purple)]',    borderLeft: 'border-l-[var(--mw-purple)]' },
+  purchase:     { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-error)]',     borderLeft: 'border-l-[var(--mw-error)]' },
+  schedule:     { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-info)]',      borderLeft: 'border-l-[var(--mw-info)]' },
+  machine:      { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--mw-mirage)]',    borderLeft: 'border-l-[var(--mw-mirage)]' },
+  delay:        { card: 'bg-card border-[var(--border)]',                        iconBg: 'bg-[var(--neutral-500)]',  borderLeft: 'border-l-[var(--neutral-500)]' },
 };
 
 // ─── SVG Connection layer ────────────────────────────────────────────────────
@@ -376,7 +376,7 @@ function Connections({ edges, nodes, canvasW, canvasH }: { edges: WFEdge[]; node
 function AddStepButton({ x, y }: { x: number; y: number }) {
   return (
     <button
-      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)]"
+      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)] hover:shadow-[var(--elevation-2)] hover:scale-110"
       style={{ left: x - 12, top: y - 12 }}
       title="Add step"
     >
@@ -403,11 +403,14 @@ function NodeCard({
   return (
     <div
       className={cn(
-        'absolute border border-l-[3px] rounded-[var(--shape-lg)] p-3 cursor-pointer shadow-sm select-none',
-        'transition-all duration-[var(--duration-short2)]',
+        'absolute border border-l-[3px] rounded-[var(--shape-lg)] p-3 cursor-pointer select-none',
+        'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+        'shadow-[var(--elevation-1)]',
         s.card,
         s.borderLeft,
-        selected ? 'ring-2 ring-[var(--mw-yellow-400)] shadow-md' : 'hover:shadow-md',
+        selected
+          ? 'ring-2 ring-[var(--mw-yellow-400)] shadow-[var(--elevation-3)] scale-[1.02]'
+          : 'hover:shadow-[var(--elevation-2)] hover:scale-[1.01]',
       )}
       style={{ left: node.x, top: node.y, width: NODE_W, minHeight: node.h }}
       onClick={onClick}
