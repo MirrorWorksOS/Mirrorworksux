@@ -570,11 +570,71 @@ function UsageBanner() {
 }
 
 // ---------------------------------------------------------------------------
+// Rail icon button — used in tablet icon-rail mode
+// ---------------------------------------------------------------------------
+
+function RailIconButton({
+  item,
+  isActive,
+}: {
+  item: MenuItem;
+  isActive: boolean;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+  const firstSubPath = getAllSubItems(item)[0]?.path ?? item.path ?? '/';
+
+  return (
+    <Link
+      to={firstSubPath}
+      className={cn(
+        'group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)]',
+        'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+        isActive
+          ? 'bg-[var(--mw-mirage)] text-white'
+          : 'text-foreground hover:bg-[var(--neutral-200)]'
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      title={item.label}
+    >
+      {item.animatedIcon ? (
+        <item.animatedIcon
+          size={ICON_SIZES.sidebar}
+          animateOnHover
+          className={isActive ? 'text-white' : 'text-foreground'}
+        />
+      ) : item.icon ? (
+        <item.icon
+          className={cn('w-5 h-5', isActive ? 'text-white' : 'text-foreground')}
+          strokeWidth={1.5}
+        />
+      ) : null}
+      {/* Tooltip on hover */}
+      <span
+        className={cn(
+          'absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--mw-mirage)] text-white text-xs font-medium whitespace-nowrap z-50 pointer-events-none',
+          'opacity-0 -translate-x-1 transition-all duration-150',
+          'group-hover:opacity-100 group-hover:translate-x-0'
+        )}
+      >
+        {item.label}
+      </span>
+    </Link>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Sidebar component
 // ---------------------------------------------------------------------------
 
-export function Sidebar() {
+interface SidebarProps {
+  /** 'full' = desktop expanded sidebar, 'rail' = tablet icon-only rail */
+  variant?: 'full' | 'rail';
+}
+
+export function Sidebar({ variant = 'full' }: SidebarProps) {
   const location = useLocation();
+  const isRail = variant === 'rail';
 
   const { open: commandOpen, initialQuery, setOpen: setCommandOpen } = useCommandPaletteStore();
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
@@ -624,8 +684,98 @@ export function Sidebar() {
     startNotificationSimulator();
   }, []);
 
+  // Helper: is a module currently active?
+  const isModuleActive = (item: MenuItem): boolean => {
+    if (item.path) return isActiveRoute(item.path);
+    const allSubs = getAllSubItems(item);
+    return allSubs.some(sub =>
+      location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
+    );
+  };
+
+  // ─── Rail (tablet) mode ───
+  if (isRail) {
+    return (
+      <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-14 border-r border-[var(--neutral-200)] items-center py-3 gap-1 shrink-0">
+        {/* Logo */}
+        <Link to="/" className="flex items-center justify-center w-11 h-11 mb-2">
+          <img
+            src={mirrorworksLogomark}
+            alt=""
+            className="h-8 w-8 shrink-0 object-contain"
+            aria-hidden
+          />
+        </Link>
+
+        {/* Quick Create — icon only */}
+        <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
+          <button
+            type="button"
+            className="group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] transition-colors"
+            title="Quick Create"
+          >
+            <Plus
+              size={20}
+              animateOnHover
+              className="text-primary-foreground"
+              strokeWidth={1.5}
+            />
+            <span className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--mw-mirage)] text-white text-xs font-medium whitespace-nowrap z-50 pointer-events-none opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0">
+              Quick Create
+            </span>
+          </button>
+        </QuickCreatePanel>
+
+        {/* Search — icon only */}
+        <button
+          type="button"
+          onClick={() => setCommandOpen(true)}
+          className="group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)] border border-border bg-card hover:bg-[var(--neutral-100)] transition-colors"
+          title="Search"
+        >
+          <Search
+            size={20}
+            animateOnHover
+            className="text-foreground"
+            strokeWidth={1.5}
+          />
+          <span className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--mw-mirage)] text-white text-xs font-medium whitespace-nowrap z-50 pointer-events-none opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0">
+            Search
+          </span>
+        </button>
+
+        {/* Divider */}
+        <div className="w-7 h-px bg-[var(--neutral-200)] my-1" />
+
+        {/* Nav icons */}
+        <div className="flex-1 flex flex-col gap-1 overflow-y-auto items-center" style={{ scrollbarWidth: 'none' }}>
+          {menuConfig.map((item) => (
+            <RailIconButton
+              key={item.label}
+              item={item}
+              isActive={isModuleActive(item)}
+            />
+          ))}
+        </div>
+
+        {/* Footer — just icons */}
+        <div className="flex flex-col items-center gap-1 pt-2 border-t border-border">
+          <NotificationBell />
+          <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center">
+            <span className="text-white text-[10px] font-medium">
+              {getUserInitials(mockUserContext.displayName)}
+            </span>
+          </div>
+        </div>
+
+        <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} initialQuery={initialQuery} />
+      </div>
+    );
+  }
+
+  // ─── Full (desktop) mode ───
   return (
-    <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-64 border-r border-[var(--neutral-200)]">
+    <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-64 border-r border-[var(--neutral-200)] shrink-0">
       {/* Header */}
       <div className="p-3">
         <div className="h-[36px] flex items-center gap-2.5 px-2">

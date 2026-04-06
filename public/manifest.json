@@ -1,0 +1,35 @@
+{
+  "name": "MirrorWorks — Smart FactoryOS",
+  "short_name": "MirrorWorks",
+  "description": "AI-enhanced manufacturing ERP for smart factories",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#FFCF4B",
+  "background_color": "#FFFFFF",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

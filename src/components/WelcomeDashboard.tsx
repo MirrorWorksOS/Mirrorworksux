@@ -248,10 +248,10 @@ export function WelcomeDashboard() {
   }, []);
 
   return (
-    <PageShell className="mx-auto max-w-[1400px] pt-8 sm:pt-12">
+    <PageShell className="mx-auto max-w-[1400px] pt-6 sm:pt-8 lg:pt-12">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-1 items-center gap-4">
-            <Avatar className="h-14 w-14 shrink-0 border border-[var(--mw-yellow-400)] ring-1 ring-[var(--mw-yellow-400-20)]">
+            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 border border-[var(--mw-yellow-400)] ring-1 ring-[var(--mw-yellow-400-20)]">
               {user.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt="" />
               ) : null}
@@ -260,7 +260,7 @@ export function WelcomeDashboard() {
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 space-y-1 text-left">
-              <h1 className="text-3xl font-bold tracking-tight text-[var(--mw-mirage)] dark:text-[var(--neutral-900)] sm:text-4xl">
+              <h1 className="text-2xl font-bold tracking-tight text-[var(--mw-mirage)] dark:text-[var(--neutral-900)] sm:text-3xl lg:text-4xl">
                 {greetingLine(firstName)}
               </h1>
               <p className="text-base font-light text-muted-foreground sm:text-lg">
@@ -310,11 +310,11 @@ export function WelcomeDashboard() {
                 />
                 <h2 className={dashboardSectionTitleClass}>Operations pulse</h2>
               </div>
-              <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-                <div className="lg:col-span-4">
+              <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 md:grid-cols-12">
+                <div className="md:col-span-4">
                   <DashboardManagementBar />
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-8">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:col-span-8">
                   <DashboardFlipCard
                     frontIcon={ClipboardCheck}
                     frontTitle="Open approvals"
@@ -355,7 +355,7 @@ export function WelcomeDashboard() {
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:items-start">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 md:items-start">
               <motion.div
                 variants={staggerItem}
                 whileHover={{ y: -1 }}
@@ -451,11 +451,11 @@ export function WelcomeDashboard() {
               </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-12 lg:items-start">
               {widgetVisible("approvals", user) ? (
                 <motion.div
                   variants={staggerItem}
-                  className="lg:col-span-5"
+                  className="md:col-span-1 lg:col-span-5"
                 >
                   <motion.div
                     whileHover={{ y: -1 }}
@@ -520,7 +520,7 @@ export function WelcomeDashboard() {
               {widgetVisible("exceptions", user) ? (
                 <motion.div
                   variants={staggerItem}
-                  className="lg:col-span-4"
+                  className="md:col-span-1 lg:col-span-4"
                 >
                   <motion.div
                     whileHover={{ y: -1 }}
@@ -572,7 +572,7 @@ export function WelcomeDashboard() {
               {widgetVisible("sync", user) ? (
                 <motion.div
                   variants={staggerItem}
-                  className="lg:col-span-3"
+                  className="md:col-span-2 lg:col-span-3"
                 >
                   <motion.div
                     whileHover={{ y: -1 }}
@@ -622,7 +622,7 @@ export function WelcomeDashboard() {
               {widgetVisible("jobs", user) ? (
                 <motion.div
                   variants={staggerItem}
-                  className="lg:col-span-6"
+                  className="md:col-span-1 lg:col-span-6"
                 >
                   <div className="flex h-full flex-col gap-4">
                     <div className="flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--mw-mirage)_12%,var(--border))] pb-3">
@@ -666,7 +666,7 @@ export function WelcomeDashboard() {
               {widgetVisible("shortcuts", user) ? (
                 <motion.div
                   variants={staggerItem}
-                  className="lg:col-span-6"
+                  className="md:col-span-1 lg:col-span-6"
                 >
                   <div className="flex h-full flex-col gap-4">
                     <div className="flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--mw-mirage)_12%,var(--border))] pb-3">

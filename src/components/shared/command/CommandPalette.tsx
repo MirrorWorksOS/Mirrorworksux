@@ -583,9 +583,13 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
         {/* Dialog content */}
         <DialogPrimitive.Content
           className={cn(
-            "fixed top-[12%] left-[50%] z-[1050] w-full max-w-[640px] translate-x-[-50%]",
-            "rounded-[var(--shape-xl)] border border-[var(--neutral-200)] bg-card",
-            "shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)]",
+            // Mobile: full-screen
+            "fixed inset-0 z-[1050] w-full",
+            "bg-card",
+            // Desktop: centered dialog
+            "sm:inset-auto sm:top-[12%] sm:left-[50%] sm:max-w-[640px] sm:translate-x-[-50%]",
+            "sm:rounded-[var(--shape-xl)] sm:border sm:border-[var(--neutral-200)]",
+            "sm:shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)]",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-[0.97] data-[state=open]:zoom-in-[0.97]",

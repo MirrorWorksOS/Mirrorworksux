@@ -244,14 +244,14 @@ export function Notifications() {
 
       {/* Filter bar */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
             {(['all', 'unread'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilterTab(f)}
                 className={cn(
-                  'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize',
+                  'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize min-h-[44px] sm:min-h-0',
                   filterTab === f
                     ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-foreground font-medium'
                     : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]',
@@ -262,15 +262,15 @@ export function Notifications() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Search */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <Input
                 placeholder="Search notifications..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 w-48 text-xs"
+                className="pl-8 h-10 sm:h-8 w-full sm:w-48 text-xs"
               />
               {searchQuery && (
                 <button
@@ -288,7 +288,7 @@ export function Notifications() {
               variant="outline"
               size="sm"
               className={cn(
-                'border-[var(--border)] text-xs h-8',
+                'border-[var(--border)] text-xs h-10 sm:h-8 min-w-[44px]',
                 hasActiveFilters && 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10',
               )}
               onClick={() => setShowFilters(!showFilters)}
@@ -304,7 +304,7 @@ export function Notifications() {
             <Button
               variant="outline"
               size="sm"
-              className="border-[var(--border)] text-xs h-8"
+              className="border-[var(--border)] text-xs h-10 sm:h-8 min-w-[44px]"
               onClick={selectAll}
             >
               Select All
@@ -312,7 +312,7 @@ export function Notifications() {
             <Button
               variant="outline"
               size="sm"
-              className="border-[var(--border)] text-xs h-8"
+              className="border-[var(--border)] text-xs h-10 sm:h-8 min-w-[44px]"
               onClick={handleMarkAllRead}
             >
               <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />

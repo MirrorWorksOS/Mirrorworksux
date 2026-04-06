@@ -39,10 +39,10 @@ export interface PageToolbarProps {
   className?: string;
 }
 
-/** Standardised toolbar row — aligns items center with consistent gap. */
+/** Standardised toolbar row — aligns items center with consistent gap. Wraps on mobile. */
 export function PageToolbar({ children, className }: PageToolbarProps) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex flex-wrap items-center gap-2 sm:gap-3", className)}>
       {children}
     </div>
   );
@@ -64,7 +64,7 @@ export interface ToolbarSearchProps {
   className?: string;
 }
 
-/** Rounded-pill search input with icon. Consistent h-10 across all data pages. */
+/** Rounded-pill search input with icon. Full-width on mobile, 256px on desktop. */
 export function ToolbarSearch({
   value,
   onChange,
@@ -72,7 +72,7 @@ export function ToolbarSearch({
   className,
 }: ToolbarSearchProps) {
   return (
-    <div className={cn("relative w-64 shrink-0", className)}>
+    <div className={cn("relative w-full sm:w-64 shrink-0", className)}>
       <Search
         aria-hidden
         className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--neutral-400)]"
