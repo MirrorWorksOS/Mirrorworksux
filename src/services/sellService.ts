@@ -18,6 +18,9 @@ import type {
   PerformerSummary,
   QuarterlyTarget,
   ReportTemplate,
+  CapableToPromiseResult,
+  WinLossRecord,
+  LossReasonBreakdown,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -144,5 +147,35 @@ export const sellService = {
   async getReportTemplates(): Promise<ReportTemplate[]> {
     await delay();
     return mock.sellReportTemplates;
+  },
+
+  // ── Capable-to-Promise ──────────────────────────────────────────
+  async getCapableToPromise(): Promise<CapableToPromiseResult> {
+    await delay();
+    const weeksOut = 2 + Math.random() * 2;
+    const date = new Date();
+    date.setDate(date.getDate() + Math.round(weeksOut * 7));
+    return {
+      earliestDate: date.toISOString().slice(0, 10),
+      confidencePercent: 78 + Math.round(Math.random() * 15),
+      capacityUtilization: 72 + Math.round(Math.random() * 20),
+      bottleneckWorkCenter: 'Welding',
+    };
+  },
+
+  // ── Win/Loss Analysis ──────────────────────────────────────────
+  async getWinLossHistory(): Promise<WinLossRecord[]> {
+    await delay();
+    return mock.winLossHistory;
+  },
+
+  async getLossReasons(): Promise<LossReasonBreakdown[]> {
+    await delay();
+    return mock.lossReasons;
+  },
+
+  async getQuoteById(id: string): Promise<Quote | undefined> {
+    await delay();
+    return mock.quotes.find((q) => q.id === id);
   },
 };

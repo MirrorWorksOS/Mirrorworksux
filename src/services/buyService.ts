@@ -12,6 +12,9 @@ import type {
   KpiMetric,
   ApprovalItem,
   ChartDataPoint,
+  MrpSuggestion,
+  ReorderRule,
+  VendorComparisonData,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -76,5 +79,29 @@ export const buyService = {
   async getApprovalQueue(): Promise<ApprovalItem[]> {
     await delay();
     return mock.buyApprovalQueue;
+  },
+
+  // ── MRP Suggestions ────────────────────────────────────────────
+  async getMrpSuggestions(): Promise<MrpSuggestion[]> {
+    await delay();
+    return mock.mrpSuggestions;
+  },
+
+  // ── Reorder Rules ──────────────────────────────────────────────
+  async getReorderRules(): Promise<ReorderRule[]> {
+    await delay();
+    return mock.reorderRules;
+  },
+
+  // ── Vendor Comparison ──────────────────────────────────────────
+  async getVendorComparison(): Promise<VendorComparisonData[]> {
+    await delay();
+    return mock.vendorComparisonData;
+  },
+
+  // ── Planning Grid ──────────────────────────────────────────────
+  async getPurchasePlanningGrid(): Promise<typeof mock.purchasePlanningGrid> {
+    await delay();
+    return mock.purchasePlanningGrid;
   },
 };

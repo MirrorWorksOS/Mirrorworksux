@@ -41,6 +41,30 @@ import type {
   PerformerSummary,
   QuarterlyTarget,
   ReportTemplate,
+  WinLossRecord,
+  LossReasonBreakdown,
+  MrpSuggestion,
+  ReorderRule,
+  VendorComparisonData,
+  Operation,
+  ScheduleBlock,
+  WorkCentre,
+  MrpNode,
+  ShiftAssignment,
+  NestingSheet,
+  BomGeneratorLine,
+  CapaRecord,
+  BatchLot,
+  MaterialConsumptionLine,
+  OperatorMessage,
+  ScrapRecord,
+  CarrierRate,
+  BillOfLading,
+  WipValuation,
+  CostVarianceRecord,
+  MaintenanceRecord,
+  ToolingItem,
+  ControlDocument,
 } from '@/types/entities';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -195,12 +219,16 @@ export const employees: Employee[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 export const opportunities: Opportunity[] = [
-  { id: 'opp-001', title: 'Server Rack Fabrication', customerId: 'cust-001', customerName: 'TechCorp Industries', value: 45000, expectedClose: '2026-04-15', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'high', stage: 'proposal', probabilityPercent: 68, tags: ['Strategic', 'Urgent'] },
-  { id: 'opp-002', title: 'Structural Steel Package', customerId: 'cust-004', customerName: 'BHP Contractors', value: 128000, expectedClose: '2026-04-30', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'urgent', stage: 'negotiation', probabilityPercent: 55, tags: ['Export'] },
-  { id: 'opp-003', title: 'Custom Brackets (50 units)', customerId: 'cust-002', customerName: 'Pacific Fabrication', value: 8500, expectedClose: '2026-03-25', assignedTo: 'emp-003', assignedToInitials: 'EW', priority: 'medium', stage: 'qualified', probabilityPercent: 40, tags: ['Repeat customer'] },
-  { id: 'opp-004', title: 'Rail Platform Components', customerId: 'cust-005', customerName: 'Sydney Rail Corp', value: 67000, expectedClose: '2026-05-10', assignedTo: 'emp-004', assignedToInitials: 'DL', priority: 'high', stage: 'proposal', probabilityPercent: 62, tags: ['Strategic'] },
-  { id: 'opp-005', title: 'Machine Guards', customerId: 'cust-006', customerName: 'Kemppi Australia', value: 12000, expectedClose: '2026-03-30', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'low', stage: 'new', probabilityPercent: 25, tags: [] },
-  { id: 'opp-006', title: 'Aluminium Enclosures', customerId: 'cust-003', customerName: 'Hunter Steel Co', value: 22000, expectedClose: '2026-04-05', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'medium', stage: 'new', probabilityPercent: 30, tags: ['Design assist'] },
+  { id: 'opp-001', title: 'Server Rack Fabrication', customerId: 'cust-001', customerName: 'TechCorp Industries', value: 45000, expectedClose: '2026-04-15', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'high', stage: 'proposal', probabilityPercent: 68, tags: ['Strategic', 'Urgent'], aiScore: 82 },
+  { id: 'opp-002', title: 'Structural Steel Package', customerId: 'cust-004', customerName: 'BHP Contractors', value: 128000, expectedClose: '2026-04-30', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'urgent', stage: 'negotiation', probabilityPercent: 55, tags: ['Export'], aiScore: 65 },
+  { id: 'opp-003', title: 'Custom Brackets (50 units)', customerId: 'cust-002', customerName: 'Pacific Fabrication', value: 8500, expectedClose: '2026-03-25', assignedTo: 'emp-003', assignedToInitials: 'EW', priority: 'medium', stage: 'qualified', probabilityPercent: 40, tags: ['Repeat customer'], aiScore: 48 },
+  { id: 'opp-004', title: 'Rail Platform Components', customerId: 'cust-005', customerName: 'Sydney Rail Corp', value: 67000, expectedClose: '2026-05-10', assignedTo: 'emp-004', assignedToInitials: 'DL', priority: 'high', stage: 'proposal', probabilityPercent: 62, tags: ['Strategic'], aiScore: 74 },
+  { id: 'opp-005', title: 'Machine Guards', customerId: 'cust-006', customerName: 'Kemppi Australia', value: 12000, expectedClose: '2026-03-30', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'low', stage: 'new', probabilityPercent: 25, tags: [], aiScore: 31 },
+  { id: 'opp-006', title: 'Aluminium Enclosures', customerId: 'cust-003', customerName: 'Hunter Steel Co', value: 22000, expectedClose: '2026-04-05', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'medium', stage: 'new', probabilityPercent: 30, tags: ['Design assist'], aiScore: 42 },
+  { id: 'opp-007', title: 'Conveyor Frame Assembly', customerId: 'cust-004', customerName: 'BHP Contractors', value: 35000, expectedClose: '2025-12-15', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'high', stage: 'lost', probabilityPercent: 0, tags: [], aiScore: 22, lossReason: 'Price too high' },
+  { id: 'opp-008', title: 'Stainless Handrails', customerId: 'cust-003', customerName: 'Hunter Steel Co', value: 18000, expectedClose: '2025-11-20', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'medium', stage: 'lost', probabilityPercent: 0, tags: [], aiScore: 15, lossReason: 'Lead time too long' },
+  { id: 'opp-009', title: 'Warehouse Shelving', customerId: 'cust-002', customerName: 'Pacific Fabrication', value: 9500, expectedClose: '2026-01-10', assignedTo: 'emp-001', assignedToInitials: 'SC', priority: 'low', stage: 'lost', probabilityPercent: 0, tags: [], aiScore: 18, lossReason: 'Competitor won' },
+  { id: 'opp-010', title: 'Electrical Enclosures x20', customerId: 'cust-001', customerName: 'TechCorp Industries', value: 28000, expectedClose: '2026-02-20', assignedTo: 'emp-002', assignedToInitials: 'MT', priority: 'medium', stage: 'won', probabilityPercent: 100, tags: ['Repeat customer'], aiScore: 91 },
 ];
 
 export const quotes: Quote[] = [
@@ -234,6 +262,17 @@ export const quotes: Quote[] = [
     lineItems: [
       { productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 20, unitPrice: 145, total: 2900 },
     ],
+  },
+  {
+    id: 'qt-005', ref: 'QT-2026-0144', opportunityId: 'opp-010', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    date: '2026-02-01', expiryDate: '2026-03-01', value: 28000, status: 'accepted',
+    lineItems: [
+      { productId: 'prod-010', description: 'Control Panel Enclosure 600×800', qty: 20, unitPrice: 420, total: 8400 },
+      { productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 40, unitPrice: 145, total: 5800 },
+    ],
+    acceptedAt: '2026-02-14T09:32:00Z',
+    acceptedBy: 'James Hartley',
+    signatureUrl: '/signatures/qt-005-sig.png',
   },
 ];
 
@@ -602,3 +641,329 @@ export const systemHealth: SystemHealth = {
   openIssues: 3,
   systemStatus: 'healthy',
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// SELL — Extended (Win/Loss, CTP, DXF)
+// ═══════════════════════════════════════════════════════════════════════
+
+export const winLossHistory: WinLossRecord[] = [
+  { month: 'Oct', wins: 8, losses: 4, winRate: 67, avgDaysToClose: 22 },
+  { month: 'Nov', wins: 6, losses: 5, winRate: 55, avgDaysToClose: 28 },
+  { month: 'Dec', wins: 5, losses: 3, winRate: 63, avgDaysToClose: 18 },
+  { month: 'Jan', wins: 9, losses: 6, winRate: 60, avgDaysToClose: 25 },
+  { month: 'Feb', wins: 7, losses: 4, winRate: 64, avgDaysToClose: 20 },
+  { month: 'Mar', wins: 10, losses: 3, winRate: 77, avgDaysToClose: 16 },
+];
+
+export const lossReasons: LossReasonBreakdown[] = [
+  { reason: 'Price too high', count: 12, totalValue: 284000 },
+  { reason: 'Lead time too long', count: 8, totalValue: 156000 },
+  { reason: 'Competitor won', count: 6, totalValue: 198000 },
+  { reason: 'Spec mismatch', count: 4, totalValue: 72000 },
+  { reason: 'Customer budget cut', count: 3, totalValue: 45000 },
+  { reason: 'No response', count: 2, totalValue: 18000 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// BUY — MRP Suggestions, Reorder Rules, Vendor Comparison
+// ═══════════════════════════════════════════════════════════════════════
+
+export const mrpSuggestions: MrpSuggestion[] = [
+  { id: 'mrp-001', material: 'Mild Steel Sheet', grade: '3mm HR', totalQtyNeeded: 40, currentStock: 12, shortfall: 28, suggestedSupplierId: 'sup-001', suggestedSupplierName: 'Hunter Steel Co', estimatedCostAud: 23800, jobIds: ['job-001', 'job-002', 'job-005'] },
+  { id: 'mrp-002', material: 'Stainless 304 Plate', grade: '5mm', totalQtyNeeded: 15, currentStock: 4, shortfall: 11, suggestedSupplierId: 'sup-002', suggestedSupplierName: 'Pacific Metals', estimatedCostAud: 13200, jobIds: ['job-001', 'job-003'] },
+  { id: 'mrp-003', material: 'Aluminium 6061', grade: '10mm', totalQtyNeeded: 8, currentStock: 2, shortfall: 6, suggestedSupplierId: 'sup-002', suggestedSupplierName: 'Pacific Metals', estimatedCostAud: 5400, jobIds: ['job-005'] },
+  { id: 'mrp-004', material: 'Welding Wire', grade: 'MIG 1.0mm', totalQtyNeeded: 100, currentStock: 30, shortfall: 70, suggestedSupplierId: 'sup-003', suggestedSupplierName: 'Sydney Welding Supply', estimatedCostAud: 2100, jobIds: ['job-001', 'job-002', 'job-003'] },
+  { id: 'mrp-005', material: 'Galvanised Steel', grade: '2mm', totalQtyNeeded: 20, currentStock: 5, shortfall: 15, suggestedSupplierId: 'sup-001', suggestedSupplierName: 'Hunter Steel Co', estimatedCostAud: 9600, jobIds: ['job-003'] },
+  { id: 'mrp-006', material: 'Cold Rolled Steel', grade: '1.6mm', totalQtyNeeded: 25, currentStock: 8, shortfall: 17, suggestedSupplierId: 'sup-001', suggestedSupplierName: 'Hunter Steel Co', estimatedCostAud: 11900, jobIds: ['job-001', 'job-005'] },
+];
+
+export const reorderRules: ReorderRule[] = [
+  { id: 'rr-001', material: 'Mild Steel Sheet', grade: '3mm HR', minStock: 10, maxStock: 50, currentStock: 12, reorderPoint: 15, preferredSupplierId: 'sup-001', preferredSupplierName: 'Hunter Steel Co', autoPoEnabled: true },
+  { id: 'rr-002', material: 'Stainless 304 Plate', grade: '5mm', minStock: 5, maxStock: 25, currentStock: 4, reorderPoint: 8, preferredSupplierId: 'sup-002', preferredSupplierName: 'Pacific Metals', autoPoEnabled: true },
+  { id: 'rr-003', material: 'Welding Wire', grade: 'MIG 1.0mm', minStock: 20, maxStock: 120, currentStock: 30, reorderPoint: 30, preferredSupplierId: 'sup-003', preferredSupplierName: 'Sydney Welding Supply', autoPoEnabled: true },
+  { id: 'rr-004', material: 'Aluminium 6061', grade: '10mm', minStock: 3, maxStock: 15, currentStock: 2, reorderPoint: 5, preferredSupplierId: 'sup-002', preferredSupplierName: 'Pacific Metals', autoPoEnabled: false },
+  { id: 'rr-005', material: 'Galvanised Steel', grade: '2mm', minStock: 8, maxStock: 30, currentStock: 5, reorderPoint: 10, preferredSupplierId: 'sup-001', preferredSupplierName: 'Hunter Steel Co', autoPoEnabled: true },
+];
+
+export const vendorComparisonData: VendorComparisonData[] = [
+  { supplierId: 'sup-001', supplierName: 'Hunter Steel Co', avgLeadTimeDays: 5, onTimeDeliveryPercent: 98, qualityRating: 5, totalSpendAud: 186000, priceHistory: [{ month: 'Oct', avgPrice: 82 }, { month: 'Nov', avgPrice: 84 }, { month: 'Dec', avgPrice: 85 }, { month: 'Jan', avgPrice: 83 }, { month: 'Feb', avgPrice: 86 }, { month: 'Mar', avgPrice: 88 }] },
+  { supplierId: 'sup-002', supplierName: 'Pacific Metals', avgLeadTimeDays: 7, onTimeDeliveryPercent: 95, qualityRating: 4, totalSpendAud: 142000, priceHistory: [{ month: 'Oct', avgPrice: 90 }, { month: 'Nov', avgPrice: 88 }, { month: 'Dec', avgPrice: 92 }, { month: 'Jan', avgPrice: 91 }, { month: 'Feb', avgPrice: 89 }, { month: 'Mar', avgPrice: 93 }] },
+  { supplierId: 'sup-003', supplierName: 'Sydney Welding Supply', avgLeadTimeDays: 3, onTimeDeliveryPercent: 88, qualityRating: 4, totalSpendAud: 38000, priceHistory: [{ month: 'Oct', avgPrice: 28 }, { month: 'Nov', avgPrice: 29 }, { month: 'Dec', avgPrice: 28 }, { month: 'Jan', avgPrice: 30 }, { month: 'Feb', avgPrice: 31 }, { month: 'Mar', avgPrice: 30 }] },
+  { supplierId: 'sup-004', supplierName: 'BHP Suppliers', avgLeadTimeDays: 14, onTimeDeliveryPercent: 82, qualityRating: 3, totalSpendAud: 95000, priceHistory: [{ month: 'Oct', avgPrice: 120 }, { month: 'Nov', avgPrice: 118 }, { month: 'Dec', avgPrice: 122 }, { month: 'Jan', avgPrice: 125 }, { month: 'Feb', avgPrice: 121 }, { month: 'Mar', avgPrice: 124 }] },
+  { supplierId: 'sup-005', supplierName: 'Generic Parts Co', avgLeadTimeDays: 10, onTimeDeliveryPercent: 65, qualityRating: 3, totalSpendAud: 22000, priceHistory: [{ month: 'Oct', avgPrice: 15 }, { month: 'Nov', avgPrice: 16 }, { month: 'Dec', avgPrice: 15 }, { month: 'Jan', avgPrice: 17 }, { month: 'Feb', avgPrice: 16 }, { month: 'Mar', avgPrice: 18 }] },
+];
+
+/** Purchase planning grid — demand by material/week */
+export const purchasePlanningGrid = [
+  { material: 'Mild Steel 3mm', gauge: '3mm', wk14: 12, wk15: 8, wk16: 15, wk17: 6, wk18: 10, wk19: 4 },
+  { material: 'Stainless 304', gauge: '5mm', wk14: 4, wk15: 6, wk16: 3, wk17: 8, wk18: 2, wk19: 5 },
+  { material: 'Aluminium 6061', gauge: '10mm', wk14: 2, wk15: 0, wk16: 4, wk17: 0, wk18: 3, wk19: 1 },
+  { material: 'Cold Rolled Steel', gauge: '1.6mm', wk14: 8, wk15: 12, wk16: 6, wk17: 10, wk18: 14, wk19: 8 },
+  { material: 'Galvanised Steel', gauge: '2mm', wk14: 5, wk15: 3, wk16: 7, wk17: 4, wk18: 6, wk19: 2 },
+  { material: 'Grade 350 Steel', gauge: 'I-Beam', wk14: 0, wk15: 2, wk16: 0, wk17: 4, wk18: 0, wk19: 2 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// PLAN — Scheduling, MRP, Nesting, Operations, Shifts
+// ═══════════════════════════════════════════════════════════════════════
+
+export const workCentres: WorkCentre[] = [
+  { id: 'wc-001', name: 'Cutting', type: 'Laser / Plasma', capacityHoursPerDay: 16, utilizationPercent: 85, activeJobs: 3 },
+  { id: 'wc-002', name: 'Forming', type: 'Press Brake', capacityHoursPerDay: 8, utilizationPercent: 42, activeJobs: 1 },
+  { id: 'wc-003', name: 'Welding', type: 'MIG / TIG', capacityHoursPerDay: 16, utilizationPercent: 92, activeJobs: 2 },
+  { id: 'wc-004', name: 'Machining', type: 'CNC Mill / Lathe', capacityHoursPerDay: 8, utilizationPercent: 67, activeJobs: 1 },
+  { id: 'wc-005', name: 'Finishing', type: 'Powder Coat / Paint', capacityHoursPerDay: 8, utilizationPercent: 28, activeJobs: 0 },
+];
+
+export const scheduleBlocks: ScheduleBlock[] = [
+  { id: 'sb-001', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationName: 'Laser Cut blanks', workCenterId: 'wc-001', workCenterName: 'Cutting', startTime: '2026-04-07T06:00', endTime: '2026-04-07T10:00', durationMinutes: 240, color: 'var(--chart-scale-high)' },
+  { id: 'sb-002', jobId: 'job-002', jobNumber: 'JOB-2026-0011', operationName: 'Laser Cut brackets', workCenterId: 'wc-001', workCenterName: 'Cutting', startTime: '2026-04-07T10:30', endTime: '2026-04-07T14:00', durationMinutes: 210, color: 'var(--chart-scale-mid)' },
+  { id: 'sb-003', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationName: 'Press brake bending', workCenterId: 'wc-002', workCenterName: 'Forming', startTime: '2026-04-07T06:00', endTime: '2026-04-07T09:30', durationMinutes: 210, color: 'var(--chart-scale-high)' },
+  { id: 'sb-004', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationName: 'MIG weld assembly', workCenterId: 'wc-003', workCenterName: 'Welding', startTime: '2026-04-08T06:00', endTime: '2026-04-08T12:00', durationMinutes: 360, color: 'var(--chart-scale-high)' },
+  { id: 'sb-005', jobId: 'job-003', jobNumber: 'JOB-2026-0013', operationName: 'Laser cut supports', workCenterId: 'wc-001', workCenterName: 'Cutting', startTime: '2026-04-08T06:00', endTime: '2026-04-08T14:00', durationMinutes: 480, color: 'var(--chart-scale-low)' },
+  { id: 'sb-006', jobId: 'job-002', jobNumber: 'JOB-2026-0011', operationName: 'Weld brackets', workCenterId: 'wc-003', workCenterName: 'Welding', startTime: '2026-04-07T06:00', endTime: '2026-04-07T10:00', durationMinutes: 240, color: 'var(--chart-scale-mid)' },
+  { id: 'sb-007', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationName: 'Powder coat', workCenterId: 'wc-005', workCenterName: 'Finishing', startTime: '2026-04-09T06:00', endTime: '2026-04-09T08:00', durationMinutes: 120, color: 'var(--chart-scale-high)' },
+  { id: 'sb-008', jobId: 'job-005', jobNumber: 'JOB-2026-0015', operationName: 'CNC machine panels', workCenterId: 'wc-004', workCenterName: 'Machining', startTime: '2026-04-07T06:00', endTime: '2026-04-07T14:00', durationMinutes: 480, color: 'var(--neutral-400)' },
+];
+
+export const operations: Operation[] = [
+  { id: 'op-001', sequence: 1, name: 'Laser Cut', workCenterId: 'wc-001', workCenterName: 'Cutting', setupMinutes: 15, runMinutes: 120, queueMinutes: 30, moveMinutes: 10 },
+  { id: 'op-002', sequence: 2, name: 'Press Brake Bend', workCenterId: 'wc-002', workCenterName: 'Forming', setupMinutes: 20, runMinutes: 90, queueMinutes: 15, moveMinutes: 10 },
+  { id: 'op-003', sequence: 3, name: 'MIG Weld Assembly', workCenterId: 'wc-003', workCenterName: 'Welding', setupMinutes: 10, runMinutes: 180, queueMinutes: 20, moveMinutes: 15 },
+  { id: 'op-004', sequence: 4, name: 'Powder Coat', workCenterId: 'wc-005', workCenterName: 'Finishing', setupMinutes: 30, runMinutes: 60, queueMinutes: 60, moveMinutes: 10, isSubcontracted: true, subcontractorId: 'sup-003', subcontractorName: 'Sydney Welding Supply', subcontractCost: 850 },
+  { id: 'op-005', sequence: 5, name: 'Final Inspection', workCenterId: 'wc-003', workCenterName: 'Welding', setupMinutes: 0, runMinutes: 30, queueMinutes: 0, moveMinutes: 5 },
+];
+
+export const mrpTree: MrpNode[] = [
+  {
+    id: 'mrp-n-001', type: 'sales_order', refNumber: 'SO-2026-0085', description: 'Mounting Bracket Assembly — TechCorp', qty: 200, status: 'partial', date: '2026-03-01',
+    children: [
+      {
+        id: 'mrp-n-002', type: 'job', refNumber: 'JOB-2026-0012', description: 'Mounting Bracket Assembly', qty: 200, status: 'partial', date: '2026-03-10',
+        children: [
+          { id: 'mrp-n-003', type: 'manufacturing_order', refNumber: 'MO-2026-0001', description: 'Cut + Bend + Weld brackets', qty: 200, status: 'partial', date: '2026-03-12' },
+          { id: 'mrp-n-004', type: 'purchase_order', refNumber: 'PO-2026-0089', description: 'Mild Steel 3mm Sheet × 10', qty: 10, status: 'pending', date: '2026-03-15' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'mrp-n-005', type: 'sales_order', refNumber: 'SO-2026-0087', description: 'Cable Tray Supports — Sydney Rail', qty: 100, status: 'pending', date: '2026-03-08',
+    children: [
+      {
+        id: 'mrp-n-006', type: 'job', refNumber: 'JOB-2026-0013', description: 'Cable Tray Support 600mm', qty: 100, status: 'pending', date: '2026-03-20',
+        children: [
+          { id: 'mrp-n-007', type: 'manufacturing_order', refNumber: 'MO-2026-0003', description: 'Cut + Form + Galvanise', qty: 100, status: 'pending', date: '2026-03-22' },
+          { id: 'mrp-n-008', type: 'purchase_order', refNumber: 'PO-2026-0086', description: 'Galvanised Steel 2mm × 20', qty: 20, status: 'pending', date: '2026-03-08' },
+        ],
+      },
+    ],
+  },
+];
+
+export const shiftAssignments: ShiftAssignment[] = [
+  { id: 'shift-001', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'shift-002', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 1, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'shift-003', workCentreId: 'wc-002', workCentreName: 'Forming', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'shift-004', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'shift-005', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 1, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'shift-006', workCentreId: 'wc-004', workCentreName: 'Machining', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'shift-007', workCentreId: 'wc-005', workCentreName: 'Finishing', dayOfWeek: 1, shift: 'day', startTime: '07:00', endTime: '15:00' },
+  { id: 'shift-008', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'shift-009', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 2, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'shift-010', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
+];
+
+export const nestingSheets: NestingSheet[] = [
+  {
+    id: 'nest-001', material: 'Mild Steel', gauge: '3mm', sheetWidthMm: 2400, sheetHeightMm: 1200,
+    yieldPercent: 87, wastePercent: 13,
+    parts: [
+      { partId: 'prod-001', partNumber: 'BKT-001', jobNumber: 'JOB-2026-0012', widthMm: 150, heightMm: 100, x: 10, y: 10, qty: 48 },
+      { partId: 'prod-001', partNumber: 'BKT-001', jobNumber: 'JOB-2026-0011', widthMm: 150, heightMm: 100, x: 170, y: 10, qty: 24 },
+    ],
+  },
+  {
+    id: 'nest-002', material: 'Stainless 304', gauge: '5mm', sheetWidthMm: 2400, sheetHeightMm: 1200,
+    yieldPercent: 72, wastePercent: 28,
+    parts: [
+      { partId: 'prod-002', partNumber: 'PLT-042', jobNumber: 'JOB-2026-0012', widthMm: 200, heightMm: 200, x: 10, y: 10, qty: 30 },
+    ],
+  },
+];
+
+export const bomGeneratorLines: BomGeneratorLine[] = [
+  { id: 'bom-gen-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90°', material: 'Mild Steel 3mm', qty: 4, operation: 'Laser Cut → Bend → Weld', confidencePercent: 95 },
+  { id: 'bom-gen-002', partNumber: 'PLT-042', description: 'Base Plate 200×200', material: 'Stainless 304 5mm', qty: 2, operation: 'Laser Cut → Deburr', confidencePercent: 92 },
+  { id: 'bom-gen-003', partNumber: 'FST-010', description: 'M10 Hex Bolt', material: 'Grade 8.8 Zinc', qty: 16, operation: 'Purchase', confidencePercent: 88 },
+  { id: 'bom-gen-004', partNumber: 'WLD-GAS', description: 'Argon/CO2 Mix', material: 'Shielding Gas', qty: 1, operation: 'Consumable', confidencePercent: 78 },
+  { id: 'bom-gen-005', partNumber: 'PCF-001', description: 'Powder Coat — Satin Black', material: 'Polyester Powder', qty: 1, operation: 'Outsource', confidencePercent: 85 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// MAKE — CAPA, Batches, Material Consumption, Chat, Scrap
+// ═══════════════════════════════════════════════════════════════════════
+
+export const capaRecords: CapaRecord[] = [
+  { id: 'capa-001', title: 'Weld porosity on bracket batch', description: 'Porosity detected in MIG welds on bracket assembly — 3 of 50 units rejected at QC', severity: 'high', status: 'corrective_action', assignedTo: 'emp-006', assignedToName: 'James Murray', jobId: 'job-002', jobNumber: 'JOB-2026-0011', identifiedDate: '2026-03-28', dueDate: '2026-04-10', rootCause: 'Contaminated shielding gas supply', correctiveAction: 'Replace gas bottle, re-test welds' },
+  { id: 'capa-002', title: 'Dimensional error on CNC parts', description: 'Base plates out of spec by 0.3mm — tool wear not detected', severity: 'medium', status: 'root_cause', assignedTo: 'emp-004', assignedToName: 'David Lee', jobId: 'job-001', jobNumber: 'JOB-2026-0012', identifiedDate: '2026-04-01', dueDate: '2026-04-15' },
+  { id: 'capa-003', title: 'Missing heat numbers on material certs', description: 'Supplier failed to provide heat numbers on stainless 304 delivery', severity: 'high', status: 'containment', assignedTo: 'emp-005', assignedToName: 'Priya Sharma', identifiedDate: '2026-04-02', dueDate: '2026-04-12' },
+  { id: 'capa-004', title: 'Paint adhesion failure', description: 'Powder coat peeling on machine guards after 48-hour salt spray test', severity: 'critical', status: 'identified', assignedTo: 'emp-007', assignedToName: 'Anh Nguyen', jobId: 'job-004', jobNumber: 'JOB-2026-0010', identifiedDate: '2026-04-04', dueDate: '2026-04-18' },
+  { id: 'capa-005', title: 'Incorrect cut program loaded', description: 'Wrong DXF loaded on laser — 5 sheets scrapped before detection', severity: 'medium', status: 'verification', assignedTo: 'emp-003', assignedToName: 'Emma Wilson', identifiedDate: '2026-03-15', dueDate: '2026-04-05', rootCause: 'File naming convention not followed', correctiveAction: 'Implement file naming SOP and machine-side verification step' },
+  { id: 'capa-006', title: 'Near-miss forklift incident', description: 'Forklift near-miss in dispatch area — poor visibility at corner', severity: 'critical', status: 'closed', assignedTo: 'emp-008', assignedToName: 'Tom Bradshaw', identifiedDate: '2026-02-20', dueDate: '2026-03-05', rootCause: 'Blind corner at warehouse exit', correctiveAction: 'Installed convex mirror and floor markings' },
+];
+
+export const batchLots: BatchLot[] = [
+  {
+    id: 'batch-001', lotNumber: 'LOT-MS3-2026-042', type: 'raw_material', material: 'Mild Steel 3mm Sheet', qty: 10, date: '2026-03-15', status: 'active', supplierId: 'sup-001', supplierName: 'Hunter Steel Co',
+    children: [
+      {
+        id: 'batch-002', lotNumber: 'WIP-BKT-2026-001', type: 'wip', material: 'Bracket blanks — cut', qty: 200, date: '2026-03-18', status: 'active',
+        children: [
+          { id: 'batch-003', lotNumber: 'FG-BKT-2026-001', type: 'finished_goods', material: 'Mounting Bracket 90° — Completed', qty: 180, date: '2026-03-25', status: 'released' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'batch-004', lotNumber: 'LOT-SS5-2026-018', type: 'raw_material', material: 'Stainless 304 5mm Plate', qty: 12, date: '2026-03-22', status: 'active', supplierId: 'sup-002', supplierName: 'Pacific Metals',
+    children: [
+      { id: 'batch-005', lotNumber: 'WIP-PLT-2026-002', type: 'wip', material: 'Base plate blanks — cut', qty: 50, date: '2026-03-24', status: 'active' },
+    ],
+  },
+];
+
+export const materialConsumption: MaterialConsumptionLine[] = [
+  { id: 'mc-001', material: 'Mild Steel 3mm Sheet', plannedQty: 10, consumedQty: 8, uom: 'sheets', variance: -2, status: 'under' },
+  { id: 'mc-002', material: 'Welding Wire MIG 1.0mm', plannedQty: 5, consumedQty: 6, uom: 'kg', variance: 1, status: 'over' },
+  { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok' },
+  { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok' },
+  { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok' },
+];
+
+export const operatorMessages: OperatorMessage[] = [
+  { id: 'msg-001', jobId: 'job-001', userId: 'emp-006', userName: 'James Murray', message: 'Material arrived — starting weld sequence on bracket batch', timestamp: '2026-04-03T06:15:00Z' },
+  { id: 'msg-002', jobId: 'job-001', userId: 'emp-004', userName: 'David Lee', message: 'CNC setup complete for mounting holes. Ready for brackets from welding.', timestamp: '2026-04-03T07:30:00Z' },
+  { id: 'msg-003', jobId: 'job-001', userId: 'emp-007', userName: 'Anh Nguyen', message: 'QC hold — 3 brackets with porosity. Quarantined in bay 4.', timestamp: '2026-04-03T09:45:00Z' },
+  { id: 'msg-004', jobId: 'job-001', userId: 'emp-003', userName: 'Emma Wilson', message: 'Noted. Adjusted schedule — extra 2hrs welding tomorrow to rework.', timestamp: '2026-04-03T10:00:00Z' },
+  { id: 'msg-005', jobId: 'job-002', userId: 'emp-006', userName: 'James Murray', message: 'Bracket run complete — 50/50 passed first article.', timestamp: '2026-04-03T14:00:00Z' },
+];
+
+export const scrapRecords: ScrapRecord[] = [
+  { id: 'scrap-001', machineId: 'mach-001', machineName: 'Laser Cutter #1', operatorId: 'emp-001', operatorName: 'Sarah Chen', jobId: 'job-001', jobNumber: 'JOB-2026-0012', week: 'Wk 13', scrapRatePercent: 2.1, scrapQty: 4 },
+  { id: 'scrap-002', machineId: 'mach-002', machineName: 'Press Brake #2', operatorId: 'emp-004', operatorName: 'David Lee', jobId: 'job-001', jobNumber: 'JOB-2026-0012', week: 'Wk 13', scrapRatePercent: 5.8, scrapQty: 12 },
+  { id: 'scrap-003', machineId: 'mach-003', machineName: 'Welding Station A', operatorId: 'emp-006', operatorName: 'James Murray', jobId: 'job-002', jobNumber: 'JOB-2026-0011', week: 'Wk 13', scrapRatePercent: 6.0, scrapQty: 3 },
+  { id: 'scrap-004', machineId: 'mach-004', machineName: 'CNC Mill #3', operatorId: 'emp-004', operatorName: 'David Lee', jobId: 'job-001', jobNumber: 'JOB-2026-0012', week: 'Wk 14', scrapRatePercent: 1.2, scrapQty: 2 },
+  { id: 'scrap-005', machineId: 'mach-001', machineName: 'Laser Cutter #1', operatorId: 'emp-001', operatorName: 'Sarah Chen', jobId: 'job-003', jobNumber: 'JOB-2026-0013', week: 'Wk 14', scrapRatePercent: 0.5, scrapQty: 1 },
+  { id: 'scrap-006', machineId: 'mach-005', machineName: 'Powder Coat Line', operatorId: 'emp-008', operatorName: 'Tom Bradshaw', jobId: 'job-004', jobNumber: 'JOB-2026-0010', week: 'Wk 12', scrapRatePercent: 8.5, scrapQty: 6 },
+  { id: 'scrap-007', machineId: 'mach-003', machineName: 'Welding Station A', operatorId: 'emp-006', operatorName: 'James Murray', jobId: 'job-001', jobNumber: 'JOB-2026-0012', week: 'Wk 14', scrapRatePercent: 3.2, scrapQty: 5 },
+  { id: 'scrap-008', machineId: 'mach-002', machineName: 'Press Brake #2', operatorId: 'emp-004', operatorName: 'David Lee', jobId: 'job-002', jobNumber: 'JOB-2026-0011', week: 'Wk 14', scrapRatePercent: 4.1, scrapQty: 8 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// SHIP — Carrier Rates, Bill of Lading
+// ═══════════════════════════════════════════════════════════════════════
+
+export const carrierRates: CarrierRate[] = [
+  { id: 'cr-001', carrierId: 'car-001', carrierName: 'Australia Post', service: 'Express Post', estimatedDays: 2, priceAud: 45.90, pickupAvailable: false },
+  { id: 'cr-002', carrierId: 'car-001', carrierName: 'Australia Post', service: 'Parcel Post', estimatedDays: 5, priceAud: 22.50, pickupAvailable: false },
+  { id: 'cr-003', carrierId: 'car-001', carrierName: 'Australia Post', service: 'StarTrack Express', estimatedDays: 1, priceAud: 68.00, pickupAvailable: true },
+  { id: 'cr-004', carrierId: 'car-003', carrierName: 'Toll', service: 'Priority', estimatedDays: 1, priceAud: 85.00, pickupAvailable: true },
+  { id: 'cr-005', carrierId: 'car-003', carrierName: 'Toll', service: 'Express', estimatedDays: 2, priceAud: 52.00, pickupAvailable: true },
+  { id: 'cr-006', carrierId: 'car-003', carrierName: 'Toll', service: 'Road', estimatedDays: 4, priceAud: 32.00, pickupAvailable: true },
+  { id: 'cr-007', carrierId: 'car-004', carrierName: 'TNT', service: 'Express', estimatedDays: 2, priceAud: 55.00, pickupAvailable: true },
+  { id: 'cr-008', carrierId: 'car-004', carrierName: 'TNT', service: 'Economy', estimatedDays: 4, priceAud: 28.00, pickupAvailable: false },
+  { id: 'cr-009', carrierId: 'car-004', carrierName: 'TNT', service: 'Overnight', estimatedDays: 1, priceAud: 92.00, pickupAvailable: true },
+  { id: 'cr-010', carrierId: 'car-002', carrierName: 'StarTrack', service: 'Premium', estimatedDays: 1, priceAud: 78.00, pickupAvailable: true },
+  { id: 'cr-011', carrierId: 'car-002', carrierName: 'StarTrack', service: 'Express', estimatedDays: 2, priceAud: 48.00, pickupAvailable: true },
+  { id: 'cr-012', carrierId: 'car-002', carrierName: 'StarTrack', service: 'Standard', estimatedDays: 3, priceAud: 35.00, pickupAvailable: true },
+];
+
+export const sampleBillOfLading: BillOfLading = {
+  id: 'bol-001',
+  shipmentId: 'shp-002',
+  shipperName: 'Alliance Metal Fabrication',
+  shipperAddress: '14 Industrial Ave, Newcastle NSW 2300',
+  consigneeName: 'Pacific Fabrication',
+  consigneeAddress: '44 Fabrication Rd, Dandenong VIC 3175',
+  carrierName: 'Toll',
+  items: [
+    { description: 'Custom Brackets x50 — Mild Steel', qty: 50, weightKg: 42.5, freightClass: 'General Freight' },
+    { description: 'Packaging materials', qty: 1, weightKg: 2.0, freightClass: 'General Freight' },
+  ],
+  totalWeightKg: 44.5,
+  date: '2026-04-01',
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// BOOK — WIP Valuation, Cost Variance
+// ═══════════════════════════════════════════════════════════════════════
+
+export const wipValuations: WipValuation[] = [
+  { id: 'wip-001', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerName: 'TechCorp Industries', percentComplete: 45, costsIncurred: 15700, valueEarned: 11025, wipBalance: 4675 },
+  { id: 'wip-002', jobId: 'job-002', jobNumber: 'JOB-2026-0011', customerName: 'Pacific Fabrication', percentComplete: 72, costsIncurred: 6200, valueEarned: 6120, wipBalance: 80 },
+  { id: 'wip-003', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerName: 'Sydney Rail Corp', percentComplete: 0, costsIncurred: 0, valueEarned: 0, wipBalance: 0 },
+  { id: 'wip-004', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerName: 'TechCorp Industries', percentComplete: 0, costsIncurred: 0, valueEarned: 0, wipBalance: 0 },
+];
+
+export const costVarianceRecords: CostVarianceRecord[] = [
+  { id: 'cv-001', jobId: 'job-001', jobNumber: 'JOB-2026-0012', category: 'labour', budgetAmount: 6000, actualAmount: 5400, varianceAmount: -600, variancePercent: -10.0 },
+  { id: 'cv-002', jobId: 'job-001', jobNumber: 'JOB-2026-0012', category: 'materials', budgetAmount: 7500, actualAmount: 8200, varianceAmount: 700, variancePercent: 9.3 },
+  { id: 'cv-003', jobId: 'job-001', jobNumber: 'JOB-2026-0012', category: 'overhead', budgetAmount: 2000, actualAmount: 2100, varianceAmount: 100, variancePercent: 5.0 },
+  { id: 'cv-004', jobId: 'job-002', jobNumber: 'JOB-2026-0011', category: 'labour', budgetAmount: 2000, actualAmount: 2200, varianceAmount: 200, variancePercent: 10.0 },
+  { id: 'cv-005', jobId: 'job-002', jobNumber: 'JOB-2026-0011', category: 'materials', budgetAmount: 2800, actualAmount: 3100, varianceAmount: 300, variancePercent: 10.7 },
+  { id: 'cv-006', jobId: 'job-002', jobNumber: 'JOB-2026-0011', category: 'overhead', budgetAmount: 800, actualAmount: 900, varianceAmount: 100, variancePercent: 12.5 },
+  { id: 'cv-007', jobId: 'job-004', jobNumber: 'JOB-2026-0010', category: 'labour', budgetAmount: 3000, actualAmount: 3200, varianceAmount: 200, variancePercent: 6.7 },
+  { id: 'cv-008', jobId: 'job-004', jobNumber: 'JOB-2026-0010', category: 'materials', budgetAmount: 4500, actualAmount: 4800, varianceAmount: 300, variancePercent: 6.7 },
+  { id: 'cv-009', jobId: 'job-004', jobNumber: 'JOB-2026-0010', category: 'subcontract', budgetAmount: 800, actualAmount: 950, varianceAmount: 150, variancePercent: 18.8 },
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// CONTROL — Maintenance, Tooling, Documents
+// ═══════════════════════════════════════════════════════════════════════
+
+export const maintenanceRecords: MaintenanceRecord[] = [
+  { id: 'maint-001', machineId: 'mach-001', machineName: 'Laser Cutter #1', type: 'preventive', description: 'Replace laser lens and nozzle assembly', status: 'scheduled', scheduledDate: '2026-04-12', assignedTo: 'emp-004', cost: 1200 },
+  { id: 'maint-002', machineId: 'mach-002', machineName: 'Press Brake #2', type: 'preventive', description: 'Hydraulic oil change and filter replacement', status: 'scheduled', scheduledDate: '2026-04-08', assignedTo: 'emp-004', cost: 650 },
+  { id: 'maint-003', machineId: 'mach-005', machineName: 'Powder Coat Line', type: 'corrective', description: 'Gun clogging — strip and rebuild powder gun assembly', status: 'in_progress', scheduledDate: '2026-04-03', assignedTo: 'emp-008', cost: 480 },
+  { id: 'maint-004', machineId: 'mach-006', machineName: 'Laser Cutter #2', type: 'corrective', description: 'Chiller unit failure — compressor replacement', status: 'in_progress', scheduledDate: '2026-04-01', assignedTo: 'emp-004', cost: 3500 },
+  { id: 'maint-005', machineId: 'mach-003', machineName: 'Welding Station A', type: 'preventive', description: 'Wire feeder calibration and tip changeover', status: 'completed', scheduledDate: '2026-03-25', completedDate: '2026-03-25', durationMinutes: 45, assignedTo: 'emp-006', cost: 120 },
+  { id: 'maint-006', machineId: 'mach-004', machineName: 'CNC Mill #3', type: 'preventive', description: 'Spindle bearing inspection and lubrication', status: 'overdue', scheduledDate: '2026-03-30', assignedTo: 'emp-004', cost: 800 },
+];
+
+export const toolingItems: ToolingItem[] = [
+  { id: 'tool-001', toolId: 'TC-001', type: 'End Mill', description: '12mm Carbide End Mill — 4 Flute', location: 'Tool Crib A', lifePercent: 72, calibrationDueDate: '2026-05-15', status: 'available', lastServiceDate: '2026-03-01' },
+  { id: 'tool-002', toolId: 'TC-002', type: 'Drill Bit', description: '10mm HSS Drill Bit — TiN Coated', location: 'Tool Crib A', lifePercent: 45, calibrationDueDate: '2026-04-20', status: 'in_use', lastServiceDate: '2026-02-15' },
+  { id: 'tool-003', toolId: 'TC-003', type: 'Die Set', description: 'V-Die 90° — 25mm Opening', location: 'Press Brake #2', lifePercent: 88, calibrationDueDate: '2026-06-01', status: 'in_use', lastServiceDate: '2026-01-10' },
+  { id: 'tool-004', toolId: 'TC-004', type: 'Laser Nozzle', description: '1.5mm Copper Nozzle — Laser', location: 'Laser Cutter #1', lifePercent: 15, calibrationDueDate: '2026-04-10', status: 'maintenance', lastServiceDate: '2026-03-20' },
+  { id: 'tool-005', toolId: 'TC-005', type: 'Welding Torch', description: 'MIG Torch 400A — Water Cooled', location: 'Welding Station A', lifePercent: 62, calibrationDueDate: '2026-05-01', status: 'available', lastServiceDate: '2026-03-05' },
+  { id: 'tool-006', toolId: 'TC-006', type: 'Gauge', description: 'Digital Caliper 0–300mm', location: 'QC Bench', lifePercent: 95, calibrationDueDate: '2026-04-15', status: 'available', lastServiceDate: '2026-02-01' },
+  { id: 'tool-007', toolId: 'TC-007', type: 'Punch Set', description: 'Turret Punch — Round 20mm', location: 'Tool Crib B', lifePercent: 8, calibrationDueDate: '2026-04-05', status: 'retired', lastServiceDate: '2026-03-15' },
+];
+
+export const controlDocuments: ControlDocument[] = [
+  { id: 'doc-001', title: 'QMS Manual — AS/NZS ISO 9001', type: 'manual', revisionNumber: 'Rev 4.2', status: 'approved', lastUpdated: '2026-02-15', owner: 'Anh Nguyen', revisions: [
+    { revision: 'Rev 4.2', date: '2026-02-15', author: 'Anh Nguyen', description: 'Updated nonconformance procedure section 8.7' },
+    { revision: 'Rev 4.1', date: '2025-11-01', author: 'Anh Nguyen', description: 'Added internal audit schedule for 2026' },
+    { revision: 'Rev 4.0', date: '2025-06-15', author: 'Emma Wilson', description: 'Major revision — recertification audit' },
+  ] },
+  { id: 'doc-002', title: 'WPS-001 — MIG Welding Mild Steel', type: 'procedure', revisionNumber: 'Rev 2.0', status: 'approved', lastUpdated: '2026-01-10', owner: 'James Murray', revisions: [
+    { revision: 'Rev 2.0', date: '2026-01-10', author: 'James Murray', description: 'Updated gas mix ratios and wire feed settings' },
+    { revision: 'Rev 1.0', date: '2024-06-01', author: 'James Murray', description: 'Initial issue' },
+  ] },
+  { id: 'doc-003', title: 'DWG-BKT-001 — Mounting Bracket', type: 'drawing', revisionNumber: 'Rev C', status: 'approved', lastUpdated: '2026-03-05', owner: 'Emma Wilson', revisions: [
+    { revision: 'Rev C', date: '2026-03-05', author: 'Emma Wilson', description: 'Updated hole pattern per customer ECN' },
+    { revision: 'Rev B', date: '2025-12-01', author: 'Emma Wilson', description: 'Added chamfer to edges' },
+    { revision: 'Rev A', date: '2025-03-15', author: 'Emma Wilson', description: 'Initial release' },
+  ] },
+  { id: 'doc-004', title: 'SPC-PLT-042 — Base Plate Material Spec', type: 'spec', revisionNumber: 'Rev 1.1', status: 'review', lastUpdated: '2026-04-01', owner: 'David Lee', revisions: [
+    { revision: 'Rev 1.1', date: '2026-04-01', author: 'David Lee', description: 'Added surface finish requirement Ra 1.6' },
+    { revision: 'Rev 1.0', date: '2025-09-01', author: 'David Lee', description: 'Initial spec' },
+  ] },
+  { id: 'doc-005', title: 'CERT-ISO9001 — Certification', type: 'certificate', revisionNumber: 'N/A', status: 'approved', lastUpdated: '2025-06-20', owner: 'Anh Nguyen', revisions: [
+    { revision: 'N/A', date: '2025-06-20', author: 'BSI Auditor', description: 'Recertification granted — valid to June 2028' },
+  ] },
+  { id: 'doc-006', title: 'SOP-LASER-001 — Laser Setup', type: 'procedure', revisionNumber: 'Rev 3.0', status: 'draft', lastUpdated: '2026-04-04', owner: 'Sarah Chen', revisions: [
+    { revision: 'Rev 3.0', date: '2026-04-04', author: 'Sarah Chen', description: 'Draft — adding new Laser #2 procedures' },
+  ] },
+];

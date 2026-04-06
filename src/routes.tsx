@@ -24,6 +24,7 @@ import { SellOrderDetail } from './components/sell/SellOrderDetail';
 import { SellInvoiceDetail } from './components/sell/SellInvoiceDetail';
 import { SellNewInvoice } from './components/sell/SellNewInvoice';
 import { SellQuoteDetail } from './components/sell/SellQuoteDetail';
+import { SellCustomerPortal } from './components/sell/SellCustomerPortal';
 
 // Buy Module
 import { BuyDashboard } from './components/buy/BuyDashboard';
@@ -41,6 +42,10 @@ import { BuyRequisitionDetail } from './components/buy/BuyRequisitionDetail';
 import { BuySupplierDetail } from './components/buy/BuySupplierDetail';
 import { BuyOrderDetail } from './components/buy/BuyOrderDetail';
 import { BuyProductDetail } from './components/buy/BuyProductDetail';
+import { BuyMrpSuggestions } from './components/buy/BuyMrpSuggestions';
+import { BuyPlanningGrid } from './components/buy/BuyPlanningGrid';
+import { BuyVendorComparison } from './components/buy/BuyVendorComparison';
+import { BuyReorderRules } from './components/buy/BuyReorderRules';
 
 // Plan Module
 import { PlanDashboard } from './components/plan/PlanDashboard';
@@ -56,6 +61,10 @@ import { PlanSettings } from './components/plan/PlanSettings';
 import { PlanNCConnect } from './components/plan/PlanNCConnect';
 import { PlanCADImport } from './components/plan/PlanCADImport';
 import { ProductStudio } from './components/plan/product-studio/ProductStudio';
+import { PlanWhatIf } from './components/plan/PlanWhatIf';
+import { PlanNesting } from './components/plan/PlanNesting';
+import { PlanMrp } from './components/plan/PlanMrp';
+import { PlanSheetCalculator } from './components/plan/PlanSheetCalculator';
 
 // Make Module
 import { MakeDashboard } from './components/make/MakeDashboard';
@@ -68,6 +77,10 @@ import { MakeProducts } from './components/make/MakeProducts';
 import { MakeProductDetail } from './components/make/MakeProductDetail';
 import { MakeSettings } from './components/make/MakeSettings';
 import { MakeShopFloor } from './components/make/MakeShopFloor';
+import { MakeScanStation } from './components/make/MakeScanStation';
+import { MakeScrapAnalysis } from './components/make/MakeScrapAnalysis';
+import { MakeJobTraveler } from './components/make/MakeJobTraveler';
+import { MakeCapa } from './components/make/MakeCapa';
 
 // Ship Module
 import { ShipDashboard } from './components/ship/ShipDashboard';
@@ -79,6 +92,8 @@ import { ShipReturns } from './components/ship/ShipReturns';
 import { ShipWarehouse } from './components/ship/ShipWarehouse';
 import { ShipReports } from './components/ship/ShipReports';
 import { ShipSettings } from './components/ship/ShipSettings';
+import { ShipCarrierRates } from './components/ship/ShipCarrierRates';
+import { ShipScanToShip } from './components/ship/ShipScanToShip';
 
 // Control Module
 import { ControlDashboard } from './components/control/ControlDashboard';
@@ -95,6 +110,10 @@ import { ControlEmptyStates } from './components/control/ControlEmptyStates';
 import { ControlProcessBuilder } from './components/control/ControlProcessBuilder';
 import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
 import { ControlGamification } from './components/control/ControlGamification';
+import { ControlShiftManager } from './components/control/ControlShiftManager';
+import { ControlMaintenance } from './components/control/ControlMaintenance';
+import { ControlTooling } from './components/control/ControlTooling';
+import { ControlDocuments } from './components/control/ControlDocuments';
 import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
 import { BridgeWizard } from './components/bridge/BridgeWizard';
 import { Notifications } from './components/Notifications';
@@ -111,6 +130,8 @@ import { ReportsGallery } from './components/book/ReportsGallery';
 import { BookSettings } from './components/book/BookSettings';
 import { InvoiceDetail } from './components/book/InvoiceDetail';
 import { JobCostDetail } from './components/book/JobCostDetail';
+import { BookWipValuation } from './components/book/BookWipValuation';
+import { BookCostVariance } from './components/book/BookCostVariance';
 
 export const router = createBrowserRouter([
   {
@@ -148,6 +169,7 @@ export const router = createBrowserRouter([
           { path: 'quotes', element: <SellQuotes /> },
           { path: 'quotes/new', element: <SellNewQuote /> },
           { path: 'quotes/:id', element: <SellQuoteDetail /> },
+          { path: 'portal', element: <SellCustomerPortal /> },
           { path: 'settings', element: <SellSettings /> },
         ],
       },
@@ -169,6 +191,10 @@ export const router = createBrowserRouter([
           { path: 'products', element: <BuyProducts /> },
           { path: 'products/:id', element: <BuyProductDetail /> },
           { path: 'agreements', element: <BuyAgreements /> },
+          { path: 'mrp-suggestions', element: <BuyMrpSuggestions /> },
+          { path: 'planning-grid', element: <BuyPlanningGrid /> },
+          { path: 'vendor-comparison', element: <BuyVendorComparison /> },
+          { path: 'reorder-rules', element: <BuyReorderRules /> },
           { path: 'reports', element: <BuyReports /> },
           { path: 'settings', element: <BuySettings /> },
         ],
@@ -189,6 +215,10 @@ export const router = createBrowserRouter([
           { path: 'qc-planning', element: <PlanQCPlanning /> },
           { path: 'product-studio', element: <ProductStudio /> },
           { path: 'product-studio/:productId', element: <ProductStudio /> },
+          { path: 'what-if', element: <PlanWhatIf /> },
+          { path: 'nesting', element: <PlanNesting /> },
+          { path: 'mrp', element: <PlanMrp /> },
+          { path: 'sheet-calculator', element: <PlanSheetCalculator /> },
           { path: 'products', element: <PlanProducts /> },
           { path: 'products/:id', element: <PlanProductDetail /> },
           { path: 'settings', element: <PlanSettings /> },
@@ -206,6 +236,10 @@ export const router = createBrowserRouter([
           { path: 'manufacturing-orders/:id', element: <MakeManufacturingOrderDetail /> },
           { path: 'time-clock', element: <MakeTimeClock /> },
           { path: 'quality', element: <MakeQuality /> },
+          { path: 'scan', element: <MakeScanStation /> },
+          { path: 'scrap-analysis', element: <MakeScrapAnalysis /> },
+          { path: 'job-traveler/:id', element: <MakeJobTraveler /> },
+          { path: 'capa', element: <MakeCapa /> },
           { path: 'products', element: <MakeProducts /> },
           { path: 'products/:id', element: <MakeProductDetail /> },
           { path: 'settings', element: <MakeSettings /> },
@@ -221,6 +255,8 @@ export const router = createBrowserRouter([
           { path: 'packaging', element: <ShipPackaging /> },
           { path: 'shipping', element: <ShipShipping /> },
           { path: 'tracking', element: <ShipTracking /> },
+          { path: 'carrier-rates', element: <ShipCarrierRates /> },
+          { path: 'scan-to-ship', element: <ShipScanToShip /> },
           { path: 'returns', element: <ShipReturns /> },
           { path: 'warehouse', element: <ShipWarehouse /> },
           { path: 'reports', element: <ShipReports /> },
@@ -259,6 +295,10 @@ export const router = createBrowserRouter([
           { path: 'boms', element: <ControlBOMs /> },
           { path: 'role-designer', element: <ControlRoleDesigner /> },
           { path: 'workflow-designer', element: <ControlWorkflowDesigner /> },
+          { path: 'shifts', element: <ControlShiftManager /> },
+          { path: 'maintenance', element: <ControlMaintenance /> },
+          { path: 'tooling', element: <ControlTooling /> },
+          { path: 'documents', element: <ControlDocuments /> },
           { path: 'gamification', element: <ControlGamification /> },
           { path: 'empty-states', element: <ControlEmptyStates /> },
         ],
@@ -293,6 +333,8 @@ export const router = createBrowserRouter([
           { path: 'purchases', element: <PurchaseOrders /> },
           { path: 'job-costs', element: <JobProfitability /> },
           { path: 'job-costs/:id', element: <JobCostDetail onBack={() => window.history.back()} /> },
+          { path: 'wip', element: <BookWipValuation /> },
+          { path: 'cost-variance', element: <BookCostVariance /> },
           { path: 'stock-valuation', element: <StockValuation /> },
           { path: 'reports', element: <ReportsGallery /> },
           { path: 'settings', element: <BookSettings /> },

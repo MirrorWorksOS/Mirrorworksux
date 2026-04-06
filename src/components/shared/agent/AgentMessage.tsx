@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { AgentLogomark } from './AgentLogomark';
+import { AgentLogomarkAnimated } from './AgentLogomarkAnimated';
 import { motion } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import type { AgentMessage as AgentMessageType } from './agent-types';
@@ -199,28 +200,17 @@ export function AgentTypingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       className="flex items-start gap-2.5 px-4"
+      role="status"
+      aria-live="polite"
+      aria-label="Agent is responding"
     >
       <div className="shrink-0 mt-0.5">
-        <AgentLogomark size={20} />
+        <AgentLogomarkAnimated size={20} animating />
       </div>
       <div className="bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 border border-[var(--mw-agent-100)] dark:border-[var(--mw-agent)]/20 rounded-2xl rounded-tl-sm px-4 py-3">
-        <div className="flex items-center gap-1.5">
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
-          />
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
-          />
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
-          />
-        </div>
+        <p className="text-[13px] text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
+          Thinking…
+        </p>
       </div>
     </motion.div>
   );

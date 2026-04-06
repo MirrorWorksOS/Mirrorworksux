@@ -13,6 +13,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send } from 'lucide-react';
 import { AgentLogomark } from './AgentLogomark';
+import { AgentLogomarkAnimated } from './AgentLogomarkAnimated';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import { useAgentStore } from '@/store/agentStore';
@@ -196,6 +197,9 @@ export function AgentChat({ currentModule }: AgentChatProps) {
       {/* Input Bar */}
       <div className="px-3 pb-3 pt-1">
         <div className="flex items-center gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] border border-[var(--border)] rounded-2xl px-3 py-2 transition-colors hover:border-[var(--mw-agent)] hover:ring-1 hover:ring-[var(--mw-agent)]/25 focus-within:border-[var(--mw-agent)] focus-within:ring-1 focus-within:ring-[var(--mw-agent)]/25">
+          <div className="shrink-0 self-center" aria-hidden>
+            <AgentLogomarkAnimated size={26} animating={isTyping} />
+          </div>
           <textarea
             ref={inputRef}
             value={inputValue}

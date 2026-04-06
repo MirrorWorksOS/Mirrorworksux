@@ -7,6 +7,11 @@ import type {
   Machine,
   ManufacturingOrder,
   WorkOrder,
+  CapaRecord,
+  BatchLot,
+  MaterialConsumptionLine,
+  OperatorMessage,
+  ScrapRecord,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -43,5 +48,35 @@ export const makeService = {
   async getWorkOrdersByMO(moId: string): Promise<WorkOrder[]> {
     await delay();
     return mock.workOrders.filter((wo) => wo.manufacturingOrderId === moId);
+  },
+
+  // ── CAPA ───────────────────────────────────────────────────────
+  async getCapaRecords(): Promise<CapaRecord[]> {
+    await delay();
+    return mock.capaRecords;
+  },
+
+  // ── Batch/Lot Traceability ─────────────────────────────────────
+  async getBatchLots(): Promise<BatchLot[]> {
+    await delay();
+    return mock.batchLots;
+  },
+
+  // ── Material Consumption ───────────────────────────────────────
+  async getMaterialConsumption(): Promise<MaterialConsumptionLine[]> {
+    await delay();
+    return mock.materialConsumption;
+  },
+
+  // ── Operator Chat ──────────────────────────────────────────────
+  async getOperatorMessages(jobId: string): Promise<OperatorMessage[]> {
+    await delay();
+    return mock.operatorMessages.filter((m) => m.jobId === jobId);
+  },
+
+  // ── Scrap Records ──────────────────────────────────────────────
+  async getScrapRecords(): Promise<ScrapRecord[]> {
+    await delay();
+    return mock.scrapRecords;
   },
 };

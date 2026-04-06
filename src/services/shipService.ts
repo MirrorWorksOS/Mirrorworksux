@@ -7,6 +7,8 @@ import type {
   Shipment,
   Carrier,
   ShippingException,
+  CarrierRate,
+  BillOfLading,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -59,6 +61,18 @@ export const shipService = {
       type: e.type.charAt(0).toUpperCase() + e.type.slice(1),
       time: formatRelativeTime(e.createdAt),
     }));
+  },
+
+  // ── Carrier Rates ──────────────────────────────────────────────
+  async getCarrierRates(): Promise<CarrierRate[]> {
+    await delay();
+    return mock.carrierRates;
+  },
+
+  // ── Bill of Lading ─────────────────────────────────────────────
+  async getBillOfLading(): Promise<BillOfLading> {
+    await delay();
+    return mock.sampleBillOfLading;
   },
 };
 

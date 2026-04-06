@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { Send } from "lucide-react";
-import { AgentLogomark } from "@/components/shared/agent/AgentLogomark";
+import { AgentLogomarkAnimated } from "@/components/shared/agent/AgentLogomarkAnimated";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -106,13 +106,26 @@ export function AiCommandBar({
 }: AiCommandBarProps) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const [thinking, setThinking] = React.useState(false);
+  const thinkingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const id = React.useId();
   const labelId = `${id}-label`;
 
+  React.useEffect(() => {
+    return () => {
+      if (thinkingTimeoutRef.current) clearTimeout(thinkingTimeoutRef.current);
+    };
+  }, []);
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim() === "") return;
-    setOpen(true);
+    if (query.trim() === "" || thinking) return;
+    setThinking(true);
+    thinkingTimeoutRef.current = setTimeout(() => {
+      setOpen(true);
+      setThinking(false);
+      thinkingTimeoutRef.current = null;
+    }, 680);
   };
 
   const mock = MOCK_REPLY[scope];
@@ -131,16 +144,18 @@ export function AiCommandBar({
         <span id={labelId} className="sr-only">
           {ariaLabel ?? `MirrorWorks AI — ${scope}`}
         </span>
-        <AgentLogomark size={40} />
+        <AgentLogomarkAnimated size={40} animating={thinking} />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          disabled={thinking}
           placeholder={PLACEHOLDER[scope]}
           className="h-12 min-h-[48px] flex-1 border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0 md:text-sm"
           aria-label={ariaLabel ?? `Ask MirrorWorks AI, ${scope} scope`}
         />
         <Button
           type="submit"
+          disabled={thinking}
           className="h-12 min-h-[48px] w-12 shrink-0 rounded-full bg-[var(--mw-yellow-400)] p-0 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
         >
           <Send className="mx-auto h-5 w-5" strokeWidth={1.5} aria-hidden />

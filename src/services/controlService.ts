@@ -9,6 +9,10 @@ import type {
   Machine,
   Supplier,
   SystemHealth,
+  MaintenanceRecord,
+  ToolingItem,
+  ControlDocument,
+  ShiftAssignment,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -52,5 +56,29 @@ export const controlService = {
   async getSuppliers(): Promise<Supplier[]> {
     await delay();
     return mock.suppliers;
+  },
+
+  // ── Maintenance ────────────────────────────────────────────────
+  async getMaintenanceRecords(): Promise<MaintenanceRecord[]> {
+    await delay();
+    return mock.maintenanceRecords;
+  },
+
+  // ── Tooling ────────────────────────────────────────────────────
+  async getToolingItems(): Promise<ToolingItem[]> {
+    await delay();
+    return mock.toolingItems;
+  },
+
+  // ── Documents ──────────────────────────────────────────────────
+  async getDocuments(): Promise<ControlDocument[]> {
+    await delay();
+    return mock.controlDocuments;
+  },
+
+  // ── Shifts ─────────────────────────────────────────────────────
+  async getShiftAssignments(): Promise<ShiftAssignment[]> {
+    await delay();
+    return mock.shiftAssignments;
   },
 };

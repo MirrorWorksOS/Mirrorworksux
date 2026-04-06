@@ -85,6 +85,26 @@ export type ExpenseCategory =
   | 'office'
   | 'other';
 
+// ─── Control Statuses ──────────────────────────────────────────────
+
+export type MaintenanceStatus = 'scheduled' | 'in_progress' | 'completed' | 'overdue';
+
+export type DocumentStatus = 'draft' | 'review' | 'approved' | 'archived';
+
+export type ToolStatus = 'available' | 'in_use' | 'maintenance' | 'retired';
+
+// ─── Make Statuses (extended) ──────────────────────────────────────
+
+export type CapaStatus = 'identified' | 'root_cause' | 'containment' | 'corrective_action' | 'verification' | 'closed';
+
+export type CapaSeverity = 'low' | 'medium' | 'high' | 'critical';
+
+export type BatchStatus = 'active' | 'quarantine' | 'released' | 'consumed';
+
+// ─── Plan Statuses (extended) ──────────────────────────────────────
+
+export type MrpNodeStatus = 'fulfilled' | 'partial' | 'pending' | 'shortage';
+
 // ─── Approval Types ─────────────────────────────────────────────────
 
 export type ApprovalItemType = 'quote' | 'order' | 'requisition' | 'po' | 'expense' | 'bill';

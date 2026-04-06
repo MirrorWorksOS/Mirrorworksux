@@ -8,6 +8,14 @@ import type {
   PlanTask,
   WeeklyCapacity,
   KpiMetric,
+  CapableToPromiseResult,
+  Operation,
+  ScheduleBlock,
+  WorkCentre,
+  MrpNode,
+  ShiftAssignment,
+  NestingSheet,
+  BomGeneratorLine,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -56,5 +64,60 @@ export const planService = {
   async getKpis(): Promise<Record<string, KpiMetric>> {
     await delay();
     return mock.planKpis;
+  },
+
+  // ── Schedule Engine ────────────────────────────────────────────
+  async getScheduleBlocks(): Promise<ScheduleBlock[]> {
+    await delay();
+    return mock.scheduleBlocks;
+  },
+
+  async getWorkCentres(): Promise<WorkCentre[]> {
+    await delay();
+    return mock.workCentres;
+  },
+
+  // ── Operations / Routing ───────────────────────────────────────
+  async getOperations(): Promise<Operation[]> {
+    await delay();
+    return mock.operations;
+  },
+
+  // ── MRP Tree ───────────────────────────────────────────────────
+  async getMrpTree(): Promise<MrpNode[]> {
+    await delay();
+    return mock.mrpTree;
+  },
+
+  // ── Shifts ─────────────────────────────────────────────────────
+  async getShiftAssignments(): Promise<ShiftAssignment[]> {
+    await delay();
+    return mock.shiftAssignments;
+  },
+
+  // ── Nesting ────────────────────────────────────────────────────
+  async getNestingSheets(): Promise<NestingSheet[]> {
+    await delay();
+    return mock.nestingSheets;
+  },
+
+  // ── BOM Generator ──────────────────────────────────────────────
+  async getBomGeneratorLines(): Promise<BomGeneratorLine[]> {
+    await delay();
+    return mock.bomGeneratorLines;
+  },
+
+  // ── Capable-to-Promise (Plan context) ──────────────────────────
+  async getCapableToPromise(): Promise<CapableToPromiseResult> {
+    await delay();
+    const weeksOut = 2 + Math.random() * 2;
+    const date = new Date();
+    date.setDate(date.getDate() + Math.round(weeksOut * 7));
+    return {
+      earliestDate: date.toISOString().slice(0, 10),
+      confidencePercent: 78 + Math.round(Math.random() * 15),
+      capacityUtilization: 72 + Math.round(Math.random() * 20),
+      bottleneckWorkCenter: 'Welding',
+    };
   },
 };

@@ -11,6 +11,8 @@ import type {
   KpiMetric,
   ApprovalItem,
   OverdueItem,
+  WipValuation,
+  CostVarianceRecord,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -64,5 +66,17 @@ export const bookService = {
   async getOverdueItems(): Promise<OverdueItem[]> {
     await delay();
     return mock.bookOverdueItems;
+  },
+
+  // ── WIP Valuation ──────────────────────────────────────────────
+  async getWipValuations(): Promise<WipValuation[]> {
+    await delay();
+    return mock.wipValuations;
+  },
+
+  // ── Cost Variance ──────────────────────────────────────────────
+  async getCostVariance(): Promise<CostVarianceRecord[]> {
+    await delay();
+    return mock.costVarianceRecords;
   },
 };
