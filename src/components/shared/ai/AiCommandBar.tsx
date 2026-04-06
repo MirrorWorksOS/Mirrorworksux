@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/components/ui/utils";
+import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
 
 
 export type AiCommandScope =
@@ -132,12 +133,16 @@ export function AiCommandBar({
 
   return (
     <>
-      <form
-        onSubmit={onSubmit}
+      <BorderGlow
+        borderRadius={9999}
         className={cn(
-          "agent-command-bar relative flex w-full items-center gap-3 rounded-full border border-[var(--neutral-200)] bg-card p-2 pl-4 shadow-xs transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
+          "focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
           className,
         )}
+      >
+      <form
+        onSubmit={onSubmit}
+        className="relative flex w-full items-center gap-3 rounded-full p-2 pl-4 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
         role="search"
         aria-labelledby={labelId}
       >
@@ -162,6 +167,7 @@ export function AiCommandBar({
           <span className="sr-only">Send</span>
         </Button>
       </form>
+      </BorderGlow>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="gap-4 sm:max-w-lg">

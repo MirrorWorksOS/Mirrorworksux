@@ -108,7 +108,7 @@ export function ModuleDashboard({
         onValueChange={onTabChange}
         className="flex w-full flex-col gap-0"
       >
-        <TabsList className="h-auto w-full justify-start gap-8 rounded-none border-b border-[var(--neutral-200)] bg-transparent p-0 shadow-none backdrop-blur-none">
+        <TabsList className="h-auto w-full justify-start gap-8 rounded-none border-b border-[var(--neutral-200)] bg-transparent dark:bg-transparent p-0 shadow-none backdrop-blur-none">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (

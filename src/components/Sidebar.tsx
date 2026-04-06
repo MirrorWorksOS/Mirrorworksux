@@ -43,6 +43,7 @@ import {
 } from '@/lib/subscription';
 import mirrorworksLogomark from '@/art/empty-states/logo/mirrorworks_logomark.svg';
 import { NotificationBell } from './shared/notifications/NotificationBell';
+import { DockNav, type DockItemData } from './shared/layout/DockNav';
 import {
   seedNotificationsIfEmpty,
   startNotificationSimulator,
@@ -747,15 +748,39 @@ export function Sidebar({ variant = 'full' }: SidebarProps) {
         {/* Divider */}
         <div className="w-7 h-px bg-[var(--neutral-200)] my-1" />
 
-        {/* Nav icons */}
-        <div className="flex-1 flex flex-col gap-1 overflow-y-auto items-center" style={{ scrollbarWidth: 'none' }}>
-          {menuConfig.map((item) => (
-            <RailIconButton
-              key={item.label}
-              item={item}
-              isActive={isModuleActive(item)}
-            />
-          ))}
+        {/* Nav icons — Dock magnification */}
+        <div className="flex-1 flex flex-col overflow-y-auto items-center" style={{ scrollbarWidth: 'none' }}>
+          <DockNav
+            orientation="vertical"
+            magnification={52}
+            distance={120}
+            baseItemSize={44}
+            spring={{ mass: 0.1, stiffness: 170, damping: 14 }}
+            items={menuConfig.map((item) => {
+              const firstSubPath = getAllSubItems(item)[0]?.path ?? item.path ?? '/';
+              const active = isModuleActive(item);
+              return {
+                icon: item.animatedIcon ? (
+                  <item.animatedIcon
+                    size={ICON_SIZES.sidebar}
+                    animateOnHover
+                    className={active ? 'text-white' : 'text-foreground'}
+                  />
+                ) : item.icon ? (
+                  <item.icon
+                    className={cn('w-5 h-5', active ? 'text-white' : 'text-foreground')}
+                    strokeWidth={1.5}
+                  />
+                ) : null,
+                label: item.label,
+                onClick: () => {
+                  window.location.href = firstSubPath;
+                },
+                isActive: active,
+                className: active ? 'bg-[var(--mw-mirage)] text-white' : '',
+              } satisfies DockItemData;
+            })}
+          />
         </div>
 
         {/* Footer — just icons */}

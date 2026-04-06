@@ -464,15 +464,15 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
           {/* Animated gradient background */}
           <React.Suspense fallback={null}>
             <Grainient
-              color1="#cacdff"
+              color1="#caf0fe"
               color2="#4dddc9"
-              color3="#ffffa1"
+              color3="#d4e3fe"
               timeSpeed={0.25}
               warpStrength={1}
               warpFrequency={5}
               warpSpeed={2}
               warpAmplitude={50}
-              blendSoftness={0.05}
+              blendSoftness={0.4}
               rotationAmount={500}
               noiseScale={2}
               grainAmount={0.1}

@@ -14,6 +14,7 @@ import { RefreshCw, Sparkles } from 'lucide-react';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Button } from '../../ui/button';
 import { cn } from '../../ui/utils';
+import { BorderGlow } from '../surfaces/BorderGlow';
 
 interface AIInsightCardProps {
   title?: string;
@@ -37,12 +38,9 @@ export function AIInsightCard({
   className,
 }: AIInsightCardProps) {
   return (
-    <div
-      className={cn(
-        'bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-4',
-        className
-      )}
-    >
+    <BorderGlow borderRadius={16} className={cn("border border-[var(--border)]", className)}>
+    <div className="p-4">
+
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -94,6 +92,7 @@ export function AIInsightCard({
         </div>
       )}
     </div>
+    </BorderGlow>
   );
 }
 

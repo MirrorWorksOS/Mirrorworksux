@@ -60,6 +60,8 @@ import {
   mwPillYellowClass,
 } from "@/lib/dashboard-ui";
 import { AnimatedCount } from "@/components/shared/motion/AnimatedCount";
+import { SplitText } from "@/components/shared/motion/SplitText";
+import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
 
 type AnimatedIconComponent = React.ComponentType<{
   size?: number;
@@ -260,9 +262,14 @@ export function WelcomeDashboard() {
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 space-y-1 text-left">
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--mw-mirage)] dark:text-[var(--neutral-900)] sm:text-3xl lg:text-4xl">
-                {greetingLine(firstName)}
-              </h1>
+              <SplitText
+                text={greetingLine(firstName)}
+                as="h1"
+                splitBy="chars"
+                delay={0.025}
+                duration={0.35}
+                className="text-2xl font-bold tracking-tight text-[var(--mw-mirage)] dark:text-[var(--neutral-900)] sm:text-3xl lg:text-4xl"
+              />
               <p className="text-base font-light text-muted-foreground sm:text-lg">
                 {user.org} · {user.role}
               </p>
@@ -361,6 +368,7 @@ export function WelcomeDashboard() {
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
+                <SpotlightCard radius="rounded-[var(--shape-xl)]">
                 <Card
                   className={cn(
                     "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
@@ -386,12 +394,14 @@ export function WelcomeDashboard() {
                     </div>
                   </div>
                 </Card>
+                </SpotlightCard>
               </motion.div>
               <motion.div
                 variants={staggerItem}
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
+                <SpotlightCard radius="rounded-[var(--shape-xl)]">
                 <Card
                   className={cn(
                     "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
@@ -417,12 +427,14 @@ export function WelcomeDashboard() {
                     </div>
                   </div>
                 </Card>
+                </SpotlightCard>
               </motion.div>
               <motion.div
                 variants={staggerItem}
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
+                <SpotlightCard radius="rounded-[var(--shape-xl)]">
                 <Card
                   className={cn(
                     "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
@@ -448,6 +460,7 @@ export function WelcomeDashboard() {
                     </div>
                   </div>
                 </Card>
+                </SpotlightCard>
               </motion.div>
             </div>
 
@@ -461,6 +474,7 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
                   <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center justify-between gap-3 border-b border-border pb-4">
                       <div className="flex min-w-0 items-center gap-2">
@@ -513,6 +527,7 @@ export function WelcomeDashboard() {
                       <Link to="/buy">Open Buy</Link>
                     </Button>
                   </Card>
+                  </SpotlightCard>
                   </motion.div>
                 </motion.div>
               ) : null}
@@ -526,6 +541,7 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
                   <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <AlertTriangle
@@ -565,6 +581,7 @@ export function WelcomeDashboard() {
                       <Link to="/ship">View Ship</Link>
                     </Button>
                   </Card>
+                  </SpotlightCard>
                   </motion.div>
                 </motion.div>
               ) : null}
@@ -578,6 +595,7 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
                   <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <Link2
@@ -615,6 +633,7 @@ export function WelcomeDashboard() {
                       </div>
                     </div>
                   </Card>
+                  </SpotlightCard>
                   </motion.div>
                 </motion.div>
               ) : null}

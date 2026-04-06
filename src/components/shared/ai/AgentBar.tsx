@@ -21,6 +21,7 @@ import {
   mwSubtleHoverTransition,
   mwSuggestionLabelClass,
 } from "@/lib/dashboard-ui";
+import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
 
 export interface AgentBarProps {
   user: MockUserContext;
@@ -122,17 +123,19 @@ export function AgentBar({ user, className }: AgentBarProps) {
         </p>
       </div>
 
-      <form
-        onSubmit={onSubmit}
+      <BorderGlow
+        borderRadius={24}
+        animated
         className={cn(
-          "relative overflow-hidden rounded-[var(--shape-2xl)] shadow-[var(--elevation-2)]",
-          mwHairlineBorder,
-          "bg-[color-mix(in_srgb,var(--card)_92%,transparent)] backdrop-blur-xl",
-          "dark:bg-[color-mix(in_srgb,var(--card)_88%,transparent)]",
+          "shadow-[var(--elevation-2)]",
           "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
           "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
           "focus-within:shadow-[0_0_0_2px_var(--mw-yellow-400-20)] focus-within:translate-y-0",
         )}
+      >
+      <form
+        onSubmit={onSubmit}
+        className="relative overflow-hidden rounded-[var(--shape-2xl)]"
         role="search"
         aria-label="Agent — search MirrorWorks"
       >
@@ -204,6 +207,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
           </div>
         </div>
       </form>
+      </BorderGlow>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import { useAgentStore } from '@/store/agentStore';
 import { AgentPanel } from './AgentPanel';
+import { ClickSpark } from '@/components/shared/motion/ClickSpark';
 
 export function AgentFAB() {
   const { isOpen, toggleOpen, hasProactiveInsight } = useAgentStore();
@@ -50,6 +51,7 @@ export function AgentFAB() {
               </span>
             )}
 
+            <ClickSpark sparkColor="var(--mw-agent)" sparkRadius={24} sparkCount={8} duration={500}>
             <button
               onClick={toggleOpen}
               className={cn(
@@ -78,6 +80,7 @@ export function AgentFAB() {
                 </motion.span>
               )}
             </button>
+            </ClickSpark>
 
             {/* Shortcut hint — visible on hover only */}
             <div

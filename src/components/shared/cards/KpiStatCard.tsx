@@ -8,6 +8,7 @@ import {
   LUCIDE_STROKE,
   type IconSurface,
 } from "@/components/shared/icons/IconWell";
+import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
 
 export type { IconSurface };
 
@@ -80,6 +81,7 @@ export function KpiStatCard({
 
   if (layout === "inlineEnd") {
     return (
+      <SpotlightCard radius="rounded-[var(--shape-lg)]">
       <Card variant="flat" className={cn("p-6", className)}>
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
@@ -106,11 +108,13 @@ export function KpiStatCard({
           ) : null}
         </div>
       </Card>
+      </SpotlightCard>
     );
   }
 
   if (layout === "compact") {
     return (
+      <SpotlightCard radius="rounded-[var(--shape-lg)]">
       <Card
         variant="flat"
         className={cn(
@@ -130,10 +134,12 @@ export function KpiStatCard({
         ) : null}
         {footer}
       </Card>
+      </SpotlightCard>
     );
   }
 
   return (
+    <SpotlightCard radius="rounded-[var(--shape-lg)]">
     <Card
       variant="flat"
       className={cn(
@@ -160,5 +166,6 @@ export function KpiStatCard({
       ) : null}
       {footer}
     </Card>
+    </SpotlightCard>
   );
 }
