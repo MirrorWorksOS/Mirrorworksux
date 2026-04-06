@@ -185,7 +185,7 @@ export function SellProducts() {
                       onClick={(e) => {
                         e.stopPropagation();
                         toast.success(`Sales order started for ${product.name}`);
-                        navigate('/sell/orders/new');
+                        navigate('/sell/quotes/new');
                       }}
                       className="w-full mt-4 h-10 gap-2 text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
                     >

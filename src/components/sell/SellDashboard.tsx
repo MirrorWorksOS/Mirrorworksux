@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, LineChart, BarChart2, Users, Target, Trophy, Download, Sparkles, PieChart as PieChartIcon } from 'lucide-react';
+import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, LineChart, BarChart2, Users, Target, Trophy, Download, Sparkles, PieChart as PieChartIcon, Gauge, AlertCircle } from 'lucide-react';
 import {
   sellKpis as kpiData,
   revenueByMonth as revenueData,
@@ -18,6 +18,10 @@ import {
   forecastChartData,
   quarterlyTargets,
   sellReportTemplates as reportTemplatesData,
+  salesPerformanceScore,
+  quotaAttainment,
+  pipelineHealth,
+  customerSegmentation,
 } from '@/services/mock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
@@ -55,6 +59,8 @@ import {
   Cell,
   AreaChart,
   Area,
+  PieChart,
+  Pie,
   LineChart as RechartsLineChart,
   Line,
   Legend,
@@ -390,6 +396,104 @@ export function SellDashboard() {
       {activeTab === 'analysis' && (
         <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
 
+          {/* Sales Performance Score + Quota Attainment */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <motion.div variants={staggerItem}>
+              <Card className="p-6">
+                <h3 className="mb-4 text-base font-medium text-foreground">
+                  Sales Performance Score
+                </h3>
+                <div className="flex items-center gap-8">
+                  <div className="relative flex h-40 w-40 shrink-0 items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--neutral-100)" strokeWidth="12" />
+                      <circle
+                        cx="50" cy="50" r="40" fill="none"
+                        stroke="var(--mw-yellow-400)"
+                        strokeWidth="12"
+                        strokeDasharray={`${(salesPerformanceScore.score / salesPerformanceScore.maxScore) * 251} 251`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-3xl font-bold tabular-nums text-foreground">{salesPerformanceScore.score}</span>
+                      <span className="text-xs text-[var(--neutral-500)]">/ {salesPerformanceScore.maxScore}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-[var(--chart-scale-high)]" />
+                      <span className="text-sm font-medium text-foreground">+{salesPerformanceScore.change}% vs last quarter</span>
+                    </div>
+                    <p className="text-xs text-[var(--neutral-500)] leading-relaxed">
+                      Composite metric based on win rate, pipeline velocity, quota attainment, and activity levels.
+                    </p>
+                    {[
+                      { label: 'Win Rate', value: 82 },
+                      { label: 'Pipeline Velocity', value: 76 },
+                      { label: 'Activity Score', value: 91 },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center gap-3">
+                        <span className="text-xs text-[var(--neutral-500)] w-28 shrink-0">{item.label}</span>
+                        <div className="flex-1 h-1.5 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-[var(--mw-yellow-400)]" style={{ width: `${item.value}%` }} />
+                        </div>
+                        <span className="text-xs tabular-nums font-medium text-foreground w-8 text-right">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={staggerItem}>
+              <Card className="p-6">
+                <h3 className="mb-4 text-base font-medium text-foreground">
+                  Quota Attainment
+                </h3>
+                <div className="flex items-center gap-8">
+                  <div className="relative flex h-40 w-40 shrink-0 items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+                      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--neutral-100)" strokeWidth="12" />
+                      <circle
+                        cx="50" cy="50" r="40" fill="none"
+                        stroke="var(--chart-scale-high)"
+                        strokeWidth="12"
+                        strokeDasharray={`${(quotaAttainment.percent / 100) * 251} 251`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-3xl font-bold tabular-nums text-foreground">{quotaAttainment.percent}%</span>
+                      <span className="text-xs text-[var(--neutral-500)]">of target</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4">
+                    <div>
+                      <div className="flex items-baseline justify-between mb-1">
+                        <span className="text-xs text-[var(--neutral-500)]">Target</span>
+                        <span className="text-sm font-medium tabular-nums text-foreground">${(quotaAttainment.target / 1000).toFixed(0)}k</span>
+                      </div>
+                      <div className="flex items-baseline justify-between mb-1">
+                        <span className="text-xs text-[var(--neutral-500)]">Current</span>
+                        <span className="text-sm font-medium tabular-nums text-foreground">${(quotaAttainment.current / 1000).toFixed(0)}k</span>
+                      </div>
+                      <div className="flex items-baseline justify-between mb-1">
+                        <span className="text-xs text-[var(--neutral-500)]">Remaining</span>
+                        <span className="text-sm font-medium tabular-nums text-foreground">${((quotaAttainment.target - quotaAttainment.current) / 1000).toFixed(0)}k</span>
+                      </div>
+                    </div>
+                    <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2">
+                      <p className="text-xs text-[var(--neutral-600)]">
+                        <span className="font-medium text-foreground tabular-nums">{quotaAttainment.daysLeft} days</span> remaining in quarter
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          </div>
+
           {/* Pipeline Funnel */}
           <motion.div variants={staggerItem}>
             <Card className="p-6">
@@ -529,6 +633,98 @@ export function SellDashboard() {
               </div>
             </Card>
           </motion.div>
+
+          {/* Pipeline Health + Customer Segmentation */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <motion.div variants={staggerItem}>
+              <Card className="p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-base font-medium text-foreground">
+                    Pipeline Health
+                  </h3>
+                  <Badge className={badgeNeutral}>Weighted</Badge>
+                </div>
+                <div className="mb-6 flex items-baseline gap-3">
+                  <span className="text-3xl font-bold tabular-nums text-foreground">
+                    ${(pipelineHealth.weightedValue / 1000000).toFixed(1)}M
+                  </span>
+                  <span className="text-xs text-[var(--neutral-500)]">weighted pipeline value</span>
+                </div>
+                <div className="space-y-3 mb-6">
+                  {pipelineHealth.stages.map((s) => {
+                    const pct = Math.round((s.value / pipelineHealth.weightedValue) * 100);
+                    return (
+                      <div key={s.stage} className="flex items-center gap-3">
+                        <span className="text-xs text-[var(--neutral-500)] w-24 shrink-0">{s.stage}</span>
+                        <div className="flex-1 h-2 bg-[var(--neutral-100)] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-[var(--mw-yellow-400)]" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs tabular-nums font-medium text-foreground w-14 text-right">${(s.value / 1000).toFixed(0)}k</span>
+                        <Badge variant="outline" className="border-[var(--border)] text-[10px] tabular-nums w-8 justify-center">{s.count}</Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-4 rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-4 py-3">
+                  <AlertCircle className="h-4 w-4 text-[var(--mw-yellow-500)] shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-foreground">
+                      {pipelineHealth.stalledDeals} stalled deals
+                    </p>
+                    <p className="text-xs text-[var(--neutral-500)]">
+                      Avg pipeline age: {pipelineHealth.avgAge} days
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={staggerItem}>
+              <Card className="p-6">
+                <h3 className="mb-4 text-base font-medium text-foreground">
+                  Customer Segmentation
+                </h3>
+                <div className="flex items-center gap-6">
+                  <div className="h-48 w-48 shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={customerSegmentation}
+                          dataKey="value"
+                          nameKey="segment"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={80}
+                          paddingAngle={2}
+                          {...MW_RECHARTS_ANIMATION}
+                        >
+                          {customerSegmentation.map((entry, i) => (
+                            <Cell key={entry.segment} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(v: number) => `${v}%`}
+                          contentStyle={MW_TOOLTIP_STYLE}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3">
+                    {customerSegmentation.map((seg) => (
+                      <div key={seg.segment} className="flex items-center gap-3">
+                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: seg.color }} />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">{seg.segment}</p>
+                        </div>
+                        <span className="text-sm font-bold tabular-nums text-foreground">{seg.value}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          </div>
         </motion.div>
       )}
 

@@ -35,6 +35,8 @@ import {
 import { cn } from "@/components/ui/utils";
 import { motion, AnimatePresence } from "motion/react";
 
+const Grainient = React.lazy(() => import("./Grainient"));
+
 
 type AIFeedModule =
   | "sell"
@@ -335,8 +337,8 @@ function ModalFeedItem({
   onAction: (path: string) => void;
 }) {
   return (
-    <div className="flex gap-3 rounded-[var(--shape-lg)] border border-[var(--mw-mirage)]/12 bg-white/95 p-4 shadow-sm">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F6F8FC]">
+    <div className="flex gap-3 rounded-[var(--shape-lg)] border border-white/30 bg-white/40 p-4 shadow-sm backdrop-blur-xl">
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/50">
         {React.cloneElement(item.icon as React.ReactElement, {
           className: "h-4 w-4 text-[var(--mw-mirage)]",
         })}
@@ -345,7 +347,7 @@ function ModalFeedItem({
         <div className="mb-1 flex items-center gap-2">
           <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
           {item.tag && (
-            <Badge className="border-0 bg-[#F6F8FC] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-mirage)]/85">
+            <Badge className="border-0 bg-white/50 text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-mirage)]/85">
               {item.tag}
             </Badge>
           )}
@@ -356,7 +358,7 @@ function ModalFeedItem({
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-xs font-medium bg-[#F6F8FC] text-[var(--mw-mirage)] hover:bg-[#E8EDF5] hover:text-[var(--mw-mirage)]"
+            className="h-7 gap-1.5 px-2.5 text-xs font-medium bg-white/50 text-[var(--mw-mirage)] hover:bg-white/70 hover:text-[var(--mw-mirage)]"
             onClick={() => onAction(item.actionPath)}
           >
             {item.actionLabel}
@@ -453,28 +455,51 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
         </div>
       </div>
 
-      {/* ── All-insights modal — blue background ── */}
+      {/* ── All-insights modal — grainient background ── */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent
-          className="gap-0 overflow-hidden border border-[var(--mw-mirage)]/15 !bg-[#4DDDC9] p-0 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] sm:max-w-lg"
+          className="gap-0 overflow-hidden border border-white/20 !bg-transparent p-0 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] sm:max-w-lg"
           showCloseButton
         >
-          <DialogHeader className="px-8 pt-8 pb-5">
-            <div className="flex items-center gap-2">
-              <DialogTitle className="text-[var(--mw-mirage)]">Agent insights</DialogTitle>
-              <Badge className="border-0 bg-[#F6F8FC] text-[10px] px-1.5 py-0 font-medium text-[var(--mw-mirage)]">
-                {items.length} new
-              </Badge>
+          {/* Animated gradient background */}
+          <React.Suspense fallback={null}>
+            <Grainient
+              color1="#cacdff"
+              color2="#4dddc9"
+              color3="#ffffa1"
+              timeSpeed={0.25}
+              warpStrength={1}
+              warpFrequency={5}
+              warpSpeed={2}
+              warpAmplitude={50}
+              blendSoftness={0.05}
+              rotationAmount={500}
+              noiseScale={2}
+              grainAmount={0.1}
+              grainScale={2}
+              contrast={1.5}
+              zoom={0.9}
+              className="rounded-[inherit]"
+            />
+          </React.Suspense>
+          <div className="relative z-[1]">
+            <DialogHeader className="px-8 pt-8 pb-5">
+              <div className="flex items-center gap-2">
+                <DialogTitle className="text-[var(--mw-mirage)]">Agent insights</DialogTitle>
+                <Badge className="border-0 bg-white/40 backdrop-blur-sm text-[10px] px-1.5 py-0 font-medium text-[var(--mw-mirage)]">
+                  {items.length} new
+                </Badge>
+              </div>
+            </DialogHeader>
+            <div className="max-h-[60vh] space-y-3 overflow-y-auto px-8 pb-8">
+              {items.map((item) => (
+                <ModalFeedItem
+                  key={item.id}
+                  item={item}
+                  onAction={handleAction}
+                />
+              ))}
             </div>
-          </DialogHeader>
-          <div className="max-h-[60vh] space-y-3 overflow-y-auto px-8 pb-8">
-            {items.map((item) => (
-              <ModalFeedItem
-                key={item.id}
-                item={item}
-                onAction={handleAction}
-              />
-            ))}
           </div>
         </DialogContent>
       </Dialog>

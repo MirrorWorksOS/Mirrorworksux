@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, Save, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Paperclip, Send, Clock, Receipt } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, Save, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Paperclip, Send, Clock, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -112,6 +112,7 @@ export function MakeManufacturingOrderDetail() {
   const [summaryFilter, setSummaryFilter] = useState<SummaryFilterKey | null>(null);
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [shiftPaused, setShiftPaused] = useState(false);
 
   const handleChatSubmit = () => {
     const msg = chatInput.trim();
@@ -311,6 +312,50 @@ export function MakeManufacturingOrderDetail() {
 
             {/* Right column */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+              {/* Shift Performance */}
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-base font-medium text-foreground">Shift Performance</h2>
+                  <Badge variant="secondary" className="border-0 bg-[var(--mw-yellow-400)]/15 text-[var(--mw-yellow-600)] text-xs">
+                    Active
+                  </Badge>
+                </div>
+                <div className="text-center mb-4">
+                  <span className="text-4xl font-bold tabular-nums text-foreground tracking-tight">05:42:18</span>
+                  <p className="text-xs text-[var(--neutral-500)] mt-1">Total Shift Time</p>
+                </div>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="flex -space-x-2">
+                    {['MJ', 'DL', 'EW', 'SC'].map((initials) => (
+                      <Avatar key={initials} className="w-7 h-7 border-2 border-card">
+                        <AvatarFallback className="text-[10px] bg-[var(--mw-mirage)] text-white">{initials}</AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
+                  <span className="text-xs text-[var(--neutral-500)]">+8 operators</span>
+                </div>
+                <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2 text-center mb-4">
+                  <p className="text-xs">
+                    <span className="font-medium text-[var(--chart-scale-high)]">5% ahead</span>
+                    <span className="text-[var(--neutral-500)]"> vs target</span>
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'w-full h-12 gap-2 border-[var(--border)]',
+                    shiftPaused && 'bg-[var(--mw-yellow-400)]/10 border-[var(--mw-yellow-400)]',
+                  )}
+                  onClick={() => setShiftPaused(!shiftPaused)}
+                >
+                  {shiftPaused ? (
+                    <><Play className="h-4 w-4" /> Resume Shift</>
+                  ) : (
+                    <><Pause className="h-4 w-4" /> Pause Shift</>
+                  )}
+                </Button>
+              </Card>
+
               {/* Progress */}
               <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <h2 className="text-base font-medium text-foreground mb-4">Overall Progress</h2>
@@ -360,6 +405,40 @@ export function MakeManufacturingOrderDetail() {
                   onClick={() => setActiveTab('issues')}
                 >
                   View all issues
+                </Button>
+              </Card>
+
+              {/* Andon Alerts */}
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-base font-medium text-foreground">Andon Alerts</h2>
+                  <Badge variant="secondary" className="border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)] text-xs tabular-nums">2</Badge>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 rounded-[var(--shape-md)] bg-[var(--mw-error)]/5 border border-[var(--mw-error)]/20 p-3">
+                    <AlertTriangle className="h-4 w-4 text-[var(--mw-error)] shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground">Material Shortage</p>
+                      <p className="text-xs text-[var(--neutral-500)] mt-0.5">RHS-50252 stock below min — 2 lengths remaining</p>
+                      <p className="text-[10px] text-[var(--neutral-400)] mt-1 tabular-nums">12 min ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-[var(--shape-md)] bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 p-3">
+                    <Timer className="h-4 w-4 text-[var(--mw-yellow-500)] shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground">Maintenance Required</p>
+                      <p className="text-xs text-[var(--neutral-500)] mt-0.5">CNC-01 spindle calibration overdue by 48 hrs</p>
+                      <p className="text-[10px] text-[var(--neutral-400)] mt-1 tabular-nums">45 min ago</p>
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3 text-xs text-[var(--neutral-500)] w-full"
+                  onClick={() => setActiveTab('issues')}
+                >
+                  View All Issues
                 </Button>
               </Card>
 

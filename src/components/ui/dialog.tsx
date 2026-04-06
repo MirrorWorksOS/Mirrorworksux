@@ -60,7 +60,7 @@ function DialogNotchClose() {
         "border border-[var(--mw-mirage)]/12 bg-[#F6F8FC]",
         "text-[var(--mw-mirage)] shadow-sm",
         "transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-        "hover:border-[#4DDDC9] hover:bg-[#4DDDC9]/20 hover:shadow-md",
+        "hover:shadow-md",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-0",
       )}
     >

@@ -75,6 +75,9 @@
         '@': path.resolve(__dirname, './src'),
       },
     },
+    optimizeDeps: {
+      include: ['ogl'],
+    },
     build: {
       target: 'esnext',
       outDir: 'build',

@@ -547,6 +547,29 @@ export const sellReportTemplates: ReportTemplate[] = [
   { id: 'rpt-006', title: 'Forecast Accuracy', description: 'Comparison of forecasted vs actual revenue with variance analysis.', iconName: 'TrendingUp', module: 'sell' },
 ];
 
+export const salesPerformanceScore = { score: 84, maxScore: 100, change: 3.2 };
+
+export const quotaAttainment = { percent: 72, target: 920000, current: 662400, daysLeft: 54 };
+
+export const pipelineHealth = {
+  weightedValue: 3200000,
+  stalledDeals: 4,
+  avgAge: 28,
+  stages: [
+    { stage: 'New', value: 480000, count: 12 },
+    { stage: 'Qualified', value: 720000, count: 9 },
+    { stage: 'Proposal', value: 960000, count: 7 },
+    { stage: 'Negotiation', value: 1040000, count: 5 },
+  ],
+};
+
+export const customerSegmentation = [
+  { segment: 'Enterprise', value: 42, color: 'var(--chart-scale-high)' },
+  { segment: 'Mid-Market', value: 28, color: 'var(--mw-yellow-400)' },
+  { segment: 'SMB', value: 22, color: 'var(--neutral-300)' },
+  { segment: 'Startup', value: 8, color: 'var(--neutral-200)' },
+];
+
 // ── Buy Dashboard ───────────────────────────────────────────────────
 
 export const buyKpis: Record<string, KpiMetric> = {
