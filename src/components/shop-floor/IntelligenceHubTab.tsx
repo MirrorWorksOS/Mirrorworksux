@@ -340,7 +340,7 @@ export function IntelligenceHubTab() {
           <div className="flex items-center justify-between">
              <div>
                 <h2 className="text-3xl font-medium tracking-tight text-[var(--neutral-800)]">Intelligence Hub</h2>
-                <p className="text-[var(--neutral-500)] text-lg">AI insights & predictive analysis</p>
+                <p className="text-[var(--neutral-500)] text-lg">Agent insights & predictive analysis</p>
              </div>
              <Button 
                 size="lg" 

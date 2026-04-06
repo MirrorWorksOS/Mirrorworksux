@@ -12,12 +12,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import {
-  Bot,
   Minimize2,
   Maximize2,
   MessageSquare,
   X,
-  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/components/ui/utils';
@@ -122,18 +120,12 @@ export function AgentPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--card)] dark:bg-[var(--card)]">
-              <div className="flex items-center gap-2.5">
-                {/* Agent icon */}
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--mw-purple)] to-[var(--mw-purple-600)] flex items-center justify-center shadow-sm">
-                  <Sparkles className="w-4 h-4 text-white" strokeWidth={2} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground leading-tight">Agent</p>
-                  <p className="text-[10px] text-[var(--mw-purple)] dark:text-[var(--mw-purple-light)] font-medium">
-                    {moduleLabel} Module
-                  </p>
-                </div>
+            <div className="flex items-center justify-between pl-6 pr-4 py-3 border-b border-[var(--border)] bg-[var(--card)] dark:bg-[var(--card)]">
+              <div>
+                <p className="text-sm font-semibold text-foreground leading-tight">Agent</p>
+                <p className="text-[10px] text-[var(--mw-agent)] dark:text-[var(--mw-agent-light)] font-medium">
+                  {moduleLabel} Module
+                </p>
               </div>
 
               <div className="flex items-center gap-1">
@@ -143,7 +135,7 @@ export function AgentPanel() {
                   className={cn(
                     'p-1.5 rounded-lg transition-colors',
                     showHistory
-                      ? 'bg-[var(--mw-purple-50)] dark:bg-[var(--mw-purple)]/10 text-[var(--mw-purple)]'
+                      ? 'bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 text-[var(--mw-agent)]'
                       : 'text-[var(--neutral-400)] hover:text-foreground hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-200)]',
                   )}
                   aria-label="Conversation history"

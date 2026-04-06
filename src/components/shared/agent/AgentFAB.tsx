@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { AgentLogomark } from './AgentLogomark';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import { useAgentStore } from '@/store/agentStore';
@@ -41,12 +41,12 @@ export function AgentFAB() {
               duration: 0.25,
               ease: [0.2, 0, 0, 1],
             }}
-            className="fixed bottom-6 right-6 z-40"
+            className="fixed bottom-6 right-6 z-40 group/fab"
           >
             {/* Pulse ring for proactive insight */}
             {hasProactiveInsight && (
               <span className="absolute inset-0 rounded-2xl">
-                <span className="agent-fab-pulse absolute inset-0 rounded-2xl bg-[var(--mw-purple)]/30" />
+                <span className="agent-fab-pulse absolute inset-0 rounded-2xl bg-[var(--mw-agent)]/30" />
               </span>
             )}
 
@@ -54,18 +54,18 @@ export function AgentFAB() {
               onClick={toggleOpen}
               className={cn(
                 'relative w-14 h-14 rounded-2xl',
-                'bg-gradient-to-br from-[var(--mw-purple)] to-[var(--mw-purple-600)]',
                 'flex items-center justify-center',
-                'shadow-lg shadow-[var(--mw-purple)]/25',
-                'hover:shadow-xl hover:shadow-[var(--mw-purple)]/30',
+                'bg-[var(--mw-mirage)]',
+                'shadow-lg shadow-black/20',
+                'hover:bg-[var(--mw-agent)] hover:shadow-xl hover:shadow-[var(--mw-agent)]/35',
                 'hover:scale-105 active:scale-95',
                 'transition-all duration-200 ease-[var(--ease-standard)]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-purple)] focus-visible:ring-offset-2',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-agent)] focus-visible:ring-offset-2',
               )}
               aria-label="Open Agent AI assistant"
               title="Agent (⌘J)"
             >
-              <Sparkles className="w-6 h-6 text-white" strokeWidth={1.5} />
+              <AgentLogomark size={28} />
 
               {/* Proactive insight badge */}
               {hasProactiveInsight && (
@@ -79,12 +79,9 @@ export function AgentFAB() {
               )}
             </button>
 
-            {/* Shortcut hint — only shown initially, fades after interaction */}
-            <motion.div
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1, duration: 0.3 }}
-              className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap"
+            {/* Shortcut hint — visible on hover only */}
+            <div
+              className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap opacity-0 group-hover/fab:opacity-100 transition-opacity duration-200 pointer-events-none"
             >
               <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[var(--card)] dark:bg-[var(--card)] border border-[var(--border)] shadow-md text-[11px] text-[var(--neutral-500)]">
                 <kbd className="px-1 py-0.5 rounded bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-[10px] font-medium">
@@ -94,7 +91,7 @@ export function AgentFAB() {
                   J
                 </kbd>
               </span>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -3,7 +3,8 @@
  */
 
 import * as React from "react";
-import { Sparkles, Send } from "lucide-react";
+import { Send } from "lucide-react";
+import { AgentLogomark } from "@/components/shared/agent/AgentLogomark";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/components/ui/utils";
-import { IconWell } from "@/components/shared/icons/IconWell";
+
 
 export type AiCommandScope =
   | "app"
@@ -121,7 +122,7 @@ export function AiCommandBar({
       <form
         onSubmit={onSubmit}
         className={cn(
-          "flex w-full items-center gap-3 rounded-full border border-[var(--neutral-200)] bg-card p-2 pl-4 shadow-xs transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
+          "agent-command-bar relative flex w-full items-center gap-3 rounded-full border border-[var(--neutral-200)] bg-card p-2 pl-4 shadow-xs transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
           className,
         )}
         role="search"
@@ -130,7 +131,7 @@ export function AiCommandBar({
         <span id={labelId} className="sr-only">
           {ariaLabel ?? `MirrorWorks AI — ${scope}`}
         </span>
-        <IconWell icon={Sparkles} surface="onLight" shape="round" size="md" />
+        <AgentLogomark size={40} />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}

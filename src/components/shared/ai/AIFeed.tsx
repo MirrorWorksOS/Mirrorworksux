@@ -12,7 +12,6 @@
 
 import React, { useState } from "react";
 import {
-  Sparkles,
   TrendingUp,
   AlertTriangle,
   Users,
@@ -35,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/components/ui/utils";
 import { motion, AnimatePresence } from "motion/react";
+
 
 type AIFeedModule =
   | "sell"
@@ -335,28 +335,28 @@ function ModalFeedItem({
   onAction: (path: string) => void;
 }) {
   return (
-    <div className="flex gap-3 rounded-[var(--shape-lg)] border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
+    <div className="flex gap-3 rounded-[var(--shape-lg)] border border-[var(--mw-mirage)]/12 bg-white/95 p-4 shadow-sm">
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F6F8FC]">
         {React.cloneElement(item.icon as React.ReactElement, {
-          className: "h-4 w-4 text-white",
+          className: "h-4 w-4 text-[var(--mw-mirage)]",
         })}
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-medium text-white">{item.title}</span>
+          <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
           {item.tag && (
-            <Badge className="border-0 bg-white/20 text-[10px] px-1.5 py-0 rounded-full text-white/80">
+            <Badge className="border-0 bg-[#F6F8FC] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-mirage)]/85">
               {item.tag}
             </Badge>
           )}
         </div>
-        <p className="text-xs leading-relaxed text-blue-100">{item.body}</p>
+        <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-[10px] text-blue-200">{item.timestamp}</span>
+          <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-xs font-medium text-white hover:bg-white/15 hover:text-white"
+            className="h-7 gap-1.5 px-2.5 text-xs font-medium bg-[#F6F8FC] text-[var(--mw-mirage)] hover:bg-[#E8EDF5] hover:text-[var(--mw-mirage)]"
             onClick={() => onAction(item.actionPath)}
           >
             {item.actionLabel}
@@ -393,8 +393,7 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
       <div className={cn("space-y-0", className)}>
         {/* Feed header */}
         <div className="mb-3 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[var(--mw-yellow-400)]" />
-          <h3 className="text-sm font-medium text-foreground">AI Insights</h3>
+          <h3 className="text-lg font-semibold text-foreground">Agent insights</h3>
           <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] text-[10px] px-1.5 py-0 dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
             {items.length} new
           </Badge>
@@ -444,7 +443,7 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 gap-1.5 text-xs font-medium text-[var(--mw-blue)] hover:text-[var(--mw-blue)] hover:bg-[var(--mw-blue)]/10 dark:text-blue-400 dark:hover:bg-blue-400/10"
+              className="h-8 gap-1.5 text-xs font-medium text-[var(--mw-mirage)] hover:bg-[#4DDDC9] hover:text-[var(--mw-mirage)]"
               onClick={() => setModalOpen(true)}
             >
               <Expand className="h-3.5 w-3.5" />
@@ -457,19 +456,18 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
       {/* ── All-insights modal — blue background ── */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent
-          className="gap-0 overflow-hidden border-0 bg-gradient-to-b from-[#1e40af] to-[#1e3a8a] p-0 sm:max-w-lg dark:from-[#1e3a8a] dark:to-[#172554]"
+          className="gap-0 overflow-hidden border border-[var(--mw-mirage)]/15 !bg-[#4DDDC9] p-0 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] sm:max-w-lg"
           showCloseButton
         >
-          <DialogHeader className="px-6 pt-6 pb-4">
+          <DialogHeader className="px-8 pt-8 pb-5">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-200" />
-              <DialogTitle className="text-white">AI Insights</DialogTitle>
-              <Badge className="border-0 bg-white/20 text-[10px] px-1.5 py-0 text-white">
+              <DialogTitle className="text-[var(--mw-mirage)]">Agent insights</DialogTitle>
+              <Badge className="border-0 bg-[#F6F8FC] text-[10px] px-1.5 py-0 font-medium text-[var(--mw-mirage)]">
                 {items.length} new
               </Badge>
             </div>
           </DialogHeader>
-          <div className="max-h-[60vh] space-y-3 overflow-y-auto px-6 pb-6">
+          <div className="max-h-[60vh] space-y-3 overflow-y-auto px-8 pb-8">
             {items.map((item) => (
               <ModalFeedItem
                 key={item.id}

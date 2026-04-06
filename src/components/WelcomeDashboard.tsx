@@ -251,7 +251,7 @@ export function WelcomeDashboard() {
     <PageShell className="mx-auto max-w-[1400px] pt-6 sm:pt-8 lg:pt-12">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-1 items-center gap-4">
-            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 border border-[var(--mw-yellow-400)] ring-1 ring-[var(--mw-yellow-400-20)]">
+            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 shrink-0 border border-neutral-200 dark:border-neutral-700">
               {user.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt="" />
               ) : null}

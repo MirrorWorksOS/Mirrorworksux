@@ -178,7 +178,7 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
   // AI Widget
   {
     type: "ai-insights",
-    label: "AI Insights",
+    label: "Agent insights",
     description: "AI-generated insights and recommendations",
     icon: "Sparkles",
     defaultSize: "md",

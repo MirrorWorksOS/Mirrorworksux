@@ -26,6 +26,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -255,8 +256,7 @@ export function OverviewTab() {
              onClick={() => setIsInsightsOpen(!isInsightsOpen)}
            >
               <div className="flex items-center gap-2 font-medium text-[var(--neutral-800)]">
-                 <Bot className="w-5 h-5 text-[var(--mw-yellow-400)]" />
-                 <span>AI Insights: <span className="text-[var(--neutral-500)] font-normal">3 new</span></span>
+                 <span>Agent insights: <span className="text-[var(--neutral-500)] font-normal">3 new</span></span>
               </div>
               <div className="flex items-center gap-2 text-sm text-[var(--neutral-500)]">
                  {isInsightsOpen ? 'Hide' : 'View All'}

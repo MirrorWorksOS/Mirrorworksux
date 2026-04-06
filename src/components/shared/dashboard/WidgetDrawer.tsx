@@ -96,7 +96,7 @@ function getAiResponse(input: string): { text: string; widgetType?: string } {
     return AI_RESPONSES["compare this month vs last"];
   }
   return {
-    text: "I'd recommend starting with an AI Insights widget to surface key trends across your data.",
+    text: "I'd recommend starting with an Agent insights widget to surface key trends across your data.",
     widgetType: "ai-insights",
   };
 }

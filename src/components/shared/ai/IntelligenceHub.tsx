@@ -4,8 +4,8 @@
  * Props: module context, entity context, insights array
  */
 import React, { useState } from 'react';
-import { Sparkles, RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Info, ChevronRight, Brain } from 'lucide-react';
-import { IconWell } from "@/components/shared/icons/IconWell";
+import { RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Info, ChevronRight, Brain } from 'lucide-react';
+
 import { EmptyState } from '../feedback/EmptyState';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
@@ -55,9 +55,8 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <IconWell icon={Sparkles} surface="key" shape="squircle" size="sm" />
           <div>
-            <h3 className="text-sm font-medium text-foreground">AI insights</h3>
+            <h3 className="text-lg font-semibold text-foreground">Agent insights</h3>
             {context && <p className="text-xs text-[var(--neutral-500)]">{context}</p>}
           </div>
         </div>

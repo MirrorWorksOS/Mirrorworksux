@@ -11,7 +11,8 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Sparkles } from 'lucide-react';
+import { Send } from 'lucide-react';
+import { AgentLogomark } from './AgentLogomark';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import { useAgentStore } from '@/store/agentStore';
@@ -130,13 +131,22 @@ export function AgentChat({ currentModule }: AgentChatProps) {
     }, delay);
   };
 
-  // Auto-resize textarea
+  const INPUT_MIN_PX = 44;
+
+  // Auto-resize textarea (min height keeps single-line placeholder vertically centred)
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
     const el = e.target;
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    el.style.height = `${Math.min(Math.max(el.scrollHeight, INPUT_MIN_PX), 120)}px`;
   };
+
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el || inputValue !== '') return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(Math.max(el.scrollHeight, INPUT_MIN_PX), 120)}px`;
+  }, [inputValue]);
 
   const isEmpty = messages.length === 0;
 
@@ -174,7 +184,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
               <button
                 key={action.label}
                 onClick={() => handleQuickAction(action.prompt)}
-                className="px-3 py-1.5 text-[11px] rounded-full border border-[var(--mw-purple-100)] dark:border-[var(--mw-purple)]/20 text-[var(--mw-purple)] dark:text-[var(--mw-purple-light)] bg-[var(--mw-purple-50)] dark:bg-[var(--mw-purple)]/5 hover:bg-[var(--mw-purple-100)] dark:hover:bg-[var(--mw-purple)]/10 transition-colors"
+                className="px-3 py-1.5 text-[11px] rounded-full border border-[var(--mw-agent-100)] dark:border-[var(--mw-agent)]/20 text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/5 hover:bg-[var(--mw-agent-100)] dark:hover:bg-[var(--mw-agent)]/10 transition-colors"
               >
                 {action.label}
               </button>
@@ -185,7 +195,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
 
       {/* Input Bar */}
       <div className="px-3 pb-3 pt-1">
-        <div className="flex items-end gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] border border-[var(--border)] rounded-2xl px-3 py-2 focus-within:border-[var(--mw-purple)] dark:focus-within:border-[var(--mw-purple-light)] focus-within:ring-1 focus-within:ring-[var(--mw-purple)]/20 transition-colors">
+        <div className="flex items-center gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] border border-[var(--border)] rounded-2xl px-3 py-2 transition-colors hover:border-[var(--mw-agent)] hover:ring-1 hover:ring-[var(--mw-agent)]/25 focus-within:border-[var(--mw-agent)] focus-within:ring-1 focus-within:ring-[var(--mw-agent)]/25">
           <textarea
             ref={inputRef}
             value={inputValue}
@@ -193,7 +203,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
             onKeyDown={handleKeyDown}
             placeholder="Ask Agent anything..."
             rows={1}
-            className="flex-1 bg-transparent border-none outline-none resize-none text-[13px] leading-relaxed text-foreground placeholder:text-[var(--neutral-400)] max-h-[120px]"
+            className="flex-1 min-h-[44px] max-h-[120px] bg-transparent border-none outline-none resize-none text-[13px] leading-5 py-[11px] text-foreground placeholder:text-[var(--neutral-400)]"
             style={{ height: 'auto' }}
           />
           <button
@@ -202,7 +212,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
             className={cn(
               'p-2 rounded-xl transition-all shrink-0',
               inputValue.trim() && !isTyping
-                ? 'bg-[var(--mw-purple)] text-white hover:bg-[var(--mw-purple-600)] shadow-sm'
+                ? 'bg-[var(--mw-agent)] text-white hover:bg-[var(--mw-agent-600)] shadow-sm'
                 : 'text-[var(--neutral-300)] dark:text-[var(--neutral-400)] cursor-not-allowed',
             )}
             aria-label="Send message"
@@ -234,15 +244,15 @@ function EmptyState({
   const welcomeText = getWelcomeMessage(currentModule);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full px-6 pt-14 pb-8">
       {/* Agent Avatar */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.2, 0, 0, 1] }}
-        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--mw-purple)] to-[var(--mw-purple-600)] flex items-center justify-center mb-4 shadow-lg shadow-[var(--mw-purple)]/20"
+        className="mb-4"
       >
-        <Sparkles className="w-7 h-7 text-white" strokeWidth={1.5} />
+        <AgentLogomark size={48} />
       </motion.div>
 
       {/* Welcome Message */}
@@ -252,7 +262,7 @@ function EmptyState({
         transition={{ delay: 0.1, duration: 0.3 }}
         className="text-center mb-6"
       >
-        <h3 className="text-sm font-semibold text-foreground mb-2">Agent</h3>
+        <h3 className="text-xl font-semibold text-foreground mb-2">Agent</h3>
         <p className="text-xs text-[var(--neutral-500)] leading-relaxed max-w-[280px]">
           Your manufacturing AI assistant. Ask about your operations, get insights, and make decisions faster.
         </p>
@@ -272,9 +282,9 @@ function EmptyState({
           <button
             key={action.label}
             onClick={() => onQuickAction(action.prompt)}
-            className="w-full text-left px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--mw-purple-100)] dark:hover:border-[var(--mw-purple)]/20 hover:bg-[var(--mw-purple-50)] dark:hover:bg-[var(--mw-purple)]/5 transition-colors group"
+            className="w-full text-left px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--mw-agent)] hover:bg-[var(--mw-agent)] dark:hover:border-[var(--mw-agent)] dark:hover:bg-[var(--mw-agent)] transition-colors group"
           >
-            <span className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-500)] group-hover:text-[var(--mw-purple)] dark:group-hover:text-[var(--mw-purple-light)] transition-colors">
+            <span className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-500)] group-hover:text-[var(--mw-mirage)] dark:group-hover:text-[var(--mw-mirage)] transition-colors">
               {action.label}
             </span>
           </button>

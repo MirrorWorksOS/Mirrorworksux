@@ -99,11 +99,18 @@
 
   /* AI Purple — semantic colour for AI features (IntelligenceHub, CommandPalette, voice) */
   /* TODO: Audit purple references — consider migrating to --mw-mirage or dedicated --mw-ai token */
-  --mw-purple: #7C3AED;
-  --mw-purple-50: #F5F3FF;
-  --mw-purple-100: #EDE9FE;
-  --mw-purple-light: #A78BFA;
-  --mw-purple-600: #6D28D9;
+  --mw-purple: #527AF2;
+  --mw-purple-50: #EEF2FE;
+  --mw-purple-100: #DBEAFE;
+  --mw-purple-light: #7C9DF7;
+  --mw-purple-600: #3B63D9;
+
+  /* MW Agent (Teal) Scale */
+  --mw-agent: #4DDDC9;
+  --mw-agent-50: #ECFDF9;
+  --mw-agent-100: #CCFBEF;
+  --mw-agent-light: #7AE8D9;
+  --mw-agent-600: #36C4B1;
 
   /* Legacy Green — alias to --mw-success. Use --mw-success for new code. */
   --mw-green: #36B37E;
@@ -732,7 +739,7 @@ html {
 
 /* ─── Agent AI Chat System ─── */
 /* Agent-specific styles for the floating AI assistant.
-   Uses --mw-purple as primary with distinctive visual identity. */
+   Uses --mw-agent as primary with distinctive visual identity. */
 
 /* Agent FAB pulse animation — draws attention when proactive insights exist */
 @keyframes agent-fab-pulse {
@@ -752,6 +759,31 @@ html {
 
 .agent-fab-pulse {
   animation: agent-fab-pulse 2.5s ease-out infinite;
+}
+
+/* Agent command bar — radial gradient border on hover */
+.agent-command-bar {
+  position: relative;
+}
+
+.agent-command-bar::before {
+  content: '';
+  position: absolute;
+  inset: -1.2px;
+  border-radius: inherit;
+  background: radial-gradient(circle, hsla(44, 100%, 65%, 1) 20%, hsla(172, 68%, 58%, 1) 100%);
+  z-index: -1;
+  opacity: 0;
+  filter: blur(0.5px);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.agent-command-bar:hover::before {
+  opacity: 1;
+}
+
+.agent-command-bar:hover {
+  border-color: transparent;
 }
 
 /* Agent message bubble — subtle gradient border glow for Agent responses */

@@ -3,7 +3,8 @@
  */
 
 import * as React from "react";
-import { Send, Sparkles } from "lucide-react";
+import { Send } from "lucide-react";
+import { AgentLogomark } from "@/components/shared/agent/AgentLogomark";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
@@ -112,11 +113,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
     <div className={cn("space-y-5", className)}>
       <div className="flex flex-col gap-2 pb-4 text-left">
         <div className="flex flex-wrap items-center gap-3">
-          <Sparkles
-            className="h-8 w-8 shrink-0 text-[var(--mw-yellow-500)] dark:text-[var(--mw-yellow-400)]"
-            strokeWidth={1.5}
-            aria-hidden
-          />
+          <AgentLogomark size={32} />
           <span className={dashboardSectionTitleClass}>Agent</span>
         </div>
         <p className={dashboardSectionSubtitleClass}>

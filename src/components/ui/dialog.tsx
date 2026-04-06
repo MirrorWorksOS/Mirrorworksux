@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog@1.1.6";
-import { XIcon } from "lucide-react";
 
+import { X } from "@/components/animate-ui/icons/x";
 import { cn } from "./utils";
 
 function Dialog({
@@ -47,28 +47,24 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 // ---------------------------------------------------------------------------
-// Notch close button
-// A circle button that sits at the top-right corner of the dialog with a
-// concave "cutout" effect created via inverted border-radius box-shadows.
+// Close control — inset so it isn’t clipped on rounded / tinted dialogs;
+// Animate UI X icon (hover animation).
 // ---------------------------------------------------------------------------
 
 function DialogNotchClose() {
   return (
     <DialogPrimitive.Close
       className={cn(
-        // Float at top-right corner, overlapping the dialog edge
-        "absolute -top-4 -right-4 z-10",
-        "flex items-center justify-center",
-        "w-10 h-10 rounded-full",
-        "bg-[var(--neutral-100)] border border-[var(--neutral-200)]",
-        "text-[var(--neutral-500)]",
-        "shadow-sm",
-        "transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-        "hover:bg-[var(--mw-mirage)] hover:text-white hover:border-[var(--mw-mirage)] hover:shadow-md",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2",
+        "absolute right-4 top-4 z-10",
+        "flex size-10 shrink-0 items-center justify-center rounded-full",
+        "border border-[var(--mw-mirage)]/12 bg-[#F6F8FC]",
+        "text-[var(--mw-mirage)] shadow-sm",
+        "transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+        "hover:border-[#4DDDC9] hover:bg-[#4DDDC9]/20 hover:shadow-md",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-0",
       )}
     >
-      <XIcon className="h-4 w-4" strokeWidth={1.5} />
+      <X size={18} animateOnHover className="shrink-0" aria-hidden />
       <span className="sr-only">Close</span>
     </DialogPrimitive.Close>
   );

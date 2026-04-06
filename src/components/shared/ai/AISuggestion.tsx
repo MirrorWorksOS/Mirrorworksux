@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { Sparkles, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Card } from '../../ui/card';
@@ -37,7 +38,7 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
       <div className="p-4">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-full bg-[var(--mw-purple)]/15 flex items-center justify-center shrink-0 mt-0.5">
-            <Sparkles className="h-4 w-4 text-[var(--mw-purple)]" />
+            <AgentLogomark size={18} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">

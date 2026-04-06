@@ -72,7 +72,7 @@ export function AgentConversationList({ currentModule, onClose }: AgentConversat
                 'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left group',
                 'transition-colors duration-150',
                 conv.id === currentConversationId
-                  ? 'bg-[var(--mw-purple-50)] dark:bg-[var(--mw-purple)]/10 text-foreground'
+                  ? 'bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 text-foreground'
                   : 'text-[var(--neutral-600)] dark:text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-200)]',
               )}
             >
@@ -116,7 +116,7 @@ export function AgentConversationList({ currentModule, onClose }: AgentConversat
       <div className="px-3 py-2">
         <button
           onClick={handleNewChat}
-          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--mw-purple)] hover:bg-[var(--mw-purple-600)] text-white text-xs font-medium transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--mw-agent)] hover:bg-[var(--mw-agent-600)] text-white text-xs font-medium transition-colors"
         >
           <MessageSquarePlus className="w-3.5 h-3.5" />
           New Chat

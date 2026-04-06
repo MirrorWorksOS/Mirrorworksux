@@ -8,12 +8,13 @@ import { toast } from 'sonner';
 import {
   Package, Box, Layers, Settings, Wrench, Scissors,
   Barcode, Plus, TrendingUp, Eye, Download, Upload, FileText,
-  CheckCircle, Sparkles, ClipboardList, Tag, Cog, DollarSign,
+  CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
   RotateCcw, Star, BarChart3, ChevronRight, Clock, MapPin,
   RefreshCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -516,7 +517,7 @@ function OverviewTab() {
         {/* AI Insights */}
         <Card className="bg-[var(--mw-yellow-50)] border-[var(--mw-yellow-200)] p-6">
           <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" /> AI Insights
+            Agent insights
           </h4>
           <div className="space-y-2.5 text-sm text-foreground">
             <p className="flex items-start gap-2"><TrendingUp className="w-4 h-4 text-[var(--mw-yellow-400)] mt-0.5 shrink-0" /> Sales increased <strong>15%</strong> after adding customer XYZ Corp.</p>

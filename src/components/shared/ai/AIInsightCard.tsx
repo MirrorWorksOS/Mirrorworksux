@@ -10,7 +10,8 @@
  */
 
 import React from 'react';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Button } from '../../ui/button';
 import { cn } from '../../ui/utils';
 
@@ -115,7 +116,7 @@ export function AIInsightMessage({
     <div className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
       <div className="flex items-center gap-2 mb-1.5">
         <div className="w-5 h-5 bg-[var(--mw-mirage)] rounded-full flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
+          <AgentLogomark size={18} />
         </div>
         <span className="text-xs font-medium text-foreground">
           Intelligence Hub

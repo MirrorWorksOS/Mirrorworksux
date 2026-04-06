@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Bot } from 'lucide-react';
+import { AgentLogomark } from './AgentLogomark';
 import { motion } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import type { AgentMessage as AgentMessageType } from './agent-types';
@@ -200,23 +200,23 @@ export function AgentTypingIndicator() {
       exit={{ opacity: 0, y: 8 }}
       className="flex items-start gap-2.5 px-4"
     >
-      <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[var(--mw-purple)] to-[var(--mw-purple-600)] flex items-center justify-center shrink-0 mt-0.5">
-        <Bot className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+      <div className="shrink-0 mt-0.5">
+        <AgentLogomark size={20} />
       </div>
-      <div className="bg-[var(--mw-purple-50)] dark:bg-[var(--mw-purple)]/10 border border-[var(--mw-purple-100)] dark:border-[var(--mw-purple)]/20 rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 border border-[var(--mw-agent-100)] dark:border-[var(--mw-agent)]/20 rounded-2xl rounded-tl-sm px-4 py-3">
         <div className="flex items-center gap-1.5">
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-purple-light)]"
+            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
           />
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-purple-light)]"
+            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
           />
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-purple-light)]"
+            className="w-1.5 h-1.5 rounded-full bg-[var(--mw-agent-light)]"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
           />
@@ -259,8 +259,8 @@ export function AgentMessageBubble({ message, index = 0 }: AgentMessageProps) {
     >
       {/* Avatar */}
       {isAgent ? (
-        <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[var(--mw-purple)] to-[var(--mw-purple-600)] flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-          <Bot className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+        <div className="shrink-0 mt-0.5">
+          <AgentLogomark size={20} />
         </div>
       ) : (
         <div className="w-7 h-7 rounded-xl bg-[var(--mw-mirage)] flex items-center justify-center shrink-0 mt-0.5">
@@ -281,7 +281,7 @@ export function AgentMessageBubble({ message, index = 0 }: AgentMessageProps) {
           className={cn(
             'px-3.5 py-2.5 rounded-2xl',
             isAgent
-              ? 'bg-[var(--mw-purple-50)] dark:bg-[var(--mw-purple)]/10 border border-[var(--mw-purple-100)] dark:border-[var(--mw-purple)]/20 rounded-tl-sm text-[var(--neutral-700)] dark:text-[var(--neutral-600)]'
+              ? 'bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 border border-[var(--mw-agent-100)] dark:border-[var(--mw-agent)]/20 rounded-tl-sm text-[var(--neutral-700)] dark:text-[var(--neutral-600)]'
               : 'bg-[var(--mw-mirage)] text-white rounded-tr-sm',
           )}
         >
