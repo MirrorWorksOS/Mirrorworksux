@@ -38,9 +38,9 @@ import { AnimatedCount } from "@/components/shared/motion/AnimatedCount";
  * Donut legend chips sit on solid MW yellow — avoid theme `foreground` / `muted-foreground`
  * (fails WCAG on #FFCF4B; dark mode can flip label colour to light on yellow).
  */
-const CHART_LEGEND_ON_YELLOW_LABEL = "text-[#2C2C2C]";
+const CHART_LEGEND_ON_YELLOW_LABEL = "text-[var(--neutral-800)]";
 /** Slightly softer than label; still ≥4.5:1 vs #FFCF4B at 12px */
-const CHART_LEGEND_ON_YELLOW_VALUE = "text-[#3A3A3A]";
+const CHART_LEGEND_ON_YELLOW_VALUE = "text-[var(--neutral-700)]";
 
 /**
  * Swatches on yellow pills: chart ramp uses light greys that disappear on yellow; yellow-on-yellow is invisible.

@@ -26,7 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogPortal, DialogOverlay } from '../ui/dialog';
-import * as DialogPrimitive from "@radix-ui/react-dialog@1.1.6";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from '../ui/utils';
 

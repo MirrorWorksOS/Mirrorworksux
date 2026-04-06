@@ -308,9 +308,9 @@ export function IssuesTab() {
                      <span className="font-bold text-[var(--neutral-800)]">Mitsubishi 3015</span>
                      <Badge className="bg-[var(--mw-green)] hover:bg-[var(--mw-success)] border-0 rounded-xs font-bold">RUNNING</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-yellow-50)] border border-[#FEF3C7]">
+                  <div className="flex items-center justify-between p-3 rounded-sm bg-[var(--mw-yellow-50)] border border-[var(--mw-amber-100)]">
                      <span className="font-bold text-[var(--neutral-800)]">Haeger Press</span>
-                     <Badge className="bg-[#F59E0B] hover:bg-[#D97706] text-foreground border-0 rounded-xs font-bold">ATTENTION</Badge>
+                     <Badge className="bg-[var(--mw-amber)] hover:bg-[var(--mw-amber)] text-foreground border-0 rounded-xs font-bold">ATTENTION</Badge>
                   </div>
                </div>
                <div className="bg-[var(--neutral-100)] p-3 text-center border-t border-[var(--neutral-200)]">

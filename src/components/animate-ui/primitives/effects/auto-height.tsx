@@ -41,6 +41,8 @@ function AutoHeight({
   const Comp = asChild ? Slot : motion.div;
 
   return (
+    // TODO: update animate-ui — motion Slot ref vs LegacyRef
+    // @ts-expect-error React 19 ref types — upstream animate-ui
     <Comp
       style={{ overflow: 'hidden', ...style }}
       animate={{ height, ...animate }}

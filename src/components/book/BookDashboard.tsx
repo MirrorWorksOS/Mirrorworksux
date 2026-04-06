@@ -107,7 +107,7 @@ export function BookDashboard() {
             icon={CreditCard}
             trailing={
               <Badge className={badgeNeutral}>
-                {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
+                {Math.round((kpiData.expensesThisMonth.value / (kpiData.expensesThisMonth.budget ?? 1)) * 100)}% of budget
               </Badge>
             }
             footer={
@@ -116,7 +116,7 @@ export function BookDashboard() {
                   <div
                     className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-[var(--duration-medium1)]"
                     style={{
-                      width: `${(kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100}%`,
+                      width: `${(kpiData.expensesThisMonth.value / (kpiData.expensesThisMonth.budget ?? 1)) * 100}%`,
                     }}
                   />
                 </div>

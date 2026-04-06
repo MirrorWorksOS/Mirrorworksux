@@ -182,7 +182,7 @@ export function SellDashboard() {
             icon={CreditCard}
             trailing={
               <Badge className={badgeNeutral}>
-                {Math.round((kpiData.expensesThisMonth.value / kpiData.expensesThisMonth.budget) * 100)}% of budget
+                {Math.round((kpiData.expensesThisMonth.value / (kpiData.expensesThisMonth.budget ?? 1)) * 100)}% of budget
               </Badge>
             }
             footer={
@@ -210,8 +210,8 @@ export function SellDashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid {...MW_CARTESIAN_GRID} />
-                <XAxis dataKey="month" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
-                <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                <XAxis dataKey="month" tick={MW_AXIS_TICK} />
+                <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
                 <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
                 <Area
                   type="monotone"
@@ -240,8 +240,8 @@ export function SellDashboard() {
               <BarChart data={jobProfitabilityData} layout="vertical">
                 {mwChartPatternDefs()}
                 <CartesianGrid {...MW_CARTESIAN_GRID} horizontal={false} />
-                <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
-                <YAxis dataKey="job" type="category" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} width={80} />
+                <XAxis type="number" tickFormatter={v => `${v}%`} tick={MW_AXIS_TICK} />
+                <YAxis dataKey="job" type="category" tick={MW_AXIS_TICK} width={80} />
                 <Tooltip cursor={MW_BAR_TOOLTIP_CURSOR} formatter={(v: number) => `${v}%`} contentStyle={MW_TOOLTIP_STYLE} />
                 <Bar dataKey="margin" radius={MW_BAR_RADIUS_H} barSize={20} {...MW_RECHARTS_ANIMATION_BAR}>
                   {jobProfitabilityData.map((entry, i) => (
@@ -588,8 +588,8 @@ export function SellDashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid {...MW_CARTESIAN_GRID} />
-                    <XAxis dataKey="month" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
-                    <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                    <XAxis dataKey="month" tick={MW_AXIS_TICK} />
+                    <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
                     <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={MW_TOOLTIP_STYLE} />
                     <Area
                       type="monotone"
@@ -794,8 +794,8 @@ export function SellDashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid {...MW_CARTESIAN_GRID} />
-                  <XAxis dataKey="month" tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
-                  <YAxis tickFormatter={v => `$${v / 1000}k`} tick={{ ...MW_AXIS_TICK, fontVariantNumeric: 'tabular-nums' }} />
+                  <XAxis dataKey="month" tick={MW_AXIS_TICK} />
+                  <YAxis tickFormatter={v => `$${v / 1000}k`} tick={MW_AXIS_TICK} />
                   <Tooltip formatter={(v: number) => v ? `$${v.toLocaleString()}` : '--'} contentStyle={MW_TOOLTIP_STYLE} />
                   <Area
                     type="monotone"

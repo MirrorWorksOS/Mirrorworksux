@@ -404,6 +404,8 @@ function AnimateIcon({
 
   const content = asChild ? (
     <Slot
+      // TODO: update animate-ui — React 19 ref types vs LegacyRef
+      // @ts-expect-error React 19 ref types — upstream animate-ui
       ref={inViewRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

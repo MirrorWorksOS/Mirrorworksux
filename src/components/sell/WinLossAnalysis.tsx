@@ -86,10 +86,11 @@ function LossReasonsChart({ data }: { data: LossReasonBreakdown[] }) {
           <Tooltip
             contentStyle={MW_TOOLTIP_STYLE}
             cursor={MW_BAR_TOOLTIP_CURSOR}
-            formatter={(value: number, _name: string, props: { payload: LossReasonBreakdown }) => {
-              const item = props.payload;
+            formatter={(value: number, _name: string, item) => {
+              const row = (item as { payload?: LossReasonBreakdown }).payload;
+              const total = row?.totalValue ?? 0;
               return [
-                `${value} deals ($${(item.totalValue / 1000).toFixed(0)}k)`,
+                `${value} deals ($${(total / 1000).toFixed(0)}k)`,
                 "Lost",
               ];
             }}
@@ -97,7 +98,7 @@ function LossReasonsChart({ data }: { data: LossReasonBreakdown[] }) {
           <Bar
             dataKey="count"
             fill={MW_CHART_COLOURS[1]}
-            radius={MW_BAR_RADIUS_H as unknown as [number, number, number, number]}
+            radius={MW_BAR_RADIUS_H}
             {...MW_RECHARTS_ANIMATION_BAR}
           />
         </BarChart>

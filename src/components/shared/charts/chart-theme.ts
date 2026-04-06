@@ -28,9 +28,9 @@ export function getChartScalePattern(value0to100: number): string {
 }
 
 /** Standard bar corner radii — horizontal bars (layout="vertical") */
-export const MW_BAR_RADIUS_H = [0, 10, 10, 0] as const;
+export const MW_BAR_RADIUS_H: [number, number, number, number] = [0, 10, 10, 0];
 /** Standard bar corner radii — vertical bars (default layout) */
-export const MW_BAR_RADIUS_V = [10, 10, 0, 0] as const;
+export const MW_BAR_RADIUS_V: [number, number, number, number] = [10, 10, 0, 0];
 
 /** Pattern fill constants for single-colour bars */
 export const MW_FILL = {
@@ -64,7 +64,8 @@ export const MW_AXIS_TICK = {
   fontFamily: "'Roboto', sans-serif",
   fontWeight: 300,
   fill: "var(--recharts-axis-tick, var(--neutral-500))",
-} as const;
+  fontVariantNumeric: 'tabular-nums' as string,
+};
 
 export const MW_CARTESIAN_GRID = {
   strokeDasharray: "3 3",

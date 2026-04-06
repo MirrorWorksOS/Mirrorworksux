@@ -14,6 +14,7 @@ import { useReducedMotion } from '@/components/shared/motion/use-reduced-motion'
 export interface BorderGlowProps {
   children?: ReactNode;
   className?: string;
+  /** Opacity threshold 0–100: lower values make the glow appear when the pointer is farther from the edge (more “reach”). */
   edgeSensitivity?: number;
   /** HSL values as "h s l" — e.g. "172 68 58" for mw-agent teal */
   glowColor?: string;

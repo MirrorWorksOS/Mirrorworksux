@@ -7,10 +7,10 @@
 
 import type { Variants, Transition } from "motion/react";
 
-const EASE_STANDARD = [0.2, 0, 0, 1.0];
-const EASE_DECELERATE = [0, 0, 0, 1];
-const EASE_ACCELERATE = [0.3, 0, 1, 1];
-const EASE_EMPHASIZED_DECELERATE = [0.05, 0.7, 0.1, 1.0];
+const EASE_STANDARD = [0.2, 0, 0, 1.0] as [number, number, number, number];
+const EASE_DECELERATE = [0, 0, 0, 1] as [number, number, number, number];
+const EASE_ACCELERATE = [0.3, 0, 1, 1] as [number, number, number, number];
+const EASE_EMPHASIZED_DECELERATE = [0.05, 0.7, 0.1, 1.0] as [number, number, number, number];
 
 export const transitions = {
   standard: { duration: 0.25, ease: EASE_STANDARD } satisfies Transition,

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Plus, LayoutGrid, List, GripVertical, Paperclip } from 'lucide-react';
+import { Plus, LayoutGrid, List, GripVertical, Paperclip, X } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';

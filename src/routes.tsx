@@ -1,137 +1,150 @@
 /**
  * Routes - Complete routing configuration for all modules
+ * Uses React.lazy for code splitting — each module loads on demand.
  */
 
+import React, { Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router';
 import { Layout } from './components/Layout';
 import { WelcomeDashboard } from './components/WelcomeDashboard';
 
+// ---------------------------------------------------------------------------
+// Lazy-loaded module components
+// ---------------------------------------------------------------------------
+
 // Sell Module
-import { SellDashboard } from './components/sell/SellDashboard';
-import { SellCRM } from './components/sell/SellCRM';
-import { SellOpportunities } from './components/sell/SellOpportunities';
-import { SellOpportunityPage } from './components/sell/SellOpportunityPage';
-import { SellOrders } from './components/sell/SellOrders';
-import { SellInvoices } from './components/sell/SellInvoices';
-import { SellProducts } from './components/sell/SellProducts';
-import { SellSettings } from './components/sell/SellSettings';
-import { SellQuotes } from './components/sell/SellQuotes';
-import { SellActivities } from './components/sell/SellActivities';
-import { SellNewQuote } from './components/sell/SellNewQuote';
-import { SellProductDetail } from './components/sell/SellProductDetail';
-import { SellCustomerDetail } from './components/sell/SellCustomerDetail';
-import { SellOrderDetail } from './components/sell/SellOrderDetail';
-import { SellInvoiceDetail } from './components/sell/SellInvoiceDetail';
-import { SellNewInvoice } from './components/sell/SellNewInvoice';
-import { SellQuoteDetail } from './components/sell/SellQuoteDetail';
-import { SellCustomerPortal } from './components/sell/SellCustomerPortal';
+const SellDashboard = React.lazy(() => import('./components/sell/SellDashboard').then(m => ({ default: m.SellDashboard })));
+const SellCRM = React.lazy(() => import('./components/sell/SellCRM').then(m => ({ default: m.SellCRM })));
+const SellOpportunities = React.lazy(() => import('./components/sell/SellOpportunities').then(m => ({ default: m.SellOpportunities })));
+const SellOpportunityPage = React.lazy(() => import('./components/sell/SellOpportunityPage').then(m => ({ default: m.SellOpportunityPage })));
+const SellOrders = React.lazy(() => import('./components/sell/SellOrders').then(m => ({ default: m.SellOrders })));
+const SellInvoices = React.lazy(() => import('./components/sell/SellInvoices').then(m => ({ default: m.SellInvoices })));
+const SellProducts = React.lazy(() => import('./components/sell/SellProducts').then(m => ({ default: m.SellProducts })));
+const SellSettings = React.lazy(() => import('./components/sell/SellSettings').then(m => ({ default: m.SellSettings })));
+const SellQuotes = React.lazy(() => import('./components/sell/SellQuotes').then(m => ({ default: m.SellQuotes })));
+const SellActivities = React.lazy(() => import('./components/sell/SellActivities').then(m => ({ default: m.SellActivities })));
+const SellNewQuote = React.lazy(() => import('./components/sell/SellNewQuote').then(m => ({ default: m.SellNewQuote })));
+const SellProductDetail = React.lazy(() => import('./components/sell/SellProductDetail').then(m => ({ default: m.SellProductDetail })));
+const SellCustomerDetail = React.lazy(() => import('./components/sell/SellCustomerDetail').then(m => ({ default: m.SellCustomerDetail })));
+const SellOrderDetail = React.lazy(() => import('./components/sell/SellOrderDetail').then(m => ({ default: m.SellOrderDetail })));
+const SellInvoiceDetail = React.lazy(() => import('./components/sell/SellInvoiceDetail').then(m => ({ default: m.SellInvoiceDetail })));
+const SellNewInvoice = React.lazy(() => import('./components/sell/SellNewInvoice').then(m => ({ default: m.SellNewInvoice })));
+const SellQuoteDetail = React.lazy(() => import('./components/sell/SellQuoteDetail').then(m => ({ default: m.SellQuoteDetail })));
+const SellCustomerPortal = React.lazy(() => import('./components/sell/SellCustomerPortal').then(m => ({ default: m.SellCustomerPortal })));
 
 // Buy Module
-import { BuyDashboard } from './components/buy/BuyDashboard';
-import { BuyOrders } from './components/buy/BuyOrders';
-import { BuyRequisitions } from './components/buy/BuyRequisitions';
-import { BuyReceipts } from './components/buy/BuyReceipts';
-import { BuySuppliers } from './components/buy/BuySuppliers';
-import { BuyRFQs } from './components/buy/BuyRFQs';
-import { BuyBills } from './components/buy/BuyBills';
-import { BuyProducts } from './components/buy/BuyProducts';
-import { BuyAgreements } from './components/buy/BuyAgreements';
-import { BuyReports } from './components/buy/BuyReports';
-import { BuySettings } from './components/buy/BuySettings';
-import { BuyRequisitionDetail } from './components/buy/BuyRequisitionDetail';
-import { BuySupplierDetail } from './components/buy/BuySupplierDetail';
-import { BuyOrderDetail } from './components/buy/BuyOrderDetail';
-import { BuyProductDetail } from './components/buy/BuyProductDetail';
-import { BuyMrpSuggestions } from './components/buy/BuyMrpSuggestions';
-import { BuyPlanningGrid } from './components/buy/BuyPlanningGrid';
-import { BuyVendorComparison } from './components/buy/BuyVendorComparison';
-import { BuyReorderRules } from './components/buy/BuyReorderRules';
+const BuyDashboard = React.lazy(() => import('./components/buy/BuyDashboard').then(m => ({ default: m.BuyDashboard })));
+const BuyOrders = React.lazy(() => import('./components/buy/BuyOrders').then(m => ({ default: m.BuyOrders })));
+const BuyRequisitions = React.lazy(() => import('./components/buy/BuyRequisitions').then(m => ({ default: m.BuyRequisitions })));
+const BuyReceipts = React.lazy(() => import('./components/buy/BuyReceipts').then(m => ({ default: m.BuyReceipts })));
+const BuySuppliers = React.lazy(() => import('./components/buy/BuySuppliers').then(m => ({ default: m.BuySuppliers })));
+const BuyRFQs = React.lazy(() => import('./components/buy/BuyRFQs').then(m => ({ default: m.BuyRFQs })));
+const BuyBills = React.lazy(() => import('./components/buy/BuyBills').then(m => ({ default: m.BuyBills })));
+const BuyProducts = React.lazy(() => import('./components/buy/BuyProducts').then(m => ({ default: m.BuyProducts })));
+const BuyAgreements = React.lazy(() => import('./components/buy/BuyAgreements').then(m => ({ default: m.BuyAgreements })));
+const BuyReports = React.lazy(() => import('./components/buy/BuyReports').then(m => ({ default: m.BuyReports })));
+const BuySettings = React.lazy(() => import('./components/buy/BuySettings').then(m => ({ default: m.BuySettings })));
+const BuyRequisitionDetail = React.lazy(() => import('./components/buy/BuyRequisitionDetail').then(m => ({ default: m.BuyRequisitionDetail })));
+const BuySupplierDetail = React.lazy(() => import('./components/buy/BuySupplierDetail').then(m => ({ default: m.BuySupplierDetail })));
+const BuyOrderDetail = React.lazy(() => import('./components/buy/BuyOrderDetail').then(m => ({ default: m.BuyOrderDetail })));
+const BuyProductDetail = React.lazy(() => import('./components/buy/BuyProductDetail').then(m => ({ default: m.BuyProductDetail })));
+const BuyMrpSuggestions = React.lazy(() => import('./components/buy/BuyMrpSuggestions').then(m => ({ default: m.BuyMrpSuggestions })));
+const BuyPlanningGrid = React.lazy(() => import('./components/buy/BuyPlanningGrid').then(m => ({ default: m.BuyPlanningGrid })));
+const BuyVendorComparison = React.lazy(() => import('./components/buy/BuyVendorComparison').then(m => ({ default: m.BuyVendorComparison })));
+const BuyReorderRules = React.lazy(() => import('./components/buy/BuyReorderRules').then(m => ({ default: m.BuyReorderRules })));
 
 // Plan Module
-import { PlanDashboard } from './components/plan/PlanDashboard';
-import { PlanJobs } from './components/plan/PlanJobs';
-import { PlanJobDetail } from './components/plan/PlanJobDetail';
-import { PlanActivities } from './components/plan/PlanActivities';
-import { PlanSchedule } from './components/plan/PlanSchedule';
-import { PlanPurchase } from './components/plan/PlanPurchase';
-import { PlanQCPlanning } from './components/plan/PlanQCPlanning';
-import { PlanProducts } from './components/plan/PlanProducts';
-import { PlanProductDetail } from './components/plan/PlanProductDetail';
-import { PlanSettings } from './components/plan/PlanSettings';
-import { PlanNCConnect } from './components/plan/PlanNCConnect';
-import { PlanCADImport } from './components/plan/PlanCADImport';
-import { ProductStudio } from './components/plan/product-studio/ProductStudio';
-import { PlanWhatIf } from './components/plan/PlanWhatIf';
-import { PlanNesting } from './components/plan/PlanNesting';
-import { PlanMrp } from './components/plan/PlanMrp';
-import { PlanSheetCalculator } from './components/plan/PlanSheetCalculator';
+const PlanDashboard = React.lazy(() => import('./components/plan/PlanDashboard').then(m => ({ default: m.PlanDashboard })));
+const PlanJobs = React.lazy(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
+const PlanJobDetail = React.lazy(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
+const PlanActivities = React.lazy(() => import('./components/plan/PlanActivities').then(m => ({ default: m.PlanActivities })));
+const PlanSchedule = React.lazy(() => import('./components/plan/PlanSchedule').then(m => ({ default: m.PlanSchedule })));
+const PlanPurchase = React.lazy(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
+const PlanQCPlanning = React.lazy(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
+const PlanProducts = React.lazy(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
+const PlanProductDetail = React.lazy(() => import('./components/plan/PlanProductDetail').then(m => ({ default: m.PlanProductDetail })));
+const PlanSettings = React.lazy(() => import('./components/plan/PlanSettings').then(m => ({ default: m.PlanSettings })));
+const PlanNCConnect = React.lazy(() => import('./components/plan/PlanNCConnect').then(m => ({ default: m.PlanNCConnect })));
+const PlanCADImport = React.lazy(() => import('./components/plan/PlanCADImport').then(m => ({ default: m.PlanCADImport })));
+const ProductStudio = React.lazy(() => import('./components/plan/product-studio/ProductStudio').then(m => ({ default: m.ProductStudio })));
+const PlanWhatIf = React.lazy(() => import('./components/plan/PlanWhatIf').then(m => ({ default: m.PlanWhatIf })));
+const PlanNesting = React.lazy(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
+const PlanMrp = React.lazy(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
+const PlanSheetCalculator = React.lazy(() => import('./components/plan/PlanSheetCalculator').then(m => ({ default: m.PlanSheetCalculator })));
 
 // Make Module
-import { MakeDashboard } from './components/make/MakeDashboard';
-import { MakeSchedule } from './components/make/MakeSchedule';
-import { MakeManufacturingOrders } from './components/make/MakeManufacturingOrders';
-import { MakeManufacturingOrderDetail } from './components/make/MakeManufacturingOrderDetail';
-import { MakeTimeClock } from './components/make/MakeTimeClock';
-import { MakeQuality } from './components/make/MakeQuality';
-import { MakeProducts } from './components/make/MakeProducts';
-import { MakeProductDetail } from './components/make/MakeProductDetail';
-import { MakeSettings } from './components/make/MakeSettings';
-import { MakeShopFloor } from './components/make/MakeShopFloor';
-import { MakeScanStation } from './components/make/MakeScanStation';
-import { MakeScrapAnalysis } from './components/make/MakeScrapAnalysis';
-import { MakeJobTraveler } from './components/make/MakeJobTraveler';
-import { MakeCapa } from './components/make/MakeCapa';
+const MakeDashboard = React.lazy(() => import('./components/make/MakeDashboard').then(m => ({ default: m.MakeDashboard })));
+const MakeSchedule = React.lazy(() => import('./components/make/MakeSchedule').then(m => ({ default: m.MakeSchedule })));
+const MakeManufacturingOrders = React.lazy(() => import('./components/make/MakeManufacturingOrders').then(m => ({ default: m.MakeManufacturingOrders })));
+const MakeManufacturingOrderDetail = React.lazy(() => import('./components/make/MakeManufacturingOrderDetail').then(m => ({ default: m.MakeManufacturingOrderDetail })));
+const MakeTimeClock = React.lazy(() => import('./components/make/MakeTimeClock').then(m => ({ default: m.MakeTimeClock })));
+const MakeQuality = React.lazy(() => import('./components/make/MakeQuality').then(m => ({ default: m.MakeQuality })));
+const MakeProducts = React.lazy(() => import('./components/make/MakeProducts').then(m => ({ default: m.MakeProducts })));
+const MakeProductDetail = React.lazy(() => import('./components/make/MakeProductDetail').then(m => ({ default: m.MakeProductDetail })));
+const MakeSettings = React.lazy(() => import('./components/make/MakeSettings').then(m => ({ default: m.MakeSettings })));
+const MakeShopFloor = React.lazy(() => import('./components/make/MakeShopFloor').then(m => ({ default: m.MakeShopFloor })));
+const MakeScanStation = React.lazy(() => import('./components/make/MakeScanStation').then(m => ({ default: m.MakeScanStation })));
+const MakeScrapAnalysis = React.lazy(() => import('./components/make/MakeScrapAnalysis').then(m => ({ default: m.MakeScrapAnalysis })));
+const MakeJobTraveler = React.lazy(() => import('./components/make/MakeJobTraveler').then(m => ({ default: m.MakeJobTraveler })));
+const MakeCapa = React.lazy(() => import('./components/make/MakeCapa').then(m => ({ default: m.MakeCapa })));
 
 // Ship Module
-import { ShipDashboard } from './components/ship/ShipDashboard';
-import { ShipOrders } from './components/ship/ShipOrders';
-import { ShipPackaging } from './components/ship/ShipPackaging';
-import { ShipShipping } from './components/ship/ShipShipping';
-import { ShipTracking } from './components/ship/ShipTracking';
-import { ShipReturns } from './components/ship/ShipReturns';
-import { ShipWarehouse } from './components/ship/ShipWarehouse';
-import { ShipReports } from './components/ship/ShipReports';
-import { ShipSettings } from './components/ship/ShipSettings';
-import { ShipCarrierRates } from './components/ship/ShipCarrierRates';
-import { ShipScanToShip } from './components/ship/ShipScanToShip';
+const ShipDashboard = React.lazy(() => import('./components/ship/ShipDashboard').then(m => ({ default: m.ShipDashboard })));
+const ShipOrders = React.lazy(() => import('./components/ship/ShipOrders').then(m => ({ default: m.ShipOrders })));
+const ShipPackaging = React.lazy(() => import('./components/ship/ShipPackaging').then(m => ({ default: m.ShipPackaging })));
+const ShipShipping = React.lazy(() => import('./components/ship/ShipShipping').then(m => ({ default: m.ShipShipping })));
+const ShipTracking = React.lazy(() => import('./components/ship/ShipTracking').then(m => ({ default: m.ShipTracking })));
+const ShipReturns = React.lazy(() => import('./components/ship/ShipReturns').then(m => ({ default: m.ShipReturns })));
+const ShipWarehouse = React.lazy(() => import('./components/ship/ShipWarehouse').then(m => ({ default: m.ShipWarehouse })));
+const ShipReports = React.lazy(() => import('./components/ship/ShipReports').then(m => ({ default: m.ShipReports })));
+const ShipSettings = React.lazy(() => import('./components/ship/ShipSettings').then(m => ({ default: m.ShipSettings })));
+const ShipCarrierRates = React.lazy(() => import('./components/ship/ShipCarrierRates').then(m => ({ default: m.ShipCarrierRates })));
+const ShipScanToShip = React.lazy(() => import('./components/ship/ShipScanToShip').then(m => ({ default: m.ShipScanToShip })));
 
 // Control Module
-import { ControlDashboard } from './components/control/ControlDashboard';
-import { ControlLocations } from './components/control/ControlLocations';
-import { ControlMachines } from './components/control/ControlMachines';
-import { ControlInventory } from './components/control/ControlInventory';
-import { ControlPurchase } from './components/control/ControlPurchase';
-import { ControlPeople } from './components/control/ControlPeople';
-import { ControlProducts } from './components/control/ControlProducts';
-import { ControlBOMs } from './components/control/ControlBOMs';
-import { ControlWorkflowDesigner } from './components/control/ControlWorkflowDesigner';
-import { ControlFactoryDesigner } from './components/control/ControlFactoryDesigner';
-import { ControlEmptyStates } from './components/control/ControlEmptyStates';
-import { ControlProcessBuilder } from './components/control/ControlProcessBuilder';
-import { ControlRoleDesigner } from './components/control/ControlRoleDesigner';
-import { ControlGamification } from './components/control/ControlGamification';
-import { ControlShiftManager } from './components/control/ControlShiftManager';
-import { ControlMaintenance } from './components/control/ControlMaintenance';
-import { ControlTooling } from './components/control/ControlTooling';
-import { ControlDocuments } from './components/control/ControlDocuments';
-import { MirrorWorksBridge } from './components/control/MirrorWorksBridge';
-import { BridgeWizard } from './components/bridge/BridgeWizard';
-import { Notifications } from './components/Notifications';
+const ControlDashboard = React.lazy(() => import('./components/control/ControlDashboard').then(m => ({ default: m.ControlDashboard })));
+const ControlLocations = React.lazy(() => import('./components/control/ControlLocations').then(m => ({ default: m.ControlLocations })));
+const ControlMachines = React.lazy(() => import('./components/control/ControlMachines').then(m => ({ default: m.ControlMachines })));
+const ControlInventory = React.lazy(() => import('./components/control/ControlInventory').then(m => ({ default: m.ControlInventory })));
+const ControlPurchase = React.lazy(() => import('./components/control/ControlPurchase').then(m => ({ default: m.ControlPurchase })));
+const ControlPeople = React.lazy(() => import('./components/control/ControlPeople').then(m => ({ default: m.ControlPeople })));
+const ControlProducts = React.lazy(() => import('./components/control/ControlProducts').then(m => ({ default: m.ControlProducts })));
+const ControlBOMs = React.lazy(() => import('./components/control/ControlBOMs').then(m => ({ default: m.ControlBOMs })));
+const ControlWorkflowDesigner = React.lazy(() => import('./components/control/ControlWorkflowDesigner').then(m => ({ default: m.ControlWorkflowDesigner })));
+const ControlFactoryDesigner = React.lazy(() => import('./components/control/ControlFactoryDesigner').then(m => ({ default: m.ControlFactoryDesigner })));
+const ControlEmptyStates = React.lazy(() => import('./components/control/ControlEmptyStates').then(m => ({ default: m.ControlEmptyStates })));
+const ControlProcessBuilder = React.lazy(() => import('./components/control/ControlProcessBuilder').then(m => ({ default: m.ControlProcessBuilder })));
+const ControlRoleDesigner = React.lazy(() => import('./components/control/ControlRoleDesigner').then(m => ({ default: m.ControlRoleDesigner })));
+const ControlGamification = React.lazy(() => import('./components/control/ControlGamification').then(m => ({ default: m.ControlGamification })));
+const ControlShiftManager = React.lazy(() => import('./components/control/ControlShiftManager').then(m => ({ default: m.ControlShiftManager })));
+const ControlMaintenance = React.lazy(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
+const ControlTooling = React.lazy(() => import('./components/control/ControlTooling').then(m => ({ default: m.ControlTooling })));
+const ControlDocuments = React.lazy(() => import('./components/control/ControlDocuments').then(m => ({ default: m.ControlDocuments })));
+const MirrorWorksBridge = React.lazy(() => import('./components/control/MirrorWorksBridge').then(m => ({ default: m.MirrorWorksBridge })));
+const BridgeWizard = React.lazy(() => import('./components/bridge/BridgeWizard').then(m => ({ default: m.BridgeWizard })));
+const Notifications = React.lazy(() => import('./components/Notifications').then(m => ({ default: m.Notifications })));
 
-// Book Module (existing)
-import { BudgetOverview } from './components/book/BudgetOverview';
-import { BookDashboard } from './components/book/BookDashboard';
-import { BookInvoices } from './components/book/BookInvoices';
-import { ExpenseKanban } from './components/book/ExpenseKanban';
-import { PurchaseOrders } from './components/book/PurchaseOrders';
-import { JobProfitability } from './components/book/JobProfitability';
-import { StockValuation } from './components/book/StockValuation';
-import { ReportsGallery } from './components/book/ReportsGallery';
-import { BookSettings } from './components/book/BookSettings';
-import { InvoiceDetail } from './components/book/InvoiceDetail';
-import { JobCostDetail } from './components/book/JobCostDetail';
-import { BookWipValuation } from './components/book/BookWipValuation';
-import { BookCostVariance } from './components/book/BookCostVariance';
+// Book Module
+const BudgetOverview = React.lazy(() => import('./components/book/BudgetOverview').then(m => ({ default: m.BudgetOverview })));
+const BookDashboard = React.lazy(() => import('./components/book/BookDashboard').then(m => ({ default: m.BookDashboard })));
+const BookInvoices = React.lazy(() => import('./components/book/BookInvoices').then(m => ({ default: m.BookInvoices })));
+const ExpenseKanban = React.lazy(() => import('./components/book/ExpenseKanban').then(m => ({ default: m.ExpenseKanban })));
+const PurchaseOrders = React.lazy(() => import('./components/book/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
+const JobProfitability = React.lazy(() => import('./components/book/JobProfitability').then(m => ({ default: m.JobProfitability })));
+const StockValuation = React.lazy(() => import('./components/book/StockValuation').then(m => ({ default: m.StockValuation })));
+const ReportsGallery = React.lazy(() => import('./components/book/ReportsGallery').then(m => ({ default: m.ReportsGallery })));
+const BookSettings = React.lazy(() => import('./components/book/BookSettings').then(m => ({ default: m.BookSettings })));
+const InvoiceDetail = React.lazy(() => import('./components/book/InvoiceDetail').then(m => ({ default: m.InvoiceDetail })));
+const JobCostDetail = React.lazy(() => import('./components/book/JobCostDetail').then(m => ({ default: m.JobCostDetail })));
+const BookWipValuation = React.lazy(() => import('./components/book/BookWipValuation').then(m => ({ default: m.BookWipValuation })));
+const BookCostVariance = React.lazy(() => import('./components/book/BookCostVariance').then(m => ({ default: m.BookCostVariance })));
+
+// ---------------------------------------------------------------------------
+// Suspense wrapper for lazy routes
+// ---------------------------------------------------------------------------
+function L({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>}>{children}</Suspense>;
+}
 
 export const router = createBrowserRouter([
   {
@@ -142,35 +155,35 @@ export const router = createBrowserRouter([
         index: true,
         element: <WelcomeDashboard />,
       },
-      
+
       // Main Dashboard Route
       {
         path: 'dashboard',
         element: <WelcomeDashboard />,
       },
-      
+
       // Sell Module Routes
       {
         path: 'sell',
         children: [
-          { index: true, element: <SellDashboard /> },
-          { path: 'crm', element: <SellCRM /> },
-          { path: 'crm/:id', element: <SellCustomerDetail /> },
-          { path: 'opportunities', element: <SellOpportunities /> },
-          { path: 'opportunities/:id', element: <SellOpportunityPage /> },
-          { path: 'orders', element: <SellOrders /> },
-          { path: 'orders/:id', element: <SellOrderDetail /> },
-          { path: 'activities', element: <SellActivities /> },
-          { path: 'invoices', element: <SellInvoices /> },
-          { path: 'invoices/new', element: <SellNewInvoice /> },
-          { path: 'invoices/:id', element: <SellInvoiceDetail /> },
-          { path: 'products', element: <SellProducts /> },
-          { path: 'products/:id', element: <SellProductDetail /> },
-          { path: 'quotes', element: <SellQuotes /> },
-          { path: 'quotes/new', element: <SellNewQuote /> },
-          { path: 'quotes/:id', element: <SellQuoteDetail /> },
-          { path: 'portal', element: <SellCustomerPortal /> },
-          { path: 'settings', element: <SellSettings /> },
+          { index: true, element: <L><SellDashboard /></L> },
+          { path: 'crm', element: <L><SellCRM /></L> },
+          { path: 'crm/:id', element: <L><SellCustomerDetail /></L> },
+          { path: 'opportunities', element: <L><SellOpportunities /></L> },
+          { path: 'opportunities/:id', element: <L><SellOpportunityPage /></L> },
+          { path: 'orders', element: <L><SellOrders /></L> },
+          { path: 'orders/:id', element: <L><SellOrderDetail /></L> },
+          { path: 'activities', element: <L><SellActivities /></L> },
+          { path: 'invoices', element: <L><SellInvoices /></L> },
+          { path: 'invoices/new', element: <L><SellNewInvoice /></L> },
+          { path: 'invoices/:id', element: <L><SellInvoiceDetail /></L> },
+          { path: 'products', element: <L><SellProducts /></L> },
+          { path: 'products/:id', element: <L><SellProductDetail /></L> },
+          { path: 'quotes', element: <L><SellQuotes /></L> },
+          { path: 'quotes/new', element: <L><SellNewQuote /></L> },
+          { path: 'quotes/:id', element: <L><SellQuoteDetail /></L> },
+          { path: 'portal', element: <L><SellCustomerPortal /></L> },
+          { path: 'settings', element: <L><SellSettings /></L> },
         ],
       },
 
@@ -178,25 +191,25 @@ export const router = createBrowserRouter([
       {
         path: 'buy',
         children: [
-          { index: true, element: <BuyDashboard /> },
-          { path: 'orders', element: <BuyOrders /> },
-          { path: 'orders/:id', element: <BuyOrderDetail /> },
-          { path: 'requisitions', element: <BuyRequisitions /> },
-          { path: 'requisitions/:id', element: <BuyRequisitionDetail /> },
-          { path: 'receipts', element: <BuyReceipts /> },
-          { path: 'suppliers', element: <BuySuppliers /> },
-          { path: 'suppliers/:id', element: <BuySupplierDetail /> },
-          { path: 'rfqs', element: <BuyRFQs /> },
-          { path: 'bills', element: <BuyBills /> },
-          { path: 'products', element: <BuyProducts /> },
-          { path: 'products/:id', element: <BuyProductDetail /> },
-          { path: 'agreements', element: <BuyAgreements /> },
-          { path: 'mrp-suggestions', element: <BuyMrpSuggestions /> },
-          { path: 'planning-grid', element: <BuyPlanningGrid /> },
-          { path: 'vendor-comparison', element: <BuyVendorComparison /> },
-          { path: 'reorder-rules', element: <BuyReorderRules /> },
-          { path: 'reports', element: <BuyReports /> },
-          { path: 'settings', element: <BuySettings /> },
+          { index: true, element: <L><BuyDashboard /></L> },
+          { path: 'orders', element: <L><BuyOrders /></L> },
+          { path: 'orders/:id', element: <L><BuyOrderDetail /></L> },
+          { path: 'requisitions', element: <L><BuyRequisitions /></L> },
+          { path: 'requisitions/:id', element: <L><BuyRequisitionDetail /></L> },
+          { path: 'receipts', element: <L><BuyReceipts /></L> },
+          { path: 'suppliers', element: <L><BuySuppliers /></L> },
+          { path: 'suppliers/:id', element: <L><BuySupplierDetail /></L> },
+          { path: 'rfqs', element: <L><BuyRFQs /></L> },
+          { path: 'bills', element: <L><BuyBills /></L> },
+          { path: 'products', element: <L><BuyProducts /></L> },
+          { path: 'products/:id', element: <L><BuyProductDetail /></L> },
+          { path: 'agreements', element: <L><BuyAgreements /></L> },
+          { path: 'mrp-suggestions', element: <L><BuyMrpSuggestions /></L> },
+          { path: 'planning-grid', element: <L><BuyPlanningGrid /></L> },
+          { path: 'vendor-comparison', element: <L><BuyVendorComparison /></L> },
+          { path: 'reorder-rules', element: <L><BuyReorderRules /></L> },
+          { path: 'reports', element: <L><BuyReports /></L> },
+          { path: 'settings', element: <L><BuySettings /></L> },
         ],
       },
 
@@ -204,24 +217,24 @@ export const router = createBrowserRouter([
       {
         path: 'plan',
         children: [
-          { index: true, element: <PlanDashboard /> },
-          { path: 'jobs', element: <PlanJobs /> },
-          { path: 'jobs/:id', element: <PlanJobDetail /> },
-          { path: 'activities', element: <PlanActivities /> },
-          { path: 'schedule', element: <PlanSchedule /> },
-          { path: 'nc-connect', element: <PlanNCConnect /> },
-          { path: 'cad-import', element: <PlanCADImport /> },
-          { path: 'purchase', element: <PlanPurchase /> },
-          { path: 'qc-planning', element: <PlanQCPlanning /> },
-          { path: 'product-studio', element: <ProductStudio /> },
-          { path: 'product-studio/:productId', element: <ProductStudio /> },
-          { path: 'what-if', element: <PlanWhatIf /> },
-          { path: 'nesting', element: <PlanNesting /> },
-          { path: 'mrp', element: <PlanMrp /> },
-          { path: 'sheet-calculator', element: <PlanSheetCalculator /> },
-          { path: 'products', element: <PlanProducts /> },
-          { path: 'products/:id', element: <PlanProductDetail /> },
-          { path: 'settings', element: <PlanSettings /> },
+          { index: true, element: <L><PlanDashboard /></L> },
+          { path: 'jobs', element: <L><PlanJobs /></L> },
+          { path: 'jobs/:id', element: <L><PlanJobDetail /></L> },
+          { path: 'activities', element: <L><PlanActivities /></L> },
+          { path: 'schedule', element: <L><PlanSchedule /></L> },
+          { path: 'nc-connect', element: <L><PlanNCConnect /></L> },
+          { path: 'cad-import', element: <L><PlanCADImport /></L> },
+          { path: 'purchase', element: <L><PlanPurchase /></L> },
+          { path: 'qc-planning', element: <L><PlanQCPlanning /></L> },
+          { path: 'product-studio', element: <L><ProductStudio /></L> },
+          { path: 'product-studio/:productId', element: <L><ProductStudio /></L> },
+          { path: 'what-if', element: <L><PlanWhatIf /></L> },
+          { path: 'nesting', element: <L><PlanNesting /></L> },
+          { path: 'mrp', element: <L><PlanMrp /></L> },
+          { path: 'sheet-calculator', element: <L><PlanSheetCalculator /></L> },
+          { path: 'products', element: <L><PlanProducts /></L> },
+          { path: 'products/:id', element: <L><PlanProductDetail /></L> },
+          { path: 'settings', element: <L><PlanSettings /></L> },
         ],
       },
 
@@ -229,20 +242,20 @@ export const router = createBrowserRouter([
       {
         path: 'make',
         children: [
-          { index: true, element: <MakeDashboard /> },
-          { path: 'schedule', element: <MakeSchedule /> },
-          { path: 'shop-floor', element: <MakeShopFloor /> },
-          { path: 'manufacturing-orders', element: <MakeManufacturingOrders /> },
-          { path: 'manufacturing-orders/:id', element: <MakeManufacturingOrderDetail /> },
-          { path: 'time-clock', element: <MakeTimeClock /> },
-          { path: 'quality', element: <MakeQuality /> },
-          { path: 'scan', element: <MakeScanStation /> },
-          { path: 'scrap-analysis', element: <MakeScrapAnalysis /> },
-          { path: 'job-traveler/:id', element: <MakeJobTraveler /> },
-          { path: 'capa', element: <MakeCapa /> },
-          { path: 'products', element: <MakeProducts /> },
-          { path: 'products/:id', element: <MakeProductDetail /> },
-          { path: 'settings', element: <MakeSettings /> },
+          { index: true, element: <L><MakeDashboard /></L> },
+          { path: 'schedule', element: <L><MakeSchedule /></L> },
+          { path: 'shop-floor', element: <L><MakeShopFloor /></L> },
+          { path: 'manufacturing-orders', element: <L><MakeManufacturingOrders /></L> },
+          { path: 'manufacturing-orders/:id', element: <L><MakeManufacturingOrderDetail /></L> },
+          { path: 'time-clock', element: <L><MakeTimeClock /></L> },
+          { path: 'quality', element: <L><MakeQuality /></L> },
+          { path: 'scan', element: <L><MakeScanStation /></L> },
+          { path: 'scrap-analysis', element: <L><MakeScrapAnalysis /></L> },
+          { path: 'job-traveler/:id', element: <L><MakeJobTraveler /></L> },
+          { path: 'capa', element: <L><MakeCapa /></L> },
+          { path: 'products', element: <L><MakeProducts /></L> },
+          { path: 'products/:id', element: <L><MakeProductDetail /></L> },
+          { path: 'settings', element: <L><MakeSettings /></L> },
         ],
       },
 
@@ -250,17 +263,17 @@ export const router = createBrowserRouter([
       {
         path: 'ship',
         children: [
-          { index: true, element: <ShipDashboard /> },
-          { path: 'orders', element: <ShipOrders /> },
-          { path: 'packaging', element: <ShipPackaging /> },
-          { path: 'shipping', element: <ShipShipping /> },
-          { path: 'tracking', element: <ShipTracking /> },
-          { path: 'carrier-rates', element: <ShipCarrierRates /> },
-          { path: 'scan-to-ship', element: <ShipScanToShip /> },
-          { path: 'returns', element: <ShipReturns /> },
-          { path: 'warehouse', element: <ShipWarehouse /> },
-          { path: 'reports', element: <ShipReports /> },
-          { path: 'settings', element: <ShipSettings /> },
+          { index: true, element: <L><ShipDashboard /></L> },
+          { path: 'orders', element: <L><ShipOrders /></L> },
+          { path: 'packaging', element: <L><ShipPackaging /></L> },
+          { path: 'shipping', element: <L><ShipShipping /></L> },
+          { path: 'tracking', element: <L><ShipTracking /></L> },
+          { path: 'carrier-rates', element: <L><ShipCarrierRates /></L> },
+          { path: 'scan-to-ship', element: <L><ShipScanToShip /></L> },
+          { path: 'returns', element: <L><ShipReturns /></L> },
+          { path: 'warehouse', element: <L><ShipWarehouse /></L> },
+          { path: 'reports', element: <L><ShipReports /></L> },
+          { path: 'settings', element: <L><ShipSettings /></L> },
         ],
       },
 
@@ -268,9 +281,11 @@ export const router = createBrowserRouter([
       {
         path: 'bridge',
         element: (
-          <div className="p-6 space-y-6 max-w-5xl mx-auto">
-            <BridgeWizard />
-          </div>
+          <L>
+            <div className="p-6 space-y-6 max-w-5xl mx-auto">
+              <BridgeWizard />
+            </div>
+          </L>
         ),
       },
 
@@ -278,36 +293,38 @@ export const router = createBrowserRouter([
       {
         path: 'control',
         children: [
-          { index: true, element: <ControlDashboard /> },
+          { index: true, element: <L><ControlDashboard /></L> },
           { path: 'mirrorworks-bridge', element: (
-            <div className="p-6 space-y-6 max-w-5xl mx-auto">
-              <BridgeWizard />
-            </div>
+            <L>
+              <div className="p-6 space-y-6 max-w-5xl mx-auto">
+                <BridgeWizard />
+              </div>
+            </L>
           ) },
-          { path: 'factory-layout', element: <ControlFactoryDesigner /> },
-          { path: 'process-builder', element: <ControlProcessBuilder /> },
-          { path: 'locations', element: <ControlLocations /> },
-          { path: 'machines', element: <ControlMachines /> },
-          { path: 'inventory', element: <ControlInventory /> },
-          { path: 'purchase', element: <ControlPurchase /> },
-          { path: 'people', element: <ControlPeople /> },
-          { path: 'products', element: <ControlProducts /> },
-          { path: 'boms', element: <ControlBOMs /> },
-          { path: 'role-designer', element: <ControlRoleDesigner /> },
-          { path: 'workflow-designer', element: <ControlWorkflowDesigner /> },
-          { path: 'shifts', element: <ControlShiftManager /> },
-          { path: 'maintenance', element: <ControlMaintenance /> },
-          { path: 'tooling', element: <ControlTooling /> },
-          { path: 'documents', element: <ControlDocuments /> },
-          { path: 'gamification', element: <ControlGamification /> },
-          { path: 'empty-states', element: <ControlEmptyStates /> },
+          { path: 'factory-layout', element: <L><ControlFactoryDesigner /></L> },
+          { path: 'process-builder', element: <L><ControlProcessBuilder /></L> },
+          { path: 'locations', element: <L><ControlLocations /></L> },
+          { path: 'machines', element: <L><ControlMachines /></L> },
+          { path: 'inventory', element: <L><ControlInventory /></L> },
+          { path: 'purchase', element: <L><ControlPurchase /></L> },
+          { path: 'people', element: <L><ControlPeople /></L> },
+          { path: 'products', element: <L><ControlProducts /></L> },
+          { path: 'boms', element: <L><ControlBOMs /></L> },
+          { path: 'role-designer', element: <L><ControlRoleDesigner /></L> },
+          { path: 'workflow-designer', element: <L><ControlWorkflowDesigner /></L> },
+          { path: 'shifts', element: <L><ControlShiftManager /></L> },
+          { path: 'maintenance', element: <L><ControlMaintenance /></L> },
+          { path: 'tooling', element: <L><ControlTooling /></L> },
+          { path: 'documents', element: <L><ControlDocuments /></L> },
+          { path: 'gamification', element: <L><ControlGamification /></L> },
+          { path: 'empty-states', element: <L><ControlEmptyStates /></L> },
         ],
       },
 
       // Notifications
       {
         path: 'notifications',
-        element: <Notifications />,
+        element: <L><Notifications /></L>,
       },
 
       // Legacy /design URLs → Control (bookmarks)
@@ -325,19 +342,19 @@ export const router = createBrowserRouter([
       {
         path: 'book',
         children: [
-          { index: true, element: <BookDashboard /> },
-          { path: 'budget', element: <BudgetOverview /> },
-          { path: 'invoices', element: <BookInvoices /> },
-          { path: 'invoices/:id', element: <InvoiceDetail onBack={() => window.history.back()} /> },
-          { path: 'expenses', element: <ExpenseKanban /> },
-          { path: 'purchases', element: <PurchaseOrders /> },
-          { path: 'job-costs', element: <JobProfitability /> },
-          { path: 'job-costs/:id', element: <JobCostDetail onBack={() => window.history.back()} /> },
-          { path: 'wip', element: <BookWipValuation /> },
-          { path: 'cost-variance', element: <BookCostVariance /> },
-          { path: 'stock-valuation', element: <StockValuation /> },
-          { path: 'reports', element: <ReportsGallery /> },
-          { path: 'settings', element: <BookSettings /> },
+          { index: true, element: <L><BookDashboard /></L> },
+          { path: 'budget', element: <L><BudgetOverview /></L> },
+          { path: 'invoices', element: <L><BookInvoices /></L> },
+          { path: 'invoices/:id', element: <L><InvoiceDetail onBack={() => window.history.back()} /></L> },
+          { path: 'expenses', element: <L><ExpenseKanban /></L> },
+          { path: 'purchases', element: <L><PurchaseOrders /></L> },
+          { path: 'job-costs', element: <L><JobProfitability /></L> },
+          { path: 'job-costs/:id', element: <L><JobCostDetail onBack={() => window.history.back()} /></L> },
+          { path: 'wip', element: <L><BookWipValuation /></L> },
+          { path: 'cost-variance', element: <L><BookCostVariance /></L> },
+          { path: 'stock-valuation', element: <L><StockValuation /></L> },
+          { path: 'reports', element: <L><ReportsGallery /></L> },
+          { path: 'settings', element: <L><BookSettings /></L> },
         ],
       },
 

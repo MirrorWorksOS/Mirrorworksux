@@ -29,6 +29,8 @@ function mergeRefs<T>(
       if (typeof ref === 'function') {
         ref(node);
       } else {
+        // TODO: update animate-ui — RefObject.current assignment under React 19
+        // @ts-expect-error React 19 ref types — upstream animate-ui
         (ref as React.RefObject<T | null>).current = node;
       }
     });

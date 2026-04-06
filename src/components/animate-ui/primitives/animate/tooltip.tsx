@@ -209,12 +209,16 @@ function TooltipArrow({
   const { side, open } = useRenderedTooltip();
   const { context, arrowRef } = useFloatingContext();
   const { transition, globalId } = useGlobalTooltip();
+  // TODO: update animate-ui — React 19 ref types
+  // @ts-expect-error React 19 ref types — upstream animate-ui
   React.useImperativeHandle(ref, () => arrowRef.current as SVGSVGElement);
 
   const deg = { top: 0, right: 90, bottom: 180, left: -90 }[side];
 
   return (
     <MotionTooltipArrow
+      // TODO: update animate-ui — React 19 ref types
+      // @ts-expect-error React 19 ref types — upstream animate-ui
       ref={arrowRef}
       context={context}
       layout
@@ -289,6 +293,8 @@ function TooltipOverlay() {
             >
               <FloatingProvider value={{ context, arrowRef }}>
                 <Component
+                  // TODO: update animate-ui — React 19 ref types
+                  // @ts-expect-error React 19 ref types — upstream animate-ui
                   ref={refs.setFloating}
                   layout="preserve-aspect"
                   layoutId={`${globalId}-tooltip`}
@@ -428,6 +434,8 @@ function TooltipTrigger({
   } = useGlobalTooltip();
 
   const triggerRef = React.useRef<HTMLDivElement | null>(null);
+  // TODO: update animate-ui — React 19 ref types
+  // @ts-expect-error React 19 ref types — upstream animate-ui
   React.useImperativeHandle(ref, () => triggerRef.current as HTMLDivElement);
 
   const suppressNextFocusRef = React.useRef(false);

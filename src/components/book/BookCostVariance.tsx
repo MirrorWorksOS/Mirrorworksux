@@ -180,13 +180,13 @@ export function BookCostVariance() {
               <Bar
                 dataKey="Budget"
                 fill={MW_CHART_COLOURS[1]}
-                radius={MW_BAR_RADIUS_V as unknown as [number, number, number, number]}
+                radius={MW_BAR_RADIUS_V}
                 {...MW_RECHARTS_ANIMATION}
               />
               <Bar
                 dataKey="Actual"
                 fill={MW_CHART_COLOURS[0]}
-                radius={MW_BAR_RADIUS_V as unknown as [number, number, number, number]}
+                radius={MW_BAR_RADIUS_V}
                 {...MW_RECHARTS_ANIMATION}
               />
             </BarChart>

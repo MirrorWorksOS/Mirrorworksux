@@ -99,6 +99,7 @@ export function ReportsGallery() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="font-medium text-foreground">From Xero</h2>
+          {/* Xero brand blue */}
           <div className="h-4 w-4 rounded-full bg-[#13B5EA]" aria-hidden />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

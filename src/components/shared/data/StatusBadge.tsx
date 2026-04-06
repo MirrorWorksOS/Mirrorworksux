@@ -6,7 +6,7 @@
  */
 
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority@0.7.1";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/components/ui/utils";
 
 const statusBadgeVariants = cva(
@@ -40,8 +40,10 @@ type StatusKey =
   | "pending"
   | "in_progress"
   | "inProgress"
+  | "progress"
   | "completed"
   | "cancelled"
+  | "confirmed"
   | "sent"
   | "viewed"
   | "paid"
@@ -55,6 +57,8 @@ type StatusKey =
   | "onHold"
   | "approved"
   | "rejected"
+  | "ordered"
+  | "received"
   | "open"
   | "closed"
   | "active"
@@ -71,8 +75,10 @@ const STATUS_VARIANT_MAP: Record<StatusKey, VariantProps<typeof statusBadgeVaria
   pending: "warning",
   in_progress: "accent",
   inProgress: "accent",
+  progress: "accent",
   completed: "success",
   cancelled: "neutral",
+  confirmed: "success",
   sent: "info",
   viewed: "info",
   paid: "success",
@@ -86,6 +92,8 @@ const STATUS_VARIANT_MAP: Record<StatusKey, VariantProps<typeof statusBadgeVaria
   onHold: "warning",
   approved: "success",
   rejected: "error",
+  ordered: "info",
+  received: "success",
   open: "info",
   closed: "neutral",
   active: "success",
@@ -114,8 +122,8 @@ const DOT_COLOUR_MAP: Record<NonNullable<VariantProps<typeof statusBadgeVariants
 };
 
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  status?: StatusKey;
-  priority?: PriorityKey;
+  status?: string;
+  priority?: string;
   variant?: VariantProps<typeof statusBadgeVariants>["status"];
   withDot?: boolean;
   children?: React.ReactNode;
@@ -132,8 +140,8 @@ function StatusBadge({
 }: StatusBadgeProps) {
   const resolvedVariant =
     variantProp ??
-    (status ? STATUS_VARIANT_MAP[status] : undefined) ??
-    (priority ? PRIORITY_VARIANT_MAP[priority] : undefined) ??
+    (status ? STATUS_VARIANT_MAP[status as StatusKey] : undefined) ??
+    (priority ? PRIORITY_VARIANT_MAP[priority as PriorityKey] : undefined) ??
     "neutral";
 
   const label =

@@ -831,8 +831,8 @@ html {
     conic-gradient(
       from var(--cursor-angle) at center,
       black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 15) * 1%),
-      transparent calc((100 - var(--cone-spread) - 15) * 1%),
+      transparent calc((var(--cone-spread) + 18) * 1%),
+      transparent calc((100 - var(--cone-spread) - 18) * 1%),
       black calc((100 - var(--cone-spread)) * 1%)
     );
 }
@@ -864,15 +864,19 @@ html {
   mix-blend-mode: soft-light;
 }
 
-/* outer glow layer */
+/* outer glow layer — above .glow-card-inner so diffuse light isn’t clipped by opaque suggestion rows */
 .glow-card > .edge-light {
   inset: calc(var(--glow-padding) * -1);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 
   mask-image:
     conic-gradient(
-      from var(--cursor-angle) at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 18) * 1%),
+      transparent calc((100 - var(--cone-spread) - 18) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
     );
 
   opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
@@ -888,20 +892,21 @@ html {
   position: absolute;
   inset: var(--glow-padding);
   border-radius: inherit;
+  /* Softer, wider falloff — outer radii align with large --glow-padding (40–60px) */
   box-shadow:
     inset 0 0 0 1px var(--glow-color, hsl(172deg 68% 58%)),
-    inset 0 0 1px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
-    inset 0 0 3px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
-    inset 0 0 6px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    inset 0 0 15px 0 var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    inset 0 0 25px 2px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    inset 0 0 50px 2px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
-    0 0 1px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
-    0 0 3px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
-    0 0 6px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    0 0 15px 0 var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    0 0 25px 2px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    0 0 50px 2px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
+    inset 0 0 2px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
+    inset 0 0 8px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
+    inset 0 0 16px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    inset 0 0 28px 2px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    inset 0 0 48px 4px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    inset 0 0 72px 6px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
+    0 0 2px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
+    0 0 8px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
+    0 0 16px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    0 0 28px 0 var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    0 0 48px 4px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    0 0 80px 8px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
 }
 
 .glow-card-inner {
@@ -911,6 +916,7 @@ html {
   overflow: hidden;
   border-radius: inherit;
   z-index: 1;
+  isolation: isolate;
 }
 
 /* SpotlightCard — swap to light color in dark mode */

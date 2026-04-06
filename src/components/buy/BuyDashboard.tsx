@@ -126,7 +126,7 @@ export function BuyDashboard() {
             icon={DollarSign}
             trailing={
               <Badge className={badgeNeutral}>
-                {Math.round((kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100)}% of budget
+                {Math.round((kpiData.spendThisMonth.value / (kpiData.spendThisMonth.budget ?? 1)) * 100)}% of budget
               </Badge>
             }
             footer={
@@ -135,7 +135,7 @@ export function BuyDashboard() {
                   <div
                     className="absolute inset-0 bg-[var(--mw-yellow-400)] transition-all duration-300"
                     style={{
-                      width: `${(kpiData.spendThisMonth.value / kpiData.spendThisMonth.budget) * 100}%`,
+                      width: `${(kpiData.spendThisMonth.value / (kpiData.spendThisMonth.budget ?? 1)) * 100}%`,
                     }}
                   />
                 </div>

@@ -56,7 +56,7 @@ export function useUsageWarnings(moduleName: string) {
           });
         } else if (status === 'critical') {
           toast.warning(
-            `${metric.limit - metric.current} ${metric.label.toLowerCase()} remaining. Upgrade now to avoid interruption.`,
+            `${(metric.limit ?? 0) - metric.current} ${metric.label.toLowerCase()} remaining. Upgrade now to avoid interruption.`,
             { duration: 8000 },
           );
         } else if (status === 'exceeded') {

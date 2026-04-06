@@ -39,7 +39,8 @@ const defaultResolved: GroupPermissionSet = {
 
 function resolvePermissions(groupRecords: Group[]) {
   const grantedBy: Record<string, string[]> = {};
-  const acc: Partial<GroupPermissionSet> = {};
+  /** Narrow accumulator so indexed writes are legal under strict optional keys */
+  const acc: Partial<Record<keyof GroupPermissionSet, boolean | ScopeValue>> = {};
 
   groupRecords.forEach(group => {
     (Object.entries(group.permissions) as [keyof GroupPermissionSet, unknown][]).forEach(([key, raw]) => {

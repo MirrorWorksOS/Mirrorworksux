@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { customers } from '@/services/mock';
+import type { Customer } from '@/types/entities';
 
 const mockCustomers = customers;
 

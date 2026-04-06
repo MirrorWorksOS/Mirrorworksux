@@ -66,7 +66,12 @@ interface SubMenuGroup {
 interface MenuItem {
   label: string;
   icon?: LucideIcon;
-  animatedIcon?: React.ComponentType<{ size?: number; animateOnHover?: boolean; className?: string }>;
+  animatedIcon?: React.ComponentType<{
+    size?: number;
+    animateOnHover?: boolean;
+    className?: string;
+    strokeWidth?: number;
+  }>;
   path?: string;
   subItems?: SubMenuItem[];
   /** Grouped sub-items with collapsible section headings */
@@ -322,7 +327,7 @@ function ModuleIcon({
       {AnimatedIcon ? (
         <AnimatedIcon
           size={ICON_SIZES.sidebar}
-          animate={isHovered}
+          animateOnHover={isHovered}
           strokeWidth={1.5}
           className="text-white"
         />
@@ -435,7 +440,7 @@ function KbdPill({
           className={cn(
             'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-xs font-medium leading-none select-none',
             isYellow
-              ? 'bg-[#E6A600]/20 text-primary-foreground/60 border border-[#E6A600]/30'
+              ? 'bg-[var(--mw-yellow-600)]/20 text-primary-foreground/60 border border-[var(--mw-yellow-600)]/30'
               : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] border border-[var(--neutral-200)]'
           )}
         >

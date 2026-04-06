@@ -71,7 +71,7 @@ export function AgentLogomarkAnimated({
       <path
         d="M202.41,50h87.71c75.6,0,136.97,61.37,136.97,136.97v159.18h-230.36c-78.88,0-142.93-64.04-142.93-142.93v-4.62c0-82.02,66.59-148.61,148.61-148.61Z"
         fill="currentColor"
-        className="text-[#1d190f] dark:text-[#1d190f]"
+        className="text-[var(--mw-mirage)]"
       />
       <motion.circle
         cx="145.3"

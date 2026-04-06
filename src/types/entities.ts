@@ -774,26 +774,31 @@ export interface KpiMetric {
 }
 
 export interface ApprovalItem {
-  type: ApprovalItemType;
+  type: string;
   id: string;
-  refNumber: string;
-  amount: number;
-  customerOrSupplier: string;
+  refNumber?: string;
+  amount?: number;
+  value?: number;
+  customer?: string;
+  supplier?: string;
   requestor?: string;
-  status: string;
+  customerOrSupplier?: string;
+  status?: string;
 }
 
 export interface OverdueItem {
   type: string;
   id: string;
-  refNumber: string;
-  customerOrVendor: string;
-  amount: number;
+  refNumber?: string;
+  customer?: string;
+  vendor?: string;
+  customerOrVendor?: string;
+  amount?: number;
+  value?: number;
   daysOverdue: number;
 }
 
 export interface ChartDataPoint {
-  label: string;
   [key: string]: string | number | null;
 }
 

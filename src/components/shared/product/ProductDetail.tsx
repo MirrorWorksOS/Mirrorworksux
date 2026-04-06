@@ -11,7 +11,7 @@ import {
   CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
   RotateCcw, Star, BarChart3, ChevronRight, Clock, MapPin,
-  RefreshCw,
+  RefreshCw, Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
