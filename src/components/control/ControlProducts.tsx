@@ -1,8 +1,9 @@
 /**
  * Control Products — product master data catalogue
  */
-import React, { useState } from 'react';
-import { Plus, Package } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Plus, Package, Boxes } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -15,6 +16,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
 
 
 const PRODUCTS = [
@@ -36,7 +38,21 @@ type Product = (typeof PRODUCTS)[number];
 const CATEGORIES = ['All', 'Finished Goods', 'Raw Materials', 'Consumables'];
 const TYPES      = ['All', 'Manufactured', 'Purchased'];
 
-const productColumns: MwColumnDef<Product>[] = [
+function buildControlProductColumns(
+  navigate: ReturnType<typeof useNavigate>,
+): MwColumnDef<Product>[] {
+  const openStudio = (p: Product) => {
+    const sid = studioProductIdForCatalogId(p.id);
+    if (sid) navigate(`/plan/product-studio/${sid}`);
+    else {
+      toast.message('No configurator record for this SKU', {
+        description: 'Open Product Studio to build configurable products.',
+      });
+      navigate('/plan/product-studio');
+    }
+  };
+
+  return [
   {
     key: 'product', header: 'Product', tooltip: 'Product name',
     cell: (p) => (
@@ -77,12 +93,36 @@ const productColumns: MwColumnDef<Product>[] = [
       </div>
     ),
   },
+  {
+    key: 'studio',
+    header: 'Studio',
+    tooltip: 'Product Studio — configurable product builder',
+    headerClassName: 'w-[1%] whitespace-nowrap',
+    className: 'w-[1%] whitespace-nowrap',
+    cell: (p) => (
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 border-[var(--border)] text-xs shrink-0"
+          onClick={() => openStudio(p)}
+        >
+          {studioProductIdForCatalogId(p.id) ? 'Open in Studio' : 'Studio'}
+        </Button>
+      </div>
+    ),
+  },
 ];
+}
 
 export function ControlProducts() {
+  const navigate = useNavigate();
   const [search,   setSearch]   = useState('');
   const [category, setCategory] = useState('All');
   const [type,     setType]     = useState('All');
+
+  const columns = useMemo(() => buildControlProductColumns(navigate), [navigate]);
 
   const filtered = PRODUCTS.filter(p => {
     const matchSearch   = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase());
@@ -110,9 +150,20 @@ export function ControlProducts() {
             {activeCount} active products
           </p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New product coming soon')}>
-          <Plus className="w-4 h-4" /> New product
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 min-h-[48px] border-[var(--border)] gap-2"
+            onClick={() => navigate('/plan/product-studio')}
+          >
+            <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+            Product Studio
+          </Button>
+          <Button className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New product coming soon')}>
+            <Plus className="w-4 h-4" /> New product
+          </Button>
+        </div>
       </div>
 
       <ToolbarSummaryBar
@@ -126,7 +177,7 @@ export function ControlProducts() {
       />
 
       <MwDataTable<Product>
-        columns={productColumns}
+        columns={columns}
         data={filtered}
         keyExtractor={(p) => p.id}
         selectable

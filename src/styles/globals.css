@@ -799,7 +799,7 @@ html {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.4s ease-out;
   z-index: -1;
 }
 
@@ -831,8 +831,8 @@ html {
     conic-gradient(
       from var(--cursor-angle) at center,
       black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 18) * 1%),
-      transparent calc((100 - var(--cone-spread) - 18) * 1%),
+      transparent calc((var(--cone-spread) + 26) * 1%),
+      transparent calc((100 - var(--cone-spread) - 26) * 1%),
       black calc((100 - var(--cone-spread)) * 1%)
     );
 }
@@ -874,12 +874,12 @@ html {
     conic-gradient(
       from var(--cursor-angle) at center,
       black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 18) * 1%),
-      transparent calc((100 - var(--cone-spread) - 18) * 1%),
+      transparent calc((var(--cone-spread) + 26) * 1%),
+      transparent calc((100 - var(--cone-spread) - 26) * 1%),
       black calc((100 - var(--cone-spread)) * 1%)
     );
 
-  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  opacity: calc(0.72 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
   mix-blend-mode: normal;
 }
 
@@ -892,21 +892,16 @@ html {
   position: absolute;
   inset: var(--glow-padding);
   border-radius: inherit;
-  /* Softer, wider falloff — outer radii align with large --glow-padding (40–60px) */
+  /* Ambient-only — no hard hairline; long blurs for very soft falloff */
   box-shadow:
-    inset 0 0 0 1px var(--glow-color, hsl(172deg 68% 58%)),
-    inset 0 0 2px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
-    inset 0 0 8px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
-    inset 0 0 16px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    inset 0 0 28px 2px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    inset 0 0 48px 4px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    inset 0 0 72px 6px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
-    0 0 2px 0 var(--glow-color-60, hsl(172deg 68% 58% / 60%)),
-    0 0 8px 0 var(--glow-color-50, hsl(172deg 68% 58% / 50%)),
-    0 0 16px 0 var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    0 0 28px 0 var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    0 0 48px 4px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    0 0 80px 8px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
+    inset 0 0 20px 2px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    inset 0 0 44px 8px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    inset 0 0 80px 14px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    inset 0 0 120px 20px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
+    0 0 28px 2px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    0 0 56px 6px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    0 0 96px 12px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    0 0 140px 22px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
 }
 
 .glow-card-inner {

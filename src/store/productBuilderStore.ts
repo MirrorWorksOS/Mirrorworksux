@@ -8,31 +8,66 @@ import type {
   Product,
   ProductNode,
   ProductEdge,
-  ProductRule,
   RightPanelTab,
   CanvasTransform,
 } from '@/components/plan/product-studio/product-studio-types';
 import { productTemplates } from '@/components/plan/product-studio/product-templates';
+import { defaultDefinitionEngineForProductId } from '@/components/plan/product-studio/definition-engine-templates';
+import type { ProductDefinitionEngine } from '@/lib/product-studio/types';
+import { createEmptyEngine } from '@/lib/product-studio/evaluate';
 
 // ── Persistence helpers ──────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'mw-product-studio';
 
+/** Map legacy prod-* seeded rows back to stable template ids so /plan/product-studio/tpl-* deep links work. */
+function migrateLegacyProductIds(products: Product[]): Product[] {
+  const tplIdsInUse = new Set(
+    products.filter((p) => productTemplates.some((t) => t.id === p.id)).map((p) => p.id),
+  );
+  return products.map((p) => {
+    if (!p.id.startsWith('prod-')) return p;
+    const tpl = productTemplates.find((t) => t.name === p.name);
+    if (tpl && !tplIdsInUse.has(tpl.id)) {
+      tplIdsInUse.add(tpl.id);
+      return { ...p, id: tpl.id };
+    }
+    return p;
+  });
+}
+
+/** Attach definition engine when missing; strip legacy form rules only when migrating that product */
+function migrateDefinitionEngine(products: Product[]): Product[] {
+  return products.map((p) => {
+    const needsEngine = !p.definitionEngine;
+    return {
+      ...p,
+      rules: needsEngine ? [] : p.rules,
+      definitionEngine: p.definitionEngine ?? defaultDefinitionEngineForProductId(p.id),
+      lifecycleStatus: p.lifecycleStatus ?? 'draft',
+      definitionVersion: p.definitionVersion ?? 1,
+    };
+  });
+}
+
 function loadProducts(): Product[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      const parsed = JSON.parse(raw) as Product[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        let migrated = migrateLegacyProductIds(parsed);
+        migrated = migrateDefinitionEngine(migrated);
+        if (JSON.stringify(migrated) !== JSON.stringify(parsed)) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+        }
+        return migrated;
+      }
     }
   } catch {
     // ignore parse errors
   }
-  // Seed with templates on first load
-  const templates = productTemplates.map((t) => ({
-    ...t,
-    id: `prod-${Math.random().toString(36).slice(2, 10)}`,
-  }));
+  const templates = productTemplates.map((t) => ({ ...t }));
   localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
   return templates;
 }
@@ -44,17 +79,13 @@ function saveProducts(products: Product[]) {
 // ── Store Interface ──────────────────────────────────────────────────────────
 
 interface ProductBuilderState {
-  // Product list
   products: Product[];
   activeProductId: string | null;
-
-  // Canvas / editor state
   selectedNodeId: string | null;
   rightPanelTab: RightPanelTab;
   canvasTransform: CanvasTransform;
   showPreview: boolean;
 
-  // Product CRUD
   loadProducts: () => void;
   createProduct: (name: string, description: string) => Product;
   duplicateProduct: (id: string) => Product | null;
@@ -62,33 +93,25 @@ interface ProductBuilderState {
   setActiveProduct: (id: string | null) => void;
   updateProductMeta: (id: string, name: string, description: string) => void;
 
-  // Node CRUD
   addNode: (node: ProductNode) => void;
   updateNode: (nodeId: string, updates: Partial<ProductNode>) => void;
   removeNode: (nodeId: string) => void;
   moveNode: (nodeId: string, position: { x: number; y: number }) => void;
 
-  // Edge CRUD
   addEdge: (edge: ProductEdge) => void;
   removeEdge: (edgeId: string) => void;
 
-  // Rule CRUD
-  addRule: (rule: ProductRule) => void;
-  updateRule: (ruleId: string, updates: Partial<ProductRule>) => void;
-  removeRule: (ruleId: string) => void;
-  reorderRules: (ruleIds: string[]) => void;
+  setDefinitionEngine: (engine: ProductDefinitionEngine) => void;
+  setLifecycleStatus: (status: 'draft' | 'published') => void;
+  setLocked: (locked: boolean) => void;
 
-  // UI state
   setSelectedNode: (nodeId: string | null) => void;
   setRightPanelTab: (tab: RightPanelTab) => void;
   setCanvasTransform: (transform: CanvasTransform) => void;
   setShowPreview: (show: boolean) => void;
 
-  // Helpers
   getActiveProduct: () => Product | null;
 }
-
-// ── Helper — update active product in list ───────────────────────────────────
 
 function updateActive(
   products: Product[],
@@ -100,8 +123,6 @@ function updateActive(
     p.id === activeId ? updater({ ...p, updatedAt: new Date().toISOString() }) : p,
   );
 }
-
-// ── Store ────────────────────────────────────────────────────────────────────
 
 export const useProductBuilderStore = create<ProductBuilderState>((set, get) => ({
   products: loadProducts(),
@@ -123,6 +144,9 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
       nodes: [],
       edges: [],
       rules: [],
+      definitionEngine: createEmptyEngine(),
+      lifecycleStatus: 'draft',
+      definitionVersion: 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -139,6 +163,7 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
       ...structuredClone(source),
       id: `prod-${Math.random().toString(36).slice(2, 10)}`,
       name: `${source.name} (Copy)`,
+      lifecycleStatus: 'draft',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -168,8 +193,6 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
     saveProducts(products);
     set({ products });
   },
-
-  // ── Node CRUD ──────────────────────────────────────────────────────────────
 
   addNode: (node) => {
     const { activeProductId: activeId } = get();
@@ -203,7 +226,6 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
 
   removeNode: (nodeId) => {
     const { activeProductId: activeId } = get();
-    // Remove node + any child nodes + related edges
     const products = updateActive(get().products, activeId, (p) => {
       const idsToRemove = new Set<string>();
       const collectChildren = (id: string) => {
@@ -217,7 +239,6 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
         edges: p.edges.filter(
           (e) => !idsToRemove.has(e.sourceId) && !idsToRemove.has(e.targetId),
         ),
-        rules: p.rules.filter((r) => !idsToRemove.has(r.nodeId)),
       };
     });
     saveProducts(products);
@@ -233,8 +254,6 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
     saveProducts(products);
     set({ products });
   },
-
-  // ── Edge CRUD ──────────────────────────────────────────────────────────────
 
   addEdge: (edge) => {
     const { activeProductId: activeId } = get();
@@ -256,55 +275,29 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
     set({ products });
   },
 
-  // ── Rule CRUD ──────────────────────────────────────────────────────────────
-
-  addRule: (rule) => {
+  setDefinitionEngine: (engine) => {
     const { activeProductId: activeId } = get();
     const products = updateActive(get().products, activeId, (p) => ({
       ...p,
-      rules: [...p.rules, rule],
+      definitionEngine: engine,
     }));
     saveProducts(products);
     set({ products });
   },
 
-  updateRule: (ruleId, updates) => {
+  setLifecycleStatus: (lifecycleStatus) => {
     const { activeProductId: activeId } = get();
-    const products = updateActive(get().products, activeId, (p) => ({
-      ...p,
-      rules: p.rules.map((r) => (r.id === ruleId ? { ...r, ...updates } : r)),
-    }));
+    const products = updateActive(get().products, activeId, (p) => ({ ...p, lifecycleStatus }));
     saveProducts(products);
     set({ products });
   },
 
-  removeRule: (ruleId) => {
+  setLocked: (locked) => {
     const { activeProductId: activeId } = get();
-    const products = updateActive(get().products, activeId, (p) => ({
-      ...p,
-      rules: p.rules.filter((r) => r.id !== ruleId),
-    }));
+    const products = updateActive(get().products, activeId, (p) => ({ ...p, locked }));
     saveProducts(products);
     set({ products });
   },
-
-  reorderRules: (ruleIds) => {
-    const { activeProductId: activeId } = get();
-    const products = updateActive(get().products, activeId, (p) => {
-      const ruleMap = new Map(p.rules.map((r) => [r.id, r]));
-      const reordered = ruleIds
-        .map((id, i) => {
-          const r = ruleMap.get(id);
-          return r ? { ...r, priority: i + 1 } : null;
-        })
-        .filter(Boolean) as ProductRule[];
-      return { ...p, rules: reordered };
-    });
-    saveProducts(products);
-    set({ products });
-  },
-
-  // ── UI state ───────────────────────────────────────────────────────────────
 
   setSelectedNode: (nodeId) => set({ selectedNodeId: nodeId }),
   setRightPanelTab: (tab) => set({ rightPanelTab: tab }),

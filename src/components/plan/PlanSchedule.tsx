@@ -16,6 +16,7 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarFilterPills, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { PlanScheduleEngine } from '@/components/plan/PlanScheduleEngine';
 
 type ViewMode = 'gantt' | 'calendar';
 type FilterMode = 'all' | 'active' | 'scheduled' | 'completed';
@@ -140,6 +141,14 @@ export function PlanSchedule() {
           />
         </div>
       )}
+
+      <div className="space-y-4 border-t border-[var(--border)] pt-6">
+        <h2 className="text-sm font-medium text-foreground">Finite capacity engine</h2>
+        <p className="text-xs text-[var(--neutral-500)]">
+          Work-centre load and finite scheduling view (prototype).
+        </p>
+        <PlanScheduleEngine />
+      </div>
     </PageShell>
   );
 }

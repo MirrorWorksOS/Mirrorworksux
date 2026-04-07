@@ -7,13 +7,13 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, Save, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Paperclip, Send, Clock, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, Save, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Clock, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
-import { AIInsightCard, AIInsightMessage } from '@/components/shared/ai/AIInsightCard';
+import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
@@ -27,6 +27,8 @@ import { cn } from '@/components/ui/utils';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
 import { manufacturingOrders } from '@/services/mock';
+import { OperatorChat } from '@/components/make/OperatorChat';
+import { MaterialConsumption } from '@/components/make/MaterialConsumption';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -56,13 +58,14 @@ const STATUS_DISPLAY: Record<string, string> = {
   draft: 'Draft', confirmed: 'Confirmed', in_progress: 'In Progress', done: 'Done',
 };
 
-const MO_BY_ID: Record<string, { moNumber: string; product: string; jobNumber: string; status: string; operator: string; startDate: string; customer: string }> = Object.fromEntries(
+const MO_BY_ID: Record<string, { moNumber: string; product: string; jobNumber: string; jobId: string; status: string; operator: string; startDate: string; customer: string }> = Object.fromEntries(
   manufacturingOrders.map((mo) => [
     mo.id,
     {
       moNumber: mo.moNumber,
       product: mo.productName,
       jobNumber: mo.jobNumber,
+      jobId: mo.jobId,
       status: STATUS_DISPLAY[mo.status] ?? mo.status,
       operator: mo.operatorName.split(' ').map((n, i) => i === 0 ? `${n[0]}.` : n).join(' '),
       startDate: new Date(mo.dueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -110,24 +113,10 @@ export function MakeManufacturingOrderDetail() {
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
   const [showChat, setShowChat] = useState(false);
   const [summaryFilter, setSummaryFilter] = useState<SummaryFilterKey | null>(null);
-  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
-  const [chatInput, setChatInput] = useState('');
   const [shiftPaused, setShiftPaused] = useState(false);
 
-  const handleChatSubmit = () => {
-    const msg = chatInput.trim();
-    if (!msg) return;
-    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
-    setChatInput('');
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { role: 'ai', text: 'Based on the current production data, WO-001 is progressing well. Material availability is confirmed for remaining operations.' },
-      ]);
-    }, 800);
-  };
-
   const mo = id ? MO_BY_ID[id] : undefined;
+  const chatJobId = mo?.jobId ?? id ?? 'job-unknown';
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
@@ -378,6 +367,8 @@ export function MakeManufacturingOrderDetail() {
                   </div>
                 </div>
               </Card>
+
+              <MaterialConsumption />
 
               {/* Issues */}
               <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
@@ -673,174 +664,8 @@ export function MakeManufacturingOrderDetail() {
     }
   };
 
-  /* ── Communication Sidebar ── */
-  const communicationSidebar = (
-    <div className="w-80 border-l border-[var(--border)] bg-card flex flex-col h-full overflow-hidden shrink-0">
-      {/* Quick Access */}
-      <div className="p-4 border-b border-[var(--border)]">
-        <h3 className="text-sm font-medium text-foreground mb-3">Quick Access</h3>
-        <div className="space-y-2">
-          {[
-            { name: 'SOP-001 Setup Procedure', type: 'SOP', color: 'bg-[var(--mw-mirage)]' },
-            { name: 'Safety Brief — Laser', type: 'Safety', color: 'bg-[var(--mw-mirage)]' },
-            { name: 'QC Checklist MO-001', type: 'Quality', color: 'bg-[var(--mw-mirage)]' },
-            { name: 'Weld Procedure Spec', type: 'SOP', color: 'bg-[var(--mw-mirage)]' },
-          ].map((doc) => (
-            <div key={doc.name} className="flex items-center gap-3 p-2 rounded-[var(--shape-md)] hover:bg-[var(--neutral-50)] cursor-pointer transition-colors">
-              <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center', doc.color)}>
-                <FileText className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground truncate">{doc.name}</p>
-              </div>
-              <Badge variant="outline" className="border-[var(--border)] text-[10px] shrink-0">{doc.type}</Badge>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Chatter Thread */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Day Separator — Today */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-[var(--border)]" />
-          <span className="text-xs font-medium text-[var(--neutral-500)]">Today</span>
-          <div className="flex-1 h-px bg-[var(--border)]" />
-        </div>
-
-        {/* AI Insight Message */}
-        <AIInsightMessage timestamp="11:02 AM">
-          CNC-01 utilisation at 92%. Consider shifting WO-004 to CNC-02 to avoid bottleneck. Estimated saving: 2.5 hrs.
-        </AIInsightMessage>
-
-        {/* User message */}
-        <div className="flex gap-3">
-          <Avatar className="w-8 h-8 border border-[var(--border)] shrink-0">
-            <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-            <AvatarFallback className="text-xs">MJ</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-foreground">M. Johnson</span>
-              <span className="text-xs text-[var(--neutral-500)]">10:30 AM</span>
-            </div>
-            <p className="text-xs text-foreground">
-              WO-001 Base Plate complete. Moving to Side Panel L on CNC-01 now. @D.Lee heads up on material staging.
-            </p>
-          </div>
-        </div>
-
-        {/* System message */}
-        <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-[var(--neutral-500)] shrink-0" />
-          <p className="text-xs text-[var(--neutral-500)]">
-            MO status changed to <strong>In Progress</strong>
-          </p>
-        </div>
-
-        {/* Day Separator — Yesterday */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-[var(--border)]" />
-          <span className="text-xs font-medium text-[var(--neutral-500)]">Yesterday</span>
-          <div className="flex-1 h-px bg-[var(--border)]" />
-        </div>
-
-        {/* User message */}
-        <div className="flex gap-3">
-          <Avatar className="w-8 h-8 border border-[var(--border)] shrink-0">
-            <AvatarImage src="https://i.pravatar.cc/150?img=5" />
-            <AvatarFallback className="text-xs">DL</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-foreground">D. Lee</span>
-              <span className="text-xs text-[var(--neutral-500)]">4:15 PM</span>
-            </div>
-            <p className="text-xs text-foreground">
-              Materials staged for WO-001. All 304SS sheets verified against cert. Good to go for morning shift.
-            </p>
-          </div>
-        </div>
-
-        {/* System message */}
-        <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-[var(--neutral-500)] shrink-0" />
-          <p className="text-xs text-[var(--neutral-500)]">
-            Materials confirmed — status changed to <strong>Ready</strong>
-          </p>
-        </div>
-
-        {/* User message */}
-        <div className="flex gap-3">
-          <Avatar className="w-8 h-8 border border-[var(--border)] shrink-0">
-            <AvatarImage src="https://i.pravatar.cc/150?img=8" />
-            <AvatarFallback className="text-xs">EW</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-foreground">E. Williams</span>
-              <span className="text-xs text-[var(--neutral-500)]">2:00 PM</span>
-            </div>
-            <p className="text-xs text-foreground">
-              Uploaded updated drawing rev B. Please confirm before we start cutting.
-            </p>
-            <div className="mt-2 border border-[var(--border)] rounded-[var(--shape-lg)] p-2 flex items-center gap-2 hover:bg-[var(--neutral-50)] cursor-pointer">
-              <div className="w-7 h-7 bg-[var(--neutral-800)] rounded flex items-center justify-center">
-                <FileText className="w-3.5 h-3.5 text-white" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-foreground">Drawing-RevB.pdf</p>
-                <p className="text-[10px] text-[var(--neutral-500)]">1.2 MB</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Chat Messages */}
-      {chatMessages.length > 0 && (
-        <div className="px-3 space-y-2 mb-2">
-          {chatMessages.map((m, i) => (
-            <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
-              {m.role === 'ai' && (
-                <div className="w-6 h-6 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center text-[10px] font-bold shrink-0">AI</div>
-              )}
-              <div className={cn(
-                'rounded-lg px-3 py-2 text-xs max-w-[85%]',
-                m.role === 'user'
-                  ? 'bg-[var(--mw-mirage)] text-white'
-                  : 'bg-[var(--neutral-100)] text-foreground',
-              )}>
-                {m.text}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Input Bar */}
-      <div className="p-3 border-t border-[var(--border)] flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="h-14 w-14 p-0 shrink-0">
-          <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
-        </Button>
-        <Input
-          placeholder="Type a message..."
-          className="flex-1 h-14 text-xs"
-          value={chatInput}
-          onChange={(e) => setChatInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
-        />
-        <Button size="sm" className="h-14 px-3 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] shrink-0" onClick={handleChatSubmit}>
-          <Send className="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
     <>
-      <div className="flex h-full">
-      <div className="flex-1 min-w-0">
       <JobWorkspaceLayout
         breadcrumbs={[
           { label: 'Make', href: '/make' },
@@ -903,9 +728,7 @@ export function MakeManufacturingOrderDetail() {
         onTabChange={setActiveTab}
         renderTabPanel={renderTabPanel}
       />
-      </div>
-      {showChat && communicationSidebar}
-      </div>
+      <OperatorChat jobId={chatJobId} open={showChat} onOpenChange={setShowChat} />
       {selectedWorkOrder && (
         <WorkOrderFullScreen
           workOrder={selectedWorkOrder}

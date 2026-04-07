@@ -16,6 +16,7 @@ import {
   Clock,
   Zap,
   ArrowRight,
+  Lock,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
@@ -175,10 +176,20 @@ export function ProductList() {
                             {product.nodes.length} nodes
                           </Badge>
                         )}
-                        {product.rules.length > 0 && (
+                        {(product.definitionEngine?.rootBlocks.length ?? 0) > 0 && (
                           <Badge variant="secondary" className="text-[9px] h-5 bg-card/80 backdrop-blur-sm gap-0.5">
                             <Zap className="w-2.5 h-2.5" />
-                            {product.rules.length}
+                            {product.definitionEngine?.rootBlocks.length}
+                          </Badge>
+                        )}
+                        {product.lifecycleStatus === 'published' && (
+                          <Badge className="text-[9px] h-5 bg-[var(--mw-green)]/15 text-[var(--mw-green)] border-0">
+                            Published
+                          </Badge>
+                        )}
+                        {product.locked && (
+                          <Badge variant="outline" className="text-[9px] h-5 px-1">
+                            <Lock className="w-2.5 h-2.5" />
                           </Badge>
                         )}
                       </div>

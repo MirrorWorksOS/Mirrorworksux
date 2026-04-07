@@ -33,6 +33,11 @@ import {
   planTasks,
   jobs,
 } from '@/services/mock';
+import { PlanCapableToPromise } from '@/components/plan/PlanCapableToPromise';
+import { BomGenerator } from '@/components/plan/BomGenerator';
+import { PlanOperationRouting } from '@/components/plan/PlanOperationRouting';
+import { PlanShiftCalendar } from '@/components/plan/PlanShiftCalendar';
+import { PlanSubcontracting } from '@/components/plan/PlanSubcontracting';
 
 const upcomingTasks = planTasks.map((t) => ({
   id: t.id,
@@ -66,7 +71,10 @@ const taskTypeColors: Record<string, string> = {
 };
 
 
-const planTabs = [{ key: 'overview', label: 'Overview' }];
+const planTabs = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'planning-tools', label: 'Planning tools' },
+];
 
 export function PlanDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -80,6 +88,7 @@ export function PlanDashboard() {
       onTabChange={setActiveTab}
       aiScope="plan"
     >
+      {activeTab === 'overview' && (
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
       {/* AI Insight Feed — below AI command bar (inside space-y-6 with KPI row) */}
       <motion.div variants={staggerItem}>
@@ -290,6 +299,29 @@ export function PlanDashboard() {
         </ChartCard>
       </motion.div>
       </motion.div>
+      )}
+
+      {activeTab === 'planning-tools' && (
+      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <motion.div variants={staggerItem}>
+            <PlanCapableToPromise />
+          </motion.div>
+          <motion.div variants={staggerItem}>
+            <BomGenerator />
+          </motion.div>
+          <motion.div variants={staggerItem} className="xl:col-span-2">
+            <PlanOperationRouting />
+          </motion.div>
+          <motion.div variants={staggerItem}>
+            <PlanShiftCalendar />
+          </motion.div>
+          <motion.div variants={staggerItem}>
+            <PlanSubcontracting />
+          </motion.div>
+        </div>
+      </motion.div>
+      )}
     </ModuleDashboard>
   );
 }

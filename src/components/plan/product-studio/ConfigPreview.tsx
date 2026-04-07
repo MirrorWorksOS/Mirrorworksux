@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronRight,
   AlertTriangle,
+  Cog,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,11 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/components/ui/utils';
 import { useProductBuilderStore } from '@/store/productBuilderStore';
+import {
+  evaluateDefinitionEngine,
+  estimateMaterialTotal,
+  estimateOperationsMinutes,
+} from '@/lib/product-studio/evaluate';
 import type { ProductNode, ProductOption } from './product-studio-types';
 import { NODE_TYPE_COLORS, NODE_TYPE_TEXT, NODE_TYPE_LABELS } from './product-studio-types';
 
@@ -55,6 +61,21 @@ export function ConfigPreview() {
     setSelections((prev) => ({ ...prev, [`${nodeId}:${optId}`]: value }));
   };
 
+  const mergedSelections = useMemo(() => ({ ...defaults, ...selections }), [defaults, selections]);
+
+  const evalResult = useMemo(() => {
+    if (!product) {
+      return {
+        variables: {} as Record<string, string>,
+        mergedBom: [] as ReturnType<typeof evaluateDefinitionEngine>['mergedBom'],
+        operations: [] as ReturnType<typeof evaluateDefinitionEngine>['operations'],
+        costAdjustments: [] as ReturnType<typeof evaluateDefinitionEngine>['costAdjustments'],
+        warnings: [] as string[],
+      };
+    }
+    return evaluateDefinitionEngine(product, product.definitionEngine, mergedSelections);
+  }, [product, mergedSelections]);
+
   if (!product) {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
@@ -74,38 +95,19 @@ export function ConfigPreview() {
     }
   });
 
-  // Calculate total estimated price
-  const totalPrice = product.nodes.reduce((sum, n) => {
-    return sum + n.pricing.basePrice + n.pricing.perUnit * (n.quantity - 1);
-  }, 0);
+  const materialSubtotal = estimateMaterialTotal(evalResult.mergedBom);
+  const costAdjustTotal = evalResult.costAdjustments.reduce((s, c) => s + c.amount, 0);
+  const totalPrice = materialSubtotal + costAdjustTotal;
+  const estimatedWeight = Math.round(Math.max(1, totalPrice / 10));
+  const warnings = evalResult.warnings;
+  const opMinutes = estimateOperationsMinutes(evalResult.operations, 1);
 
-  // Estimate weight (mock: $10 per kg approximation for demo)
-  const estimatedWeight = Math.round(totalPrice / 10);
+  const varLabel = (id: string) =>
+    product.definitionEngine?.variables.find((v) => v.id === id)?.label ?? id;
 
-  // Triggered warnings from rules
-  const warnings: string[] = [];
-  product.rules.forEach((rule) => {
-    if (!rule.enabled) return;
-    rule.actions.forEach((action) => {
-      if (action.type === 'show_warning') {
-        // Check if conditions roughly match current selections
-        const conditionsMet = rule.conditionGroups.some((group) =>
-          group.conditions.every((cond) => {
-            const matchingNode = product.nodes.find((n) =>
-              n.options.some((o) => o.name === cond.field),
-            );
-            if (!matchingNode) return false;
-            const matchingOpt = matchingNode.options.find((o) => o.name === cond.field);
-            if (!matchingOpt) return false;
-            const currentVal = getSelection(matchingNode.id, matchingOpt.id);
-            if (cond.operator === 'equals') return currentVal === cond.value;
-            return false;
-          }),
-        );
-        if (conditionsMet) warnings.push(action.value);
-      }
-    });
-  });
+  const derivedEntries = Object.entries(evalResult.variables).filter(([k]) =>
+    product.definitionEngine?.variables.some((v) => v.id === k && v.kind === 'derived'),
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -185,30 +187,97 @@ export function ConfigPreview() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Package className="w-3.5 h-3.5 text-purple-500" />
-                <span className="text-xs text-muted-foreground">Components</span>
+                <span className="text-xs text-muted-foreground">BOM lines</span>
               </div>
-              <span className="text-sm font-medium text-foreground">{product.nodes.length}</span>
+              <span className="text-sm font-medium text-foreground">{evalResult.mergedBom.length}</span>
             </div>
+
+            {evalResult.costAdjustments.length > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Rule adjustments</span>
+                <span className="text-sm font-medium text-foreground tabular-nums">
+                  {costAdjustTotal >= 0 ? '+' : ''}
+                  ${costAdjustTotal.toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {opMinutes > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Cog className="w-3.5 h-3.5 text-[var(--mw-mirage)]" />
+                  <span className="text-xs text-muted-foreground">Routing (minutes)</span>
+                </div>
+                <span className="text-sm font-medium text-foreground tabular-nums">{Math.round(opMinutes)}</span>
+              </div>
+            )}
           </div>
 
-          {/* Component list */}
+          {derivedEntries.some(([, v]) => v) && (
+            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+              <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Calculated values
+              </h5>
+              <div className="space-y-1">
+                {derivedEntries
+                  .filter(([, v]) => v)
+                  .map(([k, v]) => (
+                    <div key={k} className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">{varLabel(k)}</span>
+                      <span className="font-medium tabular-nums">{v}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {evalResult.operations.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+              <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Work operations
+              </h5>
+              <div className="flex flex-wrap gap-1.5">
+                {evalResult.operations.map((op, i) => (
+                  <Badge
+                    key={op.id}
+                    variant="outline"
+                    className="text-[10px] font-normal border-[var(--mw-green)]/40 bg-[var(--mw-green)]/5 text-foreground"
+                  >
+                    {i + 1} {op.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Merged BOM (canvas + engine) */}
           <div className="mt-4 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
             <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Bill of Materials
             </h5>
             <div className="space-y-1">
-              {product.nodes.map((n) => (
-                <div key={n.id} className="flex items-center justify-between py-1">
+              {evalResult.mergedBom.map((line) => (
+                <div key={line.id} className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', NODE_TYPE_COLORS[n.type])} />
-                    <span className="text-xs text-foreground truncate">{n.name}</span>
-                    {n.quantity > 1 && (
-                      <span className="text-[10px] text-muted-foreground">x{n.quantity}</span>
+                    <div
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full shrink-0',
+                        line.isPhantom ? 'bg-violet-500' : NODE_TYPE_COLORS[line.nodeType as ProductNode['type']],
+                      )}
+                    />
+                    <span className="text-xs text-foreground truncate">{line.name}</span>
+                    {line.isPhantom && (
+                      <Badge variant="secondary" className="text-[9px] h-5 px-1">
+                        Added by logic
+                      </Badge>
                     )}
+                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                      ×{line.quantity} {line.unit}
+                    </span>
                   </div>
-                  {n.pricing.basePrice > 0 && (
-                    <span className="text-xs text-muted-foreground ml-2 shrink-0">
-                      ${n.pricing.basePrice.toFixed(2)}
+                  {line.basePriceHint > 0 && (
+                    <span className="text-xs text-muted-foreground ml-2 shrink-0 tabular-nums">
+                      ${line.basePriceHint.toFixed(2)}
                     </span>
                   )}
                 </div>

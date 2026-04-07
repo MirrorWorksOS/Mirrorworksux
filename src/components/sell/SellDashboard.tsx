@@ -65,6 +65,7 @@ import {
   Line,
   Legend,
 } from 'recharts';
+import { WinLossAnalysis } from '@/components/sell/WinLossAnalysis';
 
 const badgeNeutral =
   'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
@@ -395,6 +396,10 @@ export function SellDashboard() {
       {/* ── Analysis Tab ── */}
       {activeTab === 'analysis' && (
         <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+
+          <motion.div variants={staggerItem}>
+            <WinLossAnalysis />
+          </motion.div>
 
           {/* Sales Performance Score + Quota Attainment */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

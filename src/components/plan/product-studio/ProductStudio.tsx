@@ -19,6 +19,8 @@ import {
   X,
   AlertCircle,
   CheckCircle2,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
@@ -34,9 +36,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/components/ui/utils';
 import { useProductBuilderStore } from '@/store/productBuilderStore';
+import { validateDefinitionEngine } from '@/lib/product-studio/validate';
 import { ProductCanvas } from './ProductCanvas';
 import { PropertiesPanel } from './PropertiesPanel';
-import { RuleBuilder } from './RuleBuilder';
+import { VisualRuleWorkspace } from './VisualRuleWorkspace';
 import { ConfigPreview } from './ConfigPreview';
 import { ProductList } from './ProductList';
 import type { RightPanelTab } from './product-studio-types';
@@ -57,6 +60,8 @@ function ProductEditor() {
     showPreview,
     setShowPreview,
     selectedNodeId,
+    setLifecycleStatus,
+    setLocked,
   } = useProductBuilderStore();
 
   // Load product from route param
@@ -95,7 +100,7 @@ function ProductEditor() {
     setTimeout(() => setSaveFlash(false), 2000);
   };
 
-  // Validation issues
+  // Validation issues (canvas + definition engine)
   const issues: string[] = [];
   if (product) {
     if (product.nodes.length === 0) issues.push('Product has no nodes');
@@ -104,6 +109,9 @@ function ProductEditor() {
     product.nodes.forEach((n) => {
       if (!n.name.trim()) issues.push(`Node "${n.id}" has no name`);
       if (!n.sku.trim() && n.type !== 'service') issues.push(`${n.name || 'Unnamed node'} needs a SKU`);
+    });
+    validateDefinitionEngine(product, product.definitionEngine).forEach((v) => {
+      if (v.level === 'error') issues.push(v.message);
     });
   }
 
@@ -185,6 +193,33 @@ function ProductEditor() {
           {product.nodes.length} nodes
         </Badge>
 
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            'h-8 text-[10px] px-2',
+            product.lifecycleStatus === 'published' && 'border-[var(--mw-green)]/50 text-[var(--mw-green)]',
+          )}
+          onClick={() =>
+            setLifecycleStatus(product.lifecycleStatus === 'published' ? 'draft' : 'published')
+          }
+          title="Toggle draft / published"
+        >
+          {product.lifecycleStatus === 'published' ? 'Published' : 'Draft'}
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          title={product.locked ? 'Unlock definition' : 'Lock definition'}
+          onClick={() => setLocked(!product.locked)}
+        >
+          {product.locked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4 opacity-50" />}
+        </Button>
+
         {/* Action buttons */}
         <Button variant="outline" size="sm" onClick={handleSave} className="h-8 gap-1.5 text-xs">
           <Save className="w-3.5 h-3.5" />
@@ -261,7 +296,7 @@ function ProductEditor() {
                     <PropertiesPanel />
                   </TabsContent>
                   <TabsContent value="rules" className="flex-1 min-h-0 overflow-hidden mt-0">
-                    <RuleBuilder />
+                    <VisualRuleWorkspace />
                   </TabsContent>
                 </Tabs>
               </div>
@@ -287,7 +322,7 @@ function ProductEditor() {
                 <PropertiesPanel />
               </TabsContent>
               <TabsContent value="rules" className="flex-1 min-h-0 overflow-hidden mt-0">
-                <RuleBuilder />
+                <VisualRuleWorkspace />
               </TabsContent>
             </Tabs>
           )}

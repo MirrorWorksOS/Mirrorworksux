@@ -21,6 +21,10 @@ import {
 import { cn } from '@/components/ui/utils';
 import { toast } from 'sonner';
 import { quotes, opportunities, customers } from '@/services/mock';
+import { CapableToPromise } from '@/components/sell/CapableToPromise';
+import { DxfUploadPanel } from '@/components/sell/DxfUploadPanel';
+import { ESignaturePanel } from '@/components/sell/ESignaturePanel';
+import { LeadScoreIndicator } from '@/components/sell/LeadScoreIndicator';
 
 /* ------------------------------------------------------------------ */
 /*  Build lookup from centralised data                                */
@@ -106,6 +110,7 @@ export function SellQuoteDetail() {
     switch (tab) {
       case 'overview':
         return (
+          <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Left — Details */}
             <Card className="lg:col-span-3 p-6 space-y-5">
@@ -193,6 +198,14 @@ export function SellQuoteDetail() {
               </div>
             </Card>
           </div>
+
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <CapableToPromise />
+            <DxfUploadPanel />
+          </div>
+
+          <ESignaturePanel quote={quote} />
+          </div>
         );
 
       case 'line-items':
@@ -247,10 +260,16 @@ export function SellQuoteDetail() {
         </span>
       }
       metaRow={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={isExpired ? 'overdue' : quote.status}>
             {isExpired ? 'Expired' : STATUS_LABEL[quote.status] ?? quote.status}
           </StatusBadge>
+          {opp && typeof opp.aiScore === 'number' && (
+            <div className="flex items-center gap-2 rounded-full border border-[var(--neutral-200)] bg-card px-2 py-1">
+              <span className="text-xs text-[var(--neutral-500)]">Lead score</span>
+              <LeadScoreIndicator score={opp.aiScore} />
+            </div>
+          )}
           {opp && (
             <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
               <Link to={`/sell/opportunities/${opp.id}`} className="hover:underline">

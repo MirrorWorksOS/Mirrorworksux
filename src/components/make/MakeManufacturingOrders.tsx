@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Factory } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -119,6 +120,38 @@ export function MakeManufacturingOrders() {
           { key: 'due', header: 'Due', tooltip: 'Due date for completion', cell: (mo) => <span className="text-[var(--neutral-600)] tabular-nums">{mo.dueDate}</span> },
           { key: 'progress', header: 'Progress', tooltip: 'Manufacturing completion %', headerClassName: 'w-32', cell: (mo) => <ProgressBar value={mo.progress} size="sm" showLabel /> },
           { key: 'wos', header: 'WOs', tooltip: 'Number of work orders', headerClassName: 'text-center', cell: (mo) => <div className="text-center"><Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{mo.workOrders}</Badge></div> },
+          {
+            key: 'actions',
+            header: 'Actions',
+            headerClassName: 'w-[200px]',
+            cell: (mo) => (
+              <div
+                className="flex flex-wrap items-center gap-1"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+                role="presentation"
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-xs"
+                  onClick={() => navigate(`/make/manufacturing-orders/${mo.id}`)}
+                >
+                  View
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-xs"
+                  onClick={() => navigate(`/make/job-traveler/${mo.id}`)}
+                >
+                  Job traveler
+                </Button>
+              </div>
+            ),
+          },
         ]}
         data={filtered}
         keyExtractor={(mo) => mo.id}

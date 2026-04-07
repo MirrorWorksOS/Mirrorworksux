@@ -4,6 +4,11 @@
  */
 
 import type { Product } from './product-studio-types';
+import {
+  shelvingDefinitionEngine,
+  bracketDefinitionEngine,
+  frameDefinitionEngine,
+} from './definition-engine-templates';
 
 function uid(): string {
   return Math.random().toString(36).slice(2, 10);
@@ -126,57 +131,16 @@ const shelvingEdges = [
   { id: 'e6', sourceId: 'shelf-shelves', targetId: 'shelf-coating' },
 ];
 
-const shelvingRules = [
-  {
-    id: 'rule-1',
-    name: 'Heavy load requires thicker steel',
-    nodeId: 'shelf-steel',
-    conditionGroups: [
-      {
-        id: 'cg-1',
-        type: 'and' as const,
-        conditions: [
-          { id: 'c-1', field: 'Load Rating', operator: 'equals' as const, value: 'Heavy (500kg/shelf)' },
-        ],
-      },
-    ],
-    actions: [
-      { id: 'a-1', type: 'change_quantity' as const, target: 'shelf-steel', value: 'Thickness = 2.0mm' },
-      { id: 'a-2', type: 'adjust_price' as const, target: 'shelf-steel', value: '+$15 per shelf' },
-    ],
-    caseStatements: [],
-    priority: 1,
-    enabled: true,
-  },
-  {
-    id: 'rule-2',
-    name: 'Galvanised finish skips powder coating',
-    nodeId: 'shelf-coating',
-    conditionGroups: [
-      {
-        id: 'cg-2',
-        type: 'and' as const,
-        conditions: [
-          { id: 'c-2', field: 'Finish', operator: 'equals' as const, value: 'Galvanised' },
-        ],
-      },
-    ],
-    actions: [
-      { id: 'a-3', type: 'remove_component' as const, target: 'shelf-coating', value: 'Powder Coating' },
-    ],
-    caseStatements: [],
-    priority: 2,
-    enabled: true,
-  },
-];
-
 export const steelShelvingTemplate: Product = {
   id: 'tpl-shelving',
   name: 'Custom Steel Shelving Unit',
   description: 'Configurable industrial shelving with adjustable dimensions, shelf count, and finishes',
   nodes: shelvingNodes,
   edges: shelvingEdges,
-  rules: shelvingRules,
+  rules: [],
+  definitionEngine: shelvingDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
   createdAt: '2026-03-15T09:30:00Z',
   updatedAt: '2026-04-01T14:22:00Z',
   thumbnail: 'shelving',
@@ -268,38 +232,16 @@ const bracketEdges = [
   { id: 'be4', sourceId: 'bracket-root', targetId: 'bracket-welding' },
 ];
 
-const bracketRules = [
-  {
-    id: 'rule-b1',
-    name: 'Stainless requires certified welding',
-    nodeId: 'bracket-welding',
-    conditionGroups: [
-      {
-        id: 'cg-b1',
-        type: 'and' as const,
-        conditions: [
-          { id: 'c-b1', field: 'Material Grade', operator: 'equals' as const, value: 'Stainless 304' },
-        ],
-      },
-    ],
-    actions: [
-      { id: 'a-b1', type: 'change_quantity' as const, target: 'bracket-welding', value: 'Weld Spec = Certified (AS/NZS 1554)' },
-      { id: 'a-b2', type: 'adjust_price' as const, target: 'bracket-welding', value: '+$45' },
-      { id: 'a-b3', type: 'require_approval' as const, target: 'bracket-root', value: 'Engineering review required for stainless' },
-    ],
-    caseStatements: [],
-    priority: 1,
-    enabled: true,
-  },
-];
-
 export const customBracketTemplate: Product = {
   id: 'tpl-bracket',
   name: 'Custom Bracket Assembly',
   description: 'Configurable mounting bracket for structural steel, with material and weld options',
   nodes: bracketNodes,
   edges: bracketEdges,
-  rules: bracketRules,
+  rules: [],
+  definitionEngine: bracketDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
   createdAt: '2026-02-20T11:00:00Z',
   updatedAt: '2026-03-28T16:45:00Z',
   thumbnail: 'bracket',
@@ -405,58 +347,16 @@ const frameEdges = [
   { id: 'fe5', sourceId: 'frame-root', targetId: 'frame-treat' },
 ];
 
-const frameRules = [
-  {
-    id: 'rule-f1',
-    name: 'Hot dip galv adds lead time warning',
-    nodeId: 'frame-treat',
-    conditionGroups: [
-      {
-        id: 'cg-f1',
-        type: 'and' as const,
-        conditions: [
-          { id: 'c-f1', field: 'Surface Treatment', operator: 'equals' as const, value: 'Hot Dip Galvanise' },
-        ],
-      },
-    ],
-    actions: [
-      { id: 'a-f1', type: 'show_warning' as const, target: 'frame-root', value: 'Hot dip galvanising adds 5-7 business days lead time' },
-      { id: 'a-f2', type: 'adjust_price' as const, target: 'frame-treat', value: '+$95' },
-    ],
-    caseStatements: [],
-    priority: 1,
-    enabled: true,
-  },
-  {
-    id: 'rule-f2',
-    name: 'Large frame requires heavier section',
-    nodeId: 'frame-members',
-    conditionGroups: [
-      {
-        id: 'cg-f2',
-        type: 'and' as const,
-        conditions: [
-          { id: 'c-f2', field: 'Length', operator: 'greater_than' as const, value: '1500' },
-          { id: 'c-f3', field: 'Height', operator: 'greater_than' as const, value: '1000' },
-        ],
-      },
-    ],
-    actions: [
-      { id: 'a-f3', type: 'show_warning' as const, target: 'frame-members', value: 'Recommend 75x50 RHS or larger for this frame size' },
-    ],
-    caseStatements: [],
-    priority: 2,
-    enabled: true,
-  },
-];
-
 export const weldedFrameTemplate: Product = {
   id: 'tpl-frame',
   name: 'Welded Steel Frame',
   description: 'Rectangular welded frame for equipment mounting with size and surface treatment options',
   nodes: frameNodes,
   edges: frameEdges,
-  rules: frameRules,
+  rules: [],
+  definitionEngine: frameDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
   createdAt: '2026-01-10T08:15:00Z',
   updatedAt: '2026-03-30T10:30:00Z',
   thumbnail: 'frame',

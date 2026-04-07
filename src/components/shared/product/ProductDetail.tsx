@@ -4,6 +4,7 @@
  * Figma: 484:251921, 519:290499, 519:295628, 519:332160
  */
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
   Package, Box, Layers, Settings, Wrench, Scissors,
@@ -11,7 +12,7 @@ import {
   CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
   RotateCcw, Star, BarChart3, ChevronRight, Clock, MapPin,
-  RefreshCw, Sparkles,
+  RefreshCw, Sparkles, Boxes,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -51,6 +52,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
 
 // ── Mock product data ─────────────────────────────────────
 const PRODUCT = {
@@ -1674,6 +1676,22 @@ export interface ProductDetailProps {
 }
 
 export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
+  const { id: routeProductId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const studioProductId =
+    module === 'plan' ? studioProductIdForCatalogId(routeProductId) : null;
+
+  const openProductStudio = () => {
+    if (studioProductId) {
+      navigate(`/plan/product-studio/${studioProductId}`);
+      return;
+    }
+    toast.message('No configurator record for this SKU', {
+      description: 'Product Studio lists configurable templates you can copy.',
+    });
+    navigate('/plan/product-studio');
+  };
+
   const [tab, setTab] = useState<Tab>('Overview');
   const TabContent = TAB_COMPONENTS[tab];
 
@@ -1698,7 +1716,18 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
             <Badge variant="outline" className="border-[var(--border)] text-xs">Traceable</Badge>
           )}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          {module === 'plan' && (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-9 border-[var(--border)] text-sm gap-2"
+              onClick={openProductStudio}
+            >
+              <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              Product Studio
+            </Button>
+          )}
           <Button variant="outline" className="h-9 border-[var(--border)] text-sm" onClick={() => toast.success('Product saved')}>Save</Button>
           <Button className="h-9 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 text-sm" onClick={() => toast('New quote coming soon')}>New Quote</Button>
         </div>

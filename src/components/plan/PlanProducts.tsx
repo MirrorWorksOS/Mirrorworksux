@@ -2,16 +2,18 @@
  * Plan Products — product catalogue with production context
  * Lead time, routing steps, work centres, BOM status
  */
-import React, { useState } from 'react';
-import { Search, ExternalLink, Package } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Search, Package, Boxes } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
+import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
 
 
 const PRODUCTS = [
@@ -25,7 +27,21 @@ const PRODUCTS = [
 
 type PlanProduct = (typeof PRODUCTS)[number];
 
-const planProductColumns: MwColumnDef<PlanProduct>[] = [
+function buildPlanProductColumns(
+  navigate: ReturnType<typeof useNavigate>,
+): MwColumnDef<PlanProduct>[] {
+  const openStudio = (p: PlanProduct) => {
+    const sid = studioProductIdForCatalogId(p.id);
+    if (sid) navigate(`/plan/product-studio/${sid}`);
+    else {
+      toast.message('No configurator record for this SKU', {
+        description: 'Open Product Studio to build configurable products.',
+      });
+      navigate('/plan/product-studio');
+    }
+  };
+
+  return [
   {
     key: 'name',
     header: 'Product',
@@ -33,7 +49,7 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
     cell: (p) => (
       <div className="flex items-center gap-2">
         <Package className="w-4 h-4 text-[var(--neutral-400)] shrink-0" />
-        <a href={`/plan/products/${p.id}`} className="font-medium text-foreground hover:underline">{p.name}</a>
+        <Link to={`/plan/products/${p.id}`} className="font-medium text-foreground hover:underline">{p.name}</Link>
       </div>
     ),
   },
@@ -64,11 +80,34 @@ const planProductColumns: MwColumnDef<PlanProduct>[] = [
         : <StatusBadge variant="warning">Missing</StatusBadge>,
   },
   { key: 'lastProduced', header: 'Last produced', tooltip: 'Most recent production date', className: 'tabular-nums text-[var(--neutral-500)]', cell: (p) => p.lastProduced },
+  {
+    key: 'studio',
+    header: 'Studio',
+    tooltip: 'Product Studio — configurable product builder',
+    headerClassName: 'w-[1%] whitespace-nowrap',
+    className: 'w-[1%] whitespace-nowrap',
+    cell: (p) => (
+      <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 border-[var(--border)] text-xs shrink-0"
+          onClick={() => openStudio(p)}
+        >
+          {studioProductIdForCatalogId(p.id) ? 'Open in Studio' : 'Studio'}
+        </Button>
+      </div>
+    ),
+  },
 ];
+}
 
 export function PlanProducts() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+
+  const columns = useMemo(() => buildPlanProductColumns(navigate), [navigate]);
 
   const filtered = PRODUCTS.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -81,9 +120,21 @@ export function PlanProducts() {
         title="Products"
         subtitle={`${PRODUCTS.length} products · ${PRODUCTS.filter(p => p.hasBOM).length} with BOMs${PRODUCTS.filter(p => !p.hasBOM).length > 0 ? ` · ${PRODUCTS.filter(p => !p.hasBOM).length} missing BOM` : ''}`}
         actions={
-          <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-[var(--shape-lg)]">
-            Product master managed in <span className="font-medium">Control → Products</span>
-          </p>
+          <div className="flex flex-wrap items-center gap-2 justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 border-[var(--border)] gap-2"
+              onClick={() => navigate('/plan/product-studio')}
+            >
+              <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              Product Studio
+            </Button>
+            <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-[var(--shape-lg)] max-w-md">
+              Product master in <span className="font-medium">Control → Products</span>
+              . Use Product Studio for configurable products, options, and rules.
+            </p>
+          </div>
         }
       />
 
@@ -102,7 +153,7 @@ export function PlanProducts() {
       />
 
       <MwDataTable
-        columns={planProductColumns}
+        columns={columns}
         data={filtered}
         keyExtractor={(p) => p.id}
         onRowClick={(p) => navigate(`/plan/products/${p.id}`)}

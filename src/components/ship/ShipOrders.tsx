@@ -17,6 +17,14 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ShipBillOfLading } from '@/components/ship/ShipBillOfLading';
 
 type Stage = 'Pick' | 'Pack' | 'Ship' | 'Transit' | 'Delivered';
 
@@ -105,6 +113,7 @@ export function ShipOrders() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>(ORDERS);
+  const [bolOpen, setBolOpen] = useState(false);
 
   const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
     setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
@@ -219,6 +228,23 @@ export function ShipOrders() {
                   <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Progress</span>
                   <DetailTimeline current={selected.stage} />
                 </div>
+                <Dialog open={bolOpen} onOpenChange={setBolOpen}>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="mb-4 w-full h-12 rounded-full text-sm font-medium border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors"
+                    >
+                      View bill of lading
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Bill of lading</DialogTitle>
+                    </DialogHeader>
+                    <ShipBillOfLading />
+                  </DialogContent>
+                </Dialog>
+
                 <div className="flex gap-4">
                   <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
                     Advance stage

@@ -3,6 +3,8 @@
  * Visual product configurator for manufacturing BOM structures + rules
  */
 
+import type { ProductDefinitionEngine } from '@/lib/product-studio/types';
+
 // ── Node Types ───────────────────────────────────────────────────────────────
 
 export type ProductNodeType = 'assembly' | 'component' | 'raw_material' | 'service';
@@ -103,6 +105,7 @@ export interface ProductRule {
 
 // ── Product Definition ───────────────────────────────────────────────────────
 
+/** @deprecated Legacy form rules — cleared on migration; use definitionEngine */
 export interface Product {
   id: string;
   name: string;
@@ -113,6 +116,13 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   thumbnail?: string; // emoji or icon key for list view
+  /** Visual rule graph + variables (Product Definition Engine) */
+  definitionEngine?: ProductDefinitionEngine;
+  lifecycleStatus?: 'draft' | 'published';
+  /** Increments when definition shape changes (export / handoff) */
+  definitionVersion?: number;
+  /** Prevent edits when referenced (prototype flag) */
+  locked?: boolean;
 }
 
 // ── Canvas State ─────────────────────────────────────────────────────────────
@@ -125,7 +135,8 @@ export interface CanvasTransform {
 
 // ── Panel Tabs ───────────────────────────────────────────────────────────────
 
-export type RightPanelTab = 'properties' | 'rules' | 'preview';
+/** Preview uses toolbar `showPreview` only — not a tab value (avoids empty TabsContent). */
+export type RightPanelTab = 'properties' | 'rules';
 
 // ── Utility ──────────────────────────────────────────────────────────────────
 

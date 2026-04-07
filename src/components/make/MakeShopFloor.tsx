@@ -19,6 +19,9 @@ import { MakeShopFloorKanban } from './MakeShopFloorKanban';
 import { WorkTab } from '../shop-floor/WorkTab';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
 import { useNavigate } from 'react-router';
+import { OfflineIndicator } from '@/components/make/OfflineIndicator';
+import { WorkOrderSequencing } from '@/components/make/WorkOrderSequencing';
+import { BatchTraceability } from '@/components/make/BatchTraceability';
 
 const TABS: JobWorkspaceTabConfig[] = [
   { id: 'overview', label: 'Overview' },
@@ -33,6 +36,7 @@ export function MakeShopFloor() {
 
   return (
     <>
+      <OfflineIndicator />
       <JobWorkspaceLayout
         breadcrumbs={[
           { label: 'Make', href: '/make' },
@@ -58,7 +62,15 @@ export function MakeShopFloor() {
         renderTabPanel={(tabId) => {
           switch (tabId) {
             case 'overview':
-              return <OverviewTab />;
+              return (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <WorkOrderSequencing />
+                    <BatchTraceability />
+                  </div>
+                  <OverviewTab />
+                </div>
+              );
             case 'kanban':
               return (
                 <div className="h-[calc(100vh-280px)] overflow-hidden">

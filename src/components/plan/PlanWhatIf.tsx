@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { planService } from "@/services/planService";
 import type { Job } from "@/types/entities";
+import { RushOrderPanel } from "@/components/plan/RushOrderPanel";
 
 /* ── products mock ───────────────────────────────────────────────── */
 
@@ -233,6 +234,10 @@ export function PlanWhatIf() {
             )}
           </Card>
         </motion.div>
+      </div>
+
+      <div className="mt-6">
+        <RushOrderPanel />
       </div>
     </PageShell>
   );
