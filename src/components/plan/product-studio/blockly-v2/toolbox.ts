@@ -147,19 +147,36 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   // `blockly-theme.css` — adding a new category means picking a slug here
   // and adding a matching `--mw-cat-icon-<slug>` data URI in the CSS.
 
-  // Recipe — surfaces both the new pricing/making hats. The legacy generic
-  // hat (`mw_when_configured`) stays registered but is hidden so old XML still
-  // loads cleanly. The two new hats embed a `Product` value socket so the user
-  // picks which product the recipe describes from the same dropdown that's
-  // used everywhere else.
+  // Recipe — the entry point of the studio. Surfaces both pricing/making hats
+  // AND the product reference chips, so the user can author a complete recipe
+  // ("price this product, then make this product, with these sub-assemblies")
+  // without ever leaving the Recipe category. Previously `mw_product_ref` and
+  // `mw_op_assemble_with` lived in their own "Products" sibling under Setup,
+  // which buried the most-used chips two clicks away. Merging them into Recipe
+  // collapses the discoverability gap — the same blocks are still findable
+  // under Sub-products ▸ Products for the "compose another product" flow.
+  //
+  // Legacy: the generic `mw_when_configured` hat stays registered but is
+  // hidden so old XML still loads cleanly.
   const triggersCategory: CategoryEntry = {
     kind: 'category',
     name: 'Recipe',
-    colour: '45',
+    colour: '#FFCF4B',
     cssConfig: { row: 'mw-cat-recipe' },
     contents: [
       { kind: 'block', type: 'mw_when_pricing' },
       { kind: 'block', type: 'mw_when_making' },
+      { kind: 'sep', gap: 8 },
+      // Product reference chips — the recipe hats' PRODUCT socket needs one of
+      // these to bind. Surfacing them inline means a brand-new user opens
+      // Recipe, drags `When pricing this`, drags a `Product`, and is already
+      // authoring — no category-hunting required.
+      { kind: 'block', type: 'mw_product_ref' },
+      {
+        kind: 'block',
+        type: 'mw_op_assemble_with',
+        inputs: { QTY: numShadow(1) },
+      },
     ],
   };
 
@@ -181,7 +198,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const inputsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Inputs',
-    colour: '290',
+    colour: '#9B4DFF',
     cssConfig: { row: 'mw-cat-inputs' },
     contents: [
       // ── Metal manufacturing presets ────────────────────────────────────
@@ -243,7 +260,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const variablesCategory: CategoryEntry = {
     kind: 'category',
     name: 'Variables',
-    colour: '260',
+    colour: '#FF4DB8',
     cssConfig: { row: 'mw-cat-variables' },
     contents: [
       {
@@ -258,7 +275,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const mathCategory: CategoryEntry = {
     kind: 'category',
     name: 'Math',
-    colour: '120',
+    colour: '#5FE07F',
     cssConfig: { row: 'mw-cat-math' },
     contents: [
       {
@@ -303,7 +320,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const logicCategory: CategoryEntry = {
     kind: 'category',
     name: 'Logic',
-    colour: '210',
+    colour: '#4D7CFF',
     cssConfig: { row: 'mw-cat-logic' },
     contents: [
       {
@@ -328,7 +345,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const timeCategory: CategoryEntry = {
     kind: 'category',
     name: 'Time',
-    colour: '175',
+    colour: '#7B9386',
     cssConfig: { row: 'mw-cat-time' },
     contents: [
       // Most-used: a literal time value with units. AMOUNT/UNIT live in fields.
@@ -351,14 +368,19 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
     ],
   };
 
-  // Costs (Calculate) — authoring helpers for AUD subtotals. Every reporter
-  // outputs an AUD number that can be dropped into a cost-adjust block. The
-  // literal block carries an inline `A$` glyph so the recipe reads like the
-  // way an Aussie estimator scribbles a margin calculation on paper.
+  // Money (Calculate ▸ Money) — authoring helpers for AUD subtotals. Every
+  // reporter outputs an AUD number that can be dropped into a cost-adjust
+  // block. The literal block carries an inline `A$` glyph so the recipe reads
+  // like the way an Aussie estimator scribbles a margin calculation on paper.
+  //
+  // Renamed from "Costs" → "Money" to disambiguate from Output ▸ Costs (the
+  // statement-level rollup adjustments). Calculate ▸ Money is for *building*
+  // a dollar value as an expression; Output ▸ Costs is for *applying* a
+  // dollar value to the rollup. Same icon (banknote), different intent.
   const costsCalcCategory: CategoryEntry = {
     kind: 'category',
-    name: 'Costs',
-    colour: '95',
+    name: 'Money',
+    colour: '#A68D60',
     cssConfig: { row: 'mw-cat-money' },
     contents: [
       {
@@ -390,7 +412,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const actionsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Actions',
-    colour: '280',
+    colour: '#9B4DFF',
     cssConfig: { row: 'mw-cat-actions' },
     contents: [
       {
@@ -415,7 +437,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const geometryCategory: CategoryEntry = {
     kind: 'category',
     name: 'Geometry',
-    colour: '160',
+    colour: '#4DDDC9',
     cssConfig: { row: 'mw-cat-geometry' },
     contents: [
       {
@@ -453,7 +475,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const materialsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Materials',
-    colour: '30',
+    colour: '#FF944D',
     cssConfig: { row: 'mw-cat-materials' },
     contents:
       opts.materials.length > 0
@@ -464,7 +486,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const cuttingCategory: CategoryEntry = {
     kind: 'category',
     name: 'Cutting',
-    colour: '195',
+    colour: '#4D7CFF',
     cssConfig: { row: 'mw-cat-cutting' },
     contents: [
       {
@@ -520,7 +542,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const formingCategory: CategoryEntry = {
     kind: 'category',
     name: 'Forming',
-    colour: '230',
+    colour: '#9B4DFF',
     cssConfig: { row: 'mw-cat-forming' },
     contents: [
       {
@@ -539,7 +561,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const weldingCategory: CategoryEntry = {
     kind: 'category',
     name: 'Welding',
-    colour: '350',
+    colour: '#FF584D',
     cssConfig: { row: 'mw-cat-welding' },
     contents: [
       {
@@ -556,7 +578,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const finishesCategory: CategoryEntry = {
     kind: 'category',
     name: 'Finishes',
-    colour: '330',
+    colour: '#FF4D7C',
     cssConfig: { row: 'mw-cat-finishes' },
     contents: [
       // Surface-prep operations live here so the user finds grind / sandblast
@@ -583,7 +605,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const assemblyCategory: CategoryEntry = {
     kind: 'category',
     name: 'Assembly',
-    colour: '50',
+    colour: '#A68D60',
     cssConfig: { row: 'mw-cat-assembly' },
     contents: [
       {
@@ -616,7 +638,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const productsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Products',
-    colour: '180',
+    colour: '#4DDDC9',
     cssConfig: { row: 'mw-cat-products' },
     contents: [
       { kind: 'block', type: 'mw_product_ref' },
@@ -631,7 +653,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const operationsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Operations',
-    colour: '200',
+    colour: '#8FA6A6',
     cssConfig: { row: 'mw-cat-operations' },
     contents: [
       {
@@ -645,7 +667,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const costsCategory: CategoryEntry = {
     kind: 'category',
     name: 'Costs',
-    colour: '15',
+    colour: '#A68D60',
     cssConfig: { row: 'mw-cat-costs' },
     contents: [
       {
@@ -662,7 +684,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
   const outputCategory: CategoryEntry = {
     kind: 'category',
     name: 'Output',
-    colour: '0',
+    colour: '#1A2732',
     cssConfig: { row: 'mw-cat-output' },
     contents: [
       {
@@ -700,20 +722,25 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
       {
         kind: 'category',
         name: 'Setup',
-        colour: '45',
+        // MW Yellow — same hue as the Recipe leaf so the Setup super-row reads
+        // as the brand-coloured "front door" of the studio. Recipe is the
+        // first thing inside it, so the colours line up.
+        colour: '#FFCF4B',
         cssConfig: { row: 'mw-cat-setup' },
-        // Products lives in Setup as well as Sub-products: a recipe almost
-        // always *opens* by picking which product it describes (via the
-        // recipe-hat Product socket), and that picking happens at the same
-        // moment the user is declaring inputs and variables — i.e. setup. The
-        // *same* `productsCategory` reference is reused under Sub-products
-        // below so there's only one place to edit when adding product blocks.
-        contents: [triggersCategory, inputsCategory, variablesCategory, productsCategory],
+        // Products is *no longer* a sibling of Recipe in Setup — its blocks
+        // (`mw_product_ref`, `mw_op_assemble_with`) are now folded directly
+        // into the Recipe leaf so the most-used recipe entry points live one
+        // click deep, not two. The `productsCategory` reference still lives
+        // under Sub-products ▸ Products for the "compose another product"
+        // flow, so nothing has been removed — just reorganised.
+        contents: [triggersCategory, inputsCategory, variablesCategory],
       },
       {
         kind: 'category',
         name: 'Calculate',
-        colour: '120',
+        // Success green — Calculate is the "pure functions" bucket and green
+        // matches the Math leaf inside it.
+        colour: '#5FE07F',
         cssConfig: { row: 'mw-cat-calculate' },
         contents: [
           mathCategory,
@@ -726,7 +753,9 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
       {
         kind: 'category',
         name: 'Build',
-        colour: '195',
+        // Graph 1 orange — Build is the "do physical things to metal" bucket
+        // and orange matches the Materials leaf inside it.
+        colour: '#FF944D',
         cssConfig: { row: 'mw-cat-build' },
         contents: [
           materialsCategory,
@@ -740,14 +769,17 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
       {
         kind: 'category',
         name: 'Sub-products',
-        colour: '180',
+        // Graph 4 teal — matches the Products leaf inside it.
+        colour: '#4DDDC9',
         cssConfig: { row: 'mw-cat-subproducts' },
         contents: [productsCategory, operationsCategory, actionsCategory],
       },
       {
         kind: 'category',
         name: 'Output',
-        colour: '0',
+        // MW Mirage — the dark brand colour, used for the "what falls out the
+        // bottom" bucket so the rollups read as the *result* of the recipe.
+        colour: '#1A2732',
         cssConfig: { row: 'mw-cat-output-group' },
         contents: [outputCategory, costsCategory],
       },

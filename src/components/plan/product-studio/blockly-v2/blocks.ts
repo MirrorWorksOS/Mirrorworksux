@@ -314,26 +314,41 @@ class FieldSearchableDropdown extends Blockly.FieldDropdown {
 
 Blockly.fieldRegistry.register('field_searchable_dropdown', FieldSearchableDropdown);
 
-// ── Hue constants ────────────────────────────────────────────────────────────
-const HUE_TRIGGER = 45;
-const HUE_INPUT = 290;
-const HUE_VARIABLE = 260;
-const HUE_OPERATOR = 120;
-const HUE_LOGIC = 210;
-const HUE_GEOMETRY = 160;
-const HUE_TIME = 175; // calc-family teal/cyan for the Time helper blocks
-const HUE_MONEY = 95; // calc-family green for the Cost helper blocks (vs HUE_COST red on the rollup blocks)
-const HUE_MATERIAL = 30;
-const HUE_CUTTING = 195;
-const HUE_FORMING = 230;
-const HUE_WELDING = 350;
-const HUE_FINISH = 330;
-const HUE_ASSEMBLY = 50;
-const HUE_PRODUCT = 180;
-const HUE_OPERATION = 200;
-const HUE_COST = 15;
-const HUE_ACTION = 280; // ERP action / command blocks (purple — distinct from triggers / inputs)
-const HUE_OUTPUT = 0;
+// ── Brand colour constants ───────────────────────────────────────────────────
+//
+// Each block category is mapped to a hex from the MirrorWorks brand sheet
+// (DesignSystem.md UI/UX + Brand Colours), so the canvas no longer ships with
+// Blockly's stock rainbow. Blockly's `setColour()` accepts a hex string and
+// computes the block tile gradient/border from there. Pairs of categories that
+// share a colour (e.g. Forming & Actions both purple) live under different
+// parent super-categories so the duplication is unambiguous in context.
+//
+//   Setup       — Recipe (yellow)   • Inputs (purple)  • Variables (magenta)
+//   Calculate   — Math (green)      • Logic (blue)     • Geometry (teal)
+//                 Time (sea foam)   • Money (saddle)
+//   Build       — Materials (orange)• Cutting (blue)   • Forming (purple)
+//                 Welding (red)     • Finishes (pink)  • Assembly (saddle)
+//   Sub-products— Products (teal)   • Operations (earth) • Actions (purple)
+//   Output      — BOM/warn (mirage) • Costs (saddle)
+const HUE_TRIGGER = '#FFCF4B';   // MW Yellow — recipe entry, brand thread
+const HUE_INPUT = '#9B4DFF';     // Graph 5 purple — typed configurator inputs
+const HUE_VARIABLE = '#FF4DB8';  // Graph 3 magenta — set/get reporters
+const HUE_OPERATOR = '#5FE07F';  // Success green — math operators (calc family)
+const HUE_LOGIC = '#4D7CFF';     // Primary blue — control flow / compares
+const HUE_GEOMETRY = '#4DDDC9';  // Graph 4 teal — shape calculators
+const HUE_TIME = '#7B9386';      // MW Sea Foam — time helpers
+const HUE_MONEY = '#A68D60';     // MW Saddle — money calc helpers (AUD)
+const HUE_MATERIAL = '#FF944D';  // Graph 1 orange — material refs
+const HUE_CUTTING = '#4D7CFF';   // Primary blue — cold cutting (laser/plasma)
+const HUE_FORMING = '#9B4DFF';   // Graph 5 purple — bending / rolling
+const HUE_WELDING = '#FF584D';   // Alert red — hot work
+const HUE_FINISH = '#FF4D7C';    // Graph 2 pink — surface treatments
+const HUE_ASSEMBLY = '#A68D60';  // MW Saddle — mechanical fastening
+const HUE_PRODUCT = '#4DDDC9';   // Graph 4 teal — sub-product compose
+const HUE_OPERATION = '#8FA6A6'; // MW Earth — generic operation escape hatch
+const HUE_COST = '#A68D60';      // MW Saddle — cost adjustments (financial)
+const HUE_ACTION = '#9B4DFF';    // Graph 5 purple — ERP side-effects
+const HUE_OUTPUT = '#1A2732';    // MW Mirage — outputs / dispatch (dark)
 
 // Guard against double-registration on hot reload.
 let registered = false;
@@ -372,8 +387,13 @@ export function registerStudioV2Blocks(): void {
   Blockly.Blocks['mw_when_pricing'] = {
     init() {
       this.appendDummyInput().appendField('When pricing this');
+      // setCheck accepts an array — list every type the product socket should
+      // tolerate so a user can plug in a `mw_product_ref` (Product), a get-var
+      // bound to a product input (Number/String/null), or a future text-based
+      // SKU literal. Without 'String' in the list a get-var binding silently
+      // refuses to drop into the hat, which is the #1 papercut on first use.
       this.appendValueInput('PRODUCT')
-        .setCheck('Product')
+        .setCheck(['Product', 'String'])
         .appendField('product');
       this.setInputsInline(true);
       this.setNextStatement(true, null);
@@ -389,7 +409,7 @@ export function registerStudioV2Blocks(): void {
     init() {
       this.appendDummyInput().appendField('When making this');
       this.appendValueInput('PRODUCT')
-        .setCheck('Product')
+        .setCheck(['Product', 'String'])
         .appendField('product');
       this.setInputsInline(true);
       this.setNextStatement(true, null);
@@ -852,7 +872,10 @@ export function registerStudioV2Blocks(): void {
       this.appendDummyInput()
         .appendField('Material')
         .appendField(new Blockly.FieldTextInput('—'), 'LABEL');
-      this.setOutput(true, 'Material');
+      // Multi-typed output: Material is the primary type but we also expose
+      // String so the chip can plug into any [Material, String] socket and
+      // String-only debugging displays without an extra adapter block.
+      this.setOutput(true, ['Material', 'String']);
       this.setColour(HUE_MATERIAL);
       this.setTooltip('A reference to a material from the Material Library.');
     },
@@ -864,7 +887,7 @@ export function registerStudioV2Blocks(): void {
       this.appendDummyInput()
         .appendField('Finish')
         .appendField(new Blockly.FieldTextInput('—'), 'LABEL');
-      this.setOutput(true, 'Finish');
+      this.setOutput(true, ['Finish', 'String']);
       this.setColour(HUE_FINISH);
       this.setTooltip('A reference to a finish from the Finish Library.');
     },
@@ -967,6 +990,13 @@ export function registerStudioV2Blocks(): void {
       );
     },
   };
+
+  // ── Recipe ▸ shop-floor input shortcut ─────────────────────────────────────
+  // The recipe hat's PRODUCT socket needs a value chip — without one the
+  // first-time user is stuck with an empty hexagonal hole and no clue what to
+  // drop in. Sub-products ▸ Products' `mw_product_ref` is the canonical answer
+  // but it lives two categories away. We surface the same chip directly under
+  // Recipe via the toolbox merge below; no new block type required.
 
   // ── Cutting (laser / waterjet / drill / tap) ───────────────────────────────
   // Each emits an `operation` engine block with computed setup + run minutes.
@@ -1326,8 +1356,13 @@ export function registerStudioV2Blocks(): void {
 
   Blockly.Blocks['mw_add_material_bom'] = {
     init() {
+      // Accept ['Material', 'String'] so a get-var bound to a `mw_input_material`
+      // declaration (which carries a material id as a string at run time) drops
+      // straight into the BOM line. Without 'String' in the check the only valid
+      // source was a static `mw_material_ref` chip, which made dynamic recipes
+      // impossible.
       this.appendValueInput('MATERIAL')
-        .setCheck('Material')
+        .setCheck(['Material', 'String'])
         .appendField('Add material to BOM');
       this.appendValueInput('QTY').setCheck('Number').appendField('qty');
       this.setInputsInline(true);
@@ -1340,7 +1375,11 @@ export function registerStudioV2Blocks(): void {
 
   Blockly.Blocks['mw_apply_finish'] = {
     init() {
-      this.appendValueInput('FINISH').setCheck('Finish').appendField('Apply finish');
+      // Same loosening as mw_add_material_bom — accept either a static
+      // `mw_finish_ref` chip OR a get-var pointing at an `mw_input_finish` decl.
+      this.appendValueInput('FINISH')
+        .setCheck(['Finish', 'String'])
+        .appendField('Apply finish');
       this.appendValueInput('AREA').setCheck('Number').appendField('area m²');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
@@ -1609,8 +1648,10 @@ export function registerStudioV2Blocks(): void {
       this.appendDummyInput()
         .appendField('▶ Create purchase request')
         .appendField(new Blockly.FieldTextInput('Stock top-up'), 'TITLE');
+      // Accept ['Material', 'String'] so the action can be triggered by a
+      // dynamic material chosen via an input variable, not just a static chip.
       this.appendValueInput('MATERIAL')
-        .setCheck('Material')
+        .setCheck(['Material', 'String'])
         .appendField('material');
       this.appendValueInput('QTY').setCheck('Number').appendField('qty');
       this.setInputsInline(true);

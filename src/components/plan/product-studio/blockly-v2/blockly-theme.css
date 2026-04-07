@@ -22,15 +22,20 @@
 }
 
 /* ── Toolbox (left rail) ─────────────────────────────────────────────────── */
+/* Bumped from 168px → 204px and row height 32 → 42 / icon 14 → 18 / label
+   12 → 14 to make the rail read as a *primary* navigator rather than a
+   compact secondary nav. The user explicitly asked for bigger icons + text,
+   and the wider rail keeps the longest super-category labels ("Sub-products",
+   "Calculate") on a single line at the new font size. */
 .mw-blockly-shell .blocklyToolbox {
   background: var(--mw-off-white) !important;
   border-right: 1px solid var(--neutral-200);
-  padding: 10px 0 !important;
+  padding: 12px 0 !important;
   font-family: var(--font-family-sans);
   box-shadow: none;
   overflow-y: auto;
-  min-width: 168px;
-  max-width: 168px;
+  min-width: 204px;
+  max-width: 204px;
   transition: max-width 180ms var(--ease-standard),
               min-width 180ms var(--ease-standard),
               opacity 120ms var(--ease-standard);
@@ -55,95 +60,248 @@
   list-style: none;
 }
 
-/* The actual category row (Triggers, Variables, …) — compact size */
-.mw-blockly-shell .blocklyToolboxCategory {
+/* The actual category row (Recipe, Variables, …) — pill-shaped to match the
+   main sidebar's nav rows. We *override* Blockly's inline 8px coloured
+   `border-left` (the "bracket") and replace the category indicator with a
+   tinted lucide icon glyph instead — see the per-slug `--mw-cat-color`
+   definitions further down.
+   ── Selector note ──
+   Blockly v12 *replaces* the default `blocklyToolboxCategory` class on a row
+   with whatever the user supplies via `cssConfig.row`. We always set
+   `mw-cat-<slug>` (see toolbox.ts), so the row element no longer carries the
+   `blocklyToolboxCategory` class at runtime — targeting it via attribute
+   selector `[class*='mw-cat-']` is the only reliable hook. The
+   `.blocklyToolbox` ancestor scopes the rule to category rows (not the icon
+   span, which also matches the attribute selector). */
+.mw-blockly-shell .blocklyToolbox [class*='mw-cat-']:not(.blocklyToolboxCategoryLabel) {
   display: flex !important;
   align-items: center !important;
-  gap: 8px;
-  height: 32px;
-  padding: 0 10px 0 8px !important;
-  margin: 1px 6px;
-  border-radius: var(--shape-sm, 10px);
-  /* Slim the inline 8px swatch down to a 3px thread; keep Blockly's colour. */
-  border-left-width: 3px !important;
-  border-left-style: solid !important;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 16px !important;
+  margin: 1px 0;
+  /* Full pill — matches sidebar `rounded-full` */
+  border-radius: 9999px !important;
+  /* Kill Blockly's inline 8px coloured border-left bracket entirely. */
+  border-left: 0 !important;
   cursor: pointer;
-  transition: background-color 100ms var(--ease-standard);
+  transition: background-color 150ms var(--ease-standard),
+              color 150ms var(--ease-standard);
 }
 
-.mw-blockly-shell .blocklyToolboxCategory:hover {
-  background: var(--neutral-100);
+.mw-blockly-shell .blocklyToolbox [class*='mw-cat-']:not(.blocklyToolboxCategoryLabel):hover {
+  background: var(--neutral-200) !important;
 }
 
-/* Selected — yellow thread + warm yellow wash */
-.mw-blockly-shell .blocklyToolboxSelected,
-.mw-blockly-shell .blocklyToolboxCategory.blocklyToolboxSelected {
-  background: var(--mw-yellow-50) !important;
+/* Selected — dark Mirage pill with white text + icon, matching the sidebar's
+   active nav-item treatment.
+   ── Specificity note ──
+   The hover rule above carries `:not(.blocklyToolboxCategoryLabel)`, which
+   adds the inner class's specificity. We mirror that `:not()` here so the
+   selected rule has equal-or-greater specificity, then source order
+   guarantees selected wins on click (selected appears later in the file). */
+.mw-blockly-shell .blocklyToolbox
+  [class*='mw-cat-'].blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) {
+  background: var(--mw-mirage) !important;
 }
-.mw-blockly-shell .blocklyToolboxSelected .blocklyToolboxCategoryLabel {
-  color: var(--neutral-900) !important;
+.mw-blockly-shell .blocklyToolbox
+  [class*='mw-cat-'].blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel)
+  .blocklyToolboxCategoryLabel {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+/* ── Indentation for leaf categories ───────────────────────────────────────
+   In a nested toolbox, Blockly v12 wraps every parent category in
+   `.blocklyToolboxCategoryContainer > .blocklyToolboxCategoryGroup` and then
+   nests another container per child. So a *leaf* (Recipe inside Setup, Math
+   inside Calculate, …) sits at least two `.blocklyToolboxCategoryGroup`s deep
+   from the toolbox root, while a *super-category* (Setup, Calculate, …) sits
+   exactly one deep. Targeting "two-deep groups" gives us a one-rule indent. */
+.mw-blockly-shell .blocklyToolbox
+  .blocklyToolboxCategoryGroup
+  .blocklyToolboxCategoryGroup
+  [class*='mw-cat-']:not(.blocklyToolboxCategoryLabel) {
+  /* 16 (base) + 16 (indent) = aligns the leaf icon with the super label */
+  padding-left: 32px !important;
+  min-height: 38px;
+}
+
+/* ── Super-category visual treatment ───────────────────────────────────────
+   The 5 top-level rows (Setup / Calculate / Build / Sub-products / Output)
+   need to read as section headers, not just bigger leaves. We bold the label,
+   add breathing room above each one, and let the chevron-style expansion
+   read as primary navigation rather than another menu strip. */
+.mw-blockly-shell .mw-cat-setup,
+.mw-blockly-shell .mw-cat-calculate,
+.mw-blockly-shell .mw-cat-build,
+.mw-blockly-shell .mw-cat-subproducts,
+.mw-blockly-shell .mw-cat-output-group {
+  margin-top: 14px !important;
+}
+.mw-blockly-shell .mw-cat-setup:first-child,
+.mw-blockly-shell .blocklyToolbox > div > div:first-child .mw-cat-setup,
+.mw-blockly-shell .blocklyToolboxCategoryGroup > .blocklyToolboxCategoryContainer:first-child > .blocklyTreeRowContentContainer > [class*='mw-cat-'] {
+  /* No top margin on the very first super-category row */
+  margin-top: 0 !important;
+}
+
+.mw-blockly-shell .mw-cat-setup .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-calculate .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-build .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-subproducts .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-output-group .blocklyToolboxCategoryLabel {
+  font-size: 13px !important;
   font-weight: 600 !important;
+  letter-spacing: 0.4px !important;
+  text-transform: uppercase !important;
+  color: var(--neutral-500) !important;
+}
+
+/* The super-category row itself has no hover affordance — the click target
+   is the whole nav strip, but we don't want it to look pressable when its
+   role is to label a group. Children handle the click feedback. */
+.mw-blockly-shell .mw-cat-setup,
+.mw-blockly-shell .mw-cat-calculate,
+.mw-blockly-shell .mw-cat-build,
+.mw-blockly-shell .mw-cat-subproducts,
+.mw-blockly-shell .mw-cat-output-group {
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  background: transparent !important;
+}
+.mw-blockly-shell .mw-cat-setup:hover,
+.mw-blockly-shell .mw-cat-calculate:hover,
+.mw-blockly-shell .mw-cat-build:hover,
+.mw-blockly-shell .mw-cat-subproducts:hover,
+.mw-blockly-shell .mw-cat-output-group:hover {
+  background: var(--neutral-100) !important;
+}
+
+/* When a super-category row is selected, the dark Mirage pill is reserved
+   for *leaves* — supers fall back to a subtler neutral wash so the active
+   leaf is unambiguous. The `:not()` mirrors the leaf-selected rule above so
+   specificity ties out and source order picks the right winner. */
+.mw-blockly-shell .blocklyToolbox .mw-cat-setup.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel),
+.mw-blockly-shell .blocklyToolbox .mw-cat-calculate.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel),
+.mw-blockly-shell .blocklyToolbox .mw-cat-build.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel),
+.mw-blockly-shell .blocklyToolbox .mw-cat-subproducts.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel),
+.mw-blockly-shell .blocklyToolbox .mw-cat-output-group.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) {
+  background: var(--neutral-100) !important;
+}
+.mw-blockly-shell .blocklyToolbox .mw-cat-setup.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .blocklyToolbox .mw-cat-calculate.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .blocklyToolbox .mw-cat-build.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .blocklyToolbox .mw-cat-subproducts.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .blocklyToolbox .mw-cat-output-group.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel {
+  color: var(--neutral-700) !important;
+}
+.mw-blockly-shell .blocklyToolbox .mw-cat-setup.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel::before,
+.mw-blockly-shell .blocklyToolbox .mw-cat-calculate.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel::before,
+.mw-blockly-shell .blocklyToolbox .mw-cat-build.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel::before,
+.mw-blockly-shell .blocklyToolbox .mw-cat-subproducts.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel::before,
+.mw-blockly-shell .blocklyToolbox .mw-cat-output-group.blocklyToolboxSelected:not(.blocklyToolboxCategoryLabel) .blocklyToolboxCategoryLabel::before {
+  background-color: var(--mw-cat-color, currentColor) !important;
 }
 
 /* The Blockly v12 icon span is empty — hide it; the colour rides on the
-   border-left thread instead. We render lucide icons via a `::before`
-   pseudo-element on the row label below, so the empty span is redundant. */
+   tinted `::before` icon glyph instead. */
 .mw-blockly-shell .blocklyToolboxCategoryIcon {
   display: none !important;
 }
 
-/* Category label — Roboto label-medium (12 / 500 / 0.1px) for the compact rail.
+/* Category label — Roboto title-small (14 / 500 / 0.1px) for the comfortable
+   rail. Bumped from 12 → 14px alongside the row-height bump above so the
+   text reads as primary navigation rather than a footnote.
    We turn it into a flex row so the `::before` lucide icon sits inline with
    the text and inherits the row's hover/selected state. */
 .mw-blockly-shell .blocklyToolboxCategoryLabel {
   font-family: var(--font-family-sans) !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
   letter-spacing: 0.1px !important;
   line-height: 1 !important;
   color: var(--neutral-800) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 10px !important;
 }
 
 /* ── Lucide icons on the toolbox rows ──────────────────────────────────────
    Each category in `toolbox.ts` is given a `cssConfig.row` slug like
-   `mw-cat-recipe`. Blockly v12 splices that class onto the
-   `.blocklyToolboxCategory` element, and we hang a `::before` icon mask off
-   the matching label inside. The icon SVG ships as a base64-free inline data
-   URI so the bundle stays cacheable and the colour follows the row's
-   `currentColor` (which we drive via the design-system text token).
+   `mw-cat-recipe`. Blockly v12 splices that class onto the row container, and
+   we hang a `::before` icon mask off the matching label inside.
 
-   Adding a new category? Pick a slug, add it to `toolbox.ts`, then add a new
-   block here matching `.mw-cat-<slug> .blocklyToolboxCategoryLabel::before {
-   --mw-cat-icon: url("data:image/svg+xml;utf8,<svg…/>"); }`.
+   Each slug carries TWO custom properties:
+     --mw-cat-icon  : the lucide SVG data URI used as the mask shape
+     --mw-cat-color : the MW brand hex used as the icon fill (replaces the
+                      old left-edge "bracket" indicator with a tinted glyph)
+
+   Adding a new category? Pick a slug, add it to `toolbox.ts`, set both
+   variables in the per-slug rule below, and add a row class to either the
+   indent rule (for leaves) or the super-category list.
 
    Stroke icons are sourced 1:1 from lucide.dev — same library as the rest of
    the app — and trimmed to a 24×24 viewBox with stroke-width 1.75 to match
    the rest of the studio chrome. */
 
-/* Shared icon glyph rules — every `mw-cat-*` category inherits this */
+/* ── Per-slug brand colour variables ──────────────────────────────────────
+   These replace the old `border-left: 4px solid <brand>` "bracket". The
+   colour now lives on the lucide icon glyph itself (set as the `::before`'s
+   `background-color` via the var below), so each row reads as a coloured
+   icon + neutral label rather than a vertical edge swatch.
+
+   Mappings mirror toolbox.ts / blocks.ts so that the toolbox row, the
+   live block on the canvas, and the icon glyph all share the same hue. */
+.mw-blockly-shell .mw-cat-recipe,
+.mw-blockly-shell .mw-cat-setup        { --mw-cat-color: #FFCF4B; } /* MW Yellow */
+.mw-blockly-shell .mw-cat-inputs,
+.mw-blockly-shell .mw-cat-forming,
+.mw-blockly-shell .mw-cat-actions      { --mw-cat-color: #9B4DFF; } /* Graph 5 purple */
+.mw-blockly-shell .mw-cat-variables    { --mw-cat-color: #FF4DB8; } /* Graph 3 magenta */
+.mw-blockly-shell .mw-cat-finishes     { --mw-cat-color: #FF4D7C; } /* Graph 2 pink */
+.mw-blockly-shell .mw-cat-math,
+.mw-blockly-shell .mw-cat-calculate    { --mw-cat-color: #5FE07F; } /* Success green */
+.mw-blockly-shell .mw-cat-logic,
+.mw-blockly-shell .mw-cat-cutting      { --mw-cat-color: #4D7CFF; } /* Primary blue */
+.mw-blockly-shell .mw-cat-geometry,
+.mw-blockly-shell .mw-cat-products,
+.mw-blockly-shell .mw-cat-subproducts  { --mw-cat-color: #4DDDC9; } /* Graph 4 teal */
+.mw-blockly-shell .mw-cat-time         { --mw-cat-color: #7B9386; } /* Sea Foam */
+.mw-blockly-shell .mw-cat-money,
+.mw-blockly-shell .mw-cat-assembly,
+.mw-blockly-shell .mw-cat-costs        { --mw-cat-color: #A68D60; } /* Saddle */
+.mw-blockly-shell .mw-cat-materials,
+.mw-blockly-shell .mw-cat-build        { --mw-cat-color: #FF944D; } /* Graph 1 orange */
+.mw-blockly-shell .mw-cat-welding      { --mw-cat-color: #FF584D; } /* Alert red */
+.mw-blockly-shell .mw-cat-operations   { --mw-cat-color: #8FA6A6; } /* MW Earth */
+.mw-blockly-shell .mw-cat-output,
+.mw-blockly-shell .mw-cat-output-group { --mw-cat-color: #1A2732; } /* MW Mirage */
+
+/* Shared icon glyph rules — every `mw-cat-*` category inherits this.
+   The icon is filled via `--mw-cat-color` (set per-slug above) so the
+   coloured glyph itself is the category indicator. Falls back to
+   `currentColor` so labels without a brand colour still render. */
 .mw-blockly-shell [class*='mw-cat-'] .blocklyToolboxCategoryLabel::before {
   content: '';
   display: inline-block;
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
-  background-color: currentColor;
+  background-color: var(--mw-cat-color, currentColor);
   -webkit-mask-image: var(--mw-cat-icon, none);
   mask-image: var(--mw-cat-icon, none);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  -webkit-mask-size: 14px 14px;
-  mask-size: 14px 14px;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
 }
 
-/* Selected row — bump the icon's contrast to match the bolded label */
+/* Selected row — icon flips to white so it reads against the dark Mirage pill */
 .mw-blockly-shell .blocklyToolboxSelected .blocklyToolboxCategoryLabel::before {
-  background-color: var(--neutral-900);
+  background-color: #ffffff !important;
 }
 
 /* Setup / Recipe — book-open (the recipe metaphor) */
