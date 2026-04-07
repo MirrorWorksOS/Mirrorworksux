@@ -105,6 +105,41 @@ export type EngineBlock =
       id: string;
       type: 'warning';
       message: string;
+    }
+  | {
+      /**
+       * Sub-assembly reference: drops another product's BOM / ops / cost into
+       * the current evaluation, multiplied by `quantity`. The Studio v2
+       * evaluator looks the product up by id, recursively evaluates it, and
+       * merges the results back in. Cycles are detected by walking the
+       * `productStack` in `RunCtx` — if `productId` is already on the stack
+       * we emit a warning and bail out cleanly.
+       */
+      id: string;
+      type: 'product_ref';
+      productId: string;
+      productLabel: string;
+      quantity: number;
+    }
+  | {
+      /**
+       * ERP side-effect action — Studio v2 only. The evaluator collects these
+       * into `EvaluationResultV2.actions` so the Actions tab in ProductStudioV2
+       * can preview "would create…" cards. The downstream platform (Plan / Make
+       * / Buy) consumes them when the recipe is executed against a real order.
+       *
+       * Payload shape varies per action kind; the evaluator never inspects it
+       * and just round-trips it through to the UI panel.
+       */
+      id: string;
+      type: 'action';
+      actionKind:
+        | 'create_work_order'
+        | 'create_plan_activity'
+        | 'send_alert'
+        | 'create_purchase_request';
+      title: string;
+      payload: Record<string, string | number | boolean>;
     };
 
 export interface ProductDefinitionEngine {

@@ -3,14 +3,14 @@
  *
  * Design spec (Guidelines §9, AI Insight Card):
  *  - White card, border var(--border), rounded-[var(--shape-lg)], p-4
- *  - Sparkles icon in MW Yellow (var(--mw-yellow-400)) next to title — NO yellow background
+ *  - Agent logomark next to title — NO yellow background
  *  - Natural language body text in Roboto Regular 14px var(--neutral-500)
  *  - "Updated X ago" caption with optional refresh button
  *  - Optional primary action button (ghost style)
  */
 
 import React from 'react';
-import { RefreshCw, Sparkles } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Button } from '../../ui/button';
 import { cn } from '../../ui/utils';
@@ -44,7 +44,7 @@ export function AIInsightCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)] flex-shrink-0" />
+          <AgentLogomark size={16} className="flex-shrink-0" />
           <span
             className="text-xs font-medium text-foreground"
             style={{ letterSpacing: '0.1px' }}

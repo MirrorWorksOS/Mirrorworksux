@@ -50,6 +50,44 @@ function migrateDefinitionEngine(products: Product[]): Product[] {
   });
 }
 
+/**
+ * Backfill `blocklyXml` from template seeds when the persisted product has none.
+ *
+ * Strictly additive: we ONLY write a non-empty `blocklyXml` when the persisted
+ * value is `undefined` or an empty string. A user who has authored their own
+ * blocks always wins — we never overwrite their work. This is what gives
+ * Studio v2 a working starter recipe on first run without breaking anyone who
+ * has already started editing.
+ */
+function migrateBlocklyXmlSeeds(products: Product[]): Product[] {
+  return products.map((p) => {
+    if (p.blocklyXml && p.blocklyXml.trim().length > 0) return p;
+    const tpl = productTemplates.find((t) => t.id === p.id);
+    if (!tpl?.blocklyXml) return p;
+    return { ...p, blocklyXml: tpl.blocklyXml };
+  });
+}
+
+/**
+ * Ensure every shipping template product is present in the user's library.
+ *
+ * Strictly additive: we ONLY append a template when no persisted product
+ * already has the same id. User-authored data is never touched, never
+ * reordered, never overwritten. Existing template entries keep their persisted
+ * blocklyXml / scenarioInputs / lifecycleStatus etc.
+ *
+ * This is what makes the `mw_product_ref` dropdown always have the seeded
+ * library to point at — without it, a user who created their own first
+ * product (so localStorage initialised with their custom row instead of the
+ * templates) would see an empty Products dropdown forever.
+ */
+function migrateTemplateProducts(products: Product[]): Product[] {
+  const existingIds = new Set(products.map((p) => p.id));
+  const missing = productTemplates.filter((t) => !existingIds.has(t.id));
+  if (missing.length === 0) return products;
+  return [...products, ...missing.map((t) => ({ ...t }))];
+}
+
 function loadProducts(): Product[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -58,6 +96,11 @@ function loadProducts(): Product[] {
       if (Array.isArray(parsed) && parsed.length > 0) {
         let migrated = migrateLegacyProductIds(parsed);
         migrated = migrateDefinitionEngine(migrated);
+        migrated = migrateBlocklyXmlSeeds(migrated);
+        // Append any shipping template products that aren't yet in the user's
+        // library so the Products dropdown always has the seeded references
+        // to point at. Existing rows are untouched.
+        migrated = migrateTemplateProducts(migrated);
         if (JSON.stringify(migrated) !== JSON.stringify(parsed)) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
         }
@@ -104,6 +147,12 @@ interface ProductBuilderState {
   setDefinitionEngine: (engine: ProductDefinitionEngine) => void;
   setLifecycleStatus: (status: 'draft' | 'published') => void;
   setLocked: (locked: boolean) => void;
+  /** Persist Blockly v2 authoring state (workspace XML + sidecar extras). */
+  setBlocklyState: (xml: string, extras: unknown) => void;
+  /** Persist per-product scenario input values for the Studio v2 sidebar. */
+  setScenarioInputs: (
+    inputs: Record<string, string | number | boolean>,
+  ) => void;
 
   setSelectedNode: (nodeId: string | null) => void;
   setRightPanelTab: (tab: RightPanelTab) => void;
@@ -295,6 +344,27 @@ export const useProductBuilderStore = create<ProductBuilderState>((set, get) => 
   setLocked: (locked) => {
     const { activeProductId: activeId } = get();
     const products = updateActive(get().products, activeId, (p) => ({ ...p, locked }));
+    saveProducts(products);
+    set({ products });
+  },
+
+  setBlocklyState: (xml, extras) => {
+    const { activeProductId: activeId } = get();
+    const products = updateActive(get().products, activeId, (p) => ({
+      ...p,
+      blocklyXml: xml,
+      blocklyExtras: extras,
+    }));
+    saveProducts(products);
+    set({ products });
+  },
+
+  setScenarioInputs: (inputs) => {
+    const { activeProductId: activeId } = get();
+    const products = updateActive(get().products, activeId, (p) => ({
+      ...p,
+      scenarioInputs: inputs,
+    }));
     saveProducts(products);
     set({ products });
   },

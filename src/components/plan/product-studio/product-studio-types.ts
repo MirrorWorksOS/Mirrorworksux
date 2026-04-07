@@ -123,6 +123,23 @@ export interface Product {
   definitionVersion?: number;
   /** Prevent edits when referenced (prototype flag) */
   locked?: boolean;
+  /**
+   * Blockly v2 authoring state — workspace XML serialised by `Blockly.Xml.workspaceToDom`.
+   * Source of truth for the visual layer; the engine + extras are derived from this on load.
+   */
+  blocklyXml?: string;
+  /**
+   * Sidecar runtime metadata for v2 blocks (material refs, expression-mode set vars, etc).
+   * Stored as `unknown` here to keep this type free of v2 implementation deps.
+   */
+  blocklyExtras?: unknown;
+  /**
+   * Per-product scenario inputs — the live values shown in the Inputs sidebar of
+   * the Studio. These are passed into the evaluator's `initialVars` slot so the
+   * configurator loop (input → output) is restored. Persists alongside the rest
+   * of the product so the user comes back to the same scenario after a reload.
+   */
+  scenarioInputs?: Record<string, string | number | boolean>;
 }
 
 // ── Canvas State ─────────────────────────────────────────────────────────────
@@ -136,7 +153,7 @@ export interface CanvasTransform {
 // ── Panel Tabs ───────────────────────────────────────────────────────────────
 
 /** Preview uses toolbar `showPreview` only — not a tab value (avoids empty TabsContent). */
-export type RightPanelTab = 'properties' | 'rules';
+export type RightPanelTab = 'properties';
 
 // ── Utility ──────────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@
  */
 
 import React, { Suspense } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, useParams } from 'react-router';
 import { Layout } from './components/Layout';
 import { WelcomeDashboard } from './components/WelcomeDashboard';
 
@@ -67,6 +67,10 @@ const PlanSettings = React.lazy(() => import('./components/plan/PlanSettings').t
 const PlanNCConnect = React.lazy(() => import('./components/plan/PlanNCConnect').then(m => ({ default: m.PlanNCConnect })));
 const PlanCADImport = React.lazy(() => import('./components/plan/PlanCADImport').then(m => ({ default: m.PlanCADImport })));
 const ProductStudio = React.lazy(() => import('./components/plan/product-studio/ProductStudio').then(m => ({ default: m.ProductStudio })));
+const BlocklySpike = React.lazy(() => import('./components/plan/product-studio/blockly-spike/BlocklySpike').then(m => ({ default: m.BlocklySpike })));
+const ProductStudioV2 = React.lazy(() => import('./components/plan/product-studio/blockly-v2/ProductStudioV2').then(m => ({ default: m.ProductStudioV2 })));
+const MaterialLibrary = React.lazy(() => import('./components/plan/material-library/MaterialLibrary').then(m => ({ default: m.MaterialLibrary })));
+const FinishLibrary = React.lazy(() => import('./components/plan/finish-library/FinishLibrary').then(m => ({ default: m.FinishLibrary })));
 const PlanWhatIf = React.lazy(() => import('./components/plan/PlanWhatIf').then(m => ({ default: m.PlanWhatIf })));
 const PlanNesting = React.lazy(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
 const PlanMrp = React.lazy(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
@@ -144,6 +148,13 @@ const BookCostVariance = React.lazy(() => import('./components/book/BookCostVari
 // ---------------------------------------------------------------------------
 function L({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>}>{children}</Suspense>;
+}
+
+// Redirect old `/plan/product-studio/v2/:productId` deep links to the new
+// canonical `/plan/product-studio/:productId` URL while preserving the id.
+function ProductStudioV2Redirect() {
+  const { productId } = useParams<{ productId: string }>();
+  return <Navigate to={`/plan/product-studio/${productId ?? ''}`} replace />;
 }
 
 export const router = createBrowserRouter([
@@ -226,8 +237,18 @@ export const router = createBrowserRouter([
           { path: 'cad-import', element: <L><PlanCADImport /></L> },
           { path: 'purchase', element: <L><PlanPurchase /></L> },
           { path: 'qc-planning', element: <L><PlanQCPlanning /></L> },
-          { path: 'product-studio', element: <L><ProductStudio /></L> },
-          { path: 'product-studio/:productId', element: <L><ProductStudio /></L> },
+          // Product Studio is now exclusively the Blockly-based v2 editor.
+          // Legacy v1 + spike routes are kept as redirects so any saved
+          // bookmarks land on the new editor instead of 404'ing.
+          { path: 'product-studio', element: <L><ProductStudioV2 /></L> },
+          { path: 'product-studio/:productId', element: <L><ProductStudioV2 /></L> },
+          { path: 'product-studio/v2', element: <Navigate to="/plan/product-studio" replace /> },
+          { path: 'product-studio/v2/:productId', element: <ProductStudioV2Redirect /> },
+          { path: 'product-studio/blockly-spike', element: <Navigate to="/plan/product-studio" replace /> },
+          { path: 'product-studio/legacy', element: <L><ProductStudio /></L> },
+          { path: 'product-studio/legacy/:productId', element: <L><ProductStudio /></L> },
+          { path: 'material-library', element: <L><MaterialLibrary /></L> },
+          { path: 'finish-library', element: <L><FinishLibrary /></L> },
           { path: 'what-if', element: <L><PlanWhatIf /></L> },
           { path: 'nesting', element: <L><PlanNesting /></L> },
           { path: 'mrp', element: <L><PlanMrp /></L> },

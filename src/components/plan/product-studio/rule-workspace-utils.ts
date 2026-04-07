@@ -1,5 +1,8 @@
 import type { EngineBlock, EngineCondition, ProductDefinitionEngine } from '@/lib/product-studio/types';
 
+/** react-dnd type string — shared by palette drag sources and Product canvas drop target */
+export const RULE_PALETTE_DND_TYPE = 'RULE_PALETTE_KIND';
+
 export type PaletteKind =
   | 'if_chain'
   | 'set_literal'

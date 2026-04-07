@@ -20,7 +20,6 @@ import {
   Pause,
   StopCircle,
   MoreHorizontal,
-  Bot,
   Zap,
   Info,
   Monitor
@@ -34,6 +33,7 @@ import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Separator } from '../ui/separator';
 import {
   Tooltip,
@@ -577,7 +577,9 @@ export function OverviewTab() {
                    {/* Context Message (System/Yellow) */}
                     <div className="flex gap-3">
                      <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
-                       <AvatarFallback className="bg-[var(--mw-yellow-400)]/20 text-foreground text-xs"><Bot className="w-4 h-4" /></AvatarFallback>
+                       <AvatarFallback className="bg-[var(--mw-yellow-400)]/20 text-foreground text-xs p-0 flex items-center justify-center">
+                         <AgentLogomark size={16} />
+                       </AvatarFallback>
                      </Avatar>
                      <div className="flex-1">
                        <div className="flex items-center justify-between">
@@ -600,7 +602,7 @@ export function OverviewTab() {
                        <div key={i} className="flex gap-3">
                          <Avatar className="w-8 h-8 mt-1 border border-[var(--neutral-200)]">
                            <AvatarFallback className={m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 text-foreground text-xs' : 'bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs'}>
-                             {m.from === 'ai' ? <Bot className="w-4 h-4" /> : 'You'}
+                             {m.from === 'ai' ? <AgentLogomark size={16} /> : 'You'}
                            </AvatarFallback>
                          </Avatar>
                          <div className="flex-1">

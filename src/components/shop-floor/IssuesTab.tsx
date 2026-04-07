@@ -14,7 +14,6 @@ import {
   Pause,
   Play,
   User,
-  Bot,
   ArrowRight,
   MoreHorizontal
 } from 'lucide-react';
@@ -23,6 +22,7 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
+import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { cn } from '../ui/utils';
 import { MaterialIssueForm, MachineIssueForm, QualityIssueForm, ScrapIssueForm } from './issues/IssueModals';
 
@@ -322,7 +322,7 @@ export function IssuesTab() {
             <Card className="shadow-none border-[var(--mw-purple)]/20 bg-card rounded-[var(--shape-lg)]">
                <div className="p-6">
                   <div className="flex items-center gap-2 mb-4 text-[var(--neutral-500)] font-bold text-lg">
-                     <Bot className="w-5 h-5" /> AI Troubleshoot
+                     <AgentLogomark size={20} /> AI Troubleshoot
                   </div>
                   
                   <Button className="w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 mb-4 justify-between group font-bold">

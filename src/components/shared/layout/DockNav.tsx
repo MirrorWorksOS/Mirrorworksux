@@ -2,10 +2,26 @@
  * DockNav — macOS-style magnification effect for navigation icons.
  * Inspired by ReactBits Dock. Uses motion/react springs.
  *
+ * ── Why fixed slots? ────────────────────────────────────────────────────────
+ * Earlier versions of this component animated each item's `width`/`height`
+ * directly. That triggered a layout-shift feedback loop:
+ *   1. The hovered icon grew → flex column re-flowed.
+ *   2. Re-flow shifted every other icon's `getBoundingClientRect()` Y.
+ *   3. The mouse-distance transform read those new positions next frame,
+ *      recomputed targets, and the spring chased a moving goalpost.
+ *   4. Net result: visible jitter on the icons next to the cursor, plus the
+ *      tooltip slid sideways because it was anchored to the growing pill.
+ *
+ * The fix is the same trick the macOS dock uses internally: reserve a **fixed
+ * slot** for every item at the maximum (magnification) size, and only animate
+ * the inner pill inside the slot. The slot's rect never moves, so the distance
+ * transform reads stable positions and the magnification stops oscillating.
+ * The tooltip is anchored off the slot too so it stays put.
+ *
  * Non-AI element: neutral colors only, no brand tint.
  */
 
-import React, { Children, cloneElement, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   type MotionValue,
@@ -42,7 +58,8 @@ export interface DockNavProps {
 }
 
 interface DockItemInternalProps {
-  children: React.ReactNode;
+  icon: React.ReactNode;
+  label: React.ReactNode;
   onClick?: () => void;
   className?: string;
   mousePos: MotionValue<number>;
@@ -56,7 +73,8 @@ interface DockItemInternalProps {
 }
 
 function DockItem({
-  children,
+  icon,
+  label,
   onClick,
   className,
   mousePos,
@@ -68,11 +86,13 @@ function DockItem({
   isActive,
   prefersReduced,
 }: DockItemInternalProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  // The ref lives on the FIXED slot, not on the growing pill, so the distance
+  // transform always reads a stable rect. This is what kills the jitter.
+  const slotRef = useRef<HTMLDivElement>(null);
   const isHovered = useMotionValue(0);
 
   const mouseDistance = useTransform(mousePos, (val) => {
-    const rect = ref.current?.getBoundingClientRect();
+    const rect = slotRef.current?.getBoundingClientRect();
     if (!rect) return distance + 1;
     if (orientation === "vertical") {
       return val - rect.y - rect.height / 2;
@@ -87,39 +107,48 @@ function DockItem({
   );
   const size = useSpring(targetSize, spring);
 
-  const style = prefersReduced
+  const innerStyle = prefersReduced
     ? { width: baseItemSize, height: baseItemSize }
     : { width: size, height: size };
 
   return (
-    <motion.div
-      ref={ref}
-      style={style}
-      onHoverStart={() => isHovered.set(1)}
-      onHoverEnd={() => isHovered.set(0)}
-      onClick={onClick}
-      className={cn(
-        "relative flex shrink-0 cursor-pointer items-center justify-center rounded-xl transition-colors",
-        isActive
-          ? "bg-[var(--mw-yellow-400)]/10 dark:bg-white/10"
-          : "hover:bg-neutral-100 dark:hover:bg-white/5",
-        className,
-      )}
-      tabIndex={0}
-      role="button"
+    <div
+      ref={slotRef}
+      // Slot is fixed at the max (magnification) size in BOTH axes so the
+      // pill can grow inside it without nudging siblings. `pointer-events-none`
+      // on the wrapper itself isn't needed — the inner pill handles all input.
+      className="relative flex shrink-0 items-center justify-center"
+      style={{ width: magnification, height: magnification }}
     >
-      {Children.map(children, (child) =>
-        React.isValidElement(child)
-          ? cloneElement(child as React.ReactElement<{ isHovered?: MotionValue<number> }>, { isHovered })
-          : child,
-      )}
-    </motion.div>
+      <motion.div
+        style={innerStyle}
+        onHoverStart={() => isHovered.set(1)}
+        onHoverEnd={() => isHovered.set(0)}
+        onClick={onClick}
+        className={cn(
+          "flex items-center justify-center rounded-xl cursor-pointer transition-colors",
+          isActive
+            ? "bg-[var(--mw-yellow-400)]/10 dark:bg-white/10"
+            : "hover:bg-neutral-100 dark:hover:bg-white/5",
+          className,
+        )}
+        tabIndex={0}
+        role="button"
+      >
+        {icon}
+      </motion.div>
+      {/* Label is a sibling of the growing pill, anchored off the fixed slot,
+          so it doesn't slide around when the pill resizes. */}
+      <DockLabel isHovered={isHovered} orientation={orientation}>
+        {label}
+      </DockLabel>
+    </div>
   );
 }
 
 interface DockLabelProps {
   children: React.ReactNode;
-  isHovered?: MotionValue<number>;
+  isHovered: MotionValue<number>;
   orientation: "vertical" | "horizontal";
 }
 
@@ -127,7 +156,6 @@ function DockLabel({ children, isHovered, orientation }: DockLabelProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (!isHovered) return;
     const unsubscribe = isHovered.on("change", (latest) => {
       setIsVisible(latest === 1);
     });
@@ -177,7 +205,9 @@ export function DockNav({
       }}
       onMouseLeave={() => mousePos.set(Infinity)}
       className={cn(
-        "flex items-center gap-1",
+        // No gap — slots already include their own breathing room since they
+        // are sized to `magnification`, not `baseItemSize`.
+        "flex items-center",
         isVert ? "flex-col" : "flex-row",
         className,
       )}
@@ -187,6 +217,8 @@ export function DockNav({
       {items.map((item, index) => (
         <DockItem
           key={index}
+          icon={item.icon}
+          label={item.label}
           onClick={item.onClick}
           className={item.className}
           mousePos={mousePos}
@@ -197,10 +229,7 @@ export function DockNav({
           orientation={orientation}
           isActive={item.isActive}
           prefersReduced={prefersReduced}
-        >
-          <div className="flex items-center justify-center">{item.icon}</div>
-          <DockLabel orientation={orientation}>{item.label}</DockLabel>
-        </DockItem>
+        />
       ))}
     </div>
   );

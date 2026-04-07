@@ -1,10 +1,12 @@
 /**
  * ProductStudio — main editor page for building configurable products.
- * Layout: Toolbar top, Canvas left (~60%), Properties/Rules/Preview right (~40%).
+ * Layout: Toolbar top, Rules rail left, product canvas centre, Properties (and optional Preview) right.
  * Handles route param for product loading and top-level layout orchestration.
  */
 
 import React, { useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useParams, useNavigate } from 'react-router';
 import {
   ArrowLeft,
@@ -26,7 +28,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,8 +43,6 @@ import { PropertiesPanel } from './PropertiesPanel';
 import { VisualRuleWorkspace } from './VisualRuleWorkspace';
 import { ConfigPreview } from './ConfigPreview';
 import { ProductList } from './ProductList';
-import type { RightPanelTab } from './product-studio-types';
-
 // ── Editor Layout ────────────────────────────────────────────────────────────
 
 function ProductEditor() {
@@ -55,8 +54,6 @@ function ProductEditor() {
     setActiveProduct,
     getActiveProduct,
     updateProductMeta,
-    rightPanelTab,
-    setRightPanelTab,
     showPreview,
     setShowPreview,
     selectedNodeId,
@@ -260,74 +257,55 @@ function ProductEditor() {
         </DropdownMenu>
       </div>
 
-      {/* ── Main area ────────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex min-h-0">
-        {/* Canvas (left) */}
-        <div className={cn(
-          'flex-1 p-3 min-w-0 transition-all duration-300',
-          showPreview ? 'w-[35%]' : 'w-[60%]',
-        )}>
-          <ProductCanvas />
-        </div>
+      {/* ── Main area: Rules | Canvas | Properties (+ Preview) ─────────────── */}
+      <DndProvider backend={HTML5Backend}>
+        <div className="flex min-h-0 flex-1">
+          <aside className="flex w-72 shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-card min-h-0">
+            <VisualRuleWorkspace />
+          </aside>
 
-        {/* Right panel — tabbed */}
-        <div className={cn(
-          'border-l border-[var(--neutral-200)] dark:border-[var(--neutral-800)] bg-card flex flex-col transition-all duration-300',
-          showPreview ? 'w-[65%]' : 'w-[40%]',
-          'min-w-[320px] max-w-[600px]',
-        )}>
-          {showPreview ? (
-            // Split: Properties + Preview
-            <div className="flex flex-1 min-h-0">
-              {/* Properties/Rules half */}
-              <div className="flex-1 flex flex-col min-w-0 border-r border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
-                <Tabs value={rightPanelTab} onValueChange={(v) => setRightPanelTab(v as RightPanelTab)} className="flex flex-col h-full gap-0">
-                  <div className="px-3 pt-2 shrink-0">
-                    <TabsList className="h-9">
-                      <TabsTrigger value="properties" className="text-xs px-3">
-                        Properties
-                      </TabsTrigger>
-                      <TabsTrigger value="rules" className="text-xs px-3">
-                        Rules
-                      </TabsTrigger>
-                    </TabsList>
+          <div className="min-w-0 flex-1 p-3 transition-all duration-300">
+            <ProductCanvas />
+          </div>
+
+          <div
+            className={cn(
+              'flex min-h-0 shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card transition-all duration-300 dark:border-[var(--neutral-800)]',
+              showPreview ? 'min-w-[280px] flex-1 basis-0' : 'w-[min(100%,420px)]',
+            )}
+          >
+            {showPreview ? (
+              <div className="flex min-h-0 flex-1">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col border-r border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+                  <div className="shrink-0 border-b border-[var(--border)] px-3 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Properties</p>
                   </div>
-                  <TabsContent value="properties" className="flex-1 min-h-0 overflow-hidden mt-0">
+                  <div className="min-h-0 flex-1 overflow-hidden">
                     <PropertiesPanel />
-                  </TabsContent>
-                  <TabsContent value="rules" className="flex-1 min-h-0 overflow-hidden mt-0">
-                    <VisualRuleWorkspace />
-                  </TabsContent>
-                </Tabs>
+                  </div>
+                </div>
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+                  <div className="shrink-0 border-b border-[var(--border)] px-3 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Preview</p>
+                  </div>
+                  <div className="min-h-0 flex-1 overflow-hidden">
+                    <ConfigPreview />
+                  </div>
+                </div>
               </div>
-              {/* Preview half */}
-              <div className="flex-1 flex flex-col min-w-0">
-                <ConfigPreview />
-              </div>
-            </div>
-          ) : (
-            // Normal: Properties/Rules tabs only
-            <Tabs value={rightPanelTab} onValueChange={(v) => setRightPanelTab(v as RightPanelTab)} className="flex flex-col h-full gap-0">
-              <div className="px-3 pt-2 shrink-0">
-                <TabsList className="h-9">
-                  <TabsTrigger value="properties" className="text-xs px-3">
-                    Properties
-                  </TabsTrigger>
-                  <TabsTrigger value="rules" className="text-xs px-3">
-                    Rules
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-              <TabsContent value="properties" className="flex-1 min-h-0 overflow-hidden mt-0">
-                <PropertiesPanel />
-              </TabsContent>
-              <TabsContent value="rules" className="flex-1 min-h-0 overflow-hidden mt-0">
-                <VisualRuleWorkspace />
-              </TabsContent>
-            </Tabs>
-          )}
+            ) : (
+              <>
+                <div className="shrink-0 border-b border-[var(--border)] px-3 py-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Properties</p>
+                </div>
+                <div className="min-h-0 flex-1 overflow-hidden">
+                  <PropertiesPanel />
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </DndProvider>
 
       {/* ── Validation bar ───────────────────────────────────────────────────── */}
       {issues.length > 0 && (

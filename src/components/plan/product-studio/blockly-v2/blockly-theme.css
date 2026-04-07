@@ -1,0 +1,466 @@
+/**
+ * Product Studio v2 — Blockly chrome overrides.
+ *
+ * Scoped to `.mw-blockly-shell` so we don't leak into anywhere else that
+ * embeds Blockly. Maps Blockly v12's stock chrome onto the MirrorWorks
+ * design system tokens (DesignSystem.md):
+ *
+ *  - Toolbox sidebar: `--mw-off-white` warm rail, neutral-200 divider,
+ *                     Roboto title-small labels, MW yellow thread on the
+ *                     selected row.
+ *  - Canvas:          `--app-canvas` background, neutral-200 dot grid,
+ *                     subtle Mirage-tinted zoom + trash chrome.
+ *  - Flyout:          white card with neutral-200 hairline border + soft drop.
+ *
+ * Blockly v12 sets per-category colours as an inline `border-left: 8px solid
+ * <hex>` on `.blocklyToolboxCategory`. We override only the width via an
+ * `!important` long-hand so the colour is preserved as a slim 4px swatch.
+ */
+
+.mw-blockly-shell {
+  font-family: var(--font-family-sans);
+}
+
+/* ── Toolbox (left rail) ─────────────────────────────────────────────────── */
+.mw-blockly-shell .blocklyToolbox {
+  background: var(--mw-off-white) !important;
+  border-right: 1px solid var(--neutral-200);
+  padding: 10px 0 !important;
+  font-family: var(--font-family-sans);
+  box-shadow: none;
+  overflow-y: auto;
+  min-width: 168px;
+  max-width: 168px;
+  transition: max-width 180ms var(--ease-standard),
+              min-width 180ms var(--ease-standard),
+              opacity 120ms var(--ease-standard);
+}
+
+/* Collapsed state — toggled via the toolbar button on the .mw-blockly-shell. */
+.mw-blockly-shell.mw-blockly-collapsed .blocklyToolbox {
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-right-width: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden !important;
+}
+
+.mw-blockly-shell .blocklyToolboxCategoryGroup,
+.mw-blockly-shell .blocklyToolboxCategoryContainer {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The actual category row (Triggers, Variables, …) — compact size */
+.mw-blockly-shell .blocklyToolboxCategory {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px 0 8px !important;
+  margin: 1px 6px;
+  border-radius: var(--shape-sm, 10px);
+  /* Slim the inline 8px swatch down to a 3px thread; keep Blockly's colour. */
+  border-left-width: 3px !important;
+  border-left-style: solid !important;
+  cursor: pointer;
+  transition: background-color 100ms var(--ease-standard);
+}
+
+.mw-blockly-shell .blocklyToolboxCategory:hover {
+  background: var(--neutral-100);
+}
+
+/* Selected — yellow thread + warm yellow wash */
+.mw-blockly-shell .blocklyToolboxSelected,
+.mw-blockly-shell .blocklyToolboxCategory.blocklyToolboxSelected {
+  background: var(--mw-yellow-50) !important;
+}
+.mw-blockly-shell .blocklyToolboxSelected .blocklyToolboxCategoryLabel {
+  color: var(--neutral-900) !important;
+  font-weight: 600 !important;
+}
+
+/* The Blockly v12 icon span is empty — hide it; the colour rides on the
+   border-left thread instead. We render lucide icons via a `::before`
+   pseudo-element on the row label below, so the empty span is redundant. */
+.mw-blockly-shell .blocklyToolboxCategoryIcon {
+  display: none !important;
+}
+
+/* Category label — Roboto label-medium (12 / 500 / 0.1px) for the compact rail.
+   We turn it into a flex row so the `::before` lucide icon sits inline with
+   the text and inherits the row's hover/selected state. */
+.mw-blockly-shell .blocklyToolboxCategoryLabel {
+  font-family: var(--font-family-sans) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1px !important;
+  line-height: 1 !important;
+  color: var(--neutral-800) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ── Lucide icons on the toolbox rows ──────────────────────────────────────
+   Each category in `toolbox.ts` is given a `cssConfig.row` slug like
+   `mw-cat-recipe`. Blockly v12 splices that class onto the
+   `.blocklyToolboxCategory` element, and we hang a `::before` icon mask off
+   the matching label inside. The icon SVG ships as a base64-free inline data
+   URI so the bundle stays cacheable and the colour follows the row's
+   `currentColor` (which we drive via the design-system text token).
+
+   Adding a new category? Pick a slug, add it to `toolbox.ts`, then add a new
+   block here matching `.mw-cat-<slug> .blocklyToolboxCategoryLabel::before {
+   --mw-cat-icon: url("data:image/svg+xml;utf8,<svg…/>"); }`.
+
+   Stroke icons are sourced 1:1 from lucide.dev — same library as the rest of
+   the app — and trimmed to a 24×24 viewBox with stroke-width 1.75 to match
+   the rest of the studio chrome. */
+
+/* Shared icon glyph rules — every `mw-cat-*` category inherits this */
+.mw-blockly-shell [class*='mw-cat-'] .blocklyToolboxCategoryLabel::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-image: var(--mw-cat-icon, none);
+  mask-image: var(--mw-cat-icon, none);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+}
+
+/* Selected row — bump the icon's contrast to match the bolded label */
+.mw-blockly-shell .blocklyToolboxSelected .blocklyToolboxCategoryLabel::before {
+  background-color: var(--neutral-900);
+}
+
+/* Setup / Recipe — book-open (the recipe metaphor) */
+.mw-blockly-shell .mw-cat-setup .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-recipe .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>");
+}
+
+/* Inputs — sliders (parameter controls) */
+.mw-blockly-shell .mw-cat-inputs .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><line x1='4' y1='21' x2='4' y2='14'/><line x1='4' y1='10' x2='4' y2='3'/><line x1='12' y1='21' x2='12' y2='12'/><line x1='12' y1='8' x2='12' y2='3'/><line x1='20' y1='21' x2='20' y2='16'/><line x1='20' y1='12' x2='20' y2='3'/><line x1='1' y1='14' x2='7' y2='14'/><line x1='9' y1='8' x2='15' y2='8'/><line x1='17' y1='16' x2='23' y2='16'/></svg>");
+}
+
+/* Variables — variable / function-square */
+.mw-blockly-shell .mw-cat-variables .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2'/><path d='M9 17c2 0 2-4 4-4s2 4 4 4'/><path d='M9 7h.01'/><path d='M15 7h.01'/></svg>");
+}
+
+/* Calculate — calculator */
+.mw-blockly-shell .mw-cat-calculate .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='2' width='16' height='20' rx='2'/><line x1='8' y1='6' x2='16' y2='6'/><line x1='16' y1='14' x2='16' y2='18'/><path d='M16 10h.01'/><path d='M12 10h.01'/><path d='M8 10h.01'/><path d='M12 14h.01'/><path d='M8 14h.01'/><path d='M12 18h.01'/><path d='M8 18h.01'/></svg>");
+}
+
+/* Math — sigma */
+.mw-blockly-shell .mw-cat-math .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M18 7V4H6l6 8-6 8h12v-3'/></svg>");
+}
+
+/* Logic — git-branch (branching) */
+.mw-blockly-shell .mw-cat-logic .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><line x1='6' y1='3' x2='6' y2='15'/><circle cx='18' cy='6' r='3'/><circle cx='6' cy='18' r='3'/><path d='M18 9a9 9 0 0 1-9 9'/></svg>");
+}
+
+/* Geometry — ruler */
+.mw-blockly-shell .mw-cat-geometry .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M21.3 15.3 8.7 2.7a1 1 0 0 0-1.4 0L2.7 7.3a1 1 0 0 0 0 1.4l12.6 12.6a1 1 0 0 0 1.4 0l4.6-4.6a1 1 0 0 0 0-1.4Z'/><path d='m7.5 10.5 2 2'/><path d='m10.5 7.5 2 2'/><path d='m13.5 4.5 2 2'/><path d='m4.5 13.5 2 2'/></svg>");
+}
+
+/* Build — hammer */
+.mw-blockly-shell .mw-cat-build .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9'/><path d='M17.64 15 22 10.64'/><path d='m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91'/></svg>");
+}
+
+/* Materials — package */
+.mw-blockly-shell .mw-cat-materials .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='m7.5 4.27 9 5.15'/><path d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/><path d='m3.3 7 8.7 5 8.7-5'/><path d='M12 22V12'/></svg>");
+}
+
+/* Cutting — scissors */
+.mw-blockly-shell .mw-cat-cutting .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='6' r='3'/><path d='M8.12 8.12 12 12'/><path d='M20 4 8.12 15.88'/><circle cx='6' cy='18' r='3'/><path d='M14.8 14.8 20 20'/></svg>");
+}
+
+/* Forming — wand2 (bend / shape) */
+.mw-blockly-shell .mw-cat-forming .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M15 4V2'/><path d='M15 16v-2'/><path d='M8 9h2'/><path d='M20 9h2'/><path d='M17.8 11.8 19 13'/><path d='M15 9h0'/><path d='M17.8 6.2 19 5'/><path d='m3 21 9-9'/><path d='M12.2 6.2 11 5'/></svg>");
+}
+
+/* Welding — flame */
+.mw-blockly-shell .mw-cat-welding .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z'/></svg>");
+}
+
+/* Finishes — paintbrush */
+.mw-blockly-shell .mw-cat-finishes .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3Z'/><path d='M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7'/><path d='M14.5 17.5 4.5 15'/></svg>");
+}
+
+/* Assembly — wrench */
+.mw-blockly-shell .mw-cat-assembly .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'/></svg>");
+}
+
+/* Sub-products — boxes (compose) */
+.mw-blockly-shell .mw-cat-subproducts .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-products .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z'/><path d='m7 16.5-4.74-2.85'/><path d='m7 16.5 5-3'/><path d='M7 16.5v5.17'/><path d='M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z'/><path d='m17 16.5-5-3'/><path d='m17 16.5 4.74-2.85'/><path d='M17 16.5v5.17'/><path d='M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z'/><path d='M12 8 7.26 5.15'/><path d='m12 8 4.74-2.85'/><path d='M12 13.5V8'/></svg>");
+}
+
+/* Operations — cog */
+.mw-blockly-shell .mw-cat-operations .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z'/><path d='M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z'/><path d='M12 2v2'/><path d='M12 22v-2'/><path d='m17 20.66-1-1.73'/><path d='M11 10.27 7 3.34'/><path d='m20.66 17-1.73-1'/><path d='m3.34 7 1.73 1'/><path d='M14 12h8'/><path d='M2 12h2'/><path d='m20.66 7-1.73 1'/><path d='m3.34 17 1.73-1'/><path d='m17 3.34-1 1.73'/><path d='m11 13.73-4 6.93'/></svg>");
+}
+
+/* Costs — dollar */
+.mw-blockly-shell .mw-cat-costs .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><line x1='12' y1='2' x2='12' y2='22'/><path d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/></svg>");
+}
+
+/* Output (super) — file-output */
+.mw-blockly-shell .mw-cat-output-group .blocklyToolboxCategoryLabel,
+.mw-blockly-shell .mw-cat-output .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><path d='M2 15h10'/><path d='m9 18 3-3-3-3'/></svg>");
+}
+
+/* Time (Calculate ▸ Time) — clock face */
+.mw-blockly-shell .mw-cat-time .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>");
+}
+
+/* Costs (Calculate ▸ Costs) — banknote glyph for AUD */
+.mw-blockly-shell .mw-cat-money .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='6' width='20' height='12' rx='2'/><circle cx='12' cy='12' r='2'/><path d='M6 12h.01'/><path d='M18 12h.01'/></svg>");
+}
+
+/* Actions (Sub-products ▸ Actions) — lightning bolt for side effects */
+.mw-blockly-shell .mw-cat-actions .blocklyToolboxCategoryLabel {
+  --mw-cat-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>");
+}
+
+/* ── Flyout (popout panel of blocks) ─────────────────────────────────────── */
+/* Blockly v12 sometimes leaves a residual flyout SVG on the canvas with a
+   visible chrome stroke — even when display:none, the parent SVG can briefly
+   render during open/close transitions, painting a vertical "bar" between the
+   toolbox and the canvas. We drop the stroke entirely and lean on a soft
+   drop-shadow instead so the flyout still reads as a card when open, but
+   leaves no visible artefact when closed. */
+.mw-blockly-shell .blocklyFlyout {
+  filter: drop-shadow(0 6px 16px rgb(15 23 42 / 0.08));
+}
+.mw-blockly-shell .blocklyFlyoutBackground {
+  fill: #ffffff;
+  fill-opacity: 1;
+  stroke: none;
+  stroke-width: 0;
+}
+
+/* Belt-and-braces: when Blockly inlines display:none on the SVG, force it to
+   collapse so no chrome can leak through while transitioning. */
+.mw-blockly-shell .blocklyFlyout[style*="display: none"],
+.mw-blockly-shell .blocklyFlyout[style*="display:none"] {
+  width: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Flyout scrollbar — slim and neutral */
+.mw-blockly-shell .blocklyFlyoutScrollbar .blocklyScrollbarHandle {
+  fill: var(--neutral-300);
+}
+
+/* ── Main canvas ─────────────────────────────────────────────────────────── */
+.mw-blockly-shell .blocklySvg {
+  background-color: var(--app-canvas);
+}
+.mw-blockly-shell .blocklyMainBackground {
+  stroke: none;
+}
+
+/* Workspace scrollbars */
+.mw-blockly-shell .blocklyScrollbarHandle {
+  fill: var(--neutral-300);
+}
+.mw-blockly-shell .blocklyScrollbarBackground {
+  fill: transparent;
+  stroke: none;
+}
+
+/* ── Phantom flyout scrollbar fix ────────────────────────────────────────────
+   Blockly v12 renders the flyout's vertical scrollbar as a SIBLING `<svg>` of
+   the flyout — not a child — so when the flyout gets `display: none` on close
+   the scrollbar stays painted at its last position (a thin 15×150 grey bar
+   sitting just past the toolbox). Verified live: the DOM order inside the
+   injectionDiv is:
+       blocklyFlyout blocklyTrashcanFlyout    ← display:none when closed
+     + blocklyFlyout … blocklyFlyoutScrollbar ← STILL VISIBLE (the bug)
+       blocklyFlyout blocklyToolboxFlyout     ← display:none when closed
+     + blocklyFlyout … blocklyFlyoutScrollbar ← STILL VISIBLE (the bug)
+   Fix: use the adjacent-sibling combinator to hide the scrollbar SVG whenever
+   its immediately-preceding flyout has the inline `display: none` Blockly
+   sets when the flyout closes. The selector reactivates automatically when
+   Blockly removes the inline style on flyout open. We also still want the
+   main workspace's vertical scrollbar hidden (the inject config disables it,
+   but defence-in-depth). */
+.mw-blockly-shell .blocklyMainWorkspaceScrollbar.blocklyScrollbarVertical {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.mw-blockly-shell .blocklyFlyout[style*="display: none"] + .blocklyFlyoutScrollbar,
+.mw-blockly-shell .blocklyFlyout[style*="display:none"] + .blocklyFlyoutScrollbar {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── Zoom controls + trash — subtle Mirage tint ──────────────────────────── */
+.mw-blockly-shell .blocklyZoom > image,
+.mw-blockly-shell .blocklyZoom > svg {
+  opacity: 0.7;
+  transition: opacity 100ms var(--ease-standard);
+}
+.mw-blockly-shell .blocklyZoom > image:hover,
+.mw-blockly-shell .blocklyZoom > svg:hover {
+  opacity: 1;
+}
+
+.mw-blockly-shell .blocklyTrash {
+  opacity: 0.7;
+  transition: opacity 100ms var(--ease-standard);
+}
+.mw-blockly-shell .blocklyTrash:hover {
+  opacity: 1;
+}
+
+/* ── Block labels — keep Roboto everywhere ───────────────────────────────── */
+.mw-blockly-shell .blocklyText {
+  font-family: var(--font-family-sans) !important;
+  font-weight: 500;
+}
+
+/* ── Context menu / field dropdowns — design-system surfaces ─────────────── */
+/* These are NOT scoped under .mw-blockly-shell because Blockly portals them
+   to document.body via .blocklyWidgetDiv / .blocklyDropDownDiv. */
+
+.blocklyWidgetDiv .blocklyMenu,
+.blocklyDropDownDiv {
+  font-family: var(--font-family-sans) !important;
+  border: 1px solid var(--neutral-200) !important;
+  border-radius: var(--shape-md) !important;
+  box-shadow: var(--elevation-3) !important;
+  background: #ffffff !important;
+}
+
+.blocklyWidgetDiv .blocklyMenu,
+.blocklyDropDownDiv .blocklyMenu {
+  padding: 4px !important;
+  background: #ffffff !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItem,
+.blocklyDropDownDiv .blocklyMenuItem {
+  font-family: var(--font-family-sans) !important;
+  font-size: 13px !important;
+  color: var(--neutral-800) !important;
+  padding: 8px 14px !important;
+  border-radius: var(--shape-sm, 8px) !important;
+}
+
+/* CRITICAL: Blockly v12 injects `.blocklyMenuItemContent { color: #fff }` for
+   field-block dropdowns (intended to read against a coloured block tile). On
+   our white DropDownDiv that renders as invisible white-on-white text, so we
+   force the design-system text colour. */
+.blocklyWidgetDiv .blocklyMenuItemContent,
+.blocklyDropDownDiv .blocklyMenuItemContent {
+  color: var(--neutral-800) !important;
+  font-family: var(--font-family-sans) !important;
+  font-size: 13px !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItemHighlight,
+.blocklyDropDownDiv .blocklyMenuItemHighlight {
+  background-color: var(--mw-yellow-50) !important;
+  border-radius: var(--shape-sm, 8px) !important;
+}
+.blocklyWidgetDiv .blocklyMenuItemHighlight .blocklyMenuItemContent,
+.blocklyDropDownDiv .blocklyMenuItemHighlight .blocklyMenuItemContent {
+  color: var(--neutral-900) !important;
+  font-weight: 500 !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItemDisabled .blocklyMenuItemContent,
+.blocklyDropDownDiv .blocklyMenuItemDisabled .blocklyMenuItemContent {
+  color: var(--neutral-400) !important;
+}
+
+/* Selected-item checkmark — recolour from Blockly's default to MW yellow */
+.blocklyWidgetDiv .blocklyMenuItemCheckbox,
+.blocklyDropDownDiv .blocklyMenuItemCheckbox {
+  filter: hue-rotate(0deg);
+}
+
+/* ── @blockly/field-grid-dropdown overrides ──────────────────────────────────
+   The grid-dropdown plugin renders each cell as a raw <button> with the class
+   `.blocklyFieldGridItem` (no inner content span), so our generic
+   `.blocklyMenuItemContent` rule above doesn't reach them. The buttons inherit
+   Blockly's default white-on-coloured-block dropdown text colour, which lands
+   as invisible white-on-white inside our portal'd .blocklyDropDownDiv. We give
+   them an explicit design-system surface here. */
+.blocklyDropDownDiv .blocklyFieldGridContainer {
+  padding: 4px !important;
+  background: #ffffff !important;
+}
+
+.blocklyDropDownDiv .blocklyFieldGrid {
+  gap: 4px !important;
+}
+
+.blocklyDropDownDiv .blocklyFieldGridItem {
+  font-family: var(--font-family-sans) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--neutral-800) !important;
+  background: #ffffff !important;
+  border: 1px solid var(--neutral-200) !important;
+  border-radius: var(--shape-sm, 8px) !important;
+  padding: 8px 12px !important;
+  min-width: 60px;
+  cursor: pointer;
+  transition: background-color 100ms var(--ease-standard),
+              border-color 100ms var(--ease-standard);
+}
+
+.blocklyDropDownDiv .blocklyFieldGridItem:hover {
+  background: var(--mw-yellow-50) !important;
+  border-color: var(--mw-yellow-300, var(--neutral-300)) !important;
+  color: var(--neutral-900) !important;
+}
+
+.blocklyDropDownDiv .blocklyFieldGridItem:focus {
+  outline: 2px solid var(--mw-yellow-400) !important;
+  outline-offset: -1px;
+}
+
+.blocklyDropDownDiv .blocklyFieldGridItemSelected {
+  background: var(--mw-yellow-50) !important;
+  border-color: var(--mw-yellow-400) !important;
+  color: var(--neutral-900) !important;
+  font-weight: 600 !important;
+}

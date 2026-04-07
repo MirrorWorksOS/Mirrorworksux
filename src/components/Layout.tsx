@@ -1,12 +1,14 @@
 /**
  * Layout - Main layout wrapper with responsive sidebar behavior
  *
- * Desktop (>= 1024px): Full sidebar
- * Tablet (768px - 1023px): Icon-only rail sidebar (56px)
- * Mobile (< 768px): No sidebar — bottom tab bar + mobile menu overlay
+ * Desktop (>= 1024px): Full sidebar — user can manually collapse to icon rail
+ *                      via the chevron toggle in the sidebar header (persisted
+ *                      to localStorage as `mw.sidebar.collapsed`).
+ * Tablet (768px - 1023px): Icon-only rail sidebar (56px) — always rail.
+ * Mobile (< 768px): No sidebar — bottom tab bar + mobile menu overlay.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { AgentFAB } from './shared/agent/AgentFAB';
@@ -15,6 +17,8 @@ import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { MobileBottomNav } from './shared/layout/MobileBottomNav';
 import { MobileMenu } from './shared/layout/MobileMenu';
 
+const SIDEBAR_COLLAPSED_KEY = 'mw.sidebar.collapsed';
+
 export function Layout() {
   const location = useLocation();
   const { open: commandOpen, setOpen: setCommandOpen } = useCommandPaletteStore();
@@ -22,6 +26,24 @@ export function Layout() {
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Manual collapse — only relevant on desktop. Tablet always renders rail.
+  const [manuallyCollapsed, setManuallyCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
+  });
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    setManuallyCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, next ? '1' : '0');
+      } catch {
+        /* ignore quota / private mode */
+      }
+      return next;
+    });
+  }, []);
 
   // Close mobile menu when switching to desktop
   useEffect(() => {
@@ -54,9 +76,15 @@ export function Layout() {
 
   return (
     <div className="flex h-screen bg-[var(--background)]">
-      {/* Sidebar: full on desktop, icon rail on tablet, hidden on mobile */}
+      {/* Sidebar: full on desktop, icon rail on tablet, hidden on mobile.
+          Desktop users can also manually collapse the full sidebar to a rail. */}
       {!isMobile && (
-        <Sidebar variant={isTablet ? 'rail' : 'full'} />
+        <Sidebar
+          variant={isTablet || manuallyCollapsed ? 'rail' : 'full'}
+          canToggleCollapse={!isTablet}
+          collapsed={manuallyCollapsed}
+          onToggleCollapse={toggleSidebarCollapsed}
+        />
       )}
 
       <main

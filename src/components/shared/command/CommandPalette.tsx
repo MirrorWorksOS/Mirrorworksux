@@ -15,6 +15,7 @@ import {
 } from '@/lib/mock-user-context';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from '@/components/ui/utils';
+import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import {
   Search,
   LayoutDashboard,
@@ -672,7 +673,11 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
                       : 'bg-[var(--neutral-50)] text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-[var(--neutral-700)]',
                   )}
                 >
-                  <Icon className="h-3 w-3" strokeWidth={1.5} />
+                  {cat.key === 'ai' ? (
+                    <AgentLogomark size={12} className="shrink-0" />
+                  ) : (
+                    <Icon className="h-3 w-3" strokeWidth={1.5} />
+                  )}
                   {cat.label}
                 </button>
               );
@@ -785,7 +790,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
             <div className="px-5 pb-5 pt-2">
               <form onSubmit={handleAiSubmit} className="flex items-center gap-2">
                 <div className="flex-1 flex items-center gap-2 border border-[var(--border)] rounded-[var(--shape-md)] px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/30 transition-shadow duration-200">
-                  <Sparkles className="h-4 w-4 shrink-0 text-[var(--mw-purple)]" strokeWidth={1.5} />
+                  <AgentLogomark size={16} className="shrink-0" />
                   <input
                     type="text"
                     value={aiQuery}
@@ -805,7 +810,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
               {aiResponse && (
                 <div className="mt-3 rounded-[var(--shape-md)] border border-[var(--mw-purple-100)] bg-[var(--mw-purple-50)] p-4">
                   <div className="flex items-start gap-2.5">
-                    <Sparkles className="h-4 w-4 mt-0.5 shrink-0 text-[var(--mw-purple)]" strokeWidth={1.5} />
+                    <AgentLogomark size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm text-foreground leading-relaxed">{aiResponse}</p>
                   </div>
                 </div>
@@ -814,7 +819,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
               {!aiResponse && (
                 <div className="flex flex-col items-center justify-center py-14 text-[var(--neutral-400)]">
                   <div className="w-12 h-12 rounded-full bg-[var(--mw-purple-50)] flex items-center justify-center mb-3">
-                    <Sparkles className="h-5 w-5 text-[var(--mw-purple)] opacity-60" strokeWidth={1.5} />
+                    <AgentLogomark size={20} className="opacity-90" />
                   </div>
                   <p className="text-sm font-medium text-[var(--neutral-500)]">Ask anything about your data</p>
                   <p className="text-xs text-[var(--neutral-400)] mt-1">

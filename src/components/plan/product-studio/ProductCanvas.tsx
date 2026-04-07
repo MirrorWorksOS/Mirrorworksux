@@ -4,11 +4,20 @@
  */
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
+import { useDrop, useDragLayer } from 'react-dnd';
 import { ZoomIn, ZoomOut, Maximize2, Plus, Layers, Box, CircleDot, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/utils';
 import { useProductBuilderStore } from '@/store/productBuilderStore';
+import { createEmptyEngine } from '@/lib/product-studio/evaluate';
 import { ProductNodeComponent } from './ProductNode';
+import {
+  appendToRoot,
+  createStubBlock,
+  deepRegenerateIds,
+  RULE_PALETTE_DND_TYPE,
+  type PaletteKind,
+} from './rule-workspace-utils';
 import type { ProductNodeType, ProductNode } from './product-studio-types';
 import {
   DropdownMenu,
@@ -47,6 +56,34 @@ export function ProductCanvas() {
   const product = getActiveProduct();
   const nodes = product?.nodes || [];
   const edges = product?.edges || [];
+
+  const paletteDragging = useDragLayer(
+    (monitor) => monitor.isDragging() && monitor.getItemType() === RULE_PALETTE_DND_TYPE,
+  );
+
+  const [{ isOverPaletteTarget, canDropPalette }, dropPalette] = useDrop(
+    () => ({
+      accept: RULE_PALETTE_DND_TYPE,
+      canDrop: () => {
+        const p = useProductBuilderStore.getState().getActiveProduct();
+        return !!p && !p.locked;
+      },
+      drop: (item: { kind: PaletteKind }) => {
+        const { getActiveProduct, setDefinitionEngine } = useProductBuilderStore.getState();
+        const p = getActiveProduct();
+        if (!p || p.locked) return;
+        const engine = p.definitionEngine ?? createEmptyEngine();
+        const firstVarId = engine.variables[0]?.id ?? '';
+        const stub = deepRegenerateIds(createStubBlock(item.kind, firstVarId));
+        setDefinitionEngine(appendToRoot(engine, stub));
+      },
+      collect: (monitor) => ({
+        isOverPaletteTarget: monitor.isOver({ shallow: true }),
+        canDropPalette: monitor.canDrop(),
+      }),
+    }),
+    [],
+  );
 
   // ── Panning ──────────────────────────────────────────────────────────────
   const [isPanning, setIsPanning] = useState(false);
@@ -172,6 +209,17 @@ export function ProductCanvas() {
 
   return (
     <div className="relative flex-1 overflow-hidden bg-[var(--neutral-50)] dark:bg-[var(--neutral-950)] rounded-xl border border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+      {paletteDragging && (
+        <div
+          ref={dropPalette}
+          className={cn(
+            'absolute inset-0 z-[30] rounded-xl transition-[box-shadow,background-color] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+            isOverPaletteTarget && canDropPalette && 'bg-[var(--mw-yellow-400)]/[0.08] ring-2 ring-inset ring-[var(--mw-yellow-400)]',
+          )}
+          aria-hidden
+        />
+      )}
+
       {/* Zoom controls */}
       <div className="absolute top-3 right-3 z-20 flex flex-col gap-1">
         <Button variant="outline" size="icon" onClick={zoomIn} className="h-8 w-8 rounded-lg bg-card">
@@ -312,7 +360,7 @@ export function ProductCanvas() {
                 </div>
                 <p className="text-sm font-medium text-foreground">Start Building</p>
                 <p className="text-xs text-muted-foreground">
-                  Click "Add Node" to add your first assembly or component to the product structure.
+                  Click &quot;Add node&quot; to add assemblies and components. Drag rule blocks from the left rail and drop them here to build product logic.
                 </p>
               </div>
             </div>

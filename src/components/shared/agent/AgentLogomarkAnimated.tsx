@@ -1,27 +1,29 @@
 /**
- * AgentLogomarkAnimated — Agent mark with dot sweep (states 0→3) from brand SVGs.
- * State 0: all dots yellow. States 1–3: left, centre, right dot highlights (#68c7bd).
- * Colours match mirrorworks_agent_state_*.svg; shell matches AgentLogomark.
+ * AgentLogomarkAnimated — Agent logomark with dot sweep while thinking.
+ * Shell matches Agent_Logomark.svg; dots pulse teal on a #1d190f base.
  */
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import { useReducedMotion } from '@/components/shared/motion/use-reduced-motion';
-import { AgentLogomark } from './AgentLogomark';
+import {
+  AgentLogomark,
+  AGENT_LOGOMARK_VIEWBOX,
+  AGENT_SHELL_PATH_D,
+  AGENT_DOTS,
+  AGENT_DOT_FILL,
+} from './AgentLogomark';
 
-const YELLOW = '#ffd04b';
 const TEAL = '#68c7bd';
-
-const RATIO = 480.89 / 396.15;
 
 const EASE_STANDARD = [0.2, 0, 0, 1] as const;
 
 interface AgentLogomarkAnimatedProps {
   className?: string;
-  /** Height in px — width scales proportionally. */
+  /** Width and height in px (square). */
   size?: number;
-  /** When false, renders static state 0 (same as AgentLogomark). */
+  /** When false, renders static mark (same as AgentLogomark). */
   animating?: boolean;
 }
 
@@ -50,53 +52,36 @@ export function AgentLogomarkAnimated({
     return <AgentLogomark className={className} size={size} />;
   }
 
-  const dot0 = phase === 1 ? TEAL : YELLOW;
-  const dot1 = phase === 2 ? TEAL : YELLOW;
-  const dot2 = phase === 3 ? TEAL : YELLOW;
+  const dot0 = phase === 1 ? TEAL : AGENT_DOT_FILL;
+  const dot1 = phase === 2 ? TEAL : AGENT_DOT_FILL;
+  const dot2 = phase === 3 ? TEAL : AGENT_DOT_FILL;
+  const fills = [dot0, dot1, dot2];
 
   return (
     <svg
-      viewBox="0 0 480.89 396.15"
+      viewBox={AGENT_LOGOMARK_VIEWBOX}
       xmlns="http://www.w3.org/2000/svg"
-      width={Math.round(size * RATIO * 100) / 100}
+      width={size}
       height={size}
       className={cn('shrink-0', className)}
       aria-hidden="true"
     >
       <path
-        d="M195,0h90.89C393.52,0,480.89,87.38,480.89,195v199.77c0,.77-.62,1.39-1.39,1.39H195C87.38,396.15,0,308.78,0,201.15v-6.15C0,87.38,87.38,0,195,0Z"
+        d={AGENT_SHELL_PATH_D}
         fill="currentColor"
         className="text-[var(--mw-yellow-400)]"
       />
-      <path
-        d="M202.41,50h87.71c75.6,0,136.97,61.37,136.97,136.97v159.18h-230.36c-78.88,0-142.93-64.04-142.93-142.93v-4.62c0-82.02,66.59-148.61,148.61-148.61Z"
-        fill="currentColor"
-        className="text-[var(--mw-mirage)]"
-      />
-      <motion.circle
-        cx="145.3"
-        cy="198.08"
-        r="30"
-        initial={false}
-        animate={{ fill: dot0 }}
-        transition={{ duration: 0.4, ease: EASE_STANDARD }}
-      />
-      <motion.circle
-        cx="240.45"
-        cy="198.08"
-        r="30"
-        initial={false}
-        animate={{ fill: dot1 }}
-        transition={{ duration: 0.4, ease: EASE_STANDARD }}
-      />
-      <motion.circle
-        cx="335.59"
-        cy="198.08"
-        r="30"
-        initial={false}
-        animate={{ fill: dot2 }}
-        transition={{ duration: 0.4, ease: EASE_STANDARD }}
-      />
+      {AGENT_DOTS.map((d, i) => (
+        <motion.circle
+          key={i}
+          cx={d.cx}
+          cy={d.cy}
+          r={d.r}
+          initial={false}
+          animate={{ fill: fills[i] }}
+          transition={{ duration: 0.4, ease: EASE_STANDARD }}
+        />
+      ))}
     </svg>
   );
 }

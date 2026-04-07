@@ -15,6 +15,8 @@ import {
   User,
   TrendingUp,
   X,
+  PanelLeftClose,
+  PanelLeftOpen,
   type LucideIcon
 } from 'lucide-react';
 import { cn } from './ui/utils';
@@ -140,12 +142,13 @@ const menuConfig: MenuItem[] = [
       { label: 'MRP', path: '/plan/mrp' },
       { label: 'Sheet calculator', path: '/plan/sheet-calculator' },
       { label: 'Product Studio', path: '/plan/product-studio' },
+      { label: 'Material library', path: '/plan/material-library' },
+      { label: 'Finish library', path: '/plan/finish-library' },
       { label: 'CAD import', path: '/plan/cad-import' },
       { label: 'NC Connect', path: '/plan/nc-connect' },
       { label: 'Purchase', path: '/plan/purchase' },
       { label: 'Quality', path: '/plan/qc-planning' },
       { label: 'Products', path: '/plan/products' },
-      { label: 'Product Studio', path: '/plan/product-studio' },
       { label: 'Settings', path: '/plan/settings' },
     ],
   },
@@ -663,9 +666,20 @@ function RailIconButton({
 interface SidebarProps {
   /** 'full' = desktop expanded sidebar, 'rail' = tablet icon-only rail */
   variant?: 'full' | 'rail';
+  /** Whether the user can manually toggle between full and rail (desktop only). */
+  canToggleCollapse?: boolean;
+  /** True when the user has manually collapsed the sidebar (used for icon state). */
+  collapsed?: boolean;
+  /** Callback fired when the user clicks the collapse/expand toggle. */
+  onToggleCollapse?: () => void;
 }
 
-export function Sidebar({ variant = 'full' }: SidebarProps) {
+export function Sidebar({
+  variant = 'full',
+  canToggleCollapse = false,
+  collapsed = false,
+  onToggleCollapse,
+}: SidebarProps) {
   const location = useLocation();
   const isRail = variant === 'rail';
 
@@ -739,6 +753,22 @@ export function Sidebar({ variant = 'full' }: SidebarProps) {
             aria-hidden
           />
         </Link>
+
+        {/* Manual collapse toggle — desktop only (canToggleCollapse=true) */}
+        {canToggleCollapse && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="group relative flex items-center justify-center w-11 h-9 rounded-[var(--shape-md)] text-foreground hover:bg-[var(--neutral-200)] transition-colors"
+            title="Expand sidebar"
+            aria-label="Expand sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4" strokeWidth={1.5} />
+            <span className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-[var(--mw-mirage)] text-white text-xs font-medium whitespace-nowrap z-50 pointer-events-none opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0">
+              Expand sidebar
+            </span>
+          </button>
+        )}
 
         {/* Quick Create — icon only */}
         <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
@@ -842,9 +872,20 @@ export function Sidebar({ variant = 'full' }: SidebarProps) {
             className="h-9 w-9 shrink-0 object-contain"
             aria-hidden
           />
-          <p className="text-lg font-bold tracking-tight text-foreground">
+          <p className="flex-1 text-lg font-bold tracking-tight text-foreground truncate">
             Alliance Metal
           </p>
+          {canToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="flex items-center justify-center w-7 h-7 rounded-[var(--shape-sm)] text-[var(--neutral-500)] hover:bg-[var(--neutral-200)] hover:text-foreground transition-colors"
+              title="Collapse sidebar"
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          )}
         </div>
       </div>
 

@@ -14,6 +14,399 @@ function uid(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+// ── Seed Blockly workspace XML for tpl-shelving ──────────────────────────────
+//
+// Drives Product Studio v2's first-run experience: every shop floor user lands
+// on a non-empty canvas with width / depth / shelves / finish_colour declared
+// and three operations (laser cut, bend, weld) that consume those variables.
+// Editing any input in the sidebar instantly re-prices the BOM, work-order,
+// and cost rollups — proving the configurator loop end-to-end.
+//
+// The XML is hand-rolled instead of generated so we can ship a tight,
+// pedagogical layout (no trial-and-error blocks). It's loaded by the v2 store
+// migration only when the persisted product has no `blocklyXml` of its own —
+// user-authored work is never overwritten. See `migrateBlocklyXmlSeeds` in
+// `productBuilderStore.ts`.
+const SHELVING_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-shelving" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-shelving-product">
+        <field name="PRODUCT_ID">tpl-shelving</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="in-width">
+        <field name="NAME">width</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">1200</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_dimension" id="in-depth">
+            <field name="NAME">depth</field>
+            <field name="UNIT">mm</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">400</field></shadow>
+            </value>
+            <next>
+              <block type="mw_input_quantity" id="in-shelves">
+                <field name="NAME">shelves</field>
+                <value name="DEFAULT">
+                  <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                </value>
+                <next>
+                  <block type="mw_input_choice" id="in-finish">
+                    <field name="NAME">finish_colour</field>
+                    <field name="OPTIONS">Signal Grey,Jet Black,Raw Steel</field>
+                    <field name="DEFAULT">Signal Grey</field>
+                    <next>
+                      <block type="mw_op_laser_cut" id="op-laser">
+                        <value name="PERIMETER">
+                          <block type="mw_arithmetic" id="laser-perim-mul">
+                            <field name="OP">MUL</field>
+                            <value name="A">
+                              <block type="mw_arithmetic" id="laser-perim-add">
+                                <field name="OP">ADD</field>
+                                <value name="A">
+                                  <block type="mw_get_variable" id="laser-w">
+                                    <field name="NAME">width</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="mw_get_variable" id="laser-d">
+                                    <field name="NAME">depth</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_number" id="laser-perim-2">
+                                <field name="VALUE">2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="PIERCES">
+                          <block type="mw_arithmetic" id="laser-pierces-mul">
+                            <field name="OP">MUL</field>
+                            <value name="A">
+                              <block type="mw_get_variable" id="laser-pierces-s">
+                                <field name="NAME">shelves</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_number" id="laser-pierces-4">
+                                <field name="VALUE">4</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="CUT_RATE">
+                          <shadow type="mw_number"><field name="VALUE">4500</field></shadow>
+                        </value>
+                        <next>
+                          <block type="mw_op_bend" id="op-bend">
+                            <value name="COUNT">
+                              <block type="mw_arithmetic" id="bend-count-mul">
+                                <field name="OP">MUL</field>
+                                <value name="A">
+                                  <block type="mw_get_variable" id="bend-s">
+                                    <field name="NAME">shelves</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="mw_number" id="bend-4">
+                                    <field name="VALUE">4</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="SEC_PER">
+                              <shadow type="mw_number"><field name="VALUE">20</field></shadow>
+                            </value>
+                            <next>
+                              <block type="mw_op_weld" id="op-weld">
+                                <value name="LENGTH_MM">
+                                  <block type="mw_arithmetic" id="weld-len-mul">
+                                    <field name="OP">MUL</field>
+                                    <value name="A">
+                                      <block type="mw_arithmetic" id="weld-len-add">
+                                        <field name="OP">ADD</field>
+                                        <value name="A">
+                                          <block type="mw_get_variable" id="weld-w">
+                                            <field name="NAME">width</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block type="mw_get_variable" id="weld-d">
+                                            <field name="NAME">depth</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="mw_number" id="weld-len-2">
+                                        <field name="VALUE">2</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <value name="SEC_PER_MM">
+                                  <shadow type="mw_number"><field name="VALUE">1.5</field></shadow>
+                                </value>
+                                <next>
+                                  <block type="mw_cost_overhead_pct" id="cost-overhead">
+                                    <field name="PCT_INLINE">15</field>
+                                    <next>
+                                      <block type="mw_cost_margin_pct" id="cost-margin">
+                                        <field name="PCT_INLINE">25</field>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="mw_when_making" id="hat-shelving-making" x="40" y="780">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-shelving-making-product">
+        <field name="PRODUCT_ID">tpl-shelving</field>
+      </block>
+    </value>
+  </block>
+</xml>`;
+
+// ── Seed Blockly XML for tpl-bracket ─────────────────────────────────────────
+//
+// A small, fast-read recipe: width input + bend angle + laser cut + bend +
+// powder coat. Designed to be small enough that the user can scan the whole
+// canvas at once and see how the inputs map onto operations. Used as a
+// reusable sub-assembly by `tpl-frame` below to demonstrate composition.
+const BRACKET_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-bracket" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-bracket-product">
+        <field name="PRODUCT_ID">tpl-bracket</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="bk-in-width">
+        <field name="NAME">plate_width</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">200</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_dimension" id="bk-in-height">
+            <field name="NAME">plate_height</field>
+            <field name="UNIT">mm</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">120</field></shadow>
+            </value>
+            <next>
+              <block type="mw_input_angle" id="bk-in-angle">
+                <field name="NAME">bend_angle</field>
+                <field name="DEFAULT">90</field>
+                <next>
+                  <block type="mw_op_laser_cut" id="bk-op-laser">
+                    <value name="PERIMETER">
+                      <block type="mw_arithmetic" id="bk-perim-mul">
+                        <field name="OP">MUL</field>
+                        <value name="A">
+                          <block type="mw_arithmetic" id="bk-perim-add">
+                            <field name="OP">ADD</field>
+                            <value name="A">
+                              <block type="mw_get_variable" id="bk-perim-w">
+                                <field name="NAME">plate_width</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_get_variable" id="bk-perim-h">
+                                <field name="NAME">plate_height</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="mw_number" id="bk-perim-2">
+                            <field name="VALUE">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="PIERCES">
+                      <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                    </value>
+                    <value name="CUT_RATE">
+                      <shadow type="mw_number"><field name="VALUE">4500</field></shadow>
+                    </value>
+                    <next>
+                      <block type="mw_op_bend" id="bk-op-bend">
+                        <value name="COUNT">
+                          <shadow type="mw_number"><field name="VALUE">1</field></shadow>
+                        </value>
+                        <value name="SEC_PER">
+                          <shadow type="mw_number"><field name="VALUE">25</field></shadow>
+                        </value>
+                        <next>
+                          <block type="mw_cost_adjust" id="bk-cost-pc">
+                            <field name="CATEGORY">material</field>
+                            <field name="LABEL">Powder coat (flat)</field>
+                            <value name="AMOUNT">
+                              <shadow type="mw_number"><field name="VALUE">18</field></shadow>
+                            </value>
+                            <next>
+                              <block type="mw_cost_overhead_pct" id="bk-cost-overhead">
+                                <field name="PCT_INLINE">15</field>
+                                <next>
+                                  <block type="mw_cost_margin_pct" id="bk-cost-margin">
+                                    <field name="PCT_INLINE">25</field>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="mw_when_making" id="hat-bracket-making" x="40" y="720">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-bracket-making-product">
+        <field name="PRODUCT_ID">tpl-bracket</field>
+      </block>
+    </value>
+  </block>
+</xml>`;
+
+// ── Seed Blockly XML for tpl-frame ───────────────────────────────────────────
+//
+// Demonstrates composition: a frame product that drops the bracket above in as
+// a sub-assembly via `mw_op_assemble_with`. The recursive evaluator pulls the
+// bracket's BOM, ops, and material/labour costs into this product's rollup
+// (multiplied by quantity). The frame's own overhead/margin re-apply at the
+// outermost level — child percentages are intentionally dropped during the
+// recursive merge to prevent overhead compounding.
+const FRAME_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-frame" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-frame-product">
+        <field name="PRODUCT_ID">tpl-frame</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="fr-in-length">
+        <field name="NAME">length</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">1200</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_dimension" id="fr-in-width">
+            <field name="NAME">width</field>
+            <field name="UNIT">mm</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">600</field></shadow>
+            </value>
+            <next>
+              <block type="mw_input_quantity" id="fr-in-brackets">
+                <field name="NAME">bracket_count</field>
+                <value name="DEFAULT">
+                  <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                </value>
+                <next>
+                  <block type="mw_op_weld" id="fr-op-weld">
+                    <field name="TYPE">MIG</field>
+                    <value name="LENGTH_MM">
+                      <block type="mw_arithmetic" id="fr-weld-len-mul">
+                        <field name="OP">MUL</field>
+                        <value name="A">
+                          <block type="mw_arithmetic" id="fr-weld-len-add">
+                            <field name="OP">ADD</field>
+                            <value name="A">
+                              <block type="mw_get_variable" id="fr-weld-l">
+                                <field name="NAME">length</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_get_variable" id="fr-weld-w">
+                                <field name="NAME">width</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="mw_number" id="fr-weld-2">
+                            <field name="VALUE">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="SEC_PER_MM">
+                      <shadow type="mw_number"><field name="VALUE">1.5</field></shadow>
+                    </value>
+                    <next>
+                      <block type="mw_op_assemble_with" id="fr-subasm-bracket">
+                        <value name="PRODUCT">
+                          <block type="mw_product_ref" id="fr-bracket-ref">
+                            <field name="PRODUCT_ID">tpl-bracket</field>
+                          </block>
+                        </value>
+                        <value name="QTY">
+                          <block type="mw_get_variable" id="fr-bracket-qty">
+                            <field name="NAME">bracket_count</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="mw_cost_overhead_pct" id="fr-cost-overhead">
+                            <field name="PCT_INLINE">15</field>
+                            <next>
+                              <block type="mw_cost_margin_pct" id="fr-cost-margin">
+                                <field name="PCT_INLINE">25</field>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="mw_when_making" id="hat-frame-making" x="40" y="700">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-frame-making-product">
+        <field name="PRODUCT_ID">tpl-frame</field>
+      </block>
+    </value>
+  </block>
+</xml>`;
+
 // ── Template 1: Steel Shelving Unit ──────────────────────────────────────────
 
 const shelvingNodes = [
@@ -144,6 +537,7 @@ export const steelShelvingTemplate: Product = {
   createdAt: '2026-03-15T09:30:00Z',
   updatedAt: '2026-04-01T14:22:00Z',
   thumbnail: 'shelving',
+  blocklyXml: SHELVING_SEED_XML,
 };
 
 // ── Template 2: Custom Bracket Assembly ──────────────────────────────────────
@@ -245,6 +639,7 @@ export const customBracketTemplate: Product = {
   createdAt: '2026-02-20T11:00:00Z',
   updatedAt: '2026-03-28T16:45:00Z',
   thumbnail: 'bracket',
+  blocklyXml: BRACKET_SEED_XML,
 };
 
 // ── Template 3: Welded Frame ─────────────────────────────────────────────────
@@ -360,6 +755,7 @@ export const weldedFrameTemplate: Product = {
   createdAt: '2026-01-10T08:15:00Z',
   updatedAt: '2026-03-30T10:30:00Z',
   thumbnail: 'frame',
+  blocklyXml: FRAME_SEED_XML,
 };
 
 // ── All templates ────────────────────────────────────────────────────────────

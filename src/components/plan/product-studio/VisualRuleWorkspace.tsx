@@ -2,9 +2,8 @@
  * Visual rule workspace — palette (react-dnd) + nested block tree + variable definitions.
  */
 
-import React, { useCallback, useMemo } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 import {
   GitBranch,
   Layers,
@@ -20,6 +19,7 @@ import {
   GripVertical,
   Info,
 } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -31,12 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/components/ui/utils';
 import { useProductBuilderStore } from '@/store/productBuilderStore';
 import { createEmptyEngine } from '@/lib/product-studio/evaluate';
@@ -50,18 +45,23 @@ import type {
 } from '@/lib/product-studio/types';
 import {
   appendToBranchChildren,
-  appendToRoot,
   createStubBlock,
   deepRegenerateIds,
   removeBlockByIdAnywhere,
   replaceBlockById,
+  RULE_PALETTE_DND_TYPE,
   type PaletteKind,
 } from './rule-workspace-utils';
 
-const DND_PALETTE = 'RULE_PALETTE_KIND';
+type PaletteCategory = 'logic' | 'variables' | 'outputs';
 
-const PALETTE_GROUPS: { label: string; items: { kind: PaletteKind; label: string; hint: string; icon: React.ElementType }[] }[] = [
+const PALETTE_GROUPS: {
+  id: PaletteCategory;
+  label: string;
+  items: { kind: PaletteKind; label: string; hint: string; icon: React.ElementType }[];
+}[] = [
   {
+    id: 'logic',
     label: 'Logic',
     items: [
       { kind: 'if_chain', label: 'When / otherwise', hint: 'If this is true, run the blocks inside; otherwise try the next branch or the final “otherwise” branch.', icon: GitBranch },
@@ -69,6 +69,7 @@ const PALETTE_GROUPS: { label: string; items: { kind: PaletteKind; label: string
     ],
   },
   {
+    id: 'variables',
     label: 'Variables',
     items: [
       { kind: 'set_literal', label: 'Set value', hint: 'Store a fixed text or number in a derived variable.', icon: Variable },
@@ -76,6 +77,7 @@ const PALETTE_GROUPS: { label: string; items: { kind: PaletteKind; label: string
     ],
   },
   {
+    id: 'outputs',
     label: 'Outputs',
     items: [
       { kind: 'bom_phantom', label: 'Add BOM line', hint: 'Add a part that is not on the canvas (phantom line).', icon: Package },
@@ -102,7 +104,7 @@ function PaletteDraggable({
 }) {
   const [{ isDragging }, drag] = useDrag(
     () => ({
-      type: DND_PALETTE,
+      type: RULE_PALETTE_DND_TYPE,
       item: { kind },
       canDrag: !disabled,
       collect: (m) => ({ isDragging: m.isDragging() }),
@@ -111,58 +113,24 @@ function PaletteDraggable({
   );
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          ref={drag as unknown as React.Ref<HTMLButtonElement>}
-          type="button"
-          disabled={disabled}
-          className={cn(
-            'flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg border border-[var(--neutral-200)] bg-white text-xs',
-            'hover:bg-[var(--neutral-50)] cursor-grab active:cursor-grabbing',
-            disabled && 'opacity-40 cursor-not-allowed',
-            isDragging && 'opacity-50',
-          )}
-        >
-          <Icon className="w-3.5 h-3.5 shrink-0 text-[var(--mw-mirage)]" />
-          <span className="font-medium truncate">{label}</span>
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="right" className="max-w-[220px] text-xs">
-        {hint}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function RootDropZone({
-  onDropKind,
-  disabled,
-}: {
-  onDropKind: (kind: PaletteKind) => void;
-  disabled?: boolean;
-}) {
-  const [{ isOver }, drop] = useDrop(
-    () => ({
-      accept: DND_PALETTE,
-      drop: (item: { kind: PaletteKind }) => {
-        if (!disabled) onDropKind(item.kind);
-      },
-      canDrop: () => !disabled,
-      collect: (m) => ({ isOver: m.isOver() && m.canDrop() }),
-    }),
-    [onDropKind, disabled],
-  );
-
-  return (
     <div
-      ref={drop as unknown as React.Ref<HTMLDivElement>}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
+      title={hint}
       className={cn(
-        'min-h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center text-xs text-muted-foreground px-3 py-4',
-        isOver ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10' : 'border-[var(--neutral-200)]',
+        'flex min-h-12 w-full cursor-grab items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-2 text-left shadow-[var(--elevation-0)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+        'hover:-translate-y-0.5 hover:border-[var(--border)] hover:bg-[var(--neutral-100)] hover:shadow-[var(--elevation-2)] active:cursor-grabbing',
+        disabled && 'pointer-events-none cursor-not-allowed opacity-40',
+        isDragging && 'opacity-50',
       )}
     >
-      Drag blocks here to add logic at the top level
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-neutral-800 dark:text-neutral-300">
+        <Icon className="h-4 w-4 text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium text-foreground">{label}</p>
+        <p className="line-clamp-2 text-[10px] text-[var(--neutral-500)]">{hint}</p>
+      </div>
+      <GripVertical className="h-3.5 w-3.5 shrink-0 text-[var(--neutral-400)]" aria-hidden />
     </div>
   );
 }
@@ -180,7 +148,7 @@ function BranchDropZone({
 }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
-      accept: DND_PALETTE,
+      accept: RULE_PALETTE_DND_TYPE,
       drop: (item: { kind?: PaletteKind }) => {
         if (disabled || !item.kind) return;
         onDropKind(item.kind, { blockId, branchId });
@@ -591,6 +559,7 @@ function BlockEditor({
 }
 
 function VisualRuleWorkspaceInner() {
+  const [paletteTab, setPaletteTab] = useState<PaletteCategory>('logic');
   const { getActiveProduct, setDefinitionEngine } = useProductBuilderStore();
   const product = getActiveProduct();
   const locked = product?.locked === true;
@@ -608,14 +577,6 @@ function VisualRuleWorkspaceInner() {
       setDefinitionEngine(next);
     },
     [product, locked, setDefinitionEngine],
-  );
-
-  const onDropRoot = useCallback(
-    (kind: PaletteKind) => {
-      const stub = deepRegenerateIds(createStubBlock(kind, firstVarId));
-      commit(appendToRoot(engine, stub));
-    },
-    [engine, firstVarId, commit],
   );
 
   const onDropBranch = useCallback(
@@ -663,23 +624,53 @@ function VisualRuleWorkspaceInner() {
 
   if (!product) return null;
 
+  const activePaletteGroup = PALETTE_GROUPS.find((g) => g.id === paletteTab) ?? PALETTE_GROUPS[0];
+
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex flex-col h-full min-h-0">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--neutral-800)] shrink-0">
-          <div className="flex items-center gap-2">
-            <GitBranch className="w-4 h-4 text-[var(--mw-yellow-500)]" />
-            <h3 className="text-sm font-semibold text-foreground">Logic</h3>
+      <div className="flex h-full min-h-0 flex-col bg-white dark:bg-card">
+        <div className="shrink-0 border-b border-[var(--border)] p-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Rules</p>
+            {locked && <span className="text-[10px] text-amber-600">Locked</span>}
           </div>
-          {locked && <span className="text-[10px] text-amber-600">Locked</span>}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-4" style={{ scrollbarWidth: 'thin' }}>
-          <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50">
-            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+        <div className="shrink-0 border-b border-[var(--border)] p-2">
+          <ToggleGroup
+            type="single"
+            value={paletteTab}
+            onValueChange={(val) => val && setPaletteTab(val as PaletteCategory)}
+            className="flex w-full flex-wrap"
+            variant="outline"
+          >
+            <ToggleGroupItem
+              value="logic"
+              className="h-7 flex-1 px-1.5 text-[10px] data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]"
+            >
+              Logic
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="variables"
+              className="h-7 flex-1 px-1.5 text-[10px] data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]"
+            >
+              Variables
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="outputs"
+              className="h-7 flex-1 px-1.5 text-[10px] data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]"
+            >
+              Outputs
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-2" style={{ scrollbarWidth: 'thin' }}>
+          <div className="flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 p-3 dark:border-blue-900/50 dark:bg-blue-950/30">
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              Drag blocks from the palette into the drop zones. Use <strong>When / otherwise</strong> for if-then-else style rules. Define variables first so
-              conditions know what to compare.
+              Drag a block from the list below and <strong>drop it on the product canvas</strong> (or into a branch drop zone here). Use{' '}
+              <strong>When / otherwise</strong> for if-then-else rules. Define variables first so conditions know what to compare.
             </p>
           </div>
 
@@ -802,29 +793,20 @@ function VisualRuleWorkspaceInner() {
             ))}
           </div>
 
-          {/* Palette */}
+          {/* Palette — Factory Designer–style rows; whole row is draggable */}
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Block palette</span>
-            <div className="grid gap-3">
-              {PALETTE_GROUPS.map((g) => (
-                <div key={g.label}>
-                  <p className="text-[10px] text-muted-foreground mb-1.5">{g.label}</p>
-                  <div className="grid gap-1">
-                    {g.items.map((it) => (
-                      <PaletteDraggable key={it.kind} {...it} disabled={locked} />
-                    ))}
-                  </div>
-                </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{activePaletteGroup.label}</span>
+            <div className="space-y-1">
+              {activePaletteGroup.items.map((it) => (
+                <PaletteDraggable key={it.kind} {...it} disabled={locked} />
               ))}
             </div>
           </div>
 
-          <RootDropZone onDropKind={onDropRoot} disabled={locked} />
-
           <div className="space-y-2">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Your logic</span>
             {engine.rootBlocks.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-2">No blocks yet — drag from the palette above.</p>
+              <p className="text-xs text-muted-foreground py-2">No blocks yet — drag a block onto the canvas or add one from the list above.</p>
             ) : (
               engine.rootBlocks.map((b) => (
                 <BlockEditor
@@ -837,7 +819,7 @@ function VisualRuleWorkspaceInner() {
                   }
                   onDelete={() => commit({ ...engine, rootBlocks: removeBlockByIdAnywhere(engine.rootBlocks, b.id) })}
                   depth={0}
-                  onDropBranch={onDropBranch}
+                  onDropInBranch={onDropBranch}
                 />
               ))
             )}
@@ -848,10 +830,7 @@ function VisualRuleWorkspaceInner() {
   );
 }
 
+/** Rules rail — must render under a parent `DndProvider` (see ProductStudio). */
 export function VisualRuleWorkspace() {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <VisualRuleWorkspaceInner />
-    </DndProvider>
-  );
+  return <VisualRuleWorkspaceInner />;
 }

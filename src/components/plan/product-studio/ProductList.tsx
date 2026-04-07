@@ -17,6 +17,7 @@ import {
   Zap,
   ArrowRight,
   Lock,
+  Sparkles,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
@@ -91,6 +92,11 @@ export function ProductList() {
     navigate(`/plan/product-studio/${productId}`);
   };
 
+  const handleOpenV2 = (productId: string) => {
+    setActiveProduct(productId);
+    navigate(`/plan/product-studio/v2/${productId}`);
+  };
+
   const handleDuplicate = (productId: string) => {
     duplicateProduct(productId);
   };
@@ -109,10 +115,26 @@ export function ProductList() {
             Build configurable products with visual structure trees and smart rules
           </p>
         </div>
-        <Button onClick={() => setShowNewDialog(true)} className="gap-2">
-          <Plus className="w-4 h-4" />
-          New Product
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/plan/product-studio/v2')}
+            className="gap-2"
+          >
+            <Sparkles className="w-4 h-4" strokeWidth={1.5} />
+            Open Visual editor
+            <Badge
+              variant="outline"
+              className="ml-1 h-[18px] rounded-full border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] px-1.5 text-[9px] font-medium uppercase tracking-wider text-[var(--neutral-800)]"
+            >
+              v2 beta
+            </Badge>
+          </Button>
+          <Button onClick={() => setShowNewDialog(true)} className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Product
+          </Button>
+        </div>
       </div>
 
       {/* Product grid */}
@@ -182,6 +204,12 @@ export function ProductList() {
                             {product.definitionEngine?.rootBlocks.length}
                           </Badge>
                         )}
+                        {product.blocklyXml && (
+                          <Badge className="text-[9px] h-5 gap-0.5 border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--neutral-800)] backdrop-blur-sm">
+                            <Sparkles className="w-2.5 h-2.5" strokeWidth={1.5} />
+                            v2
+                          </Badge>
+                        )}
                         {product.lifecycleStatus === 'published' && (
                           <Badge className="text-[9px] h-5 bg-[var(--mw-green)]/15 text-[var(--mw-green)] border-0">
                             Published
@@ -220,6 +248,10 @@ export function ProductList() {
                           <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleOpen(product.id); }} className="gap-2 text-xs">
                             <ArrowRight className="w-3.5 h-3.5" />
                             Open
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleOpenV2(product.id); }} className="gap-2 text-xs">
+                            <Sparkles className="w-3.5 h-3.5" strokeWidth={1.5} />
+                            Edit in v2 (beta)
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDuplicate(product.id); }} className="gap-2 text-xs">
                             <Copy className="w-3.5 h-3.5" />
