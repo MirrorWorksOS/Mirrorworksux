@@ -6,9 +6,9 @@
  */
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { Play, Timer, ListOrdered } from "lucide-react";
-import { toast } from "sonner";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ const PRIORITY_CLASS: Record<string, string> = {
 
 export function WorkOrderSequencing() {
   const [nextWO, setNextWO] = useState<WorkOrder | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     makeService.getWorkOrders().then((orders) => {
@@ -45,12 +46,15 @@ export function WorkOrderSequencing() {
     });
   }, []);
 
+  // Launch the next work order into Shop Floor Mode. We intentionally
+  // navigate to /floor/run/:id rather than firing a toast — the previous
+  // implementation pretended to start a job but the operator had nowhere
+  // to actually run it. Routing into Floor Mode puts them on the proper
+  // execution screen (WorkOrderFullScreen) with timer, parts counter,
+  // checklist, and emergency stop.
   const handleStart = () => {
-    toast.success("Work order started", {
-      description: nextWO
-        ? `${nextWO.woNumber} — ${nextWO.operation} is now in progress.`
-        : "Work order started.",
-    });
+    if (!nextWO) return;
+    navigate(`/floor/run/${nextWO.id}`);
   };
 
   if (!nextWO) {

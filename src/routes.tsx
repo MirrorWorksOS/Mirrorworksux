@@ -79,16 +79,27 @@ const MakeDashboard = React.lazy(() => import('./components/make/MakeDashboard')
 const MakeSchedule = React.lazy(() => import('./components/make/MakeSchedule').then(m => ({ default: m.MakeSchedule })));
 const MakeManufacturingOrders = React.lazy(() => import('./components/make/MakeManufacturingOrders').then(m => ({ default: m.MakeManufacturingOrders })));
 const MakeManufacturingOrderDetail = React.lazy(() => import('./components/make/MakeManufacturingOrderDetail').then(m => ({ default: m.MakeManufacturingOrderDetail })));
-const MakeTimeClock = React.lazy(() => import('./components/make/MakeTimeClock').then(m => ({ default: m.MakeTimeClock })));
+// MakeTimeClock deprecated — clock-in now lives in /floor. Left the module
+// file on disk so legacy deep links elsewhere in the codebase still resolve,
+// but we no longer wire it into a route.
+// const MakeTimeClock = React.lazy(() => import('./components/make/MakeTimeClock').then(m => ({ default: m.MakeTimeClock })));
 const MakeQuality = React.lazy(() => import('./components/make/MakeQuality').then(m => ({ default: m.MakeQuality })));
 const MakeProducts = React.lazy(() => import('./components/make/MakeProducts').then(m => ({ default: m.MakeProducts })));
 const MakeProductDetail = React.lazy(() => import('./components/make/MakeProductDetail').then(m => ({ default: m.MakeProductDetail })));
 const MakeSettings = React.lazy(() => import('./components/make/MakeSettings').then(m => ({ default: m.MakeSettings })));
 const MakeShopFloor = React.lazy(() => import('./components/make/MakeShopFloor').then(m => ({ default: m.MakeShopFloor })));
-const MakeScanStation = React.lazy(() => import('./components/make/MakeScanStation').then(m => ({ default: m.MakeScanStation })));
+// MakeScanStation deprecated — scanning a traveler is only meaningful
+// inside a clocked-in kiosk session (see /floor). Kept the module file
+// but no longer routed.
+// const MakeScanStation = React.lazy(() => import('./components/make/MakeScanStation').then(m => ({ default: m.MakeScanStation })));
 const MakeScrapAnalysis = React.lazy(() => import('./components/make/MakeScrapAnalysis').then(m => ({ default: m.MakeScrapAnalysis })));
 const MakeJobTraveler = React.lazy(() => import('./components/make/MakeJobTraveler').then(m => ({ default: m.MakeJobTraveler })));
 const MakeCapa = React.lazy(() => import('./components/make/MakeCapa').then(m => ({ default: m.MakeCapa })));
+
+// Floor Mode (kiosk) — sibling of Layout, no sidebar / no banners / no AgentFAB
+const FloorModeLayout = React.lazy(() => import('./components/floor/FloorModeLayout').then(m => ({ default: m.FloorModeLayout })));
+const FloorHome = React.lazy(() => import('./components/floor/FloorHome').then(m => ({ default: m.FloorHome })));
+const FloorRun = React.lazy(() => import('./components/floor/FloorRun').then(m => ({ default: m.FloorRun })));
 
 // Ship Module
 const ShipDashboard = React.lazy(() => import('./components/ship/ShipDashboard').then(m => ({ default: m.ShipDashboard })));
@@ -156,6 +167,23 @@ function ProductStudioV2Redirect() {
 }
 
 export const router = createBrowserRouter([
+  // ────────────────────────────────────────────────────────────────
+  // Floor Mode (Shop Floor Kiosk)
+  //
+  // Lives as a TOP-LEVEL sibling of `/` so it escapes the office
+  // Layout (no sidebar, no Sell upgrade banner, no AgentFAB, no
+  // command palette). An operator at a tablet with greasy gloves
+  // on should not see any of that — the URL itself declares the
+  // device posture.
+  // ────────────────────────────────────────────────────────────────
+  {
+    path: '/floor',
+    element: <L><FloorModeLayout /></L>,
+    children: [
+      { index: true, element: <L><FloorHome /></L> },
+      { path: 'run/:workOrderId', element: <L><FloorRun /></L> },
+    ],
+  },
   {
     path: '/',
     element: <Layout />,
@@ -271,9 +299,14 @@ export const router = createBrowserRouter([
           { path: 'shop-floor', element: <L><MakeShopFloor /></L> },
           { path: 'manufacturing-orders', element: <L><MakeManufacturingOrders /></L> },
           { path: 'manufacturing-orders/:id', element: <L><MakeManufacturingOrderDetail /></L> },
-          { path: 'time-clock', element: <L><MakeTimeClock /></L> },
+          // /make/time-clock → moved into unified kiosk (FloorClockIn). The old
+          // office-chrome time-clock screen is kept under the hood as a legacy
+          // fallback but the canonical URL is now /floor.
+          { path: 'time-clock', element: <Navigate to="/floor" replace /> },
           { path: 'quality', element: <L><MakeQuality /></L> },
-          { path: 'scan', element: <L><MakeScanStation /></L> },
+          // /make/scan → same deal; scanning a traveler is only meaningful
+          // inside a clocked-in session, which lives in /floor.
+          { path: 'scan', element: <Navigate to="/floor" replace /> },
           { path: 'scrap-analysis', element: <L><MakeScrapAnalysis /></L> },
           { path: 'job-traveler/:id', element: <L><MakeJobTraveler /></L> },
           { path: 'capa', element: <L><MakeCapa /></L> },

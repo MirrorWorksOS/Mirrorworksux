@@ -35,21 +35,87 @@ import { MaterialsModal } from './MaterialsModal';
 import { CadFileModal } from './CadFileModal';
 import { DefectReportModal } from './DefectReportModal';
 
+/**
+ * Prop shape — intentionally loose so both call sites work:
+ *
+ *   - Legacy: MakeShopFloor's WorkTab passes an ad-hoc object
+ *     ({ id, name, station, moId, moCustomer, moPartName, status: 'progress'|…}).
+ *     Fields are optional; fallbacks render the Alliance Metal demo.
+ *
+ *   - New: /floor/run/:id passes a rich context via FloorRun:
+ *     { id, woNumber, operation, machineName, moNumber, productName,
+ *       customerName, operatorName, operatorRole, operatorInitials,
+ *       mode: 'route' }.
+ *
+ * In `route` mode the component renders immediately (no slide-up animation)
+ * because its route IS the URL — there is no modal to animate out of.
+ */
 export interface FullScreenWorkOrderProps {
-  workOrder: any; 
+  workOrder: any;
   onClose: () => void;
+  /** 'overlay' slides up over a parent view (default). 'route' renders flat. */
+  mode?: 'overlay' | 'route';
 }
 
-export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(workOrder?.status === 'progress');
+// Normalised view of whatever shape the caller handed us. Every field has
+// a sensible Alliance Metal demo fallback so nothing ever renders blank.
+function useNormalisedWorkOrder(raw: any) {
+  const moNumber =
+    raw?.moNumber ?? raw?.mo?.moNumber ?? raw?.moId ?? 'MO-26-401';
+  const productName =
+    raw?.productName ?? raw?.mo?.productName ?? raw?.moPartName ?? 'Server Rack Chassis';
+  const customerName =
+    raw?.customerName ?? raw?.mo?.customerName ?? raw?.moCustomer ?? 'Alliance Metal';
+  const machineName =
+    raw?.machineName ?? raw?.machine?.name ?? raw?.station ?? 'Amada Ensis Laser';
+  const operatorName = raw?.operatorName ?? raw?.operator?.name ?? 'David Miller';
+  const operatorRole = raw?.operatorRole ?? raw?.operator?.role ?? 'Senior Operator';
+  const operatorInitials =
+    raw?.operatorInitials ??
+    raw?.operator?.initials ??
+    operatorName
+      .split(' ')
+      .map((p: string) => p[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  const operation = raw?.operation ?? raw?.name ?? 'Laser cutting operation';
+  const subtitle = raw?.subtitle ?? `${customerName} • ${operation}`;
+  const isInitiallyRunning =
+    raw?.status === 'progress' || raw?.status === 'in_progress';
+
+  return {
+    moNumber,
+    productName,
+    customerName,
+    machineName,
+    operatorName,
+    operatorRole,
+    operatorInitials,
+    operation,
+    subtitle,
+    isInitiallyRunning,
+  };
+}
+
+export function WorkOrderFullScreen({
+  workOrder,
+  onClose,
+  mode = 'overlay',
+}: FullScreenWorkOrderProps) {
+  const wo = useNormalisedWorkOrder(workOrder);
+  const [isVisible, setIsVisible] = useState(mode === 'route');
+  const [isRunning, setIsRunning] = useState(wo.isInitiallyRunning);
   const [activeModal, setActiveModal] = useState<'materials' | 'cad' | 'defect' | null>(null);
   const [completedParts, setCompletedParts] = useState(78);
   const [viewMode, setViewMode] = useState<'camera' | '3d'>('camera');
   const [isOffline, setIsOffline] = useState(false);
-  
-  // Timer state
-  const [elapsedSeconds, setElapsedSeconds] = useState(14 * 60 + 32); // Start at 00:14:32
+
+  // Timer state — in route mode we start fresh (new job). In overlay mode
+  // we keep the legacy 14:32 demo start so the old screen still looks alive.
+  const [elapsedSeconds, setElapsedSeconds] = useState(
+    mode === 'route' ? 0 : 14 * 60 + 32
+  );
 
   // Animation states
   const [isAnimatingButton, setIsAnimatingButton] = useState(false);
@@ -71,19 +137,28 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Animation on mount
+  // Animation on mount — only in overlay mode. Route mode lives at its own
+  // URL so there's nothing to slide up "from".
   useEffect(() => {
-    setIsVisible(true);
+    if (mode === 'overlay') {
+      setIsVisible(true);
+    }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') handleClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
+    if (mode === 'route') {
+      // No animation — caller handles navigation.
+      onClose();
+      return;
+    }
     setIsVisible(false);
-    setTimeout(onClose, 700); 
+    setTimeout(onClose, 700);
   };
 
   const handlePartsIncrement = () => {
@@ -94,31 +169,43 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
 
   if (!workOrder) return null;
 
+  // In route mode we live inside FloorModeLayout's flex child, so we fill
+  // that container rather than positioning `fixed` over the whole viewport.
+  // In overlay mode we keep the legacy `fixed inset-0` slide-up behaviour.
+  const rootClass =
+    mode === 'route'
+      ? 'absolute inset-0 bg-[var(--neutral-100)] flex flex-col font-sans'
+      : cn(
+          'fixed inset-0 z-[1000] bg-[var(--neutral-100)] flex flex-col transition-transform duration-[550ms] ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans',
+          isVisible ? 'translate-y-0' : 'translate-y-full'
+        );
+
   return (
-    <div 
-      className={cn(
-        "fixed inset-0 z-[1000] bg-[var(--neutral-100)] flex flex-col transition-transform duration-[550ms] ease-[cubic-bezier(0.2,0.0,0,1.0)] will-change-transform font-sans",
-        isVisible ? "translate-y-0" : "translate-y-full"
-      )}
-    >
+    <div className={rootClass}>
       {/* --- Fixed Header (72px) --- */}
       <div className="h-[72px] bg-card border-b border-[var(--neutral-200)] flex items-center shadow-sm shrink-0 sticky top-0 z-10">
         <div className="flex items-center px-6 xl:w-[360px] shrink-0 justify-start">
-           <button 
+           <button
              onClick={handleClose}
              className="flex items-center gap-3 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] transition-colors group min-h-[48px]"
            >
               <div className="w-12 h-12 rounded-full flex items-center justify-center group-hover:bg-[var(--neutral-100)] transition-colors">
                  <ArrowLeft className="w-6 h-6" />
               </div>
-              <span className="text-base font-medium">Back to Work Orders</span>
+              <span className="text-base font-medium">
+                {mode === 'route' ? 'Back to Queue' : 'Back to Work Orders'}
+              </span>
            </button>
         </div>
 
         <div className="flex-1 flex items-center pl-6 xl:pl-6 justify-center">
            <div className="text-center">
-             <span className="text-xl font-bold text-[var(--neutral-800)] tracking-tight block">MO-26-401: Server Rack Chassis</span>
-             <span className="text-sm text-[var(--neutral-500)] font-medium">Alliance Metal • Sheet 12 of 20</span>
+             <span className="text-xl font-bold text-[var(--neutral-800)] tracking-tight block">
+               {wo.moNumber}: {wo.productName}
+             </span>
+             <span className="text-sm text-[var(--neutral-500)] font-medium">
+               {wo.subtitle}
+             </span>
            </div>
         </div>
 
@@ -148,12 +235,16 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] bg-card rounded-[var(--shape-lg)]">
              <CardContent className="p-6 flex items-center gap-4">
                <Avatar className="w-16 h-16 border-2 border-[var(--neutral-200)]">
-                  <AvatarImage src={operatorAvatar} className="object-cover" />
-                  <AvatarFallback className="bg-[var(--neutral-800)] text-white font-bold">DM</AvatarFallback>
+                  {mode === 'overlay' && <AvatarImage src={operatorAvatar} className="object-cover" />}
+                  <AvatarFallback className="bg-[var(--neutral-800)] text-white font-bold">
+                    {wo.operatorInitials}
+                  </AvatarFallback>
                </Avatar>
                <div>
-                  <div className="font-bold text-[var(--neutral-800)] text-lg">David Miller</div>
-                  <div className="text-sm text-[var(--neutral-500)]">Senior Operator • Amada Ensis Laser</div>
+                  <div className="font-bold text-[var(--neutral-800)] text-lg">{wo.operatorName}</div>
+                  <div className="text-sm text-[var(--neutral-500)]">
+                    {wo.operatorRole} • {wo.machineName}
+                  </div>
                </div>
              </CardContent>
            </Card>
@@ -268,10 +359,10 @@ export function WorkOrderFullScreen({ workOrder, onClose }: FullScreenWorkOrderP
            <div className="bg-[var(--mw-yellow-400)] rounded-[var(--shape-lg)] p-4 shadow-sm z-20 relative flex items-center justify-between text-primary-foreground">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-sm">
-                    <img src={amadaLogo} className="w-8 h-8 object-contain" alt="Amada" />
+                    <img src={amadaLogo} className="w-8 h-8 object-contain" alt="Machine" />
                  </div>
                  <div>
-                    <div className="font-bold text-lg leading-none">Amada Ensis Laser</div>
+                    <div className="font-bold text-lg leading-none">{wo.machineName}</div>
                     <div className="text-sm font-medium opacity-80 mt-1">Cycle Time: 3:45 (Target: 3:20)</div>
                  </div>
               </div>

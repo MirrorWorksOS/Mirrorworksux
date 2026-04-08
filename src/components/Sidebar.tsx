@@ -245,7 +245,9 @@ export const menuConfig: MenuItem[] = [
           { label: 'Schedule', path: '/make/schedule' },
           { label: 'Shop Floor', path: '/make/shop-floor' },
           { label: 'Manufacturing Orders', path: '/make/manufacturing-orders' },
-          { label: 'Scan station', path: '/make/scan' },
+          // Scan station and Time Clock moved into the unified Shop Floor
+          // kiosk at /floor — removed from the office sidebar to eliminate
+          // multiple entry points. See FloorHome for the gated funnel.
         ],
       },
       {
@@ -254,7 +256,6 @@ export const menuConfig: MenuItem[] = [
           { label: 'Quality', path: '/make/quality' },
           { label: 'Scrap analysis', path: '/make/scrap-analysis' },
           { label: 'CAPA', path: '/make/capa' },
-          { label: 'Time Clock', path: '/make/time-clock' },
         ],
       },
       {

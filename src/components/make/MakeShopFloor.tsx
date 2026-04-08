@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { ArrowLeft, Monitor } from 'lucide-react';
+import { ArrowLeft, Monitor, Maximize2 } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -53,6 +53,17 @@ export function MakeShopFloor() {
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
+            </Button>
+            {/* Primary CTA — launches the kiosk/tablet experience. This is
+                the "office-side manager sends a tablet into kiosk mode"
+                path. An operator at a bolted tablet would hit /floor
+                directly and never see this page. */}
+            <Button
+              className="bg-[var(--neutral-800)] hover:bg-[var(--neutral-900)] text-white"
+              onClick={() => navigate('/floor')}
+            >
+              <Maximize2 className="w-4 h-4 mr-2" />
+              Enter Shop Floor Mode
             </Button>
           </div>
         }
