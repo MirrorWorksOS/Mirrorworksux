@@ -8,6 +8,9 @@ import {
   shelvingDefinitionEngine,
   bracketDefinitionEngine,
   frameDefinitionEngine,
+  cableTrayDefinitionEngine,
+  enclosureDefinitionEngine,
+  handrailDefinitionEngine,
 } from './definition-engine-templates';
 
 function uid(): string {
@@ -60,7 +63,46 @@ const SHELVING_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml
                     <field name="OPTIONS">Signal Grey,Jet Black,Raw Steel</field>
                     <field name="DEFAULT">Signal Grey</field>
                     <next>
-                      <block type="mw_op_laser_cut" id="op-laser">
+                      <!-- Worked example: pick the sheet thickness from the
+                           width input. Wide shelves get 3 mm plate; narrow
+                           ones get 2 mm. This is the canonical "rule" pattern
+                           for the studio — IF <var> compare <literal>, THEN
+                           set <var> = <value>, ELSE set <var> = <other>. -->
+                      <block type="controls_if" id="rule-thickness">
+                        <mutation else="1"/>
+                        <value name="IF0">
+                          <block type="mw_compare" id="rule-thickness-cmp">
+                            <field name="OP">GTE</field>
+                            <value name="A">
+                              <block type="mw_get_variable" id="rule-thickness-w">
+                                <field name="NAME">width</field>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_number" id="rule-thickness-rhs">
+                                <field name="VALUE">1500</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="mw_set_variable" id="rule-thickness-set-heavy">
+                            <field name="NAME">thickness</field>
+                            <value name="VALUE">
+                              <shadow type="mw_number"><field name="VALUE">3</field></shadow>
+                            </value>
+                          </block>
+                        </statement>
+                        <statement name="ELSE">
+                          <block type="mw_set_variable" id="rule-thickness-set-light">
+                            <field name="NAME">thickness</field>
+                            <value name="VALUE">
+                              <shadow type="mw_number"><field name="VALUE">2</field></shadow>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="mw_op_laser_cut" id="op-laser">
                         <value name="PERIMETER">
                           <block type="mw_arithmetic" id="laser-perim-mul">
                             <field name="OP">MUL</field>
@@ -167,6 +209,8 @@ const SHELVING_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml
                               </block>
                             </next>
                           </block>
+                        </next>
+                      </block>
                         </next>
                       </block>
                     </next>
@@ -367,11 +411,7 @@ const FRAME_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
                     </value>
                     <next>
                       <block type="mw_op_assemble_with" id="fr-subasm-bracket">
-                        <value name="PRODUCT">
-                          <block type="mw_product_ref" id="fr-bracket-ref">
-                            <field name="PRODUCT_ID">tpl-bracket</field>
-                          </block>
-                        </value>
+                        <field name="PRODUCT_ID">tpl-bracket</field>
                         <value name="QTY">
                           <block type="mw_get_variable" id="fr-bracket-qty">
                             <field name="NAME">bracket_count</field>
@@ -758,10 +798,435 @@ export const weldedFrameTemplate: Product = {
   blocklyXml: FRAME_SEED_XML,
 };
 
+// ── Template 4: Cable Tray Run ───────────────────────────────────────────────
+//
+// Demonstrates the new `controls_repeat_ext` loop block: a cable tray is a
+// repeated rung pattern, so the recipe declares `rungs` as an input and the
+// laser cut + weld blocks live inside a repeat that unrolls per rung at
+// generation time. Editing the rung count in the Inputs sidebar instantly
+// re-prices the BOM and ops without authoring more blocks.
+const CABLE_TRAY_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-tray" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-tray-product">
+        <field name="PRODUCT_ID">tpl-cable-tray</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="in-tray-length">
+        <field name="NAME">length</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">2400</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_dimension" id="in-tray-width">
+            <field name="NAME">width</field>
+            <field name="UNIT">mm</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">300</field></shadow>
+            </value>
+            <next>
+              <block type="mw_input_quantity" id="in-tray-rungs">
+                <field name="NAME">rungs</field>
+                <value name="DEFAULT">
+                  <shadow type="mw_number"><field name="VALUE">12</field></shadow>
+                </value>
+                <next>
+                  <block type="mw_op_laser_cut" id="op-tray-rails">
+                    <value name="PERIMETER">
+                      <block type="mw_arithmetic" id="tray-rail-mul">
+                        <field name="OP">MUL</field>
+                        <value name="A">
+                          <block type="mw_get_variable" id="tray-rail-len">
+                            <field name="NAME">length</field>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="mw_number" id="tray-rail-2"><field name="VALUE">2</field></block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="PIERCES">
+                      <block type="mw_number" id="tray-rail-pierces"><field name="VALUE">8</field></block>
+                    </value>
+                    <value name="CUT_RATE">
+                      <shadow type="mw_number"><field name="VALUE">4500</field></shadow>
+                    </value>
+                    <next>
+                      <block type="controls_repeat_ext" id="loop-tray">
+                        <value name="TIMES">
+                          <block type="mw_get_variable" id="tray-rungs-ref">
+                            <field name="NAME">rungs</field>
+                          </block>
+                        </value>
+                        <statement name="DO">
+                          <block type="mw_op_tack_weld" id="op-tray-tack">
+                            <value name="COUNT">
+                              <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                            </value>
+                            <value name="SEC_PER">
+                              <shadow type="mw_number"><field name="VALUE">5</field></shadow>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="mw_op_deburr" id="op-tray-deburr">
+                            <value name="LENGTH_MM">
+                              <block type="mw_get_variable" id="tray-deburr-len">
+                                <field name="NAME">length</field>
+                              </block>
+                            </value>
+                            <value name="SEC_PER_MM">
+                              <shadow type="mw_number"><field name="VALUE">0.2</field></shadow>
+                            </value>
+                            <next>
+                              <block type="mw_op_powder_coat" id="op-tray-coat">
+                                <value name="AREA">
+                                  <shadow type="mw_number"><field name="VALUE">1.5</field></shadow>
+                                </value>
+                                <value name="MIN_PER_M2">
+                                  <shadow type="mw_number"><field name="VALUE">8</field></shadow>
+                                </value>
+                                <next>
+                                  <block type="mw_cost_overhead_pct" id="tray-overhead">
+                                    <field name="PCT_INLINE">12</field>
+                                    <next>
+                                      <block type="mw_cost_margin_pct" id="tray-margin">
+                                        <field name="PCT_INLINE">22</field>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>`;
+
+export const cableTrayTemplate: Product = {
+  id: 'tpl-cable-tray',
+  name: 'Cable Tray Run',
+  description:
+    'Perforated steel cable tray with rail + repeating rung pattern. Demonstrates the repeat-loop block driving a per-rung weld pass.',
+  nodes: [],
+  edges: [],
+  rules: [],
+  definitionEngine: cableTrayDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
+  createdAt: '2026-04-01T09:00:00Z',
+  updatedAt: '2026-04-08T12:00:00Z',
+  thumbnail: 'tray',
+  blocklyXml: CABLE_TRAY_SEED_XML,
+};
+
+// ── Template 5: Powder-Coated Control Enclosure ──────────────────────────────
+//
+// Showcases the new powder coat / deburr / QC ops AND drops a catalogue
+// product (BKT-001 Mounting Bracket) in as a sub-assembly via the mock:
+// product reference. Proves the cross-module catalogue path end-to-end.
+const ENCLOSURE_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-encl" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-encl-product">
+        <field name="PRODUCT_ID">tpl-enclosure</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="in-encl-w">
+        <field name="NAME">width</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">600</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_dimension" id="in-encl-h">
+            <field name="NAME">height</field>
+            <field name="UNIT">mm</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">800</field></shadow>
+            </value>
+            <next>
+              <block type="mw_input_dimension" id="in-encl-d">
+                <field name="NAME">depth</field>
+                <field name="UNIT">mm</field>
+                <value name="DEFAULT">
+                  <shadow type="mw_number"><field name="VALUE">300</field></shadow>
+                </value>
+                <next>
+                  <block type="mw_input_quantity" id="in-encl-mounts">
+                    <field name="NAME">mount_brackets</field>
+                    <value name="DEFAULT">
+                      <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                    </value>
+                    <next>
+                      <block type="mw_op_laser_cut" id="op-encl-laser">
+                        <value name="PERIMETER">
+                          <block type="mw_arithmetic" id="encl-perim-mul">
+                            <field name="OP">MUL</field>
+                            <value name="A">
+                              <block type="mw_arithmetic" id="encl-perim-add">
+                                <field name="OP">ADD</field>
+                                <value name="A">
+                                  <block type="mw_get_variable" id="encl-w">
+                                    <field name="NAME">width</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block type="mw_get_variable" id="encl-h">
+                                    <field name="NAME">height</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="mw_number" id="encl-perim-4"><field name="VALUE">4</field></block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="PIERCES">
+                          <block type="mw_number" id="encl-pierces"><field name="VALUE">12</field></block>
+                        </value>
+                        <value name="CUT_RATE">
+                          <shadow type="mw_number"><field name="VALUE">4500</field></shadow>
+                        </value>
+                        <next>
+                          <block type="mw_op_bend" id="op-encl-bend">
+                            <value name="COUNT">
+                              <shadow type="mw_number"><field name="VALUE">8</field></shadow>
+                            </value>
+                            <value name="SEC_PER">
+                              <shadow type="mw_number"><field name="VALUE">25</field></shadow>
+                            </value>
+                            <next>
+                              <block type="mw_op_tack_weld" id="op-encl-tack">
+                                <value name="COUNT">
+                                  <shadow type="mw_number"><field name="VALUE">12</field></shadow>
+                                </value>
+                                <value name="SEC_PER">
+                                  <shadow type="mw_number"><field name="VALUE">6</field></shadow>
+                                </value>
+                                <next>
+                                  <block type="mw_op_deburr" id="op-encl-deburr">
+                                    <value name="LENGTH_MM">
+                                      <shadow type="mw_number"><field name="VALUE">3000</field></shadow>
+                                    </value>
+                                    <value name="SEC_PER_MM">
+                                      <shadow type="mw_number"><field name="VALUE">0.25</field></shadow>
+                                    </value>
+                                    <next>
+                                      <block type="mw_op_powder_coat" id="op-encl-coat">
+                                        <value name="AREA">
+                                          <shadow type="mw_number"><field name="VALUE">2.5</field></shadow>
+                                        </value>
+                                        <value name="MIN_PER_M2">
+                                          <shadow type="mw_number"><field name="VALUE">10</field></shadow>
+                                        </value>
+                                        <next>
+                                          <block type="mw_op_assemble_with" id="op-encl-bracket">
+                                            <field name="PRODUCT_ID">mock:prod-001</field>
+                                            <value name="QTY">
+                                              <block type="mw_get_variable" id="encl-bracket-qty">
+                                                <field name="NAME">mount_brackets</field>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="mw_op_qc_first_article" id="op-encl-qc">
+                                                <value name="MIN">
+                                                  <shadow type="mw_number"><field name="VALUE">15</field></shadow>
+                                                </value>
+                                                <next>
+                                                  <block type="mw_op_pack" id="op-encl-pack">
+                                                    <field name="NAME">Carton</field>
+                                                    <value name="MIN">
+                                                      <shadow type="mw_number"><field name="VALUE">4</field></shadow>
+                                                    </value>
+                                                    <next>
+                                                      <block type="mw_cost_overhead_pct" id="encl-overhead">
+                                                        <field name="PCT_INLINE">15</field>
+                                                        <next>
+                                                          <block type="mw_cost_margin_pct" id="encl-margin">
+                                                            <field name="PCT_INLINE">28</field>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>`;
+
+export const enclosureTemplate: Product = {
+  id: 'tpl-enclosure',
+  name: 'Powder-Coated Control Enclosure',
+  description:
+    'IP65 control box with laser-cut sides, bend, weld, deburr, powder coat and a mounted catalogue bracket sub-assembly.',
+  nodes: [],
+  edges: [],
+  rules: [],
+  definitionEngine: enclosureDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
+  createdAt: '2026-04-02T10:00:00Z',
+  updatedAt: '2026-04-08T12:00:00Z',
+  thumbnail: 'enclosure',
+  blocklyXml: ENCLOSURE_SEED_XML,
+};
+
+// ── Template 6: Stainless Handrail Section ───────────────────────────────────
+//
+// Plate-roll + weld + polish workflow. Designed to feel different from the
+// sheet-metal templates by leaning on the rolling op and the polish finish.
+const HANDRAIL_SEED_XML = `<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="mw_when_pricing" id="hat-rail" x="40" y="40">
+    <value name="PRODUCT">
+      <block type="mw_product_ref" id="hat-rail-product">
+        <field name="PRODUCT_ID">tpl-handrail</field>
+      </block>
+    </value>
+    <next>
+      <block type="mw_input_dimension" id="in-rail-len">
+        <field name="NAME">length</field>
+        <field name="UNIT">mm</field>
+        <value name="DEFAULT">
+          <shadow type="mw_number"><field name="VALUE">3000</field></shadow>
+        </value>
+        <next>
+          <block type="mw_input_quantity" id="in-rail-posts">
+            <field name="NAME">posts</field>
+            <value name="DEFAULT">
+              <shadow type="mw_number"><field name="VALUE">3</field></shadow>
+            </value>
+            <next>
+              <block type="mw_op_shear" id="op-rail-shear">
+                <value name="COUNT">
+                  <block type="mw_get_variable" id="rail-shear-count">
+                    <field name="NAME">posts</field>
+                  </block>
+                </value>
+                <value name="SEC_PER">
+                  <shadow type="mw_number"><field name="VALUE">12</field></shadow>
+                </value>
+                <next>
+                  <block type="mw_op_roll" id="op-rail-roll">
+                    <value name="LENGTH_MM">
+                      <block type="mw_get_variable" id="rail-roll-len">
+                        <field name="NAME">length</field>
+                      </block>
+                    </value>
+                    <value name="SEC_PER_MM">
+                      <shadow type="mw_number"><field name="VALUE">0.5</field></shadow>
+                    </value>
+                    <next>
+                      <block type="mw_op_weld" id="op-rail-weld">
+                        <field name="TYPE">TIG</field>
+                        <value name="LENGTH_MM">
+                          <shadow type="mw_number"><field name="VALUE">240</field></shadow>
+                        </value>
+                        <value name="SEC_PER_MM">
+                          <shadow type="mw_number"><field name="VALUE">2</field></shadow>
+                        </value>
+                        <next>
+                          <block type="mw_op_polish" id="op-rail-polish">
+                            <value name="AREA">
+                              <shadow type="mw_number"><field name="VALUE">0.8</field></shadow>
+                            </value>
+                            <value name="SEC_PER_M2">
+                              <shadow type="mw_number"><field name="VALUE">240</field></shadow>
+                            </value>
+                            <next>
+                              <block type="mw_op_qc_dimensional" id="op-rail-qc">
+                                <value name="CHECKS">
+                                  <shadow type="mw_number"><field name="VALUE">6</field></shadow>
+                                </value>
+                                <value name="SEC_PER">
+                                  <shadow type="mw_number"><field name="VALUE">15</field></shadow>
+                                </value>
+                                <next>
+                                  <block type="mw_cost_overhead_pct" id="rail-overhead">
+                                    <field name="PCT_INLINE">15</field>
+                                    <next>
+                                      <block type="mw_cost_margin_pct" id="rail-margin">
+                                        <field name="PCT_INLINE">30</field>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>`;
+
+export const handrailTemplate: Product = {
+  id: 'tpl-handrail',
+  name: 'Stainless Handrail Section',
+  description:
+    'Stainless 316 handrail with rolled top rail, TIG weld, polish, and dimensional QC. Showcases the polish + roll ops together.',
+  nodes: [],
+  edges: [],
+  rules: [],
+  definitionEngine: handrailDefinitionEngine(),
+  lifecycleStatus: 'published',
+  definitionVersion: 1,
+  createdAt: '2026-04-03T11:00:00Z',
+  updatedAt: '2026-04-08T12:00:00Z',
+  thumbnail: 'handrail',
+  blocklyXml: HANDRAIL_SEED_XML,
+};
+
 // ── All templates ────────────────────────────────────────────────────────────
 
 export const productTemplates: Product[] = [
   steelShelvingTemplate,
   customBracketTemplate,
   weldedFrameTemplate,
+  cableTrayTemplate,
+  enclosureTemplate,
+  handrailTemplate,
 ];

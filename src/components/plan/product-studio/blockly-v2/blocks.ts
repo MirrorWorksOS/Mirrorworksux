@@ -45,6 +45,7 @@ import '@blockly/block-plus-minus';
 // the dropdown's menu generator so a stale module-load snapshot never freezes
 // the choices — every time the user opens the menu they see the current list.
 import { useProductBuilderStore } from '@/store/productBuilderStore';
+import { useMaterialLibraryStore } from '@/store/materialLibraryStore';
 // Cross-module product catalogue. The 10 mock products in `@/services/mock`
 // are the company-wide parts list shared by Sell / Buy / Make / Plan / Ship
 // (mounting brackets, base plates, motor housings, server rack chassis…). The
@@ -62,21 +63,24 @@ Blockly.setLocale(BlocklyEn as unknown as { [key: string]: string });
 
 // ── FieldVariableDropdown ────────────────────────────────────────────────────
 //
-// Dropdown that lists every input variable currently declared on the workspace
-// (i.e. every `mw_input_*` block's NAME field). Eliminates the entire "I typed
-// `widt` instead of `width`" class of bugs by removing the typing entirely.
+// Dropdown that lists every variable currently visible on the workspace —
+// both *declared inputs* (any `mw_input_*` block, surfaced as a configurator
+// parameter) and *derived variables* (every `mw_set_variable` block, the
+// recipe's internal scratch values). Eliminates the entire "I typed `widt`
+// instead of `width`" class of bugs by removing the typing entirely.
 //
 // We extend `FieldDropdown` and pass a *menu generator function* (not a static
 // array) so the option list refreshes every time the user opens the menu —
-// newly-added inputs show up immediately, renames take effect on next open.
-// The generator walks `this.sourceBlock_.workspace` to find sibling input
+// newly-added inputs / set-vars show up immediately, renames take effect on
+// next open. The generator walks `this.sourceBlock_.workspace` to find sibling
 // blocks rather than calling out to `extractInputs()` directly so the field
 // stays decoupled from the generator module (avoids a circular import).
 //
-// Behaviour when no inputs exist: the dropdown still has to render at least
-// one option (Blockly throws if you give it an empty array), so we surface a
-// sentinel `(no inputs declared)` row that round-trips losslessly through XML
-// — the evaluator's `vars` lookup will simply miss and fall back to 0.
+// Behaviour when nothing is declared: the dropdown still has to render at
+// least one option (Blockly throws if you give it an empty array), so we
+// surface a sentinel `(no inputs declared)` row that round-trips losslessly
+// through XML — the evaluator's `vars` lookup will simply miss and fall back
+// to 0.
 const INPUT_BLOCK_TYPES = new Set([
   'mw_input_dimension',
   'mw_input_quantity',
@@ -89,15 +93,29 @@ const INPUT_BLOCK_TYPES = new Set([
   'mw_input_finish',
 ]);
 
-/** Walk a workspace and return [name, name] tuples for every input block. */
+/** Walk a workspace and return [name, name] tuples for every variable name
+ *  reachable on the canvas — `mw_input_*` declarations *and* every
+ *  `mw_set_variable` NAME. Inputs come first (configurator parameters),
+ *  derived set-vars come second; insertion order is preserved so duplicate
+ *  names render once at their first appearance. */
 function listWorkspaceInputNames(
   workspace: Blockly.Workspace | null,
 ): { names: string[]; seen: Set<string> } {
   const seen = new Set<string>();
   const names: string[] = [];
   if (!workspace) return { names, seen };
+  // Pass 1 — declared inputs (configurator parameters).
   for (const b of workspace.getAllBlocks(true)) {
     if (!INPUT_BLOCK_TYPES.has(b.type)) continue;
+    const name = String(b.getFieldValue('NAME') ?? '').trim();
+    if (!name || seen.has(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  // Pass 2 — derived `mw_set_variable` names. A name that already showed up as
+  // an input is skipped so the option list stays unique.
+  for (const b of workspace.getAllBlocks(true)) {
+    if (b.type !== 'mw_set_variable') continue;
     const name = String(b.getFieldValue('NAME') ?? '').trim();
     if (!name || seen.has(name)) continue;
     seen.add(name);
@@ -126,10 +144,12 @@ class FieldVariableDropdown extends Blockly.FieldDropdown {
       const out: [string, string][] = names.map((n) => [n, n]);
       // Make sure the persisted value is always present in the options so the
       // dropdown can render it even if the matching input was deleted (or
-      // hasn't been deserialised yet). Show it with a "(unbound)" suffix when
-      // it isn't backed by a live input — gives the user a visible cue.
+      // hasn't been deserialised yet). We surface it as a plain row — no
+      // "(unbound)" suffix because the visible label IS what gets persisted
+      // through XML, and a tagged label causes Blockly to round-trip the tag
+      // text into the next save.
       if (self.pendingValue && !seen.has(self.pendingValue)) {
-        out.push([`${self.pendingValue} (unbound)`, self.pendingValue]);
+        out.push([self.pendingValue, self.pendingValue]);
       }
       if (out.length === 0) {
         return [['(no inputs declared)', '__none__']];
@@ -314,6 +334,41 @@ class FieldSearchableDropdown extends Blockly.FieldDropdown {
 
 Blockly.fieldRegistry.register('field_searchable_dropdown', FieldSearchableDropdown);
 
+/** Studio + mock catalogue — shared by `mw_product_ref` and inline product pickers. */
+function buildProductPickerOptions(): [string, string][] {
+  const state = useProductBuilderStore.getState();
+  const activeId = state.activeProductId;
+  const studioProducts = state.products.map((p) => {
+    let tag = '';
+    if (p.id === activeId) tag = ' (this)';
+    else if (p.lifecycleStatus === 'draft') tag = ' (draft)';
+    return [`${p.name}${tag}`, p.id] as [string, string];
+  });
+  const catalogueProducts = mockCatalogueProducts
+    .filter((p) => p.isActive)
+    .map(
+      (p) =>
+        [`${p.partNumber} · ${p.description}`, `mock:${p.id}`] as [string, string],
+    );
+  const out = [...studioProducts, ...catalogueProducts];
+  if (out.length === 0) {
+    return [['(no products)', '__none__']];
+  }
+  return out;
+}
+
+/** Material library — searchable “Add material to BOM” picker (live store). */
+function buildMaterialPickerOptions(): [string, string][] {
+  const materials = useMaterialLibraryStore.getState().materials;
+  const out = materials.map(
+    (m) => [`${m.code} · ${m.name}`, m.id] as [string, string],
+  );
+  if (out.length === 0) {
+    return [['(no materials)', '__none__']];
+  }
+  return out;
+}
+
 // ── Brand colour constants ───────────────────────────────────────────────────
 //
 // Each block category is mapped to a hex from the MirrorWorks brand sheet
@@ -449,6 +504,109 @@ export function registerStudioV2Blocks(): void {
       this.setHelpUrl('');
     },
   };
+
+  // ── Lifecycle hats (state-machine triggers) ──────────────────────────────
+  //
+  // The studio's mental model is: a *template* lives in the studio, and when
+  // a customer touchpoint occurs (quote requested, order placed, MO raised,
+  // WO completed, delivered, stock drops below threshold) the template spawns
+  // an *instance* and the matching hat's body runs. Each hat binds to a
+  // specific state-machine event so the recipe author is explicit about
+  // "this set of actions fires when this exact transition happens".
+  //
+  // The two "common" hats (`mw_when_pricing`, `mw_when_making`) above are
+  // ergonomic shortcuts — they map onto `quote.price` and `production.start`
+  // respectively. The lifecycle hats below give full access to the state
+  // machine for recipes that need finer-grained control (e.g. "send SMS on
+  // delivery", "raise a reorder PO when stock drops low").
+  //
+  // All lifecycle hats share the same shape as `mw_when_pricing`: a
+  // `PRODUCT` value socket that binds the recipe to a specific product chip,
+  // and a statement stack for the body. The only thing that varies is the
+  // label and the implicit event — which the generator records in
+  // `extras.hatEvents[<block.id>] = '<event>'`.
+  const defineLifecycleHat = (
+    type: string,
+    label: string,
+    tooltip: string,
+    opts?: { hideProductSocket?: boolean },
+  ) => {
+    Blockly.Blocks[type] = {
+      init() {
+        this.appendDummyInput().appendField(label);
+        if (!opts?.hideProductSocket) {
+          this.appendValueInput('PRODUCT')
+            .setCheck(['Product', 'String'])
+            .appendField('product');
+        }
+        this.setInputsInline(true);
+        this.setNextStatement(true, null);
+        this.setColour(HUE_TRIGGER);
+        this.setTooltip(tooltip);
+        this.setHelpUrl('');
+      },
+    };
+  };
+
+  defineLifecycleHat(
+    'mw_when_quote_requested',
+    'When a quote is requested for',
+    'Fires the moment a customer asks for a quote on this product. Good place to run configurator validation, warn about out-of-range dimensions, or calculate lead time.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_quote_confirmed',
+    'When a quote is confirmed for',
+    'Fires when the customer accepts the quote. Typical actions: create sales order, reserve stock, send confirmation email.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_order_placed',
+    'When an order is placed for',
+    'Fires when a firm order is raised against this product. Typical actions: create manufacturing order, push purchase requisitions for long-lead materials.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_mo_raised',
+    'When a manufacturing order is raised for',
+    'Fires when a manufacturing order (MO) is created. Typical actions: schedule work orders, reserve capacity, push NC programs to the laser.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_wo_start',
+    'When a work order starts for',
+    'Fires when a work order on the shop floor moves to in-progress. Typical actions: clock the operator on, light up a cell kanban, start a QC log.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_wo_complete',
+    'When a work order completes for',
+    'Fires when a work order is marked complete. Typical actions: record QC, move the part to the next cell, update the dispatch manifest.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_delivered',
+    'When this product is delivered:',
+    'Fires when the product is marked delivered. Typical actions: send customer SMS, generate invoice, request a review.',
+  );
+
+  defineLifecycleHat(
+    'mw_when_stock_low',
+    'When stock runs low for',
+    'Fires when on-hand stock for this product drops below its reorder threshold. Typical actions: create a replenishment manufacturing order or a purchase order.',
+  );
+
+  // Manual-run hat — the play button in the studio toolbar dispatches a
+  // synthetic `manual.run` event, which matches this hat only. Lets an author
+  // dry-run a recipe against the current scenario inputs without waiting for
+  // a real quote/order touchpoint. No product socket — the play button
+  // implicitly runs against the studio's active product.
+  defineLifecycleHat(
+    'mw_when_manual',
+    'When I press Run in the studio',
+    'Dry-run entry point. The Run button in the studio toolbar fires this hat against the current scenario inputs, without committing any of the downstream actions. Use this to scratch-test a recipe.',
+    { hideProductSocket: true },
+  );
 
   // ── Inputs (typed customer/quote parameters) ───────────────────────────────
   // These are statement blocks that act like `set_variable` but expose the
@@ -910,41 +1068,6 @@ export function registerStudioV2Blocks(): void {
   // a non-product context — useful for "use product code as sku" patterns.
   Blockly.Blocks['mw_product_ref'] = {
     init() {
-      const generator = (): [string, string][] => {
-        const state = useProductBuilderStore.getState();
-        const activeId = state.activeProductId;
-        // Source 1 — products authored inside the Product Studio. Include
-        // EVERY product (drafts, published, and the active one) so the recipe
-        // hats can pick "this product" as the binding. Sub-assembly cycles are
-        // caught by the evaluator at run time, not by stripping options here.
-        const studioProducts = state.products.map((p) => {
-          let tag = '';
-          if (p.id === activeId) tag = ' (this)';
-          else if (p.lifecycleStatus === 'draft') tag = ' (draft)';
-          return [`${p.name}${tag}`, p.id] as [string, string];
-        });
-
-        // Source 2 — the cross-module catalogue from `@/services/mock`. These
-        // are real platform-wide parts (BKT-001 Mounting Bracket, PLT-042 Base
-        // Plate, etc) shared with Sell / Buy / Make / Ship. Surfacing them
-        // here means a recipe can reference any part the org already tracks
-        // — not just ones authored in the studio. We tag with the part number
-        // so the user can scan visually, and prefix the id with `mock:` so it
-        // never collides with a studio product id (the evaluator checks the
-        // prefix when expanding sub-assemblies).
-        const catalogueProducts = mockCatalogueProducts
-          .filter((p) => p.isActive)
-          .map(
-            (p) =>
-              [`${p.partNumber} · ${p.description}`, `mock:${p.id}`] as [string, string],
-          );
-
-        const out = [...studioProducts, ...catalogueProducts];
-        if (out.length === 0) {
-          return [['(no products)', '__none__']];
-        }
-        return out;
-      };
       // FieldSearchableDropdown adds a search box at the top of the menu so a
       // catalogue with dozens of parts (BKT-001, PLT-042, …) is searchable
       // instead of scroll-only. Critical the moment the platform-wide product
@@ -952,7 +1075,7 @@ export function registerStudioV2Blocks(): void {
       // unioned with studio products.
       this.appendDummyInput()
         .appendField('Product')
-        .appendField(new FieldSearchableDropdown(generator), 'PRODUCT_ID');
+        .appendField(new FieldSearchableDropdown(buildProductPickerOptions), 'PRODUCT_ID');
       // Multi-output: Blockly accepts an array of accepted check types on
       // setOutput(), so the same reporter slots into a 'Product' value input
       // (recipe hats, sub-assembly), a 'Number' input (legacy fallback), or
@@ -971,22 +1094,19 @@ export function registerStudioV2Blocks(): void {
   // Generates a `product_ref` engine op that the evaluator recursively expands.
   Blockly.Blocks['mw_op_assemble_with'] = {
     init() {
-      this.appendDummyInput().appendField('Add sub-assembly');
-      // Accept the multi-typed mw_product_ref output (['Product', 'Number',
-      // 'String']). Blockly's connection check passes when ANY of the value's
-      // checks intersects with ANY of the input's checks, so listing 'Product'
-      // alone is enough — but we list 'String' too as a forward-compat hook
-      // for possible future text-based product references.
-      this.appendValueInput('PRODUCT')
-        .setCheck(['Product', 'String'])
-        .appendField('product');
+      // Searchable picker on the block — users were stuck with an empty value
+      // socket unless they hunted the toolbox for `mw_product_ref`. Same
+      // catalogue + search UX as the Product reporter chip.
+      this.appendDummyInput()
+        .appendField('Add sub-assembly')
+        .appendField(new FieldSearchableDropdown(buildProductPickerOptions), 'PRODUCT_ID');
       this.appendValueInput('QTY').setCheck('Number').appendField('×');
       this.setInputsInline(true);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(HUE_PRODUCT);
       this.setTooltip(
-        'Drops another product into this one as a sub-assembly. BOM lines, operations, and material/labour costs all roll up multiplied by the quantity. Cycles are detected automatically.',
+        'Adds another product as a sub-assembly — search by name or part number on the block. BOM, operations, and costs roll up × quantity. Cycles are blocked.',
       );
     },
   };
@@ -1254,6 +1374,291 @@ export function registerStudioV2Blocks(): void {
     },
   };
 
+  // Palletise / strap — minutes per pallet for pallet-build / strapping ahead
+  // of shipping to the freight forwarder. Charged to PACK workcentre.
+  Blockly.Blocks['mw_op_palletise'] = {
+    init() {
+      this.appendDummyInput().appendField('Palletise & strap');
+      this.appendValueInput('PALLETS').setCheck('Number').appendField('pallets');
+      this.appendValueInput('MIN_PER').setCheck('Number').appendField('min/pallet');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ASSEMBLY);
+      this.setTooltip('Adds palletising / strapping minutes ahead of dispatch.');
+    },
+  };
+
+  // Kit / pick — pulling components from stores into a kit prior to assembly.
+  Blockly.Blocks['mw_op_kit'] = {
+    init() {
+      this.appendDummyInput().appendField('Kit / pick');
+      this.appendValueInput('LINES').setCheck('Number').appendField('lines');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/line');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ASSEMBLY);
+      this.setTooltip('Adds a kit-build / pick operation, charged to ASSY.');
+    },
+  };
+
+  // ── Machining (mill / lathe / EDM) ─────────────────────────────────────────
+  // 3-axis CNC mill — explicit setup vs run minutes; rolled into a generic
+  // operation on the MILL workcentre. Setup is typically the long pole on
+  // milled jobs (workholding + tooling), so we expose it directly.
+  Blockly.Blocks['mw_op_mill'] = {
+    init() {
+      this.appendDummyInput().appendField('CNC mill');
+      this.appendValueInput('SETUP').setCheck('Number').appendField('setup min');
+      this.appendValueInput('RUN').setCheck('Number').appendField('run min/unit');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a CNC milling operation: setup minutes + run minutes per unit.');
+    },
+  };
+
+  // CNC lathe — same shape as mill (setup vs run), different workcentre so
+  // the scheduler can split machining across mill and turning capacity.
+  Blockly.Blocks['mw_op_lathe'] = {
+    init() {
+      this.appendDummyInput().appendField('CNC lathe turn');
+      this.appendValueInput('SETUP').setCheck('Number').appendField('setup min');
+      this.appendValueInput('RUN').setCheck('Number').appendField('run min/unit');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a CNC turning operation on the lathe.');
+    },
+  };
+
+  // Wire EDM — length × sec/mm, rough setup. Charged to EDM workcentre.
+  Blockly.Blocks['mw_op_edm'] = {
+    init() {
+      this.appendDummyInput().appendField('Wire EDM');
+      this.appendValueInput('LENGTH_MM').setCheck('Number').appendField('cut length mm');
+      this.appendValueInput('SEC_PER_MM').setCheck('Number').appendField('sec/mm');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a wire EDM operation, time = length × sec/mm.');
+    },
+  };
+
+  // Countersink — fast secondary op on already-drilled holes. Count × sec/each.
+  Blockly.Blocks['mw_op_countersink'] = {
+    init() {
+      this.appendDummyInput().appendField('Countersink');
+      this.appendValueInput('COUNT').setCheck('Number').appendField('count');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/each');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a countersink operation on a set of holes.');
+    },
+  };
+
+  // Ream — precision finishing pass on holes. Count × sec/each.
+  Blockly.Blocks['mw_op_ream'] = {
+    init() {
+      this.appendDummyInput().appendField('Ream holes');
+      this.appendValueInput('COUNT').setCheck('Number').appendField('count');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/each');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a ream / precision-hole operation.');
+    },
+  };
+
+  // Deburr — perimeter-based finishing pass. Charged to FINISH workcentre.
+  Blockly.Blocks['mw_op_deburr'] = {
+    init() {
+      this.appendDummyInput().appendField('Deburr');
+      this.appendValueInput('LENGTH_MM').setCheck('Number').appendField('length mm');
+      this.appendValueInput('SEC_PER_MM').setCheck('Number').appendField('sec/mm');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds a deburring operation, time = length × sec/mm.');
+    },
+  };
+
+  // Polish / linish — area-based fine surface finishing.
+  Blockly.Blocks['mw_op_polish'] = {
+    init() {
+      this.appendDummyInput().appendField('Polish');
+      this.appendValueInput('AREA').setCheck('Number').appendField('area m²');
+      this.appendValueInput('SEC_PER_M2').setCheck('Number').appendField('sec/m²');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds a polishing operation, time = area × sec/m².');
+    },
+  };
+
+  // Vibratory tumble — batch finishing. Single setup + run minutes (one cycle).
+  Blockly.Blocks['mw_op_tumble'] = {
+    init() {
+      this.appendDummyInput().appendField('Vibratory tumble');
+      this.appendValueInput('CYCLE_MIN').setCheck('Number').appendField('cycle min');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds a vibratory / tumble finishing cycle (batch operation).');
+    },
+  };
+
+  // Bead / shot blast — area-based surface prep, distinct from sandblast in the
+  // shop because it uses a finer media. Charged to BLAST workcentre.
+  Blockly.Blocks['mw_op_bead_blast'] = {
+    init() {
+      this.appendDummyInput().appendField('Bead blast');
+      this.appendValueInput('AREA').setCheck('Number').appendField('area m²');
+      this.appendValueInput('SEC_PER_M2').setCheck('Number').appendField('sec/m²');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds a bead / shot-blast surface prep operation.');
+    },
+  };
+
+  // Powder coat — full coat process minutes (mask + spray + bake), area-based.
+  // Charged to COAT workcentre. Distinct from `mw_apply_finish` (which adds it
+  // as a *cost* line) — this surfaces the *time* on the schedule.
+  Blockly.Blocks['mw_op_powder_coat'] = {
+    init() {
+      this.appendDummyInput().appendField('Powder coat');
+      this.appendValueInput('AREA').setCheck('Number').appendField('area m²');
+      this.appendValueInput('MIN_PER_M2').setCheck('Number').appendField('min/m²');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds powder-coat process minutes (prep + spray + bake) on the schedule.');
+    },
+  };
+
+  // Anodise prep — minutes spent racking + chemistry-prep before the anodise
+  // line. Charged to COAT workcentre.
+  Blockly.Blocks['mw_op_anodise'] = {
+    init() {
+      this.appendDummyInput().appendField('Anodise');
+      this.appendValueInput('AREA').setCheck('Number').appendField('area m²');
+      this.appendValueInput('MIN_PER_M2').setCheck('Number').appendField('min/m²');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds anodising process minutes (rack + bath + seal).');
+    },
+  };
+
+  // Heat treat — flat hours per batch (kiln cycle is the constraint, not part
+  // count). Authored as hours in the field, generator converts to minutes.
+  Blockly.Blocks['mw_op_heat_treat'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('Heat treat')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Anneal', 'ANNEAL'],
+            ['Normalise', 'NORMALISE'],
+            ['Harden', 'HARDEN'],
+            ['Temper', 'TEMPER'],
+            ['Stress relieve', 'STRESS'],
+          ]),
+          'PROCESS',
+        );
+      this.appendValueInput('HOURS').setCheck('Number').appendField('hours');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_FINISH);
+      this.setTooltip('Adds a heat-treatment cycle measured in hours per batch.');
+    },
+  };
+
+  // Tack weld — small spot welds for fit-up before final pass. Count × sec/tack.
+  Blockly.Blocks['mw_op_tack_weld'] = {
+    init() {
+      this.appendDummyInput().appendField('Tack weld');
+      this.appendValueInput('COUNT').setCheck('Number').appendField('tacks');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/tack');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_WELDING);
+      this.setTooltip('Adds tack-weld minutes (typically before a full weld pass).');
+    },
+  };
+
+  // Spot weld — resistance-welded joints, count × sec/spot.
+  Blockly.Blocks['mw_op_spot_weld'] = {
+    init() {
+      this.appendDummyInput().appendField('Resistance spot weld');
+      this.appendValueInput('COUNT').setCheck('Number').appendField('spots');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/spot');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_WELDING);
+      this.setTooltip('Adds a resistance spot-weld operation, count × sec/spot.');
+    },
+  };
+
+  // Laser engrave / etch — text or graphic engraving on a part face.
+  Blockly.Blocks['mw_op_engrave'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('Laser engrave')
+        .appendField(new Blockly.FieldTextInput('Part #'), 'TEXT');
+      this.appendValueInput('SECONDS').setCheck('Number').appendField('sec/unit');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_CUTTING);
+      this.setTooltip('Adds a laser-engrave operation (part marking / serialisation).');
+    },
+  };
+
+  // Dimensional QC — flat seconds per check × number of checks. Charged to QC.
+  Blockly.Blocks['mw_op_qc_dimensional'] = {
+    init() {
+      this.appendDummyInput().appendField('QC dimensional check');
+      this.appendValueInput('CHECKS').setCheck('Number').appendField('checks');
+      this.appendValueInput('SEC_PER').setCheck('Number').appendField('sec/check');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ASSEMBLY);
+      this.setTooltip('Adds dimensional inspection minutes (CMM, calipers, gauges).');
+    },
+  };
+
+  // First-article inspection — flat minutes per first-off. Triggered once per run.
+  Blockly.Blocks['mw_op_qc_first_article'] = {
+    init() {
+      this.appendDummyInput().appendField('First-article inspection');
+      this.appendValueInput('MIN').setCheck('Number').appendField('minutes');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ASSEMBLY);
+      this.setTooltip('Adds first-article inspection minutes (one-off per run).');
+    },
+  };
+
   // ── Operations (generic catch-all) ─────────────────────────────────────────
   Blockly.Blocks['mw_operation'] = {
     init() {
@@ -1264,11 +1669,25 @@ export function registerStudioV2Blocks(): void {
         .appendField(
           new Blockly.FieldDropdown([
             ['Laser', 'LASER'],
+            ['Plasma', 'PLASMA'],
+            ['Waterjet', 'WATERJET'],
+            ['Shear', 'SHEAR'],
+            ['Punch', 'PUNCH'],
             ['Press brake', 'BRAKE'],
-            ['Welding', 'WELD'],
+            ['Plate roll', 'ROLL'],
+            ['CNC mill', 'MILL'],
+            ['CNC lathe', 'LATHE'],
+            ['Wire EDM', 'EDM'],
             ['Drill', 'DRILL'],
+            ['Welding', 'WELD'],
+            ['Spot weld', 'SPOT'],
+            ['Heat treat', 'HEAT'],
+            ['Bead blast', 'BLAST'],
             ['Powder coat', 'COAT'],
+            ['Surface finish', 'FINISH'],
             ['Assembly', 'ASSY'],
+            ['QC', 'QC'],
+            ['Pack & ship', 'PACK'],
           ]),
           'WORK_CENTRE',
         );
@@ -1356,20 +1775,22 @@ export function registerStudioV2Blocks(): void {
 
   Blockly.Blocks['mw_add_material_bom'] = {
     init() {
-      // Accept ['Material', 'String'] so a get-var bound to a `mw_input_material`
-      // declaration (which carries a material id as a string at run time) drops
-      // straight into the BOM line. Without 'String' in the check the only valid
-      // source was a static `mw_material_ref` chip, which made dynamic recipes
-      // impossible.
+      // Searchable picker on row 1; optional value socket on row 2 so dynamic
+      // recipes (`mw_input_material` → get variable) still work.
+      this.setInputsInline(false);
+      this.appendDummyInput()
+        .appendField('Add material to BOM')
+        .appendField(new FieldSearchableDropdown(buildMaterialPickerOptions), 'MATERIAL_ID');
+      this.appendValueInput('QTY').setCheck('Number').appendField('qty');
       this.appendValueInput('MATERIAL')
         .setCheck(['Material', 'String'])
-        .appendField('Add material to BOM');
-      this.appendValueInput('QTY').setCheck('Number').appendField('qty');
-      this.setInputsInline(true);
+        .appendField('or drag material / expression (optional)');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(HUE_OUTPUT);
-      this.setTooltip('Adds a material from the library as a BOM line.');
+      this.setTooltip(
+        'Pick a material from your library (search inline). Use the optional socket for a dynamic expression (variable, input material, etc.) — it overrides the picker when connected.',
+      );
     },
   };
 
@@ -1660,6 +2081,372 @@ export function registerStudioV2Blocks(): void {
       this.setColour(HUE_ACTION);
       this.setTooltip(
         'Drops a purchase request into Buy for the chosen material. Use inside an If to trigger reorder when stock falls below a threshold.',
+      );
+    },
+  };
+
+  // ── Expanded action vocabulary (Phase 3b) ────────────────────────────────
+  //
+  // Every action block below follows the same shape so the generator can
+  // lower them uniformly:
+  //   • statement block (previous/next), colour HUE_ACTION
+  //   • TITLE: plain text, shown as the first chip on the row
+  //   • optional typed value sockets (PRODUCT / MATERIAL / QTY / DURATION_MIN)
+  //   • optional static dropdown fields that drop straight into the payload
+  // The generator's `mw_action_*` switch arm mirrors this shape and the
+  // evaluator's generic `case 'action'` handler resolves the value sockets
+  // from extras.values at run-time.
+
+  // ── Sell ─────────────────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_create_quote'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create quote')
+        .appendField(new Blockly.FieldTextInput('Quote'), 'TITLE');
+      this.appendValueInput('PRODUCT')
+        .setCheck(['Product', 'String'])
+        .appendField('for');
+      this.appendValueInput('QTY').setCheck('Number').appendField('×');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Drafts a Sell quote for the chosen product and quantity, ready for the customer to accept.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_create_sales_order'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create sales order')
+        .appendField(new Blockly.FieldTextInput('Sales order'), 'TITLE');
+      this.appendValueInput('PRODUCT')
+        .setCheck(['Product', 'String'])
+        .appendField('for');
+      this.appendValueInput('QTY').setCheck('Number').appendField('×');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Promotes a quote into a firm sales order. Typically fires on `When a quote is confirmed`.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_create_invoice'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create invoice')
+        .appendField(new Blockly.FieldTextInput('Invoice'), 'TITLE');
+      this.appendDummyInput()
+        .appendField('terms')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['7 days', '7'],
+            ['14 days', '14'],
+            ['30 days', '30'],
+            ['60 days', '60'],
+          ]),
+          'TERMS',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Raises an invoice for the active order. Typically fires on `When this product is delivered`.',
+      );
+    },
+  };
+
+  // ── Plan ─────────────────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_reserve_capacity'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Reserve capacity')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Laser', 'LASER'],
+            ['Press brake', 'BRAKE'],
+            ['Welding', 'WELD'],
+            ['Powder coat', 'COAT'],
+            ['Assembly', 'ASSY'],
+            ['QA', 'QC'],
+          ]),
+          'LANE',
+        );
+      this.appendValueInput('DURATION_MIN')
+        .setCheck('Number')
+        .appendField('minutes');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Soft-books capacity on a cell ahead of the work order being created. Prevents a hot order from being quoted past the lane\'s real availability.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_push_nc_program'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Push NC program')
+        .appendField(new Blockly.FieldTextInput('Nest.nc'), 'PROGRAM');
+      this.appendDummyInput()
+        .appendField('to')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Laser', 'LASER'],
+            ['Plasma', 'PLASMA'],
+            ['Waterjet', 'WATERJET'],
+            ['Mill', 'MILL'],
+            ['Lathe', 'LATHE'],
+            ['Punch', 'PUNCH'],
+          ]),
+          'MACHINE',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Uploads an NC program to the chosen machine via NC Connect. Fires typically on `When a work order starts`.',
+      );
+    },
+  };
+
+  // ── Production / Make ────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_create_mo'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create manufacturing order')
+        .appendField(new Blockly.FieldTextInput('MO'), 'TITLE');
+      this.appendValueInput('PRODUCT')
+        .setCheck(['Product', 'String'])
+        .appendField('for');
+      this.appendValueInput('QTY').setCheck('Number').appendField('×');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Raises a manufacturing order that spawns the work orders on the shop floor. Typically fires on `When an order is placed`.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_record_qc'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Record QC')
+        .appendField(new Blockly.FieldTextInput('Dimensional check'), 'CHECK')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Pass', 'pass'],
+            ['Fail', 'fail'],
+            ['Hold', 'hold'],
+          ]),
+          'RESULT',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Writes a QC event against the active work order. Typically fires on `When a work order completes`.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_clock_on'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Clock operator on')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Laser', 'LASER'],
+            ['Press brake', 'BRAKE'],
+            ['Welding', 'WELD'],
+            ['Powder coat', 'COAT'],
+            ['Assembly', 'ASSY'],
+            ['QA', 'QC'],
+          ]),
+          'LANE',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Starts a cell-level operator timer for the active work order. Fires typically on `When a work order starts`.',
+      );
+    },
+  };
+
+  // ── Buy ──────────────────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_create_po'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create purchase order')
+        .appendField(new Blockly.FieldTextInput('PO'), 'TITLE');
+      this.appendValueInput('MATERIAL')
+        .setCheck(['Material', 'String'])
+        .appendField('material');
+      this.appendValueInput('QTY').setCheck('Number').appendField('qty');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Raises a firm purchase order against the chosen material. Use for long-lead buys that need to commit early.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_reserve_stock'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Reserve stock')
+        .appendField(new Blockly.FieldTextInput('Allocation'), 'TITLE');
+      this.appendValueInput('MATERIAL')
+        .setCheck(['Material', 'String'])
+        .appendField('material');
+      this.appendValueInput('QTY').setCheck('Number').appendField('qty');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Soft-allocates on-hand stock against the active order so a later hot order can\'t pull the same material.',
+      );
+    },
+  };
+
+  // ── Stock ────────────────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_stock_adjust'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Stock adjust')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Consume', 'consume'],
+            ['Return', 'return'],
+            ['Scrap', 'scrap'],
+          ]),
+          'DIRECTION',
+        );
+      this.appendValueInput('MATERIAL')
+        .setCheck(['Material', 'String'])
+        .appendField('material');
+      this.appendValueInput('QTY').setCheck('Number').appendField('qty');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Writes a stock movement (consume / return / scrap) against the chosen material.',
+      );
+    },
+  };
+
+  // ── People (comms) ───────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_create_task'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Create task')
+        .appendField(new Blockly.FieldTextInput('Follow-up'), 'TITLE')
+        .appendField('assign to')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Sales', 'sales'],
+            ['Production', 'production'],
+            ['Buying', 'buying'],
+            ['QA', 'qa'],
+            ['Dispatch', 'dispatch'],
+          ]),
+          'TEAM',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Creates a follow-up task assigned to a team. Previews in the Actions tab.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_send_sms'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Send SMS')
+        .appendField(new Blockly.FieldTextInput('Your order is on its way'), 'MESSAGE');
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Sends a text message to the customer. Typically fires on `When this product is delivered`.',
+      );
+    },
+  };
+
+  // ── Integrate ────────────────────────────────────────────────────────────
+  Blockly.Blocks['mw_action_webhook'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Call webhook')
+        .appendField(new Blockly.FieldTextInput('https://example.com/hook'), 'URL');
+      this.appendDummyInput()
+        .appendField('method')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['POST', 'POST'],
+            ['PUT', 'PUT'],
+            ['PATCH', 'PATCH'],
+          ]),
+          'METHOD',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Fires an HTTP request at an external system. Use for any integration not already in this vocabulary.',
+      );
+    },
+  };
+
+  Blockly.Blocks['mw_action_push_accounting'] = {
+    init() {
+      this.appendDummyInput()
+        .appendField('▶ Push to accounting')
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Xero', 'xero'],
+            ['MYOB', 'myob'],
+            ['QuickBooks', 'quickbooks'],
+          ]),
+          'SYSTEM',
+        )
+        .appendField(
+          new Blockly.FieldDropdown([
+            ['Invoice', 'invoice'],
+            ['Bill', 'bill'],
+            ['Credit note', 'credit'],
+          ]),
+          'DOCTYPE',
+        );
+      this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(HUE_ACTION);
+      this.setTooltip(
+        'Pushes a finance document into the connected accounting system.',
       );
     },
   };

@@ -271,10 +271,30 @@ export function frameDefinitionEngine(): ProductDefinitionEngine {
   };
 }
 
+// Stub engines for the v2-only templates. Studio v2 routes everything through
+// `blocklyXml`, so these don't need rules in the v1 IR — an empty `rootBlocks`
+// array is sufficient. The function still has to exist so the Product type's
+// required `definitionEngine` field has something to reference.
+function emptyEngine(): ProductDefinitionEngine {
+  return {
+    schemaVersion: ENGINE_SCHEMA_VERSION,
+    variables: [],
+    lookupTables: [],
+    rootBlocks: [],
+  };
+}
+
+export const cableTrayDefinitionEngine = emptyEngine;
+export const enclosureDefinitionEngine = emptyEngine;
+export const handrailDefinitionEngine = emptyEngine;
+
 const DEFAULTS: Record<string, () => ProductDefinitionEngine> = {
   'tpl-shelving': shelvingDefinitionEngine,
   'tpl-bracket': bracketDefinitionEngine,
   'tpl-frame': frameDefinitionEngine,
+  'tpl-cable-tray': cableTrayDefinitionEngine,
+  'tpl-enclosure': enclosureDefinitionEngine,
+  'tpl-handrail': handrailDefinitionEngine,
 };
 
 export function defaultDefinitionEngineForProductId(productId: string): ProductDefinitionEngine {

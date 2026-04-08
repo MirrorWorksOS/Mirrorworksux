@@ -17,6 +17,12 @@ import type { Material } from '@/lib/material-library/types';
 import type { Finish } from '@/lib/finish-library/types';
 import type { Product } from '@/components/plan/product-studio/product-studio-types';
 import type { StudioV2Extras, ValueExpr } from './generator';
+// Cross-module catalogue products. The dropdown in `mw_product_ref` surfaces
+// these alongside studio products with a `mock:` id prefix; the evaluator
+// looks them up here and emits a phantom BOM line so dropping a "Mounting
+// Bracket BKT-001" into a recipe contributes its part number + unit price
+// to the rollup without needing the part to have its own studio recipe.
+import { products as mockCatalogueProducts } from '@/services/mock';
 
 // ── Output types ─────────────────────────────────────────────────────────────
 export interface BomLineV2 {
@@ -66,10 +72,32 @@ export interface CostRollupV2 {
 export interface ActionItemV2 {
   id: string;
   kind:
-    | 'create_work_order'
+    // ── Sell ───────────────────────────────────────────────
+    | 'create_quote'
+    | 'create_sales_order'
+    | 'create_invoice'
+    // ── Plan ───────────────────────────────────────────────
     | 'create_plan_activity'
+    | 'reserve_capacity'
+    | 'push_nc_program'
+    // ── Production / Make ──────────────────────────────────
+    | 'create_mo'
+    | 'create_work_order'
+    | 'record_qc'
+    | 'clock_on'
+    // ── Buy ────────────────────────────────────────────────
+    | 'create_purchase_request'
+    | 'create_po'
+    | 'reserve_stock'
+    // ── Stock ──────────────────────────────────────────────
+    | 'stock_adjust'
+    // ── People (comms) ─────────────────────────────────────
     | 'send_alert'
-    | 'create_purchase_request';
+    | 'create_task'
+    | 'send_sms'
+    // ── Integrate ──────────────────────────────────────────
+    | 'webhook'
+    | 'push_accounting';
   title: string;
   payload: Record<string, string | number | boolean>;
 }
@@ -97,7 +125,12 @@ const WORK_CENTRE_RATES_PER_HOUR: Record<string, number> = {
   BRAKE: 120,
   ROLL: 130,
   WELD: 110,
+  SPOT: 95,
   DRILL: 80,
+  MILL: 165,
+  LATHE: 145,
+  EDM: 200,
+  HEAT: 110,
   COAT: 90,
   FINISH: 85,
   BLAST: 95,
@@ -248,6 +281,11 @@ interface RunCtx {
    *  stack-overflowing. */
   productStack: Set<string>;
   vars: Record<string, string | number | boolean>;
+  /** Variable names supplied via `initialVars` (scenario overrides). The
+   *  evaluator must NOT overwrite these when it later runs the
+   *  `set_variable` ops emitted by `mw_input_*` declaration blocks —
+   *  otherwise the canvas default would clobber the user's sidebar value. */
+  overriddenVars: Set<string>;
   bom: BomLineV2[];
   operations: OperationLineV2[];
   costs: CostLineV2[];
@@ -298,6 +336,10 @@ function runBlock(block: EngineBlock, ctx: RunCtx): void {
     }
 
     case 'set_variable': {
+      // Scenario overrides win: a sidebar value passed via `initialVars` must
+      // survive the canvas default that an `mw_input_*` declaration would
+      // otherwise re-assert here.
+      if (ctx.overriddenVars.has(block.variableId)) break;
       const mode = ctx.extras.setVariableMode[block.id];
       if (mode === 'expression') {
         const expr = ctx.extras.values[block.id]?.VALUE;
@@ -456,6 +498,35 @@ function runBlock(block: EngineBlock, ctx: RunCtx): void {
         break;
       }
 
+      // Catalogue (mock:) products — these don't have a Studio recipe, they're
+      // just SKUs from the cross-module parts list. Resolve as a single phantom
+      // BOM line at the catalogue unit price so the recipe still rolls up a
+      // sensible $ figure when a user drops one in.
+      if (childId.startsWith('mock:')) {
+        const stripped = childId.slice('mock:'.length);
+        const part = mockCatalogueProducts.find((p) => p.id === stripped);
+        if (!part) {
+          ctx.warnings.push(
+            `Catalogue part "${block.productLabel || stripped}" not found.`,
+          );
+          break;
+        }
+        const qtyExpr = ctx.extras.values[block.id]?.QTY;
+        const qty = num(resolve(qtyExpr, ctx.vars)) || block.quantity || 1;
+        const unitCost = part.unitPrice ?? 0;
+        ctx.bom.push({
+          id: `${block.id}:mock`,
+          name: `${part.partNumber} · ${part.description}`,
+          sku: part.partNumber,
+          quantity: qty,
+          unit: 'ea',
+          unitCost,
+          lineCost: unitCost * qty,
+          source: 'phantom',
+        });
+        break;
+      }
+
       const child = ctx.products.get(childId);
       if (!child) {
         ctx.warnings.push(
@@ -593,6 +664,7 @@ export function evaluateStudioV2({
     products: new Map((products ?? []).map((p) => [p.id, p])),
     productStack: parentStack ?? new Set<string>(),
     vars: { ...(initialVars ?? {}) },
+    overriddenVars: new Set(Object.keys(initialVars ?? {})),
     bom: [],
     operations: [],
     costs: [],

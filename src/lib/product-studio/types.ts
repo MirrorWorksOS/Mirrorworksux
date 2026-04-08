@@ -134,10 +134,32 @@ export type EngineBlock =
       id: string;
       type: 'action';
       actionKind:
-        | 'create_work_order'
+        // ── Sell ───────────────────────────────────────────────
+        | 'create_quote'
+        | 'create_sales_order'
+        | 'create_invoice'
+        // ── Plan ───────────────────────────────────────────────
         | 'create_plan_activity'
+        | 'reserve_capacity'
+        | 'push_nc_program'
+        // ── Production / Make ──────────────────────────────────
+        | 'create_mo'
+        | 'create_work_order'
+        | 'record_qc'
+        | 'clock_on'
+        // ── Buy ────────────────────────────────────────────────
+        | 'create_purchase_request'
+        | 'create_po'
+        | 'reserve_stock'
+        // ── Stock ──────────────────────────────────────────────
+        | 'stock_adjust'
+        // ── People (comms) ─────────────────────────────────────
         | 'send_alert'
-        | 'create_purchase_request';
+        | 'create_task'
+        | 'send_sms'
+        // ── Integrate ──────────────────────────────────────────
+        | 'webhook'
+        | 'push_accounting';
       title: string;
       payload: Record<string, string | number | boolean>;
     };

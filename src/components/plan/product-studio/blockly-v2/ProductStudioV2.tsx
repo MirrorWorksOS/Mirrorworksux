@@ -44,6 +44,23 @@ import {
   Package,
   SlidersHorizontal,
   RotateCcw,
+  // Action-card icons (Phase 3b expanded vocabulary)
+  FileText,
+  Receipt,
+  FileCheck2,
+  CalendarCheck,
+  Upload,
+  Factory,
+  ClipboardCheck,
+  UserCheck,
+  FileSpreadsheet,
+  Boxes as BoxesReserve,
+  Warehouse,
+  ListTodo,
+  MessageSquare,
+  Webhook,
+  Landmark,
+  Play,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +69,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectTrigger,
@@ -162,6 +188,17 @@ export function ProductStudioV2() {
     Record<string, string | number | boolean>
   >({});
   const [inputsPanelOpen, setInputsPanelOpen] = useState<boolean>(true);
+  /** Dry-run state — populated by the Run toolbar button. Captures the subset
+   *  of the recipe that fires on the synthetic `manual.run` event (just the
+   *  `mw_when_manual` hat's body) evaluated against the current scenario
+   *  inputs. Shown in the DryRunDialog as a "would create…" preview, with a
+   *  Commit toggle that (in v1) simply flips the cards' visual tone — wiring
+   *  Commit to the real Plan / Make / Buy endpoints is a Phase 4 task. */
+  const [dryRunResult, setDryRunResult] = useState<EvaluationResultV2 | null>(
+    null,
+  );
+  const [dryRunOpen, setDryRunOpen] = useState<boolean>(false);
+  const [dryRunCommit, setDryRunCommit] = useState<boolean>(false);
   /** Stable handle so the React effect that watches `scenarioInputs` can ask
    *  the Blockly bootstrap closure to re-run evaluation without re-mounting
    *  Blockly. The bootstrap effect assigns this; the watcher effect calls it. */
@@ -265,7 +302,20 @@ export function ProductStudioV2() {
 
     const reEvaluate = () => {
       try {
-        const { engine, extras } = generateEngine(ws);
+        // Build initialVars from scenario overrides ONLY. The canvas defaults
+        // are emitted as `set_variable` ops at runtime by the input
+        // declaration blocks themselves; the evaluator now skips those for any
+        // var name that came in via initialVars (see RunCtx.overriddenVars),
+        // so a sidebar override always wins over its canvas default.
+        const initialVars: Record<string, string | number | boolean> = {
+          ...scenarioInputsRef.current,
+        };
+
+        // Hand the live scenario to the generator so loop blocks whose count
+        // is bound to a var (e.g. `repeat rungs times`) can unroll at
+        // generation time using the user's current sidebar value, instead of
+        // falling back to a single iteration + warning.
+        const { engine, extras } = generateEngine(ws, initialVars);
         extrasRef.current = extras;
 
         // Surface declared inputs to the React layer so the Inputs sidebar can
@@ -274,17 +324,6 @@ export function ProductStudioV2() {
         // set_variable engine ops.
         const decls = extractInputs(ws);
         setInputDecls(decls);
-
-        // Mix scenario overrides on top of the declaration defaults so the
-        // configurator loop is closed: changing an input in the sidebar
-        // re-runs evaluation with the user's choice winning over the canvas
-        // default. We read from the ref (kept in sync via useEffect) so this
-        // closure stays stable across renders.
-        const initialVars: Record<string, string | number | boolean> = {};
-        for (const d of decls) initialVars[d.name] = d.defaultValue;
-        for (const [k, v] of Object.entries(scenarioInputsRef.current)) {
-          if (k in initialVars) initialVars[k] = v;
-        }
 
         // Seed the cycle-detection stack with the *active* product id so a
         // direct self-reference (`tpl-frame` dropping `tpl-frame`) is caught
@@ -350,6 +389,53 @@ export function ProductStudioV2() {
   useEffect(() => {
     reEvaluateRef.current?.();
   }, [scenarioInputs]);
+
+  // ── Run (dry-run) handler ─────────────────────────────────────────────────
+  // Fires the synthetic `manual.run` event: generates a second engine that
+  // includes ONLY the `mw_when_manual` hat's body, evaluates it against the
+  // current scenario inputs, and parks the result in `dryRunResult` for the
+  // DryRunDialog to render. If the canvas has no manual hat, the dry-run
+  // falls back to running every hat (so a user with a `When pricing this`
+  // recipe can still scratch-test it without first dragging a manual hat).
+  const handleDryRun = () => {
+    const ws = workspaceRef.current;
+    if (!ws) return;
+    try {
+      const initialVars: Record<string, string | number | boolean> = {
+        ...scenarioInputsRef.current,
+      };
+
+      // Does the canvas have a manual.run hat? If yes, filter the run to
+      // that hat only. If not, run everything (treats the whole recipe as
+      // the dry-run body — useful for the common case where the author is
+      // still composing and hasn't added a manual hat yet).
+      const hasManualHat = ws
+        .getTopBlocks(true)
+        .some((b) => b.type === 'mw_when_manual');
+
+      const { engine, extras } = generateEngine(
+        ws,
+        initialVars,
+        hasManualHat ? { eventFilter: 'manual.run' } : undefined,
+      );
+
+      const activeId = useProductBuilderStore.getState().activeProductId;
+      const result = evaluateStudioV2({
+        engine,
+        extras,
+        materials: useMaterialLibraryStore.getState().materials,
+        finishes: useFinishLibraryStore.getState().finishes,
+        products: useProductBuilderStore.getState().products,
+        initialVars,
+        parentStack: activeId ? new Set([activeId]) : undefined,
+      });
+      setDryRunResult(result);
+      setDryRunCommit(false);
+      setDryRunOpen(true);
+    } catch (err) {
+      console.error('[ProductStudioV2] dry-run failed', err);
+    }
+  };
 
   // ── Reset + restore Blockly when the active product changes ───────────────
   useEffect(() => {
@@ -509,35 +595,65 @@ export function ProductStudioV2() {
 
         <div className="flex-1" />
 
+        {/* Run button — dispatches the synthetic `manual.run` event against
+            the current scenario inputs and opens the dry-run dialog with a
+            preview of every action the recipe would queue. Sits leftmost so
+            the control cluster reads as: "[Run] [Inputs] [Outputs]" — the
+            author's triggering verb first, the two data panes after. */}
+        <Button
+          variant="default"
+          size="sm"
+          onClick={handleDryRun}
+          disabled={!product}
+          className="h-9 gap-1.5 rounded-full bg-[var(--mw-yellow-400)] px-3.5 text-[12px] font-semibold text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-300)] disabled:opacity-40"
+          title="Dry-run this recipe against the current scenario inputs"
+        >
+          <Play className="size-4" strokeWidth={2} fill="currentColor" />
+          Run
+        </Button>
+
+        {/* Inputs + Outputs toggles — labelled pills at top-right so the two
+            scenario panels are obviously discoverable rather than hidden
+            behind cryptic icon buttons. Matching shape/size means they read
+            as a paired "configure inputs / view outputs" control cluster. */}
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={() => setInputsPanelOpen((o) => !o)}
           className={cn(
-            'size-10 rounded-[var(--shape-md)]',
-            inputsPanelOpen && 'bg-[var(--neutral-100)]',
+            'h-9 gap-1.5 rounded-full px-3 text-[12px] font-medium text-[var(--neutral-700)]',
+            inputsPanelOpen &&
+              'bg-[var(--mw-yellow-50)] text-[var(--neutral-900)]',
           )}
           aria-label={inputsPanelOpen ? 'Hide inputs panel' : 'Show inputs panel'}
           title={inputsPanelOpen ? 'Hide inputs panel' : 'Show inputs panel'}
+          aria-pressed={inputsPanelOpen}
         >
           <SlidersHorizontal className="size-4" strokeWidth={1.5} />
+          Inputs
         </Button>
 
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={() => setRightPanelOpen((o) => !o)}
-          className="size-10 rounded-[var(--shape-md)]"
+          className={cn(
+            'h-9 gap-1.5 rounded-full px-3 text-[12px] font-medium text-[var(--neutral-700)]',
+            rightPanelOpen &&
+              'bg-[var(--mw-yellow-50)] text-[var(--neutral-900)]',
+          )}
           aria-label={
             rightPanelOpen ? 'Hide outputs panel' : 'Show outputs panel'
           }
           title={rightPanelOpen ? 'Hide outputs panel' : 'Show outputs panel'}
+          aria-pressed={rightPanelOpen}
         >
           {rightPanelOpen ? (
             <PanelRightClose className="size-4" strokeWidth={1.5} />
           ) : (
             <PanelRightOpen className="size-4" strokeWidth={1.5} />
           )}
+          Outputs
         </Button>
 
         {/* Saved-status pill — shows "Saved · 5s ago" when persisting */}
@@ -658,36 +774,68 @@ export function ProductStudioV2() {
             onValueChange={(v) => setActiveTab(v as typeof activeTab)}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <TabsList className="m-2 grid grid-cols-8">
-              <TabsTrigger value="formula" className="text-[11px]">
-                <Sparkles className="mr-1 h-3 w-3" /> Formula
+            <TabsList className="mx-2 mt-2 mb-1 flex w-[calc(100%-1rem)] max-w-none min-w-0 justify-start px-0.5">
+              <TabsTrigger
+                value="formula"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Sparkles className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Formula
               </TabsTrigger>
-              <TabsTrigger value="bom" className="text-[11px]">
-                <Boxes className="mr-1 h-3 w-3" /> BOM
+              <TabsTrigger
+                value="bom"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Boxes className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                BOM
               </TabsTrigger>
-              <TabsTrigger value="costs" className="text-[11px]">
-                <Coins className="mr-1 h-3 w-3" /> Cost
+              <TabsTrigger
+                value="costs"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Coins className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Cost
               </TabsTrigger>
-              <TabsTrigger value="ops" className="text-[11px]">
-                <Hammer className="mr-1 h-3 w-3" /> Work
+              <TabsTrigger
+                value="ops"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Hammer className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Work
               </TabsTrigger>
-              <TabsTrigger value="time" className="text-[11px]">
-                <Clock className="mr-1 h-3 w-3" /> Time
+              <TabsTrigger
+                value="time"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Clock className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                Time
               </TabsTrigger>
-              <TabsTrigger value="actions" className="text-[11px]">
-                <Zap className="mr-1 h-3 w-3" />
+              <TabsTrigger
+                value="actions"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+                title="Actions from rules"
+              >
+                <Zap className="h-3 w-3 shrink-0" strokeWidth={1.75} />
                 {evaluation && evaluation.actions.length > 0
                   ? evaluation.actions.length
                   : 'Actions'}
               </TabsTrigger>
-              <TabsTrigger value="warnings" className="text-[11px]">
-                <AlertTriangle className="mr-1 h-3 w-3" />
-                {evaluation && evaluation.warnings.length > 0
-                  ? evaluation.warnings.length
-                  : ''}
+              <TabsTrigger
+                value="warnings"
+                className="h-8 min-w-8 shrink-0 px-2 py-0 text-[11px] leading-none"
+                title="Warnings"
+              >
+                <AlertTriangle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                {evaluation && evaluation.warnings.length > 0 ? (
+                  <span className="tabular-nums">{evaluation.warnings.length}</span>
+                ) : null}
               </TabsTrigger>
-              <TabsTrigger value="json" className="text-[11px]">
-                <Code2 className="mr-1 h-3 w-3" /> JSON
+              <TabsTrigger
+                value="json"
+                className="h-8 shrink-0 px-2.5 py-0 text-[11px] leading-none"
+              >
+                <Code2 className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                JSON
               </TabsTrigger>
             </TabsList>
 
@@ -728,6 +876,20 @@ export function ProductStudioV2() {
           </Tabs>
         </aside>
       </div>
+
+      {/* Dry-run dialog — previews the actions that `manual.run` (the Run
+          button) would queue, against the current scenario inputs. The
+          Commit toggle is a visual switch for v1; in Phase 4 it will gate
+          the real Plan / Make / Buy endpoint calls. */}
+      <DryRunDialog
+        open={dryRunOpen}
+        onOpenChange={setDryRunOpen}
+        result={dryRunResult}
+        scenarioInputs={scenarioInputs}
+        commit={dryRunCommit}
+        onCommitChange={setDryRunCommit}
+        productName={product?.name ?? 'this product'}
+      />
     </div>
   );
 }
@@ -745,6 +907,173 @@ function EmptyPanel({ icon: Icon, title }: { icon: React.ElementType; title: str
         recipe.
       </p>
     </div>
+  );
+}
+
+/**
+ * DryRunDialog — the Run button's output surface.
+ *
+ * Renders the filtered evaluation (only the `mw_when_manual` hat's body, or
+ * the whole recipe if the author hasn't added a manual hat) as a "would
+ * create…" preview. Three sections:
+ *   1. Scenario snapshot — the live input values the recipe was tested
+ *      against, so the author can see at a glance what inputs drove the run.
+ *   2. Actions — the side-effects the recipe queued, reusing ActionsPanel
+ *      so the card design stays consistent with the outputs panel's tab.
+ *   3. Commit toggle — dry-run (default) vs commit. In v1 the toggle is
+ *      cosmetic; flipping it tints the dialog header yellow and swaps the
+ *      banner copy so the author *sees* the difference between preview and
+ *      commit mode. Phase 4 wires Commit to the real endpoint calls.
+ */
+function DryRunDialog({
+  open,
+  onOpenChange,
+  result,
+  scenarioInputs,
+  commit,
+  onCommitChange,
+  productName,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  result: EvaluationResultV2 | null;
+  scenarioInputs: Record<string, string | number | boolean>;
+  commit: boolean;
+  onCommitChange: (v: boolean) => void;
+  productName: string;
+}) {
+  const actionCount = result?.actions.length ?? 0;
+  const warningCount = result?.warnings.length ?? 0;
+  const inputRows = Object.entries(scenarioInputs);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Play className="h-4 w-4" fill="currentColor" />
+            Dry-run · {productName}
+            <Badge
+              variant="outline"
+              className={cn(
+                'ml-2 text-[10px] uppercase tracking-wide',
+                commit
+                  ? 'border-[var(--mw-success)] bg-[var(--mw-success-light)] text-[var(--mw-success)]'
+                  : 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--mw-mirage)]',
+              )}
+            >
+              {commit ? 'Commit · live' : 'Preview only'}
+            </Badge>
+          </DialogTitle>
+          <DialogDescription>
+            {commit ? (
+              <>
+                Committed runs <strong>will fire</strong> the Plan / Make /
+                Buy endpoints against the current scenario inputs.
+              </>
+            ) : (
+              <>
+                Previewing the <code>manual.run</code> event against the
+                current scenario inputs. Nothing has been committed — flip
+                the toggle to commit for real.
+              </>
+            )}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Scenario snapshot */}
+          <section>
+            <h4 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Scenario inputs
+            </h4>
+            {inputRows.length === 0 ? (
+              <p className="text-[11px] text-muted-foreground italic">
+                No scenario inputs — add <code>Input</code> blocks to the
+                canvas to parameterise the run.
+              </p>
+            ) : (
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[11px]">
+                {inputRows.map(([k, v]) => (
+                  <React.Fragment key={k}>
+                    <dt className="text-muted-foreground">{k}</dt>
+                    <dd className="font-mono text-[var(--neutral-900)] dark:text-white">
+                      {String(v)}
+                    </dd>
+                  </React.Fragment>
+                ))}
+              </dl>
+            )}
+          </section>
+
+          {/* Actions — reuse ActionsPanel for visual consistency */}
+          <section>
+            <h4 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Would {commit ? 'fire' : 'create'} · {actionCount}{' '}
+              {actionCount === 1 ? 'action' : 'actions'}
+            </h4>
+            <div
+              className={cn(
+                'max-h-[360px] overflow-y-auto rounded-md border p-2',
+                commit
+                  ? 'border-[var(--mw-success-light)]'
+                  : 'border-[var(--neutral-200)]',
+              )}
+            >
+              <ActionsPanel evaluation={result} />
+            </div>
+          </section>
+
+          {/* Warnings, only if any — same style as the outputs tab */}
+          {warningCount > 0 && (
+            <section>
+              <h4 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                {warningCount} warning{warningCount === 1 ? '' : 's'}
+              </h4>
+              <WarningsPanel evaluation={result} />
+            </section>
+          )}
+
+          {/* Commit toggle — prominent, so the mode switch is visible */}
+          <section className="flex items-center justify-between rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3 dark:border-[var(--neutral-800)] dark:bg-[var(--neutral-900)]">
+            <div className="flex-1">
+              <Label
+                htmlFor="dry-run-commit"
+                className="cursor-pointer text-[12px] font-semibold"
+              >
+                Commit mode
+              </Label>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Off: preview only. On: dispatches the above actions to the
+                real Plan / Make / Buy systems when you click Run.
+              </p>
+            </div>
+            <Switch
+              id="dry-run-commit"
+              checked={commit}
+              onCheckedChange={onCommitChange}
+            />
+          </section>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            Close
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            disabled={!commit || actionCount === 0}
+            className="gap-1.5 bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-300)]"
+          >
+            <Play className="size-3.5" fill="currentColor" />
+            {commit
+              ? `Commit · ${actionCount} action${actionCount === 1 ? '' : 's'}`
+              : 'Flip toggle to commit'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -1145,7 +1474,7 @@ function FormulaPanel({
 
       {/* Grand total reprise — repeats the header so the eye can scan top→
           bottom and bottom→top and land on the same number both ways. */}
-      <div className="rounded-md bg-[var(--mw-yellow-50)] px-3 py-2.5 text-xs dark:bg-[var(--mw-yellow-950)]">
+      <div className="rounded-md border border-[var(--mw-yellow-200)] bg-[var(--mw-yellow-50)] px-3 py-2.5 text-xs dark:border-[var(--mw-yellow-900)] dark:bg-[var(--mw-yellow-950)]">
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-semibold uppercase tracking-wider text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-200)]">
             {product?.name ?? 'This product'}
@@ -1498,33 +1827,139 @@ function ActionsPanel({ evaluation }: { evaluation: EvaluationResultV2 | null })
   }
 
   // Map action kind → presentation. Keeps the JSX below tight.
+  //
+  // Tones follow business-function colour families so a glance at the panel
+  // reveals the mix of side-effects:
+  //   Sell        → sky blue    (customer-facing)
+  //   Plan        → sky blue    (scheduling)
+  //   Production  → neutral     (shop-floor / mirage)
+  //   Buy + Stock → emerald     (inventory / money out)
+  //   People      → amber       (humans / comms)
+  //   Integrate   → violet      (wire to external systems)
   const meta: Record<
     EvaluationResultV2['actions'][number]['kind'],
     { icon: React.ElementType; tone: string; tint: string; label: string }
   > = {
-    create_work_order: {
-      icon: Briefcase,
-      tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
-      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
-      label: 'Work order',
+    // ── Sell ─────────────────────────────────────────────────────────
+    create_quote: {
+      icon: FileText,
+      tone: 'text-sky-700 dark:text-sky-300',
+      tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
+      label: 'Quote',
     },
+    create_sales_order: {
+      icon: FileCheck2,
+      tone: 'text-sky-700 dark:text-sky-300',
+      tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
+      label: 'Sales order',
+    },
+    create_invoice: {
+      icon: Receipt,
+      tone: 'text-sky-700 dark:text-sky-300',
+      tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
+      label: 'Invoice',
+    },
+    // ── Plan ─────────────────────────────────────────────────────────
     create_plan_activity: {
       icon: CalendarClock,
       tone: 'text-sky-700 dark:text-sky-300',
       tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
       label: 'Plan activity',
     },
+    reserve_capacity: {
+      icon: CalendarCheck,
+      tone: 'text-sky-700 dark:text-sky-300',
+      tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
+      label: 'Reserve capacity',
+    },
+    push_nc_program: {
+      icon: Upload,
+      tone: 'text-sky-700 dark:text-sky-300',
+      tint: 'border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950',
+      label: 'NC program',
+    },
+    // ── Production / Make ────────────────────────────────────────────
+    create_mo: {
+      icon: Factory,
+      tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      label: 'Manufacturing order',
+    },
+    create_work_order: {
+      icon: Briefcase,
+      tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      label: 'Work order',
+    },
+    record_qc: {
+      icon: ClipboardCheck,
+      tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      label: 'QC check',
+    },
+    clock_on: {
+      icon: UserCheck,
+      tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      label: 'Clock on',
+    },
+    // ── Buy ──────────────────────────────────────────────────────────
+    create_purchase_request: {
+      icon: ShoppingCart,
+      tone: 'text-emerald-800 dark:text-emerald-300',
+      tint: 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
+      label: 'Purchase request',
+    },
+    create_po: {
+      icon: FileSpreadsheet,
+      tone: 'text-emerald-800 dark:text-emerald-300',
+      tint: 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
+      label: 'Purchase order',
+    },
+    reserve_stock: {
+      icon: BoxesReserve,
+      tone: 'text-emerald-800 dark:text-emerald-300',
+      tint: 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
+      label: 'Stock reservation',
+    },
+    // ── Stock ────────────────────────────────────────────────────────
+    stock_adjust: {
+      icon: Warehouse,
+      tone: 'text-emerald-800 dark:text-emerald-300',
+      tint: 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
+      label: 'Stock adjustment',
+    },
+    // ── People ───────────────────────────────────────────────────────
     send_alert: {
       icon: Bell,
       tone: 'text-amber-800 dark:text-amber-300',
       tint: 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950',
       label: 'Team alert',
     },
-    create_purchase_request: {
-      icon: ShoppingCart,
-      tone: 'text-emerald-800 dark:text-emerald-300',
-      tint: 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950',
-      label: 'Purchase request',
+    create_task: {
+      icon: ListTodo,
+      tone: 'text-amber-800 dark:text-amber-300',
+      tint: 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950',
+      label: 'Task',
+    },
+    send_sms: {
+      icon: MessageSquare,
+      tone: 'text-amber-800 dark:text-amber-300',
+      tint: 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950',
+      label: 'SMS',
+    },
+    // ── Integrate ────────────────────────────────────────────────────
+    webhook: {
+      icon: Webhook,
+      tone: 'text-violet-700 dark:text-violet-300',
+      tint: 'border-violet-200 bg-violet-50 dark:border-violet-900 dark:bg-violet-950',
+      label: 'Webhook',
+    },
+    push_accounting: {
+      icon: Landmark,
+      tone: 'text-violet-700 dark:text-violet-300',
+      tint: 'border-violet-200 bg-violet-50 dark:border-violet-900 dark:bg-violet-950',
+      label: 'Accounting',
     },
   };
 

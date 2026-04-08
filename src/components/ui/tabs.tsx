@@ -59,7 +59,7 @@ function TabsList({
     <TabsListPrimitive
       data-slot="tabs-list"
       className={cn(
-        "inline-flex h-11 w-fit items-center justify-center rounded-full bg-[#E5E4E0]/50 dark:bg-[var(--neutral-200)]/40 p-1 backdrop-blur-sm",
+        "inline-flex min-h-11 w-fit min-w-0 max-w-full items-center justify-center gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-[#E5E4E0]/50 p-1 backdrop-blur-sm dark:bg-[var(--neutral-200)]/40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
       {...props}
@@ -81,12 +81,13 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       value={value}
       className={cn(
-        "relative inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium whitespace-nowrap outline-none",
+        "relative inline-flex h-9 min-h-9 items-center justify-center gap-1 overflow-hidden rounded-full px-4 text-sm font-medium whitespace-nowrap outline-none",
         "transition-colors duration-200",
         "data-[state=active]:text-foreground",
         "data-[state=inactive]:bg-transparent data-[state=inactive]:text-foreground/60",
+        "data-[state=inactive]:hover:bg-black/[0.04] dark:data-[state=inactive]:hover:bg-white/[0.06]",
         "hover:text-foreground",
-        "focus-visible:ring-2 focus-visible:ring-[#FFCF4B]/50 focus-visible:ring-offset-1",
+        "focus-visible:ring-2 focus-visible:ring-[#FFCF4B]/50 focus-visible:ring-inset",
         "disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
@@ -96,12 +97,12 @@ function TabsTrigger({
         <motion.span
           layoutId={ctx.layoutId}
           data-slot="tab-indicator"
-          className="absolute inset-0 rounded-full bg-card shadow-sm"
+          className="absolute inset-0 box-border rounded-full bg-card shadow-[0_1px_2px_rgb(0_0_0_/0.06)] dark:shadow-[0_1px_2px_rgb(0_0_0_/0.2)]"
           style={{ zIndex: 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          transition={{ type: "spring", stiffness: 400, damping: 32 }}
         />
       )}
-      <span className="relative z-10 inline-flex items-center gap-[inherit]">
+      <span className="relative z-10 inline-flex min-w-0 items-center gap-[inherit]">
         {children}
       </span>
     </TabsTriggerPrimitive>

@@ -90,7 +90,53 @@ export interface StudioV2Extras {
   operationMeta: Record<string, { workCentre: string }>;
   /** Percentage-based cost adjustments (overhead/margin %) — block id → pct. */
   costPctMeta: Record<string, { kind: 'overhead' | 'margin'; pctExpr: ValueExpr }>;
+  /**
+   * Recipe-hat metadata — hat block id → state-machine event + body block ids.
+   *
+   * The studio is a state machine: a template spawns an instance at some
+   * lifecycle touchpoint (quote requested → order placed → MO raised → WO
+   * start → WO complete → delivered), and every hat block that matches the
+   * firing event runs its body. We record the mapping here so the Run
+   * button's dry-run pane (and future scheduled fire paths) can filter
+   * execution down to just the hats that match a given synthetic event.
+   *
+   * - `event`     : canonical event name (`quote.requested`, `mo.raised`,
+   *                 `manual.run`, …). Drives hat → event matching.
+   * - `bodyIds`   : engine block ids (i.e. the output of collectStatements
+   *                 called on the hat's next block) in-order. An empty
+   *                 array means the hat is standalone — author dragged it
+   *                 into the canvas but hasn't added any children yet.
+   */
+  hatEvents: Record<string, { event: string; bodyIds: string[] }>;
 }
+
+/**
+ * Canonical mapping from hat block type → state-machine event name.
+ *
+ * Kept at module scope so the generator, the evaluator, and the Run button's
+ * dry-run path all agree on which hat fires on which event. Legacy ids map
+ * onto the new event vocabulary so old XML continues to run under the state
+ * machine without migration.
+ */
+export const HAT_EVENT_MAP: Record<string, string> = {
+  // New lifecycle hats
+  mw_when_quote_requested: 'quote.requested',
+  mw_when_quote_confirmed: 'quote.confirmed',
+  mw_when_order_placed: 'order.placed',
+  mw_when_mo_raised: 'mo.raised',
+  mw_when_wo_start: 'wo.start',
+  mw_when_wo_complete: 'wo.complete',
+  mw_when_delivered: 'delivered',
+  mw_when_stock_low: 'stock.low',
+  mw_when_manual: 'manual.run',
+  // Ergonomic shortcuts (folded onto the lifecycle event vocabulary)
+  mw_when_pricing: 'quote.requested',
+  mw_when_making: 'mo.raised',
+  // Legacy generic hats — map onto mo.raised as the closest equivalent so
+  // they still run under the default synthetic "make everything" simulation.
+  mw_when_configured: 'mo.raised',
+  mw_when_published: 'mo.raised',
+};
 
 export function emptyExtras(): StudioV2Extras {
   return {
@@ -100,6 +146,7 @@ export function emptyExtras(): StudioV2Extras {
     finishMeta: {},
     operationMeta: {},
     costPctMeta: {},
+    hatEvents: {},
   };
 }
 
@@ -554,7 +601,19 @@ function blockToEngine(
     }
 
     case 'mw_add_material_bom': {
-      const matExpr = readValue(block.getInputTargetBlock('MATERIAL'));
+      const materialInput = block.getInputTargetBlock('MATERIAL');
+      const matExpr: ValueExpr = materialInput
+        ? readValue(materialInput)
+        : (() => {
+            const mid = String(block.getFieldValue('MATERIAL_ID') ?? '');
+            const mfield = block.getField('MATERIAL_ID') as Blockly.Field | null;
+            const mlabel = mfield ? mfield.getText() : 'Material';
+            return {
+              kind: 'material_ref' as const,
+              id: mid === '__none__' ? '' : mid,
+              label: mlabel,
+            };
+          })();
       const qtyExpr = readValue(block.getInputTargetBlock('QTY'));
       const matId = matExpr.kind === 'material_ref' ? matExpr.id : '';
       const matLabel = matExpr.kind === 'material_ref' ? matExpr.label : 'Material';
@@ -920,6 +979,402 @@ function blockToEngine(
       };
     }
 
+    // Palletise / strap — pallets × min/pallet, PACK workcentre.
+    case 'mw_op_palletise': {
+      const pallets = readValue(block.getInputTargetBlock('PALLETS'));
+      const minPer = readValue(block.getInputTargetBlock('MIN_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 0 };
+      const runExpr: ValueExpr = { kind: 'arith', op: 'MUL', a: pallets, b: minPer };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'PACK' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Palletise & strap',
+        workCentre: 'PACK',
+        setupMinutes: 0,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Kit / pick — lines × sec/line ÷ 60, ASSY workcentre.
+    case 'mw_op_kit': {
+      const lines = readValue(block.getInputTargetBlock('LINES'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 1 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: lines, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'ASSY' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Kit / pick',
+        workCentre: 'ASSY',
+        setupMinutes: 1,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // CNC mill — explicit setup + run minutes, MILL workcentre.
+    case 'mw_op_mill': {
+      const setupExpr = readValue(block.getInputTargetBlock('SETUP'));
+      const runExpr = readValue(block.getInputTargetBlock('RUN'));
+      extras.values[id] = { SETUP: setupExpr, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'MILL' };
+      return {
+        id,
+        type: 'operation',
+        name: 'CNC mill',
+        workCentre: 'MILL',
+        setupMinutes: setupExpr.kind === 'number' ? setupExpr.value : 0,
+        runMinutesPerUnit: runExpr.kind === 'number' ? runExpr.value : 0,
+      };
+    }
+
+    // CNC lathe — explicit setup + run minutes, LATHE workcentre.
+    case 'mw_op_lathe': {
+      const setupExpr = readValue(block.getInputTargetBlock('SETUP'));
+      const runExpr = readValue(block.getInputTargetBlock('RUN'));
+      extras.values[id] = { SETUP: setupExpr, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'LATHE' };
+      return {
+        id,
+        type: 'operation',
+        name: 'CNC lathe turn',
+        workCentre: 'LATHE',
+        setupMinutes: setupExpr.kind === 'number' ? setupExpr.value : 0,
+        runMinutesPerUnit: runExpr.kind === 'number' ? runExpr.value : 0,
+      };
+    }
+
+    // Wire EDM — length × sec/mm ÷ 60, EDM workcentre.
+    case 'mw_op_edm': {
+      const len = readValue(block.getInputTargetBlock('LENGTH_MM'));
+      const secPerMm = readValue(block.getInputTargetBlock('SEC_PER_MM'));
+      const setup: ValueExpr = { kind: 'number', value: 15 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: len, b: secPerMm },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'EDM' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Wire EDM',
+        workCentre: 'EDM',
+        setupMinutes: 15,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Countersink — count × sec/each ÷ 60, DRILL workcentre.
+    case 'mw_op_countersink': {
+      const count = readValue(block.getInputTargetBlock('COUNT'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 1 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: count, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'DRILL' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Countersink',
+        workCentre: 'DRILL',
+        setupMinutes: 1,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Ream — count × sec/each ÷ 60, DRILL workcentre.
+    case 'mw_op_ream': {
+      const count = readValue(block.getInputTargetBlock('COUNT'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 2 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: count, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'DRILL' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Ream holes',
+        workCentre: 'DRILL',
+        setupMinutes: 2,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Deburr — length × sec/mm ÷ 60, FINISH workcentre.
+    case 'mw_op_deburr': {
+      const len = readValue(block.getInputTargetBlock('LENGTH_MM'));
+      const secPerMm = readValue(block.getInputTargetBlock('SEC_PER_MM'));
+      const setup: ValueExpr = { kind: 'number', value: 1 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: len, b: secPerMm },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'FINISH' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Deburr',
+        workCentre: 'FINISH',
+        setupMinutes: 1,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Polish — area × sec/m² ÷ 60, FINISH workcentre.
+    case 'mw_op_polish': {
+      const area = readValue(block.getInputTargetBlock('AREA'));
+      const secPerM2 = readValue(block.getInputTargetBlock('SEC_PER_M2'));
+      const setup: ValueExpr = { kind: 'number', value: 3 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: area, b: secPerM2 },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'FINISH' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Polish',
+        workCentre: 'FINISH',
+        setupMinutes: 3,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Vibratory tumble — flat cycle minutes (one batch run), FINISH workcentre.
+    case 'mw_op_tumble': {
+      const cycleMin = readValue(block.getInputTargetBlock('CYCLE_MIN'));
+      const setup: ValueExpr = { kind: 'number', value: 5 };
+      extras.values[id] = { SETUP: setup, RUN: cycleMin };
+      extras.operationMeta[id] = { workCentre: 'FINISH' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Vibratory tumble',
+        workCentre: 'FINISH',
+        setupMinutes: 5,
+        runMinutesPerUnit: cycleMin.kind === 'number' ? cycleMin.value : 0,
+      };
+    }
+
+    // Bead blast — area × sec/m² ÷ 60, BLAST workcentre.
+    case 'mw_op_bead_blast': {
+      const area = readValue(block.getInputTargetBlock('AREA'));
+      const secPerM2 = readValue(block.getInputTargetBlock('SEC_PER_M2'));
+      const setup: ValueExpr = { kind: 'number', value: 4 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: area, b: secPerM2 },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'BLAST' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Bead blast',
+        workCentre: 'BLAST',
+        setupMinutes: 4,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Powder coat — area × min/m², COAT workcentre.
+    case 'mw_op_powder_coat': {
+      const area = readValue(block.getInputTargetBlock('AREA'));
+      const minPerM2 = readValue(block.getInputTargetBlock('MIN_PER_M2'));
+      const setup: ValueExpr = { kind: 'number', value: 15 };
+      const runExpr: ValueExpr = { kind: 'arith', op: 'MUL', a: area, b: minPerM2 };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'COAT' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Powder coat',
+        workCentre: 'COAT',
+        setupMinutes: 15,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Anodise — area × min/m², COAT workcentre.
+    case 'mw_op_anodise': {
+      const area = readValue(block.getInputTargetBlock('AREA'));
+      const minPerM2 = readValue(block.getInputTargetBlock('MIN_PER_M2'));
+      const setup: ValueExpr = { kind: 'number', value: 20 };
+      const runExpr: ValueExpr = { kind: 'arith', op: 'MUL', a: area, b: minPerM2 };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'COAT' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Anodise',
+        workCentre: 'COAT',
+        setupMinutes: 20,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Heat treat — hours × 60 = minutes, HEAT workcentre. Process is captured
+    // in the block name so the schedule can group anneal/harden separately.
+    case 'mw_op_heat_treat': {
+      const hours = readValue(block.getInputTargetBlock('HOURS'));
+      const process = String(block.getFieldValue('PROCESS') ?? 'ANNEAL');
+      const setup: ValueExpr = { kind: 'number', value: 30 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'MUL',
+        a: hours,
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'HEAT' };
+      return {
+        id,
+        type: 'operation',
+        name: `Heat treat (${process.toLowerCase()})`,
+        workCentre: 'HEAT',
+        setupMinutes: 30,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Tack weld — count × sec/tack ÷ 60, WELD workcentre.
+    case 'mw_op_tack_weld': {
+      const count = readValue(block.getInputTargetBlock('COUNT'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 2 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: count, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'WELD' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Tack weld',
+        workCentre: 'WELD',
+        setupMinutes: 2,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Spot weld — count × sec/spot ÷ 60, SPOT workcentre.
+    case 'mw_op_spot_weld': {
+      const count = readValue(block.getInputTargetBlock('COUNT'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 3 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: count, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'SPOT' };
+      return {
+        id,
+        type: 'operation',
+        name: 'Resistance spot weld',
+        workCentre: 'SPOT',
+        setupMinutes: 3,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // Laser engrave — sec/unit ÷ 60, LASER workcentre. Mark text rides on the
+    // operation name so it surfaces in the ops table.
+    case 'mw_op_engrave': {
+      const seconds = readValue(block.getInputTargetBlock('SECONDS'));
+      const text = String(block.getFieldValue('TEXT') ?? '');
+      const setup: ValueExpr = { kind: 'number', value: 2 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: seconds,
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'LASER' };
+      return {
+        id,
+        type: 'operation',
+        name: text ? `Engrave “${text}”` : 'Laser engrave',
+        workCentre: 'LASER',
+        setupMinutes: 2,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // QC dimensional check — checks × sec/check ÷ 60, QC workcentre.
+    case 'mw_op_qc_dimensional': {
+      const checks = readValue(block.getInputTargetBlock('CHECKS'));
+      const secPer = readValue(block.getInputTargetBlock('SEC_PER'));
+      const setup: ValueExpr = { kind: 'number', value: 1 };
+      const runExpr: ValueExpr = {
+        kind: 'arith',
+        op: 'DIV',
+        a: { kind: 'arith', op: 'MUL', a: checks, b: secPer },
+        b: { kind: 'number', value: 60 },
+      };
+      extras.values[id] = { SETUP: setup, RUN: runExpr };
+      extras.operationMeta[id] = { workCentre: 'QC' };
+      return {
+        id,
+        type: 'operation',
+        name: 'QC dimensional check',
+        workCentre: 'QC',
+        setupMinutes: 1,
+        runMinutesPerUnit: 0,
+      };
+    }
+
+    // First-article inspection — flat minutes, QC workcentre.
+    case 'mw_op_qc_first_article': {
+      const minExpr = readValue(block.getInputTargetBlock('MIN'));
+      const setup: ValueExpr = { kind: 'number', value: 0 };
+      extras.values[id] = { SETUP: setup, RUN: minExpr };
+      extras.operationMeta[id] = { workCentre: 'QC' };
+      return {
+        id,
+        type: 'operation',
+        name: 'First-article inspection',
+        workCentre: 'QC',
+        setupMinutes: 0,
+        runMinutesPerUnit: minExpr.kind === 'number' ? minExpr.value : 0,
+      };
+    }
+
     case 'mw_op_weld': {
       const len = readValue(block.getInputTargetBlock('LENGTH_MM'));
       const secPerMm = readValue(block.getInputTargetBlock('SEC_PER_MM'));
@@ -1031,16 +1486,20 @@ function blockToEngine(
     }
 
     case 'mw_op_assemble_with': {
-      // Sub-assembly drop. Resolve the wired product reference + multiplier so
-      // the evaluator can recursively expand the child product. The QTY socket
-      // can be a literal or an expression — we stash both, but the engine block
-      // also caches a literal qty so the recursive merge has a sensible default
-      // when no live vars are available (the v1 evaluator never executes this).
-      const productExpr = readValue(block.getInputTargetBlock('PRODUCT'));
-      const qtyExpr = readValue(block.getInputTargetBlock('QTY'));
-      const productId = productExpr.kind === 'product_ref' ? productExpr.id : '';
+      // Sub-assembly: searchable `PRODUCT_ID` field (same catalogue as
+      // `mw_product_ref`). Legacy XML that wired a `mw_product_ref` into a
+      // removed socket is unsupported — open the picker and re-select.
+      const pid = String(block.getFieldValue('PRODUCT_ID') ?? '');
+      const pfield = block.getField('PRODUCT_ID') as Blockly.Field | null;
       const productLabel =
-        productExpr.kind === 'product_ref' ? productExpr.label : 'Sub-assembly';
+        pfield && pid && pid !== '__none__' ? pfield.getText() : 'Sub-assembly';
+      const productExpr: ValueExpr = {
+        kind: 'product_ref',
+        id: pid === '__none__' ? '' : pid,
+        label: productLabel,
+      };
+      const qtyExpr = readValue(block.getInputTargetBlock('QTY'));
+      const productId = productExpr.id;
       const qty = qtyExpr.kind === 'number' ? qtyExpr.value : 1;
       extras.values[id] = { PRODUCT: productExpr, QTY: qtyExpr };
       return {
@@ -1132,6 +1591,194 @@ function blockToEngine(
       };
     }
 
+    // ── Expanded action vocabulary (Phase 3b) ────────────────────────────
+    // All four "product + qty" actions share one shape — build the
+    // payload once and just swap the actionKind per block type.
+    case 'mw_action_create_quote':
+    case 'mw_action_create_sales_order':
+    case 'mw_action_create_mo': {
+      const productExpr = readValue(block.getInputTargetBlock('PRODUCT'));
+      const qtyExpr = readValue(block.getInputTargetBlock('QTY'));
+      extras.values[id] = { PRODUCT: productExpr, QTY: qtyExpr };
+      const productLabel =
+        productExpr.kind === 'product_ref'
+          ? productExpr.label
+          : productExpr.kind === 'text'
+          ? productExpr.value
+          : '';
+      const kindMap: Record<string, 'create_quote' | 'create_sales_order' | 'create_mo'> = {
+        mw_action_create_quote: 'create_quote',
+        mw_action_create_sales_order: 'create_sales_order',
+        mw_action_create_mo: 'create_mo',
+      };
+      const titleDefaults: Record<string, string> = {
+        mw_action_create_quote: 'Quote',
+        mw_action_create_sales_order: 'Sales order',
+        mw_action_create_mo: 'MO',
+      };
+      return {
+        id,
+        type: 'action',
+        actionKind: kindMap[block.type],
+        title: String(block.getFieldValue('TITLE') ?? titleDefaults[block.type]),
+        payload: {
+          productId: productExpr.kind === 'product_ref' ? productExpr.id : '',
+          productLabel,
+          quantity: qtyExpr.kind === 'number' ? qtyExpr.value : 1,
+        },
+      };
+    }
+
+    case 'mw_action_create_invoice':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'create_invoice',
+        title: String(block.getFieldValue('TITLE') ?? 'Invoice'),
+        payload: {
+          terms: String(block.getFieldValue('TERMS') ?? '30'),
+        },
+      };
+
+    case 'mw_action_reserve_capacity': {
+      const durExpr = readValue(block.getInputTargetBlock('DURATION_MIN'));
+      extras.values[id] = { DURATION_MIN: durExpr };
+      return {
+        id,
+        type: 'action',
+        actionKind: 'reserve_capacity',
+        title: `Reserve ${String(block.getFieldValue('LANE') ?? 'ASSY')}`,
+        payload: {
+          lane: String(block.getFieldValue('LANE') ?? 'ASSY'),
+          durationMinutes: durExpr.kind === 'number' ? durExpr.value : 0,
+        },
+      };
+    }
+
+    case 'mw_action_push_nc_program':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'push_nc_program',
+        title: String(block.getFieldValue('PROGRAM') ?? 'NC program'),
+        payload: {
+          program: String(block.getFieldValue('PROGRAM') ?? ''),
+          machine: String(block.getFieldValue('MACHINE') ?? 'LASER'),
+        },
+      };
+
+    case 'mw_action_record_qc':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'record_qc',
+        title: String(block.getFieldValue('CHECK') ?? 'QC check'),
+        payload: {
+          check: String(block.getFieldValue('CHECK') ?? ''),
+          result: String(block.getFieldValue('RESULT') ?? 'pass'),
+        },
+      };
+
+    case 'mw_action_clock_on':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'clock_on',
+        title: `Clock on · ${String(block.getFieldValue('LANE') ?? 'ASSY')}`,
+        payload: {
+          lane: String(block.getFieldValue('LANE') ?? 'ASSY'),
+        },
+      };
+
+    // All three "material + qty" actions share one shape; swap actionKind
+    // + title default per block type.
+    case 'mw_action_create_po':
+    case 'mw_action_reserve_stock':
+    case 'mw_action_stock_adjust': {
+      const matExpr = readValue(block.getInputTargetBlock('MATERIAL'));
+      const qtyExpr = readValue(block.getInputTargetBlock('QTY'));
+      extras.values[id] = { MATERIAL: matExpr, QTY: qtyExpr };
+      const kindMap: Record<string, 'create_po' | 'reserve_stock' | 'stock_adjust'> = {
+        mw_action_create_po: 'create_po',
+        mw_action_reserve_stock: 'reserve_stock',
+        mw_action_stock_adjust: 'stock_adjust',
+      };
+      const titleDefaults: Record<string, string> = {
+        mw_action_create_po: 'Purchase order',
+        mw_action_reserve_stock: 'Stock reservation',
+        mw_action_stock_adjust: 'Stock movement',
+      };
+      const extraPayload: Record<string, string | number | boolean> = {};
+      if (block.type === 'mw_action_stock_adjust') {
+        extraPayload.direction = String(block.getFieldValue('DIRECTION') ?? 'consume');
+      }
+      return {
+        id,
+        type: 'action',
+        actionKind: kindMap[block.type],
+        title: String(
+          block.getFieldValue('TITLE') ?? titleDefaults[block.type],
+        ),
+        payload: {
+          materialId: matExpr.kind === 'material_ref' ? matExpr.id : '',
+          materialLabel:
+            matExpr.kind === 'material_ref' ? matExpr.label : 'Material',
+          quantity: qtyExpr.kind === 'number' ? qtyExpr.value : 1,
+          ...extraPayload,
+        },
+      };
+    }
+
+    case 'mw_action_create_task':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'create_task',
+        title: String(block.getFieldValue('TITLE') ?? 'Follow-up'),
+        payload: {
+          team: String(block.getFieldValue('TEAM') ?? 'sales'),
+        },
+      };
+
+    case 'mw_action_send_sms':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'send_sms',
+        title: String(block.getFieldValue('MESSAGE') ?? 'SMS'),
+        payload: {
+          message: String(block.getFieldValue('MESSAGE') ?? ''),
+        },
+      };
+
+    case 'mw_action_webhook':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'webhook',
+        title: `${String(block.getFieldValue('METHOD') ?? 'POST')} ${String(
+          block.getFieldValue('URL') ?? '',
+        )}`,
+        payload: {
+          url: String(block.getFieldValue('URL') ?? ''),
+          method: String(block.getFieldValue('METHOD') ?? 'POST'),
+        },
+      };
+
+    case 'mw_action_push_accounting':
+      return {
+        id,
+        type: 'action',
+        actionKind: 'push_accounting',
+        title: `${String(block.getFieldValue('SYSTEM') ?? 'xero')} · ${String(
+          block.getFieldValue('DOCTYPE') ?? 'invoice',
+        )}`,
+        payload: {
+          system: String(block.getFieldValue('SYSTEM') ?? 'xero'),
+          docType: String(block.getFieldValue('DOCTYPE') ?? 'invoice'),
+        },
+      };
+
     default:
       return null;
   }
@@ -1144,11 +1791,155 @@ function collectStatements(
   const out: EngineBlock[] = [];
   let cur: Blockly.Block | null = start;
   while (cur) {
-    const e = blockToEngine(cur, extras);
-    if (e) out.push(e);
+    // Loop blocks expand into multiple engine blocks (literal unroll), so we
+    // call the array-returning helper first and only fall back to single-block
+    // translation when it returns null.
+    const expanded = expandLoopBlock(cur, extras);
+    if (expanded) {
+      out.push(...expanded);
+    } else {
+      const e = blockToEngine(cur, extras);
+      if (e) out.push(e);
+    }
     cur = cur.getNextBlock();
   }
   return out;
+}
+
+// ── Loop expansion ───────────────────────────────────────────────────────────
+// Built-in Blockly loop blocks (controls_repeat_ext, controls_for) get
+// unrolled into a flat list of engine blocks when their counts are literal
+// numbers. This keeps the engine schema unchanged — there is no `loop` engine
+// block — at the cost of an upper bound on the unroll size (we cap at 200 to
+// avoid runaway recipes). For non-literal counts we run the body once and
+// emit a warning so the author knows the runtime fell back.
+//
+// We re-walk the body workspace once per iteration via `collectStatements`,
+// which naturally generates fresh engine block ids (and matching `extras`
+// entries) for every pass. The cost is N walks of the body subtree per loop —
+// negligible for the recipe sizes the studio targets, and far simpler than
+// trying to clone the extras map by hand.
+//
+// `controls_whileUntil` has no literal form so we always emit a warning and
+// run the body once. Authors get the affordance, the engine doesn't have to
+// learn a new control flow primitive, and the warning is loud enough that
+// nobody silently relies on broken behaviour.
+const MAX_UNROLL = 200;
+
+// Per-generation scenario context. Threaded through `generateEngine` so loop
+// expansion can resolve a var-driven count (e.g. `repeat rungs times`) at
+// generation time using the current scenario inputs. JS is single-threaded so
+// the module-level handle is safe; we always reset it in a `try/finally` in
+// `generateEngine`.
+let CURRENT_SCENARIO_VARS: Record<string, string | number | boolean> | null = null;
+
+/** Best-effort numeric resolution for a loop-count expression: literal,
+ *  or a var that the live scenario knows about. Returns null if neither
+ *  applies (the caller falls back to running the body once + a warning). */
+function resolveLoopCount(expr: ValueExpr): number | null {
+  if (expr.kind === 'number') return expr.value;
+  if (expr.kind === 'var' && CURRENT_SCENARIO_VARS) {
+    const raw = CURRENT_SCENARIO_VARS[expr.name];
+    if (raw == null) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function expandLoopBlock(
+  block: Blockly.Block,
+  extras: StudioV2Extras,
+): EngineBlock[] | null {
+  switch (block.type) {
+    case 'controls_repeat_ext': {
+      const timesExpr = readValue(block.getInputTargetBlock('TIMES'));
+      const bodyStart = block.getInputTargetBlock('DO');
+      const resolved = resolveLoopCount(timesExpr);
+      if (resolved !== null) {
+        const n = Math.max(0, Math.min(MAX_UNROLL, Math.floor(resolved)));
+        const out: EngineBlock[] = [];
+        for (let i = 0; i < n; i++) {
+          out.push(...collectStatements(bodyStart, extras));
+        }
+        return out;
+      }
+      // Dynamic count with no scenario value — fall back to one iteration.
+      return [
+        {
+          id: nextId('blk'),
+          type: 'warning',
+          message:
+            'Repeat with dynamic count is not yet evaluated — body ran once.',
+        },
+        ...collectStatements(bodyStart, extras),
+      ];
+    }
+
+    case 'controls_for': {
+      const fromExpr = readValue(block.getInputTargetBlock('FROM'));
+      const toExpr = readValue(block.getInputTargetBlock('TO'));
+      const byExpr = readValue(block.getInputTargetBlock('BY'));
+      const varName = String(block.getFieldValue('VAR') ?? 'i');
+      const bodyStart = block.getInputTargetBlock('DO');
+      // Use resolveLoopCount on each bound so a scenario-bound var
+      // (e.g. `for i = 1 to rungs`) can unroll just like a literal.
+      const fromN = resolveLoopCount(fromExpr);
+      const toN = resolveLoopCount(toExpr);
+      const byN = resolveLoopCount(byExpr);
+      if (fromN !== null && toN !== null && byN !== null) {
+        const from = fromN;
+        const to = toN;
+        const step = byN === 0 ? 1 : Math.abs(byN);
+        const out: EngineBlock[] = [];
+        let count = 0;
+        const ascending = from <= to;
+        const tick = (i: number): boolean =>
+          ascending ? i <= to : i >= to;
+        for (let i = from; tick(i) && count < MAX_UNROLL; i += ascending ? step : -step) {
+          // Seed the loop variable for this iteration so a `mw_get_variable`
+          // bound to it resolves to the current index. We push a synthetic
+          // set_variable engine block at the head of each iteration.
+          out.push({
+            id: nextId('blk'),
+            type: 'set_variable',
+            variableId: varName,
+            mode: 'literal',
+            value: String(i),
+          });
+          out.push(...collectStatements(bodyStart, extras));
+          count += 1;
+        }
+        return out;
+      }
+      // Non-literal bounds — body ran once, warning emitted.
+      return [
+        {
+          id: nextId('blk'),
+          type: 'warning',
+          message:
+            'For-loop with dynamic bounds is not yet evaluated — body ran once.',
+        },
+        ...collectStatements(bodyStart, extras),
+      ];
+    }
+
+    case 'controls_whileUntil': {
+      const bodyStart = block.getInputTargetBlock('DO');
+      return [
+        {
+          id: nextId('blk'),
+          type: 'warning',
+          message:
+            'While / until loops are not yet evaluated — body ran once.',
+        },
+        ...collectStatements(bodyStart, extras),
+      ];
+    }
+
+    default:
+      return null;
+  }
 }
 
 // ── Public entry point ───────────────────────────────────────────────────────
@@ -1158,50 +1949,81 @@ export interface GenerateResult {
 }
 
 // Recipe hats — every top-level block whose type is in this set is treated as
-// an entry point. The new pricing/making split lives here alongside the legacy
-// `mw_when_configured` / `mw_when_published` ids so older XML still loads.
-//
-// Both new hats expose a PRODUCT value socket (an `mw_product_ref` chip). The
-// product binding is currently informational only — the studio still authors
-// against the *active* product on the page — but we round-trip it through
-// extras so a future feature ("multi-product canvas") can light up without a
-// schema change.
-const RECIPE_HAT_TYPES = new Set([
-  'mw_when_pricing',
-  'mw_when_making',
-  'mw_when_configured',
-  'mw_when_published',
-]);
+// an entry point. Kept deliberately in sync with HAT_EVENT_MAP above: if a
+// block type has an entry in HAT_EVENT_MAP it is a valid recipe hat. Derived
+// from that map so adding a new hat is a one-line change (add to HAT_EVENT_MAP
+// and nothing else here needs to move).
+const RECIPE_HAT_TYPES = new Set(Object.keys(HAT_EVENT_MAP));
 
-export function generateEngine(workspace: Blockly.Workspace): GenerateResult {
-  const extras = emptyExtras();
-  const rootBlocks: EngineBlock[] = [];
+export interface GenerateEngineOptions {
+  /**
+   * Restrict engine collection to hats matching this state-machine event.
+   *
+   * When set, only recipe hats whose `HAT_EVENT_MAP[type]` matches are
+   * walked — every other hat is skipped entirely. Used by the Run button's
+   * dry-run mode to isolate the `manual.run` hat so an author can scratch-
+   * test a recipe without accidentally firing the production hats as well.
+   *
+   * Leave `undefined` for normal "run every hat" behaviour (the default).
+   */
+  eventFilter?: string;
+}
 
-  for (const top of workspace.getTopBlocks(true)) {
-    if (!RECIPE_HAT_TYPES.has(top.type)) continue;
-    // Skip the hat itself; collect everything stacked under it.
-    rootBlocks.push(...collectStatements(top.getNextBlock(), extras));
+export function generateEngine(
+  workspace: Blockly.Workspace,
+  scenarioVars?: Record<string, string | number | boolean>,
+  options?: GenerateEngineOptions,
+): GenerateResult {
+  // Park the live scenario on the module-level handle so loop expansion can
+  // resolve var-driven counts (`repeat rungs times`) at generation time.
+  // try/finally guarantees we never leak this between successive calls.
+  CURRENT_SCENARIO_VARS = scenarioVars ?? null;
+  try {
+    const extras = emptyExtras();
+    const rootBlocks: EngineBlock[] = [];
+
+    for (const top of workspace.getTopBlocks(true)) {
+      if (!RECIPE_HAT_TYPES.has(top.type)) continue;
+      const event = HAT_EVENT_MAP[top.type] ?? 'unknown';
+      // Dry-run filter: if caller asked for a specific event, skip every
+      // hat that doesn't match. The hat's body is neither collected nor
+      // recorded in extras.hatEvents so the evaluator never sees it.
+      if (options?.eventFilter && options.eventFilter !== event) continue;
+      // Skip the hat itself; collect everything stacked under it.
+      const body = collectStatements(top.getNextBlock(), extras);
+      rootBlocks.push(...body);
+      // Record the hat → event mapping so the Run button can filter
+      // execution down to a single event (e.g. "simulate quote requested"
+      // or "manual run"). Stores the body block ids so the evaluator can
+      // run only the matching subset when an eventFilter is provided.
+      extras.hatEvents[top.id] = {
+        event,
+        bodyIds: body.map((b) => b.id),
+      };
+    }
+
+    // Walk all set_variable blocks to surface their names as variable defs.
+    // (We treat every named variable as a "derived" engine variable.)
+    const variableNames = new Set<string>();
+    walkEngineBlocks(rootBlocks, (b) => {
+      if (b.type === 'set_variable') variableNames.add(b.variableId);
+    });
+
+    const engine: ProductDefinitionEngine = {
+      schemaVersion: ENGINE_SCHEMA_VERSION,
+      variables: Array.from(variableNames).map((name) => ({
+        id: name,
+        label: name,
+        kind: 'derived',
+      })),
+      lookupTables: [],
+      rootBlocks,
+    };
+
+    return { engine, extras };
+  } finally {
+    CURRENT_SCENARIO_VARS = null;
   }
-
-  // Walk all set_variable blocks to surface their names as variable defs.
-  // (We treat every named variable as a "derived" engine variable.)
-  const variableNames = new Set<string>();
-  walkEngineBlocks(rootBlocks, (b) => {
-    if (b.type === 'set_variable') variableNames.add(b.variableId);
-  });
-
-  const engine: ProductDefinitionEngine = {
-    schemaVersion: ENGINE_SCHEMA_VERSION,
-    variables: Array.from(variableNames).map((name) => ({
-      id: name,
-      label: name,
-      kind: 'derived',
-    })),
-    lookupTables: [],
-    rootBlocks,
-  };
-
-  return { engine, extras };
 }
 
 function walkEngineBlocks(
