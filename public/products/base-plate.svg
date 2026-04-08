@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Base Plate 200×200 — Stainless 304</title>
+  <!-- top face (isometric parallelogram) -->
+  <path d="M 40 55 L 130 55 L 170 95 L 80 95 Z"/>
+  <!-- thickness -->
+  <path d="M 130 55 L 130 70 L 170 110 L 170 95"/>
+  <path d="M 80 95 L 80 110 L 170 110"/>
+  <!-- corner holes -->
+  <ellipse cx="55" cy="65" rx="5" ry="3.5" fill="#FFCF4B"/>
+  <ellipse cx="115" cy="65" rx="5" ry="3.5" fill="#FFCF4B"/>
+  <ellipse cx="95" cy="85" rx="5" ry="3.5" fill="#FFCF4B"/>
+  <ellipse cx="155" cy="85" rx="5" ry="3.5" fill="#FFCF4B"/>
+</svg>

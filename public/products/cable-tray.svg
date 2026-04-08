@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Cable Tray Support 600mm</title>
+  <!-- front U-channel face -->
+  <path d="M 25 50 L 25 110 L 40 110 L 40 65 L 160 65 L 160 110 L 175 110 L 175 50 Z"/>
+  <!-- back depth -->
+  <path d="M 25 50 L 45 35 L 195 35 L 175 50"/>
+  <path d="M 195 35 L 195 95 L 175 110"/>
+  <path d="M 40 65 L 60 50"/>
+  <path d="M 160 65 L 180 50"/>
+  <!-- ventilation slots in bottom of tray -->
+  <line x1="55" y1="100" x2="78" y2="100" stroke="#FFCF4B" stroke-width="4"/>
+  <line x1="88" y1="100" x2="112" y2="100" stroke="#FFCF4B" stroke-width="4"/>
+  <line x1="122" y1="100" x2="145" y2="100" stroke="#FFCF4B" stroke-width="4"/>
+</svg>

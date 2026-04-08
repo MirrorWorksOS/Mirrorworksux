@@ -139,6 +139,105 @@ export function BridgeSegmentedSkipPrimary({
   return <div className={cn(shell, className)}>{segments}</div>;
 }
 
+/**
+ * Three-segment action: two secondary segments + one primary, sharing one shell.
+ * Used by the import-results screen to offer Import more / Skip / Continue.
+ */
+export function BridgeSegmentedTriple({
+  firstLabel,
+  firstIcon: FirstIcon = PenLine,
+  firstTooltip,
+  onFirst,
+  firstDisabled = false,
+  secondLabel,
+  secondIcon: SecondIcon = PenLine,
+  secondTooltip,
+  onSecond,
+  secondDisabled = false,
+  primaryLabel,
+  primaryIcon: PrimaryIcon = ArrowRight,
+  primaryTooltip,
+  onPrimary,
+  primaryDisabled: isPrimaryDisabled = false,
+  isLoading = false,
+  className,
+}: {
+  firstLabel: string;
+  firstIcon?: LucideIcon;
+  firstTooltip: string;
+  onFirst: () => void;
+  firstDisabled?: boolean;
+  secondLabel: string;
+  secondIcon?: LucideIcon;
+  secondTooltip: string;
+  onSecond: () => void;
+  secondDisabled?: boolean;
+  primaryLabel: string;
+  primaryIcon?: LucideIcon;
+  primaryTooltip: string;
+  onPrimary: () => void;
+  primaryDisabled?: boolean;
+  isLoading?: boolean;
+  className?: string;
+}) {
+  const firstButton = (
+    <button
+      type="button"
+      onClick={onFirst}
+      disabled={firstDisabled || isLoading}
+      className={cn(
+        segmentBase,
+        secondarySegment,
+        (firstDisabled || isLoading) && 'opacity-[0.38] pointer-events-none',
+      )}
+    >
+      <FirstIcon className="w-4 h-4 shrink-0" aria-hidden />
+      {firstLabel}
+    </button>
+  );
+
+  const secondButton = (
+    <button
+      type="button"
+      onClick={onSecond}
+      disabled={secondDisabled || isLoading}
+      className={cn(
+        segmentBase,
+        secondarySegment,
+        (secondDisabled || isLoading) && 'opacity-[0.38] pointer-events-none',
+      )}
+    >
+      <SecondIcon className="w-4 h-4 shrink-0" aria-hidden />
+      {secondLabel}
+    </button>
+  );
+
+  const primaryButton = (
+    <button
+      type="button"
+      onClick={isPrimaryDisabled || isLoading ? undefined : onPrimary}
+      disabled={isPrimaryDisabled || isLoading}
+      className={cn(
+        segmentBase,
+        isPrimaryDisabled || isLoading ? primaryDisabled : primaryEnabled,
+      )}
+    >
+      <PrimaryIcon className="w-4 h-4 shrink-0" aria-hidden />
+      {primaryLabel}
+    </button>
+  );
+
+  return (
+    <div className={cn(shell, className)}>
+      <SegmentWithTooltip tooltip={firstTooltip} side="top" trigger={firstButton} />
+      <div className={divider} aria-hidden />
+      <SegmentWithTooltip tooltip={secondTooltip} side="top" trigger={secondButton} />
+      <div className={divider} aria-hidden />
+      <SegmentWithTooltip tooltip={primaryTooltip} side="top" trigger={primaryButton} />
+    </div>
+  );
+}
+
 /** Single primary CTA with tooltip (steps without a skip pair) */
 export function BridgePrimaryWithTooltip({
   label,

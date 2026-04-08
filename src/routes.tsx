@@ -57,20 +57,18 @@ const BuyReorderRules = React.lazy(() => import('./components/buy/BuyReorderRule
 const PlanDashboard = React.lazy(() => import('./components/plan/PlanDashboard').then(m => ({ default: m.PlanDashboard })));
 const PlanJobs = React.lazy(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
 const PlanJobDetail = React.lazy(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
-const PlanActivities = React.lazy(() => import('./components/plan/PlanActivities').then(m => ({ default: m.PlanActivities })));
 const PlanSchedule = React.lazy(() => import('./components/plan/PlanSchedule').then(m => ({ default: m.PlanSchedule })));
 const PlanPurchase = React.lazy(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
 const PlanQCPlanning = React.lazy(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
 const PlanProducts = React.lazy(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
 const PlanProductDetail = React.lazy(() => import('./components/plan/PlanProductDetail').then(m => ({ default: m.PlanProductDetail })));
 const PlanSettings = React.lazy(() => import('./components/plan/PlanSettings').then(m => ({ default: m.PlanSettings })));
-const PlanNCConnect = React.lazy(() => import('./components/plan/PlanNCConnect').then(m => ({ default: m.PlanNCConnect })));
-const PlanCADImport = React.lazy(() => import('./components/plan/PlanCADImport').then(m => ({ default: m.PlanCADImport })));
 const ProductStudio = React.lazy(() => import('./components/plan/product-studio/ProductStudio').then(m => ({ default: m.ProductStudio })));
-const BlocklySpike = React.lazy(() => import('./components/plan/product-studio/blockly-spike/BlocklySpike').then(m => ({ default: m.BlocklySpike })));
 const ProductStudioV2 = React.lazy(() => import('./components/plan/product-studio/blockly-v2/ProductStudioV2').then(m => ({ default: m.ProductStudioV2 })));
-const MaterialLibrary = React.lazy(() => import('./components/plan/material-library/MaterialLibrary').then(m => ({ default: m.MaterialLibrary })));
-const FinishLibrary = React.lazy(() => import('./components/plan/finish-library/FinishLibrary').then(m => ({ default: m.FinishLibrary })));
+// PlanLibraries statically imports MaterialLibrary + FinishLibrary
+const PlanLibraries = React.lazy(() => import('./components/plan/PlanLibraries').then(m => ({ default: m.PlanLibraries })));
+// PlanMachineIO statically imports PlanCADImport + PlanNCConnect
+const PlanMachineIO = React.lazy(() => import('./components/plan/PlanMachineIO').then(m => ({ default: m.PlanMachineIO })));
 const PlanWhatIf = React.lazy(() => import('./components/plan/PlanWhatIf').then(m => ({ default: m.PlanWhatIf })));
 const PlanNesting = React.lazy(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
 const PlanMrp = React.lazy(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
@@ -231,10 +229,13 @@ export const router = createBrowserRouter([
           { index: true, element: <L><PlanDashboard /></L> },
           { path: 'jobs', element: <L><PlanJobs /></L> },
           { path: 'jobs/:id', element: <L><PlanJobDetail /></L> },
-          { path: 'activities', element: <L><PlanActivities /></L> },
+          // Activities folded into Schedule's calendar view
+          { path: 'activities', element: <Navigate to="/plan/schedule?view=calendar" replace /> },
           { path: 'schedule', element: <L><PlanSchedule /></L> },
-          { path: 'nc-connect', element: <L><PlanNCConnect /></L> },
-          { path: 'cad-import', element: <L><PlanCADImport /></L> },
+          // CAD import + NC Connect unified under /plan/machine-io
+          { path: 'machine-io', element: <L><PlanMachineIO /></L> },
+          { path: 'nc-connect', element: <Navigate to="/plan/machine-io?tab=nc-connect" replace /> },
+          { path: 'cad-import', element: <Navigate to="/plan/machine-io?tab=cad-import" replace /> },
           { path: 'purchase', element: <L><PlanPurchase /></L> },
           { path: 'qc-planning', element: <L><PlanQCPlanning /></L> },
           // Product Studio is now exclusively the Blockly-based v2 editor.
@@ -247,8 +248,10 @@ export const router = createBrowserRouter([
           { path: 'product-studio/blockly-spike', element: <Navigate to="/plan/product-studio" replace /> },
           { path: 'product-studio/legacy', element: <L><ProductStudio /></L> },
           { path: 'product-studio/legacy/:productId', element: <L><ProductStudio /></L> },
-          { path: 'material-library', element: <L><MaterialLibrary /></L> },
-          { path: 'finish-library', element: <L><FinishLibrary /></L> },
+          // Material + Finish library unified under /plan/libraries
+          { path: 'libraries', element: <L><PlanLibraries /></L> },
+          { path: 'material-library', element: <Navigate to="/plan/libraries?tab=materials" replace /> },
+          { path: 'finish-library', element: <Navigate to="/plan/libraries?tab=finishes" replace /> },
           { path: 'what-if', element: <L><PlanWhatIf /></L> },
           { path: 'nesting', element: <L><PlanNesting /></L> },
           { path: 'mrp', element: <L><PlanMrp /></L> },

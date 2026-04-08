@@ -246,11 +246,11 @@ const MACHINES: Machine[] = [
 
 const MACHINE_TYPES: MachineType[] = ['CNC Mill', 'CNC Lathe', 'Laser Cutter', 'Press Brake', 'Welder', 'Grinder', 'Drill Press', 'Saw'];
 
-const STATUS_CONFIG: Record<MachineStatus, { label: string; variant: 'success' | 'warning' | 'neutral' | 'error'; border: string }> = {
-  active:      { label: 'Active',      variant: 'success', border: 'border-l-[var(--mw-success)]' },
-  maintenance: { label: 'Maintenance', variant: 'warning', border: 'border-l-[var(--mw-warning)]' },
-  idle:        { label: 'Idle',        variant: 'neutral', border: 'border-l-[var(--neutral-400)]' },
-  offline:     { label: 'Offline',     variant: 'error',   border: 'border-l-[var(--mw-error)]' },
+const STATUS_CONFIG: Record<MachineStatus, { label: string; variant: 'success' | 'warning' | 'neutral' | 'error' }> = {
+  active:      { label: 'Active',      variant: 'success' },
+  maintenance: { label: 'Maintenance', variant: 'warning' },
+  idle:        { label: 'Idle',        variant: 'neutral' },
+  offline:     { label: 'Offline',     variant: 'error'   },
 };
 
 const LOCATIONS = [...new Set(MACHINES.map(m => m.location))];
@@ -350,37 +350,37 @@ function MachineCard({ machine, onClick }: { machine: Machine; onClick: () => vo
       variants={staggerItem}
       onClick={onClick}
       className={cn(
-        'bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-5 cursor-pointer',
-        'border-l-4',
-        config.border,
-        'hover:shadow-md transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+        'flex flex-col bg-card text-card-foreground rounded-[var(--shape-lg)] p-6 cursor-pointer',
+        'border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]',
+        'shadow-xs hover:shadow-sm',
+        'transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
       )}
     >
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between gap-3 mb-4">
         <div className="min-w-0">
           <h3 className="text-sm font-medium text-foreground truncate">{machine.name}</h3>
           <p className="text-xs text-[var(--neutral-500)] mt-0.5">{machine.type}</p>
         </div>
-        <StatusBadge variant={config.variant}>{config.label}</StatusBadge>
+        <StatusBadge variant={config.variant} withDot>{config.label}</StatusBadge>
       </div>
 
       <div className="space-y-2 text-xs text-[var(--neutral-500)]">
         <div className="flex items-center gap-1.5">
-          <MapPin className="w-3 h-3 shrink-0" />
+          <MapPin className="w-3 h-3 shrink-0" strokeWidth={1.5} />
           <span className="truncate">{machine.location}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Settings2 className="w-3 h-3 shrink-0" />
-          <span>{machine.manufacturer} {machine.model}</span>
+          <Settings2 className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+          <span className="truncate">{machine.manufacturer} {machine.model}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Calendar className="w-3 h-3 shrink-0" />
+          <Calendar className="w-3 h-3 shrink-0" strokeWidth={1.5} />
           <span>Last maint: {formatDate(machine.lastMaintenance)}</span>
         </div>
       </div>
 
       {/* Utilisation bar */}
-      <div className="mt-4 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+      <div className="mt-5 pt-4 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs text-[var(--neutral-500)]">Utilisation</span>
           <span className="text-xs tabular-nums font-medium text-foreground">{machine.utilisation}%</span>

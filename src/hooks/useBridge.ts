@@ -31,15 +31,14 @@ export function getActiveSteps(
     steps.push('upload');
   }
 
-  if (needsUploadStep(sourceSystems)) {
-    if (hasUploadedFiles) {
-      steps.push('mapping');
-    } else {
-      steps.push('manual_entry');
-    }
-  } else {
-    steps.push('manual_entry');
+  // Mapping is only relevant when files have been uploaded.
+  if (needsUploadStep(sourceSystems) && hasUploadedFiles) {
+    steps.push('mapping');
   }
+
+  // Manual entry ('Enter data') is always part of the flow so users get the
+  // chance to add records by hand even after an upload + mapping pass.
+  steps.push('manual_entry');
 
   steps.push('review', 'results');
 

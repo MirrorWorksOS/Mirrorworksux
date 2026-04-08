@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Mounting Bracket 90°</title>
+  <!-- L-bracket front face -->
+  <path d="M 55 30 L 95 30 L 95 100 L 160 100 L 160 130 L 55 130 Z"/>
+  <!-- isometric depth -->
+  <path d="M 55 30 L 70 18 L 110 18 L 95 30"/>
+  <path d="M 110 18 L 110 88 L 175 88 L 160 100"/>
+  <path d="M 175 88 L 175 118 L 160 130"/>
+  <path d="M 95 100 L 110 88"/>
+  <!-- mounting holes -->
+  <circle cx="75" cy="50" r="5" fill="#FFCF4B"/>
+  <circle cx="75" cy="78" r="5" fill="#FFCF4B"/>
+  <circle cx="120" cy="115" r="5" fill="#FFCF4B"/>
+  <circle cx="145" cy="115" r="5" fill="#FFCF4B"/>
+</svg>

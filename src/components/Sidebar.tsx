@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from './ui/utils';
 import { MODULE_ICONS, ICON_SIZES } from '@/lib/icon-config';
+import { getSubItemMeta } from '@/lib/sub-item-meta';
 import { CommandPalette } from './shared/command/CommandPalette';
 import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
 import { useCommandPaletteStore } from '@/store/commandPaletteStore';
@@ -55,17 +56,17 @@ import {
 // Types
 // ---------------------------------------------------------------------------
 
-interface SubMenuItem {
+export interface SubMenuItem {
   label: string;
   path: string;
 }
 
-interface SubMenuGroup {
+export interface SubMenuGroup {
   heading: string;
   items: SubMenuItem[];
 }
 
-interface MenuItem {
+export interface MenuItem {
   label: string;
   icon?: LucideIcon;
   animatedIcon?: React.ComponentType<{
@@ -85,7 +86,7 @@ interface MenuItem {
 // Menu Configuration
 // ---------------------------------------------------------------------------
 
-const menuConfig: MenuItem[] = [
+export const menuConfig: MenuItem[] = [
   {
     label: 'Dashboard',
     icon: LayoutDashboard,
@@ -95,112 +96,249 @@ const menuConfig: MenuItem[] = [
     label: 'Sell',
     animatedIcon: MODULE_ICONS.sell,
     section: 'Operations',
-    subItems: [
-      { label: 'Dashboard', path: '/sell' },
-      { label: 'CRM', path: '/sell/crm' },
-      { label: 'Opportunities', path: '/sell/opportunities' },
-      { label: 'Orders', path: '/sell/orders' },
-      { label: 'Quotes', path: '/sell/quotes' },
-      { label: 'Customer portal', path: '/sell/portal' },
-      { label: 'Activities', path: '/sell/activities' },
-      { label: 'Invoices', path: '/sell/invoices' },
-      { label: 'Products', path: '/sell/products' },
-      { label: 'Settings', path: '/sell/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/sell' },
+        ],
+      },
+      {
+        heading: 'Pipeline',
+        items: [
+          { label: 'CRM', path: '/sell/crm' },
+          { label: 'Opportunities', path: '/sell/opportunities' },
+          { label: 'Quotes', path: '/sell/quotes' },
+        ],
+      },
+      {
+        heading: 'Transactions',
+        items: [
+          { label: 'Orders', path: '/sell/orders' },
+          { label: 'Invoices', path: '/sell/invoices' },
+        ],
+      },
+      {
+        heading: 'Customer engagement',
+        items: [
+          { label: 'Activities', path: '/sell/activities' },
+          { label: 'Customer portal', path: '/sell/portal' },
+        ],
+      },
+      {
+        heading: 'Catalog & Config',
+        items: [
+          { label: 'Products', path: '/sell/products' },
+          { label: 'Settings', path: '/sell/settings' },
+        ],
+      },
     ],
   },
   {
     label: 'Buy',
     animatedIcon: MODULE_ICONS.buy,
-    subItems: [
-      { label: 'Dashboard', path: '/buy' },
-      { label: 'Orders', path: '/buy/orders' },
-      { label: 'Requisitions', path: '/buy/requisitions' },
-      { label: 'Receipts', path: '/buy/receipts' },
-      { label: 'Suppliers', path: '/buy/suppliers' },
-      { label: 'RFQs', path: '/buy/rfqs' },
-      { label: 'Bills', path: '/buy/bills' },
-      { label: 'Products', path: '/buy/products' },
-      { label: 'Agreements', path: '/buy/agreements' },
-      { label: 'MRP suggestions', path: '/buy/mrp-suggestions' },
-      { label: 'Planning grid', path: '/buy/planning-grid' },
-      { label: 'Vendor comparison', path: '/buy/vendor-comparison' },
-      { label: 'Reorder rules', path: '/buy/reorder-rules' },
-      { label: 'Reports', path: '/buy/reports' },
-      { label: 'Settings', path: '/buy/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/buy' },
+        ],
+      },
+      {
+        heading: 'Transactions',
+        items: [
+          { label: 'Orders', path: '/buy/orders' },
+          { label: 'Requisitions', path: '/buy/requisitions' },
+          { label: 'Receipts', path: '/buy/receipts' },
+          { label: 'Bills', path: '/buy/bills' },
+        ],
+      },
+      {
+        heading: 'Sourcing',
+        items: [
+          { label: 'Suppliers', path: '/buy/suppliers' },
+          { label: 'RFQs', path: '/buy/rfqs' },
+          { label: 'Agreements', path: '/buy/agreements' },
+          { label: 'Vendor comparison', path: '/buy/vendor-comparison' },
+        ],
+      },
+      {
+        heading: 'Planning',
+        items: [
+          { label: 'MRP suggestions', path: '/buy/mrp-suggestions' },
+          { label: 'Planning grid', path: '/buy/planning-grid' },
+          { label: 'Reorder rules', path: '/buy/reorder-rules' },
+        ],
+      },
+      {
+        heading: 'Catalog & Config',
+        items: [
+          { label: 'Products', path: '/buy/products' },
+          { label: 'Reports', path: '/buy/reports' },
+          { label: 'Settings', path: '/buy/settings' },
+        ],
+      },
     ],
   },
   {
     label: 'Plan',
     animatedIcon: MODULE_ICONS.plan,
-    subItems: [
-      { label: 'Dashboard', path: '/plan' },
-      { label: 'Jobs', path: '/plan/jobs' },
-      { label: 'Activities', path: '/plan/activities' },
-      { label: 'Schedule', path: '/plan/schedule' },
-      { label: 'What-if', path: '/plan/what-if' },
-      { label: 'Nesting', path: '/plan/nesting' },
-      { label: 'MRP', path: '/plan/mrp' },
-      { label: 'Sheet calculator', path: '/plan/sheet-calculator' },
-      { label: 'Product Studio', path: '/plan/product-studio' },
-      { label: 'Material library', path: '/plan/material-library' },
-      { label: 'Finish library', path: '/plan/finish-library' },
-      { label: 'CAD import', path: '/plan/cad-import' },
-      { label: 'NC Connect', path: '/plan/nc-connect' },
-      { label: 'Purchase', path: '/plan/purchase' },
-      { label: 'Quality', path: '/plan/qc-planning' },
-      { label: 'Products', path: '/plan/products' },
-      { label: 'Settings', path: '/plan/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/plan' },
+        ],
+      },
+      {
+        heading: 'Execution',
+        items: [
+          { label: 'Jobs', path: '/plan/jobs' },
+          { label: 'Schedule', path: '/plan/schedule' },
+          { label: 'What-if', path: '/plan/what-if' },
+        ],
+      },
+      {
+        heading: 'Engineering',
+        items: [
+          { label: 'Product Studio', path: '/plan/product-studio' },
+          { label: 'Machine I/O', path: '/plan/machine-io' },
+          { label: 'Nesting', path: '/plan/nesting' },
+        ],
+      },
+      {
+        heading: 'Planning tools',
+        items: [
+          { label: 'MRP', path: '/plan/mrp' },
+          { label: 'Sheet calculator', path: '/plan/sheet-calculator' },
+          { label: 'Purchase', path: '/plan/purchase' },
+        ],
+      },
+      {
+        heading: 'Libraries',
+        items: [
+          { label: 'Libraries', path: '/plan/libraries' },
+          { label: 'Products', path: '/plan/products' },
+        ],
+      },
+      {
+        heading: 'Quality & Config',
+        items: [
+          { label: 'Quality', path: '/plan/qc-planning' },
+          { label: 'Settings', path: '/plan/settings' },
+        ],
+      },
     ],
   },
   {
     label: 'Make',
     animatedIcon: MODULE_ICONS.make,
-    subItems: [
-      { label: 'Dashboard', path: '/make' },
-      { label: 'Schedule', path: '/make/schedule' },
-      { label: 'Shop Floor', path: '/make/shop-floor' },
-      { label: 'Manufacturing Orders', path: '/make/manufacturing-orders' },
-      { label: 'Scan station', path: '/make/scan' },
-      { label: 'Scrap analysis', path: '/make/scrap-analysis' },
-      { label: 'CAPA', path: '/make/capa' },
-      { label: 'Time Clock', path: '/make/time-clock' },
-      { label: 'Quality', path: '/make/quality' },
-      { label: 'Products', path: '/make/products' },
-      { label: 'Settings', path: '/make/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/make' },
+        ],
+      },
+      {
+        heading: 'Execution',
+        items: [
+          { label: 'Schedule', path: '/make/schedule' },
+          { label: 'Shop Floor', path: '/make/shop-floor' },
+          { label: 'Manufacturing Orders', path: '/make/manufacturing-orders' },
+          { label: 'Scan station', path: '/make/scan' },
+        ],
+      },
+      {
+        heading: 'Quality & People',
+        items: [
+          { label: 'Quality', path: '/make/quality' },
+          { label: 'Scrap analysis', path: '/make/scrap-analysis' },
+          { label: 'CAPA', path: '/make/capa' },
+          { label: 'Time Clock', path: '/make/time-clock' },
+        ],
+      },
+      {
+        heading: 'Catalog & Config',
+        items: [
+          { label: 'Products', path: '/make/products' },
+          { label: 'Settings', path: '/make/settings' },
+        ],
+      },
     ],
   },
   {
     label: 'Ship',
     animatedIcon: MODULE_ICONS.ship,
-    subItems: [
-      { label: 'Dashboard', path: '/ship' },
-      { label: 'Orders', path: '/ship/orders' },
-      { label: 'Packaging', path: '/ship/packaging' },
-      { label: 'Shipping', path: '/ship/shipping' },
-      { label: 'Tracking', path: '/ship/tracking' },
-      { label: 'Carrier rates', path: '/ship/carrier-rates' },
-      { label: 'Scan to ship', path: '/ship/scan-to-ship' },
-      { label: 'Returns', path: '/ship/returns' },
-      { label: 'Warehouse', path: '/ship/warehouse' },
-      { label: 'Reports', path: '/ship/reports' },
-      { label: 'Settings', path: '/ship/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/ship' },
+        ],
+      },
+      {
+        heading: 'Fulfillment',
+        items: [
+          { label: 'Orders', path: '/ship/orders' },
+          { label: 'Packaging', path: '/ship/packaging' },
+          { label: 'Shipping', path: '/ship/shipping' },
+          { label: 'Scan to ship', path: '/ship/scan-to-ship' },
+        ],
+      },
+      {
+        heading: 'Logistics',
+        items: [
+          { label: 'Tracking', path: '/ship/tracking' },
+          { label: 'Warehouse', path: '/ship/warehouse' },
+          { label: 'Carrier rates', path: '/ship/carrier-rates' },
+        ],
+      },
+      {
+        heading: 'Returns & Config',
+        items: [
+          { label: 'Returns', path: '/ship/returns' },
+          { label: 'Reports', path: '/ship/reports' },
+          { label: 'Settings', path: '/ship/settings' },
+        ],
+      },
     ],
   },
   {
     label: 'Book',
     animatedIcon: MODULE_ICONS.book,
-    subItems: [
-      { label: 'Dashboard', path: '/book' },
-      { label: 'Budget', path: '/book/budget' },
-      { label: 'Invoices', path: '/book/invoices' },
-      { label: 'Expenses', path: '/book/expenses' },
-      { label: 'Purchase Orders', path: '/book/purchases' },
-      { label: 'Job Costs', path: '/book/job-costs' },
-      { label: 'WIP valuation', path: '/book/wip' },
-      { label: 'Cost variance', path: '/book/cost-variance' },
-      { label: 'Stock Valuation', path: '/book/stock-valuation' },
-      { label: 'Reports', path: '/book/reports' },
-      { label: 'Settings', path: '/book/settings' },
+    groupedSubItems: [
+      {
+        heading: '',
+        items: [
+          { label: 'Dashboard', path: '/book' },
+        ],
+      },
+      {
+        heading: 'Receivables & Payables',
+        items: [
+          { label: 'Invoices', path: '/book/invoices' },
+          { label: 'Expenses', path: '/book/expenses' },
+          { label: 'Purchase Orders', path: '/book/purchases' },
+        ],
+      },
+      {
+        heading: 'Costing & Valuation',
+        items: [
+          { label: 'Job Costs', path: '/book/job-costs' },
+          { label: 'WIP valuation', path: '/book/wip' },
+          { label: 'Cost variance', path: '/book/cost-variance' },
+          { label: 'Stock Valuation', path: '/book/stock-valuation' },
+        ],
+      },
+      {
+        heading: 'Budget & Config',
+        items: [
+          { label: 'Budget', path: '/book/budget' },
+          { label: 'Reports', path: '/book/reports' },
+          { label: 'Settings', path: '/book/settings' },
+        ],
+      },
     ],
   },
   {
@@ -389,64 +527,156 @@ function MenuItemRow({
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  // When this module is expanded, pin its header to the top of the
+  // scroll container so the user can always see where they are even when
+  // the sub-item list overflows. Only the header is sticky — children
+  // scroll underneath it.
+  const headerWrapperClass = cn(
+    'w-full',
+    isExpanded && 'sticky top-0 z-10 bg-[var(--neutral-50)]'
+  );
+
   return (
     <div
       className="w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {item.path && !hasSubItems ? (
-        <Link to={item.path} className="w-full group">
-          <div
+      <div className={headerWrapperClass}>
+        {item.path && !hasSubItems ? (
+          <Link to={item.path} className="w-full group">
+            <div
+              className={cn(
+                'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
+                'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+                isActive
+                  ? 'bg-[var(--mw-mirage)] text-white'
+                  : 'hover:bg-[var(--neutral-200)]'
+              )}
+            >
+              <ModuleIcon item={item} isHovered={isHovered} />
+              <span className="flex-1 text-sm text-current">
+                {item.label}
+              </span>
+              <ChevronRight className={cn(
+                "w-4 h-4",
+                isActive ? "text-white/50" : "text-[var(--neutral-400)]"
+              )} />
+            </div>
+          </Link>
+        ) : (
+          <button
+            onClick={onToggle}
             className={cn(
-              'flex items-center gap-2.5 p-2 rounded-full cursor-pointer',
+              'w-full flex items-center gap-2.5 p-2 rounded-full group',
               'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-              isActive
-                ? 'bg-[var(--mw-mirage)] text-white'
+              isExpanded
+                ? 'bg-[var(--neutral-100)]'
                 : 'hover:bg-[var(--neutral-200)]'
             )}
           >
             <ModuleIcon item={item} isHovered={isHovered} />
-            <span className="flex-1 text-sm text-current">
+
+            <span className="flex-1 text-sm text-foreground text-left">
               {item.label}
             </span>
-            <ChevronRight className={cn(
-              "w-4 h-4",
-              isActive ? "text-white/50" : "text-[var(--neutral-400)]"
-            )} />
-          </div>
-        </Link>
-      ) : (
-        <button
-          onClick={onToggle}
-          className={cn(
-            'w-full flex items-center gap-2.5 p-2 rounded-full group',
-            'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-            isExpanded
-              ? 'bg-[var(--neutral-100)]'
-              : 'hover:bg-[var(--neutral-200)]'
-          )}
-        >
-          <ModuleIcon item={item} isHovered={isHovered} />
 
-          <span className="flex-1 text-sm text-foreground text-left">
-            {item.label}
-          </span>
-
-          {hasSubItems && (
-            <ChevronRight
-              className="w-4 h-4 text-[var(--neutral-400)]"
-              style={{
-                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
-              }}
-            />
-          )}
-        </button>
-      )}
+            {hasSubItems && (
+              <ChevronRight
+                className="w-4 h-4 text-[var(--neutral-400)]"
+                style={{
+                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: `transform ${EXPAND_DURATION} ${EXPAND_EASING}`,
+                }}
+              />
+            )}
+          </button>
+        )}
+      </div>
 
       {children}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Shared sub-item link — icon + label + hover tooltip with description
+// ---------------------------------------------------------------------------
+
+function SubItemLink({
+  subItem,
+  isActive,
+  isHovered,
+  onPointerMove,
+  onPointerLeave,
+  size = 'md',
+}: {
+  subItem: SubMenuItem;
+  isActive: boolean;
+  isHovered: boolean;
+  onPointerMove: () => void;
+  onPointerLeave: () => void;
+  /** md = 48px (flat), sm = 40px (grouped) */
+  size?: 'md' | 'sm';
+}) {
+  const meta = getSubItemMeta(subItem.path);
+  const Icon = meta?.icon;
+  const heightClass = size === 'sm' ? 'h-10' : 'h-12';
+
+  return (
+    <Link to={subItem.path} className="group/sub relative block">
+      <div
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        className={cn(
+          'relative flex items-center gap-2.5 px-4 rounded-full',
+          heightClass,
+          'transition-[background-color,color] duration-200 ease-[cubic-bezier(0,0,0,1)]',
+          isActive
+            ? 'bg-[var(--mw-mirage)] text-white'
+            : 'bg-transparent text-foreground'
+        )}
+      >
+        {!isActive && (
+          <span
+            className={cn(
+              'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
+              isHovered
+                ? 'opacity-100 -inset-y-[2px] duration-200 ease-[cubic-bezier(0.3,0,1,1)]'
+                : 'opacity-0 inset-y-0 duration-[550ms] ease-[cubic-bezier(0,0,0,1)]'
+            )}
+          />
+        )}
+        {Icon && (
+          <Icon
+            className={cn(
+              'relative w-4 h-4 shrink-0',
+              isActive ? 'text-white' : 'text-[var(--neutral-500)]'
+            )}
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        )}
+        <span className="relative text-sm truncate flex-1">
+          {subItem.label}
+        </span>
+      </div>
+
+      {/* Description tooltip on hover (progressive disclosure, heuristic #6) */}
+      {meta?.description && (
+        <span
+          className={cn(
+            'pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50',
+            'px-2.5 py-1.5 rounded-lg bg-[var(--mw-mirage)] text-white text-xs font-medium whitespace-nowrap',
+            'opacity-0 -translate-x-1 transition-all duration-150',
+            'group-hover/sub:opacity-100 group-hover/sub:translate-x-0',
+            'shadow-lg max-w-[260px]'
+          )}
+        >
+          {meta.description}
+        </span>
+      )}
+    </Link>
   );
 }
 
@@ -954,46 +1184,24 @@ export function Sidebar({
                 onToggle={() => hasSubItems && toggleModule(item.label)}
               >
 
-                {/* Flat sub-items (all modules except Control) */}
+                {/* Flat sub-items (modules with no grouping) */}
                 {item.subItems && item.subItems.length > 0 && (
                   <CollapsibleSubMenu isOpen={isExpanded}>
-                    {item.subItems.map((subItem) => {
-                      const isSubActive = isActiveRoute(subItem.path);
-                      const isSubHovered = hoveredSubPath === subItem.path;
-                      return (
-                        <Link key={subItem.path} to={subItem.path}>
-                          <div
-                            onPointerMove={() => handleSubItemPointerMove(subItem.path)}
-                            onPointerLeave={handleSubItemPointerLeave}
-                            className={cn(
-                              'relative h-12 flex items-center px-4 rounded-full',
-                              'transition-[background-color,color] duration-200 ease-[cubic-bezier(0,0,0,1)]',
-                              isSubActive
-                                ? 'bg-[var(--mw-mirage)] text-white'
-                                : 'bg-transparent text-foreground'
-                            )}
-                          >
-                            {!isSubActive && (
-                              <span
-                                className={cn(
-                                  'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
-                                  isSubHovered
-                                    ? 'opacity-100 -inset-y-[2px] duration-200 ease-[cubic-bezier(0.3,0,1,1)]'
-                                    : 'opacity-0 inset-y-0 duration-[550ms] ease-[cubic-bezier(0,0,0,1)]'
-                                )}
-                              />
-                            )}
-                            <span className="relative text-sm">
-                              {subItem.label}
-                            </span>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                    {item.subItems.map((subItem) => (
+                      <SubItemLink
+                        key={subItem.path}
+                        subItem={subItem}
+                        isActive={isActiveRoute(subItem.path)}
+                        isHovered={hoveredSubPath === subItem.path}
+                        onPointerMove={() => handleSubItemPointerMove(subItem.path)}
+                        onPointerLeave={handleSubItemPointerLeave}
+                        size="md"
+                      />
+                    ))}
                   </CollapsibleSubMenu>
                 )}
 
-                {/* Grouped sub-items (Control module) */}
+                {/* Grouped sub-items (Plan, Buy, Control) */}
                 {item.groupedSubItems && item.groupedSubItems.length > 0 && (
                   <CollapsibleSubMenu isOpen={isExpanded}>
                     {item.groupedSubItems.map((group) => (
@@ -1006,39 +1214,17 @@ export function Sidebar({
                           </div>
                         )}
                         <div className="flex flex-col gap-[5px]">
-                        {group.items.map((subItem) => {
-                          const isSubActive = isActiveRoute(subItem.path);
-                          const isSubHovered = hoveredSubPath === subItem.path;
-                          return (
-                            <Link key={subItem.path} to={subItem.path}>
-                              <div
-                                onPointerMove={() => handleSubItemPointerMove(subItem.path)}
-                                onPointerLeave={handleSubItemPointerLeave}
-                                className={cn(
-                                  'relative h-10 flex items-center px-4 rounded-full',
-                                  'transition-[background-color,color] duration-200 ease-[cubic-bezier(0,0,0,1)]',
-                                  isSubActive
-                                    ? 'bg-[var(--mw-mirage)] text-white'
-                                    : 'bg-transparent text-foreground'
-                                )}
-                              >
-                                {!isSubActive && (
-                                  <span
-                                    className={cn(
-                                      'absolute inset-x-0 rounded-full bg-[var(--neutral-200)] transition-[opacity,inset]',
-                                      isSubHovered
-                                        ? 'opacity-100 -inset-y-[2px] duration-200 ease-[cubic-bezier(0.3,0,1,1)]'
-                                        : 'opacity-0 inset-y-0 duration-[550ms] ease-[cubic-bezier(0,0,0,1)]'
-                                    )}
-                                  />
-                                )}
-                                <span className="relative text-sm">
-                                  {subItem.label}
-                                </span>
-                              </div>
-                            </Link>
-                          );
-                        })}
+                          {group.items.map((subItem) => (
+                            <SubItemLink
+                              key={subItem.path}
+                              subItem={subItem}
+                              isActive={isActiveRoute(subItem.path)}
+                              isHovered={hoveredSubPath === subItem.path}
+                              onPointerMove={() => handleSubItemPointerMove(subItem.path)}
+                              onPointerLeave={handleSubItemPointerLeave}
+                              size="sm"
+                            />
+                          ))}
                         </div>
                       </div>
                     ))}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Motor Housing Assembly</title>
+  <!-- top cap of cylinder -->
+  <ellipse cx="100" cy="32" rx="40" ry="10"/>
+  <!-- cylinder body -->
+  <line x1="60" y1="32" x2="60" y2="100"/>
+  <line x1="140" y1="32" x2="140" y2="100"/>
+  <path d="M 60 100 A 40 10 0 0 0 140 100"/>
+  <!-- mounting flange -->
+  <ellipse cx="100" cy="112" rx="55" ry="12"/>
+  <line x1="45" y1="112" x2="45" y2="128"/>
+  <line x1="155" y1="112" x2="155" y2="128"/>
+  <path d="M 45 128 A 55 12 0 0 0 155 128"/>
+  <!-- shaft accent (top) -->
+  <ellipse cx="100" cy="32" rx="9" ry="3" fill="#FFCF4B"/>
+  <!-- bolt heads on flange -->
+  <circle cx="62" cy="122" r="3.5" fill="#FFCF4B"/>
+  <circle cx="100" cy="126" r="3.5" fill="#FFCF4B"/>
+  <circle cx="138" cy="122" r="3.5" fill="#FFCF4B"/>
+</svg>

@@ -32,7 +32,7 @@ interface Product {
   stockLevel: number;
   reorderPoint: number;
   unitPrice: number;
-  image?: string;
+  imageUrl?: string;
 }
 
 // Bridge centralized Product data to the local shape expected by rendering code.
@@ -48,6 +48,7 @@ const mockProducts: Product[] = centralProducts
     stockLevel: Math.round(p.weightKg * 10),
     reorderPoint: Math.round(p.weightKg * 3),
     unitPrice: p.unitPrice,
+    imageUrl: p.imageUrl,
   }));
 
 const getStockBadgeProps = (stockLevel: number, reorderPoint: number) => {
@@ -147,8 +148,17 @@ export function SellProducts() {
                 <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/sell/products/${product.id}`)}
                 >
-                  <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">
-                    <Package className="w-16 h-16 text-[var(--neutral-400)]" />
+                  <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center p-4">
+                    {product.imageUrl ? (
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="max-h-full max-w-full object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Package className="w-16 h-16 text-[var(--neutral-400)]" />
+                    )}
                   </div>
 
                   <div className="p-6">

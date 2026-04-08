@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Aluminium Enclosure Panel — IP65</title>
+  <!-- depth back -->
+  <path d="M 35 35 L 50 22 L 180 22 L 165 35"/>
+  <path d="M 180 22 L 180 112 L 165 125"/>
+  <!-- front panel -->
+  <rect x="35" y="35" width="130" height="90" rx="2"/>
+  <!-- inner gasket line -->
+  <rect x="48" y="48" width="104" height="64" rx="1" stroke-dasharray="4 3"/>
+  <!-- mounting holes around perimeter -->
+  <circle cx="42" cy="42" r="2.5" fill="#FFCF4B"/>
+  <circle cx="100" cy="42" r="2.5" fill="#FFCF4B"/>
+  <circle cx="158" cy="42" r="2.5" fill="#FFCF4B"/>
+  <circle cx="42" cy="80" r="2.5" fill="#FFCF4B"/>
+  <circle cx="158" cy="80" r="2.5" fill="#FFCF4B"/>
+  <circle cx="42" cy="118" r="2.5" fill="#FFCF4B"/>
+  <circle cx="100" cy="118" r="2.5" fill="#FFCF4B"/>
+  <circle cx="158" cy="118" r="2.5" fill="#FFCF4B"/>
+</svg>

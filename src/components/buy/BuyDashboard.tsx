@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import {
@@ -65,6 +66,11 @@ export function BuyDashboard() {
       {/* AI Insight Feed — positioned below the AI command bar */}
       <motion.div variants={staggerItem}>
         <AIFeed module="buy" />
+      </motion.div>
+
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="buy" />
       </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

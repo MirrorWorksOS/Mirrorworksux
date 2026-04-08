@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Structural Steel — I-Beam Assembly</title>
+  <!-- I-beam end face -->
+  <path d="M 30 30 L 80 30 L 80 45 L 65 45 L 65 105 L 80 105 L 80 120 L 30 120 L 30 105 L 45 105 L 45 45 L 30 45 Z"/>
+  <!-- isometric depth (back face) -->
+  <path d="M 30 30 L 50 15 L 100 15 L 80 30"/>
+  <path d="M 100 15 L 100 105 L 80 120"/>
+  <path d="M 80 45 L 100 30"/>
+  <path d="M 65 45 L 85 30"/>
+  <path d="M 65 105 L 85 90"/>
+  <path d="M 80 105 L 100 90"/>
+  <!-- continuation lines suggesting length -->
+  <line x1="105" y1="22" x2="180" y2="22" stroke-dasharray="5 4"/>
+  <line x1="105" y1="60" x2="180" y2="60" stroke-dasharray="5 4"/>
+  <line x1="105" y1="98" x2="180" y2="98" stroke-dasharray="5 4"/>
+  <!-- accent rivet -->
+  <circle cx="55" cy="75" r="4" fill="#FFCF4B"/>
+</svg>

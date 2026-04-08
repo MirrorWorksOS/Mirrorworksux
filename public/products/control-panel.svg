@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Control Panel Enclosure 600×800</title>
+  <!-- back depth -->
+  <path d="M 40 25 L 60 12 L 175 12 L 155 25"/>
+  <path d="M 175 12 L 175 122 L 155 135"/>
+  <!-- front face -->
+  <rect x="40" y="25" width="115" height="110" rx="2"/>
+  <!-- door split line -->
+  <line x1="97" y1="25" x2="97" y2="135"/>
+  <!-- handle -->
+  <rect x="85" y="73" width="10" height="22" rx="1" fill="#FFCF4B"/>
+  <!-- hinges (right door edge) -->
+  <line x1="151" y1="42" x2="155" y2="42"/>
+  <line x1="151" y1="118" x2="155" y2="118"/>
+  <!-- corner mounting bolts -->
+  <circle cx="46" cy="32" r="2.5" fill="#FFCF4B"/>
+  <circle cx="149" cy="32" r="2.5" fill="#FFCF4B"/>
+  <circle cx="46" cy="128" r="2.5" fill="#FFCF4B"/>
+  <circle cx="149" cy="128" r="2.5" fill="#FFCF4B"/>
+</svg>

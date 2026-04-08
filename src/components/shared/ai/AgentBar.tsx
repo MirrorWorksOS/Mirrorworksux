@@ -127,10 +127,10 @@ export function AgentBar({ user, className }: AgentBarProps) {
         borderRadius={24}
         animated
         edgeSensitivity={10}
-        glowRadius={72}
-        glowIntensity={0.32}
+        glowRadius={36}
+        glowIntensity={0.16}
         coneSpread={30}
-        fillOpacity={0.22}
+        fillOpacity={0.11}
         className={cn(
           "shadow-[var(--elevation-2)]",
           "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",

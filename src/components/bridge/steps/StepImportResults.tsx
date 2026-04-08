@@ -4,10 +4,10 @@
 import { useEffect, useState } from 'react';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
-import { BridgeSegmentedSkipPrimary, BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
+import { BridgeSegmentedTriple, BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, CheckCircle, AlertTriangle, Loader2, MinusCircle, Upload, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle, Loader2, MinusCircle, PenLine, Upload, Users } from 'lucide-react';
 
 export function StepImportResults() {
   const {
@@ -143,16 +143,19 @@ export function StepImportResults() {
           )}
 
           <div className="flex justify-end pt-2">
-            <BridgeSegmentedSkipPrimary
-              order="skip-first"
-              skipLabel="Import more data"
-              primaryLabel="Go to dashboard"
-              skipIcon={Upload}
-              primaryIcon={ArrowRight}
-              onSkip={() => goToStep('upload')}
-              onPrimary={() => { window.location.href = '/'; }}
-              skipTooltip="Return to the upload step to bring in another file (prototype)."
-              primaryTooltip="Exit the wizard and open the main dashboard."
+            <BridgeSegmentedTriple
+              firstLabel="Import more data"
+              firstIcon={Upload}
+              firstTooltip="Return to the upload step to bring in another file (prototype)."
+              onFirst={() => goToStep('upload')}
+              secondLabel="Skip to dashboard"
+              secondIcon={ArrowRight}
+              secondTooltip="Exit the wizard now and open the main dashboard."
+              onSecond={() => { window.location.href = '/'; }}
+              primaryLabel="Continue to Enter data"
+              primaryIcon={PenLine}
+              primaryTooltip="Go to the Enter data step to add or edit records by hand."
+              onPrimary={() => goToStep('manual_entry')}
             />
           </div>
         </>

@@ -780,7 +780,7 @@ html {
   --edge-sensitivity: 30;
   --color-sensitivity: calc(var(--edge-sensitivity) + 20);
   --border-radius: 28px;
-  --glow-padding: 40px;
+  --glow-padding: 20px;
   --cone-spread: 25;
 
   position: relative;
@@ -825,7 +825,7 @@ html {
     var(--gradient-seven) border-box,
     var(--gradient-base) border-box;
 
-  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  opacity: calc(0.5 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
 
   mask-image:
     conic-gradient(
@@ -879,7 +879,7 @@ html {
       black calc((100 - var(--cone-spread)) * 1%)
     );
 
-  opacity: calc(0.72 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  opacity: calc(0.36 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
   mix-blend-mode: normal;
 }
 
@@ -894,14 +894,14 @@ html {
   border-radius: inherit;
   /* Ambient-only — no hard hairline; long blurs for very soft falloff */
   box-shadow:
-    inset 0 0 20px 2px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    inset 0 0 44px 8px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    inset 0 0 80px 14px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    inset 0 0 120px 20px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
-    0 0 28px 2px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
-    0 0 56px 6px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
-    0 0 96px 12px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
-    0 0 140px 22px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
+    inset 0 0 10px 1px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    inset 0 0 22px 4px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    inset 0 0 40px 7px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    inset 0 0 60px 10px var(--glow-color-10, hsl(172deg 68% 58% / 10%)),
+    0 0 14px 1px var(--glow-color-40, hsl(172deg 68% 58% / 40%)),
+    0 0 28px 3px var(--glow-color-30, hsl(172deg 68% 58% / 30%)),
+    0 0 48px 6px var(--glow-color-20, hsl(172deg 68% 58% / 20%)),
+    0 0 70px 11px var(--glow-color-10, hsl(172deg 68% 58% / 10%));
 }
 
 .glow-card-inner {

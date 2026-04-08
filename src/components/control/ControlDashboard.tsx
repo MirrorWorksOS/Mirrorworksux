@@ -8,6 +8,7 @@ import { Badge } from '../ui/badge';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { systemHealth } from '@/services/mock';
@@ -26,6 +27,11 @@ export function ControlDashboard() {
       aiScope="control"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="control" />
+      </motion.div>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>
           <KpiStatCard

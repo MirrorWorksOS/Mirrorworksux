@@ -6,6 +6,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { bookKpis as kpiData, bookApprovalQueue as approvalQueue, bookOverdueItems as overdueActions } from '@/services/mock';
 
@@ -26,6 +27,11 @@ export function BookDashboard() {
       aiScope="book"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="book" />
+      </motion.div>
+
       {/* KPI Cards - Top Row */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <motion.div variants={staggerItem}>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Machine Guard Assembly — CNC</title>
+  <!-- depth back -->
+  <path d="M 35 25 L 50 12 L 180 12 L 165 25"/>
+  <path d="M 180 12 L 180 122 L 165 135"/>
+  <!-- outer frame -->
+  <rect x="35" y="25" width="130" height="110" rx="3"/>
+  <!-- polycarbonate window -->
+  <rect x="50" y="40" width="100" height="75" rx="2" fill="#FFCF4B" fill-opacity="0.25"/>
+  <!-- bottom kickplate -->
+  <line x1="35" y1="120" x2="165" y2="120"/>
+  <!-- corner bolts -->
+  <circle cx="42" cy="32" r="3" fill="#FFCF4B"/>
+  <circle cx="158" cy="32" r="3" fill="#FFCF4B"/>
+  <circle cx="42" cy="128" r="3" fill="#FFCF4B"/>
+  <circle cx="158" cy="128" r="3" fill="#FFCF4B"/>
+</svg>

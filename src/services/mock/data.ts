@@ -175,16 +175,16 @@ export const customers: Customer[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 export const products: Product[] = [
-  { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, weightKg: 0.85, category: 'Brackets', isActive: true },
-  { id: 'prod-002', partNumber: 'PLT-042', description: 'Base Plate 200×200 — Stainless 304', material: 'Stainless 304 5mm', unitPrice: 67.00, weightKg: 2.10, category: 'Plates', isActive: true },
-  { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, weightKg: 3.45, category: 'Housings', isActive: true },
-  { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, weightKg: 48.0, category: 'Racks', isActive: true },
-  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true },
-  { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, weightKg: 8.50, category: 'Guards', isActive: true },
-  { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, weightKg: 2.80, category: 'Enclosures', isActive: true },
-  { id: 'prod-008', partNumber: 'SSP-200', description: 'Structural Steel Package — I-Beam Assembly', material: 'Grade 350 Steel', unitPrice: 4500.00, weightKg: 280.0, category: 'Structural', isActive: true },
-  { id: 'prod-009', partNumber: 'RPC-010', description: 'Rail Platform Component — Handrail Section', material: 'Stainless 316 Tube', unitPrice: 890.00, weightKg: 12.0, category: 'Rail', isActive: true },
-  { id: 'prod-010', partNumber: 'CPE-030', description: 'Control Panel Enclosure 600×800', material: 'Mild Steel 1.6mm + Powder Coat', unitPrice: 420.00, weightKg: 15.0, category: 'Enclosures', isActive: true },
+  { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, weightKg: 0.85, category: 'Brackets', isActive: true, imageUrl: '/products/bracket-90.svg' },
+  { id: 'prod-002', partNumber: 'PLT-042', description: 'Base Plate 200×200 — Stainless 304', material: 'Stainless 304 5mm', unitPrice: 67.00, weightKg: 2.10, category: 'Plates', isActive: true, imageUrl: '/products/base-plate.svg' },
+  { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, weightKg: 3.45, category: 'Housings', isActive: true, imageUrl: '/products/motor-housing.svg' },
+  { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, weightKg: 48.0, category: 'Racks', isActive: true, imageUrl: '/products/server-rack.svg' },
+  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg' },
+  { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, weightKg: 8.50, category: 'Guards', isActive: true, imageUrl: '/products/machine-guard.svg' },
+  { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, weightKg: 2.80, category: 'Enclosures', isActive: true, imageUrl: '/products/enclosure-panel.svg' },
+  { id: 'prod-008', partNumber: 'SSP-200', description: 'Structural Steel Package — I-Beam Assembly', material: 'Grade 350 Steel', unitPrice: 4500.00, weightKg: 280.0, category: 'Structural', isActive: true, imageUrl: '/products/i-beam.svg' },
+  { id: 'prod-009', partNumber: 'RPC-010', description: 'Rail Platform Component — Handrail Section', material: 'Stainless 316 Tube', unitPrice: 890.00, weightKg: 12.0, category: 'Rail', isActive: true, imageUrl: '/products/handrail.svg' },
+  { id: 'prod-010', partNumber: 'CPE-030', description: 'Control Panel Enclosure 600×800', material: 'Mild Steel 1.6mm + Powder Coat', unitPrice: 420.00, weightKg: 15.0, category: 'Enclosures', isActive: true, imageUrl: '/products/control-panel.svg' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════

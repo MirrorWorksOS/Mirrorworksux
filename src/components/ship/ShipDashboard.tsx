@@ -11,6 +11,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import {
   MW_AXIS_TICK,
   MW_BAR_TOOLTIP_CURSOR,
@@ -72,6 +73,11 @@ export function ShipDashboard() {
       {/* AI Insight Feed */}
       <motion.div variants={staggerItem}>
         <AIFeed module="ship" />
+      </motion.div>
+
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="ship" />
       </motion.div>
 
       {/* KPIs */}

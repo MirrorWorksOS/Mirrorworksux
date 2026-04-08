@@ -20,6 +20,7 @@ import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { toast } from 'sonner';
 import { machines as centralMachines } from '@/services/mock';
@@ -250,6 +251,11 @@ export function MakeDashboard() {
       {/* TASK 1 — AI Feed below command bar */}
       <motion.div variants={staggerItem}>
         <AIFeed module="make" />
+      </motion.div>
+
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="make" />
       </motion.div>
 
       {/* TASK 3 — Work Orders elevated to top with larger cards */}

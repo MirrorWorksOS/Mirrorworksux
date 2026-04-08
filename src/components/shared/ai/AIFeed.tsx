@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/components/ui/utils";
 import { motion, AnimatePresence } from "motion/react";
-
-const Grainient = React.lazy(() => import("./Grainient"));
+import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
+import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
 
 
 type AIFeedModule =
@@ -284,46 +284,52 @@ function FeedItemCard({
       }}
       className="overflow-hidden"
     >
-      <div className="flex gap-3 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-4 dark:border-[var(--neutral-700)]">
-        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
-          {item.icon}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground">
-              {item.title}
-            </span>
-            {item.tag && (
-              <Badge
-                className={cn(
-                  "border-0 text-[10px] px-1.5 py-0 rounded-full",
-                  item.tagColor ??
-                    "bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]",
-                )}
+      <SpotlightCard
+        radius="rounded-[var(--shape-lg)]"
+        spotlightColor="rgba(77, 221, 201, 0.10)"
+        className="border border-[var(--mw-agent)]/15 bg-card dark:border-[var(--mw-agent)]/20"
+      >
+        <div className="flex gap-3 p-4">
+          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+            {item.icon}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center gap-2">
+              <span className="text-sm font-medium text-foreground">
+                {item.title}
+              </span>
+              {item.tag && (
+                <Badge
+                  className={cn(
+                    "border-0 text-[10px] px-1.5 py-0 rounded-full",
+                    item.tagColor ??
+                      "bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]",
+                  )}
+                >
+                  {item.tag}
+                </Badge>
+              )}
+            </div>
+            <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
+              {item.body}
+            </p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
+                {item.timestamp}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-yellow-700)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)] dark:hover:bg-[var(--mw-yellow-400)]/15 dark:hover:text-[var(--mw-yellow-300)]"
+                onClick={() => onAction(item.actionPath)}
               >
-                {item.tag}
-              </Badge>
-            )}
-          </div>
-          <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
-            {item.body}
-          </p>
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
-              {item.timestamp}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-yellow-700)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)] dark:hover:bg-[var(--mw-yellow-400)]/15 dark:hover:text-[var(--mw-yellow-300)]"
-              onClick={() => onAction(item.actionPath)}
-            >
-              {item.actionLabel}
-              <ArrowRight className="h-3 w-3" />
-            </Button>
+                {item.actionLabel}
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </SpotlightCard>
     </motion.div>
   );
 }
@@ -337,36 +343,42 @@ function ModalFeedItem({
   onAction: (path: string) => void;
 }) {
   return (
-    <div className="flex gap-3 rounded-[var(--shape-lg)] border border-white/30 bg-white/40 p-4 shadow-sm backdrop-blur-xl">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/50">
-        {React.cloneElement(item.icon as React.ReactElement, {
-          className: "h-4 w-4 text-[var(--mw-mirage)]",
-        })}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
-          {item.tag && (
-            <Badge className="border-0 bg-white/50 text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-mirage)]/85">
-              {item.tag}
-            </Badge>
-          )}
+    <SpotlightCard
+      radius="rounded-[var(--shape-lg)]"
+      spotlightColor="rgba(77, 221, 201, 0.18)"
+      className="border border-[var(--mw-agent)]/25 bg-white"
+    >
+      <div className="flex gap-3 p-4">
+        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--mw-agent-50)]">
+          {React.cloneElement(item.icon as React.ReactElement, {
+            className: "h-4 w-4 text-[var(--mw-agent-600)]",
+          })}
         </div>
-        <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 gap-1.5 px-2.5 text-xs font-medium bg-white/50 text-[var(--mw-mirage)] hover:bg-white/70 hover:text-[var(--mw-mirage)]"
-            onClick={() => onAction(item.actionPath)}
-          >
-            {item.actionLabel}
-            <ArrowRight className="h-3 w-3" />
-          </Button>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
+            {item.tag && (
+              <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-agent-600)]">
+                {item.tag}
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--mw-agent-50)] hover:text-[var(--mw-agent-600)]"
+              onClick={() => onAction(item.actionPath)}
+            >
+              {item.actionLabel}
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }
 
@@ -455,38 +467,25 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
         </div>
       </div>
 
-      {/* ── All-insights modal — grainient background ── */}
+      {/* ── All-insights modal — white surface with AI border glow ── */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent
-          className="gap-0 overflow-hidden border border-white/20 !bg-transparent p-0 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] sm:max-w-lg"
+          className="gap-0 border-0 !bg-transparent p-0 shadow-none sm:max-w-lg"
           showCloseButton
         >
-          {/* Animated gradient background */}
-          <React.Suspense fallback={null}>
-            <Grainient
-              color1="#caf0fe"
-              color2="#4dddc9"
-              color3="#d4e3fe"
-              timeSpeed={0.25}
-              warpStrength={1}
-              warpFrequency={5}
-              warpSpeed={2}
-              warpAmplitude={50}
-              blendSoftness={0.4}
-              rotationAmount={500}
-              noiseScale={2}
-              grainAmount={0.1}
-              grainScale={2}
-              contrast={1.5}
-              zoom={0.9}
-              className="rounded-[inherit]"
-            />
-          </React.Suspense>
-          <div className="relative z-[1]">
+          <BorderGlow
+            backgroundColor="#ffffff"
+            borderRadius={20}
+            glowRadius={20}
+            glowIntensity={0.6}
+            fillOpacity={0.3}
+            coneSpread={20}
+            edgeSensitivity={15}
+          >
             <DialogHeader className="px-8 pt-8 pb-5">
               <div className="flex items-center gap-2">
                 <DialogTitle className="text-[var(--mw-mirage)]">Agent insights</DialogTitle>
-                <Badge className="border-0 bg-white/40 backdrop-blur-sm text-[10px] px-1.5 py-0 font-medium text-[var(--mw-mirage)]">
+                <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 font-medium text-[var(--mw-agent-600)]">
                   {items.length} new
                 </Badge>
               </div>
@@ -500,7 +499,7 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
                 />
               ))}
             </div>
-          </div>
+          </BorderGlow>
         </DialogContent>
       </Dialog>
     </>

@@ -30,6 +30,7 @@ import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
+import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
@@ -102,6 +103,11 @@ export function SellDashboard() {
       {/* AI Insight Feed */}
       <motion.div variants={staggerItem}>
         <AIFeed module="sell" />
+      </motion.div>
+
+      {/* Quick navigation bento — jump to any sub-page without using sidebar */}
+      <motion.div variants={staggerItem}>
+        <ModuleQuickNav moduleKey="sell" />
       </motion.div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

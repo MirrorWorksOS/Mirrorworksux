@@ -6,6 +6,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 import { Calendar as CalendarIcon, ChartGantt } from 'lucide-react';
 import { addDays } from 'date-fns';
 import { cn } from '../ui/utils';
@@ -57,7 +58,15 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export function PlanSchedule() {
-  const [viewMode, setViewMode] = useState<ViewMode>('gantt');
+  const location = useLocation();
+  // Honour `?view=calendar` so the legacy `/plan/activities` redirect lands on
+  // the calendar tab instead of the default Gantt.
+  const initialView: ViewMode = useMemo(() => {
+    const param = new URLSearchParams(location.search).get('view');
+    return param === 'calendar' ? 'calendar' : 'gantt';
+  }, [location.search]);
+
+  const [viewMode, setViewMode] = useState<ViewMode>(initialView);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [calendarMonth, setCalendarMonth] = useState(MONTH_BASE);
 
