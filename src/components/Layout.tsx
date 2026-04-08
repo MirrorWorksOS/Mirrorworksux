@@ -8,7 +8,7 @@
  * Mobile (< 768px): No sidebar — bottom tab bar + mobile menu overlay.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { AgentFAB } from './shared/agent/AgentFAB';
@@ -76,6 +76,12 @@ export function Layout() {
 
   return (
     <div className="flex h-screen bg-[var(--background)]">
+      {/* Skip-to-main-content link — WCAG 2.4.1 Level A.
+          Screen-reader-only until focused, then visible at top-left. */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       {/* Sidebar: full on desktop, icon rail on tablet, hidden on mobile.
           Desktop users can also manually collapse the full sidebar to a rail. */}
       {!isMobile && (
@@ -88,6 +94,8 @@ export function Layout() {
       )}
 
       <main
+        id="main-content"
+        tabIndex={-1}
         className={
           isMobile
             ? 'flex-1 overflow-auto bg-[var(--app-canvas)] pb-mobile-nav'

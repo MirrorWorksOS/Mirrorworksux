@@ -15,14 +15,12 @@ import { Shield, ChevronDown, ChevronRight, Plus, Trash2, Users, GripVertical } 
 import { ConfirmDialog } from '../feedback/ConfirmDialog';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
 import { Badge } from '../../ui/badge';
 import { Switch } from '../../ui/switch';
 import { Separator } from '../../ui/separator';
 import { cn } from '../../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { PlanUsageCard } from './PlanUsageCard';
 import { CURRENT_SUBSCRIPTION, type TierName } from '@/lib/subscription';

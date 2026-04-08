@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
+import { AISuggestion } from "@/components/shared/ai/AISuggestion";
 import { buyService } from "@/services/buyService";
 
 const breadcrumbs = [
@@ -158,11 +159,13 @@ export function BuyPlanningGrid() {
                             val === 0
                               ? "transparent"
                               : getChartScaleColour(pct);
+                          // Mid band (34–66%) renders on --mw-mirage (dark navy) → needs white text.
+                          // Low (≤33%) is light grey and high (>66%) is yellow → both take dark text.
                           const textColor =
                             val === 0
                               ? "var(--neutral-400)"
-                              : pct > 66
-                                ? "var(--foreground)"
+                              : pct > 33 && pct <= 66
+                                ? "#ffffff"
                                 : "var(--foreground)";
                           return (
                             <TableCell key={wk} className="text-center p-1">
@@ -189,6 +192,44 @@ export function BuyPlanningGrid() {
               </Table>
             )}
           </Card>
+        </motion.div>
+
+        <motion.div variants={staggerItem} className="space-y-3">
+          <h3 className="text-base font-medium text-foreground">
+            AI suggestions
+          </h3>
+
+          <AISuggestion
+            title="Consolidate Mild Steel 3mm into a single Wk 14 order"
+            confidence={89}
+            source="Planning grid Wk 14–18 · supplier quote history"
+            impact="Est. saving $1,240 · avoids 2 rush freight charges"
+          >
+            Mild Steel 3mm shows alternating peaks (Wk 14: 12, Wk 16: 15, Wk 18: 10) totalling <strong>37 sheets</strong> across three
+            separate orders. Consolidating into a single <strong>Wk 14 bulk PO with staged delivery</strong> unlocks the supplier's
+            30+ sheet price break and removes two expedite fees.
+          </AISuggestion>
+
+          <AISuggestion
+            title="Cold Rolled Steel 1.6mm trending above safety stock"
+            confidence={92}
+            source="6-week demand forecast · current on-hand inventory"
+            impact="Prevents Wk 15 stockout · protects 4 open jobs"
+          >
+            Cold Rolled Steel 1.6mm is the highest-demand line in the grid (<strong>58 units / 6 wks</strong>) with sustained draw
+            from Wk 14 through Wk 19. At current consumption you'll <strong>breach safety stock mid-Wk 15</strong>. Recommend raising
+            a PO for 30 sheets this week with a standing replenishment trigger.
+          </AISuggestion>
+
+          <AISuggestion
+            title="Delay Aluminium 6061 purchase to Wk 16"
+            confidence={74}
+            source="Demand pattern · 10-day lead time from primary supplier"
+            impact="Frees ~$2,800 in working capital"
+          >
+            Aluminium 6061 demand is back-loaded (0 in Wk 15, 0 in Wk 17, only 10 units total). With a 10-day lead time, pushing
+            the PO to <strong>Wk 16</strong> still covers Wk 18–19 requirements while reducing early-month cash outlay.
+          </AISuggestion>
         </motion.div>
       </motion.div>
     </PageShell>

@@ -80,12 +80,12 @@ export function ModuleDashboard({
   return (
     <div className={cn("flex flex-col gap-8 p-8", className)}>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-[length:var(--font-headline-medium)] font-bold leading-[var(--line-headline-medium)] tracking-tight text-foreground">
+        <div className="min-w-0 space-y-2">
+          <h1 className="text-2xl sm:text-3xl tracking-tight text-foreground">
             {title}
           </h1>
           {subtitle ? (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">{subtitle}</div>
           ) : null}
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">

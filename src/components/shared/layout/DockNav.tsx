@@ -125,8 +125,16 @@ function DockItem({
         onHoverStart={() => isHovered.set(1)}
         onHoverEnd={() => isHovered.set(0)}
         onClick={onClick}
+        onKeyDown={(e) => {
+          // WCAG 2.1.1 — activate with both Enter and Space, like a native button.
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick?.();
+          }
+        }}
         className={cn(
           "flex items-center justify-center rounded-xl cursor-pointer transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
           isActive
             ? "bg-[var(--mw-yellow-400)]/10 dark:bg-white/10"
             : "hover:bg-neutral-100 dark:hover:bg-white/5",

@@ -670,6 +670,42 @@
   transition-timing-function: var(--ease-standard);
 }
 
+/* ─── Standard focus ring ─────────────────────────────────────────────
+   Single source of truth for keyboard-visible focus rings.
+   Apply to any interactive element to get a consistent 3px ring using
+   the theme --ring token. Used by Button, Input, Select, Dialog close, etc.
+   WCAG 2.4.7 (Focus Visible) — AA compliant. */
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
+  }
+}
+
+/* ─── Skip link ──────────────────────────────────────────────────────
+   Screen-reader-only until focused, then visible at top-left.
+   WCAG 2.4.1 (Bypass Blocks) — Level A. */
+.skip-to-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  background: var(--mw-yellow-400);
+  color: var(--mw-mirage);
+  font-weight: 600;
+  border-radius: 0 0 var(--shape-md) 0;
+  box-shadow: var(--elevation-3);
+  transform: translateY(-100%);
+  transition: transform var(--duration-medium1) var(--ease-standard);
+}
+.skip-to-content:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--mw-mirage);
+  outline-offset: 2px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

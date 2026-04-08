@@ -27,7 +27,6 @@ import { QuickCreatePanel } from './shared/command/QuickCreatePanel';
 import { useCommandPaletteStore } from '@/store/commandPaletteStore';
 import { useTheme } from '@/components/theme-provider';
 import { mockUserContext, getUserInitials } from '@/lib/mock-user-context';
-import { motion } from 'motion/react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1159,7 +1158,13 @@ export function Sidebar({
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5" style={{ scrollbarWidth: 'none' }}>
+      {/*
+        Padding lives on the inner wrapper, not the scroll container, so the
+        scrollport has no top/bottom padding gap for content to leak through
+        above the sticky expanded-module header.
+      */}
+      <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+       <div className="px-3 py-4 space-y-0.5">
         {menuConfig.map((item) => {
           const hasSubItems = (item.subItems && item.subItems.length > 0) || (item.groupedSubItems && item.groupedSubItems.length > 0);
           const isExpanded = expandedModule === item.label;
@@ -1234,6 +1239,7 @@ export function Sidebar({
             </React.Fragment>
           );
         })}
+       </div>
       </div>
 
       {/* Usage Warning Banner */}

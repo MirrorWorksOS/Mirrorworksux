@@ -61,7 +61,7 @@ function DialogNotchClose() {
         "text-[var(--mw-mirage)] shadow-sm",
         "transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
         "hover:shadow-md",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-0",
+        "outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
       )}
     >
       <X size={18} animateOnHover className="shrink-0" aria-hidden />

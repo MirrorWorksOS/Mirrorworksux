@@ -457,7 +457,7 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 gap-1.5 text-xs font-medium text-[var(--mw-mirage)] hover:bg-[#4DDDC9] hover:text-[var(--mw-mirage)]"
+              className="h-8 gap-1.5 text-xs font-medium text-[var(--mw-mirage)] hover:bg-[var(--mw-agent)] hover:text-[var(--mw-mirage)]"
               onClick={() => setModalOpen(true)}
             >
               <Expand className="h-3.5 w-3.5" />

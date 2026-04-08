@@ -1,12 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, LayoutGrid, List, KanbanSquare, Pencil, Check, X } from 'lucide-react';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { KanbanBoard } from '@/components/shared/kanban/KanbanBoard';
@@ -193,7 +191,7 @@ export function PlanJobs() {
   );
 
   return (
-    <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--neutral-100)]">
+    <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--app-canvas)]">
       {/* Toolbar */}
       <div className="bg-card border-b border-[var(--border)] px-6 py-4 space-y-4">
         <PageHeader title="Jobs" />

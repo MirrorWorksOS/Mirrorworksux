@@ -7,7 +7,7 @@
  * TASK 3: Work orders elevated to top with larger cards
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Wrench, AlertTriangle, CheckCircle2, Clock, Zap,
   ShieldAlert, TrendingUp, Play, ClipboardCheck,
@@ -240,7 +240,7 @@ export function MakeDashboard() {
 
   return (
     <ModuleDashboard
-      title="Andon Board"
+      title="Make"
       tabs={makeTabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}

@@ -3,12 +3,11 @@
  * Based on animate-ui patterns but optimized for manufacturing UI
  */
 
-import React from 'react';
-import { 
-  RefreshCw, 
-  CheckCircle2, 
-  AlertTriangle, 
-  TrendingUp, 
+import {
+  RefreshCw,
+  CheckCircle2,
+  AlertTriangle,
+  TrendingUp,
   TrendingDown,
   DollarSign,
   Send,
@@ -30,10 +29,7 @@ import {
   Check,
   Info,
   HelpCircle,
-  Calendar,
-  FileText,
   Sparkles,
-  type LucideIcon
 } from 'lucide-react';
 import { cn } from './utils';
 
@@ -150,7 +146,7 @@ export const AnimatedDownload = ({ className, size = 16 }: AnimatedIconProps) =>
 export const AnimatedTrash = ({ className, size = 16 }: AnimatedIconProps) => (
   <Trash2 
     className={cn(
-      "transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)] group-hover:scale-110 group-hover:text-[#EF4444]",
+      "transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)] group-hover:scale-110 group-hover:text-destructive",
       className
     )} 
     size={size} 

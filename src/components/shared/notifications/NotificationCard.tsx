@@ -4,7 +4,6 @@
  * Used in both the popover (compact mode) and the full Notifications page.
  */
 
-import React from 'react';
 import { Link } from 'react-router';
 import {
   Bell,
@@ -42,7 +41,7 @@ const TYPE_STYLES: Record<NotificationType, string> = {
   warning: 'bg-[var(--mw-yellow-400)]/10 text-[var(--mw-yellow-600)] dark:bg-[var(--mw-yellow-400)]/15 dark:text-[var(--mw-yellow-400)]',
   success: 'bg-[var(--mw-green)]/10 text-[var(--mw-green)] dark:bg-[var(--mw-green)]/15',
   error: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)] dark:bg-[var(--mw-error)]/15',
-  system: 'bg-[#0052CC]/10 text-[#0052CC] dark:bg-[#0052CC]/15 dark:text-[#4C9AFF]',
+  system: 'bg-[var(--mw-info)]/10 text-[var(--mw-info)] dark:bg-[var(--mw-info)]/15 dark:text-[#4C9AFF]',
 };
 
 // ---------------------------------------------------------------------------
@@ -161,7 +160,19 @@ export function NotificationCardFull({
         <Icon className="w-4 h-4" />
       </div>
 
-      <div className="flex-1 min-w-0" onClick={onMarkRead} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onMarkRead?.()}>
+      <div
+        className="flex-1 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-sm"
+        onClick={onMarkRead}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          // WCAG 2.1.1 — activate with both Enter and Space.
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onMarkRead?.();
+          }
+        }}
+      >
         <div className="flex items-center gap-2 mb-0.5">
           <p className={cn('text-sm text-foreground', !notification.isRead && 'font-medium')}>
             {notification.title}
@@ -183,7 +194,7 @@ export function NotificationCardFull({
         {notification.actionUrl && (
           <Link
             to={notification.actionUrl}
-            className="inline-flex items-center gap-1 text-[10px] text-[#0052CC] dark:text-[#4C9AFF] hover:underline"
+            className="inline-flex items-center gap-1 text-[10px] text-[var(--mw-info)] dark:text-[#4C9AFF] hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
             View <ExternalLink className="w-2.5 h-2.5" />
