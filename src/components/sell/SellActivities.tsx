@@ -64,10 +64,13 @@ import {
   SelectValue,
 } from '../ui/select';
 import { cn } from '../ui/utils';
+import {
+  type ActivityType,
+  TEAM_MEMBERS,
+} from '@/components/sell/sell-activity-shared';
 
 type CalendarGranularity = 'month' | 'week' | 'day';
 
-type ActivityType = 'call' | 'email' | 'meeting' | 'task' | 'note';
 type ActivityStatus = 'completed' | 'scheduled' | 'overdue' | 'in_progress';
 
 interface Activity {
@@ -256,7 +259,6 @@ const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }>
   },
 };
 
-const TEAM_MEMBERS = ['Sarah Chen', 'James Miller', 'David Park'];
 const OPPORTUNITIES = [
   { id: 'OPP-0138', label: 'OPP-0138 - Sydney Rail Corp' },
   { id: 'OPP-0144', label: 'OPP-0144 - Hunter Steel' },

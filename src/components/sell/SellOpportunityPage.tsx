@@ -13,7 +13,6 @@ import {
   FileText,
   Mail,
   MessageSquare,
-  Phone,
   Save,
   TrendingUp,
   User,
@@ -45,6 +44,7 @@ import { cn } from "@/components/ui/utils";
 import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 import type { Opportunity } from "./sell-opportunity-types";
 import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services/mock';
+import { SellOpportunityRecommendedActions } from "@/components/sell/SellOpportunityRecommendedActions";
 
 type Stage = Opportunity["stage"];
 
@@ -668,45 +668,11 @@ export function SellOpportunityPage() {
 
             {/* 2. Two-column: Recommended Actions + Deal Velocity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Recommended Next Actions */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
-                <h3 className="mb-4 text-sm font-medium text-foreground">Recommended Next Actions</h3>
-                <div className="space-y-4">
-                  {[
-                    {
-                      icon: <Phone className="h-4 w-4 text-[var(--mw-green)]" />,
-                      title: `Call ${customer.contact.split(" ")[0]}`,
-                      desc: "Quote opened twice — high engagement signal",
-                      btn: "Schedule call",
-                    },
-                    {
-                      icon: <FileText className="h-4 w-4 text-[var(--mw-blue)]" />,
-                      title: "Send revised quote",
-                      desc: "Material costs updated since last quote — $2,100 variance",
-                      btn: "Open builder",
-                    },
-                    {
-                      icon: <Calendar className="h-4 w-4 text-[var(--mw-blue)]" />,
-                      title: "Book site visit",
-                      desc: "Customer requested dimensional verification before sign-off",
-                      btn: "Schedule",
-                    },
-                  ].map((a) => (
-                    <div key={a.title} className="flex items-start gap-3">
-                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-50)]">
-                        {a.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground">{a.title}</p>
-                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">{a.desc}</p>
-                      </div>
-                      <Button variant="outline" size="sm" className="shrink-0 text-xs">
-                        {a.btn}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+              <SellOpportunityRecommendedActions
+                contactFirstName={customer.contact.split(" ")[0] ?? "Contact"}
+                opportunityId={opp.id}
+                opportunityLabel={`${opp.customer} — ${opp.title}`}
+              />
 
               {/* Deal Velocity */}
               <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
