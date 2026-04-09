@@ -868,7 +868,7 @@ html {
     var(--gradient-seven) border-box,
     var(--gradient-base) border-box;
 
-  opacity: calc(0.5 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  opacity: calc(0.6 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
 
   mask-image:
     conic-gradient(
@@ -903,7 +903,7 @@ html {
     conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
 
   mask-composite: subtract, add, add, add, add, add;
-  opacity: calc(var(--fill-opacity, 0.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  opacity: calc(var(--fill-opacity, 0.6) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
   mix-blend-mode: soft-light;
 }
 
@@ -922,7 +922,7 @@ html {
       black calc((100 - var(--cone-spread)) * 1%)
     );
 
-  opacity: calc(0.36 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  opacity: calc(0.432 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
   mix-blend-mode: normal;
 }
 

@@ -137,9 +137,9 @@ export function AiCommandBar({
         borderRadius={9999}
         edgeSensitivity={10}
         glowRadius={36}
-        glowIntensity={0.16}
+        glowIntensity={0.192}
         coneSpread={30}
-        fillOpacity={0.11}
+        fillOpacity={0.132}
         className={cn(
           "focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
           className,

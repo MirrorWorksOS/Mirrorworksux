@@ -320,7 +320,7 @@ function FeedItemCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-agent-50)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--mw-agent)]/15 dark:hover:text-[var(--mw-agent-light)]"
+                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--neutral-800)] dark:hover:text-[var(--mw-agent-light)]"
                 onClick={() => onAction(item.actionPath)}
               >
                 {item.actionLabel}
@@ -369,7 +369,7 @@ function ModalFeedItem({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--mw-agent-50)] hover:text-[var(--mw-agent-600)]"
+              className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:hover:bg-[var(--neutral-800)]"
               onClick={() => onAction(item.actionPath)}
             >
               {item.actionLabel}
@@ -477,8 +477,8 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             backgroundColor="#ffffff"
             borderRadius={20}
             glowRadius={20}
-            glowIntensity={0.6}
-            fillOpacity={0.3}
+            glowIntensity={0.72}
+            fillOpacity={0.36}
             coneSpread={20}
             edgeSensitivity={15}
           >

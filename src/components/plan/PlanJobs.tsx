@@ -193,7 +193,7 @@ export function PlanJobs() {
   return (
     <PageShell className="p-0 space-y-0 flex flex-col h-full bg-[var(--app-canvas)]">
       {/* Toolbar */}
-      <div className="bg-card border-b border-[var(--border)] px-6 py-4 space-y-4">
+      <div className="bg-[var(--app-canvas)] border-b border-[var(--border)] px-6 py-4 space-y-4">
         <PageHeader title="Jobs" />
         <PageToolbar>
           <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search jobs…" />

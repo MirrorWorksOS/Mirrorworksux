@@ -91,11 +91,11 @@ export function BorderGlow({
   backgroundColor = 'var(--card)',
   borderRadius = 28,
   glowRadius = 15,
-  glowIntensity = 0.6,
+  glowIntensity = 0.72,
   coneSpread = 14,
   animated = true,
   colors = ['#FFCF4B', '#4DDDC9', '#C084FC'],
-  fillOpacity = 0.25,
+  fillOpacity = 0.3,
 }: BorderGlowProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
