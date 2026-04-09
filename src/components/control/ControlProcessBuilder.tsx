@@ -118,6 +118,15 @@ const ELEMENT_LIBRARY: Record<string, DragItem[]> = {
   ],
 };
 
+/** Drag payload only serialises category + label — icon is a function and cannot go through JSON. */
+function resolveLibraryItem(category: NodeCategory, label: string): DragItem | null {
+  for (const group of Object.values(ELEMENT_LIBRARY)) {
+    const found = group.find((i) => i.category === category && i.label === label);
+    if (found) return found;
+  }
+  return null;
+}
+
 // ─── AI Lean Suggestions ────────────────────────────────────────────────────
 
 const AI_SUGGESTIONS: AILeanSuggestion[] = [
@@ -245,7 +254,11 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
       )}
       draggable
       onDragStart={(e) => {
-        e.dataTransfer.setData('application/process-node', JSON.stringify(item));
+        // JSON.stringify drops `icon` (functions); only category + label are serialisable.
+        e.dataTransfer.setData(
+          'application/process-node',
+          JSON.stringify({ category: item.category, label: item.label }),
+        );
         onDragStart(item);
       }}
     >
@@ -827,7 +840,19 @@ export function ControlProcessBuilder() {
     const data = e.dataTransfer.getData('application/process-node');
     if (!data) return;
 
-    const item: DragItem = JSON.parse(data);
+    let parsed: { category: NodeCategory; label: string };
+    try {
+      parsed = JSON.parse(data) as { category: NodeCategory; label: string };
+    } catch {
+      return;
+    }
+
+    const item = resolveLibraryItem(parsed.category, parsed.label);
+    if (!item) {
+      toast.error('Could not add that element — unknown type');
+      return;
+    }
+
     const canvas = screenToCanvas(e.clientX, e.clientY);
 
     const newNode: ProcessNode = {
