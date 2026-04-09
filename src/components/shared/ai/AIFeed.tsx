@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/components/ui/utils";
 import { motion, AnimatePresence } from "motion/react";
-import { GlareHover } from "@/components/shared/surfaces/GlareHover";
 import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
+import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
 
 type AIFeedModule =
   | "sell"
@@ -47,7 +47,7 @@ type AIFeedModule =
   | "control"
   | "all";
 
-interface FeedItem {
+export interface FeedItem {
   id: string;
   icon: React.ReactNode;
   title: string;
@@ -321,6 +321,11 @@ export interface AIFeedProps {
   className?: string;
   /** Maximum number of items to show initially before "Show more" */
   initialCount?: number;
+  /**
+   * When set, replaces the default module feed (e.g. opportunity- or job-scoped mock copy).
+   * Icons should be stable across renders (built once per entity).
+   */
+  items?: FeedItem[];
 }
 
 // ── Individual feed item card ────────────────────────────────────────
@@ -349,8 +354,24 @@ function FeedItemCard({
       }}
       className="overflow-visible"
     >
-      <GlareHover className="rounded-[var(--shape-lg)] shadow-xs" peakOpacity={0.09}>
-        <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card">
+      <SpotlightCard
+        radius="rounded-[var(--shape-lg)]"
+        overflow="visible"
+        className="shadow-xs"
+        spotlightColor="rgba(77, 221, 201, 0.07)"
+        spotlightColorDark="rgba(125, 232, 217, 0.1)"
+      >
+        <BorderGlow
+          borderRadius={22}
+          edgeSensitivity={10}
+          glowRadius={22}
+          glowIntensity={0.23}
+          coneSpread={30}
+          fillOpacity={0.158}
+          perimeter="uniform"
+          animated
+          className="bg-card"
+        >
           <div className="flex gap-3 p-4">
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
               {item.icon}
@@ -394,8 +415,8 @@ function FeedItemCard({
               </div>
             </div>
           </div>
-        </div>
-      </GlareHover>
+        </BorderGlow>
+      </SpotlightCard>
     </motion.div>
   );
 }
@@ -409,8 +430,25 @@ function ModalFeedItem({
   onAction: (path: string) => void;
 }) {
   return (
-    <GlareHover className="rounded-[var(--shape-lg)]" peakOpacity={0.1}>
-      <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white">
+    <SpotlightCard
+      radius="rounded-[var(--shape-lg)]"
+      overflow="visible"
+      className="w-full"
+      spotlightColor="rgba(77, 221, 201, 0.07)"
+      spotlightColorDark="rgba(125, 232, 217, 0.1)"
+    >
+      <BorderGlow
+        borderRadius={22}
+        edgeSensitivity={10}
+        glowRadius={22}
+        glowIntensity={0.23}
+        coneSpread={30}
+        fillOpacity={0.158}
+        perimeter="uniform"
+        animated
+        backgroundColor="#ffffff"
+        className="bg-white"
+      >
         <div className="flex gap-3 p-4">
           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
             {React.cloneElement(item.icon as React.ReactElement, {
@@ -444,13 +482,18 @@ function ModalFeedItem({
             </div>
           </div>
         </div>
-      </div>
-    </GlareHover>
+      </BorderGlow>
+    </SpotlightCard>
   );
 }
 
-export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
-  const items = FEED_DATA[module] ?? [];
+export function AIFeed({
+  module,
+  className,
+  initialCount = 1,
+  items: itemsProp,
+}: AIFeedProps) {
+  const items = itemsProp ?? FEED_DATA[module] ?? [];
   const [expanded, setExpanded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();

@@ -46,6 +46,7 @@ import type { Opportunity } from "./sell-opportunity-types";
 import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services/mock';
 import { SellOpportunityRecommendedActions } from "@/components/sell/SellOpportunityRecommendedActions";
 import { AIFeed } from "@/components/shared/ai/AIFeed";
+import { buildSellOpportunityFeedItems } from "@/components/sell/sell-opportunity-agent-feed";
 
 type Stage = Opportunity["stage"];
 
@@ -175,6 +176,11 @@ export function SellOpportunityPage() {
       return { ...t };
     });
   }, []);
+
+  const agentFeedItems = useMemo(() => {
+    if (!opp) return null;
+    return buildSellOpportunityFeedItems(opp);
+  }, [opp]);
 
   if (!opp) {
     return (
@@ -631,7 +637,7 @@ export function SellOpportunityPage() {
       case "intelligence":
         return (
           <div className="space-y-6">
-            <AIFeed module="sell" initialCount={3} />
+            <AIFeed module="sell" initialCount={3} items={agentFeedItems ?? undefined} />
 
             {/* AI top-line signal */}
             <AIInsightCard title="Intelligence Hub">

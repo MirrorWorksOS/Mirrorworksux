@@ -42,7 +42,7 @@ function SheetOverlay({ className, ...props }: SheetOverlayProps) {
   return (
     <SheetOverlayPrimitive
       className={cn(
-        'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm',
+        'fixed inset-0 z-[90] bg-black/20 backdrop-blur-sm',
         className,
       )}
       {...props}
@@ -72,7 +72,7 @@ function SheetContent({
       <SheetOverlay />
       <SheetContentPrimitive
         className={cn(
-          'z-50 flex flex-col gap-4 border border-[var(--neutral-200)] bg-white/95 p-6 shadow-lg backdrop-blur-xl',
+          'z-[100] flex flex-col gap-4 border border-[var(--neutral-200)] bg-white/95 p-6 shadow-lg backdrop-blur-xl',
           side === 'right' &&
             'h-full w-3/4 max-w-sm rounded-l-[var(--shape-lg)] rounded-r-none border-l sm:max-w-sm',
           side === 'left' &&

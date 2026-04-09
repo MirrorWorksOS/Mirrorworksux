@@ -22,6 +22,8 @@ export interface DatePickerProps {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  /** Portal mount node — use the sheet/dialog body so the popover stacks above the overlay. */
+  popoverContainer?: HTMLElement | null;
 }
 
 export function DatePicker({
@@ -30,6 +32,7 @@ export function DatePicker({
   placeholder = "Select date",
   disabled,
   className,
+  popoverContainer,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [visibleMonth, setVisibleMonth] = React.useState(() => value ?? new Date());
@@ -64,7 +67,11 @@ export function DatePicker({
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-4" align="start">
+      <PopoverContent
+        container={popoverContainer}
+        className="w-auto p-4"
+        align="start"
+      >
         <div className="flex items-center justify-between gap-4 pb-3">
           <Button
             type="button"

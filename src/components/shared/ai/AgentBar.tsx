@@ -134,7 +134,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
         className={cn(
           "shadow-[var(--elevation-2)]",
           "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
-          "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
+          "hover:-translate-y-px",
           "focus-within:shadow-[0_0_0_2px_var(--mw-yellow-400-20)] focus-within:translate-y-0",
         )}
       >

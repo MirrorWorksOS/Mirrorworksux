@@ -2,8 +2,9 @@ import * as React from 'react';
 import { useNavigate } from 'react-router';
 import { CalendarDays, FileText, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { SplitSegmentDateTimePopover } from '@/components/shared/datetime/SplitSegmentDateTimePopover';
+import { BorderGlow } from '@/components/shared/surfaces/BorderGlow';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { cn } from '@/components/ui/utils';
 import {
   SellOpportunityQuickActivitySheet,
@@ -71,7 +72,25 @@ export function SellOpportunityRecommendedActions({
 
   return (
     <>
-      <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+      <SpotlightCard
+        radius="rounded-[var(--shape-lg)]"
+        overflow="visible"
+        className="w-full"
+        spotlightColor="rgba(77, 221, 201, 0.07)"
+        spotlightColorDark="rgba(125, 232, 217, 0.1)"
+      >
+        <BorderGlow
+          borderRadius={22}
+          edgeSensitivity={10}
+          glowRadius={22}
+          glowIntensity={0.23}
+          coneSpread={30}
+          fillOpacity={0.158}
+          perimeter="uniform"
+          animated
+          className="bg-card"
+        >
+          <div className="p-6">
         <h3 className="mb-4 text-sm font-medium text-foreground">Recommended Next Actions</h3>
         <div className="space-y-4">
           {/* Call row */}
@@ -183,7 +202,9 @@ export function SellOpportunityRecommendedActions({
             </div>
           </div>
         </div>
-      </Card>
+          </div>
+        </BorderGlow>
+      </SpotlightCard>
 
       <SellOpportunityQuickActivitySheet
         open={sheetOpen}

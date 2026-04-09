@@ -847,6 +847,12 @@ html {
   overflow: visible;
 }
 
+/* Pointer near the card centre used to leave --edge-proximity at 0, so the halo read as “off”.
+   Any hover over the card boosts proximity so BorderGlow reads as active (angle still tracks in JS). */
+.glow-card:hover {
+  --edge-proximity: 88 !important;
+}
+
 .glow-card::before,
 .glow-card::after,
 .glow-card > .edge-light {

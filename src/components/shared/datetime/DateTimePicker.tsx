@@ -25,9 +25,17 @@ export interface DateTimePickerProps {
   onChange: (date: Date | undefined) => void;
   disabled?: boolean;
   className?: string;
+  /** Mount popovers inside this element (e.g. sheet scroll body) so they appear above the sheet overlay. */
+  popoverContainer?: HTMLElement | null;
 }
 
-export function DateTimePicker({ value, onChange, disabled, className }: DateTimePickerProps) {
+export function DateTimePicker({
+  value,
+  onChange,
+  disabled,
+  className,
+  popoverContainer,
+}: DateTimePickerProps) {
   const timeValue = value ? dateToTimeString(value) : "";
 
   return (
@@ -36,6 +44,7 @@ export function DateTimePicker({ value, onChange, disabled, className }: DateTim
         <DatePicker
           value={value}
           disabled={disabled}
+          popoverContainer={popoverContainer}
           onChange={(d) => {
             if (!d) {
               onChange(undefined);
@@ -53,6 +62,7 @@ export function DateTimePicker({ value, onChange, disabled, className }: DateTim
         <TimePicker
           value={timeValue}
           disabled={disabled}
+          popoverContainer={popoverContainer}
           onChange={(t) => {
             if (!value) {
               const base = new Date();

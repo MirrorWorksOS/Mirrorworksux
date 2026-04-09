@@ -57,6 +57,7 @@ export function SellOpportunityQuickActivitySheet({
   const [title, setTitle] = React.useState('');
   const [assignedTo, setAssignedTo] = React.useState<string>(MOCK_CURRENT_USER_NAME);
   const [description, setDescription] = React.useState('');
+  const [popoverContainer, setPopoverContainer] = React.useState<HTMLElement | null>(null);
 
   React.useEffect(() => {
     if (open && preset) {
@@ -95,7 +96,10 @@ export function SellOpportunityQuickActivitySheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
+        <div
+          ref={setPopoverContainer}
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4"
+        >
           {activityType ? (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -141,7 +145,11 @@ export function SellOpportunityQuickActivitySheet({
             <Label className="text-sm font-medium text-[var(--neutral-700)]">
               Due <span className="text-[var(--mw-error)]">*</span>
             </Label>
-            <DateTimePicker value={scheduledAt} onChange={(d) => d && onScheduledAtChange(d)} />
+            <DateTimePicker
+              value={scheduledAt}
+              onChange={(d) => d && onScheduledAtChange(d)}
+              popoverContainer={popoverContainer}
+            />
           </div>
 
           <div className="grid gap-1.5">
