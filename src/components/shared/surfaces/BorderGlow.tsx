@@ -86,16 +86,16 @@ function animateValue({ start = 0, end = 100, duration = 1000, delay = 0, ease =
 export function BorderGlow({
   children,
   className,
-  edgeSensitivity = 20,
+  edgeSensitivity = 10,
   glowColor = '172 68 58',
   backgroundColor = 'var(--card)',
   borderRadius = 28,
-  glowRadius = 15,
-  glowIntensity = 0.28,
-  coneSpread = 14,
+  glowRadius = 22,
+  glowIntensity = 0.192,
+  coneSpread = 30,
   animated = true,
   colors = ['#FFCF4B', '#4DDDC9', '#C084FC'],
-  fillOpacity = 0.13,
+  fillOpacity = 0.132,
 }: BorderGlowProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();

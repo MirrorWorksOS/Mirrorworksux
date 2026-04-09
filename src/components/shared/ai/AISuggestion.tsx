@@ -12,9 +12,6 @@ import { cn } from '../../ui/utils';
 import { BorderGlow } from '@/components/shared/surfaces/BorderGlow';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 
-/** Mesh accents — mw-agent hues at lower chroma so hover matches dash Agent subtlety */
-const MW_AGENT_GLOW_COLORS = ['#4DDDC980', '#36C4B173', '#7AE8D966'] as const;
-
 interface AISuggestionProps {
   title: string;
   confidence: number; // 0-100
@@ -43,19 +40,22 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
     >
       <BorderGlow
         borderRadius={16}
-        glowRadius={12}
-        glowColor="172 68 58"
-        glowIntensity={0.2}
-        fillOpacity={0.1}
-        edgeSensitivity={22}
-        colors={[...MW_AGENT_GLOW_COLORS]}
-        className={cn(
-          'border transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
-          applied
-            ? 'border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5'
-            : 'border-[var(--border)] bg-card',
-        )}
+        edgeSensitivity={10}
+        glowRadius={22}
+        glowIntensity={0.192}
+        coneSpread={30}
+        fillOpacity={0.132}
         animated={false}
+        className={cn(
+          'transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+          applied
+            ? 'border border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5'
+            : cn(
+                'bg-card shadow-[var(--elevation-2)]',
+                'transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]',
+                'hover:shadow-[var(--elevation-3)] hover:-translate-y-px',
+              ),
+        )}
       >
         <div className="p-4">
           <div className="flex items-start gap-3">

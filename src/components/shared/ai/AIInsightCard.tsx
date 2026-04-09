@@ -45,7 +45,20 @@ export function AIInsightCard({
       spotlightColor="rgba(77, 221, 201, 0.07)"
       spotlightColorDark="rgba(125, 232, 217, 0.1)"
     >
-    <BorderGlow borderRadius={16} className="border border-[var(--border)] bg-card">
+    <BorderGlow
+      borderRadius={16}
+      edgeSensitivity={10}
+      glowRadius={22}
+      glowIntensity={0.192}
+      coneSpread={30}
+      fillOpacity={0.132}
+      animated
+      className={cn(
+        "bg-card shadow-[var(--elevation-2)]",
+        "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
+        "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
+      )}
+    >
     <div className="p-4">
 
       {/* Header */}

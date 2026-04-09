@@ -292,11 +292,20 @@ function FeedItemCard({
       >
         <BorderGlow
           borderRadius={16}
-          className="border border-[var(--border)] bg-card"
+          edgeSensitivity={10}
+          glowRadius={22}
+          glowIntensity={0.192}
+          coneSpread={30}
+          fillOpacity={0.132}
           animated={false}
+          className={cn(
+            "bg-card shadow-[var(--elevation-2)]",
+            "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
+            "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
+          )}
         >
           <div className="flex gap-3 p-4">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
               {item.icon}
             </div>
             <div className="min-w-0 flex-1">
@@ -359,11 +368,20 @@ function ModalFeedItem({
       <BorderGlow
         borderRadius={16}
         backgroundColor="#ffffff"
-        className="border border-[var(--neutral-200)] bg-white"
+        edgeSensitivity={10}
+        glowRadius={22}
+        glowIntensity={0.192}
+        coneSpread={30}
+        fillOpacity={0.132}
         animated={false}
+        className={cn(
+          "bg-white shadow-[var(--elevation-2)]",
+          "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
+          "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
+        )}
       >
         <div className="flex gap-3 p-4">
-          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--mw-agent-50)]">
+          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
             {React.cloneElement(item.icon as React.ReactElement, {
               className: "h-4 w-4 text-[var(--mw-agent-600)]",
             })}
@@ -491,11 +509,17 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
           <BorderGlow
             backgroundColor="#ffffff"
             borderRadius={20}
-            glowRadius={20}
-            glowIntensity={0.34}
-            fillOpacity={0.16}
-            coneSpread={20}
-            edgeSensitivity={15}
+            edgeSensitivity={10}
+            glowRadius={28}
+            glowIntensity={0.192}
+            coneSpread={30}
+            fillOpacity={0.132}
+            animated
+            className={cn(
+              "shadow-[var(--elevation-2)]",
+              "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
+              "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
+            )}
           >
             <DialogHeader className="px-8 pt-8 pb-5">
               <div className="flex items-center gap-2">
