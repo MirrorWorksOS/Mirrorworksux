@@ -272,7 +272,7 @@ export function FloorScanJob() {
                           {wo.estimatedMinutes} min
                         </span>
                       </div>
-                      <ChevronRight className="w-6 h-6 text-[var(--neutral-400)] group-hover:text-[var(--mw-yellow-700)] group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-6 h-6 text-[var(--neutral-400)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:translate-x-0.5 group-hover:text-foreground" />
                     </div>
                   </button>
                 );

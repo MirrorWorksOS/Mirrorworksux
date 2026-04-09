@@ -92,7 +92,7 @@ export function DashboardNotificationList({
       whileHover={isTop ? undefined : { y: -1 }}
       transition={{ duration: 0.55, ease: SOFT_EASE }}
       className={cn(
-        "bg-card p-5 text-foreground shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
+        "bg-card p-5 text-foreground shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
         mwHairlineBorder,
         isTop ? "rounded-[var(--shape-2xl)]" : "rounded-[var(--shape-xl)]",
         className,

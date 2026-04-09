@@ -526,7 +526,7 @@ export function PlanCADImport() {
                         defaultChecked={opt.checked}
                         className="w-4 h-4 rounded border-[var(--border)] accent-[var(--mw-yellow-400)]"
                       />
-                      <span className="text-sm text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <span className="text-sm text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                         {opt.label}
                       </span>
                     </label>

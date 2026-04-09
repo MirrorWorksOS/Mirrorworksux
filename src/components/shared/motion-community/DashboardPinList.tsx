@@ -50,7 +50,7 @@ export function DashboardPinList({
   return (
     <div
       className={cn(
-        "rounded-[var(--shape-xl)] bg-card p-5 shadow-xs transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md hover:-translate-y-px dark:bg-card",
+        "rounded-[var(--shape-xl)] bg-card p-5 shadow-[var(--card-shadow-rest)] transition-[box-shadow,transform] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:-translate-y-px dark:bg-card",
         mwHairlineBorder,
         className,
       )}

@@ -179,7 +179,7 @@ export function QualityTab() {
   const [showLogModal, setShowLogModal] = useState(false);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--neutral-100)] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
+    <div className="flex flex-col h-full bg-[var(--app-canvas)] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
       
       {/* Action button row (heading provided by PageHeader in MakeQuality wrapper) */}
       <div className="flex justify-end mb-8 flex-shrink-0">

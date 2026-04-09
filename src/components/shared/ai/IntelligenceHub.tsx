@@ -8,6 +8,7 @@ import { RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Info, ChevronRight, 
 
 import { EmptyState } from '../feedback/EmptyState';
 import { Card } from '../../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { cn } from '../../ui/utils';
@@ -94,14 +95,21 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <Card
-                  className={cn(
-                    'border rounded-[var(--shape-lg)] p-4',
-                    insight.type === 'risk'
-                      ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)] dark:border-[var(--mw-error)]/30 dark:bg-[var(--mw-error)]/10'
-                      : 'border-[var(--border)] bg-card hover:shadow-sm transition-shadow',
-                  )}
+                <SpotlightCard
+                  radius="rounded-[var(--shape-lg)]"
+                  className="h-full min-h-0"
+                  spotlightColor="rgba(77, 221, 201, 0.12)"
+                  spotlightColorDark="rgba(125, 232, 217, 0.16)"
                 >
+                  <Card
+                    variant="flat"
+                    className={cn(
+                      'h-full rounded-[var(--shape-lg)] border p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+                      insight.type === 'risk'
+                        ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)] dark:border-[var(--mw-error)]/30 dark:bg-[var(--mw-error)]/10'
+                        : 'border-[var(--border)] bg-card',
+                    )}
+                  >
                   <div className="flex items-start gap-3">
                     <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5', cfg.bg)}>
                       <Icon className={cn('w-4 h-4', cfg.text)} />
@@ -124,7 +132,8 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                     </div>
                   </div>
                   <p className="text-[10px] text-[var(--neutral-400)] mt-2 text-right">Updated {insight.updatedAt}</p>
-                </Card>
+                  </Card>
+                </SpotlightCard>
               </motion.div>
             );
           })

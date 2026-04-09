@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -393,12 +394,16 @@ export function PlanQCPlanning() {
 
       {/* SECTION: Quality Checklists */}
       {activeSection === 'checklists' && (
-        <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
           {CHECKLISTS.map((cl) => {
             const progress = cl.itemCount > 0 ? Math.round((cl.completedCount / cl.itemCount) * 100) : 0;
             return (
-              <motion.div key={cl.id} variants={staggerItem}>
-                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+              <motion.div key={cl.id} variants={staggerItem} className="h-full min-h-0">
+                <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                  <Card
+                    variant="flat"
+                    className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <ClipboardCheck
@@ -407,7 +412,7 @@ export function PlanQCPlanning() {
                           cl.status === 'completed' ? 'text-[var(--mw-success)]' : cl.status === 'failed' ? 'text-[var(--mw-error)]' : 'text-foreground',
                         )}
                       />
-                      <h3 className="text-sm font-medium text-foreground leading-tight group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="text-sm font-medium text-foreground leading-tight transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                         {cl.name}
                       </h3>
                     </div>
@@ -457,7 +462,8 @@ export function PlanQCPlanning() {
                       </span>
                     </div>
                   </div>
-                </Card>
+                  </Card>
+                </SpotlightCard>
               </motion.div>
             );
           })}

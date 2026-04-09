@@ -162,7 +162,7 @@ function ProductEditor() {
         ) : (
           <button
             onClick={() => setIsEditingName(true)}
-            className="flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-[var(--mw-yellow-600)] dark:hover:text-[var(--mw-yellow-400)] transition-colors group"
+            className="group flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-muted-foreground"
           >
             {product.name}
             <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />

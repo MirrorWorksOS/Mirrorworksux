@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Plus, Search, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -78,17 +79,19 @@ export function BuyAgreements() {
       />
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 items-stretch gap-4">
         {[
           { label: 'Total contracted', value: `$${totalCommitted.toLocaleString()}`, sub: `${AGREEMENTS.length} agreements` },
           { label: 'Total spent YTD',  value: `$${totalSpent.toLocaleString()}`,     sub: `${((totalSpent / totalCommitted) * 100).toFixed(0)}% utilised` },
           { label: 'Remaining',        value: `$${(totalCommitted - totalSpent).toLocaleString()}`, sub: 'Available to spend' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className="text-xl font-medium tabular-nums text-foreground">{s.value}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
-          </Card>
+          <SpotlightCard key={s.label} radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+            <Card variant="flat" className="h-full border-[var(--border)] p-6">
+              <p className="mb-1 text-xs font-medium text-[var(--neutral-500)]">{s.label}</p>
+              <p className="text-xl font-medium tabular-nums text-foreground">{s.value}</p>
+              <p className="mt-0.5 text-xs text-[var(--neutral-500)]">{s.sub}</p>
+            </Card>
+          </SpotlightCard>
         ))}
       </div>
 
@@ -106,8 +109,12 @@ export function BuyAgreements() {
           const remaining  = agr.value - agr.used - agr.committed;
 
           return (
-            <motion.div key={agr.id} variants={staggerItem}>
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-150 cursor-pointer group">
+            <motion.div key={agr.id} variants={staggerItem} className="h-full min-h-0">
+              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                <Card
+                  variant="flat"
+                  className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
@@ -156,7 +163,8 @@ export function BuyAgreements() {
                     </p>
                   </div>
                 </div>
-              </Card>
+                </Card>
+              </SpotlightCard>
             </motion.div>
           );
         })}

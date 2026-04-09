@@ -145,7 +145,7 @@ export function SellOpportunities() {
                         }}
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <h4 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2">
+                          <h4 className="text-sm font-medium text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] line-clamp-2">
                             {opp.title}
                           </h4>
                           <Badge className={cn("rounded-full text-xs px-2.5 py-0.5 border-0 flex-shrink-0 ml-2", priorityBadge.bg, priorityBadge.text)}>

@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Truck, Download, Printer, Sparkles } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -96,18 +97,20 @@ export function ShipShipping() {
     <PageShell className="overflow-y-auto">
       <PageHeader title="Shipping" />
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 items-stretch gap-4 lg:grid-cols-4">
         {[
           { label: 'Active Carriers', value: activeCarriers, sub: `${totalCarriers} total`, bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
           { label: 'Shipments Today', value: totalShipmentsToday, sub: 'Across all carriers', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Avg On-Time', value: `${avgOnTime}%`, sub: 'Delivery performance', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Open Manifests', value: MANIFESTS.filter(m => m.open).length, sub: 'Awaiting closure', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-            <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
-            <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
-            <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
-          </Card>
+          <SpotlightCard key={s.label} radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+            <Card variant="flat" className="h-full border-[var(--border)] p-6">
+              <p className="mb-1 text-xs font-medium text-[var(--neutral-500)]">{s.label}</p>
+              <p className={cn('text-2xl font-medium tabular-nums', s.text)}>{s.value}</p>
+              <p className="mt-0.5 text-xs text-[var(--neutral-500)]">{s.sub}</p>
+            </Card>
+          </SpotlightCard>
         ))}
       </div>
 
@@ -120,9 +123,10 @@ export function ShipShipping() {
 
       {/* Carriers */}
       {tab === 'carriers' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
           {CARRIERS.map(c => (
-            <Card key={c.name} className="p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)]">
+            <SpotlightCard key={c.name} radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+            <Card variant="flat" className="h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <Truck className="w-5 h-5 text-foreground" strokeWidth={1.5} />
@@ -143,6 +147,7 @@ export function ShipShipping() {
                 ))}
               </div>
             </Card>
+            </SpotlightCard>
           ))}
         </div>
       )}

@@ -10,6 +10,7 @@ import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Card } from '../../ui/card';
 import { cn } from '../../ui/utils';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 
 interface AISuggestionProps {
   title: string;
@@ -31,9 +32,14 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
   const confidenceColor = confidence >= 80 ? 'var(--mw-green)' : confidence >= 60 ? 'var(--mw-yellow-500)' : 'var(--neutral-500)';
 
   return (
+    <SpotlightCard
+      radius="rounded-[var(--shape-lg)]"
+      spotlightColor="rgba(77, 221, 201, 0.12)"
+      spotlightColorDark="rgba(125, 232, 217, 0.16)"
+    >
     <Card className={cn(
-      "border bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden transition-all",
-      applied ? "border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5" : "border-[var(--neutral-200)]"
+      "overflow-hidden rounded-[var(--shape-lg)] border transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+      applied ? "border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5" : "border-[var(--border)] bg-card"
     )}>
       <div className="p-4">
         <div className="flex items-start gap-3">
@@ -98,5 +104,6 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
         </div>
       </div>
     </Card>
+    </SpotlightCard>
   );
 }

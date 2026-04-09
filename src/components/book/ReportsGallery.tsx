@@ -63,7 +63,7 @@ const scheduledColumns: MwColumnDef<ScheduledReport>[] = [
 ];
 
 const ReportCard = ({ icon: Icon, title, desc, borderColor, badge, ai }: any) => (
-  <Card className={cn("bg-card rounded-[var(--shape-lg)] shadow-xs border border-[var(--border)] p-6 hover:shadow-md transition-shadow", borderColor && `border-l-[3px] ${borderColor}`)}>
+  <Card variant="flat" className={cn("rounded-[var(--shape-lg)] border border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", borderColor && `border-l-[3px] ${borderColor}`)}>
     <Icon className="w-8 h-8 text-foreground mb-3" />
     <div className="flex items-center gap-2 mb-1">
       <h3 className="text-sm text-foreground font-medium">{title}</h3>

@@ -152,7 +152,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Budget */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={DollarSign} surface="onLight" />
             </div>
@@ -173,7 +173,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Total Spent */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200 relative group">
+          <Card variant="flat" className="relative border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={Receipt} surface="onLight" />
               <Badge className="rounded-full border-0 bg-[var(--neutral-100)] px-2 py-0.5 text-xs text-foreground">
@@ -220,7 +220,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Remaining */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={Clock} surface="onLight" />
             </div>
@@ -238,7 +238,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId }: PlanBudgetTabProps) 
 
         {/* Margin */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-200">
+          <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
             <div className="flex items-center justify-between mb-4">
               <IconWell icon={BarChart3} surface="onLight" />
               <div className="flex items-center gap-1">

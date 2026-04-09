@@ -4,12 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./utils";
 
 const cardVariants = cva(
+  /* Card shadows use --card-shadow-* in globals.css (softer than shadow-xs/sm utilities). */
   "flex flex-col rounded-[var(--shape-lg)] transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
   {
     variants: {
       variant: {
-        flat: "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-xs",
-        elevated: "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-sm",
+        flat: "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-[var(--card-shadow-rest)]",
+        elevated:
+          "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-[var(--card-shadow-elevated)]",
         dark: "bg-[var(--mw-mirage)] text-white border-none",
         ghost: "bg-card text-card-foreground border-none shadow-none",
       },

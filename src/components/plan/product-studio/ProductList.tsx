@@ -22,6 +22,7 @@ import {
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
@@ -159,21 +160,24 @@ export function ProductList() {
           variants={staggerContainer}
           initial="initial"
           animate="animate"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           {/* New product card */}
-          <motion.div variants={staggerItem}>
+          <motion.div variants={staggerItem} className="h-full min-h-0">
+            <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
             <Card
-              className="h-full min-h-[200px] flex flex-col items-center justify-center cursor-pointer border-2 border-dashed border-[var(--neutral-300)] dark:border-[var(--neutral-700)] hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/5 transition-all duration-200 group"
+              variant="flat"
+              className="group flex h-full min-h-[200px] cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[var(--neutral-300)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.04] dark:border-[var(--neutral-700)] dark:hover:bg-white/[0.06]"
               onClick={() => setShowNewDialog(true)}
             >
-              <div className="w-12 h-12 rounded-xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center group-hover:bg-[var(--mw-yellow-400)]/20 transition-colors">
-                <Plus className="w-6 h-6 text-[var(--neutral-400)] group-hover:text-[var(--mw-yellow-500)] transition-colors" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--neutral-100)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:bg-[var(--neutral-200)] dark:bg-[var(--neutral-800)] dark:group-hover:bg-[var(--neutral-700)]">
+                <Plus className="w-6 h-6 text-[var(--neutral-400)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:text-foreground" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground mt-3 group-hover:text-foreground transition-colors">
+              <p className="mt-3 text-sm font-medium text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:text-foreground">
                 New Product
               </p>
             </Card>
+            </SpotlightCard>
           </motion.div>
 
           {/* Product cards */}
@@ -182,9 +186,11 @@ export function ProductList() {
             const ThumbnailIcon = THUMBNAIL_ICONS[product.thumbnail || ''] || Layers;
 
             return (
-              <motion.div key={product.id} variants={staggerItem}>
+              <motion.div key={product.id} variants={staggerItem} className="h-full min-h-0">
+                <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                 <Card
-                  className="h-full min-h-[200px] flex flex-col cursor-pointer hover:shadow-md transition-all duration-200 group"
+                  variant="flat"
+                  className="group flex h-full min-h-[200px] cursor-pointer flex-col border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                   onClick={() => handleOpen(product.id)}
                 >
                   {/* Thumbnail area */}
@@ -228,7 +234,7 @@ export function ProductList() {
                   <div className="flex-1 px-4 py-2">
                     <div className="flex items-start justify-between">
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-semibold text-foreground truncate group-hover:text-[var(--mw-yellow-600)] dark:group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                        <h3 className="text-sm font-semibold text-foreground truncate transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                           {product.name}
                         </h3>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
@@ -288,11 +294,12 @@ export function ProductList() {
                   </div>
 
                   {/* Footer */}
-                  <div className="px-4 pb-3 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                  <div className="flex items-center gap-1.5 px-4 pb-3 text-[10px] text-muted-foreground">
                     <Clock className="w-3 h-3" />
                     {getTimeAgo(product.updatedAt)}
                   </div>
                 </Card>
+                </SpotlightCard>
               </motion.div>
             );
           })}

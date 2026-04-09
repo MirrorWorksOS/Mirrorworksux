@@ -333,7 +333,7 @@ function ConfigSection({
           <div className="w-3.5" />
         )}
         <div className={cn('w-2 h-2 rounded-full shrink-0', NODE_TYPE_COLORS[node.type])} />
-        <span className="text-xs font-semibold text-foreground group-hover:text-[var(--mw-yellow-600)] dark:group-hover:text-[var(--mw-yellow-400)] transition-colors">
+        <span className="text-xs font-semibold text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
           {node.name}
         </span>
         {node.quantity > 1 && (

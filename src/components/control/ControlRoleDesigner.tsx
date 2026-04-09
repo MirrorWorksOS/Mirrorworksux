@@ -57,7 +57,7 @@ export function ControlRoleDesigner() {
         {roles.map(role => (
           <Card
             key={role.name}
-            className="cursor-pointer rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs transition-shadow hover:shadow-md"
+            className="cursor-pointer rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
           >
             <div className="mb-3 flex items-center gap-3">
               <div

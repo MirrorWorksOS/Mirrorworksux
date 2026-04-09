@@ -6,6 +6,7 @@ import { MapPin, Plus, Search, Building2, Warehouse, ChevronRight } from 'lucide
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -106,18 +107,22 @@ export function ControlLocations() {
       </div>
 
       {/* Location cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
         {filtered.map(loc => {
           const cfg  = TYPE_CONFIG[loc.type] ?? TYPE_CONFIG['Office'];
           const Icon = cfg.icon;
           return (
-            <motion.div key={loc.id} variants={staggerItem}>
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow duration-[var(--duration-short2)] cursor-pointer group">
+            <motion.div key={loc.id} variants={staggerItem} className="h-full min-h-0">
+              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                <Card
+                  variant="flat"
+                  className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
                     <IconWell icon={Icon} surface="onDark" />
                     <div>
-                      <h3 className="font-medium text-sm text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="font-medium text-sm text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                         {loc.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -130,7 +135,7 @@ export function ControlLocations() {
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[var(--neutral-400)] group-hover:text-[var(--mw-yellow-400)] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-[var(--neutral-400)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:text-foreground" />
                 </div>
 
                 <div className="space-y-2 mb-4">
@@ -163,7 +168,8 @@ export function ControlLocations() {
                     </span>
                   ))}
                 </div>
-              </Card>
+                </Card>
+              </SpotlightCard>
             </motion.div>
           );
         })}

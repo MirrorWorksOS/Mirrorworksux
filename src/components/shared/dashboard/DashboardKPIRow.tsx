@@ -15,13 +15,20 @@ export interface DashboardKPIRowProps {
 export function DashboardKPIRow({ children, className }: DashboardKPIRowProps) {
   return (
     <motion.div
-      className={cn("grid grid-cols-2 gap-4 lg:grid-cols-4", className)}
+      className={cn(
+        "grid grid-cols-2 items-stretch gap-4 lg:grid-cols-4",
+        className,
+      )}
       variants={staggerContainer}
       initial="initial"
       animate="animate"
     >
       {React.Children.map(children, (child, index) => (
-        <motion.div key={index} variants={staggerItem}>
+        <motion.div
+          key={index}
+          variants={staggerItem}
+          className="h-full min-h-0"
+        >
           {child}
         </motion.div>
       ))}

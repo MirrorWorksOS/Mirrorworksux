@@ -333,7 +333,7 @@ export function OverviewTab() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <span className="text-lg font-medium text-[var(--neutral-800)] hover:underline hover:text-[var(--mw-yellow-400)] transition-colors cursor-pointer" onClick={() => toast('Customer detail coming soon')}>
+                      <span className="cursor-pointer text-lg font-medium text-[var(--neutral-800)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-foreground hover:underline dark:text-[var(--neutral-200)]" onClick={() => toast('Customer detail coming soon')}>
                         {ACTIVE_JOBS_SUMMARY.customer}
                       </span>
                       <div className="flex items-center gap-2 mt-1">
@@ -628,7 +628,7 @@ export function OverviewTab() {
                      onChange={e => setChatInput(e.target.value)}
                      onKeyDown={e => { if (e.key === 'Enter') handleChatSubmit(); }}
                    />
-                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-14 w-14 text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-400)] hover:bg-transparent" onClick={handleChatSubmit}>
+                   <Button size="icon" variant="ghost" className="absolute right-1 top-1 h-14 w-14 text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-agent-50)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--mw-agent)]/15 dark:hover:text-[var(--mw-agent-light)]" onClick={handleChatSubmit}>
                      <Send className="w-4 h-4" />
                    </Button>
                  </div>

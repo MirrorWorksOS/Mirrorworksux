@@ -352,7 +352,7 @@ function MachineCard({ machine, onClick }: { machine: Machine; onClick: () => vo
       className={cn(
         'flex flex-col bg-card text-card-foreground rounded-[var(--shape-lg)] p-6 cursor-pointer',
         'border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]',
-        'shadow-xs hover:shadow-sm',
+        'shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:shadow-[var(--card-shadow-elevated)]',
         'transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
       )}
     >

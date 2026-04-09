@@ -362,16 +362,18 @@ export function WelcomeDashboard() {
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 md:items-start">
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:gap-6 sm:grid-cols-2 md:grid-cols-3">
               <motion.div
                 variants={staggerItem}
+                className="h-full min-h-0"
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]">
+                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
                 <Card
+                  variant="flat"
                   className={cn(
-                    "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
+                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -398,13 +400,15 @@ export function WelcomeDashboard() {
               </motion.div>
               <motion.div
                 variants={staggerItem}
+                className="h-full min-h-0"
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]">
+                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
                 <Card
+                  variant="flat"
                   className={cn(
-                    "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
+                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -431,13 +435,15 @@ export function WelcomeDashboard() {
               </motion.div>
               <motion.div
                 variants={staggerItem}
+                className="h-full min-h-0"
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]">
+                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
                 <Card
+                  variant="flat"
                   className={cn(
-                    "rounded-[var(--shape-xl)] bg-card p-6 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
+                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -474,8 +480,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
-                  <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center justify-between gap-3 border-b border-border pb-4">
                       <div className="flex min-w-0 items-center gap-2">
                         <ClipboardList
@@ -541,8 +547,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
-                  <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <AlertTriangle
                         className="h-7 w-7 shrink-0 text-[var(--mw-warning)]"
@@ -595,8 +601,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]">
-                  <Card className={cn("h-full rounded-[var(--shape-xl)] bg-card p-6 shadow-xs", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <Link2
                         className="h-7 w-7 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]"
@@ -660,7 +666,7 @@ export function WelcomeDashboard() {
                     >
                       <MwDataTable
                         className={cn(
-                          "rounded-[var(--shape-xl)] shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md",
+                          "rounded-[var(--shape-xl)] shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                           mwHairlineBorder,
                         )}
                         columns={RECENT_JOB_COLUMNS}

@@ -20,6 +20,7 @@ import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 
@@ -140,14 +141,25 @@ export function SellProducts() {
 
       {/* Product Cards Grid */}
       {viewMode === 'card' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredProducts.map((product, idx) => {
             const stockBadge = getStockBadgeProps(product.stockLevel, product.reorderPoint);
             return (
-              <motion.div key={product.id} variants={staggerItem} custom={idx}>
-                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group"
-                  onClick={() => navigate(`/sell/products/${product.id}`)}
+              <motion.div
+                key={product.id}
+                variants={staggerItem}
+                custom={idx}
+                className="h-full min-h-0"
+              >
+                <SpotlightCard
+                  radius="rounded-[var(--shape-lg)]"
+                  className="h-full min-h-0"
                 >
+                  <Card
+                    variant="flat"
+                    className="group h-full cursor-pointer overflow-hidden border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                    onClick={() => navigate(`/sell/products/${product.id}`)}
+                  >
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center p-4">
                     {product.imageUrl ? (
                       <img
@@ -164,7 +176,7 @@ export function SellProducts() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors line-clamp-2 mb-1">
+                        <h3 className="text-sm font-medium text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] line-clamp-2 mb-1">
                           {product.name}
                         </h3>
                         <p className="text-xs text-[var(--neutral-500)] tabular-nums">{product.sku}</p>
@@ -203,7 +215,8 @@ export function SellProducts() {
                       Sell
                     </Button>
                   </div>
-                </Card>
+                  </Card>
+                </SpotlightCard>
               </motion.div>
             );
           })}

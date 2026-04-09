@@ -455,8 +455,9 @@ function ActivityCard({
       transition={{ duration: 0.2 }}
     >
       <Card
+        variant="flat"
         className={cn(
-          'border bg-card p-4 shadow-xs rounded-[var(--shape-lg)] cursor-pointer transition-all duration-200 hover:shadow-md',
+          'cursor-pointer rounded-[var(--shape-lg)] border-[var(--border)] p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
           isOverdue && 'border-[var(--mw-error)]/30 dark:border-red-500/30',
           isCompleted && 'opacity-75',
         )}

@@ -140,7 +140,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               <span className="text-sm text-foreground font-medium">Payments</span>
             </div>
             <p className="text-sm text-muted-foreground text-center py-4">No payments recorded yet</p>
-            <Button variant="ghost" className="w-full text-[var(--mw-yellow-400)] hover:text-[var(--mw-yellow-600)]" onClick={() => toast('Payment recording form coming soon')}>Record Payment</Button>
+            <Button variant="ghost" className="w-full text-foreground hover:text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]" onClick={() => toast('Payment recording form coming soon')}>Record Payment</Button>
           </Card>
 
           {/* Email History */}

@@ -169,7 +169,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
                   Attendees ({event.attendees.length})
                 </h4>
                 <button
-                  className="flex items-center gap-1 text-xs font-medium text-[var(--mw-yellow-700)] hover:text-[var(--mw-yellow-800)] transition-colors"
+                  className="flex items-center gap-1 text-xs font-medium text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-muted-foreground"
                   onClick={() => toast('Add attendee dialog coming soon')}
                 >
                   <UserPlus className="w-3.5 h-3.5" strokeWidth={1.5} />

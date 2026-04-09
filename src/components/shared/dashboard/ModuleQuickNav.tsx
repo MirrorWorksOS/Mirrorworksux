@@ -122,7 +122,7 @@ export function ModuleQuickNav({
             <motion.div key={nav.path} variants={staggerItem}>
               <Link to={nav.path} className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]/60 rounded-2xl">
                 <SpotlightCard className="h-full border border-[var(--border)] bg-card transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-300)] dark:hover:border-[var(--neutral-700)]">
-                  <div className="relative z-20 flex h-full items-start gap-3 p-4">
+                  <div className="flex h-full items-start gap-3 p-4">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-mirage)] text-white">
                       {Icon ? (
                         <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />

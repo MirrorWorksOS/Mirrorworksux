@@ -81,8 +81,14 @@ export function KpiStatCard({
 
   if (layout === "inlineEnd") {
     return (
-      <SpotlightCard radius="rounded-[var(--shape-lg)]">
-      <Card variant="flat" className={cn("p-6", className)}>
+      <SpotlightCard
+        radius="rounded-[var(--shape-lg)]"
+        className="h-full min-h-0"
+      >
+        <Card
+          variant="flat"
+          className={cn("flex h-full min-h-0 flex-col p-6", className)}
+        >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm text-[var(--neutral-500)]">{label}</p>
@@ -107,21 +113,24 @@ export function KpiStatCard({
             )
           ) : null}
         </div>
-      </Card>
+        </Card>
       </SpotlightCard>
     );
   }
 
   if (layout === "compact") {
     return (
-      <SpotlightCard radius="rounded-[var(--shape-lg)]">
-      <Card
-        variant="flat"
-        className={cn(
-          "mw-shine mw-shine-once border border-[var(--border)] p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
-          className,
-        )}
+      <SpotlightCard
+        radius="rounded-[var(--shape-lg)]"
+        className="h-full min-h-0"
       >
+        <Card
+          variant="flat"
+          className={cn(
+            "flex h-full min-h-0 flex-col border border-[var(--border)] p-6",
+            className,
+          )}
+        >
         {Icon !== undefined && (
           <div className="mb-4">{renderIcon()}</div>
         )}
@@ -133,20 +142,20 @@ export function KpiStatCard({
           <p className="mt-1 text-xs text-[var(--neutral-500)]">{hint}</p>
         ) : null}
         {footer}
-      </Card>
+        </Card>
       </SpotlightCard>
     );
   }
 
   return (
-    <SpotlightCard radius="rounded-[var(--shape-lg)]">
-    <Card
-      variant="flat"
-      className={cn(
-        "mw-shine mw-shine-once p-6 transition-shadow duration-[var(--duration-short2)] ease-[var(--ease-standard)] hover:shadow-md",
-        className,
-      )}
+    <SpotlightCard
+      radius="rounded-[var(--shape-lg)]"
+      className="h-full min-h-0"
     >
+      <Card
+        variant="flat"
+        className={cn("flex h-full min-h-0 flex-col p-6", className)}
+      >
       {(Icon !== undefined || trailing !== undefined) && (
         <div className="mb-4 flex items-start justify-between gap-4">
           {Icon !== undefined ? renderIcon() : <span />}
@@ -164,8 +173,8 @@ export function KpiStatCard({
       {hint !== undefined && hint !== "" ? (
         <p className="mt-2 text-xs text-[var(--neutral-500)]">{hint}</p>
       ) : null}
-      {footer}
-    </Card>
+        {footer}
+      </Card>
     </SpotlightCard>
   );
 }

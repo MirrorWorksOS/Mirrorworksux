@@ -1,27 +1,27 @@
 /**
  * MakeCapa — CAPA Kanban board at /make/capa.
  *
- * Columns: Identified -> Root Cause -> Containment -> Corrective Action -> Verification -> Closed.
- * Cards: issue title, severity badge, assigned to, due date.
- * Simple CSS grid (no drag-and-drop).
+ * Columns: Identified → Root Cause → Containment → Corrective Action → Verification → Closed.
+ * Drag cards between columns to update status (local state; mock data).
  */
 
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { ShieldAlert, Calendar, User } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { format, isBefore, parseISO, startOfDay } from "date-fns";
+import { Calendar, User } from "lucide-react";
 
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { InlineEmpty } from "@/components/shared/feedback/EmptyState";
+import { KanbanBoard } from "@/components/shared/kanban/KanbanBoard";
+import { KanbanColumn, type KanbanDragItem } from "@/components/shared/kanban/KanbanColumn";
+import { KanbanCard } from "@/components/shared/kanban/KanbanCard";
 import { cn } from "@/components/ui/utils";
-import {
-  staggerContainer,
-  staggerItem,
-} from "@/components/shared/motion/motion-variants";
 import { makeService } from "@/services/makeService";
 import type { CapaRecord } from "@/types/entities";
 import type { CapaStatus, CapaSeverity } from "@/types/common";
+
+const KANBAN_ITEM_TYPE = "capa-record";
 
 /* ------------------------------------------------------------------ */
 /* Column config                                                       */
@@ -65,48 +65,50 @@ const SEVERITY_CONFIG: Record<CapaSeverity, { label: string; className: string }
 };
 
 /* ------------------------------------------------------------------ */
-/* CAPA Card sub-component                                             */
+/* Card body (inner — KanbanCard supplies outer Card + drag)           */
 /* ------------------------------------------------------------------ */
 
-function CapaCard({ record }: { record: CapaRecord }) {
+function CapaCardContent({ record }: { record: CapaRecord }) {
   const sevCfg = SEVERITY_CONFIG[record.severity];
-  const isOverdue = new Date(record.dueDate) < new Date();
+  const due = parseISO(record.dueDate);
+  const isOverdue = isBefore(due, startOfDay(new Date()));
+  const dueLabel = format(due, "MMM d");
 
   return (
-    <motion.div variants={staggerItem}>
-      <Card variant="flat" className="p-4 space-y-3">
-        {/* Title + severity */}
-        <div className="space-y-2">
-          <Badge variant="outline" className={sevCfg.className}>
-            {sevCfg.label}
-          </Badge>
-          <p className="text-sm font-medium text-foreground leading-snug">
-            {record.title}
-          </p>
-        </div>
+    <div className="space-y-3 p-4">
+      <div className="space-y-2">
+        <Badge variant="outline" className={sevCfg.className}>
+          {sevCfg.label}
+        </Badge>
+        <p className="text-sm font-medium text-foreground leading-snug">
+          {record.title}
+        </p>
+      </div>
 
-        {/* Job ref */}
-        {record.jobNumber && (
-          <p className="font-mono text-xs text-muted-foreground">
-            {record.jobNumber}
-          </p>
-        )}
+      {record.jobNumber && (
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {record.jobNumber}
+        </p>
+      )}
 
-        {/* Meta */}
-        <div className="space-y-1.5 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <User className="h-3.5 w-3.5" strokeWidth={1.5} />
-            <span>{record.assignedToName}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
-            <span className={cn(isOverdue && "text-[var(--mw-red,#dc2626)] font-medium")}>
-              Due {record.dueDate}
-            </span>
-          </div>
+      <div className="space-y-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <User className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden />
+          <span>{record.assignedToName}</span>
         </div>
-      </Card>
-    </motion.div>
+        <div className="flex items-center gap-1.5">
+          <Calendar className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden />
+          <span
+            className={cn(
+              "tabular-nums",
+              isOverdue && "text-[var(--mw-red,#dc2626)] font-medium",
+            )}
+          >
+            Due {dueLabel}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -124,6 +126,14 @@ export function MakeCapa() {
   const byStatus = (status: CapaStatus) =>
     records.filter((r) => r.status === status);
 
+  const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
+    setRecords((prev) =>
+      prev.map((r) =>
+        r.id === item.id ? { ...r, status: columnId as CapaStatus } : r,
+      ),
+    );
+  }, []);
+
   return (
     <PageShell className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <PageHeader
@@ -135,49 +145,35 @@ export function MakeCapa() {
         ]}
       />
 
-      <motion.div
-        variants={staggerContainer}
-        initial="initial"
-        animate="animate"
-      >
-        <div className="overflow-x-auto pb-4">
-          <div className="grid min-w-[960px] grid-cols-6 gap-4">
-            {COLUMNS.map((col) => {
-              const items = byStatus(col.status);
-              return (
-                <motion.div key={col.status} variants={staggerItem}>
-                  <div className="space-y-3">
-                    {/* Column header */}
-                    <div className="flex items-center justify-between gap-2 rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2">
-                      <h3 className="text-sm font-medium text-foreground">
-                        {col.label}
-                      </h3>
-                      <Badge variant="outline" className="font-mono text-xs">
-                        {items.length}
-                      </Badge>
-                    </div>
+      <KanbanBoard className="gap-4 min-h-[min(70vh,520px)]">
+        {COLUMNS.map((col) => {
+          const items = byStatus(col.status);
+          return (
+            <KanbanColumn
+              key={col.status}
+              id={col.status}
+              title={col.label}
+              count={items.length}
+              accept={KANBAN_ITEM_TYPE}
+              onDrop={handleKanbanDrop}
+              className="min-w-[260px] w-[260px] flex-shrink-0"
+            >
+              {items.map((record) => (
+                <KanbanCard
+                  key={record.id}
+                  id={record.id}
+                  type={KANBAN_ITEM_TYPE}
+                  className="p-0"
+                >
+                  <CapaCardContent record={record} />
+                </KanbanCard>
+              ))}
 
-                    {/* Cards */}
-                    <div className="space-y-3">
-                      {items.map((record) => (
-                        <CapaCard key={record.id} record={record} />
-                      ))}
-
-                      {items.length === 0 && (
-                        <div className="rounded-[var(--shape-md)] border border-dashed border-[var(--neutral-200)] p-4 text-center">
-                          <p className="text-xs text-muted-foreground">
-                            No items
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </motion.div>
+              {items.length === 0 && <InlineEmpty message="No items" />}
+            </KanbanColumn>
+          );
+        })}
+      </KanbanBoard>
     </PageShell>
   );
 }

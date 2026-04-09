@@ -320,7 +320,7 @@ function FeedItemCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-yellow-700)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)] dark:hover:bg-[var(--mw-yellow-400)]/15 dark:hover:text-[var(--mw-yellow-300)]"
+                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-agent-50)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--mw-agent)]/15 dark:hover:text-[var(--mw-agent-light)]"
                 onClick={() => onAction(item.actionPath)}
               >
                 {item.actionLabel}

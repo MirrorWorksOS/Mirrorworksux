@@ -36,7 +36,7 @@ export function DashboardManagementBar({
       whileHover={{ y: -1 }}
       transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
       className={cn(
-        "flex h-full flex-col gap-4 rounded-[var(--shape-xl)] border border-[var(--neutral-200)] bg-card p-5 shadow-xs transition-shadow duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:shadow-md dark:border-[var(--border)]",
+        "flex h-full flex-col gap-4 rounded-[var(--shape-xl)] border border-[var(--neutral-200)] bg-card p-5 shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] dark:border-[var(--border)]",
         className,
       )}
     >

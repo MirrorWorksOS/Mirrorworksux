@@ -197,7 +197,7 @@ export function MakeScrapAnalysis() {
                 return (
                   <motion.div key={cell.key} variants={staggerItem}>
                     <div
-                      className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] p-4 transition-shadow hover:shadow-md"
+                      className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] p-4 shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                       style={{
                         backgroundColor: `color-mix(in srgb, ${colour} 12%, transparent)`,
                         borderColor: `color-mix(in srgb, ${colour} 30%, var(--neutral-200))`,

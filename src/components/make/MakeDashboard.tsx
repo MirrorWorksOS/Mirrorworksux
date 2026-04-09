@@ -276,7 +276,7 @@ export function MakeDashboard() {
                 whileHover={{ scale: 1.01 }}
                 transition={{ duration: 0.15 }}
               >
-                <Card className="bg-card border border-[var(--border)] rounded-lg p-5 cursor-pointer hover:shadow-md transition-shadow duration-[var(--duration-medium1)]">
+                <Card variant="flat" className="cursor-pointer rounded-lg border-[var(--border)] p-5 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                   {/* Top row: WO number + status */}
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-base font-medium text-foreground tabular-nums">{wo.woNumber}</span>
@@ -342,7 +342,7 @@ export function MakeDashboard() {
             {scheduledWOs.map((wo) => {
               const statusCfg = getWoStatusConfig(wo.status);
               return (
-                <Card key={wo.woNumber} className="bg-card border border-[var(--border)] rounded-lg p-4 hover:shadow-sm transition-shadow duration-[var(--duration-medium1)]">
+                <Card key={wo.woNumber} variant="flat" className="rounded-lg border-[var(--border)] p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-foreground tabular-nums">{wo.woNumber}</span>
                     <Badge className={cn('border-0 text-[10px] px-1.5 py-0.5', statusCfg.bg, statusCfg.text)}>

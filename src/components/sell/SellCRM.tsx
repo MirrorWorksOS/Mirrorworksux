@@ -16,6 +16,7 @@ import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryB
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { useNavigate } from 'react-router';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
@@ -65,16 +66,23 @@ export function SellCRM() {
 
       {/* Customer Cards Grid */}
       {viewMode === 'card' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredCustomers.map((customer, idx) => (
             <motion.div
               key={customer.id}
               variants={staggerItem}
               custom={idx}
+              className="h-full min-h-0"
             >
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer group"
-                onClick={() => navigate(`/sell/crm/${customer.id}`)}
+              <SpotlightCard
+                radius="rounded-[var(--shape-lg)]"
+                className="h-full min-h-0"
               >
+                <Card
+                  variant="flat"
+                  className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  onClick={() => navigate(`/sell/crm/${customer.id}`)}
+                >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="w-12 h-12">
@@ -83,7 +91,7 @@ export function SellCRM() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="text-sm font-medium text-foreground group-hover:text-[var(--mw-yellow-400)] transition-colors">
+                      <h3 className="text-sm font-medium text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                         {customer.company}
                       </h3>
                       <p className="text-xs text-[var(--neutral-500)]">
@@ -125,7 +133,8 @@ export function SellCRM() {
                     </p>
                   </div>
                 </div>
-              </Card>
+                </Card>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>

@@ -250,7 +250,7 @@ export function ControlGamification() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {BADGES.map(badge => (
               <motion.div key={badge.id} variants={staggerItem}>
-                <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-shadow">
+                <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                   <div className="flex items-start gap-3 mb-3">
                     <div
                       className="flex h-12 w-12 items-center justify-center rounded-[var(--shape-lg)] shrink-0"

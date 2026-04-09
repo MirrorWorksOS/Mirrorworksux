@@ -376,7 +376,7 @@ function Connections({ edges, nodes, canvasW, canvasH }: { edges: WFEdge[]; node
 function AddStepButton({ x, y }: { x: number; y: number }) {
   return (
     <button
-      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-[var(--mw-yellow-600)] hover:shadow-[var(--elevation-2)] hover:scale-110"
+      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.06] hover:text-foreground hover:shadow-[var(--card-shadow-rest)] hover:scale-110"
       style={{ left: x - 12, top: y - 12 }}
       title="Add step"
     >

@@ -72,11 +72,12 @@ export function ProductNodeComponent({
       <div
         className={cn(
           'relative flex flex-col items-center gap-1.5 rounded-2xl border-2 px-4 py-3 min-w-[160px] max-w-[200px]',
-          'bg-card dark:bg-card shadow-sm',
-          'transition-all duration-200',
+          'bg-card dark:bg-card shadow-[var(--card-shadow-rest)]',
+          'transition-[box-shadow,transform] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
           NODE_TYPE_BORDER[node.type],
           isSelected && 'ring-2 ring-[var(--mw-yellow-400)] shadow-md border-[var(--mw-yellow-400)]',
-          !isSelected && 'hover:shadow-md',
+          !isSelected &&
+            'transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:shadow-[var(--card-shadow-elevated)]',
         )}
       >
         {/* Drag handle */}

@@ -15,6 +15,7 @@ import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Button } from '../../ui/button';
 import { cn } from '../../ui/utils';
 import { BorderGlow } from '../surfaces/BorderGlow';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 
 interface AIInsightCardProps {
   title?: string;
@@ -38,7 +39,13 @@ export function AIInsightCard({
   className,
 }: AIInsightCardProps) {
   return (
-    <BorderGlow borderRadius={16} className={cn("border border-[var(--border)]", className)}>
+    <SpotlightCard
+      radius="rounded-[var(--shape-lg)]"
+      className={cn("min-h-0", className)}
+      spotlightColor="rgba(77, 221, 201, 0.12)"
+      spotlightColorDark="rgba(125, 232, 217, 0.16)"
+    >
+    <BorderGlow borderRadius={16} className="border border-[var(--border)] bg-card">
     <div className="p-4">
 
       {/* Header */}
@@ -93,6 +100,7 @@ export function AIInsightCard({
       )}
     </div>
     </BorderGlow>
+    </SpotlightCard>
   );
 }
 

@@ -8,6 +8,7 @@ import { Package, CheckCircle2, Scan, Camera } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
+import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -61,13 +62,15 @@ export function BuyReceipts() {
 
       {!selectedPO ? (
         /* PO Selection */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
           {mockPOs.map((po) => (
-            <motion.div key={po.id} variants={staggerItem}>
-              <Card
-                className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => setSelectedPO(po)}
-              >
+            <motion.div key={po.id} variants={staggerItem} className="h-full min-h-0">
+              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                <Card
+                  variant="flat"
+                  className="h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  onClick={() => setSelectedPO(po)}
+                >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-lg font-medium tabular-nums text-foreground">{po.poNumber}</h3>
@@ -82,7 +85,8 @@ export function BuyReceipts() {
                     Start Receipt →
                   </Button>
                 </div>
-              </Card>
+                </Card>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>
