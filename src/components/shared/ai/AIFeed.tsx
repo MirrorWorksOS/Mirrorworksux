@@ -286,8 +286,8 @@ function FeedItemCard({
     >
       <SpotlightCard
         radius="rounded-[var(--shape-lg)]"
-        spotlightColor="rgba(77, 221, 201, 0.12)"
-        spotlightColorDark="rgba(125, 232, 217, 0.16)"
+        spotlightColor="rgba(77, 221, 201, 0.07)"
+        spotlightColorDark="rgba(125, 232, 217, 0.1)"
         className="min-h-0"
       >
         <BorderGlow
@@ -352,7 +352,8 @@ function ModalFeedItem({
   return (
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
-      spotlightColor="rgba(77, 221, 201, 0.18)"
+      spotlightColor="rgba(77, 221, 201, 0.1)"
+      spotlightColorDark="rgba(125, 232, 217, 0.12)"
       className="min-h-0"
     >
       <BorderGlow
@@ -491,8 +492,8 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             backgroundColor="#ffffff"
             borderRadius={20}
             glowRadius={20}
-            glowIntensity={0.72}
-            fillOpacity={0.36}
+            glowIntensity={0.34}
+            fillOpacity={0.16}
             coneSpread={20}
             edgeSensitivity={15}
           >

@@ -42,8 +42,8 @@ export function AIInsightCard({
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
       className={cn("min-h-0", className)}
-      spotlightColor="rgba(77, 221, 201, 0.12)"
-      spotlightColorDark="rgba(125, 232, 217, 0.16)"
+      spotlightColor="rgba(77, 221, 201, 0.07)"
+      spotlightColorDark="rgba(125, 232, 217, 0.1)"
     >
     <BorderGlow borderRadius={16} className="border border-[var(--border)] bg-card">
     <div className="p-4">

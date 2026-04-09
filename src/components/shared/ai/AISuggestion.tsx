@@ -12,8 +12,8 @@ import { cn } from '../../ui/utils';
 import { BorderGlow } from '@/components/shared/surfaces/BorderGlow';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 
-/** Mesh accents for BorderGlow — mw-agent family (--mw-agent, --mw-agent-600, --mw-agent-light) */
-const MW_AGENT_GLOW_COLORS = ['#4DDDC9', '#36C4B1', '#7AE8D9'] as const;
+/** Mesh accents — mw-agent hues at lower chroma so hover matches dash Agent subtlety */
+const MW_AGENT_GLOW_COLORS = ['#4DDDC980', '#36C4B173', '#7AE8D966'] as const;
 
 interface AISuggestionProps {
   title: string;
@@ -38,12 +38,16 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
       className="min-h-0"
-      spotlightColor="rgba(77, 221, 201, 0.12)"
-      spotlightColorDark="rgba(125, 232, 217, 0.16)"
+      spotlightColor="rgba(77, 221, 201, 0.07)"
+      spotlightColorDark="rgba(125, 232, 217, 0.1)"
     >
       <BorderGlow
         borderRadius={16}
+        glowRadius={12}
         glowColor="172 68 58"
+        glowIntensity={0.2}
+        fillOpacity={0.1}
+        edgeSensitivity={22}
         colors={[...MW_AGENT_GLOW_COLORS]}
         className={cn(
           'border transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
