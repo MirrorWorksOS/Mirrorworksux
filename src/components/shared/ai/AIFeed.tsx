@@ -286,49 +286,56 @@ function FeedItemCard({
     >
       <SpotlightCard
         radius="rounded-[var(--shape-lg)]"
-        spotlightColor="rgba(77, 221, 201, 0.10)"
-        className="border border-[var(--mw-agent)]/15 bg-card dark:border-[var(--mw-agent)]/20"
+        spotlightColor="rgba(77, 221, 201, 0.12)"
+        spotlightColorDark="rgba(125, 232, 217, 0.16)"
+        className="min-h-0"
       >
-        <div className="flex gap-3 p-4">
-          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
-            {item.icon}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-foreground">
-                {item.title}
-              </span>
-              {item.tag && (
-                <Badge
-                  className={cn(
-                    "border-0 text-[10px] px-1.5 py-0 rounded-full",
-                    item.tagColor ??
-                      "bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]",
-                  )}
+        <BorderGlow
+          borderRadius={16}
+          className="border border-[var(--border)] bg-card"
+          animated={false}
+        >
+          <div className="flex gap-3 p-4">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+              {item.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {item.title}
+                </span>
+                {item.tag && (
+                  <Badge
+                    className={cn(
+                      "border-0 text-[10px] px-1.5 py-0 rounded-full",
+                      item.tagColor ??
+                        "bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]",
+                    )}
+                  >
+                    {item.tag}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
+                {item.body}
+              </p>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
+                  {item.timestamp}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--neutral-800)] dark:hover:text-[var(--mw-agent-light)]"
+                  onClick={() => onAction(item.actionPath)}
                 >
-                  {item.tag}
-                </Badge>
-              )}
-            </div>
-            <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
-              {item.body}
-            </p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className="text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
-                {item.timestamp}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--neutral-800)] dark:hover:text-[var(--mw-agent-light)]"
-                onClick={() => onAction(item.actionPath)}
-              >
-                {item.actionLabel}
-                <ArrowRight className="h-3 w-3" />
-              </Button>
+                  {item.actionLabel}
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </BorderGlow>
       </SpotlightCard>
     </motion.div>
   );
@@ -346,38 +353,45 @@ function ModalFeedItem({
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
       spotlightColor="rgba(77, 221, 201, 0.18)"
-      className="border border-[var(--mw-agent)]/25 bg-white"
+      className="min-h-0"
     >
-      <div className="flex gap-3 p-4">
-        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--mw-agent-50)]">
-          {React.cloneElement(item.icon as React.ReactElement, {
-            className: "h-4 w-4 text-[var(--mw-agent-600)]",
-          })}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
-            {item.tag && (
-              <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-agent-600)]">
-                {item.tag}
-              </Badge>
-            )}
+      <BorderGlow
+        borderRadius={16}
+        backgroundColor="#ffffff"
+        className="border border-[var(--neutral-200)] bg-white"
+        animated={false}
+      >
+        <div className="flex gap-3 p-4">
+          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--mw-agent-50)]">
+            {React.cloneElement(item.icon as React.ReactElement, {
+              className: "h-4 w-4 text-[var(--mw-agent-600)]",
+            })}
           </div>
-          <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:hover:bg-[var(--neutral-800)]"
-              onClick={() => onAction(item.actionPath)}
-            >
-              {item.actionLabel}
-              <ArrowRight className="h-3 w-3" />
-            </Button>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center gap-2">
+              <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
+              {item.tag && (
+                <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-agent-600)]">
+                  {item.tag}
+                </Badge>
+              )}
+            </div>
+            <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:hover:bg-[var(--neutral-800)]"
+                onClick={() => onAction(item.actionPath)}
+              >
+                {item.actionLabel}
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </BorderGlow>
     </SpotlightCard>
   );
 }
