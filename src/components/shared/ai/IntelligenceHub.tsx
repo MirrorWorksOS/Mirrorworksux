@@ -8,7 +8,7 @@ import { RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Info, ChevronRight, 
 
 import { EmptyState } from '../feedback/EmptyState';
 import { Card } from '../../ui/card';
-import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
+import { GlareHover } from '@/components/shared/surfaces/GlareHover';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { cn } from '../../ui/utils';
@@ -55,10 +55,20 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">Agent insights</h3>
-            {context && <p className="text-xs text-[var(--neutral-500)]">{context}</p>}
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg font-semibold text-foreground">Agent insights</h3>
+              <Badge variant="softAi" className="text-[10px] px-2 py-0.5 font-medium">
+                AI-powered
+              </Badge>
+              {insights.length > 0 && (
+                <Badge className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
+                  {insights.length} new
+                </Badge>
+              )}
+            </div>
+            {context && <p className="text-xs text-[var(--neutral-500)] mt-0.5">{context}</p>}
           </div>
         </div>
         <Button
@@ -95,12 +105,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <SpotlightCard
-                  radius="rounded-[var(--shape-lg)]"
-                  className="h-full min-h-0"
-                  spotlightColor="rgba(77, 221, 201, 0.12)"
-                  spotlightColorDark="rgba(125, 232, 217, 0.16)"
-                >
+                <GlareHover className="rounded-[var(--shape-lg)] shadow-xs" peakOpacity={0.09}>
                   <Card
                     variant="flat"
                     className={cn(
@@ -115,8 +120,17 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                       <Icon className={cn('w-4 h-4', cfg.text)} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-foreground">{insight.title}</span>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="text-sm font-medium text-foreground">{insight.title}</span>
+                        <Badge variant="softAi" className="text-[10px] px-2 py-0.5">
+                          AI-powered
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]"
+                        >
+                          {cfg.label}
+                        </Badge>
                         {insight.confidence !== undefined && (
                           <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-400)] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence
@@ -124,16 +138,23 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                         )}
                       </div>
                       <p className="text-xs text-[var(--neutral-500)] leading-relaxed">{insight.body}</p>
-                      {insight.action && (
-                        <button className="text-xs text-[var(--mw-blue)] hover:underline mt-1.5 font-medium">
-                          {insight.action} →
-                        </button>
-                      )}
+                      <div className="mt-2 flex items-center justify-between gap-3">
+                        <span className="text-[10px] text-[var(--neutral-400)]">Updated {insight.updatedAt}</span>
+                        {insight.action ? (
+                          <button
+                            type="button"
+                            className="text-xs font-medium text-[var(--mw-agent-600)] hover:underline shrink-0"
+                          >
+                            {insight.action} →
+                          </button>
+                        ) : (
+                          <span />
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-[10px] text-[var(--neutral-400)] mt-2 text-right">Updated {insight.updatedAt}</p>
                   </Card>
-                </SpotlightCard>
+                </GlareHover>
               </motion.div>
             );
           })

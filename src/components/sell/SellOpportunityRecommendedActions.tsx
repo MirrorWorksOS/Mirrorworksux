@@ -1,21 +1,14 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router';
-import { Calendar, ChevronDown, FileText, Phone } from 'lucide-react';
+import { CalendarDays, FileText, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { DateTimePicker } from '@/components/shared/datetime/DateTimePicker';
+import { SplitSegmentDateTimePopover } from '@/components/shared/datetime/SplitSegmentDateTimePopover';
 import { cn } from '@/components/ui/utils';
 import {
   SellOpportunityQuickActivitySheet,
   type QuickActivityPreset,
 } from '@/components/sell/SellOpportunityQuickActivitySheet';
-import type { ActivityType } from '@/components/sell/sell-activity-shared';
 
 type RowKey = 'call' | 'quote' | 'visit';
 
@@ -27,51 +20,7 @@ function defaultSchedule(): Date {
 }
 
 const PRIMARY_LEADING =
-  'h-10 min-h-0 rounded-r-none px-3 text-xs font-medium sm:h-12 sm:min-h-[48px] sm:px-4 sm:text-sm';
-const SPLIT_TRIGGER =
-  'h-10 min-h-0 rounded-l-none border-l-0 px-2 sm:h-12 sm:min-h-[48px] sm:px-2.5';
-
-type MenuDef = { label: string; type: ActivityType; defaultTitle: string };
-
-function RecommendedActionsSplitMenu({
-  rowKey,
-  ariaLabel,
-  items,
-  onPick,
-}: {
-  rowKey: RowKey;
-  ariaLabel: string;
-  items: MenuDef[];
-  onPick: (row: RowKey, preset: QuickActivityPreset) => void;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className={SPLIT_TRIGGER}
-          aria-label={ariaLabel}
-        >
-          <ChevronDown className="h-4 w-4" aria-hidden />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        {items.map((item) => (
-          <DropdownMenuItem
-            key={item.label}
-            onSelect={() =>
-              onPick(rowKey, { activityType: item.type, defaultTitle: item.defaultTitle })
-            }
-          >
-            {item.label}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+  'h-10 min-h-0 rounded-l-[var(--shape-md)] rounded-r-none border-[var(--neutral-200)] px-3 text-xs font-medium sm:h-12 sm:min-h-[48px] sm:px-4 sm:text-sm';
 
 export interface SellOpportunityRecommendedActionsProps {
   contactFirstName: string;
@@ -120,44 +69,14 @@ export function SellOpportunityRecommendedActions({
     }
   };
 
-  const callMenu: MenuDef[] = [
-    { label: 'Email follow-up', type: 'email', defaultTitle: `Email ${contactFirstName}` },
-    { label: 'Book meeting', type: 'meeting', defaultTitle: `Meeting with ${contactFirstName}` },
-    { label: 'Log task', type: 'task', defaultTitle: 'Follow up on quote engagement' },
-  ];
-
-  const quoteMenu: MenuDef[] = [
-    { label: 'Schedule follow-up', type: 'task', defaultTitle: 'Follow up after revised quote' },
-    {
-      label: 'Schedule call',
-      type: 'call',
-      defaultTitle: `Call ${contactFirstName} — revised quote`,
-    },
-    { label: 'Log note', type: 'note', defaultTitle: 'Note on quote variance' },
-  ];
-
-  const visitMenu: MenuDef[] = [
-    {
-      label: 'Call reminder',
-      type: 'call',
-      defaultTitle: `Call before site visit — ${contactFirstName}`,
-    },
-    { label: 'Email directions', type: 'email', defaultTitle: 'Email site visit details' },
-    {
-      label: 'Log task',
-      type: 'task',
-      defaultTitle: 'Prepare dimensional verification checklist',
-    },
-  ];
-
   return (
     <>
       <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
         <h3 className="mb-4 text-sm font-medium text-foreground">Recommended Next Actions</h3>
         <div className="space-y-4">
-          {/* Call row — next best: yellow primary */}
-          <div className="flex flex-col gap-4 border-b border-[var(--neutral-100)] pb-4 md:flex-row md:items-start md:justify-between">
-            <div className="flex min-w-0 flex-1 gap-3">
+          {/* Call row */}
+          <div className="border-b border-[var(--neutral-100)] pb-4">
+            <div className="flex gap-3">
               <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-50)]">
                 <Phone className="h-4 w-4 text-[var(--mw-green)]" />
               </div>
@@ -168,15 +87,12 @@ export function SellOpportunityRecommendedActions({
                     Quote opened twice — high engagement signal
                   </p>
                 </div>
-                <div className="inline-flex">
+                <div className="inline-flex max-w-full rounded-[var(--shape-md)] shadow-xs">
                   <Button
                     type="button"
                     size="sm"
-                    variant="default"
-                    className={cn(
-                      PRIMARY_LEADING,
-                      'border-0 bg-[var(--mw-yellow-400)] text-[#2C2C2C] hover:bg-[var(--mw-yellow-500)] active:bg-[var(--mw-yellow-600)]',
-                    )}
+                    variant="outline"
+                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
                     onClick={() =>
                       openSheet('call', {
                         activityType: 'call',
@@ -186,29 +102,19 @@ export function SellOpportunityRecommendedActions({
                   >
                     Schedule call
                   </Button>
-                  <RecommendedActionsSplitMenu
-                    rowKey="call"
-                    ariaLabel={`More actions for Call ${contactFirstName}`}
-                    items={callMenu}
-                    onPick={openSheet}
+                  <SplitSegmentDateTimePopover
+                    value={scheduleByRow.call}
+                    onChange={(d) => setScheduledForRow('call', d)}
+                    ariaLabel={`Date and time for Call ${contactFirstName}`}
                   />
                 </div>
               </div>
             </div>
-            <div className="w-full shrink-0 md:w-[min(100%,280px)] md:pt-1">
-              <DateTimePicker
-                value={scheduleByRow.call}
-                onChange={(d) => {
-                  if (d) setScheduledForRow('call', d);
-                }}
-                className="sm:flex-col sm:gap-2 md:flex-row md:items-start"
-              />
-            </div>
           </div>
 
-          {/* Quote row — primary navigates */}
-          <div className="flex flex-col gap-4 border-b border-[var(--neutral-100)] pb-4 md:flex-row md:items-start md:justify-between">
-            <div className="flex min-w-0 flex-1 gap-3">
+          {/* Quote row */}
+          <div className="border-b border-[var(--neutral-100)] pb-4">
+            <div className="flex gap-3">
               <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-50)]">
                 <FileText className="h-4 w-4 text-[var(--mw-blue)]" />
               </div>
@@ -219,41 +125,31 @@ export function SellOpportunityRecommendedActions({
                     Material costs updated since last quote — $2,100 variance
                   </p>
                 </div>
-                <div className="inline-flex">
+                <div className="inline-flex max-w-full rounded-[var(--shape-md)] shadow-xs">
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
-                    className={PRIMARY_LEADING}
+                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
                     onClick={() => navigate('/sell/quotes/new')}
                   >
                     Open builder
                   </Button>
-                  <RecommendedActionsSplitMenu
-                    rowKey="quote"
-                    ariaLabel="More actions for Send revised quote"
-                    items={quoteMenu}
-                    onPick={openSheet}
+                  <SplitSegmentDateTimePopover
+                    value={scheduleByRow.quote}
+                    onChange={(d) => setScheduledForRow('quote', d)}
+                    ariaLabel="Date and time for revised quote follow-up"
                   />
                 </div>
               </div>
             </div>
-            <div className="w-full shrink-0 md:w-[min(100%,280px)] md:pt-1">
-              <DateTimePicker
-                value={scheduleByRow.quote}
-                onChange={(d) => {
-                  if (d) setScheduledForRow('quote', d);
-                }}
-                className="sm:flex-col sm:gap-2 md:flex-row md:items-start"
-              />
-            </div>
           </div>
 
           {/* Site visit row */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div className="flex min-w-0 flex-1 gap-3">
+          <div>
+            <div className="flex gap-3">
               <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-50)]">
-                <Calendar className="h-4 w-4 text-[var(--mw-blue)]" />
+                <CalendarDays className="h-4 w-4 text-[var(--mw-blue)]" />
               </div>
               <div className="min-w-0 flex-1 space-y-3">
                 <div>
@@ -262,12 +158,12 @@ export function SellOpportunityRecommendedActions({
                     Customer requested dimensional verification before sign-off
                   </p>
                 </div>
-                <div className="inline-flex">
+                <div className="inline-flex max-w-full rounded-[var(--shape-md)] shadow-xs">
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
-                    className={PRIMARY_LEADING}
+                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
                     onClick={() =>
                       openSheet('visit', {
                         activityType: 'meeting',
@@ -277,23 +173,13 @@ export function SellOpportunityRecommendedActions({
                   >
                     Schedule
                   </Button>
-                  <RecommendedActionsSplitMenu
-                    rowKey="visit"
-                    ariaLabel="More actions for Book site visit"
-                    items={visitMenu}
-                    onPick={openSheet}
+                  <SplitSegmentDateTimePopover
+                    value={scheduleByRow.visit}
+                    onChange={(d) => setScheduledForRow('visit', d)}
+                    ariaLabel="Date and time for site visit"
                   />
                 </div>
               </div>
-            </div>
-            <div className="w-full shrink-0 md:w-[min(100%,280px)] md:pt-1">
-              <DateTimePicker
-                value={scheduleByRow.visit}
-                onChange={(d) => {
-                  if (d) setScheduledForRow('visit', d);
-                }}
-                className="sm:flex-col sm:gap-2 md:flex-row md:items-start"
-              />
             </div>
           </div>
         </div>

@@ -45,6 +45,7 @@ import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 import type { Opportunity } from "./sell-opportunity-types";
 import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services/mock';
 import { SellOpportunityRecommendedActions } from "@/components/sell/SellOpportunityRecommendedActions";
+import { AIFeed } from "@/components/shared/ai/AIFeed";
 
 type Stage = Opportunity["stage"];
 
@@ -630,6 +631,8 @@ export function SellOpportunityPage() {
       case "intelligence":
         return (
           <div className="space-y-6">
+            <AIFeed module="sell" initialCount={3} />
+
             {/* AI top-line signal */}
             <AIInsightCard title="Intelligence Hub">
               Win probability is <strong className="text-foreground">68%</strong> based on 142 similar fabrication opportunities. Next best action: call {customer.contact.split(" ")[0]} — quote engagement is high.

@@ -10,6 +10,7 @@ import { AIInsightCard, AIInsightMessage } from '@/components/shared/ai/AIInsigh
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 
 export function PlanIntelligenceHubTab() {
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
@@ -30,6 +31,8 @@ export function PlanIntelligenceHubTab() {
 
   return (
     <div className="p-6 space-y-6">
+      <AIFeed module="plan" initialCount={3} />
+
       {/* AI Suggestions */}
       <AISuggestion
         title="Critical path risk"

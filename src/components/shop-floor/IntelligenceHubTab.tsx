@@ -29,6 +29,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogPortal, Di
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from '../ui/utils';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 
 // --- Mock Data ---
 
@@ -357,6 +358,8 @@ export function IntelligenceHubTab() {
                 <FilterBadge key={f} label={f} active={filter === f} onClick={() => setFilter(f)} />
              ))}
           </div>
+
+          <AIFeed module="make" initialCount={3} />
        </div>
 
        {/* Content Grid */}

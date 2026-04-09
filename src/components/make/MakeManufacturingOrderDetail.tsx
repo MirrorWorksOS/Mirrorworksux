@@ -14,7 +14,7 @@ import {
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
-import { AISuggestion } from '@/components/shared/ai/AISuggestion';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -557,49 +557,7 @@ export function MakeManufacturingOrderDetail() {
       case 'intelligence':
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-medium text-foreground">AI Suggestions</h2>
-                <p className="text-xs text-[var(--neutral-500)]">Actionable recommendations based on production data</p>
-              </div>
-              <Badge variant="softAccent" className="text-xs">3 new suggestions</Badge>
-            </div>
-
-            <AISuggestion
-              title="Schedule optimisation"
-              confidence={87}
-              source="Production scheduling engine · last 30 days of similar jobs"
-              impact="4 hours saved on total MO lead time"
-            >
-              Moving WO-004 (Mounting Bracket) start forward by 1 day enables parallel processing with WO-003 completion. Net benefit: <strong>4 hours saved</strong> on total MO lead time.
-            </AISuggestion>
-
-            <AISuggestion
-              title="Quality trend alert"
-              confidence={74}
-              source="SPC analysis · CNC-01 measurement data"
-              impact="Prevent potential batch rejection — estimated cost avoidance: $3,200"
-            >
-              Material thickness variance detected on Side Panel L (WO-002). 3 of 75 units flagged — within tolerance but <strong>trending toward upper limit</strong>. Recommend recalibrating laser measurement on next batch.
-            </AISuggestion>
-
-            <AISuggestion
-              title="Predictive maintenance"
-              confidence={68}
-              source="Machine vibration sensors · historical failure data"
-              impact="Avoid 8-hour unplanned downtime"
-            >
-              CNC-01 spindle vibration trending <strong>15% above baseline</strong>. Based on similar patterns, predicted bearing wear in ~40 operating hours. Recommend scheduling maintenance before WO-006 starts.
-            </AISuggestion>
-
-            <AISuggestion
-              title="Resource reallocation"
-              confidence={92}
-              source="Real-time machine utilisation · current queue"
-              impact="2.5 hours time saving"
-            >
-              CNC-01 utilisation at 92%. Consider shifting WO-004 to CNC-02 (currently idle) to avoid bottleneck. Estimated time saving: <strong>2.5 hours</strong>.
-            </AISuggestion>
+            <AIFeed module="make" initialCount={3} />
 
             <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <h3 className="text-sm font-medium text-foreground mb-4">MO Timeline</h3>

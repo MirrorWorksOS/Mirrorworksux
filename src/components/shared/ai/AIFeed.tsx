@@ -34,9 +34,8 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/components/ui/utils";
 import { motion, AnimatePresence } from "motion/react";
+import { GlareHover } from "@/components/shared/surfaces/GlareHover";
 import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
-import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
-
 
 type AIFeedModule =
   | "sell"
@@ -211,7 +210,40 @@ const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
       actionPath: "/ship/packaging",
     },
   ],
-  book: [],
+  book: [
+    {
+      id: "book-1",
+      icon: <DollarSign className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Margin compression on Job 1284",
+      body: "Actual machine burden is 8% above budgeted rate. Consider updating standard costs before the next quote cycle.",
+      tag: "Costing",
+      timestamp: "25 min ago",
+      actionLabel: "Open job costing",
+      actionPath: "/book/job-profitability",
+    },
+    {
+      id: "book-2",
+      icon: <TrendingUp className="h-4 w-4 text-[var(--mw-success)]" />,
+      title: "WIP valuation spike",
+      body: "Work-in-progress is 18% higher than the 12-week average — mostly driven by two long-running fabrication jobs.",
+      tag: "WIP",
+      tagColor: "bg-[var(--mw-success)]/15 text-[var(--mw-success)]",
+      timestamp: "1h ago",
+      actionLabel: "View WIP report",
+      actionPath: "/book/wip-valuation",
+    },
+    {
+      id: "book-3",
+      icon: <AlertTriangle className="h-4 w-4 text-[var(--mw-warning)]" />,
+      title: "Invoice ageing threshold",
+      body: "Three customer accounts crossed 45-day terms this week. Total exposure: $84,200.",
+      tag: "AR",
+      tagColor: "bg-[var(--mw-warning)]/15 text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)]",
+      timestamp: "2h ago",
+      actionLabel: "Review AR",
+      actionPath: "/book/invoices",
+    },
+  ],
   buy: [
     {
       id: "buy-1",
@@ -247,7 +279,40 @@ const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
       actionPath: "/buy/requisitions",
     },
   ],
-  control: [],
+  control: [
+    {
+      id: "control-1",
+      icon: <Clock className="h-4 w-4 text-[var(--mw-yellow-400)]" />,
+      title: "Workflow run failures up",
+      body: "The \"New job from order\" automation failed 4 times in 24h — all due to missing routing on product SKU-4412.",
+      tag: "Automation",
+      timestamp: "18 min ago",
+      actionLabel: "Open workflow designer",
+      actionPath: "/control/workflow-designer",
+    },
+    {
+      id: "control-2",
+      icon: <AlertTriangle className="h-4 w-4 text-[var(--mw-error)]" />,
+      title: "Document approval backlog",
+      body: "12 drawings are waiting >72h for engineering sign-off. Oldest: Bracket-v3.dwg (5 days).",
+      tag: "Compliance",
+      tagColor: "bg-[var(--mw-error)]/15 text-[var(--mw-error)]",
+      timestamp: "50 min ago",
+      actionLabel: "View documents",
+      actionPath: "/control/documents",
+    },
+    {
+      id: "control-3",
+      icon: <Users className="h-4 w-4 text-[var(--mw-info)]" />,
+      title: "Training compliance gap",
+      body: "4 operators on Laser 2 have hot-work certificates expiring within 14 days. Schedule refresher to stay audit-ready.",
+      tag: "People",
+      tagColor: "bg-[var(--mw-info)]/15 text-[var(--mw-info)]",
+      timestamp: "3h ago",
+      actionLabel: "Open training",
+      actionPath: "/control/people",
+    },
+  ],
   all: [],
 };
 
@@ -284,24 +349,8 @@ function FeedItemCard({
       }}
       className="overflow-visible"
     >
-      <SpotlightCard
-        radius="rounded-[var(--shape-lg)]"
-        overflow="visible"
-        spotlightColor="rgba(77, 221, 201, 0.07)"
-        spotlightColorDark="rgba(125, 232, 217, 0.1)"
-        className="min-h-0"
-      >
-        <BorderGlow
-          borderRadius={16}
-          edgeSensitivity={10}
-          glowRadius={22}
-          glowIntensity={0.23}
-          coneSpread={30}
-          fillOpacity={0.158}
-          perimeter="uniform"
-          animated={false}
-          className="bg-card"
-        >
+      <GlareHover className="rounded-[var(--shape-lg)] shadow-xs" peakOpacity={0.09}>
+        <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card">
           <div className="flex gap-3 p-4">
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
               {item.icon}
@@ -329,14 +378,14 @@ function FeedItemCard({
               <p className="text-xs leading-relaxed text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
                 {item.body}
               </p>
-              <div className="mt-2 flex items-center justify-between">
+              <div className="mt-2 flex items-center justify-between gap-3">
                 <span className="text-[10px] text-[var(--neutral-400)] dark:text-[var(--neutral-500)]">
                   {item.timestamp}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--neutral-800)] dark:hover:text-[var(--mw-agent-light)]"
+                  className="h-7 shrink-0 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:text-[var(--mw-agent-light)] dark:hover:bg-[var(--neutral-800)] dark:hover:text-[var(--mw-agent-light)]"
                   onClick={() => onAction(item.actionPath)}
                 >
                   {item.actionLabel}
@@ -345,8 +394,8 @@ function FeedItemCard({
               </div>
             </div>
           </div>
-        </BorderGlow>
-      </SpotlightCard>
+        </div>
+      </GlareHover>
     </motion.div>
   );
 }
@@ -360,25 +409,8 @@ function ModalFeedItem({
   onAction: (path: string) => void;
 }) {
   return (
-    <SpotlightCard
-      radius="rounded-[var(--shape-lg)]"
-      overflow="visible"
-      spotlightColor="rgba(77, 221, 201, 0.1)"
-      spotlightColorDark="rgba(125, 232, 217, 0.12)"
-      className="min-h-0"
-    >
-      <BorderGlow
-        borderRadius={16}
-        backgroundColor="#ffffff"
-        edgeSensitivity={10}
-        glowRadius={22}
-        glowIntensity={0.23}
-        coneSpread={30}
-        fillOpacity={0.158}
-        perimeter="uniform"
-        animated={false}
-        className="bg-white"
-      >
+    <GlareHover className="rounded-[var(--shape-lg)]" peakOpacity={0.1}>
+      <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-white">
         <div className="flex gap-3 p-4">
           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
             {React.cloneElement(item.icon as React.ReactElement, {
@@ -398,12 +430,12 @@ function ModalFeedItem({
               )}
             </div>
             <p className="text-xs leading-relaxed text-[var(--mw-mirage)]/75">{item.body}</p>
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-2 flex items-center justify-between gap-3">
               <span className="text-[10px] text-[var(--mw-mirage)]/55">{item.timestamp}</span>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:hover:bg-[var(--neutral-800)]"
+                className="h-7 shrink-0 gap-1.5 px-2.5 text-xs font-medium text-[var(--mw-agent-600)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-agent-600)] dark:hover:bg-[var(--neutral-800)]"
                 onClick={() => onAction(item.actionPath)}
               >
                 {item.actionLabel}
@@ -412,8 +444,8 @@ function ModalFeedItem({
             </div>
           </div>
         </div>
-      </BorderGlow>
-    </SpotlightCard>
+      </div>
+    </GlareHover>
   );
 }
 
@@ -441,8 +473,11 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
     <>
       <div className={cn("space-y-0", className)}>
         {/* Feed header */}
-        <div className="mb-3 flex items-center gap-2">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
           <h3 className="text-lg font-semibold text-foreground">Agent insights</h3>
+          <Badge variant="softAi" className="text-[10px] px-2 py-0.5 font-medium">
+            AI-powered
+          </Badge>
           <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] text-[10px] px-1.5 py-0 dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
             {items.length} new
           </Badge>
@@ -521,8 +556,11 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             className="bg-white"
           >
             <DialogHeader className="px-8 pt-8 pb-5">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <DialogTitle className="text-[var(--mw-mirage)]">Agent insights</DialogTitle>
+                <Badge variant="softAi" className="text-[10px] px-2 py-0.5 font-medium">
+                  AI-powered
+                </Badge>
                 <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 font-medium text-[var(--mw-agent-600)]">
                   {items.length} new
                 </Badge>

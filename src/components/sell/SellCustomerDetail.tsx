@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Building2, Users, FileText, Clock, Plus, Sparkles, ChevronDown, ChevronUp, ExternalLink, MessageSquare, PhoneCall, Send, Upload, Trash2, Pencil, Archive } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Building2, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, ExternalLink, MessageSquare, PhoneCall, Send, Upload, Trash2, Pencil, Archive } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -32,6 +32,7 @@ import { FinancialTable, type FinancialColumn } from '@/components/shared/data/F
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { customers, opportunities, quotes, salesOrders, sellInvoices, sellActivities, employees } from '@/services/mock';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 
 // ============================================================
 // Mock Data — built from centralised @/services/mock exports
@@ -597,17 +598,10 @@ export function SellCustomerDetail() {
                 <button className="text-xs text-foreground hover:underline mt-3">View all →</button>
               </Card>
 
-              {/* Intelligence Hub */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
-                  <h3 className="text-base font-medium text-foreground">Intelligence Hub</h3>
-                </div>
-                <p className="text-xs text-[var(--neutral-500)] leading-relaxed">
-                  TechCorp's order frequency has increased 40% this quarter. Consider offering volume pricing on 5052 aluminium enclosures to lock in Q2 demand.
-                </p>
-                <p className="text-xs text-[var(--neutral-500)] mt-2">Updated 3 hours ago</p>
-              </Card>
+              {/* Agent insights */}
+              <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+                <AIFeed module="sell" initialCount={2} />
+              </div>
             </div>
           </div>
         )}
