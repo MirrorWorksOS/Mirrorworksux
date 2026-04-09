@@ -17,6 +17,12 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        /** AI / intelligence — MW Agent surface + Mirage (or agent-light on dark) */
+        softAi:
+          "border-transparent bg-[var(--badge-soft-ai-bg)] text-[var(--badge-soft-ai-text)] shadow-none px-2.5 py-1 font-medium",
+        /** Radix-style soft accent: stronger amber/yellow contrast than plain yellow-50 */
+        softAccent:
+          "border-transparent bg-[var(--badge-soft-accent-bg)] text-[var(--badge-soft-accent-text)] shadow-none px-2.5 py-1 font-medium",
       },
     },
     defaultVariants: {

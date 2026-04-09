@@ -136,7 +136,7 @@ const PRIORITY_BADGE: Record<
   },
   high: {
     className:
-      "border-0 bg-[var(--mw-yellow-400)]/25 text-foreground",
+      "border-0 bg-[var(--badge-soft-accent-bg)] text-[var(--badge-soft-accent-text)]",
     label: "High",
   },
   medium: {
@@ -446,7 +446,7 @@ export function SellOpportunityPage() {
               </Card>
 
               <div className="flex flex-wrap gap-2">
-                <Badge className="rounded-full border-0 bg-[var(--mw-yellow-400)]/30 text-foreground">
+                <Badge variant="softAccent">
                   Hot
                 </Badge>
                 <Badge className="rounded-full border-0 bg-[var(--neutral-100)] text-foreground">
@@ -639,7 +639,7 @@ export function SellOpportunityPage() {
             <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-foreground">Win Probability</h3>
-                <Badge className="border-0 bg-[var(--mw-purple)]/15 text-[var(--mw-purple)] text-xs">AI-powered</Badge>
+                <Badge variant="softAi">AI-powered</Badge>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-center">

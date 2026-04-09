@@ -4,8 +4,6 @@ import { useDrop } from "react-dnd";
 
 import { cn } from "@/components/ui/utils";
 
-import { DROP_ZONE_STYLE } from "./drag-styles";
-
 export interface KanbanDragItem {
   id: string;
   type: string;
@@ -34,21 +32,15 @@ export function KanbanColumn({
 }: KanbanColumnProps) {
   const [listRef] = useAutoAnimate<HTMLDivElement>();
 
-  const [{ isOver, canDrop }, drop] = useDrop(
+  const [, drop] = useDrop(
     () => ({
       accept,
       drop: (item: KanbanDragItem) => {
         onDrop(item, id);
       },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
     }),
     [accept, id, onDrop],
   );
-
-  const showActive = isOver && canDrop;
 
   return (
     <div
@@ -72,10 +64,7 @@ export function KanbanColumn({
       </div>
       <div
         ref={drop}
-        className={cn(
-          "flex-1 rounded-b-[var(--shape-md)] border-2 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-          showActive ? DROP_ZONE_STYLE.active : DROP_ZONE_STYLE.inactive,
-        )}
+        className="flex-1 rounded-b-[var(--shape-md)] border-2 border-transparent bg-transparent transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
       >
         <div ref={listRef} className="space-y-2 min-h-[200px] p-2">
           {children}

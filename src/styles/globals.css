@@ -130,6 +130,12 @@
   --pb-custom-fill: var(--mw-purple-50);
   --pb-text-shapes-fill: var(--neutral-50);
 
+  /* Badge — AI / intelligence (MW Agent wash + Mirage label; on-brand vs blue) */
+  --badge-soft-ai-bg: var(--mw-agent-50);
+  --badge-soft-ai-text: var(--mw-mirage);
+  --badge-soft-accent-bg: color-mix(in srgb, var(--mw-yellow-400) 24%, var(--neutral-50));
+  --badge-soft-accent-text: var(--mw-yellow-900);
+
   /* M3 Shape Scale — rounder defaults for SaaS cards / command surfaces */
   --shape-none: 0px;
   --shape-xs: 4px;
@@ -338,6 +344,12 @@
   --pb-resource-fill: #404040;
   --pb-custom-fill: rgba(107, 33, 168, 0.3);
   --pb-text-shapes-fill: var(--neutral-100);
+
+  /* Badge — AI chip on dark surfaces */
+  --badge-soft-ai-bg: color-mix(in srgb, var(--mw-agent) 24%, var(--neutral-100));
+  --badge-soft-ai-text: var(--mw-agent-light);
+  --badge-soft-accent-bg: color-mix(in srgb, var(--mw-yellow-400) 22%, transparent);
+  --badge-soft-accent-text: #fef08a;
 
   /* M3 Elevation — lighter glow on dark surfaces */
   --elevation-0: none;
@@ -955,6 +967,37 @@ html {
   border-radius: inherit;
   z-index: 1;
   isolation: isolate;
+}
+
+/* Uniform perimeter — full rounded border ring; no directional conic wedge (small cards / feed) */
+.glow-card.glow-card--uniform::before {
+  mask-image: none;
+  -webkit-mask: none;
+  /* +20% vs directional ::before (0.34) */
+  opacity: calc(0.408 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+}
+
+.glow-card.glow-card--uniform::after {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.glow-card.glow-card--uniform > .edge-light {
+  mask-image: none;
+  -webkit-mask: none;
+  /* +20% vs directional edge-light (0.22) */
+  opacity: calc(0.264 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+}
+
+.glow-card.glow-card--uniform > .edge-light::before {
+  inset: 0;
+  /* Softer, even halo; fallback alphas +20% vs directional stack */
+  box-shadow:
+    0 0 0 1px var(--glow-color-40, hsl(172deg 68% 58% / 19%)),
+    0 0 18px 3px var(--glow-color-30, hsl(172deg 68% 58% / 14%)),
+    0 0 36px 8px var(--glow-color-20, hsl(172deg 68% 58% / 10%)),
+    0 0 52px 12px var(--glow-color-10, hsl(172deg 68% 58% / 6%));
 }
 
 /* SpotlightCard — swap to light color in dark mode */

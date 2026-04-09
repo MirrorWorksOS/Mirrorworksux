@@ -25,6 +25,11 @@ export interface SpotlightCardProps {
   spotlightColorDark?: string;
   /** Border radius class — default rounded-2xl */
   radius?: string;
+  /**
+   * Use `visible` when wrapping BorderGlow so outer glow layers are not clipped at corners/edges.
+   * Default `hidden` keeps the spotlight vignette contained.
+   */
+  overflow?: "hidden" | "visible";
 }
 
 export function SpotlightCard({
@@ -33,6 +38,7 @@ export function SpotlightCard({
   spotlightColor = "rgba(0, 0, 0, 0.1)",
   spotlightColorDark = "rgba(255, 255, 255, 0.18)",
   radius = "rounded-2xl",
+  overflow = "hidden",
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -77,7 +83,8 @@ export function SpotlightCard({
       onMouseMove={reducedMotion ? undefined : handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "spotlight-card relative overflow-hidden",
+        "spotlight-card relative",
+        overflow === "visible" ? "overflow-visible" : "overflow-hidden",
         radius,
         className,
       )}

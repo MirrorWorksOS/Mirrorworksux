@@ -633,7 +633,7 @@ export function WelcomeDashboard() {
                         <span className="font-light text-muted-foreground">
                           MES bridge
                         </span>
-                        <Badge className="rounded-full border-0 bg-[var(--mw-amber-50)] px-3 py-1 font-bold text-[var(--mw-yellow-900)] dark:bg-[var(--mw-yellow-400-20)] dark:text-[var(--mw-yellow-400)]">
+                        <Badge variant="softAccent" className="rounded-full font-bold">
                           Degraded
                         </Badge>
                       </div>

@@ -476,7 +476,7 @@ function OverviewTab() {
             <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
               <Star className="w-4 h-4 text-[var(--mw-yellow-400)]" /> Supplier Performance
             </h4>
-            <Badge className="bg-[var(--mw-yellow-50)] text-foreground border-0 text-xs tabular-nums">94/100</Badge>
+            <Badge variant="softAccent" className="text-xs tabular-nums">94/100</Badge>
           </div>
           <p className="text-sm font-medium text-foreground mb-3">Acme Industries</p>
           {[

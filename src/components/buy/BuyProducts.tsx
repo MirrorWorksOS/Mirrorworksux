@@ -70,7 +70,7 @@ const productColumns: MwColumnDef<Product>[] = [
     cell: (row) => (
       <div className="flex items-center justify-center">
         {row.stock < row.reorder ? (
-          <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-0 flex items-center gap-1">
+          <Badge variant="softAccent" className="flex items-center gap-1">
             <AlertTriangle className="w-4 h-4" />
             Low Stock
           </Badge>

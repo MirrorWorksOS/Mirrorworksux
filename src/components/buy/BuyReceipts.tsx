@@ -76,7 +76,7 @@ export function BuyReceipts() {
                     <h3 className="text-lg font-medium tabular-nums text-foreground">{po.poNumber}</h3>
                     <p className="text-sm text-[var(--neutral-500)]">{po.supplier}</p>
                   </div>
-                  <Badge className="bg-[var(--mw-amber-50)] text-[var(--mw-yellow-900)] border-0">Pending</Badge>
+                  <Badge variant="softAccent">Pending</Badge>
                 </div>
                 <p className="text-xs text-[var(--neutral-600)] mb-3">Expected: {new Date(po.expectedDate).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">

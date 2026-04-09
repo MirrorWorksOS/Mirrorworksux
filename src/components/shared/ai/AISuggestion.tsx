@@ -34,6 +34,7 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
   return (
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
+      overflow="visible"
       className="min-h-0"
       spotlightColor="rgba(77, 221, 201, 0.07)"
       spotlightColorDark="rgba(125, 232, 217, 0.1)"
@@ -42,19 +43,16 @@ export function AISuggestion({ title, confidence, source, impact, children, onAp
         borderRadius={16}
         edgeSensitivity={10}
         glowRadius={22}
-        glowIntensity={0.192}
+        glowIntensity={0.23}
         coneSpread={30}
-        fillOpacity={0.132}
+        fillOpacity={0.158}
+        perimeter="uniform"
         animated={false}
         className={cn(
           'transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
           applied
             ? 'border border-[var(--mw-green)]/50 bg-[var(--mw-green)]/5'
-            : cn(
-                'bg-card shadow-[var(--elevation-2)]',
-                'transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]',
-                'hover:shadow-[var(--elevation-3)] hover:-translate-y-px',
-              ),
+            : 'bg-card',
         )}
       >
         <div className="p-4">

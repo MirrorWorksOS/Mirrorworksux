@@ -143,7 +143,7 @@ export function UpgradeDialog({
             </div>
             {/* Next tier */}
             <div className="bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 rounded-[var(--shape-lg)] p-4">
-              <Badge className="bg-[var(--mw-yellow-400)]/20 text-[var(--mw-yellow-600)] dark:text-[var(--mw-yellow-400)] border-0 text-xs rounded-full mb-2">
+              <Badge variant="softAccent" className="text-xs rounded-full mb-2">
                 Recommended
               </Badge>
               <p className="text-sm font-medium text-foreground">{nextTier}</p>

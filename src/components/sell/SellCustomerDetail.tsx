@@ -513,7 +513,7 @@ export function SellCustomerDetail() {
                 <h2 className="text-lg font-medium text-foreground mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
-                    <Badge key={tag} className="bg-[var(--mw-yellow-50)] text-foreground border border-[var(--mw-yellow-400)] rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    <Badge key={tag} variant="softAccent" className="rounded text-xs px-2 py-0.5">{tag}</Badge>
                   ))}
                   <button className="text-xs text-foreground hover:underline flex items-center gap-1">
                     <Plus className="w-4 h-4" /> Add tag

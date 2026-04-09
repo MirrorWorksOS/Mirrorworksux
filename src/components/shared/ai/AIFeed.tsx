@@ -282,10 +282,11 @@ function FeedItemCard({
         delay: index * 0.08,
         ease: [0.25, 0.1, 0.25, 1],
       }}
-      className="overflow-hidden"
+      className="overflow-visible"
     >
       <SpotlightCard
         radius="rounded-[var(--shape-lg)]"
+        overflow="visible"
         spotlightColor="rgba(77, 221, 201, 0.07)"
         spotlightColorDark="rgba(125, 232, 217, 0.1)"
         className="min-h-0"
@@ -294,25 +295,25 @@ function FeedItemCard({
           borderRadius={16}
           edgeSensitivity={10}
           glowRadius={22}
-          glowIntensity={0.192}
+          glowIntensity={0.23}
           coneSpread={30}
-          fillOpacity={0.132}
+          fillOpacity={0.158}
+          perimeter="uniform"
           animated={false}
-          className={cn(
-            "bg-card shadow-[var(--elevation-2)]",
-            "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
-            "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
-          )}
+          className="bg-card"
         >
           <div className="flex gap-3 p-4">
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
               {item.icon}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="mb-1 flex items-center gap-2">
+              <div className="mb-1 flex flex-wrap items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
                   {item.title}
                 </span>
+                <Badge variant="softAi" className="text-[10px] px-2 py-0.5">
+                  AI-powered
+                </Badge>
                 {item.tag && (
                   <Badge
                     className={cn(
@@ -361,6 +362,7 @@ function ModalFeedItem({
   return (
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
+      overflow="visible"
       spotlightColor="rgba(77, 221, 201, 0.1)"
       spotlightColorDark="rgba(125, 232, 217, 0.12)"
       className="min-h-0"
@@ -370,15 +372,12 @@ function ModalFeedItem({
         backgroundColor="#ffffff"
         edgeSensitivity={10}
         glowRadius={22}
-        glowIntensity={0.192}
+        glowIntensity={0.23}
         coneSpread={30}
-        fillOpacity={0.132}
+        fillOpacity={0.158}
+        perimeter="uniform"
         animated={false}
-        className={cn(
-          "bg-white shadow-[var(--elevation-2)]",
-          "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
-          "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
-        )}
+        className="bg-white"
       >
         <div className="flex gap-3 p-4">
           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
@@ -387,8 +386,11 @@ function ModalFeedItem({
             })}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="mb-1 flex items-center gap-2">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
               <span className="text-sm font-semibold text-[var(--mw-mirage)]">{item.title}</span>
+              <Badge variant="softAi" className="text-[10px] px-2 py-0.5">
+                AI-powered
+              </Badge>
               {item.tag && (
                 <Badge className="border-0 bg-[var(--mw-agent-50)] text-[10px] px-1.5 py-0 rounded-full font-medium text-[var(--mw-agent-600)]">
                   {item.tag}
@@ -511,15 +513,12 @@ export function AIFeed({ module, className, initialCount = 1 }: AIFeedProps) {
             borderRadius={20}
             edgeSensitivity={10}
             glowRadius={28}
-            glowIntensity={0.192}
+            glowIntensity={0.23}
             coneSpread={30}
-            fillOpacity={0.132}
+            fillOpacity={0.158}
+            perimeter="uniform"
             animated
-            className={cn(
-              "shadow-[var(--elevation-2)]",
-              "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
-              "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
-            )}
+            className="bg-white"
           >
             <DialogHeader className="px-8 pt-8 pb-5">
               <div className="flex items-center gap-2">

@@ -83,11 +83,11 @@ const MODULE_ORDER = ['Sell', 'Plan', 'Make', 'Buy', 'Ship', 'Book', 'Control'];
 
 // Module colors for icon wells
 const MODULE_COLORS: Record<string, { bg: string; text: string }> = {
-  Sell: { bg: 'bg-[var(--mw-yellow-50)]', text: 'text-[var(--mw-yellow-700)]' },
+  Sell: { bg: 'bg-[var(--badge-soft-accent-bg)]', text: 'text-[var(--badge-soft-accent-text)]' },
   Plan: { bg: 'bg-[var(--mw-blue-50)]', text: 'text-[var(--mw-blue)]' },
   Make: { bg: 'bg-[var(--mw-green-50)]', text: 'text-[var(--mw-green)]' },
   Buy: { bg: 'bg-[var(--mw-purple-50)]', text: 'text-[var(--mw-purple)]' },
-  Ship: { bg: 'bg-[var(--mw-amber-50)]', text: 'text-[var(--mw-amber)]' },
+  Ship: { bg: 'bg-[var(--badge-soft-accent-bg)]', text: 'text-[var(--badge-soft-accent-text)]' },
   Book: { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-600)]' },
   Control: { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
 };

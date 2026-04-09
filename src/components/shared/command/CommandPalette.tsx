@@ -591,7 +591,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
   // Item type badge color
   function getTypeBadge(type: string) {
     switch (type) {
-      case 'action': return 'bg-[var(--mw-yellow-50)] text-[var(--mw-yellow-700)]';
+      case 'action': return 'bg-[var(--badge-soft-accent-bg)] text-[var(--badge-soft-accent-text)]';
       case 'person': return 'bg-[var(--mw-blue-50)] text-[var(--mw-blue)]';
       case 'suggested': return 'bg-[var(--mw-purple-50)] text-[var(--mw-purple)]';
       default: return '';
@@ -732,7 +732,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
                           item.type === 'recent'
                             ? 'bg-[var(--neutral-100)]'
                             : item.type === 'action'
-                            ? 'bg-[var(--mw-yellow-50)]'
+                            ? 'bg-[var(--badge-soft-accent-bg)]'
                             : item.type === 'person'
                             ? 'bg-[var(--mw-blue-50)]'
                             : item.type === 'suggested'
@@ -744,7 +744,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
                           ) : item.type === 'person' ? (
                             <UserCircle className="h-4 w-4 text-[var(--mw-blue)]" strokeWidth={1.5} />
                           ) : item.type === 'action' ? (
-                            <Icon className="h-4 w-4 text-[var(--mw-yellow-700)]" strokeWidth={1.5} />
+                            <Icon className="h-4 w-4 text-[var(--badge-soft-accent-text)]" strokeWidth={1.5} />
                           ) : item.type === 'suggested' ? (
                             <Icon className="h-4 w-4 text-[var(--mw-purple)]" strokeWidth={1.5} />
                           ) : (

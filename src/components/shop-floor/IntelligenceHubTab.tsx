@@ -214,7 +214,7 @@ const INSIGHTS: Insight[] = [
              <div className="p-3 bg-[var(--neutral-100)] rounded-sm border border-[var(--neutral-200)]">
                 <div className="flex justify-between items-center mb-1">
                    <div className="font-medium text-sm flex items-center gap-2 text-[var(--neutral-800)]">David Miller (Amada Ensis) 
-                     <Badge variant="outline" className="text-[10px] h-5 px-2 bg-[var(--mw-yellow-400)]/10 text-foreground border-transparent font-medium rounded-full">Below Target</Badge>
+                     <Badge variant="softAccent" className="text-[10px] h-5 px-2 font-medium rounded-full">Below Target</Badge>
                    </div>
                    <div className="font-bold text-[var(--mw-error)] text-sm">82%</div>
                 </div>

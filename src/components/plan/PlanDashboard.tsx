@@ -123,7 +123,7 @@ export function PlanDashboard() {
             value={kpiData.tasksToday.value}
             icon={ClipboardList}
             trailing={
-              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground text-xs">
+              <Badge variant="softAccent" className="text-xs">
                 2 overdue
               </Badge>
             }

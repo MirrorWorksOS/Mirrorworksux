@@ -861,7 +861,7 @@ export function SellDashboard() {
                         </Badge>
                       )}
                       {isActive && (
-                        <Badge className="border-0 bg-[var(--mw-yellow-400)]/15 text-[var(--mw-yellow-600)] text-xs">
+                        <Badge variant="softAccent" className="text-xs">
                           Active
                         </Badge>
                       )}

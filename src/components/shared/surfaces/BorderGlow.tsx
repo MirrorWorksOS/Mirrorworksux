@@ -26,6 +26,10 @@ export interface BorderGlowProps {
   animated?: boolean;
   colors?: string[];
   fillOpacity?: number;
+  /**
+   * `directional` — conic mask (pointer follows glow). `uniform` — full rounded-rectangle border ring + soft halo (smoother on small cards).
+   */
+  perimeter?: 'directional' | 'uniform';
 }
 
 function parseHSL(hslStr: string): { h: number; s: number; l: number } {
@@ -96,6 +100,7 @@ export function BorderGlow({
   animated = true,
   colors = ['#FFCF4B', '#4DDDC9', '#C084FC'],
   fillOpacity = 0.132,
+  perimeter = 'directional',
 }: BorderGlowProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
@@ -169,7 +174,7 @@ export function BorderGlow({
     <div
       ref={cardRef}
       onPointerMove={handlePointerMove}
-      className={cn('glow-card', className)}
+      className={cn('glow-card', perimeter === 'uniform' && 'glow-card--uniform', className)}
       style={{
         '--card-bg': backgroundColor,
         '--edge-sensitivity': edgeSensitivity,

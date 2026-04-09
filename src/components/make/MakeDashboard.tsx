@@ -262,7 +262,7 @@ export function MakeDashboard() {
       <motion.div variants={staggerItem}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-medium text-foreground">Active Work Orders</h2>
-          <Badge className="bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10 text-foreground border-0 text-xs">
+          <Badge variant="softAccent" className="text-xs">
             {activeWOs.length} active
           </Badge>
         </div>

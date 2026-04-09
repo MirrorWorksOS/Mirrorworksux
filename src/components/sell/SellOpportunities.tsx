@@ -54,7 +54,7 @@ const stages: { key: OpportunityStage; label: string; summaryColor: string }[] =
 const getPriorityBadge = (priority: Priority) => {
   switch (priority) {
     case 'urgent': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', label: 'Urgent' };
-    case 'high': return { bg: 'bg-[var(--mw-yellow-400)]/20', text: 'text-foreground', label: 'High' };
+    case 'high': return { bg: 'bg-[var(--badge-soft-accent-bg)]', text: 'text-[var(--badge-soft-accent-text)]', label: 'High' };
     case 'medium': return { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground', label: 'Medium' };
     case 'low': return { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]', label: 'Low' };
   }

@@ -305,7 +305,7 @@ export function MakeManufacturingOrderDetail() {
               <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-medium text-foreground">Shift Performance</h2>
-                  <Badge variant="secondary" className="border-0 bg-[var(--mw-yellow-400)]/15 text-[var(--mw-yellow-600)] text-xs">
+                  <Badge variant="softAccent" className="text-xs">
                     Active
                   </Badge>
                 </div>
@@ -562,7 +562,7 @@ export function MakeManufacturingOrderDetail() {
                 <h2 className="text-base font-medium text-foreground">AI Suggestions</h2>
                 <p className="text-xs text-[var(--neutral-500)]">Actionable recommendations based on production data</p>
               </div>
-              <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground text-xs">3 new suggestions</Badge>
+              <Badge variant="softAccent" className="text-xs">3 new suggestions</Badge>
             </div>
 
             <AISuggestion

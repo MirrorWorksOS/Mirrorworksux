@@ -41,6 +41,7 @@ export function AIInsightCard({
   return (
     <SpotlightCard
       radius="rounded-[var(--shape-lg)]"
+      overflow="visible"
       className={cn("min-h-0", className)}
       spotlightColor="rgba(77, 221, 201, 0.07)"
       spotlightColorDark="rgba(125, 232, 217, 0.1)"
@@ -49,15 +50,12 @@ export function AIInsightCard({
       borderRadius={16}
       edgeSensitivity={10}
       glowRadius={22}
-      glowIntensity={0.192}
+      glowIntensity={0.23}
       coneSpread={30}
-      fillOpacity={0.132}
+      fillOpacity={0.158}
+      perimeter="uniform"
       animated
-      className={cn(
-        "bg-card shadow-[var(--elevation-2)]",
-        "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
-        "hover:shadow-[var(--elevation-3)] hover:-translate-y-px",
-      )}
+      className="bg-card"
     >
     <div className="p-4">
 
