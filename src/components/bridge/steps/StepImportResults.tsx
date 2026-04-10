@@ -2,14 +2,16 @@
  * Step 7 — Import execution and results.
  */
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
-import { BridgeSegmentedTriple, BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
+import { BridgeSegmentedSkipPrimary, BridgePrimaryWithTooltip } from '@/components/bridge/BridgeSegmentedActions';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, CheckCircle, AlertTriangle, Loader2, MinusCircle, PenLine, Upload, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle, Loader2, MinusCircle, Upload, Users } from 'lucide-react';
 
 export function StepImportResults() {
+  const navigate = useNavigate();
   const {
     sessionId,
     sessionStatus,
@@ -62,6 +64,10 @@ export function StepImportResults() {
           <div className="text-center space-y-4 py-12">
             <Loader2 className="w-12 h-12 text-[var(--mw-yellow-400)] animate-spin mx-auto" />
             <h2 className="text-2xl font-medium tracking-tight">Importing your data...</h2>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Typical imports of this size finish within a minute. You can leave this page and return to Bridge from
+              Control if you need to — progress is simulated in this prototype.
+            </p>
             {importProgress && (
               <div className="max-w-md mx-auto space-y-2">
                 <p className="text-sm text-muted-foreground capitalize">
@@ -120,6 +126,29 @@ export function StepImportResults() {
             ))}
           </div>
 
+          <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6 space-y-4">
+            <div>
+              <h3 className="text-sm font-medium text-foreground">What happens next</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                <span className="font-medium text-foreground">Flagged</span> records are saved but should be checked
+                before you rely on them for quotes, jobs, or shipments — usually for formatting or missing optional fields.{' '}
+                <span className="font-medium text-foreground">Skipped</span> rows were not created; fix the source file
+                and run Bridge again, or add them manually.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <Link to="/sell/crm" className="text-[var(--mw-info)] underline underline-offset-2 hover:opacity-90">
+                Customers in Sell
+              </Link>
+              <Link to="/sell/products" className="text-[var(--mw-info)] underline underline-offset-2 hover:opacity-90">
+                Products in Sell
+              </Link>
+              <Link to="/control/mirrorworks-bridge" className="text-[var(--mw-info)] underline underline-offset-2 hover:opacity-90">
+                Import more data
+              </Link>
+            </div>
+          </div>
+
           {/* Team setup CTA */}
           {hasEmployees && (
             <Card className="border-[var(--mw-yellow-400)] bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,white)] dark:bg-[color-mix(in_srgb,var(--mw-yellow-400)_8%,var(--card))] p-6">
@@ -143,19 +172,17 @@ export function StepImportResults() {
           )}
 
           <div className="flex justify-end pt-2">
-            <BridgeSegmentedTriple
-              firstLabel="Import more data"
-              firstIcon={Upload}
-              firstTooltip="Return to the upload step to bring in another file (prototype)."
-              onFirst={() => goToStep('upload')}
-              secondLabel="Skip to dashboard"
-              secondIcon={ArrowRight}
-              secondTooltip="Exit the wizard now and open the main dashboard."
-              onSecond={() => { window.location.href = '/'; }}
-              primaryLabel="Continue to Enter data"
-              primaryIcon={PenLine}
-              primaryTooltip="Go to the Enter data step to add or edit records by hand."
-              onPrimary={() => goToStep('manual_entry')}
+            <BridgeSegmentedSkipPrimary
+              skipLabel="Import more data"
+              skipIcon={Upload}
+              skipTooltip="Return to the upload step to bring in another file (prototype)."
+              onSkip={() => goToStep('upload')}
+              primaryLabel="Continue to dashboard"
+              primaryIcon={ArrowRight}
+              primaryTooltip="Exit the wizard and open the main dashboard."
+              onPrimary={() => {
+                navigate('/');
+              }}
             />
           </div>
         </>

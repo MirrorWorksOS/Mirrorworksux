@@ -6,28 +6,50 @@ import { useState, useCallback, useRef } from 'react';
 import { cn } from '@/components/ui/utils';
 import { Upload } from 'lucide-react';
 
+export type FileUploadRejection = {
+  invalidTypeCount: number;
+  oversizeCount: number;
+};
+
 interface FileUploadZoneProps {
   onFilesSelected: (files: File[]) => void;
+  onReject?: (info: FileUploadRejection) => void;
   disabled?: boolean;
 }
 
 const ACCEPTED = '.xlsx,.xls,.csv';
 const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
-export function FileUploadZone({ onFilesSelected, disabled }: FileUploadZoneProps) {
+export function FileUploadZone({ onFilesSelected, onReject, disabled }: FileUploadZoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList) return;
-      const valid = Array.from(fileList).filter((f) => {
+      const all = Array.from(fileList);
+      const valid: File[] = [];
+      let invalidTypeCount = 0;
+      let oversizeCount = 0;
+      for (const f of all) {
         const ext = f.name.split('.').pop()?.toLowerCase();
-        return ['xlsx', 'xls', 'csv'].includes(ext || '') && f.size <= MAX_SIZE;
-      });
+        const typeOk = ['xlsx', 'xls', 'csv'].includes(ext || '');
+        if (!typeOk) {
+          invalidTypeCount++;
+          continue;
+        }
+        if (f.size > MAX_SIZE) {
+          oversizeCount++;
+          continue;
+        }
+        valid.push(f);
+      }
+      if (invalidTypeCount > 0 || oversizeCount > 0) {
+        onReject?.({ invalidTypeCount, oversizeCount });
+      }
       if (valid.length) onFilesSelected(valid);
     },
-    [onFilesSelected]
+    [onFilesSelected, onReject]
   );
 
   const onDrop = useCallback(
@@ -41,7 +63,10 @@ export function FileUploadZone({ onFilesSelected, disabled }: FileUploadZoneProp
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragOver(true);
+      }}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={onDrop}
       onClick={() => !disabled && inputRef.current?.click()}
@@ -55,7 +80,9 @@ export function FileUploadZone({ onFilesSelected, disabled }: FileUploadZoneProp
     >
       <Upload className="w-8 h-8 text-muted-foreground mb-3" />
       <p className="text-sm font-medium text-foreground">Drag files here or click to browse</p>
-      <p className="text-xs text-muted-foreground mt-1">Accepts .xlsx, .xls, .csv up to 50MB</p>
+      <p className="text-xs text-muted-foreground mt-1 text-center px-4">
+        Accepts .xlsx, .xls, .csv up to 50MB each. You can select or drop several files at once (Ctrl or Cmd+click in the file dialog).
+      </p>
       <input
         ref={inputRef}
         type="file"

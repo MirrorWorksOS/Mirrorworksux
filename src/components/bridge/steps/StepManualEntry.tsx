@@ -1,7 +1,8 @@
 /**
  * Guided manual data entry (PLAT 01). Machines include optional connectivity for shop-floor / networking setup.
  */
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Link } from 'react-router';
 import { useBridge } from '@/hooks/useBridge';
 import { Button } from '@/components/ui/button';
 import { BridgeSegmentedSkipPrimary } from '@/components/bridge/BridgeSegmentedActions';
@@ -28,7 +29,7 @@ import {
 } from '@/components/ui/command';
 import { cn } from '@/components/ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
-import { ChevronDown, Plus, Trash2, CheckCircle, Check, ChevronsUpDown } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, CheckCircle, Check, ChevronsUpDown, Download } from 'lucide-react';
 
 type FieldDef = {
   name: string;
@@ -357,6 +358,18 @@ function getDisplayedFields(entity: EntityFormDef) {
   return entity.fields;
 }
 
+function downloadCsvTemplateForEntity(entity: EntityFormDef) {
+  const headers = entity.fields.map((f) => f.label.replace(/"/g, '""'));
+  const line = headers.map((h) => `"${h}"`).join(',');
+  const blob = new Blob([`${line}\n`], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${entity.key}-import-template.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function StepManualEntry() {
   const { goToNextStep, goToPreviousStep } = useBridge();
   const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
@@ -399,6 +412,10 @@ export function StepManualEntry() {
     }
   };
 
+  const handleDownloadTemplate = useCallback(() => {
+    downloadCsvTemplateForEntity(entity);
+  }, [entity]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -406,6 +423,22 @@ export function StepManualEntry() {
         <p className="text-sm text-muted-foreground mt-1">
           Enter your {entity.label.toLowerCase()} one at a time, or skip to add later.
         </p>
+        <p className="text-xs text-muted-foreground mt-2 border-l-2 border-[var(--mw-yellow-400)] pl-3">
+          Prefer bulk load? Use{' '}
+          <Link to="/control/mirrorworks-bridge" className="text-foreground underline underline-offset-2">
+            MirrorWorks Bridge
+          </Link>{' '}
+          to upload a spreadsheet, or download a CSV template for this section and fill it offline.
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-3 h-12 min-h-[48px] gap-2"
+          onClick={handleDownloadTemplate}
+        >
+          <Download className="w-4 h-4" aria-hidden />
+          Download CSV template ({entity.label})
+        </Button>
       </div>
 
       <div className="flex gap-6">

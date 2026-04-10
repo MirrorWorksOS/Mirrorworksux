@@ -1,6 +1,20 @@
 /**
  * Bridge Service — mock API layer for PLAT 01 data import.
  * Set USE_MOCK = false when real Supabase endpoints are ready.
+ *
+ * ## Future production ingest (design intent)
+ *
+ * Replace the per-step client calls (`uploadFile` → `analyseFile` → `triggerAIMatch`) with
+ * either:
+ * - **Single round-trip per file:** `POST /bridge/sessions/:id/ingest` (multipart) returning
+ *   parsed headers, row counts, and suggested mappings in one response; or
+ * - **Short pipeline on the server** with one WebSocket or polling handle for long parses.
+ *
+ * Large jobs should use **async jobs** (202 + job id) with batched DB upserts / COPY into
+ * staging, then merge — avoid row-by-row API from the browser.
+ *
+ * Client helper {@link runBridgeFileIngestPipeline} mirrors the current call order so the UI
+ * can switch to a single fetch without restructuring components.
  */
 import type {
   BridgeFile,
@@ -14,7 +28,16 @@ import type {
 
 const USE_MOCK = true;
 
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+/** In development, mock delays are shortened so the wizard stays usable while iterating. */
+const FAST_MOCK_DELAYS = Boolean(import.meta.env?.DEV);
+
+/** Scale mock latency down in dev (floor keeps a hint of async behaviour). */
+function mockMs(ms: number): number {
+  if (!FAST_MOCK_DELAYS) return ms;
+  return Math.max(35, Math.round(ms * 0.06));
+}
+
+const delay = (ms: number) => new Promise((r) => setTimeout(r, mockMs(ms)));
 const uid = () => crypto.randomUUID();
 
 // ─── Mock Generators ────────────────────────────────────────────────
@@ -289,3 +312,26 @@ export const bridgeService = {
     }));
   },
 };
+
+/**
+ * Runs upload → analyse → AI match for one file in sequence (matches current mock API).
+ * Swap the body for a single `fetch` when the real ingest endpoint exists.
+ */
+export async function runBridgeFileIngestPipeline(
+  sessionId: string,
+  file: File
+): Promise<{ bridgeFile: BridgeFile; analysed: BridgeFile; mappings: FieldMapping[] }> {
+  const bridgeFile = await bridgeService.uploadFile(sessionId, file);
+  const analysed = await bridgeService.analyseFile(sessionId, bridgeFile);
+  const merged: BridgeFile = {
+    ...bridgeFile,
+    ...analysed,
+    headers: analysed.headers ?? bridgeFile.headers,
+    sampleData: analysed.sampleData ?? bridgeFile.sampleData,
+    rowCount: analysed.rowCount ?? bridgeFile.rowCount,
+    detectedEntityType: analysed.detectedEntityType ?? bridgeFile.detectedEntityType,
+    analysisStatus: 'complete',
+  };
+  const mappings = await bridgeService.triggerAIMatch(sessionId, merged);
+  return { bridgeFile, analysed: merged, mappings };
+}

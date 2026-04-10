@@ -2,6 +2,7 @@
  * Step 8 — Team group review and AI-assisted assignment.
  */
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services/bridgeService';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ const MODULE_META: Record<string, { icon: React.ReactNode; color: string }> = {
 };
 
 export function StepTeamSetup() {
+  const navigate = useNavigate();
   const { sessionId, moduleGroups, setModuleGroups, teamSuggestions, setTeamSuggestions } = useBridge();
   const [loading, setLoading] = useState(true);
   const [accepted, setAccepted] = useState<Set<string>>(new Set());
@@ -61,7 +63,11 @@ export function StepTeamSetup() {
   };
 
   const handleFinish = () => {
-    window.location.href = '/';
+    navigate('/');
+  };
+
+  const exitToDashboard = () => {
+    navigate('/');
   };
 
   if (loading) {
@@ -89,6 +95,10 @@ export function StepTeamSetup() {
           <h2 className="text-2xl font-medium tracking-tight">Your team groups</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Review the default groups for each module. You can rename or add groups.
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Accepting suggestions here does not block your import — it only speeds up who sees which modules. You can
+            change groups later in Control.
           </p>
         </div>
 
@@ -226,7 +236,7 @@ export function StepTeamSetup() {
           order="skip-first"
           skipLabel="I'll do this later"
           primaryLabel="Confirm & finish"
-          onSkip={() => { window.location.href = '/'; }}
+          onSkip={exitToDashboard}
           onPrimary={handleFinish}
           skipTooltip="Exit to the dashboard and finish team setup later from Control."
           primaryTooltip="Save suggested assignments and return to the dashboard."

@@ -111,9 +111,9 @@ export function FieldMappingRow({ mapping, targetFields, onUpdate }: FieldMappin
         )}
       </div>
 
-      {/* AI reasoning tooltip */}
-      {mapping.aiReasoning && isMapped && (
-        <p className="text-xs text-muted-foreground max-w-[200px] pt-1 hidden lg:block">
+      {mapping.aiReasoning && (
+        <p className="text-xs text-muted-foreground max-w-[220px] pt-1">
+          <span className="font-medium text-foreground">Why: </span>
           {mapping.aiReasoning}
         </p>
       )}

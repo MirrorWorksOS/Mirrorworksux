@@ -165,6 +165,10 @@ export function StepScopeQuestions() {
         <p className="text-sm text-muted-foreground mt-1">
           This helps us set up only what you need — you can always add more later.
         </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Nothing here imports data by itself — it only tunes what we suggest on the next steps. You can leave and come
+          back; your answers are saved for this session.
+        </p>
       </div>
 
       {showTemplateBanner && (

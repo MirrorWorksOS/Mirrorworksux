@@ -11,7 +11,11 @@ function needsScopeStep(sources: SourceSystem[]): boolean {
   return sources.includes('pen_paper');
 }
 
-/** Ordered wizard steps from confirmed source selection and upload state. */
+/**
+ * Ordered wizard steps from confirmed source selection and upload state.
+ * When at least one file is on the session, `manual_entry` is omitted so file imports go
+ * mapping → review → results (add master data later via Bridge or module screens).
+ */
 export function getActiveSteps(
   sourceSystems: SourceSystem[],
   hasEmployees: boolean,
@@ -36,9 +40,12 @@ export function getActiveSteps(
     steps.push('mapping');
   }
 
-  // Manual entry ('Enter data') is always part of the flow so users get the
-  // chance to add records by hand even after an upload + mapping pass.
-  steps.push('manual_entry');
+  // Manual entry: required when there is no file import. If the user already
+  // uploaded spreadsheets, skip this step so they go mapping → review →
+  // results (add master data later from Control → Bridge or module screens).
+  if (!hasUploadedFiles) {
+    steps.push('manual_entry');
+  }
 
   steps.push('review', 'results');
 

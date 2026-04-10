@@ -122,6 +122,11 @@ export function StepSourceSelect() {
           Select everything that applies — for example, spreadsheets for parts and quotes, and pen &amp; paper or a
           whiteboard for scheduling. We will combine those paths in one import journey.
         </p>
+        <p className="text-xs text-muted-foreground mt-3 border-l-2 border-[var(--mw-yellow-400)] pl-3">
+          If you upload spreadsheets, you&apos;ll map columns and review rows next — then import — without the full
+          enter-data wizard. Pen &amp; paper only (no files) still uses guided entry. Add more master data any time from
+          Control → MirrorWorks Bridge.
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

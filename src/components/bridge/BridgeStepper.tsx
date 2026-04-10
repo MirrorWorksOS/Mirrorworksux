@@ -35,7 +35,7 @@ export function BridgeStepper() {
                   'flex items-center gap-2 text-sm font-medium transition-colors',
                   isCompleted && 'cursor-pointer text-[var(--mw-success)] hover:opacity-90',
                   isCurrent && 'text-foreground',
-                  isFuture && 'text-muted-foreground/50 cursor-default'
+                  isFuture && 'text-muted-foreground/70 cursor-default'
                 )}
               >
                 <span
@@ -43,7 +43,7 @@ export function BridgeStepper() {
                     'flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium shrink-0 transition-colors',
                     isCompleted && 'bg-[var(--mw-success-light)] text-[var(--mw-success)]',
                     isCurrent && 'bg-[var(--mw-yellow-400)] text-primary-foreground',
-                    isFuture && 'bg-muted text-muted-foreground/50'
+                    isFuture && 'bg-muted text-muted-foreground/70'
                   )}
                 >
                   {isCompleted ? (

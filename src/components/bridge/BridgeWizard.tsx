@@ -17,6 +17,13 @@ export function BridgeWizard() {
   useEffect(() => {
     if (activeSteps.includes(currentStep)) return;
 
+    if (currentStep === 'manual_entry' && !activeSteps.includes('manual_entry')) {
+      if (activeSteps.includes('review')) setCurrentStep('review');
+      else if (activeSteps.includes('mapping')) setCurrentStep('mapping');
+      else setCurrentStep(activeSteps[0] ?? 'source');
+      return;
+    }
+
     if (hasUploadedFiles && activeSteps.includes('mapping')) {
       setCurrentStep('mapping');
     } else if (activeSteps.includes('manual_entry')) {
