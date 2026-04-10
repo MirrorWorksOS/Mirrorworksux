@@ -5,7 +5,8 @@
  * Lucide icons for utility elements (ChevronRight); Animate UI Plus and Search for Quick Create / command palette.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
@@ -406,6 +407,56 @@ export const menuConfig: MenuItem[] = [
 const EXPAND_DURATION = 'var(--duration-medium2)';
 const EXPAND_EASING = 'var(--ease-standard)';
 
+/** M3 `--ease-standard`: cubic-bezier(0.2, 0, 0, 1) — Y at linear time t (X=t on curve). */
+function easeStandardAt(t: number): number {
+  const p1x = 0.2;
+  const p1y = 0;
+  const p2x = 0;
+  const p2y = 1;
+  const bez = (u: number, a: number, b: number, c: number, d: number) => {
+    const o = 1 - u;
+    return o * o * o * a + 3 * o * o * u * b + 3 * o * u * u * c + u * u * u * d;
+  };
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 12; i++) {
+    const mid = (lo + hi) / 2;
+    if (bez(mid, 0, p1x, p2x, 1) < t) lo = mid;
+    else hi = mid;
+  }
+  const u = (lo + hi) / 2;
+  return bez(u, 0, p1y, p2y, 1);
+}
+
+const SNAP_UNDER_SEARCH_PADDING_PX = 5;
+const SNAP_SCROLL_DURATION_MS = 350;
+
+function animateScrollTop(
+  el: HTMLElement,
+  targetTop: number,
+  durationMs: number,
+  animToken: { cancelled: boolean }
+) {
+  const start = el.scrollTop;
+  const delta = targetTop - start;
+  if (Math.abs(delta) < 0.5) return;
+
+  const t0 = performance.now();
+  const maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
+  const clampedTarget = Math.max(0, Math.min(maxScroll, targetTop));
+
+  function frame(now: number) {
+    if (animToken.cancelled) return;
+    const t = Math.min(1, (now - t0) / durationMs);
+    const eased = easeStandardAt(t);
+    el.scrollTop = start + (clampedTarget - start) * eased;
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
 // ---------------------------------------------------------------------------
 // Helper: determine which module owns the current route
 // ---------------------------------------------------------------------------
@@ -517,6 +568,7 @@ function MenuItemRow({
   isExpanded,
   onToggle,
   children,
+  outerRef,
 }: {
   item: MenuItem;
   hasSubItems: boolean;
@@ -524,6 +576,8 @@ function MenuItemRow({
   isExpanded: boolean;
   onToggle: () => void;
   children?: React.ReactNode;
+  /** Root element for scroll-into-view under the search bar (parent + subtree block). */
+  outerRef?: React.Ref<HTMLDivElement>;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -538,6 +592,7 @@ function MenuItemRow({
 
   return (
     <div
+      ref={outerRef}
       className="w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -921,6 +976,13 @@ export function Sidebar({
   );
   const [hoveredSubPath, setHoveredSubPath] = useState<string | null>(null);
 
+  const navScrollRef = useRef<HTMLDivElement | null>(null);
+  const searchBarRef = useRef<HTMLButtonElement | null>(null);
+  const moduleRowRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrollSnapTokenRef = useRef<{ cancelled: boolean } | null>(null);
+  /** Set only when the user opens a module; cleared in layout effect after snapping. */
+  const pendingScrollSnapLabelRef = useRef<string | null>(null);
+
   useEffect(() => {
     const active = getActiveModule(location.pathname);
     if (active && active !== expandedModule) {
@@ -928,9 +990,50 @@ export function Sidebar({
     }
   }, [location.pathname]);
 
-  const toggleModule = (label: string) => {
-    setExpandedModule(prev => (prev === label ? null : label));
-  };
+  const runScrollSnapUnderSearch = useCallback((label: string) => {
+    const scrollEl = navScrollRef.current;
+    const searchEl = searchBarRef.current;
+    const rowEl = moduleRowRefs.current[label];
+    if (!scrollEl || !searchEl || !rowEl) return;
+
+    if (scrollSnapTokenRef.current) {
+      scrollSnapTokenRef.current.cancelled = true;
+    }
+    const token = { cancelled: false };
+    scrollSnapTokenRef.current = token;
+
+    const searchRect = searchEl.getBoundingClientRect();
+    const rowRect = rowEl.getBoundingClientRect();
+    const delta =
+      rowRect.top - searchRect.bottom - SNAP_UNDER_SEARCH_PADDING_PX;
+    if (Math.abs(delta) < 1) return;
+
+    const targetScroll = scrollEl.scrollTop + delta;
+    animateScrollTop(
+      scrollEl,
+      targetScroll,
+      SNAP_SCROLL_DURATION_MS,
+      token
+    );
+  }, []);
+
+  useLayoutEffect(() => {
+    const label = pendingScrollSnapLabelRef.current;
+    if (label === null) return;
+    pendingScrollSnapLabelRef.current = null;
+
+    const scrollIfReady = () => {
+      if (!moduleRowRefs.current[label]) return false;
+      runScrollSnapUnderSearch(label);
+      return true;
+    };
+
+    if (!scrollIfReady()) {
+      requestAnimationFrame(() => {
+        scrollIfReady();
+      });
+    }
+  }, [expandedModule, runScrollSnapUnderSearch]);
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
@@ -1140,6 +1243,7 @@ export function Sidebar({
           </button>
         </QuickCreatePanel>
         <button
+          ref={searchBarRef}
           type="button"
           onClick={() => setCommandOpen(true)}
           className="flex h-12 min-h-[48px] w-full items-center gap-2 rounded-full border border-border bg-card px-3 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--neutral-100)]"
@@ -1164,7 +1268,11 @@ export function Sidebar({
         scrollport has no top/bottom padding gap for content to leak through
         above the sticky expanded-module header.
       */}
-      <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+      <div
+        ref={navScrollRef}
+        className="flex-1 overflow-y-auto"
+        style={{ scrollbarWidth: 'none' }}
+      >
        <div className="px-3 py-4 space-y-0.5">
         {menuConfig.map((item) => {
           const hasSubItems = (item.subItems && item.subItems.length > 0) || (item.groupedSubItems && item.groupedSubItems.length > 0);
@@ -1187,7 +1295,25 @@ export function Sidebar({
                 hasSubItems={!!hasSubItems}
                 isActive={isActive}
                 isExpanded={isExpanded}
-                onToggle={() => hasSubItems && toggleModule(item.label)}
+                outerRef={(el) => {
+                  moduleRowRefs.current[item.label] = el;
+                }}
+                onToggle={() => {
+                  if (!hasSubItems) return;
+                  const isClosing = expandedModule === item.label;
+                  if (isClosing) {
+                    if (scrollSnapTokenRef.current) {
+                      scrollSnapTokenRef.current.cancelled = true;
+                      scrollSnapTokenRef.current = null;
+                    }
+                    setExpandedModule(null);
+                    return;
+                  }
+                  pendingScrollSnapLabelRef.current = item.label;
+                  flushSync(() => {
+                    setExpandedModule(item.label);
+                  });
+                }}
               >
 
                 {/* Flat sub-items (modules with no grouping) */}
