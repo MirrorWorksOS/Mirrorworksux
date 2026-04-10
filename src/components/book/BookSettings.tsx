@@ -4,8 +4,8 @@
  */
 import React, { useState } from 'react';
 import {
-  Settings, FileText, Link, BarChart3, Lock, Calendar, RefreshCw,
-  AlertTriangle, Plus, Trash2,
+  Settings, FileText, Link, BarChart3, Calendar, RefreshCw,
+  AlertTriangle,
 } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Card } from '../ui/card';
@@ -15,7 +15,6 @@ import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import {
   ModuleSettingsLayout,

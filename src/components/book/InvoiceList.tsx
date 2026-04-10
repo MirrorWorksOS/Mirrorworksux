@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Download, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';

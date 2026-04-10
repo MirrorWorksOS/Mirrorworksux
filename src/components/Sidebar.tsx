@@ -429,7 +429,7 @@ function easeStandardAt(t: number): number {
 }
 
 const SNAP_UNDER_SEARCH_PADDING_PX = 5;
-const SNAP_SCROLL_DURATION_MS = 350;
+const SNAP_SCROLL_DURATION_MS = 500;
 
 function animateScrollTop(
   el: HTMLElement,
@@ -442,13 +442,15 @@ function animateScrollTop(
   if (Math.abs(delta) < 0.5) return;
 
   const t0 = performance.now();
-  const maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
-  const clampedTarget = Math.max(0, Math.min(maxScroll, targetTop));
 
   function frame(now: number) {
     if (animToken.cancelled) return;
     const t = Math.min(1, (now - t0) / durationMs);
     const eased = easeStandardAt(t);
+    // Recompute max scroll each frame — content may still be expanding
+    // via CSS grid transition, so scrollHeight grows over time.
+    const maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
+    const clampedTarget = Math.max(0, Math.min(maxScroll, targetTop));
     el.scrollTop = start + (clampedTarget - start) * eased;
     if (t < 1) {
       requestAnimationFrame(frame);

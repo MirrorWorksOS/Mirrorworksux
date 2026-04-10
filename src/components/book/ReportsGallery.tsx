@@ -1,5 +1,4 @@
-import React from 'react';
-import { BarChart3, PieChart, FileText, Clock, Scale, TrendingUp, Users, DollarSign, Target, Wrench, Receipt, Sparkles, Calendar, ExternalLink } from 'lucide-react';
+import { BarChart3, PieChart, FileText, Clock, Scale, TrendingUp, Users, DollarSign, Target, Wrench, Receipt, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';

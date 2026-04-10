@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowDown, Sparkles } from 'lucide-react';
-import { Button } from '../ui/button';
+import { useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { AIInsightCard } from '../shared/ai/AIInsightCard';
 import { Card } from '../ui/card';

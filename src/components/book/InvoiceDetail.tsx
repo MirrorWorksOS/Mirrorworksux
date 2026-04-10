@@ -1,7 +1,5 @@
-import React from 'react';
-import { ArrowLeft, Send, Download, DollarSign, MoreVertical, Mail, Eye, Clock, ExternalLink } from 'lucide-react';
+import { Send, Download, DollarSign, MoreVertical, Mail, Eye, Clock, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';

@@ -1,10 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { Calendar, ChevronDown, ChevronUp, Filter, ArrowUp, ArrowDown } from 'lucide-react';
+import { Calendar, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
@@ -74,8 +70,6 @@ const JOBS: JobRow[] = [
 ];
 
 const getBarPattern = (m: number) => getChartScalePattern(marginToScalePercent(m));
-const marginBadgeClass = 'bg-[var(--neutral-100)] text-foreground';
-const statusBadge = (s: string) => s === 'Complete' ? 'text-foreground' : s === 'In Production' ? 'text-foreground' : 'text-foreground';
 
 const jobTableColumns: FinancialColumn<JobRow>[] = [
   { key: 'id', header: 'JOB #', accessor: (r) => r.id, format: 'text', align: 'left' },
@@ -88,18 +82,7 @@ const jobTableColumns: FinancialColumn<JobRow>[] = [
   { key: 'status', header: 'STATUS', accessor: (r) => r.status, format: 'text', align: 'left' },
 ];
 
-type BreakdownRow = { type: string; quoted: number; actual: number; variance: number };
-
-const breakdownColumns: FinancialColumn<BreakdownRow>[] = [
-  { key: 'type', header: 'Type', accessor: (r) => r.type, format: 'text', align: 'left' },
-  { key: 'quoted', header: 'Quoted', accessor: (r) => r.quoted, format: 'currency' },
-  { key: 'actual', header: 'Actual', accessor: (r) => r.actual, format: 'currency' },
-  { key: 'variance', header: 'Variance', accessor: (r) => r.variance, format: 'currency' },
-];
-
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
-  const navigate = useNavigate();
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   return (
     <PageShell className="p-6 space-y-6">

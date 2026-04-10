@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { MoreVertical, FileText } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
@@ -7,7 +7,7 @@ import { Input } from '../ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
@@ -18,14 +18,11 @@ import {
   AnimatedDownload,
   AnimatedPlus,
   AnimatedSend,
-  AnimatedEye
 } from '../ui/animated-icons';
 import { sellInvoices, salesOrders, jobs } from '@/services/mock';
 
 
 type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'partiallyPaid' | 'paid' | 'overdue' | 'cancelled';
-type ViewMode = 'list' | 'detail';
-
 interface Invoice {
   id: string;
   customer: string;
@@ -92,7 +89,6 @@ interface BookInvoicesProps {
 
 export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | InvoiceStatus>('all');
 
