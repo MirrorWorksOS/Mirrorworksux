@@ -210,8 +210,8 @@ class FieldSearchableDropdown extends Blockly.FieldDropdown {
   }
 
   protected override showEditor_(_e?: MouseEvent): void {
-    const div = Blockly.DropDownDiv.getContentDiv();
     Blockly.DropDownDiv.clearContent();
+    const div = Blockly.DropDownDiv.getContentDiv();
     div.innerHTML = '';
 
     // Resolve the option list. FieldDropdown stores either a static array or a
@@ -308,7 +308,9 @@ class FieldSearchableDropdown extends Blockly.FieldDropdown {
     search.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         Blockly.DropDownDiv.hideWithoutAnimation();
+        return;
       }
+      e.stopPropagation();
     });
 
     renderRows(this.searchQuery);

@@ -61,6 +61,7 @@ import {
   Webhook,
   Landmark,
   Play,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -149,6 +150,7 @@ export function ProductStudioV2() {
   const setBlocklyState = useProductBuilderStore((s) => s.setBlocklyState);
   const setScenarioInputs = useProductBuilderStore((s) => s.setScenarioInputs);
   const createProduct = useProductBuilderStore((s) => s.createProduct);
+  const deleteProduct = useProductBuilderStore((s) => s.deleteProduct);
 
   const materials = useMaterialLibraryStore((s) => s.materials);
   const finishes = useFinishLibraryStore((s) => s.finishes);
@@ -580,6 +582,19 @@ export function ProductStudioV2() {
               >
                 <Package className="size-3.5" strokeWidth={1.5} />
                 <span className="flex-1 truncate">{p.name}</span>
+                {p.id !== activeProductId && (
+                  <button
+                    type="button"
+                    className="ml-auto rounded p-0.5 text-[var(--neutral-400)] opacity-0 transition-opacity hover:text-[var(--error)] group-hover:opacity-100 [div:hover>&]:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteProduct(p.id);
+                    }}
+                    aria-label={`Delete ${p.name}`}
+                  >
+                    <Trash2 className="size-3" strokeWidth={1.5} />
+                  </button>
+                )}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
@@ -719,6 +734,17 @@ export function ProductStudioV2() {
                         >
                           <Package className="size-3.5" strokeWidth={1.5} />
                           <span className="flex-1 truncate">{p.name}</span>
+                          <button
+                            type="button"
+                            className="ml-auto rounded p-0.5 text-[var(--neutral-400)] opacity-0 transition-opacity hover:text-[var(--error)] group-hover:opacity-100 [div:hover>&]:opacity-100"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteProduct(p.id);
+                            }}
+                            aria-label={`Delete ${p.name}`}
+                          >
+                            <Trash2 className="size-3" strokeWidth={1.5} />
+                          </button>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>

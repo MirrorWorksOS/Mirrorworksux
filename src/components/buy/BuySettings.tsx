@@ -12,8 +12,6 @@ import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Separator } from '../ui/separator';
-import { cn } from '../ui/utils';
 import { toast } from 'sonner';
 import {
   ModuleSettingsLayout,

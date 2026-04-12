@@ -3,13 +3,10 @@
  * Tabs: All, Draft, Sent, Acknowledged, Partial, Received, Cancelled
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedDownload } from '../ui/animated-icons';

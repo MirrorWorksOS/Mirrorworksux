@@ -3,19 +3,16 @@
  * Route: /buy/orders/:id
  */
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useParams, Link } from "react-router";
 import {
   ArrowLeft,
   CheckCircle2,
-  ClipboardList,
-  Download,
   Edit,
   FileText,
   Package,
   Printer,
-  Send,
   Truck,
 } from "lucide-react";
 import {

@@ -3,11 +3,9 @@
  * Shows stock levels, reorder points, preferred suppliers
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router';
-import { Package, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';

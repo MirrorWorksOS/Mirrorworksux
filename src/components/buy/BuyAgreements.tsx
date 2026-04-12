@@ -1,15 +1,15 @@
 /**
  * Buy Agreements — Blanket Purchase Agreements with spend tracking
  */
-import React, { useState } from 'react';
-import { Plus, Search, TrendingUp, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';

@@ -3,14 +3,13 @@
  * Large touch targets for shop floor use with gloved hands
  */
 
-import React, { useState } from 'react';
-import { Package, CheckCircle2, Scan, Camera } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle2, Scan, Camera } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { PageShell } from '@/components/shared/layout/PageShell';

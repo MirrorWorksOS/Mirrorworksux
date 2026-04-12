@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Package, Wrench, CheckCircle, ChevronDown, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { Package, Wrench, CheckCircle, Calendar } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '../ui/utils';
@@ -38,12 +37,6 @@ const donutData = [
 ];
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
-const ageStyles: Record<AgeCategory, string> = {
-  Fresh: 'bg-[var(--neutral-100)] text-foreground',
-  Active: 'bg-[var(--neutral-100)] text-foreground',
-  Slow: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
-  Stale: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
-};
 
 const rawMaterials = [
   { item: '10mm MS Plate', sku: 'MS-10-3678', qty: 120, unit: '$85.00', total: 10200, location: 'Bay A1', lastMove: '25 Feb', age: 'Fresh' as AgeCategory },

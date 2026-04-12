@@ -3,22 +3,20 @@
  * Route: /buy/requisitions/:id
  */
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router';
-import { ArrowLeft, CheckCircle2, XCircle, Send, Download, Printer } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Send, Printer } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { cn } from '@/components/ui/utils';
 import { toast } from 'sonner';
 import { requisitions, employees, purchaseOrders } from '@/services/mock';
 

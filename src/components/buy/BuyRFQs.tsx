@@ -2,15 +2,13 @@
  * Buy RFQs — Request for Quotation management
  * Full list with supplier comparison modal
  */
-import React, { useState } from 'react';
-import { Plus, Search, ChevronRight, X, Check, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Search, ChevronRight, Check, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { AnimatedPlus } from '../ui/animated-icons';
 import { toast } from 'sonner';
