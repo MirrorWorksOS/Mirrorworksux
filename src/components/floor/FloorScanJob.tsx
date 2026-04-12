@@ -18,19 +18,11 @@
  * counter, checklist, emergency stop, etc.).
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import {
-  ScanBarcode,
-  Search,
-  Clock,
-  AlertTriangle,
-  ChevronRight,
-  Hash,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Clock, ChevronRight, Hash } from 'lucide-react';
+import { ScanInput } from '@/components/shared/barcode/ScanInput';
 import { makeService } from '@/services/makeService';
 import { useFloorSession } from '@/store/floorSessionStore';
 import type { WorkOrder, ManufacturingOrder } from '@/types/entities';
@@ -39,12 +31,10 @@ export function FloorScanJob() {
   const navigate = useNavigate();
   const session = useFloorSession();
 
-  const [query, setQuery] = useState('');
   const [queue, setQueue] = useState<WorkOrder[]>([]);
   const [mos, setMos] = useState<ManufacturingOrder[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load the pending queue for this station + MO map for enrichment.
   useEffect(() => {
@@ -64,11 +54,6 @@ export function FloorScanJob() {
     };
   }, [session.stationId]);
 
-  // Keep the scan input focused so a hardware scanner "just works".
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
   const moById = (id: string) => mos.find((m) => m.id === id);
 
   const runWorkOrder = (wo: WorkOrder) => {
@@ -76,12 +61,9 @@ export function FloorScanJob() {
     navigate(`/floor/run/${wo.id}`);
   };
 
-  const handleScan = () => {
-    const raw = query.trim().toUpperCase();
-    if (!raw) return;
-
+  const handleScan = (value: string) => {
     // First try: direct WO number match against the live queue.
-    const woHit = queue.find((w) => w.woNumber.toUpperCase() === raw);
+    const woHit = queue.find((w) => w.woNumber.toUpperCase() === value);
     if (woHit) {
       runWorkOrder(woHit);
       return;
@@ -90,7 +72,7 @@ export function FloorScanJob() {
     // Fallback: MO number → pick the first pending WO for this station on
     // that MO. This lets operators scan the bigger MO traveler barcode at
     // the top of the paper packet.
-    const moHit = mos.find((m) => m.moNumber.toUpperCase() === raw);
+    const moHit = mos.find((m) => m.moNumber.toUpperCase() === value);
     if (moHit) {
       const woForMo = queue.find((w) => w.manufacturingOrderId === moHit.id);
       if (woForMo) {
@@ -100,12 +82,10 @@ export function FloorScanJob() {
       setError(
         `MO ${moHit.moNumber} has no pending work at ${session.stationName}.`
       );
-      setQuery('');
       return;
     }
 
-    setError(`No match for "${query.trim()}". Try scanning again.`);
-    setQuery('');
+    setError(`No match for "${value}". Try scanning again.`);
   };
 
   return (
@@ -146,42 +126,13 @@ export function FloorScanJob() {
           transition={{ duration: 0.35, delay: 0.05, ease: [0.2, 0, 0, 1] }}
           className="mb-10"
         >
-          <div className="flex items-center gap-3 p-2 bg-card border-2 border-[var(--neutral-200)] rounded-[var(--shape-lg)] focus-within:border-[var(--mw-yellow-400)] focus-within:shadow-[var(--elevation-2)] transition-all">
-            <div className="w-14 h-14 rounded-[var(--shape-md)] bg-[var(--neutral-100)] flex items-center justify-center shrink-0">
-              <ScanBarcode className="w-7 h-7 text-[var(--neutral-800)]" />
-            </div>
-            <Input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => {
-                setError(null);
-                setQuery(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleScan();
-              }}
-              placeholder="Scan or type WO-2026-0002…"
-              className="flex-1 h-14 text-xl border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-1 placeholder:text-[var(--neutral-400)]"
-              autoFocus
-              spellCheck={false}
-              autoCapitalize="characters"
-            />
-            <Button
-              onClick={handleScan}
-              disabled={!query.trim()}
-              className="h-14 px-6 bg-[var(--neutral-800)] hover:bg-[var(--neutral-900)] text-white font-bold"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              Find
-            </Button>
-          </div>
-
-          {error && (
-            <div className="mt-3 flex items-start gap-2 text-sm text-[var(--mw-error)]">
-              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
+          <ScanInput
+            size="large"
+            onScan={(value) => handleScan(value)}
+            placeholder="Scan or type WO-2026-0002…"
+            error={error}
+            onErrorClear={() => setError(null)}
+          />
           <div className="mt-3 text-xs text-[var(--neutral-400)]">
             Demo travelers: <span className="font-mono">WO-2026-0002</span>,{' '}
             <span className="font-mono">WO-2026-0003</span>,{' '}

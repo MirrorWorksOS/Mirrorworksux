@@ -290,7 +290,7 @@ export function SellCustomerDetail() {
   return (
     <PageShell className="p-0 space-y-0 min-h-screen bg-[var(--neutral-100)] flex flex-col">
       {/* Header */}
-      <div className="bg-card border-b border-[var(--border)] px-6 py-4">
+      <div className="bg-[var(--neutral-100)] border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={() => navigate('/sell/crm')} className="p-1 hover:bg-[var(--neutral-100)] rounded transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -366,7 +366,7 @@ export function SellCustomerDetail() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Tab)} className="overflow-x-auto">
-          <TabsList className="h-auto min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 w-fit">
+          <TabsList className="h-auto min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 w-fit bg-[var(--neutral-200)]/45">
             {tabs.map(tab => (
               <TabsTrigger key={tab.key} value={tab.key} className="gap-2 px-3 sm:px-4">
                 <span>{tab.label}</span>

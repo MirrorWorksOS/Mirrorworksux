@@ -28,6 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { BarcodeDisplay } from '@/components/shared/barcode/BarcodeDisplay';
+import type { BarcodeSymbology } from '@/types/common';
 import { Textarea } from '@/components/ui/textarea';
 import {
   DropdownMenu,
@@ -222,6 +224,8 @@ function SubHeading({ children, actions }: { children: React.ReactNode; actions?
 // ═══════════════════════════════════════════════════════════
 function OverviewTab() {
   const [selectedType, setSelectedType] = useState(PRODUCT.productType);
+  const [barcodeValue, setBarcodeValue] = useState(PRODUCT.barcode);
+  const [barcodeType, setBarcodeType] = useState<BarcodeSymbology>('ean13');
 
   return (
     <div className="space-y-8">
@@ -300,22 +304,44 @@ function OverviewTab() {
           <div>
             <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Primary Barcode</label>
             <div className="flex gap-2">
-              <Input placeholder="Enter or generate barcode" className="h-10 bg-card border-[var(--border)] flex-1" />
-              <Button variant="outline" className="h-10 gap-2 border-[var(--border)]" onClick={() => toast.success('Barcode generated')}>
+              <Input
+                placeholder="Enter or generate barcode"
+                className="h-10 bg-card border-[var(--border)] flex-1"
+                value={barcodeValue}
+                onChange={(e) => setBarcodeValue(e.target.value)}
+              />
+              <Button
+                variant="outline"
+                className="h-10 gap-2 border-[var(--border)]"
+                onClick={() => {
+                  const generated = barcodeType === 'ean13'
+                    ? '400638133393'  // 12 digits — check digit auto-computed
+                    : `PRD-${PRODUCT.internalRef}`;
+                  setBarcodeValue(generated);
+                  toast.success('Barcode generated');
+                }}
+              >
                 <Barcode className="w-4 h-4" /> Generate
               </Button>
             </div>
-            <div className="mt-2">
-              <Select defaultValue="ean13">
+            <div className="mt-2 flex items-start gap-4">
+              <Select value={barcodeType} onValueChange={(v) => setBarcodeType(v as BarcodeSymbology)}>
                 <SelectTrigger className="h-9 w-32 bg-card border-[var(--border)]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ean13">EAN-13</SelectItem>
                   <SelectItem value="code128">Code 128</SelectItem>
-                  <SelectItem value="qr">QR Code</SelectItem>
+                  <SelectItem value="qrcode">QR Code</SelectItem>
                 </SelectContent>
               </Select>
+              {barcodeValue && (
+                <BarcodeDisplay
+                  value={barcodeValue}
+                  symbology={barcodeType}
+                  className="mt-1"
+                />
+              )}
             </div>
           </div>
           <div>

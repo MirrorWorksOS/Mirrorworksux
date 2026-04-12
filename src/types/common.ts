@@ -109,6 +109,19 @@ export type MrpNodeStatus = 'fulfilled' | 'partial' | 'pending' | 'shortage';
 
 export type ApprovalItemType = 'quote' | 'order' | 'requisition' | 'po' | 'expense' | 'bill';
 
+// ─── Barcode ───────────────────────────────────────────────────────
+
+/** Supported barcode symbologies across the platform. */
+export type BarcodeSymbology =
+  | 'code128'    // Internal WO/MO/SKU identifiers
+  | 'ean13'      // Product barcodes (retail-facing)
+  | 'qrcode'     // URLs, batch traceability links
+  | 'datamatrix' // Small labels, GS1 compliance
+  | 'code39';    // Legacy compatibility
+
+/** How a barcode value was captured. */
+export type ScanSource = 'keyboard' | 'camera';
+
 // ─── Helpers ────────────────────────────────────────────────────────
 
 export interface DateRange {

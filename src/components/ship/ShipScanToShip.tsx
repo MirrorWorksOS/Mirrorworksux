@@ -2,17 +2,17 @@
  * ShipScanToShip — Mock scanning interface for warehouse pick-pack-ship workflow.
  * Large touch targets (56px), scan input, matched items list, and packing list generation.
  */
-import { useState, useRef } from "react";
-import { ScanBarcode, Check, PackagePlus, Trash2, Package } from "lucide-react";
+import { useState } from "react";
+import { Check, PackagePlus, Trash2, Package } from "lucide-react";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
+import { ScanInput } from "@/components/shared/barcode/ScanInput";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/components/ui/utils";
 
@@ -33,18 +33,13 @@ const EXPECTED_ITEMS = [
 
 export function ShipScanToShip() {
   const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
-  const [scanInput, setScanInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleScan = () => {
-    const trimmed = scanInput.trim().toUpperCase();
-    if (!trimmed) return;
-
+  const handleScan = (value: string) => {
     const match = EXPECTED_ITEMS.find(
-      (item) => item.barcode.toUpperCase() === trimmed,
+      (item) => item.barcode.toUpperCase() === value,
     );
     const already = scannedItems.find(
-      (s) => s.barcode.toUpperCase() === trimmed,
+      (s) => s.barcode.toUpperCase() === value,
     );
 
     if (already) {
@@ -54,8 +49,8 @@ export function ShipScanToShip() {
     } else {
       const newItem: ScannedItem = {
         id: `scan-${Date.now()}`,
-        barcode: trimmed,
-        description: match?.description ?? `Unknown item (${trimmed})`,
+        barcode: value,
+        description: match?.description ?? `Unknown item (${value})`,
         qty: match?.qty ?? 1,
         matched: !!match,
       };
@@ -64,9 +59,6 @@ export function ShipScanToShip() {
         description: newItem.description,
       });
     }
-
-    setScanInput("");
-    inputRef.current?.focus();
   };
 
   const removeItem = (id: string) => {
@@ -97,39 +89,15 @@ export function ShipScanToShip() {
       {/* Scan input */}
       <motion.div variants={staggerItem}>
         <Card variant="flat" className="p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="flex-1 space-y-2">
-              <label
-                htmlFor="scan-input"
-                className="text-sm font-medium text-[var(--neutral-500)]"
-              >
-                Scan Barcode
-              </label>
-              <div className="relative">
-                <ScanBarcode
-                  className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--neutral-400)]"
-                  strokeWidth={1.5}
-                />
-                <Input
-                  ref={inputRef}
-                  id="scan-input"
-                  value={scanInput}
-                  onChange={(e) => setScanInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleScan()}
-                  placeholder="Scan or type barcode..."
-                  className="min-h-[56px] pl-11 text-lg font-mono"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <Button
-              onClick={handleScan}
-              className="min-h-[56px] px-8"
-              disabled={!scanInput.trim()}
-            >
-              <ScanBarcode className="mr-2 h-5 w-5" strokeWidth={1.5} />
-              Scan
-            </Button>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[var(--neutral-500)]">
+              Scan Barcode
+            </label>
+            <ScanInput
+              onScan={(value) => handleScan(value)}
+              placeholder="Scan or type barcode..."
+              showCamera
+            />
           </div>
 
           <div className="mt-4 flex items-center gap-3 text-sm text-[var(--neutral-500)]">

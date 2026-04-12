@@ -22,6 +22,7 @@ import {
 
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
+import { BarcodeDisplay } from "@/components/shared/barcode/BarcodeDisplay";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -181,22 +182,32 @@ export function MakeJobTraveler() {
           {/* Job header card */}
           <motion.div variants={staggerItem}>
             <Card variant="flat" className="p-6">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-muted-foreground">Job Number</p>
-                  <p className="font-mono font-medium text-foreground">{mo.jobNumber}</p>
+              <div className="flex items-start justify-between gap-6">
+                <div className="grid grid-cols-2 gap-4 text-sm flex-1">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Job Number</p>
+                    <p className="font-mono font-medium text-foreground">{mo.jobNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Customer</p>
+                    <p className="font-medium text-foreground">{mo.customerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Operator</p>
+                    <p className="font-medium text-foreground">{mo.operatorName}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Due Date</p>
+                    <p className="font-medium text-foreground">{mo.dueDate}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Customer</p>
-                  <p className="font-medium text-foreground">{mo.customerName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Operator</p>
-                  <p className="font-medium text-foreground">{mo.operatorName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Due Date</p>
-                  <p className="font-medium text-foreground">{mo.dueDate}</p>
+                {/* Scannable barcode for this MO — printed on the paper traveler */}
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  <BarcodeDisplay
+                    value={mo.moNumber}
+                    symbology="code128"
+                    scale={2}
+                  />
                 </div>
               </div>
             </Card>

@@ -55,6 +55,8 @@
               '@radix-ui/react-tabs',
               '@radix-ui/react-tooltip',
             ],
+            'vendor-barcode': ['bwip-js'],
+            'vendor-camera': ['html5-qrcode'],
           },
         },
       },

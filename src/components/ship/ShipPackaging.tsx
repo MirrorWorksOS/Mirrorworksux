@@ -1,12 +1,12 @@
 /**
  * Ship Packaging — pack station touch interface
  */
-import React, { useState, useRef, useEffect } from 'react';
-import { ScanBarcode } from 'lucide-react';
+import React, { useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
+import { ScanInput, type ScanInputHandle } from '@/components/shared/barcode/ScanInput';
 import { Checklist } from '@/components/shared/checklist/Checklist';
 import { ChecklistItem } from '@/components/shared/checklist/ChecklistItem';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -29,20 +29,18 @@ const PACKAGES = [
 
 export function ShipPackaging() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
-  const [scan, setScan] = useState('');
-  const [flash, setFlash] = useState<'none' | 'ok' | 'err'>('none');
   const [pkg, setPkg] = useState('Medium');
   const [fragile, setFragile] = useState(false);
-  const ref = useRef<HTMLInputElement>(null);
+  const scanRef = useRef<ScanInputHandle>(null);
 
-  useEffect(() => { ref.current?.focus(); }, []);
-
-  const handleScan = () => {
-    const found = ITEMS.find(i => i.sku === scan.toUpperCase());
-    if (found) { setChecked(p => new Set(p).add(found.sku)); setFlash('ok'); }
-    else setFlash('err');
-    setTimeout(() => setFlash('none'), 500);
-    setScan('');
+  const handleScan = (value: string) => {
+    const found = ITEMS.find(i => i.sku === value);
+    if (found) {
+      setChecked(p => new Set(p).add(found.sku));
+      scanRef.current?.flash('ok');
+    } else {
+      scanRef.current?.flash('err');
+    }
   };
 
   const toggle = (sku: string) => {
@@ -85,21 +83,13 @@ export function ShipPackaging() {
             </span>
           </div>
 
-          <div
-            className={cn(
-              'relative mb-6 rounded-[var(--shape-lg)] transition-all duration-150',
-              flash === 'ok' && 'ring-2 ring-[var(--mw-success)]',
-              flash === 'err' && 'ring-2 ring-[var(--mw-error)]',
-            )}
-          >
-            <ScanBarcode className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--neutral-400)]" strokeWidth={1.5} />
-            <Input
-              ref={ref}
-              value={scan}
-              onChange={(e) => setScan(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleScan()}
+          <div className="mb-6">
+            <ScanInput
+              onScan={(value) => handleScan(value)}
               placeholder="Scan barcode..."
-              className="h-14 rounded-[var(--shape-lg)] border-transparent bg-[var(--neutral-100)] pl-12"
+              flash
+              scanRef={scanRef}
+              showCamera
             />
           </div>
 
