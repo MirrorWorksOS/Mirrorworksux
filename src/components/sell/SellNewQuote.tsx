@@ -20,6 +20,8 @@ import { useNavigate } from 'react-router';
 
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { getChartScaleColour } from '@/components/shared/charts/chart-theme';
+import { QuoteUploadZone } from '@/components/sell/QuoteUploadZone';
+import { QuoteAssistantBar } from '@/components/sell/QuoteAssistantBar';
 
 // ── Types ─────────────────────────────────────────────────
 interface LineItem {
@@ -123,6 +125,22 @@ export function SellNewQuote() {
   };
 
   const removeLine = (id: string) => setLines(prev => prev.filter(l => l.id !== id));
+
+  const addItemsFromUpload = (items: { description: string; sku: string; qty: number; unit: string; unitCost: number; margin: number; unitPrice: number }[]) => {
+    const converted: LineItem[] = items.map(i => ({
+      id: Math.random().toString(36).slice(2),
+      ...i,
+    }));
+    setLines(prev => [...prev, ...converted]);
+  };
+
+  const updateAllMargins = (newMargin: number) => {
+    setLines(prev => prev.map(l => ({
+      ...l,
+      margin: newMargin,
+      unitPrice: parseFloat(calcPrice(l.unitCost, newMargin).toFixed(2)),
+    })));
+  };
 
   const lineItemColumns: MwColumnDef<LineItem>[] = [
     {
@@ -298,6 +316,14 @@ export function SellNewQuote() {
             </AIInsightCard>
           )}
 
+          {/* AI Assistant Bar */}
+          <QuoteAssistantBar
+            customer={customer}
+            lines={lines}
+            onAddLines={addItemsFromUpload}
+            onUpdateMargins={updateAllMargins}
+          />
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left — Quote details */}
             <div className="lg:col-span-2 space-y-6">
@@ -341,6 +367,9 @@ export function SellNewQuote() {
                   </div>
                 </div>
               </Card>
+
+              {/* Upload zone */}
+              <QuoteUploadZone onAddItems={addItemsFromUpload} />
 
               {/* Line items */}
               <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">

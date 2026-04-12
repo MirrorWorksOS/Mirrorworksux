@@ -29,7 +29,7 @@ export type OpportunityStage =
   | 'won'
   | 'lost';
 
-export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired';
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'revision_requested';
 
 export type SalesOrderStatus = 'draft' | 'confirmed' | 'in_production' | 'shipped' | 'invoiced' | 'cancelled';
 

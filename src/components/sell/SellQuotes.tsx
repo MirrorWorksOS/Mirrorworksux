@@ -15,6 +15,8 @@ import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryB
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '../ui/button';
 import { quotes as centralQuotes } from '@/services/mock';
+import { QuoteViewBadge } from '@/components/sell/QuoteViewActivity';
+import type { QuoteViewEvent } from '@/types/entities';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'expired';
 
@@ -27,6 +29,7 @@ interface Quote {
   status: QuoteStatus;
   created: string;
   validUntil: string;
+  viewEvents?: QuoteViewEvent[];
 }
 
 const mockQuotes: Quote[] = centralQuotes.map((q) => ({
@@ -38,6 +41,7 @@ const mockQuotes: Quote[] = centralQuotes.map((q) => ({
   status: q.status as QuoteStatus,
   created: q.date,
   validUntil: q.expiryDate,
+  viewEvents: q.viewEvents,
 }));
 
 const STATUS_VARIANT: Record<QuoteStatus, { variant: 'neutral' | 'info' | 'success' | 'error'; label: string }> = {
@@ -109,6 +113,13 @@ const quoteColumns: MwColumnDef<Quote>[] = [
         </div>
       );
     },
+  },
+  {
+    key: 'views',
+    header: 'Views',
+    headerClassName: 'text-center',
+    className: 'text-center',
+    cell: (row) => <QuoteViewBadge viewEvents={row.viewEvents} />,
   },
   {
     key: 'created',

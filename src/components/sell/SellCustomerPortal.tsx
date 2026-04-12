@@ -1,11 +1,13 @@
 /**
- * Sell Customer Portal — mock customer-facing portal preview.
+ * Sell Customer Portal — customer-facing portal preview.
  * Full-page component with PageShell + PageHeader.
- * Tabs: Orders, Invoices, Quotes.
+ * Tabs: Orders, Invoices, Quotes — with quote detail drill-down.
  * Route: /sell/portal
+ *
+ * Uses centralized mock data filtered by a mock logged-in customer (TechCorp, cust-001).
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { Package, FileText, ClipboardList, Download, Eye, Check, X } from "lucide-react";
 import { PageShell } from "@/components/shared/layout/PageShell";
@@ -24,66 +26,54 @@ import {
 import { StatusBadge, type StatusKey } from "@/components/shared/data/StatusBadge";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
 import { toast } from "sonner";
+import { quotes, salesOrders, sellInvoices } from "@/services/mock";
+import { PortalQuoteDetail } from "@/components/sell/PortalQuoteDetail";
+import type { Quote } from "@/types/entities";
 
-// ── Mock portal data ──────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────
 
-interface PortalOrder {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: StatusKey;
-  total: number;
-  items: number;
-}
+const PORTAL_CUSTOMER_ID = "cust-001"; // TechCorp Industries
 
-interface PortalInvoice {
-  id: string;
-  invoiceNumber: string;
-  date: string;
-  dueDate: string;
-  status: StatusKey;
-  amount: number;
-}
-
-interface PortalQuote {
-  id: string;
-  ref: string;
-  date: string;
-  expiryDate: string;
-  value: number;
-  status: "pending" | "accepted" | "declined";
-  description: string;
-}
-
-const portalOrders: PortalOrder[] = [
-  { id: "po-001", orderNumber: "SO-2024-0089", date: "2024-03-15", status: "shipped", total: 24500, items: 3 },
-  { id: "po-002", orderNumber: "SO-2024-0076", date: "2024-03-08", status: "in_progress", total: 18200, items: 2 },
-  { id: "po-003", orderNumber: "SO-2024-0065", date: "2024-02-28", status: "completed", total: 31400, items: 5 },
-  { id: "po-004", orderNumber: "SO-2024-0052", date: "2024-02-15", status: "completed", total: 12800, items: 1 },
-  { id: "po-005", orderNumber: "SO-2024-0041", date: "2024-02-01", status: "completed", total: 45600, items: 4 },
-];
-
-const portalInvoices: PortalInvoice[] = [
-  { id: "pi-001", invoiceNumber: "INV-2024-0134", date: "2024-03-18", dueDate: "2024-04-17", status: "sent", amount: 24500 },
-  { id: "pi-002", invoiceNumber: "INV-2024-0121", date: "2024-03-05", dueDate: "2024-04-04", status: "overdue", amount: 18200 },
-  { id: "pi-003", invoiceNumber: "INV-2024-0108", date: "2024-02-28", dueDate: "2024-03-29", status: "paid", amount: 31400 },
-  { id: "pi-004", invoiceNumber: "INV-2024-0095", date: "2024-02-15", dueDate: "2024-03-16", status: "paid", amount: 12800 },
-];
-
-const portalQuotes: PortalQuote[] = [
-  { id: "pq-001", ref: "QTE-2024-0042", date: "2024-03-20", expiryDate: "2024-04-19", value: 28900, status: "pending", description: "Structural steel frames x 4 — warehouse fit-out" },
-  { id: "pq-002", ref: "QTE-2024-0038", date: "2024-03-12", expiryDate: "2024-04-11", value: 15400, status: "pending", description: "Custom bracket assemblies — mining conveyor upgrade" },
-  { id: "pq-003", ref: "QTE-2024-0029", date: "2024-02-25", expiryDate: "2024-03-26", value: 42000, status: "accepted", description: "Platform grating panels — commercial kitchen" },
-  { id: "pq-004", ref: "QTE-2024-0021", date: "2024-02-10", expiryDate: "2024-03-11", value: 8600, status: "declined", description: "Sheet metal enclosures x 10 — electrical cabinets" },
-];
-
-// ── Sub-components ────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────
 
 function formatCurrency(value: number): string {
   return value.toLocaleString("en-AU", { style: "currency", currency: "AUD" });
 }
 
+const orderStatusMap: Record<string, StatusKey> = {
+  draft: "draft",
+  confirmed: "approved",
+  in_production: "in_progress",
+  shipped: "shipped",
+  invoiced: "completed",
+  cancelled: "rejected",
+};
+
+const invoiceStatusMap: Record<string, StatusKey> = {
+  draft: "draft",
+  sent: "sent",
+  paid: "completed",
+  overdue: "overdue",
+  void: "rejected",
+};
+
+const quoteStatusMap: Record<string, StatusKey> = {
+  draft: "pending",
+  sent: "pending",
+  accepted: "approved",
+  declined: "rejected",
+  expired: "overdue",
+  revision_requested: "pending",
+};
+
+// ── Sub-components ───────────────────────────────────────────────────
+
 function OrdersTab() {
+  const customerOrders = useMemo(
+    () => salesOrders.filter((o) => o.customerId === PORTAL_CUSTOMER_ID),
+    [],
+  );
+
   return (
     <motion.div variants={staggerItem}>
       <Card variant="flat">
@@ -92,23 +82,30 @@ function OrdersTab() {
             <TableRow>
               <TableHead>Order #</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Items</TableHead>
+              <TableHead>Delivery</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {portalOrders.map((order) => (
+            {customerOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-mono font-medium">{order.orderNumber}</TableCell>
                 <TableCell className="text-[var(--neutral-600)]">{order.date}</TableCell>
-                <TableCell className="font-mono">{order.items}</TableCell>
+                <TableCell className="text-[var(--neutral-600)]">{order.deliveryDate}</TableCell>
                 <TableCell>
-                  <StatusBadge status={order.status} withDot />
+                  <StatusBadge status={orderStatusMap[order.status] ?? "pending"} withDot />
                 </TableCell>
                 <TableCell className="text-right font-mono">{formatCurrency(order.total)}</TableCell>
               </TableRow>
             ))}
+            {customerOrders.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-sm text-[var(--neutral-400)] py-8">
+                  No orders yet.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </Card>
@@ -117,6 +114,11 @@ function OrdersTab() {
 }
 
 function InvoicesTab() {
+  const customerInvoices = useMemo(
+    () => sellInvoices.filter((i) => i.customerId === PORTAL_CUSTOMER_ID),
+    [],
+  );
+
   return (
     <motion.div variants={staggerItem}>
       <Card variant="flat">
@@ -132,13 +134,13 @@ function InvoicesTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {portalInvoices.map((inv) => (
+            {customerInvoices.map((inv) => (
               <TableRow key={inv.id}>
                 <TableCell className="font-mono font-medium">{inv.invoiceNumber}</TableCell>
                 <TableCell className="text-[var(--neutral-600)]">{inv.date}</TableCell>
                 <TableCell className="text-[var(--neutral-600)]">{inv.dueDate}</TableCell>
                 <TableCell>
-                  <StatusBadge status={inv.status} withDot />
+                  <StatusBadge status={invoiceStatusMap[inv.status] ?? "pending"} withDot />
                 </TableCell>
                 <TableCell className="text-right font-mono">{formatCurrency(inv.amount)}</TableCell>
                 <TableCell className="text-right">
@@ -161,6 +163,13 @@ function InvoicesTab() {
                 </TableCell>
               </TableRow>
             ))}
+            {customerInvoices.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-sm text-[var(--neutral-400)] py-8">
+                  No invoices yet.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </Card>
@@ -168,40 +177,39 @@ function InvoicesTab() {
   );
 }
 
-function QuotesTab() {
-  const [quotes, setQuotes] = useState(portalQuotes);
+function QuotesTab({ onSelectQuote }: { onSelectQuote: (q: Quote) => void }) {
+  const [localQuotes, setLocalQuotes] = useState(() =>
+    quotes.filter((q) => q.customerId === PORTAL_CUSTOMER_ID),
+  );
 
   const handleAccept = (id: string) => {
-    setQuotes((prev) =>
+    setLocalQuotes((prev) =>
       prev.map((q) => (q.id === id ? { ...q, status: "accepted" as const } : q)),
     );
     toast.success("Quote accepted");
   };
 
   const handleDecline = (id: string) => {
-    setQuotes((prev) =>
+    setLocalQuotes((prev) =>
       prev.map((q) => (q.id === id ? { ...q, status: "declined" as const } : q)),
     );
     toast.info("Quote declined");
   };
 
-  const quoteStatusMap: Record<PortalQuote["status"], StatusKey> = {
-    pending: "pending",
-    accepted: "approved",
-    declined: "rejected",
-  };
-
   return (
     <motion.div variants={staggerItem} className="grid gap-4 sm:grid-cols-2">
-      {quotes.map((quote) => (
+      {localQuotes.map((quote) => (
         <Card key={quote.id} variant="flat" className="p-5 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-1">
               <p className="text-sm font-medium text-foreground font-mono">{quote.ref}</p>
-              <p className="text-xs text-[var(--neutral-500)]">{quote.description}</p>
+              <p className="text-xs text-[var(--neutral-500)]">
+                {quote.lineItems.length} item{quote.lineItems.length !== 1 ? "s" : ""}
+                {quote.revisions && quote.revisions.length > 1 && ` · v${quote.revisions.length}`}
+              </p>
             </div>
-            <StatusBadge status={quoteStatusMap[quote.status]} withDot>
-              {quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
+            <StatusBadge status={quoteStatusMap[quote.status] ?? "pending"} withDot>
+              {quote.status.charAt(0).toUpperCase() + quote.status.slice(1).replace("_", " ")}
             </StatusBadge>
           </div>
 
@@ -215,37 +223,81 @@ function QuotesTab() {
             <span>Expires: {quote.expiryDate}</span>
           </div>
 
-          {quote.status === "pending" && (
-            <div className="flex gap-2 pt-1">
-              <Button size="sm" className="flex-1" onClick={() => handleAccept(quote.id)}>
-                <Check className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
-                Accept
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1"
-                onClick={() => handleDecline(quote.id)}
-              >
-                <X className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
-                Decline
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2 pt-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1"
+              onClick={() => onSelectQuote(quote)}
+            >
+              <Eye className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
+              View Details
+            </Button>
+            {(quote.status === "sent" || quote.status === "draft") && (
+              <>
+                <Button size="sm" className="flex-1" onClick={() => handleAccept(quote.id)}>
+                  <Check className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} />
+                  Accept
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDecline(quote.id)}
+                >
+                  <X className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </Button>
+              </>
+            )}
+          </div>
         </Card>
       ))}
+      {localQuotes.length === 0 && (
+        <p className="text-sm text-[var(--neutral-400)] text-center col-span-2 py-8">
+          No quotes yet.
+        </p>
+      )}
     </motion.div>
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────
+// ── Main component ───────────────────────────────────────────────────
 
 export function SellCustomerPortal() {
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+
+  if (selectedQuote) {
+    return (
+      <PageShell>
+        <PageHeader
+          title="Customer Portal"
+          subtitle="TechCorp Industries"
+          breadcrumbs={[
+            { label: "Sell", href: "/sell" },
+            { label: "Customer Portal", href: "/sell/portal" },
+            { label: selectedQuote.ref },
+          ]}
+        />
+        <PortalQuoteDetail
+          quote={selectedQuote}
+          onBack={() => setSelectedQuote(null)}
+          onAccept={(id) => {
+            toast.success("Quote accepted");
+            setSelectedQuote(null);
+          }}
+          onDecline={(id) => {
+            toast.info("Quote declined");
+            setSelectedQuote(null);
+          }}
+        />
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell>
       <PageHeader
         title="Customer Portal"
-        subtitle="Preview of your customer-facing portal"
+        subtitle="TechCorp Industries — Preview of customer-facing portal"
         breadcrumbs={[
           { label: "Sell", href: "/sell" },
           { label: "Customer Portal" },
@@ -253,7 +305,7 @@ export function SellCustomerPortal() {
       />
 
       <motion.div variants={staggerItem}>
-        <Tabs defaultValue="orders">
+        <Tabs defaultValue="quotes">
           <TabsList>
             <TabsTrigger value="orders">
               <Package className="mr-1.5 h-4 w-4" strokeWidth={1.5} />
@@ -276,7 +328,7 @@ export function SellCustomerPortal() {
             <InvoicesTab />
           </TabsContent>
           <TabsContent value="quotes" className="mt-4">
-            <QuotesTab />
+            <QuotesTab onSelectQuote={setSelectedQuote} />
           </TabsContent>
         </Tabs>
       </motion.div>

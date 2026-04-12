@@ -135,6 +135,14 @@ export interface Quote {
   acceptedBy?: string;
   /** Signature image URL placeholder */
   signatureUrl?: string;
+  /** Quote revision history */
+  revisions?: QuoteRevision[];
+  /** Chat messages between shop and customer */
+  messages?: QuoteMessage[];
+  /** Files uploaded with this quote */
+  uploadedFiles?: { name: string; type: string; sizeKb: number }[];
+  /** Customer view/open events */
+  viewEvents?: QuoteViewEvent[];
 }
 
 export interface QuoteLineItem {
@@ -200,6 +208,101 @@ export interface DxfAnalysisResult {
   materialCostAud: number;
   partsPerSheet: number;
   sheetDimensions: { widthMm: number; heightMm: number };
+}
+
+// ─── Upload Analysis ───────────────────────────────────────────────
+
+/** Result from AI file upload analysis */
+export interface UploadAnalysisResult {
+  fileId: string;
+  fileName: string;
+  fileType: 'cad' | 'spreadsheet' | 'image' | 'document';
+  extractedItems: ExtractedLineItem[];
+  metadata: {
+    customerHint?: string;
+    deliveryDateHint?: string;
+    materialSummary?: string;
+    routingSummary?: string;
+  };
+}
+
+/** Line item extracted from uploaded file */
+export interface ExtractedLineItem {
+  id: string;
+  description: string;
+  suggestedSku?: string;
+  material?: string;
+  qty: number;
+  unit: string;
+  estimatedCost: number;
+  suggestedPrice: number;
+  confidence: number;
+  source: string;
+  routingSteps?: string[];
+}
+
+// ─── Quote Heuristics ──────────────────────────────────────────────
+
+/** AI heuristic analysis for a quote */
+export interface QuoteHeuristics {
+  winProbability: number;
+  factors: { label: string; impact: 'positive' | 'negative' | 'neutral'; detail: string }[];
+  priceCompetitiveness: {
+    thisQuote: number;
+    historicalWinRange: [number, number];
+    verdict: 'competitive' | 'high' | 'low';
+  };
+  marginSuggestions: {
+    lineItemIndex: number;
+    currentMargin: number;
+    suggestedMargin: number;
+    reason: string;
+  }[];
+  riskFlags: {
+    severity: 'low' | 'medium' | 'high';
+    title: string;
+    detail: string;
+  }[];
+  customerInsights: {
+    avgOrderValue: number;
+    totalLifetimeValue: number;
+    avgDaysToAccept: number;
+    quotesAccepted: number;
+    quotesDeclined: number;
+  };
+}
+
+// ─── Quote Revisions & Chat ────────────────────────────────────────
+
+/** A single version in quote revision history */
+export interface QuoteRevision {
+  version: number;
+  date: string;
+  changedBy: 'shop' | 'customer_request';
+  changes: string[];
+  totalValue: number;
+}
+
+/** Chat message between shop and customer on a quote */
+export interface QuoteMessage {
+  id: string;
+  quoteId: string;
+  sender: 'customer' | 'shop';
+  senderName: string;
+  message: string;
+  timestamp: string;
+  attachments?: { name: string; sizeKb: number }[];
+}
+
+/** Customer view/open event for a quote */
+export interface QuoteViewEvent {
+  id: string;
+  quoteId: string;
+  viewedBy: string;
+  viewedAt: string;
+  source: 'email_link' | 'portal';
+  duration?: number;
+  deviceType?: 'desktop' | 'mobile';
 }
 
 /** Win/loss analysis data point */

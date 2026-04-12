@@ -25,6 +25,9 @@ import { CapableToPromise } from '@/components/sell/CapableToPromise';
 import { DxfUploadPanel } from '@/components/sell/DxfUploadPanel';
 import { ESignaturePanel } from '@/components/sell/ESignaturePanel';
 import { LeadScoreIndicator } from '@/components/sell/LeadScoreIndicator';
+import { QuoteHeuristicPanel } from '@/components/sell/QuoteHeuristicPanel';
+import { QuoteViewActivity } from '@/components/sell/QuoteViewActivity';
+import { quoteHeuristics } from '@/services/mock';
 
 /* ------------------------------------------------------------------ */
 /*  Build lookup from centralised data                                */
@@ -53,6 +56,7 @@ const STATUS_LABEL: Record<string, string> = {
 const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'line-items', label: 'Line Items' },
+  { id: 'ai-analysis', label: 'AI Analysis' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -197,6 +201,9 @@ export function SellQuoteDetail() {
                 </Button>
               </div>
             </Card>
+
+            {/* Customer View Activity */}
+            <QuoteViewActivity viewEvents={quote.viewEvents} quoteRef={quote.ref} />
           </div>
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -241,10 +248,15 @@ export function SellQuoteDetail() {
           </Card>
         );
 
+      case 'ai-analysis':
+        return <QuoteHeuristicPanel quoteId={quote.id} />;
+
       default:
         return null;
     }
   };
+
+  const heuristic = quoteHeuristics[quote.id];
 
   return (
     <JobWorkspaceLayout
@@ -264,6 +276,17 @@ export function SellQuoteDetail() {
           <StatusBadge status={isExpired ? 'overdue' : quote.status}>
             {isExpired ? 'Expired' : STATUS_LABEL[quote.status] ?? quote.status}
           </StatusBadge>
+          {heuristic && (
+            <div className="flex items-center gap-2 rounded-full border border-[var(--neutral-200)] bg-card px-2 py-1">
+              <span className="text-xs text-[var(--neutral-500)]">Win</span>
+              <span className={cn(
+                'text-xs font-medium tabular-nums',
+                heuristic.winProbability >= 75 ? 'text-[var(--mw-green)]' : heuristic.winProbability >= 50 ? 'text-[var(--mw-yellow-500)]' : 'text-[var(--mw-error)]',
+              )}>
+                {heuristic.winProbability}%
+              </span>
+            </div>
+          )}
           {opp && typeof opp.aiScore === 'number' && (
             <div className="flex items-center gap-2 rounded-full border border-[var(--neutral-200)] bg-card px-2 py-1">
               <span className="text-xs text-[var(--neutral-500)]">Lead score</span>

@@ -65,6 +65,8 @@ import type {
   MaintenanceRecord,
   ToolingItem,
   ControlDocument,
+  QuoteHeuristics,
+  UploadAnalysisResult,
 } from '@/types/entities';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -240,6 +242,9 @@ export const quotes: Quote[] = [
       { productId: 'prod-001', description: 'Mounting Bracket 90°', qty: 200, unitPrice: 24.50, total: 4900 },
       { productId: 'prod-002', description: 'Base Plate 200×200', qty: 50, unitPrice: 67, total: 3350 },
     ],
+    viewEvents: [
+      { id: 've-004', quoteId: 'qt-001', viewedBy: 'James Hartley', viewedAt: '2026-04-10T16:45:00Z', source: 'email_link', duration: 120, deviceType: 'desktop' },
+    ],
   },
   {
     id: 'qt-002', ref: 'Q-2026-0048', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
@@ -273,6 +278,54 @@ export const quotes: Quote[] = [
     acceptedAt: '2026-02-14T09:32:00Z',
     acceptedBy: 'James Hartley',
     signatureUrl: '/signatures/qt-005-sig.png',
+  },
+  {
+    id: 'qt-006', ref: 'Q-2026-0062', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    date: '2026-04-08', expiryDate: '2026-05-08', value: 38500, status: 'draft',
+    lineItems: [
+      { productId: 'prod-004', description: 'Server Rack Chassis 42U', qty: 6, unitPrice: 1250, total: 7500 },
+      { productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 120, unitPrice: 24.50, total: 2940 },
+      { productId: 'prod-010', description: 'Control Panel Enclosure 600×800', qty: 10, unitPrice: 420, total: 4200 },
+      { productId: 'prod-002', description: 'Base Plate 200×200 — Mild Steel 6mm', qty: 60, unitPrice: 67, total: 4020 },
+      { productId: 'LABOUR-FAB', description: 'Fabrication Labour', qty: 80, unitPrice: 95, total: 7600 },
+      { productId: 'LABOUR-WLD', description: 'Welding Labour', qty: 50, unitPrice: 105, total: 5250 },
+      { productId: 'CUSTOM', description: 'Powder Coat — RAL 7035 Light Grey', qty: 196, unitPrice: 35, total: 6860 },
+    ],
+    revisions: [
+      { version: 1, date: '2026-04-08', changedBy: 'shop', changes: ['Initial quote from uploaded RFQ — 7 line items extracted via AI'], totalValue: 38500 },
+    ],
+    uploadedFiles: [
+      { name: 'TechCorp-RFQ-2026-Q2.pdf', type: 'document', sizeKb: 245 },
+      { name: 'rack-assembly-v3.dxf', type: 'cad', sizeKb: 1200 },
+    ],
+    viewEvents: [],
+  },
+  {
+    id: 'qt-007', ref: 'Q-2026-0058', opportunityId: 'opp-004', customerId: 'cust-005', customerName: 'Sydney Rail Corp',
+    date: '2026-03-25', expiryDate: '2026-04-25', value: 67000, status: 'sent',
+    lineItems: [
+      { productId: 'prod-009', description: 'Rail Platform Component — Handrail Section', qty: 40, unitPrice: 890, total: 35600 },
+      { productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 80, unitPrice: 67, total: 5360 },
+      { productId: 'LABOUR-FAB', description: 'Fabrication Labour — Rail Spec', qty: 120, unitPrice: 105, total: 12600 },
+      { productId: 'CUSTOM', description: 'Hot-Dip Galvanising — AS/NZS 4680', qty: 40, unitPrice: 210, total: 8400 },
+      { productId: 'CUSTOM', description: 'Third-Party Weld Inspection — AS 1554.1', qty: 1, unitPrice: 5040, total: 5040 },
+    ],
+    revisions: [
+      { version: 1, date: '2026-03-25', changedBy: 'shop', changes: ['Initial quote — 40 handrail sections + base plates'], totalValue: 72000 },
+      { version: 2, date: '2026-03-30', changedBy: 'customer_request', changes: ['Applied 7% volume discount on handrails', 'Reduced handrail unit price from $940 to $890'], totalValue: 69600 },
+      { version: 3, date: '2026-04-02', changedBy: 'shop', changes: ['Extended delivery by 1 week for lower material cost', 'Added base plate line item', 'Added galvanising and weld inspection line items'], totalValue: 67000 },
+    ],
+    messages: [
+      { id: 'msg-001', quoteId: 'qt-007', sender: 'customer', senderName: "Rebecca O'Brien", message: "Thanks for the quote. Can we get a volume discount on the handrails? We may increase the order to 60 units if the price is right.", timestamp: '2026-03-28T10:15:00Z' },
+      { id: 'msg-002', quoteId: 'qt-007', sender: 'shop', senderName: 'Sarah Chen', message: "Absolutely, Rebecca. I've applied a 7% discount on the handrails in v2. If you go to 60 units, we can offer an additional 3%. Would also like to discuss the base plate requirement — our engineer recommends 10mm stainless for the rail spec.", timestamp: '2026-03-30T14:30:00Z' },
+      { id: 'msg-003', quoteId: 'qt-007', sender: 'customer', senderName: "Rebecca O'Brien", message: "v2 looks good. Can you add the base plates and galvanising? Also, can you push delivery to May 15 instead of May 8? That aligns better with our site schedule.", timestamp: '2026-04-01T09:00:00Z' },
+      { id: 'msg-004', quoteId: 'qt-007', sender: 'shop', senderName: 'Sarah Chen', message: "Done in v3. Extended delivery actually lets us batch with another rail order, so material cost drops slightly. Total stays at $67k. I've also added weld inspection as a separate line — it's required for AS 1554.1 compliance on rail infrastructure. Ready for sign-off when you are.", timestamp: '2026-04-02T11:45:00Z' },
+    ],
+    viewEvents: [
+      { id: 've-001', quoteId: 'qt-007', viewedBy: "Rebecca O'Brien", viewedAt: '2026-04-12T08:30:00Z', source: 'email_link', duration: 45, deviceType: 'desktop' },
+      { id: 've-002', quoteId: 'qt-007', viewedBy: "Rebecca O'Brien", viewedAt: '2026-04-11T14:15:00Z', source: 'portal', duration: 240, deviceType: 'desktop' },
+      { id: 've-003', quoteId: 'qt-007', viewedBy: "Rebecca O'Brien", viewedAt: '2026-04-09T10:00:00Z', source: 'email_link', duration: 30, deviceType: 'mobile' },
+    ],
   },
 ];
 
@@ -990,3 +1043,126 @@ export const controlDocuments: ControlDocument[] = [
     { revision: 'Rev 3.0', date: '2026-04-04', author: 'Sarah Chen', description: 'Draft — adding new Laser #2 procedures' },
   ] },
 ];
+
+// ═══════════════════════════════════════════════════════════════════════
+// QUOTING — Heuristics & Upload Analysis
+// ═══════════════════════════════════════════════════════════════════════
+
+export const quoteHeuristics: Record<string, QuoteHeuristics> = {
+  'qt-001': {
+    winProbability: 72,
+    factors: [
+      { label: 'Customer relationship', impact: 'positive', detail: 'TechCorp is a repeat customer with 3 past orders' },
+      { label: 'Price vs market', impact: 'positive', detail: 'Quote is 8% below market average for similar scope' },
+      { label: 'Quote age', impact: 'negative', detail: 'Quote expires today — no response in 30 days' },
+      { label: 'Competition', impact: 'neutral', detail: 'No known competing quotes detected' },
+    ],
+    priceCompetitiveness: { thisQuote: 42000, historicalWinRange: [38000, 52000], verdict: 'competitive' },
+    marginSuggestions: [
+      { lineItemIndex: 0, currentMargin: 22, suggestedMargin: 25, reason: 'Server rack chassis demand is high — market supports 25% margin' },
+      { lineItemIndex: 1, currentMargin: 18, suggestedMargin: 22, reason: 'Mounting brackets have low price sensitivity for TechCorp' },
+    ],
+    riskFlags: [
+      { severity: 'medium', title: 'Steel price volatility', detail: 'Mild steel 3mm has increased 4.2% in the last 30 days. Consider locking supplier pricing.' },
+      { severity: 'low', title: 'Capacity constraint', detail: 'Welding bay at 85% utilisation for April. May need overtime for this order.' },
+    ],
+    customerInsights: { avgOrderValue: 28500, totalLifetimeValue: 245000, avgDaysToAccept: 12, quotesAccepted: 8, quotesDeclined: 2 },
+  },
+  'qt-006': {
+    winProbability: 68,
+    factors: [
+      { label: 'Customer relationship', impact: 'positive', detail: 'TechCorp — strong account with 60-day terms established' },
+      { label: 'RFQ quality', impact: 'positive', detail: 'Customer provided detailed RFQ with DXF files — serious intent' },
+      { label: 'Quote freshness', impact: 'positive', detail: 'Quote created 4 days ago — within typical response window' },
+      { label: 'Scope complexity', impact: 'negative', detail: '7 line items including powder coat — complex scope increases risk' },
+    ],
+    priceCompetitiveness: { thisQuote: 38500, historicalWinRange: [35000, 48000], verdict: 'competitive' },
+    marginSuggestions: [
+      { lineItemIndex: 4, currentMargin: 42, suggestedMargin: 38, reason: 'Fabrication labour rate is above market — consider reducing to stay competitive' },
+      { lineItemIndex: 6, currentMargin: 30, suggestedMargin: 35, reason: 'Powder coat is typically higher margin — industry standard is 35%' },
+    ],
+    riskFlags: [
+      { severity: 'high', title: 'No customer response yet', detail: 'Quote sent 4 days ago — TechCorp typically responds within 3 days. Consider a follow-up call.' },
+    ],
+    customerInsights: { avgOrderValue: 28500, totalLifetimeValue: 245000, avgDaysToAccept: 12, quotesAccepted: 8, quotesDeclined: 2 },
+  },
+  'qt-007': {
+    winProbability: 81,
+    factors: [
+      { label: 'Active negotiation', impact: 'positive', detail: 'Customer is in active v3 negotiation — strong buying signals' },
+      { label: 'Customer engagement', impact: 'positive', detail: 'Quote viewed 3 times, 4 chat messages exchanged' },
+      { label: 'Strategic account', impact: 'positive', detail: 'Sydney Rail Corp is a strategic account — government infrastructure' },
+      { label: 'Price sensitivity', impact: 'negative', detail: 'Customer requested 7% discount — margin pressure' },
+    ],
+    priceCompetitiveness: { thisQuote: 67000, historicalWinRange: [55000, 78000], verdict: 'competitive' },
+    marginSuggestions: [
+      { lineItemIndex: 0, currentMargin: 24, suggestedMargin: 22, reason: 'Handrail pricing already discounted — hold current margin' },
+      { lineItemIndex: 3, currentMargin: 35, suggestedMargin: 30, reason: 'Galvanising is subcontracted — pass through at lower margin to win' },
+    ],
+    riskFlags: [
+      { severity: 'medium', title: 'Compliance requirement', detail: 'AS 1554.1 weld inspection required — ensure certified inspector availability' },
+      { severity: 'low', title: 'Delivery timeline', detail: 'Extended to May 15 per customer request — aligns with material batch order' },
+    ],
+    customerInsights: { avgOrderValue: 45000, totalLifetimeValue: 182000, avgDaysToAccept: 18, quotesAccepted: 4, quotesDeclined: 1 },
+  },
+};
+
+export const mockUploadScenarios: Record<string, UploadAnalysisResult> = {
+  'rfq-pdf': {
+    fileId: 'file-001',
+    fileName: 'TechCorp-RFQ-2026-Q2.pdf',
+    fileType: 'document',
+    extractedItems: [
+      { id: 'ext-001', description: 'Server Rack Chassis 42U', suggestedSku: 'PROD-SR-001', material: 'Mild Steel 1.6mm', qty: 6, unit: 'each', estimatedCost: 820, suggestedPrice: 1250, confidence: 92, source: 'Extracted from RFQ line item 1', routingSteps: ['Laser Cut', 'Bend', 'Weld', 'Powder Coat'] },
+      { id: 'ext-002', description: 'Mounting Bracket 90° — Mild Steel', suggestedSku: 'PROD-BP-002', material: 'Mild Steel 3mm', qty: 120, unit: 'each', estimatedCost: 14.50, suggestedPrice: 24.50, confidence: 88, source: 'Extracted from RFQ line item 2', routingSteps: ['Laser Cut', 'Bend'] },
+      { id: 'ext-003', description: 'Control Panel Enclosure 600×800', suggestedSku: 'PROD-AE-003', material: 'Mild Steel 1.6mm + Powder Coat', qty: 10, unit: 'each', estimatedCost: 280, suggestedPrice: 420, confidence: 85, source: 'Extracted from RFQ line item 3', routingSteps: ['Laser Cut', 'Bend', 'Weld', 'Powder Coat'] },
+      { id: 'ext-004', description: 'Base Plate 200×200 — Mild Steel 6mm', material: 'Mild Steel 6mm', qty: 60, unit: 'each', estimatedCost: 38, suggestedPrice: 67, confidence: 78, source: 'Extracted from RFQ line item 4 (inferred dimensions from drawing ref)', routingSteps: ['Laser Cut', 'Deburr'] },
+    ],
+    metadata: {
+      customerHint: 'TechCorp Industries',
+      deliveryDateHint: '2026-05-08',
+      materialSummary: 'Mild Steel 1.6mm, Mild Steel 3mm, Mild Steel 6mm',
+      routingSummary: 'Laser Cut → Bend → Weld → Powder Coat',
+    },
+  },
+  'bom-xlsx': {
+    fileId: 'file-002',
+    fileName: 'BHP-BOM-Structural-2026.xlsx',
+    fileType: 'spreadsheet',
+    extractedItems: [
+      { id: 'ext-010', description: 'I-Beam 200UB — Grade 350', material: 'Grade 350 Steel', qty: 12, unit: 'each', estimatedCost: 380, suggestedPrice: 620, confidence: 95, source: 'Row 2: "I-Beam 200UB" × 12', routingSteps: ['Cut', 'Drill', 'Weld'] },
+      { id: 'ext-011', description: 'Base Plate 300×300 — 12mm', material: 'Mild Steel 12mm', qty: 24, unit: 'each', estimatedCost: 45, suggestedPrice: 78, confidence: 91, source: 'Row 3: "Base Plate 300sq" × 24', routingSteps: ['Laser Cut', 'Drill'] },
+      { id: 'ext-012', description: 'Gusset Plate — 10mm', material: 'Mild Steel 10mm', qty: 48, unit: 'each', estimatedCost: 22, suggestedPrice: 38, confidence: 87, source: 'Row 4: "Gusset 150×150×10" × 48', routingSteps: ['Laser Cut'] },
+    ],
+    metadata: {
+      customerHint: 'BHP Contractors',
+      materialSummary: 'Grade 350 Steel, Mild Steel 12mm, Mild Steel 10mm',
+      routingSummary: 'Cut → Drill → Weld',
+    },
+  },
+  'drawing-dxf': {
+    fileId: 'file-003',
+    fileName: 'bracket-assembly-v2.dxf',
+    fileType: 'cad',
+    extractedItems: [
+      { id: 'ext-020', description: 'Custom Bracket — L-Shape 150×100', material: 'Mild Steel 3mm', qty: 1, unit: 'each', estimatedCost: 18.50, suggestedPrice: 32, confidence: 82, source: 'Detected from DXF geometry — 2D profile with bend lines', routingSteps: ['Laser Cut', 'Bend'] },
+      { id: 'ext-021', description: 'Mounting Tab — with M8 holes', material: 'Mild Steel 3mm', qty: 2, unit: 'each', estimatedCost: 6.20, suggestedPrice: 12, confidence: 74, source: 'Detected sub-component in DXF — tab with 2× Ø8.5 holes', routingSteps: ['Laser Cut', 'Deburr'] },
+    ],
+    metadata: {
+      materialSummary: 'Mild Steel 3mm',
+      routingSummary: 'Laser Cut → Bend → Deburr',
+    },
+  },
+  'photo-jpg': {
+    fileId: 'file-004',
+    fileName: 'part-photo-whiteboard.jpg',
+    fileType: 'image',
+    extractedItems: [
+      { id: 'ext-030', description: 'Bracket — estimated 120×80mm, right angle', material: 'Mild Steel (estimated)', qty: 1, unit: 'each', estimatedCost: 15, suggestedPrice: 28, confidence: 62, source: 'Detected from image — right-angle bracket with 2 mounting holes' },
+      { id: 'ext-031', description: 'Flat plate — estimated 200×150mm', material: 'Unknown — verify with customer', qty: 1, unit: 'each', estimatedCost: 12, suggestedPrice: 22, confidence: 48, source: 'Detected from image — rectangular plate, dimensions approximate' },
+    ],
+    metadata: {
+      materialSummary: 'Mild Steel (estimated — verify with customer)',
+    },
+  },
+};
