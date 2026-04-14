@@ -4,7 +4,7 @@ An interactive UX prototype for MirrorWorks Smart FactoryOS, an AI-native manufa
 
 The goal is to refine UX patterns, validate information architecture, and establish a component library before building the full-stack product.
 
-The **home dashboard** is a persona/widget prototype (mock user context, bento widgets, skeleton first paint) with module access secondary. **Module dashboards** share **`KpiStatCard`** (`iconSurface` + **`IconWell`**) for KPI rows and the **`AiCommandBar`** (set `aiScope` on `ModuleDashboard`) for a consistent AI entry point. Visual hierarchy follows **~60/30/10** canvas/chrome/yellow-thread guidance (see `src/guidelines/DesignSystem.md` — **Implementation checklist** for tokens, `PageShell`/`PageHeader`, `MwDataTable`, and charts).
+The **home dashboard** is a persona/widget prototype (mock user context, bento widgets, skeleton first paint) with module access secondary. **Module dashboards** share **`KpiStatCard`** (`iconSurface` + **`IconWell`**) for KPI rows and the **`AiCommandBar`** (set `aiScope` on `ModuleDashboard`) for a consistent AI entry point. Visual hierarchy follows **~60/30/10** canvas/chrome/yellow-thread guidance (see `apps/web/src/guidelines/DesignSystem.md` — **Implementation checklist** for tokens, `PageShell`/`PageHeader`, `MwDataTable`, and charts).
 
 **Figma source:** [MirrorWorks UX on Figma](https://www.figma.com/design/GHlDNdtoNbRuObqFEPr2eV/MirrorWorks-UX)
 
@@ -40,30 +40,31 @@ npm install
 npm run dev
 ```
 
-The dev server starts at `http://localhost:5173`.
+Run these commands from the repository root. The root scripts proxy to the Vite app in `apps/web`.
+
+The dev server starts at `http://localhost:3001`.
 
 ## Project Structure
 
-```
-src/
-├── components/
-│   ├── ui/              # ShadCN primitives
-│   ├── animate-ui/      # Animated icon components
-│   ├── shared/          # Cross-module shared component library (15 domains)
-│   ├── sell/            # Sell module screens
-│   ├── plan/            # Plan module screens
-│   ├── make/            # Make module screens
-│   ├── ship/            # Ship module screens
-│   ├── book/            # Book module screens
-│   ├── buy/             # Buy module screens
-│   ├── control/         # Control module screens
-│   ├── design/          # Onboarding module
-│   ├── shop-floor/      # Immersive dark-UI shop floor
-│   └── figma/           # Raw Figma exports (reference only)
-├── guidelines/          # Design system docs, visual language, build progress
-├── lib/                 # Design tokens (colours, shapes)
-├── styles/              # Global CSS, M3 type scale, animation keyframes
-└── utils/               # Supabase client (future)
+```text
+apps/
+└── web/
+    ├── src/
+    │   ├── components/   # UI primitives, shared library, and module screens
+    │   ├── guidelines/   # Design system docs, specs, audits
+    │   ├── lib/          # Tokens, routing, auth, and domain helpers
+    │   ├── services/     # Mock/remote service adapters
+    │   ├── store/        # Zustand stores
+    │   ├── styles/       # Global CSS, typography, motion
+    │   ├── test/         # Vitest smoke coverage
+    │   └── utils/        # Shared utilities
+    ├── package.json
+    └── vite.config.ts
+packages/
+├── config/              # Shared ESLint/TS config
+└── contracts/           # Shared frontend/backend contracts
+scripts/
+└── audit-charts.mjs     # Recharts token guardrail
 ```
 
 ## Design System
@@ -73,9 +74,9 @@ All design decisions follow the MirrorWorks v2.0 design system based on Material
 - **60-30-10 colour rule:** 60% white, 30% greyscale, 10% MW Yellow (#FFCF4B)
 - **Single font:** Roboto with `tabular-nums` for financial data
 - **M3 tokens:** Shape scale, elevation hierarchy, motion easing/duration, state layers
-- **Shared component library:** 37 reusable components across 15 domains in `src/components/shared/`
+- **Shared component library:** 37 reusable components across 15 domains in `apps/web/src/components/shared/`
 
-See `src/guidelines/DesignSystem.md` for the full specification.
+See `apps/web/src/guidelines/DesignSystem.md` for the full specification.
 
 ## Important Notes
 

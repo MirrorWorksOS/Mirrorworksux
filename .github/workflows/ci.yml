@@ -41,6 +41,23 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+  audit_charts:
+    name: audit charts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Run chart audit
+        run: npm run audit:charts
+
   test:
     name: test
     runs-on: ubuntu-latest

@@ -6,17 +6,28 @@
  * Allowed: CSS variables (var(--...)), theme imports from chart-theme, MW_* tokens.
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "src");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = [
+  join(REPO_ROOT, "apps", "web", "src"),
+  join(REPO_ROOT, "src"),
+].find((candidate) => existsSync(candidate));
+
+if (!ROOT) {
+  console.error("audit-charts: could not locate source directory. Checked apps/web/src and src.");
+  process.exit(1);
+}
 
 const SKIP_DIRS = new Set(["figma", "node_modules", "assets"]);
 
-/** Hex in JSX/string props that should use tokens */
+/** Hex in JSX/string props that should use tokens.
+ * Ignore CSS attribute selectors such as `[stroke='#ccc']` inside className strings.
+ */
 const HEX_IN_CHART_PROPS =
-  /(?:fill|stroke|backgroundColor)\s*=\s*["'`]#([0-9A-Fa-f]{3,8})["'`]/g;
+  /(?<!\[)(?:fill|stroke|backgroundColor)\s*=\s*["'`]#([0-9A-Fa-f]{3,8})["'`]/g;
 
 /** Inline style object with hex */
 const HEX_IN_STYLE = /backgroundColor:\s*["']#([0-9A-Fa-f]{3,8})["']/g;
