@@ -1,7 +1,7 @@
 # Vite outputs to `build` (see vite.config.ts `build.outDir`), not the default `dist`.
 [build]
-  command = "npm run build"
-  publish = "build"
+  command = "npm run build --workspace @mirrorworks/web"
+  publish = "apps/web/build"
 
 # Client-side routing (React Router): serve index.html for deep links and refresh.
 [[redirects]]

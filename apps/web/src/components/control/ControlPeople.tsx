@@ -1,0 +1,99 @@
+import { useMemo, useState } from 'react';
+import { BellDot, Layers3, Users } from 'lucide-react';
+import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GroupsTab } from './people/GroupsTab';
+import { GroupDetailSheet } from './people/GroupDetailSheet';
+import { InviteUserDialog } from './people/InviteUserDialog';
+import { UsersTab } from './people/UsersTab';
+import { UserDetailSheet } from './people/UserDetailSheet';
+import { peopleGroups, peopleUsers, type PeopleGroupView, type PeopleUserView } from './people/people-data';
+
+type PeopleTab = 'users' | 'groups';
+
+export function ControlPeople() {
+  const [activeTab, setActiveTab] = useState<PeopleTab>('users');
+  const [selectedUser, setSelectedUser] = useState<PeopleUserView | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<PeopleGroupView | null>(null);
+  const [userSheetOpen, setUserSheetOpen] = useState(false);
+  const [groupSheetOpen, setGroupSheetOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+
+  const stats = useMemo(() => {
+    const activeUsers = peopleUsers.filter(user => user.status === 'active').length;
+    const pendingInvites = peopleUsers.filter(user => user.status === 'pending').length;
+    const leads = peopleUsers.filter(user => user.displayRole === 'lead').length;
+    const totalModules = 7;
+    return { activeUsers, pendingInvites, leads, totalModules };
+  }, []);
+
+  return (
+    <div className="space-y-8 bg-[var(--neutral-100)] p-8">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">People</h1>
+          <p className="mt-1 text-sm text-[var(--neutral-500)]">
+            Manage team members, module access, and group permissions
+          </p>
+        </div>
+        <Button
+          className="h-11 bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+          onClick={() => {
+            if (activeTab === 'users') {
+              setInviteOpen(true);
+              return;
+            }
+            setSelectedGroup(peopleGroups[0] ?? null);
+            setGroupSheetOpen(true);
+          }}
+        >
+          {activeTab === 'users' ? '+ Invite user' : '+ New group'}
+        </Button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <DarkAccentCard icon={Users} label="Total users" value={String(stats.activeUsers)} subtext="Active" />
+        <DarkAccentCard icon={Layers3} label="Leads assigned" value={`${stats.leads} / ${stats.totalModules}`} subtext="Module leads" />
+        <DarkAccentCard
+          icon={BellDot}
+          label="Pending invites"
+          value={String(stats.pendingInvites)}
+          subtext={stats.pendingInvites > 0 ? 'Action required' : 'No pending invites'}
+        />
+      </div>
+
+      <Tabs value={activeTab} onValueChange={value => setActiveTab(value as PeopleTab)} className="space-y-6">
+        <TabsList className="h-auto w-fit justify-start gap-1 rounded-xl p-1">
+          <TabsTrigger value="users" className="px-5">
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="groups" className="px-5">
+            Groups
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users">
+          <UsersTab
+            onOpenUserDetail={user => {
+              setSelectedUser(user);
+              setUserSheetOpen(true);
+            }}
+          />
+        </TabsContent>
+        <TabsContent value="groups">
+          <GroupsTab
+            onOpenGroupDetail={group => {
+              setSelectedGroup(group);
+              setGroupSheetOpen(true);
+            }}
+          />
+        </TabsContent>
+      </Tabs>
+
+      <UserDetailSheet user={selectedUser} open={userSheetOpen} onOpenChange={setUserSheetOpen} />
+      <GroupDetailSheet group={selectedGroup} open={groupSheetOpen} onOpenChange={setGroupSheetOpen} />
+      <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+    </div>
+  );
+}

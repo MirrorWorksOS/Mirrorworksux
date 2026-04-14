@@ -1,0 +1,12 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@mirrorworks/contracts": ["../../packages/contracts/src/index.ts"],
+      "@mirrorworks/contracts/*": ["../../packages/contracts/src/*"]
+    }
+  },
+  "include": ["src", "../../packages/**/*.ts", "vite.config.ts", "vitest.config.ts"],
+  "exclude": ["src/supabase/functions/server/**"]
+}
