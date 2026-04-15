@@ -81,7 +81,7 @@ Book: Invoice → Payment (§4.3→§4.4)
 | **BookSettings** | General, Tax, Invoicing, Expenses, Integration, Reports, Numbering, Approval, Currency | **Most complete** settings. But tax rates, approval workflows, and numbering sequences are all display-only — no backend to enforce them. |
 | **BuySettings** | General, Approvals, Receiving, Matching, Templates, Reorder Rules, Integrations, Price Rules | References "three-way matching" (§4.6.3) but matching tolerance % set here isn't used by `BuyReceipts.tsx` or `BuyBills.tsx` |
 | **ShipSettings** | General, Warehouse Zones, Carriers, Packaging, Fulfilment, Notifications, Returns, Integrations | References carrier API keys and zone configuration but `ShipShipping.tsx` uses hardcoded carrier data |
-| **Control** | **N/A — by design** | Control is inherently a settings/configuration module (factory layout, process builder, machines, inventory, people, BOMs, workflow designer, role designer). A separate `/control/settings` page is redundant. No action needed. |
+| **Control** | **N/A — by design** | Control is inherently a settings/configuration module (factory layout, process builder, machines, inventory, people, BOMs, workflow designer, and user/group administration). A separate `/control/settings` page is redundant. No action needed. |
 
 ### 2.3 Make Module: Shop Floor Route
 
@@ -196,7 +196,6 @@ All 11 routes present and matching spec. No missing pages identified.
 | People | ✅ |
 | Products | ✅ |
 | BOMs | ✅ |
-| Role Designer | ✅ |
 | Workflow Designer | ✅ |
 | **Settings** | **N/A** — Control is the configuration module; no separate settings route (same as §2.2) |
 

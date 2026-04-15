@@ -111,7 +111,6 @@ Internal implementation documentation for the current codebase. Organized module
   - [People](./modules/control/people.md)
   - [Products](./modules/control/products.md)
   - [BOMs](./modules/control/boms.md)
-  - [Role Designer](./modules/control/role-designer.md)
   - [Workflow Designer](./modules/control/workflow-designer.md)
   - [Shift Manager](./modules/control/shifts.md)
   - [Maintenance](./modules/control/maintenance.md)

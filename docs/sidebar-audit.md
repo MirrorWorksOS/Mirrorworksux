@@ -149,7 +149,7 @@ Already grouped; see `Sidebar.tsx:210-260` for the canonical groups.
 |---|---|
 | Factory | Factory Designer, Process Builder, Machines, Locations |
 | Inventory & Products | Inventory, Products, Product Studio, BOMs, Purchase |
-| People & Roles | People, Role Designer, Shifts, Gamification |
+| People & Access | People, Shifts, Gamification |
 | Operations | Maintenance, Tooling, Documents |
 | Configuration | Workflow Designer, MirrorWorks Bridge |
 

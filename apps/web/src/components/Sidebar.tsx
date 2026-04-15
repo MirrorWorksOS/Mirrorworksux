@@ -373,10 +373,9 @@ export const menuConfig: MenuItem[] = [
         ],
       },
       {
-        heading: 'People & Roles',
+        heading: 'People & Access',
         items: [
           { label: 'People', path: '/control/people' },
-          { label: 'Role Designer', path: '/control/role-designer' },
           { label: 'Shifts', path: '/control/shifts' },
           { label: 'Gamification', path: '/control/gamification' },
         ],

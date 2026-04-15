@@ -128,7 +128,6 @@ const ControlWorkflowDesigner = React.lazy(() => import('./components/control/Co
 const ControlFactoryDesigner = React.lazy(() => import('./components/control/ControlFactoryDesigner').then(m => ({ default: m.ControlFactoryDesigner })));
 const ControlEmptyStates = React.lazy(() => import('./components/control/ControlEmptyStates').then(m => ({ default: m.ControlEmptyStates })));
 const ControlProcessBuilder = React.lazy(() => import('./components/control/ControlProcessBuilder').then(m => ({ default: m.ControlProcessBuilder })));
-const ControlRoleDesigner = React.lazy(() => import('./components/control/ControlRoleDesigner').then(m => ({ default: m.ControlRoleDesigner })));
 const ControlGamification = React.lazy(() => import('./components/control/ControlGamification').then(m => ({ default: m.ControlGamification })));
 const ControlShiftManager = React.lazy(() => import('./components/control/ControlShiftManager').then(m => ({ default: m.ControlShiftManager })));
 const ControlMaintenance = React.lazy(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
@@ -386,7 +385,6 @@ export const router = createBrowserRouter([
           { path: 'people', element: <L><ControlPeople /></L> },
           { path: 'products', element: <L><ControlProducts /></L> },
           { path: 'boms', element: <L><ControlBOMs /></L> },
-          { path: 'role-designer', element: <L><ControlRoleDesigner /></L> },
           { path: 'workflow-designer', element: <L><ControlWorkflowDesigner /></L> },
           { path: 'shifts', element: <L><ControlShiftManager /></L> },
           { path: 'maintenance', element: <L><ControlMaintenance /></L> },

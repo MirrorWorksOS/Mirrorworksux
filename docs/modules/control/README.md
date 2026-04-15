@@ -23,7 +23,6 @@ Operations admins, implementation leads, and system owners.
 - [People](./people.md) — `/control/people`
 - [Products](./products.md) — `/control/products`
 - [BOMs](./boms.md) — `/control/boms`
-- [Role Designer](./role-designer.md) — `/control/role-designer`
 - [Workflow Designer](./workflow-designer.md) — `/control/workflow-designer`
 - [Shift Manager](./shifts.md) — `/control/shifts`
 - [Maintenance](./maintenance.md) — `/control/maintenance`
@@ -48,7 +47,6 @@ Operations admins, implementation leads, and system owners.
 - `apps/web/src/components/control/ControlPeople.tsx`
 - `apps/web/src/components/control/ControlProducts.tsx`
 - `apps/web/src/components/control/ControlBOMs.tsx`
-- `apps/web/src/components/control/ControlRoleDesigner.tsx`
 
 ## Data Dependencies
 - Local React state and shared UI components are primary dependencies across pages.

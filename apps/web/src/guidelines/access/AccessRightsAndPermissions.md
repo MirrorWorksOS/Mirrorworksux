@@ -6,7 +6,7 @@
 
 - **Organisation:** Users belong to an organisation; permissions are evaluated in that context.
 - **Module groups:** Each operational module (Sell, Plan, Make, Ship, Book, Buy) defines **permission groups** with granular toggles. Users are assigned to one or more groups per module.
-- **Control:** Master data, people, workflows, and factory design tools live under Control; **global role templates** (Role designer) complement module groups.
+- **Control:** Master data, people, workflows, and factory design tools live under Control. User access is managed through Control → People (users and groups) and each module’s Settings → Access & Permissions.
 - **Scopes:** Some permissions use **own vs all** record scope (`documents.scope`, requisition/expense scopes, etc.).
 
 ## Prototype mapping
@@ -15,7 +15,7 @@
 | --- | --- |
 | Module settings — Access & Permissions | [`ModuleSettingsLayout`](../components/shared/settings/ModuleSettingsLayout.tsx) + per-module `*Settings.tsx` |
 | People — users & groups | [`ControlPeople`](../components/control/ControlPeople.tsx), [`ModuleAccessCard`](../components/control/people/ModuleAccessCard.tsx), [`PermissionGrid`](../components/control/people/PermissionGrid.tsx) |
-| Role templates | [`ControlRoleDesigner`](../components/control/ControlRoleDesigner.tsx) at `/control/role-designer` |
+| Module settings — per-module access | `*Settings.tsx` screens rendered through [`ModuleSettingsLayout`](../components/shared/settings/ModuleSettingsLayout.tsx) |
 
 ## Permission matrix (by module, ARCH 00 §4.3–§4.9)
 

@@ -185,7 +185,6 @@ const PAGES: PageItem[] = [
   { label: 'Machines', path: '/control/machines', section: 'Control', icon: Wrench, keywords: ['equipment'] },
   { label: 'Inventory', path: '/control/inventory', section: 'Control', icon: Package, keywords: ['stock'] },
   { label: 'Workflow Designer', path: '/control/workflow-designer', section: 'Control', icon: Workflow },
-  { label: 'Role Designer', path: '/control/role-designer', section: 'Control', icon: Shield, keywords: ['permissions'] },
   { label: 'Shifts', path: '/control/shifts', section: 'Control', icon: Clock, keywords: ['roster'] },
   { label: 'Maintenance', path: '/control/maintenance', section: 'Control', icon: Wrench, keywords: ['work orders'] },
   { label: 'Tooling', path: '/control/tooling', section: 'Control', icon: Cpu, keywords: ['dies', 'fixtures'] },

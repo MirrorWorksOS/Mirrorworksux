@@ -8,7 +8,7 @@ Structured extracts from the combined module specification PDF live alongside th
 | [Plan-04-Screen-by-Screen.md](./Plan-04-Screen-by-Screen.md) | Plan | Dashboard, jobs, activities, purchase, QC planning, products, settings |
 | [Book-04-Screen-by-Screen.md](./Book-04-Screen-by-Screen.md) | Book | Finance bento, budget, invoices, expenses, purchases, job costs, stock, reports, settings |
 | [Ship-04-Screen-by-Screen.md](./Ship-04-Screen-by-Screen.md) | Ship | Dashboard, orders, packaging, shipping, tracking, returns, warehouse, reports, settings |
-| [Control-04-Screen-by-Screen.md](./Control-04-Screen-by-Screen.md) | Control | Dashboard, master data, MirrorWorks Bridge, factory/process designers, workflow, people, role designer |
+| [Control-04-Screen-by-Screen.md](./Control-04-Screen-by-Screen.md) | Control | Dashboard, master data, MirrorWorks Bridge, factory/process designers, workflow, people, and access management |
 | [Buy-04-Screen-by-Screen.md](./Buy-04-Screen-by-Screen.md) | Buy | Procurement: orders, requisitions, receipts, suppliers, RFQs, bills, products, agreements, reports, settings |
 | [Make-04-Screen-by-Screen.md](./Make-04-Screen-by-Screen.md) | Make | Andon/dashboard, schedule, shop floor, work, issues, settings |
 

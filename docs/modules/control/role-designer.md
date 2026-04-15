@@ -2,14 +2,13 @@
 
 ## Summary
 
-*Note: Updated on 2026-04-15 by Claw*
-Role Designer screen. Behavior is documented from current component implementation.
+This feature has been retired from the prototype navigation. Access is now managed through Control → People (users and groups) and each module’s Settings → Access & Permissions.
 
-## Route
+## Previous Route
 `/control/role-designer`
 
-## User Intent
-Complete role designer work and move records to the next stage.
+## Status
+Deprecated and removed from active navigation and routing.
 
 ## Primary Actions
 - Review current records and execute available CTA actions.

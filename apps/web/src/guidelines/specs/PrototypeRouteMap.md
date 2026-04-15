@@ -153,10 +153,9 @@ Base path: `/control`
 | `/control/machines` | `ControlMachines` | |
 | `/control/inventory` | `ControlInventory` | |
 | `/control/purchase` | `ControlPurchase` | |
-| `/control/people` | `ControlPeople` | Groups, permissions (ARCH 00) |
+| `/control/people` | `ControlPeople` | Users, groups, and permissions (ARCH 00) |
 | `/control/products` | `ControlProducts` | |
 | `/control/boms` | `ControlBOMs` | |
-| `/control/role-designer` | `ControlRoleDesigner` | |
 | `/control/workflow-designer` | `ControlWorkflowDesigner` | |
 
 Control is inherently a settings/configuration module — no separate `/control/settings` route needed.
