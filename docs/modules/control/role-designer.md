@@ -1,6 +1,8 @@
 # Role Designer
 
 ## Summary
+
+*Note: Updated on 2026-04-15 by Claw*
 Role Designer screen. Behavior is documented from current component implementation.
 
 ## Route
