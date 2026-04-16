@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { manufacturingOrders } from '@/services';
 import { OperatorChat } from '@/components/make/OperatorChat';
 import { MaterialConsumption } from '@/components/make/MaterialConsumption';
+import { useTravellerStore } from '@/store/travellerStore';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -116,6 +117,16 @@ export function MakeManufacturingOrderDetail() {
   const [shiftPaused, setShiftPaused] = useState(false);
 
   const mo = id ? MO_BY_ID[id] : undefined;
+  const travellerPackets = useTravellerStore((state) =>
+    state.travellers.filter((packet) => packet.jobRef === mo?.jobNumber),
+  );
+  const primaryTravellerPacket = useMemo(
+    () =>
+      travellerPackets.find((packet) =>
+        ['released', 'in_progress', 'hold'].includes(packet.status),
+      ) ?? travellerPackets[0],
+    [travellerPackets],
+  );
   const chatJobId = mo?.jobId ?? id ?? 'job-unknown';
 
   const tabConfig = useMemo(() => {
@@ -239,6 +250,82 @@ export function MakeManufacturingOrderDetail() {
                     </div>
                   </div>
                 </div>
+              </Card>
+
+              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                  <h2 className="text-base font-medium text-foreground">Traveller packet</h2>
+                  {primaryTravellerPacket ? (
+                    <StatusBadge
+                      variant={
+                        primaryTravellerPacket.status === 'hold'
+                          ? 'warning'
+                          : primaryTravellerPacket.status === 'released' || primaryTravellerPacket.status === 'in_progress'
+                            ? 'accent'
+                            : primaryTravellerPacket.status === 'complete'
+                              ? 'success'
+                              : 'info'
+                      }
+                    >
+                      {primaryTravellerPacket.status === 'in_progress' ? 'In progress' : primaryTravellerPacket.status}
+                    </StatusBadge>
+                  ) : null}
+                </div>
+                {primaryTravellerPacket ? (
+                  <div className="space-y-4">
+                    <p className="text-sm text-[var(--neutral-600)]">
+                      Released by Plan as a controlled packet for execution in Make.
+                    </p>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Traveller</p>
+                        <p className="font-medium tabular-nums">{primaryTravellerPacket.travellerNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Work order</p>
+                        <p className="tabular-nums">{primaryTravellerPacket.workOrderRef}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Drawing + revision</p>
+                        <p>{primaryTravellerPacket.drawingNumber} • {primaryTravellerPacket.drawingRevision}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Quantity</p>
+                        <p className="tabular-nums">{primaryTravellerPacket.quantityToMake}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Current operation</p>
+                        <p>{primaryTravellerPacket.currentOperation}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Workstation / work centre</p>
+                        <p>{primaryTravellerPacket.workstation} • {primaryTravellerPacket.workCentre}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Drawing file</p>
+                        <p>{primaryTravellerPacket.linkedFiles.drawing}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[var(--neutral-500)]">Instructions</p>
+                        <p>{primaryTravellerPacket.linkedFiles.instructions}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[var(--neutral-500)] mb-2">Route / operation strip</p>
+                      <div className="flex flex-wrap gap-2">
+                        {primaryTravellerPacket.routeOperationStrip.map((operation) => (
+                          <Badge key={`${primaryTravellerPacket.id}-${operation}`} variant="outline" className="border-[var(--border)]">
+                            {operation}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[var(--neutral-500)]">
+                    No traveller packet found for this job yet. Travellers are issued from Plan.
+                  </p>
+                )}
               </Card>
 
               {/* Work Orders summary */}

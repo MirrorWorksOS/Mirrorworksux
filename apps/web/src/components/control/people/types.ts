@@ -27,6 +27,9 @@ export type PermissionKey =
   | 'budget.visibility'
   | 'bom.edit'
   | 'intelligence_hub.access'
+  | 'traveller.release'
+  | 'traveller.exception_release'
+  | 'traveller.view_all'
   // Make (ARCH 00 §4.5)
   | 'workorders.scope'
   | 'timers.scope'
@@ -89,6 +92,9 @@ export interface GroupPermissionSet {
   'budget.visibility'?: boolean;
   'bom.edit'?: boolean;
   'intelligence_hub.access'?: boolean;
+  'traveller.release'?: boolean;
+  'traveller.exception_release'?: boolean;
+  'traveller.view_all'?: boolean;
   // Make (ARCH 00 §4.5) — optional, set only on Make groups
   'workorders.scope'?: ScopeValue;
   'timers.scope'?: ScopeValue;

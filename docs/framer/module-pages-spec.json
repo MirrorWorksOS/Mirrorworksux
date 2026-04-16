@@ -1,0 +1,356 @@
+{
+  "framerTemplate": {
+    "path": "/sell",
+    "pageNodeId": "iOJYv5VFi",
+    "notes": "Duplicate this page in Framer for each new route. Node ID is from a prior Framer MCP session; if duplicate fails, use Pages panel → duplicate /sell."
+  },
+  "pagesToCreateFromTemplate": [
+    "/plan",
+    "/make",
+    "/buy",
+    "/ship",
+    "/book",
+    "/product-studio",
+    "/bridge"
+  ],
+  "modules": [
+    {
+      "moduleTitle": "Sales Module — Sell",
+      "hero": "Turn enquiries into orders, faster.",
+      "introBlurb": "Pipeline from first call to signed PO. AI quoting that learns from every job you’ve ever won, so estimates get sharper with every deal. Your customers see quote status, order progress, and invoices through a self-serve portal. Your sales team sees which opportunities are stalling and what to do about them. Less chasing, more closing.",
+      "features": [
+        {
+          "name": "Intelligent quoting",
+          "description": "Quotes in minutes, not hours. Upload a DXF or drawing and AI populates line items from your historical pricing and machine rates. Fulcrum has nesting; nobody else has this."
+        },
+        {
+          "name": "Intelligence Hub",
+          "description": "Next actions, surfaced. Every opportunity shows the follow-ups, calls, and meetings you should book next, with one-click scheduling. No other ERP does this."
+        },
+        {
+          "name": "Customer portal",
+          "description": "Self-serve for your customers. Accept quotes, check order status, and view invoices without phoning the office. Fewer \"where’s my job?\" calls."
+        },
+        {
+          "name": "Engagement tracking",
+          "description": "See who opened your quote. Know when a customer has viewed a quote, and how many times, before you chase. Standard in sales tools, new to manufacturing ERP."
+        },
+        {
+          "name": "Product workspace",
+          "description": "One page, five tabs. Overview, Manufacturing, Inventory, Accounting, and Documents in a single product record. Stop hunting through five screens."
+        },
+        {
+          "name": "Pipeline at a glance",
+          "description": "Every deal, every stage. Drag opportunities between stages, forecast by value and probability, and see which deals are stalling."
+        }
+      ],
+      "outro": {
+        "headline": "Quoting is the bottleneck. We fixed it.",
+        "blurb": "Shops lose deals because they take three days to quote. By the time the PDF lands, the customer has already chosen the faster supplier.",
+        "body": "MirrorWorks reads your drawings, pulls your rates, and drafts the quote. You review, adjust, and send — often inside half an hour. Every quote you send makes the next one more accurate, because AgentWorks learns from what you charged, what you won, and what you lost. For a three-person sales team, that’s the difference between chasing fifty opportunities a month and chasing two hundred. Included in Produce, $9 per user per month, annual."
+      },
+      "path": "/sell",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/adam-rhodes-uBrWOHLgOcg-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Scheduling Module — Plan",
+      "hero": "Drag, drop, done.",
+      "introBlurb": "Every job, every machine, every due date on one screen. AgentWorks auto-schedules based on capacity, capability, and priority, then reshuffles in seconds when a rush job lands. What-if scenarios answer \"can we fit this in?\" without committing. Cycle times learn from completed work, so the schedule reflects how your shop actually runs, not the rates you set three years ago.",
+      "features": [
+        {
+          "name": "AI auto-schedule",
+          "description": "Jobs placed, automatically. AgentWorks assigns work to the right machine based on capability, load, and due date. Reshuffles in seconds when a rush job lands."
+        },
+        {
+          "name": "What-if scenarios",
+          "description": "Model the rush job before you say yes. Test schedule and capacity changes without committing. Answers the daily question: can we fit this in?"
+        },
+        {
+          "name": "Material library",
+          "description": "Specs at your fingertips. Unified material and finish catalogue with search and filters. New estimators find grades without asking the senior guy."
+        },
+        {
+          "name": "Bottleneck prediction",
+          "description": "See the crash before it happens. Flag capacity clashes and due-date risk days in advance, not the morning a job ships late."
+        },
+        {
+          "name": "Capacity view",
+          "description": "Know what you can take on. Real load by machine, by week, by team. Quote with confidence instead of guessing."
+        },
+        {
+          "name": "Historical learning",
+          "description": "Estimates that improve every week. Cycle times learn from completed jobs, so the schedule reflects how your shop actually runs, not the rates you set three years ago."
+        }
+      ],
+      "outro": {
+        "headline": "Stop scheduling in Excel.",
+        "blurb": "Schedulers burn five to ten hours a week moving jobs around spreadsheets. Every rush job triggers a cascade — deadlines slip, operators get told three different plans in a day.",
+        "body": "MirrorWorks takes that hour-long reshuffle and does it in under a minute. It knows which machine can run the job, who’s trained on it, and what’s already in the queue. When priorities change, the schedule updates and the shop floor sees it immediately. No more colour-coded Excel tabs, no more chasing operators to confirm what they’re on. JobBoss has what-if; we match it and add AI assignment on top. Included in Produce, $9 per user per month."
+      },
+      "path": "/plan",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/thisisengineering-raeng-ZPeXrWxOjRQ-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Production Module — Make",
+      "hero": "Built for operators in gloves.",
+      "introBlurb": "The shop floor interface your team will actually use. 56px touch targets, high-contrast status indicators, barcode-driven start and stop. Operators in gloves can start a job, log a quality issue, and move to the next work order without leaving the screen. Supervisors walk the floor with a tablet and see live machine status, job progress, and who is on what across the whole shop.",
+      "features": [
+        {
+          "name": "Floor Mode kiosk",
+          "description": "One screen for the whole shift. Overview, Kanban, and Work Orders in a three-tab interface. Tablet-first, barcode-ready, gloves-friendly."
+        },
+        {
+          "name": "Full-screen work orders",
+          "description": "Everything on one view. 160px buttons, emergency stop, live camera and CAD toggle, inline quality checks. The most operator-focused UX in the market."
+        },
+        {
+          "name": "Barcode in, barcode out",
+          "description": "Start, pause, and complete with a scan. No typing, no hunting for a mouse. Scan station and time clock consolidated into one kiosk."
+        },
+        {
+          "name": "Live production dashboard",
+          "description": "Know what’s running, right now. Machine status, job progress, and who’s on what across the floor. Visible from the office or the factory."
+        },
+        {
+          "name": "Inline QC",
+          "description": "Quality at the machine, not after. Operators record checks against the job before it moves on. NCRs raised on the spot."
+        },
+        {
+          "name": "Time tracking built in",
+          "description": "Labour cost without a second system. Operators clock on and off jobs from the same screen they use to work them. Data flows straight into costing."
+        }
+      ],
+      "outro": {
+        "headline": "Operators won't use what doesn't work with gloves on.",
+        "blurb": "Most ERPs put the shop floor last. Tiny buttons, dropdown menus, three clicks to start a job. Operators work around it or ignore it, and the data is rubbish by the end of the week.",
+        "body": "MirrorWorks was designed backwards from the shop floor. Big targets, high contrast, loud status indicators. A welder with thick gloves can start a job, log a quality issue, and move to the next work order without leaving the screen. Supervisors walk the floor with a tablet and see the same view. Because operators actually use it, the data is clean — which makes scheduling, costing, and quoting everywhere else in the system accurate. Fulcrum has tablet UX; ours goes further. Included in Produce, $9 per user per month."
+      },
+      "path": "/make",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/tool-inc-fuiexaKxlhk-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Purchasing Module — Buy",
+      "hero": "Buy better, not just cheaper.",
+      "introBlurb": "Vendor comparison, MRP suggestions, and visual purchase planning in one place. See price, lead time, and on-time delivery side by side for every supplier you use, built from your own purchase history. MRP flags what to order before you run out, requisitions turn into POs straight from the job, and approved bills sync to Xero with job costs attached.",
+      "features": [
+        {
+          "name": "Vendor comparison",
+          "description": "Side by side, not side-lined. Price, lead time, quality, and delivery reliability across every supplier for the same part. See what switching costs you."
+        },
+        {
+          "name": "MRP suggestions",
+          "description": "No more running out of 3mm mild steel. Auto-generated purchase recommendations based on scheduled demand and current stock. Table-stakes, finally done well."
+        },
+        {
+          "name": "Purchase planning grid",
+          "description": "Visual planning across weeks. Lay out purchases by time period and supplier. See cashflow and material arrival at a glance."
+        },
+        {
+          "name": "Supplier performance",
+          "description": "The data nobody else tracks. Lead time actuals versus promised, defect rates, on-time delivery per vendor. Feeds directly into future comparisons."
+        },
+        {
+          "name": "Bills to Xero",
+          "description": "Approve once, synced automatically. Vendor bills flow to Xero with job costs attached, so the P&L matches the floor."
+        },
+        {
+          "name": "Requisition to PO",
+          "description": "Straight from the job. Plan raises the requirement, Buy turns it into a purchase order against your preferred supplier."
+        }
+      ],
+      "outro": {
+        "headline": "Most shops buy from habit.",
+        "blurb": "The supplier you’ve used for fifteen years might be 12% more expensive and two days slower than the one across town. Nobody checks, because checking is painful.",
+        "body": "MirrorWorks tracks every PO against every supplier and makes the comparison visible the next time you buy the same item. You see price, lead time, and on-time delivery in one view. The data is yours, built from your own purchase history, not an industry average. Over a year, shops typically find 5–8% savings on material spend just by seeing the numbers. Included in Produce, $9 per user per month."
+      },
+      "path": "/buy",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/engin-akyurt-PBfzw2d4Qjg-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Dispatch Module — Ship",
+      "hero": "Out the door, on the money.",
+      "introBlurb": "Pick, pack, scan, ship. Every item accounted for, every dispatch documented, every invoice triggered automatically. Only jobs with all work orders complete, QC passed, and no open NCRs become dispatch candidates, so you cannot accidentally ship a half-finished order. Packing lists, labels, and carrier selection generate themselves from the product catalogue. Delivery confirmation closes the loop straight to Book.",
+      "features": [
+        {
+          "name": "Scan to Ship",
+          "description": "Barcode-driven dispatch. Scan items onto a shipment, generate the packing list, and confirm dispatch without typing. Parity with every competitor, finally."
+        },
+        {
+          "name": "Dispatch readiness",
+          "description": "Know what can ship today. Only MOs with all work orders complete, QC passed, and no open NCRs become dispatch candidates."
+        },
+        {
+          "name": "Carrier selection",
+          "description": "The right carrier, automatically. Standard priority gets the cheapest option, urgent gets the fastest, customer preference overrides both."
+        },
+        {
+          "name": "Packing lists and labels",
+          "description": "Generated, not typed. Pull weight, dimensions, and SKU from the product catalogue. Print or email straight to the carrier."
+        },
+        {
+          "name": "Delivery confirmation",
+          "description": "Closes the loop to Book. Confirmed delivery auto-triggers the invoice. No more \"did we bill for that one?\" at month end."
+        },
+        {
+          "name": "Returns handling",
+          "description": "Track what came back. Link returns to the original dispatch, route to inventory or scrap, trigger credit notes in Book."
+        }
+      ],
+      "outro": {
+        "headline": "Dispatch is where small errors become big customer complaints.",
+        "blurb": "Wrong quantity, wrong address, wrong item. Manual shipment logging is slow and error-prone, and every mistake costs a freight charge and a phone call.",
+        "body": "MirrorWorks makes dispatch a three-step workflow: scan, confirm, print. The system knows what’s ready to ship because Make tells it so, which means you can’t accidentally dispatch a half-finished job. Delivery confirmation closes the loop to invoicing, so Book has the data it needs the same day the truck leaves the yard. For a shop doing 30–50 dispatches a week, that’s easily 3–4 hours saved and a measurable drop in delivery errors. Included in Produce, $9 per user per month."
+      },
+      "path": "/ship",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/multi-awesome-studio-l4IFvzAEs1o-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Accounting Module — Book",
+      "hero": "The numbers, without the month-end panic.",
+      "introBlurb": "Invoicing, job costing, and Xero sync built into the same system that makes the parts. Labour from Make, materials from Buy, overhead allocated automatically — see margin on every job before it ships, not three weeks later. Invoices draft themselves when dispatch confirms delivery. Xero handles the statutory side; MirrorWorks handles the operational side. No double entry, no month-end scramble.",
+      "features": [
+        {
+          "name": "Auto-invoice on delivery",
+          "description": "Ship confirms, Book invoices. When a dispatch is marked delivered, the invoice drafts itself against the sales order and syncs to Xero. Month-end stops being a scramble."
+        },
+        {
+          "name": "Live job costing",
+          "description": "Actual cost, not estimated. Labour from Make, materials from Buy, overhead allocated automatically. See margin on every job before it ships, not three weeks later."
+        },
+        {
+          "name": "WIP at a glance",
+          "description": "Money tied up in half-built jobs. Financial value of partially completed work, updated daily. Know what your shop owes you before the accountant asks."
+        },
+        {
+          "name": "Xero sync",
+          "description": "One ledger, two views. Invoices, bills, and payments flow both ways. Job cost data stays in MirrorWorks where the shop can see it."
+        },
+        {
+          "name": "Budget vs actual",
+          "description": "See the slip before it’s a problem. Compare quoted cost against actual by job, by department, by period. Flag overruns while the job is still on the floor."
+        },
+        {
+          "name": "Credit notes and adjustments",
+          "description": "Returns close the loop. When Ship logs a return, Book drafts the credit note against the original invoice. Xero stays in sync without manual fixing."
+        }
+      ],
+      "outro": {
+        "headline": "Most shops only know their margin at tax time.",
+        "blurb": "Quotes are done in one system, time is tracked in another, materials go into a third. By the time the bookkeeper pulls it together, the job is six weeks gone and there’s nothing you can do about a bad one.",
+        "body": "MirrorWorks brings costing into the same system as quoting and production. Every hour clocked on the floor, every sheet pulled from stores, every PO raised against the job lands in Book the day it happens. You see the P&L of a job while it’s still running, which means you can catch bad estimates, scope creep, and rework before they eat the margin. Xero handles the statutory side; MirrorWorks handles the operational side. Included in Produce, $9 per user per month."
+      },
+      "path": "/book",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/christopher-gower-m_HRfLhgABo-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Configurator Module — Product Studio",
+      "hero": "Build product logic, not spreadsheets.",
+      "introBlurb": "A visual rule builder for complex, configurable products. IF material is 316, THEN use the stainless routing. Drag blocks to define how size, material, finish, and hardware drive BOMs, pricing, and routing — define once, quote forever. Your balustrade shop stops maintaining 60 near-identical BOMs and starts maintaining one product with five rules. Same pattern as CAD configurators, applied to the full ERP.",
+      "features": [
+        {
+          "name": "Blockly rule builder",
+          "description": "Logic without code. Drag IF / THEN blocks to define how size, material, finish, and hardware drive BOMs, pricing, and routing. No other ERP does this visually."
+        },
+        {
+          "name": "WYSIWYG preview",
+          "description": "See the product as you configure. Live preview updates as rules fire, so you catch mistakes before a customer does."
+        },
+        {
+          "name": "Variant explosion handled",
+          "description": "One product, a thousand variants. Instead of creating separate BOMs for every size and material combination, define the rules once and let the system resolve the variant at quote time."
+        },
+        {
+          "name": "Feeds Sell and Plan",
+          "description": "Rules drive the quote and the job. When the customer picks options on a quote, Product Studio produces the correct BOM, routing, and price. Plan receives a fully resolved job."
+        },
+        {
+          "name": "Version controlled",
+          "description": "Change a rule, keep history. Old orders stay linked to the rule version in place when they were quoted. New orders use the latest."
+        },
+        {
+          "name": "Inheritance",
+          "description": "Build on what you’ve got. Create a variant family from a base product, override only what changes. Same pattern as CAD configurators, applied to the full ERP."
+        }
+      ],
+      "outro": {
+        "headline": "Custom fabrication shouldn’t mean a spreadsheet per variant.",
+        "blurb": "Shops that make configurable products — stairs, railings, tanks, enclosures — either maintain hundreds of near-identical BOMs, or rebuild them from scratch every quote. Neither scales.",
+        "body": "Product Studio gives you the pattern that CAD configurators have had for twenty years, applied to BOMs, routings, and pricing. Define the base product, write the rules for how options change it, and every future quote resolves automatically. A balustrade shop with five styles, four finishes, and three railing options stops maintaining 60 BOMs and starts maintaining one product with five rules. The time saving compounds — on quoting, on production prep, on inventory. This is genuinely unique in the market. Available from Expand, $19 per user per month."
+      },
+      "path": "/product-studio",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/opt-lasers-2dFkRHRPfF4-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    },
+    {
+      "moduleTitle": "Onboarding Module — Bridge",
+      "hero": "Your data, moved without the pain.",
+      "introBlurb": "A guided wizard that imports customers, products, suppliers, and open jobs from spreadsheets or your old ERP. Upload CSVs, map columns, preview, and commit — fix bad rows in place without round-tripping to Excel. Route mismatches get flagged and corrected. Open jobs import with their current status, so day one on MirrorWorks is not a clean slate you do not have. No consultants, no six-month projects.",
+      "features": [
+        {
+          "name": "Guided wizard",
+          "description": "Step by step, not consultant by the day. Upload CSVs, map columns, preview, and commit. Built for shop owners, not IT teams. No other ERP has this."
+        },
+        {
+          "name": "Multi-file upload",
+          "description": "Bring the whole dataset at once. Customers, products, BOMs, and suppliers in parallel. Validation flags conflicts before anything hits the database."
+        },
+        {
+          "name": "Multi-select and bulk edit",
+          "description": "Fix rows in the import, not after. Select bad rows, correct them in place, re-validate, commit. No round trips to Excel."
+        },
+        {
+          "name": "Route fixing",
+          "description": "Clean up the operations you inherited. Old routings rarely match new machine definitions. Bridge flags mismatches and suggests the correct route."
+        },
+        {
+          "name": "Open job import",
+          "description": "Start mid-production, not from scratch. Import jobs that are already on the floor with their current status, so the first day on MirrorWorks isn’t a clean slate you don’t have."
+        },
+        {
+          "name": "Rollback and re-run",
+          "description": "Mistakes aren’t terminal. Undo an import, fix the source, run it again. Standard in dev tools, missing from every other ERP."
+        }
+      ],
+      "outro": {
+        "headline": "Data migration is the number one reason ERP projects fail.",
+        "blurb": "Most shops hear \"six months and $40k of consulting\" and walk away. The ones that push through arrive on day one with half their data missing and the other half wrong.",
+        "body": "Bridge turns migration into something a shop owner can do on a weekend. Export your customer list from Xero, your product data from the old ERP, and your open jobs from a spreadsheet. Drop them in, map the columns, fix the obvious errors, and commit. Most implementations finish in under a week, not six months. This is how MirrorWorks goes from \"interesting\" to \"we’re on it by the end of the month\" — because the hardest step just isn’t hard anymore. Included in every tier, from Pilot onwards."
+      },
+      "path": "/bridge",
+      "recommendedHeroImage": {
+        "type": "local_file",
+        "absolutePath": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock/kevin-ku-w7ZyuGYNpRQ-unsplash.jpg",
+        "notes": "Upload in Framer via image fill or paste path; Framer MCP accepts external URLs in backgroundImage."
+      }
+    }
+  ],
+  "sourceDocx": "/Users/mattquigley/Downloads/MirrorWorks-Module-Pages_1.docx",
+  "googleDriveImageRoot": "/Users/mattquigley/Library/CloudStorage/GoogleDrive-matt@mirrorworks.ai/My Drive/Website/images/iw stock"
+}

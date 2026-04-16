@@ -131,9 +131,10 @@ export const mockGroups: Group[] = [
   { id: 'g-sell-cs', module: 'sell', name: 'Customer Service', description: 'Order entry, customer queries, quote follow-up', isDefault: true, members: ['6'], permissions: permissions({ 'documents.scope': 'all', 'crm.access': true, 'pipeline.visibility': 'all' }) },
 
   // ── Plan (ARCH 00 §4.4) ──
-  { id: 'g-plan-scheduling', module: 'plan', name: 'Scheduling', description: 'Production schedulers, planners, workshop coordinators', isDefault: true, members: ['2', '3'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': true, 'budget.visibility': true, 'intelligence_hub.access': true, 'reports.access': true }) },
-  { id: 'g-plan-engineering', module: 'plan', name: 'Engineering', description: 'Design engineers, drafters, BOM maintainers', isDefault: true, members: ['1', '7'], permissions: permissions({ 'documents.scope': 'all', 'bom.edit': true, 'intelligence_hub.access': true }) },
-  { id: 'g-plan-costing', module: 'plan', name: 'Costing', description: 'Cost analysts, estimators reviewing job budgets', isDefault: true, members: ['3'], permissions: permissions({ 'documents.scope': 'all', 'budget.visibility': true, 'reports.access': true }) },
+  { id: 'g-plan-scheduling', module: 'plan', name: 'Scheduling', description: 'Production schedulers, planners, workshop coordinators', isDefault: true, members: ['2', '3'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': true, 'budget.visibility': true, 'bom.edit': false, 'intelligence_hub.access': true, 'traveller.release': true, 'traveller.exception_release': false, 'traveller.view_all': true, 'settings.access': false, 'reports.access': true }) },
+  { id: 'g-plan-engineering', module: 'plan', name: 'Engineering', description: 'Design engineers, drafters, BOM maintainers', isDefault: true, members: ['1', '7'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': false, 'budget.visibility': false, 'bom.edit': true, 'intelligence_hub.access': true, 'traveller.release': false, 'traveller.exception_release': false, 'traveller.view_all': true, 'settings.access': false, 'reports.access': false }) },
+  { id: 'g-plan-costing', module: 'plan', name: 'Costing', description: 'Cost analysts, estimators reviewing job budgets', isDefault: true, members: ['3'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': false, 'budget.visibility': true, 'bom.edit': false, 'intelligence_hub.access': false, 'traveller.release': false, 'traveller.exception_release': false, 'traveller.view_all': false, 'settings.access': false, 'reports.access': true }) },
+  { id: 'g-plan-office-production-control', module: 'plan', name: 'Office / Production Control', description: 'Production coordinators and office staff with release authority', isDefault: true, members: ['2'], permissions: permissions({ 'documents.scope': 'all', 'schedule.edit': false, 'budget.visibility': true, 'bom.edit': false, 'intelligence_hub.access': true, 'traveller.release': true, 'traveller.exception_release': false, 'traveller.view_all': true, 'settings.access': false, 'reports.access': true }) },
 
   // ── Make (ARCH 00 §4.5) ──
   { id: 'g-make-production', module: 'make', name: 'Production', description: 'Operators, welders, machinists, assemblers', isDefault: true, members: ['1', '2', '6', '7'], permissions: permissions({ 'workorders.scope': 'own', 'timers.scope': 'own', 'qc.record': true, 'scrap.report': true }) },
@@ -211,6 +212,9 @@ export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> =
     { key: 'budget.visibility', label: 'Budget visibility', section: 'actions', type: 'boolean' },
     { key: 'bom.edit', label: 'Edit BOMs', section: 'actions', type: 'boolean' },
     { key: 'intelligence_hub.access', label: 'Intelligence hub', section: 'actions', type: 'boolean' },
+    { key: 'traveller.release', label: 'Release travellers', section: 'actions', type: 'boolean' },
+    { key: 'traveller.exception_release', label: 'Exception release', section: 'actions', type: 'boolean' },
+    { key: 'traveller.view_all', label: 'View all travellers', section: 'actions', type: 'boolean' },
     { key: 'settings.access', label: 'Access settings', section: 'admin', type: 'boolean' },
     { key: 'reports.access', label: 'Access reports', section: 'admin', type: 'boolean' },
   ],

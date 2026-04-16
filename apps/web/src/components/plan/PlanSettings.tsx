@@ -23,13 +23,16 @@ import {
 
 // ── Permission keys for Plan module (from ARCH 00 §4.4) ──
 const planPermissionKeys: PermissionKey[] = [
-  { key: 'documents.scope', label: 'Document visibility', description: 'Own records only, or all org records', type: 'scope' },
-  { key: 'schedule.edit', label: 'Edit schedule', description: 'Edit production schedule and Gantt chart', type: 'boolean' },
-  { key: 'budget.visibility', label: 'Budget visibility', description: 'View job budgets and cost breakdowns', type: 'boolean' },
-  { key: 'bom.edit', label: 'Edit BOMs', description: 'Edit bills of materials', type: 'boolean' },
-  { key: 'intelligence_hub.access', label: 'Intelligence hub', description: 'Access intelligence hub analytics', type: 'boolean' },
-  { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean' },
-  { key: 'reports.access', label: 'Reports access', description: 'View analytics and reports', type: 'boolean' },
+  { key: 'documents.scope', label: 'Document visibility', description: 'Own records only, or all org records', type: 'scope', group: 'Common' },
+  { key: 'schedule.edit', label: 'Edit schedule', description: 'Edit production schedule and Gantt chart', type: 'boolean', group: 'Plan controls' },
+  { key: 'budget.visibility', label: 'Budget visibility', description: 'View job budgets and cost breakdowns', type: 'boolean', group: 'Plan controls' },
+  { key: 'bom.edit', label: 'Edit BOMs', description: 'Edit bills of materials', type: 'boolean', group: 'Plan controls' },
+  { key: 'intelligence_hub.access', label: 'Intelligence hub', description: 'Access intelligence hub analytics', type: 'boolean', group: 'Plan controls' },
+  { key: 'traveller.release', label: 'Release travellers', description: 'Issue travellers from Plan into Make (high-trust action)', type: 'boolean', group: 'Traveller controls' },
+  { key: 'traveller.exception_release', label: 'Exception release', description: 'Reserved for guarded exception release paths', type: 'boolean', group: 'Traveller controls' },
+  { key: 'traveller.view_all', label: 'View all travellers', description: 'View released travellers across jobs and work centres', type: 'boolean', group: 'Traveller controls' },
+  { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean', group: 'Administration' },
+  { key: 'reports.access', label: 'Reports access', description: 'View analytics and reports', type: 'boolean', group: 'Administration' },
 ];
 
 // ── Default groups (from ARCH 00 §4.4) ──
@@ -44,6 +47,7 @@ const planDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'schedule.edit': 'true', 'budget.visibility': 'true',
       'bom.edit': 'false', 'intelligence_hub.access': 'true',
+      'traveller.release': 'true', 'traveller.exception_release': 'false', 'traveller.view_all': 'true',
       'settings.access': 'false', 'reports.access': 'true',
     },
   },
@@ -57,6 +61,7 @@ const planDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'schedule.edit': 'false', 'budget.visibility': 'false',
       'bom.edit': 'true', 'intelligence_hub.access': 'true',
+      'traveller.release': 'false', 'traveller.exception_release': 'false', 'traveller.view_all': 'true',
       'settings.access': 'false', 'reports.access': 'false',
     },
   },
@@ -70,6 +75,22 @@ const planDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'schedule.edit': 'false', 'budget.visibility': 'true',
       'bom.edit': 'false', 'intelligence_hub.access': 'false',
+      'traveller.release': 'false', 'traveller.exception_release': 'false', 'traveller.view_all': 'false',
+      'settings.access': 'false', 'reports.access': 'true',
+    },
+  },
+  {
+    name: 'Office / Production Control',
+    description: 'Production coordinators and office staff with release authority',
+    isDefault: true,
+    members: [
+      { name: 'Emma Wilson', email: 'emma@alliancemetal.com.au', initials: 'EW' },
+      { name: 'Sarah Chen', email: 'sarah@alliancemetal.com.au', initials: 'SC' },
+    ],
+    permissions: {
+      'documents.scope': 'all', 'schedule.edit': 'false', 'budget.visibility': 'true',
+      'bom.edit': 'false', 'intelligence_hub.access': 'true',
+      'traveller.release': 'true', 'traveller.exception_release': 'false', 'traveller.view_all': 'true',
       'settings.access': 'false', 'reports.access': 'true',
     },
   },

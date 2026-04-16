@@ -35,6 +35,7 @@ export interface PermissionKey {
   label: string;
   description?: string;
   type: 'boolean' | 'scope';
+  group?: string;
 }
 
 export interface GroupMember {
@@ -212,8 +213,19 @@ function AccessPermissionsPanel({
                     {/* Permissions */}
                     <div className="p-4">
                       <h4 className="text-xs tracking-wider text-[var(--neutral-500)] font-medium mb-3 uppercase">Permissions</h4>
-                      <div className="space-y-2">
-                        {permissionKeys.map((pk) => {
+                      <div className="space-y-3">
+                        {Object.entries(
+                          permissionKeys.reduce<Record<string, PermissionKey[]>>((acc, permission) => {
+                            const groupName = permission.group ?? 'Permissions';
+                            acc[groupName] = [...(acc[groupName] ?? []), permission];
+                            return acc;
+                          }, {}),
+                        ).map(([groupName, keys]) => (
+                          <div key={`${group.name}-${groupName}`} className="space-y-2">
+                            <p className="text-[10px] uppercase tracking-wide text-[var(--neutral-500)]">
+                              {groupName}
+                            </p>
+                            {keys.map((pk) => {
                           const currentValue = group.permissions[pk.key] ?? 'false';
                           if (pk.type === 'scope') {
                             return (
@@ -252,7 +264,9 @@ function AccessPermissionsPanel({
                               <Switch defaultChecked={currentValue === 'true'} />
                             </div>
                           );
-                        })}
+                            })}
+                          </div>
+                        ))}
                       </div>
                     </div>
 

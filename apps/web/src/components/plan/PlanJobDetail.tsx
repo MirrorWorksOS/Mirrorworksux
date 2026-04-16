@@ -1,7 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, DollarSign, Plus, Save, ChevronRight } from 'lucide-react';
+import { useNavigate, Link } from 'react-router';
+import { ArrowLeft, Plus, Save, ChevronRight, SendToBack, ShieldAlert } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
+import { Separator } from '../ui/separator';
+import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -12,6 +15,20 @@ import { PlanProductionTab } from './PlanProductionTab';
 import { PlanScheduleTab } from './PlanScheduleTab';
 import { PlanIntelligenceHubTab } from './PlanIntelligenceHubTab';
 import { PlanBudgetTab } from './PlanBudgetTab';
+import { PlanTravellersTab } from './PlanTravellersTab';
+import { useTravellerStore, isTravellerReadyForRelease } from '@/store/travellerStore';
+import type { PermissionKey } from '@mirrorworks/contracts';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { peopleUsers } from '@/components/control/people/people-data';
+import { mockUserContext } from '@/lib/mock-user-context';
 
 const STAGES = [
   { id: 'backlog', label: 'Backlog' },
@@ -41,19 +58,54 @@ const DOCUMENT_FLOW = [
 
 export function PlanJobDetail() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
   const userRole = 'Manager' as 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
   const [activeTab, setActiveTab] = useState('overview');
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
+  const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
+  const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>('traveller-001');
 
   const jobId = 'JOB-2026-0012';
   const quoteId = 'Q-2026-0055';
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
+  const activePermissionUser = useMemo(
+    () =>
+      peopleUsers.find((user) => user.name === mockUserContext.displayName) ??
+      peopleUsers.find((user) => user.modules.some((assignment) => assignment.module === 'plan')) ??
+      peopleUsers[0],
+    [],
+  );
+  const planPermissionGrants = activePermissionUser?.effectivePermissions ?? [];
+
+  const hasPlanPermission = (permissionKey: PermissionKey): boolean =>
+    planPermissionGrants.some(
+      (grant) =>
+        grant.module === 'plan' &&
+        grant.key === permissionKey &&
+        grant.value === true,
+    );
+
+  const canReleaseTraveller = hasPlanPermission('traveller.release');
+  const canViewAllTravellers = hasPlanPermission('traveller.view_all');
+
+  const travellers = useTravellerStore((state) =>
+    state.travellers.filter(
+      (packet) => packet.jobRef === jobId || (canViewAllTravellers && packet.status === 'released'),
+    ),
+  );
+  const releaseTraveller = useTravellerStore((state) => state.releaseTraveller);
+
+  const selectedTraveller =
+    travellers.find((packet) => packet.id === selectedTravellerId) ??
+    travellers[0] ??
+    null;
+  const selectedTravellerReady = selectedTraveller ? isTravellerReadyForRelease(selectedTraveller) : false;
+  const selectedTravellerReleased = selectedTraveller?.status === 'released';
 
   const tabs = useMemo<JobWorkspaceTabConfig[]>(() => {
     const base: JobWorkspaceTabConfig[] = [
       { id: 'overview', label: 'Overview' },
       { id: 'production', label: 'Production', count: 4 },
+      { id: 'travellers', label: 'Travellers', count: travellers.length },
     ];
     if (hasBudgetAccess) {
       base.push({ id: 'budget', label: 'Budget' });
@@ -63,7 +115,7 @@ export function PlanJobDetail() {
       { id: 'schedule', label: 'Schedule', count: 9 },
     );
     return base;
-  }, [hasBudgetAccess]);
+  }, [hasBudgetAccess, travellers.length]);
 
   const renderTabPanel = (tab: string) => {
     switch (tab) {
@@ -84,95 +136,230 @@ export function PlanJobDetail() {
             onOpenIntelligence={() => setActiveTab('intelligence')}
           />
         );
+      case 'travellers':
+        return (
+          <PlanTravellersTab
+            travellers={travellers}
+            selectedTravellerId={selectedTraveller?.id ?? null}
+            onSelectTraveller={setSelectedTravellerId}
+          />
+        );
       default:
         return null;
     }
   };
 
+  const handleReleaseToFloor = () => {
+    if (!selectedTraveller) return;
+    const result = releaseTraveller(selectedTraveller.id);
+    if (result.ok) {
+      toast.success(`${selectedTraveller.travellerNumber} released to floor.`);
+      setIsReleaseDialogOpen(false);
+      return;
+    }
+    toast.error(result.reason ?? 'Unable to release traveller.');
+  };
+
+  const checklistRows = selectedTraveller
+    ? [
+        { label: 'Routing complete', pass: selectedTraveller.checklist.routingComplete },
+        { label: 'Drawing attached', pass: selectedTraveller.checklist.drawingAttached },
+        { label: 'NC attached (if required)', pass: selectedTraveller.checklist.ncAttachedIfRequired },
+        { label: 'Instructions present', pass: selectedTraveller.checklist.instructionsPresent },
+        {
+          label: 'Material status ready / ordered',
+          pass:
+            selectedTraveller.checklist.materialStatus === 'ready' ||
+            selectedTraveller.checklist.materialStatus === 'ordered',
+          detail: selectedTraveller.checklist.materialStatus,
+        },
+        { label: 'Revision locked', pass: selectedTraveller.checklist.revisionLocked },
+      ]
+    : [];
+
   return (
-    <JobWorkspaceLayout
-      breadcrumbs={[
-        { label: 'Plan', href: '/plan' },
-        { label: 'Jobs', href: '/plan/jobs' },
-        { label: 'Server Rack Chassis' },
-      ]}
-      title="Server Rack Chassis"
-      subtitle={
-        <>
-          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{jobId}</span>
-          <span>TechCorp Industries</span>
-          <span className="tabular-nums">$20,000</span>
-        </>
-      }
-      metaRow={
-        <div className="flex flex-col gap-3 w-full">
-          {/* Progress bar */}
-          <ProgressBar value={stageProgress(currentStage)} showLabel size="sm" />
+    <Dialog open={isReleaseDialogOpen} onOpenChange={setIsReleaseDialogOpen}>
+      <JobWorkspaceLayout
+        breadcrumbs={[
+          { label: 'Plan', href: '/plan' },
+          { label: 'Jobs', href: '/plan/jobs' },
+          { label: 'Server Rack Chassis' },
+        ]}
+        title="Server Rack Chassis"
+        subtitle={
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{jobId}</span>
+            <span>TechCorp Industries</span>
+            <span className="tabular-nums">$20,000</span>
+          </>
+        }
+        metaRow={
+          <div className="flex flex-col gap-3 w-full">
+            <ProgressBar value={stageProgress(currentStage)} showLabel size="sm" />
 
-          {/* Stage button group */}
-          <div className="flex items-center gap-0 border border-[var(--border)] rounded-full overflow-hidden w-fit">
-            {STAGES.map((stage) => (
-              <button
-                key={stage.id}
-                type="button"
-                onClick={() => setCurrentStage(stage.id)}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
-                  currentStage === stage.id
-                    ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
-                    : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:text-[var(--neutral-400)] dark:hover:bg-[var(--neutral-800)]'
-                }`}
-              >
-                {stage.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Document flow breadcrumb */}
-          <nav aria-label="Document flow" className="flex flex-wrap items-center gap-1">
-            {DOCUMENT_FLOW.map((doc, idx) => (
-              <React.Fragment key={doc.label}>
-                {idx > 0 && (
-                  <ChevronRight className="h-3 w-3 shrink-0 text-[var(--neutral-400)]" aria-hidden />
-                )}
-                <Link
-                  to={doc.href}
-                  title={doc.docType}
-                  className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
-                    doc.label === jobId
-                      ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 text-foreground'
-                      : 'border-[var(--border)] text-foreground hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-800)]'
+            <div className="flex items-center gap-0 border border-[var(--border)] rounded-full overflow-hidden w-fit">
+              {STAGES.map((stage) => (
+                <button
+                  key={stage.id}
+                  type="button"
+                  onClick={() => setCurrentStage(stage.id)}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
+                    currentStage === stage.id
+                      ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
+                      : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:text-[var(--neutral-400)] dark:hover:bg-[var(--neutral-800)]'
                   }`}
                 >
-                  {doc.label}
-                </Link>
-              </React.Fragment>
-            ))}
-          </nav>
-        </div>
-      }
-      headerActions={
-        <>
-          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => navigate('/plan/jobs')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]">
-            <Save className="mr-2 h-4 w-4" />
-            Save
+                  {stage.label}
+                </button>
+              ))}
+            </div>
+
+            <nav aria-label="Document flow" className="flex flex-wrap items-center gap-1">
+              {DOCUMENT_FLOW.map((doc, idx) => (
+                <React.Fragment key={doc.label}>
+                  {idx > 0 && (
+                    <ChevronRight className="h-3 w-3 shrink-0 text-[var(--neutral-400)]" aria-hidden />
+                  )}
+                  <Link
+                    to={doc.href}
+                    title={doc.docType}
+                    className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
+                      doc.label === jobId
+                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 text-foreground'
+                        : 'border-[var(--border)] text-foreground hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-800)]'
+                    }`}
+                  >
+                    {doc.label}
+                  </Link>
+                </React.Fragment>
+              ))}
+            </nav>
+
+            {selectedTraveller ? (
+              <Card variant="flat" className="border-[var(--border)] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium">Traveller control point</p>
+                    <p className="text-xs text-[var(--neutral-500)]">
+                      Operators can view and execute released travellers only.
+                    </p>
+                  </div>
+                  <StatusBadge variant={selectedTravellerReleased ? 'accent' : selectedTravellerReady ? 'info' : 'warning'}>
+                    {selectedTraveller.status === 'in_progress'
+                      ? 'In progress'
+                      : selectedTraveller.status.slice(0, 1).toUpperCase() + selectedTraveller.status.slice(1)}
+                  </StatusBadge>
+                </div>
+                <Separator className="my-3" />
+                <p className="text-xs text-[var(--neutral-600)]">
+                  Selected packet: <span className="text-foreground font-medium">{selectedTraveller.travellerNumber}</span> • {selectedTraveller.workOrderRef} • {selectedTraveller.currentOperation}
+                </p>
+              </Card>
+            ) : null}
+          </div>
+        }
+        headerActions={
+          <>
+            <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => navigate('/plan/jobs')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <Button variant="outline" className="h-12 border-[var(--border)]">
+              <Save className="mr-2 h-4 w-4" />
+              Save
+            </Button>
+            {canReleaseTraveller ? (
+              <Button
+                className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                onClick={() => setIsReleaseDialogOpen(true)}
+                disabled={!selectedTraveller || selectedTravellerReleased}
+              >
+                <SendToBack className="mr-2 h-4 w-4" />
+                Release to floor
+              </Button>
+            ) : null}
+            <Button
+              className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => navigate('/make/manufacturing-orders')}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create manufacturing order
+            </Button>
+          </>
+        }
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        renderTabPanel={renderTabPanel}
+      />
+
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Release to floor</DialogTitle>
+          <DialogDescription>
+            This traveller can only be issued once files, routing, and materials are ready.
+          </DialogDescription>
+        </DialogHeader>
+
+        {selectedTraveller ? (
+          <div className="space-y-4">
+            <Card variant="flat" className="border-[var(--border)] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-medium">{selectedTraveller.travellerNumber}</p>
+                <p className="text-xs text-[var(--neutral-500)]">
+                  {selectedTraveller.jobRef} / {selectedTraveller.workOrderRef}
+                </p>
+              </div>
+              <p className="mt-1 text-sm text-[var(--neutral-600)]">{selectedTraveller.partName}</p>
+            </Card>
+
+            <Card variant="flat" className="border-[var(--border)] p-4">
+              <p className="mb-2 text-sm font-medium">Release checklist</p>
+              <div className="space-y-2">
+                {checklistRows.map((row) => (
+                  <div
+                    key={row.label}
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0"
+                  >
+                    <p className="text-sm text-foreground">
+                      {row.label}
+                      {row.detail ? (
+                        <span className="ml-1 text-[var(--neutral-500)]">({row.detail})</span>
+                      ) : null}
+                    </p>
+                    <StatusBadge variant={row.pass ? 'success' : 'warning'}>
+                      {row.pass ? 'Ready' : 'Missing'}
+                    </StatusBadge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card variant="flat" className="border-[var(--border)] p-4">
+              <p className="text-sm text-[var(--neutral-600)]">
+                Operators can view and execute released travellers only. If something is missing,
+                place the traveller on hold and notify planning.
+              </p>
+            </Card>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--neutral-500)]">No traveller selected.</p>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => setIsReleaseDialogOpen(false)}>
+            Cancel
           </Button>
           <Button
             className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-            onClick={() => navigate('/make/manufacturing-orders')}
+            disabled={!selectedTraveller || !selectedTravellerReady || selectedTravellerReleased}
+            onClick={handleReleaseToFloor}
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Create manufacturing order
+            <ShieldAlert className="mr-2 h-4 w-4" />
+            Issue traveller
           </Button>
-        </>
-      }
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      renderTabPanel={renderTabPanel}
-    />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
