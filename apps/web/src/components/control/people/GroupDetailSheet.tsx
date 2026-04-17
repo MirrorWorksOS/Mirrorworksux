@@ -1,6 +1,8 @@
 import React from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { cn } from '@/components/ui/utils';
 import { moduleColors, moduleLabels, peopleUsers, type PeopleGroupView } from './people-data';
 
 interface GroupDetailSheetProps {
@@ -40,19 +42,44 @@ export function GroupDetailSheet({ group, open, onOpenChange }: GroupDetailSheet
           </div>
 
           <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6">
-            <p className="mb-4 text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Members</p>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Members</p>
+              {members.some(m => m.status === 'inactive') && (
+                <p className="text-[11px] text-[var(--neutral-500)]">
+                  Deactivated members receive no permissions from this group.
+                </p>
+              )}
+            </div>
             <div className="space-y-2">
-              {members.map(member => (
-                <div key={member.id} className="flex items-center gap-3 rounded-xl bg-[var(--neutral-100)] p-2">
-                  <Avatar className="h-8 w-8 ring-1 ring-white dark:ring-card">
-                    <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">{initials(member.name)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm text-foreground">{member.name}</p>
-                    <p className="text-xs text-[var(--neutral-500)]">{member.email}</p>
+              {members.map(member => {
+                const inactive = member.status === 'inactive';
+                const pending = member.status === 'pending';
+                return (
+                  <div
+                    key={member.id}
+                    className={cn(
+                      'flex items-center gap-3 rounded-xl bg-[var(--neutral-100)] p-2',
+                      inactive && 'opacity-50',
+                    )}
+                  >
+                    <Avatar className="h-8 w-8 ring-1 ring-white dark:ring-card">
+                      <AvatarFallback className="bg-[var(--neutral-100)] text-xs text-[var(--neutral-800)]">{initials(member.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className={cn('text-sm text-foreground', inactive && 'line-through decoration-[var(--neutral-400)]')}>
+                        {member.name}
+                      </p>
+                      <p className="text-xs text-[var(--neutral-500)]">{member.email}</p>
+                    </div>
+                    {inactive && (
+                      <Badge variant="secondary" className="shrink-0 text-[10px]">Deactivated</Badge>
+                    )}
+                    {pending && (
+                      <Badge variant="outline" className="shrink-0 text-[10px]">Invited</Badge>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

@@ -2,7 +2,6 @@
  * Book Settings — Implements ARCH 00 §4.7 group-based permissions model
  * Panels: General, Invoicing, Xero Integration, Reports, Access & Permissions
  */
-import React, { useState } from 'react';
 import {
   Settings, FileText, Link, BarChart3, Calendar, RefreshCw,
   AlertTriangle,

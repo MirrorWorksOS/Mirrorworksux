@@ -142,6 +142,13 @@ export function resolveEffectivePermissions(
   membership: OrganizationMembership,
   groups: ModuleGroupSummary[],
 ): EffectivePermissionGrant[] {
+  // Deactivated/inactive memberships yield zero grants — even super-admin or
+  // lead flags are ignored until the membership is reactivated. This is the
+  // authoritative cut-off; UI layers should not need to re-check status.
+  if (membership.status === 'inactive') {
+    return [];
+  }
+
   if (membership.orgRole === 'super_admin') {
     return MODULE_ORDER.flatMap((module) =>
       buildFullModuleGrants(module, 'super_admin', membership.id),

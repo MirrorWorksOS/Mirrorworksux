@@ -2,10 +2,9 @@
  * Control BOMs — Bill of Materials management
  * Full list with expandable BOM lines
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
@@ -71,12 +70,6 @@ const BOMS: BOM[] = [
     ],
   },
 ];
-
-const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  active:   { bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
-  draft:    { bg: 'bg-[var(--neutral-100)]', text: 'text-[var(--neutral-500)]' },
-  obsolete: { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
-};
 
 /* Column definitions for the nested BOM-lines sub-table */
 const bomLineColumns: MwColumnDef<BOMLine>[] = [
@@ -173,16 +166,6 @@ export function ControlBOMs() {
       flatData.push({ kind: 'detail', bom });
     }
   }
-
-  const flatColumns: MwColumnDef<FlatRow>[] = bomColumns.map((col) => ({
-    ...col,
-    cell: (row: FlatRow, index: number) => {
-      if (row.kind === 'detail') return null;            // detail rows rendered via colSpan below
-      return col.cell(row.bom, index);
-    },
-    headerClassName: col.headerClassName,
-    className: col.className,
-  }));
 
   return (
     <motion.div

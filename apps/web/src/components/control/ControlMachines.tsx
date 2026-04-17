@@ -4,9 +4,9 @@
  */
 import React, { useState, useMemo } from 'react';
 import {
-  Plus, Cog, LayoutGrid, List, Wrench, Power, PowerOff,
-  UserPlus, Calendar, Activity, Settings2, ChevronRight,
-  MapPin, Clock, Gauge, AlertTriangle, CheckCircle2
+  Plus, Cog, LayoutGrid, List, Wrench, PowerOff,
+  UserPlus, Calendar, Settings2,
+  MapPin,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { motion } from 'motion/react';
@@ -252,8 +252,6 @@ const STATUS_CONFIG: Record<MachineStatus, { label: string; variant: 'success' |
   idle:        { label: 'Idle',        variant: 'neutral' },
   offline:     { label: 'Offline',     variant: 'error'   },
 };
-
-const LOCATIONS = [...new Set(MACHINES.map(m => m.location))];
 
 const VIEW_OPTIONS = [
   { key: 'grid', icon: LayoutGrid, label: 'Grid view' },

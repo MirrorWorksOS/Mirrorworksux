@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Crown, Shield } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { moduleLabels, mockActivity, peopleGroups, type PeopleUserView } from './people-data';
 import { ModuleAccessCard, UnassignedModuleCard } from './ModuleAccessCard';
+import { EffectivePermissionsPanel } from './EffectivePermissionsPanel';
 import type { ModuleKey } from '@mirrorworks/contracts';
 
 interface UserDetailSheetProps {
@@ -31,6 +32,9 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
 
   const assignedModules = new Set(user.modules.map(item => item.module));
   const unassigned = allModules.filter(moduleKey => !assignedModules.has(moduleKey));
+  const leadModules = user.modules.filter(item => item.isLead).map(item => item.module);
+  const isSuperAdmin = user.orgRole === 'super_admin';
+  const isDeactivated = user.status === 'inactive';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -83,6 +87,40 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
           </div>
 
           <div className="border-b border-[var(--neutral-100)]" />
+
+          {isDeactivated && (
+            <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--neutral-300)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-600)]">
+              This user is deactivated. They hold no effective permissions in any module until reactivated.
+            </div>
+          )}
+
+          {!isDeactivated && (isSuperAdmin || leadModules.length > 0) && (
+            <div className="rounded-[var(--shape-lg)] border border-[var(--mw-yellow-400)]/40 bg-[var(--mw-yellow-50,theme(colors.yellow.50))] p-4">
+              <div className="flex items-start gap-3">
+                {isSuperAdmin ? (
+                  <Shield className="mt-0.5 h-5 w-5 shrink-0 text-[var(--mw-yellow-500)]" />
+                ) : (
+                  <Crown className="mt-0.5 h-5 w-5 shrink-0 text-[var(--mw-yellow-500)]" />
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground">
+                    {isSuperAdmin
+                      ? 'Platform super admin — full access to every module'
+                      : leadModules.length === 1
+                        ? `Module lead — full access in ${moduleLabels[leadModules[0]]}`
+                        : `Module lead in ${leadModules.map(m => moduleLabels[m]).join(', ')}`}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[var(--neutral-600)]">
+                    {isSuperAdmin
+                      ? 'Group memberships are ignored while this flag is active — every permission is granted.'
+                      : 'Group memberships are ignored for the module(s) they lead — every permission in that module is granted.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!isDeactivated && <EffectivePermissionsPanel user={user} />}
 
           <div className="space-y-4">
             {user.modules.map(assignment => (

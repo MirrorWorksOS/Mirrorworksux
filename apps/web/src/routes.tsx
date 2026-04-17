@@ -133,7 +133,15 @@ const ControlShiftManager = React.lazy(() => import('./components/control/Contro
 const ControlMaintenance = React.lazy(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
 const ControlTooling = React.lazy(() => import('./components/control/ControlTooling').then(m => ({ default: m.ControlTooling })));
 const ControlDocuments = React.lazy(() => import('./components/control/ControlDocuments').then(m => ({ default: m.ControlDocuments })));
+const ControlBilling = React.lazy(() => import('./components/control/ControlBilling').then(m => ({ default: m.ControlBilling })));
+const ControlAudit = React.lazy(() => import('./components/control/ControlAudit').then(m => ({ default: m.ControlAudit })));
+const ControlGroups = React.lazy(() => import('./components/control/ControlGroups').then(m => ({ default: m.ControlGroups })));
 const MirrorWorksBridge = React.lazy(() => import('./components/control/MirrorWorksBridge').then(m => ({ default: m.MirrorWorksBridge })));
+
+// Platform Admin (super_admin only) — separate chrome, not in tenant Layout
+const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
+const AdminTiers = React.lazy(() => import('./components/admin/AdminTiers').then(m => ({ default: m.AdminTiers })));
+const AdminTenants = React.lazy(() => import('./components/admin/AdminTenants').then(m => ({ default: m.AdminTenants })));
 const BridgeWizard = React.lazy(() => import('./components/bridge/BridgeWizard').then(m => ({ default: m.BridgeWizard })));
 const Notifications = React.lazy(() => import('./components/Notifications').then(m => ({ default: m.Notifications })));
 
@@ -200,6 +208,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <L><FloorHome /></L> },
       { path: 'run/:workOrderId', element: <L><FloorRun /></L> },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  // Platform Admin Console — MirrorWorks staff only (super_admin).
+  // Lives as a top-level sibling of `/` so it escapes tenant chrome
+  // (sidebar, AgentFAB, command palette). Gated by AdminLayout itself;
+  // non-staff see a stop screen rather than a redirect so URL stays
+  // visible for support/debugging.
+  // ────────────────────────────────────────────────────────────────
+  {
+    path: '/admin',
+    element: <L><AdminLayout /></L>,
+    children: [
+      { index: true, element: <Navigate to="/admin/tiers" replace /> },
+      { path: 'tiers', element: <L><AdminTiers /></L> },
+      { path: 'tenants', element: <L><AdminTenants /></L> },
     ],
   },
   {
@@ -383,6 +407,7 @@ export const router = createBrowserRouter([
           { path: 'inventory', element: <L><ControlInventory /></L> },
           { path: 'purchase', element: <L><ControlPurchase /></L> },
           { path: 'people', element: <L><ControlPeople /></L> },
+          { path: 'groups', element: <L><ControlGroups /></L> },
           { path: 'products', element: <L><ControlProducts /></L> },
           { path: 'boms', element: <L><ControlBOMs /></L> },
           { path: 'workflow-designer', element: <L><ControlWorkflowDesigner /></L> },
@@ -391,6 +416,8 @@ export const router = createBrowserRouter([
           { path: 'tooling', element: <L><ControlTooling /></L> },
           { path: 'documents', element: <L><ControlDocuments /></L> },
           { path: 'gamification', element: <L><ControlGamification /></L> },
+          { path: 'billing', element: <L><ControlBilling /></L> },
+          { path: 'audit', element: <L><ControlAudit /></L> },
           { path: 'empty-states', element: <L><ControlEmptyStates /></L> },
         ],
       },

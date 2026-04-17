@@ -3,7 +3,7 @@
  * KPI cards: Overdue count, Avg MTTR, Equipment Availability %.
  */
 import { useState, useEffect, useMemo } from "react";
-import { Wrench, AlertTriangle, Clock, Activity } from "lucide-react";
+import { AlertTriangle, Clock, Activity } from "lucide-react";
 import { motion } from "motion/react";
 
 import { controlService } from "@/services";
@@ -25,8 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/components/ui/utils";
-
 function fmtAud(v: number): string {
   return v.toLocaleString("en-AU", {
     style: "currency",

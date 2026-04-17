@@ -267,7 +267,65 @@ export const modulePermissionLabels: Record<ModuleKey, PermissionLabelEntry[]> =
 };
 
 export const mockActivity: ActivityEvent[] = [
-  { id: 'a1', actorName: 'Mike Thompson', message: 'Sarah added to Make > Quality', timestamp: '3 days ago' },
-  { id: 'a2', actorName: 'David Lee', message: 'James invited to Ship > Warehouse', timestamp: '5 days ago' },
-  { id: 'a3', actorName: 'Priya Sharma', message: 'Book > Expenses permissions updated', timestamp: '1 week ago' },
+  {
+    id: 'a1', actorName: 'Mike Thompson', actorId: 'u-mike-thompson',
+    message: 'Sarah added to Make > Quality', timestamp: '3 days ago',
+    category: 'membership', targetType: 'user', targetId: 'u-sarah-chen', targetLabel: 'Sarah Chen',
+    occurredAt: '2026-04-14T09:12:00Z', before: '—', after: 'Make > Quality',
+  },
+  {
+    id: 'a2', actorName: 'David Lee', actorId: 'u-david-lee',
+    message: 'James invited to Ship > Warehouse', timestamp: '5 days ago',
+    category: 'invite', targetType: 'user', targetLabel: 'james@alliancemetal.com.au',
+    occurredAt: '2026-04-12T16:40:00Z',
+  },
+  {
+    id: 'a3', actorName: 'Priya Sharma', actorId: 'u-priya-sharma',
+    message: 'Book > Expenses permissions updated', timestamp: '1 week ago',
+    category: 'permission', targetType: 'group', targetId: 'g-book-expenses', targetLabel: 'Book > Expenses',
+    occurredAt: '2026-04-10T11:05:00Z',
+    before: 'expenses.scope: own', after: 'expenses.scope: all',
+  },
+  {
+    id: 'a4', actorName: 'Alex Morgan', actorId: 'u-alex-morgan',
+    message: 'Subscription tier changed', timestamp: '2 weeks ago',
+    category: 'tier', targetType: 'tenant', targetLabel: 'Alliance Metal Fabrication',
+    occurredAt: '2026-04-03T10:00:00Z', before: 'Pilot', after: 'Produce',
+  },
+  {
+    id: 'a5', actorName: 'Mike Thompson', actorId: 'u-mike-thompson',
+    message: 'Granted Plan > Schedule edit', timestamp: '2 weeks ago',
+    category: 'permission', targetType: 'group', targetId: 'g-plan-schedulers', targetLabel: 'Plan > Schedulers',
+    occurredAt: '2026-04-02T14:22:00Z', before: 'schedule.edit: false', after: 'schedule.edit: true',
+  },
+  {
+    id: 'a6', actorName: 'System', actorId: 'system',
+    message: 'Failed login — 3 attempts', timestamp: '3 weeks ago',
+    category: 'auth', targetType: 'user', targetLabel: 'karen@alliancemetal.com.au',
+    occurredAt: '2026-03-27T07:48:00Z', ip: '203.12.44.18',
+  },
+  {
+    id: 'a7', actorName: 'Pete Santos', actorId: 'u-pete-santos',
+    message: 'Access denied: approve PO', timestamp: '3 weeks ago',
+    category: 'denial', targetType: 'module', targetLabel: 'Buy > Orders', after: 'po.approve',
+    occurredAt: '2026-03-26T13:15:00Z',
+  },
+  {
+    id: 'a8', actorName: 'David Lee', actorId: 'u-david-lee',
+    message: 'Removed from Sell > Leadership', timestamp: '4 weeks ago',
+    category: 'membership', targetType: 'user', targetId: 'u-rachel-ng', targetLabel: 'Rachel Ng',
+    occurredAt: '2026-03-20T09:30:00Z', before: 'Sell > Leadership', after: '—',
+  },
+  {
+    id: 'a9', actorName: 'Alex Morgan', actorId: 'u-alex-morgan',
+    message: 'Deactivated user', timestamp: '5 weeks ago',
+    category: 'invite', targetType: 'user', targetLabel: 'jordan@alliancemetal.com.au',
+    occurredAt: '2026-03-13T15:02:00Z', before: 'active', after: 'deactivated',
+  },
+  {
+    id: 'a10', actorName: 'System', actorId: 'system',
+    message: 'Login', timestamp: '5 weeks ago',
+    category: 'auth', targetType: 'user', targetLabel: 'alex@alliancemetal.com.au',
+    occurredAt: '2026-03-13T08:01:00Z', ip: '110.144.221.9',
+  },
 ];

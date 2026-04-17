@@ -2,15 +2,13 @@
  * Buy Bills — Supplier bills with three-way matching
  * PO · GRN · Invoice matching with detail sheet
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Search, CheckCircle2, AlertTriangle, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
-import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';

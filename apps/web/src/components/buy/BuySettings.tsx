@@ -4,7 +4,6 @@
  *
  * Note: PO approval is separated from PO creation by default (segregation of duties).
  */
-import React, { useState } from 'react';
 import { Settings, Users, BarChart3, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';

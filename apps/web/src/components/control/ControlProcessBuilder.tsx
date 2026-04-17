@@ -29,17 +29,6 @@ import {
 } from '../ui/resizable';
 import { cn } from '../ui/utils';
 import { Blocks as AnimatedBlocks } from '@/components/animate-ui/icons/blocks';
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetPortal,
-  SheetOverlay,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/animate-ui/primitives/radix/sheet';
-import { PanelRight } from 'lucide-react';
 import { MirrorWorksAgentCard } from '@/components/shared/ai/MirrorWorksAgentCard';
 import { readStorageValue, removeStorageValue } from '@/lib/platform/storage';
 

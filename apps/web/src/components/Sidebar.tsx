@@ -376,8 +376,16 @@ export const menuConfig: MenuItem[] = [
         heading: 'People & Access',
         items: [
           { label: 'People', path: '/control/people' },
+          { label: 'Groups', path: '/control/groups' },
           { label: 'Shifts', path: '/control/shifts' },
           { label: 'Gamification', path: '/control/gamification' },
+          { label: 'Access audit', path: '/control/audit' },
+        ],
+      },
+      {
+        heading: 'Workspace',
+        items: [
+          { label: 'Billing & subscription', path: '/control/billing' },
         ],
       },
       {

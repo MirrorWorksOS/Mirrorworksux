@@ -136,11 +136,30 @@ export interface Group {
   permissions: GroupPermissionSet;
 }
 
+export type AuditCategory =
+  | 'permission'   // group permission edit
+  | 'membership'  // user added/removed from group; role change
+  | 'invite'      // user invited / activated / deactivated
+  | 'tier'        // subscription tier changed
+  | 'auth'        // login / logout / failed login
+  | 'denial';     // access denied — attempted action the user lacks permission for
+
 export interface ActivityEvent {
   id: string;
   actorName: string;
   message: string;
   timestamp: string;
+  /** Optional structured fields — present on audit entries, omitted on legacy seed rows */
+  category?: AuditCategory;
+  actorId?: string;
+  targetType?: 'user' | 'group' | 'module' | 'tenant';
+  targetId?: string;
+  targetLabel?: string;
+  /** ISO timestamp for sorting/filtering; `timestamp` above is the display string */
+  occurredAt?: string;
+  before?: string;
+  after?: string;
+  ip?: string;
 }
 
 /** Per-module permission label definitions for the Groups tab */

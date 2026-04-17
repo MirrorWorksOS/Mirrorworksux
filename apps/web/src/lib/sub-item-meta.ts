@@ -82,6 +82,8 @@ import {
   FolderOpen,
   GitBranch,
   Wand2,
+  UsersRound,
+  ShieldAlert,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -190,9 +192,12 @@ export const SUB_ITEM_META: Record<string, SubItemMeta> = {
   '/control/products': { icon: Package, description: 'Master product definitions' },
   '/control/boms': { icon: Network, description: 'Bill of materials editor' },
   '/control/purchase': { icon: ShoppingBag, description: 'Purchasing master data' },
-  '/control/people': { icon: Users, description: 'Users, groups, and access management' },
+  '/control/people': { icon: Users, description: 'Employee master with skills' },
+  '/control/groups': { icon: UsersRound, description: 'Permission groups across modules' },
   '/control/shifts': { icon: CalendarClock, description: 'Shift patterns & scheduling' },
   '/control/gamification': { icon: Trophy, description: 'Leaderboards & achievements' },
+  '/control/audit': { icon: ShieldAlert, description: 'Permission change history & access logs' },
+  '/control/billing': { icon: CreditCard, description: 'Subscription, invoices & payment' },
   '/control/maintenance': { icon: Wrench, description: 'PM & corrective maintenance' },
   '/control/tooling': { icon: Drill, description: 'Tool inventory & lifecycle' },
   '/control/documents': { icon: FolderOpen, description: 'Document library & versions' },

@@ -34,6 +34,8 @@ export interface MockUserContext {
   commandPaletteRole: CommandPaletteUserRole;
   /** Module labels for palette prioritisation (e.g. "Plan", "Sell") */
   recentModules?: string[];
+  /** Tenant/org owner — can edit billing & subscription */
+  isOwner: boolean;
 }
 
 export const mockUserContext: MockUserContext = {
@@ -46,6 +48,7 @@ export const mockUserContext: MockUserContext = {
   avatarUrl: undefined,
   commandPaletteRole: "admin",
   recentModules: ["Plan", "Make", "Ship", "Sell"],
+  isOwner: true,
 };
 
 /** Two-letter initials from display name */

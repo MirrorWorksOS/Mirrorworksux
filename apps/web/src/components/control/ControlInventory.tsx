@@ -5,8 +5,8 @@
 import React, { useState, useMemo } from 'react';
 import {
   Plus, Download, ClipboardCheck, ArrowLeftRight, AlertTriangle,
-  Package, Warehouse, TrendingDown, CheckCircle2, XCircle,
-  ChevronRight, ChevronLeft, BarChart3, DollarSign, Percent,
+  TrendingDown, CheckCircle2,
+  ChevronRight, ChevronLeft, DollarSign, Percent,
 } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
