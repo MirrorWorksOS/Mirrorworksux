@@ -28,3 +28,25 @@
 ## Migration status
 
 ## Testing
+
+## Components Used
+- `@/components/shared/ai/AISuggestion`
+- `@/components/shared/charts/chart-theme`
+- `@/components/shared/layout/PageHeader`
+- `@/components/shared/layout/PageShell`
+- `@/components/shared/motion/motion-variants`
+- `@/components/ui/badge`
+- `@/components/ui/card`
+- `@/components/ui/table`
+
+## Logic / Behaviour
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
+
+## Related Files
+- `apps/web/src/components/buy/BuyPlanningGrid.tsx`

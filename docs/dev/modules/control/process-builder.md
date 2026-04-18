@@ -17,3 +17,37 @@ intent + component/dependency references in one file). It has not been split yet
 
 User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
 States) remain in `docs/user/modules/control/process-builder.md` until a human editor does the split.
+
+## Components Used
+- `@/components/animate-ui/icons/blocks`
+- `@/components/animate-ui/primitives/radix/sheet`
+- `@/components/shared/ai/MirrorWorksAgentCard`
+- `apps/web/src/components/ui/button.tsx`
+- `apps/web/src/components/ui/input.tsx`
+- `apps/web/src/components/ui/switch.tsx`
+- `apps/web/src/components/ui/badge.tsx`
+- `apps/web/src/components/ui/toggle-group.tsx`
+- `apps/web/src/components/ui/resizable.tsx`
+- `apps/web/src/components/ui/utils.tsx`
+
+## Logic / Behaviour
+- Local state drives search/filter and derived visible lists.
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- `@/lib/platform/storage`
+
+## Known Gaps / Questions
+- Code includes explicit placeholder/legacy markers; some interactions are transitional.
+- Page appears mock/seed-backed; production API integration path is unclear from this file alone.
+- Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
+
+## Related Files
+- `apps/web/src/components/control/ControlProcessBuilder.tsx`
+- `apps/web/src/components/ui/button.tsx`
+- `apps/web/src/components/ui/input.tsx`
+- `apps/web/src/components/ui/switch.tsx`
+- `apps/web/src/components/ui/badge.tsx`
+- `apps/web/src/components/ui/toggle-group.tsx`
+- `apps/web/src/components/ui/resizable.tsx`
+- `apps/web/src/components/ui/utils.tsx`

@@ -17,3 +17,34 @@ intent + component/dependency references in one file). It has not been split yet
 
 User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
 States) remain in `docs/user/modules/control/people.md` until a human editor does the split.
+
+## Components Used
+- `@/components/shared/cards/DarkAccentCard`
+- `@/components/ui/button`
+- `@/components/ui/tabs`
+- `apps/web/src/components/control/people/GroupsTab.tsx`
+- `apps/web/src/components/control/people/GroupDetailSheet.tsx`
+- `apps/web/src/components/control/people/InviteUserDialog.tsx`
+- `apps/web/src/components/control/people/UsersTab.tsx`
+- `apps/web/src/components/control/people/UserDetailSheet.tsx`
+- `apps/web/src/components/control/people/people-data.tsx`
+
+## Logic / Behaviour
+- Local state drives search/filter and derived visible lists.
+- Behavior is largely client-side React state and memoized derivations.
+- Mode/tab switching is implemented through local state and/or query params.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
+
+## Related Files
+- `apps/web/src/components/control/ControlPeople.tsx`
+- `apps/web/src/components/control/people/GroupsTab.tsx`
+- `apps/web/src/components/control/people/GroupDetailSheet.tsx`
+- `apps/web/src/components/control/people/InviteUserDialog.tsx`
+- `apps/web/src/components/control/people/UsersTab.tsx`
+- `apps/web/src/components/control/people/UserDetailSheet.tsx`
+- `apps/web/src/components/control/people/people-data.tsx`

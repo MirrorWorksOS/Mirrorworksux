@@ -11,3 +11,29 @@ This stub exists so developers browsing `docs/dev/modules/shop-floor/` can find 
 - Layout (no sidebar, no AgentFAB): `apps/web/src/components/floor/FloorModeLayout.tsx`
 - Stores: `apps/web/src/store/floorSessionStore.ts`, `apps/web/src/store/floorExecutionStore.ts`
 - Service entry: `makeService.getMachineById`, `makeService.getWorkOrderById` (see `apps/web/src/services/makeService.ts`)
+
+## Components Used
+- `apps/web/src/components/floor/FloorClockIn.tsx`
+- `apps/web/src/components/floor/FloorStationPicker.tsx`
+- `apps/web/src/components/floor/FloorScanJob.tsx`
+
+## Logic / Behaviour
+- Routing links and back navigation are handled in-component.
+- Page logic relies on Zustand stores for shared state or mutations.
+- Behavior is largely client-side React state and memoized derivations.
+- Kiosk flow protects operator context and redirects to run steps when prerequisites are met.
+
+## Dependencies
+- `@/store/floorExecutionStore`
+- `@/store/floorSessionStore`
+
+## Known Gaps / Questions
+- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
+
+## Related Files
+- `apps/web/src/components/floor/FloorHome.tsx`
+- `apps/web/src/components/floor/FloorClockIn.tsx`
+- `apps/web/src/components/floor/FloorStationPicker.tsx`
+- `apps/web/src/components/floor/FloorScanJob.tsx`
+- `apps/web/src/store/floorExecutionStore`
+- `apps/web/src/store/floorSessionStore`

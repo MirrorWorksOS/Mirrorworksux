@@ -28,3 +28,31 @@
 ## Migration status
 
 ## Testing
+
+## Components Used
+- `@/components/shared/settings/ModuleSettingsLayout`
+- `apps/web/src/components/ui/button.tsx`
+- `apps/web/src/components/ui/input.tsx`
+- `apps/web/src/components/ui/label.tsx`
+- `apps/web/src/components/ui/badge.tsx`
+- `apps/web/src/components/ui/switch.tsx`
+- `apps/web/src/components/ui/select.tsx`
+
+## Logic / Behaviour
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- Code includes explicit placeholder/legacy markers; some interactions are transitional.
+- Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
+
+## Related Files
+- `apps/web/src/components/buy/BuySettings.tsx`
+- `apps/web/src/components/ui/button.tsx`
+- `apps/web/src/components/ui/input.tsx`
+- `apps/web/src/components/ui/label.tsx`
+- `apps/web/src/components/ui/badge.tsx`
+- `apps/web/src/components/ui/switch.tsx`
+- `apps/web/src/components/ui/select.tsx`

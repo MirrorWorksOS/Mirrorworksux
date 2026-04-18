@@ -17,3 +17,24 @@ intent + component/dependency references in one file). It has not been split yet
 
 User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
 States) remain in `docs/user/modules/control/dashboard.md` until a human editor does the split.
+
+## Components Used
+- `@/components/shared/cards/KpiStatCard`
+- `@/components/shared/dashboard/ModuleDashboard`
+- `@/components/shared/dashboard/ModuleQuickNav`
+- `@/components/shared/layout/ModuleInfoCallout`
+- `@/components/shared/motion/motion-variants`
+- `apps/web/src/components/ui/badge.tsx`
+
+## Logic / Behaviour
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
+
+## Related Files
+- `apps/web/src/components/control/ControlDashboard.tsx`
+- `apps/web/src/components/ui/badge.tsx`

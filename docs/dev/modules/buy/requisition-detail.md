@@ -28,3 +28,24 @@
 ## Migration status
 
 ## Testing
+
+## Components Used
+- `@/components/shared/data/StatusBadge`
+- `@/components/shared/layout/JobWorkspaceLayout`
+- `@/components/ui/button`
+- `@/components/ui/card`
+- `@/components/ui/label`
+- `@/components/ui/table`
+
+## Logic / Behaviour
+- Routing links and back navigation are handled in-component.
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
+
+## Related Files
+- `apps/web/src/components/buy/BuyRequisitionDetail.tsx`
