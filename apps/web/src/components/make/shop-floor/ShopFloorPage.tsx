@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { WorkOrderFullScreen } from '@/components/shop-floor/WorkOrderFullScreen';
@@ -20,10 +21,13 @@ export function ShopFloorPage() {
     (state) => state.clearWorkOrderState
   );
   const holdTraveller = useTravellerStore((state) => state.holdTraveller);
-  const releasedQueue = useTravellerStore((state) =>
-    state.travellers.filter((packet) =>
-      ['released', 'in_progress', 'hold'].includes(packet.status),
-    ),
+  const travellers = useTravellerStore((state) => state.travellers);
+  const releasedQueue = useMemo(
+    () =>
+      travellers.filter((packet) =>
+        ['released', 'in_progress', 'hold'].includes(packet.status),
+      ),
+    [travellers],
   );
 
   const selectedMachine = machines.find((machine) => machine.id === selectedMachineId);
