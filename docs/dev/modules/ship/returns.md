@@ -11,3 +11,31 @@
 ## Mock data shapes
 
 ## Known gaps / migration TODOs
+
+## Components Used
+- `@/components/shared/charts/ChartPatternDefs`
+- `@/components/shared/charts/chart-theme`
+- `@/components/shared/data/MwDataTable`
+- `@/components/shared/data/StatusBadge`
+- `@/components/shared/layout/FilterBar`
+- `@/components/shared/layout/PageHeader`
+- `@/components/shared/layout/PageShell`
+- `apps/web/src/components/ui/card.tsx`
+- `apps/web/src/components/ui/sheet.tsx`
+- `apps/web/src/components/ui/utils.tsx`
+
+## Logic / Behaviour
+- Local state drives search/filter and derived visible lists.
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- Code includes explicit placeholder/legacy markers; some interactions are transitional.
+
+## Related Files
+- `apps/web/src/components/ship/ShipReturns.tsx`
+- `apps/web/src/components/ui/card.tsx`
+- `apps/web/src/components/ui/sheet.tsx`
+- `apps/web/src/components/ui/utils.tsx`

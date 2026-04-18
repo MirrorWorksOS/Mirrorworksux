@@ -28,3 +28,23 @@
 ## Migration status
 
 ## Testing
+
+## Components Used
+- `@/components/shared/data/MwDataTable`
+- `@/components/shared/layout/PageHeader`
+- `@/components/shared/layout/PageShell`
+- `apps/web/src/components/ui/badge.tsx`
+
+## Logic / Behaviour
+- Local state drives search/filter and derived visible lists.
+- Routing links and back navigation are handled in-component.
+
+## Dependencies
+- No explicit store/service/hook dependency imported in this component.
+
+## Known Gaps / Questions
+- Page appears mock/seed-backed; production API integration path is unclear from this file alone.
+
+## Related Files
+- `apps/web/src/components/buy/BuyProducts.tsx`
+- `apps/web/src/components/ui/badge.tsx`

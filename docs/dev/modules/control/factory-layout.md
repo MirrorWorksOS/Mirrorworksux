@@ -17,3 +17,32 @@ intent + component/dependency references in one file). It has not been split yet
 
 User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
 States) remain in `docs/user/modules/control/factory-layout.md` until a human editor does the split.
+
+## Components Used
+- `@/components/animate-ui/icons/cog`
+- `@/components/animate-ui/primitives/animate/tooltip`
+- `@/components/animate-ui/primitives/radix/sheet`
+- `@/components/ui/button`
+- `@/components/ui/input`
+- `@/components/ui/label`
+- `@/components/ui/resizable`
+- `@/components/ui/select`
+- `@/components/ui/slider`
+- `@/components/ui/switch`
+- `@/components/ui/toggle-group`
+
+## Logic / Behaviour
+- Local state drives search/filter and derived visible lists.
+- Client-side sorting/grouping appears in list preparation.
+- Routing links and back navigation are handled in-component.
+- Behavior is largely client-side React state and memoized derivations.
+
+## Dependencies
+- `@/lib/platform/storage`
+
+## Known Gaps / Questions
+- Code includes explicit placeholder/legacy markers; some interactions are transitional.
+- Page appears mock/seed-backed; production API integration path is unclear from this file alone.
+
+## Related Files
+- `apps/web/src/components/control/ControlFactoryDesigner.tsx`

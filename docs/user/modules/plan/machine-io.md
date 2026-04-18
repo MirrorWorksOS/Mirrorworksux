@@ -23,28 +23,7 @@ Complete machine i/o work and move records to the next stage.
 - default
 - populated
 
-## Components Used
-- `@/components/ui/tabs`
-- `apps/web/src/components/plan/PlanCADImport.tsx`
-- `apps/web/src/components/plan/PlanNCConnect.tsx`
-
-## Logic / Behaviour
-- Routing links and back navigation are handled in-component.
-- Behavior is largely client-side React state and memoized derivations.
-- Mode/tab switching is implemented through local state and/or query params.
-
-## Dependencies
-- No explicit store/service/hook dependency imported in this component.
-
 ## Design / UX Notes
 - No explicit mock marker in this file; verify real-data behavior in integration testing.
 - No explicit placeholder text found in current component.
 - Action persistence paths are not fully visible in this component alone.
-
-## Known Gaps / Questions
-- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
-
-## Related Files
-- `apps/web/src/components/plan/PlanMachineIO.tsx`
-- `apps/web/src/components/plan/PlanCADImport.tsx`
-- `apps/web/src/components/plan/PlanNCConnect.tsx`
