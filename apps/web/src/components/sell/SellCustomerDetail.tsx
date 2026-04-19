@@ -5,13 +5,11 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Building2, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, ExternalLink, MessageSquare, PhoneCall, Send, Upload, Trash2, Pencil, Archive } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, MessageSquare, PhoneCall, Upload, Trash2, Pencil, Archive } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
@@ -684,7 +682,7 @@ export function SellCustomerDetail() {
             <MwDataTable<any>
               columns={contactColumns}
               data={allContacts}
-              keyExtractor={(c: any, i: number) => `contact-${i}`}
+              keyExtractor={(_c: any, i: number) => `contact-${i}`}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
@@ -708,7 +706,7 @@ export function SellCustomerDetail() {
             <MwDataTable<any>
               columns={documentColumns}
               data={customer.documents}
-              keyExtractor={(doc: any, i: number) => `doc-${i}`}
+              keyExtractor={(_doc: any, i: number) => `doc-${i}`}
               selectable
               onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
               onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}

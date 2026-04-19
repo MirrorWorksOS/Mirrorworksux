@@ -2,9 +2,9 @@
  * Sell Dashboard - Commercial engine KPIs and action cards
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, LineChart, BarChart2, Users, Target, Trophy, Download, Sparkles, PieChart as PieChartIcon, Gauge, AlertCircle } from 'lucide-react';
+import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock, Users, Target, Trophy, Download, AlertCircle } from 'lucide-react';
 import {
   sellKpis as kpiData,
   revenueByMonth as revenueData,
@@ -17,13 +17,11 @@ import {
   topPerformers,
   forecastChartData,
   quarterlyTargets,
-  sellReportTemplates as reportTemplatesData,
   salesPerformanceScore,
   quotaAttainment,
   pipelineHealth,
   customerSegmentation,
 } from '@/services';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -62,9 +60,6 @@ import {
   Area,
   PieChart,
   Pie,
-  LineChart as RechartsLineChart,
-  Line,
-  Legend,
 } from 'recharts';
 import { WinLossAnalysis } from '@/components/sell/WinLossAnalysis';
 
@@ -710,7 +705,7 @@ export function SellDashboard() {
                           paddingAngle={2}
                           {...MW_RECHARTS_ANIMATION}
                         >
-                          {customerSegmentation.map((entry, i) => (
+                          {customerSegmentation.map((entry) => (
                             <Cell key={entry.segment} fill={entry.color} />
                           ))}
                         </Pie>

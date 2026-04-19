@@ -1,26 +1,19 @@
-import React, { useState } from 'react';
-import { 
-  AlertTriangle, 
-  Package, 
-  Settings, 
-  XCircle, 
-  Recycle, 
-  Clock, 
-  CheckCircle2, 
-  ChevronRight, 
-  Siren, 
-  ChevronDown,
+import { useState } from 'react';
+import {
+  AlertTriangle,
+  Package,
+  Settings,
+  XCircle,
+  Recycle,
+  ChevronRight,
+  Siren,
   Mic,
-  Pause,
   Play,
-  User,
-  ArrowRight,
-  MoreHorizontal
+  ArrowRight
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { cn } from '../ui/utils';

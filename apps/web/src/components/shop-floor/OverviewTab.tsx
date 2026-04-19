@@ -1,24 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  ChevronRight, 
-  ChevronDown, 
-  Clock, 
-  Users, 
-  TrendingUp, 
-  AlertCircle, 
-  ArrowUpRight, 
-  ArrowDownRight,
-  MessageSquare,
+import { useState, useRef, useEffect } from 'react';
+import {
+  Search,
+  ChevronRight,
+  ChevronDown,
+  AlertCircle,
+  ArrowUpRight,
   FileText,
   ShieldAlert,
   Paperclip,
   Send,
-  Play,
-  Pause,
-  StopCircle,
   MoreHorizontal,
   Zap,
   Info,
@@ -31,16 +21,10 @@ import { cn } from '../ui/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { Separator } from '../ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
 import { toast } from 'sonner';
 
 // --- Mock Data ---

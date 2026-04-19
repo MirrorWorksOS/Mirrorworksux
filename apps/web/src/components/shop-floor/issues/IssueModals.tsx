@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { 
-  X, Camera, Mic, Info, History, AlertTriangle, 
-  CheckCircle2, AlertOctagon, FileText, Pause,
-  Image as ImageIcon, Upload, Recycle
+import { useState } from 'react';
+import {
+  Camera, Mic, Info, History,
+  AlertOctagon, Pause,
+  Recycle
 } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';

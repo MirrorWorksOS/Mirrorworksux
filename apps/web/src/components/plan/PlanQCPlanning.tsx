@@ -1,24 +1,19 @@
 /**
  * Plan QC Planning — Inspection points, quality checklists, and NCR history
  */
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Plus,
   CheckCircle2,
-  AlertTriangle,
-  Search,
   ChevronRight,
   ClipboardCheck,
   UserCheck,
-  XCircle,
   Eye,
-  Calendar,
   FileWarning,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
-import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
@@ -26,9 +21,8 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
+import { PageToolbar, ToolbarSearch, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
-import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
 
 // ── Inspection Points ───────────────────────────────────────────────
