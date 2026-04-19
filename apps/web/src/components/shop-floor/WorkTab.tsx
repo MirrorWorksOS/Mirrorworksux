@@ -1,39 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Search, 
-  Filter, 
-  ChevronRight, 
-  ChevronDown, 
-  Play, 
-  Pause, 
-  Clock, 
-  RotateCcw, 
-  Maximize2, 
-  ZoomIn, 
-  ZoomOut, 
-  Box, 
-  FileText, 
-  MoreHorizontal,
-  CheckCircle2,
-  AlertTriangle,
-  Plus,
-  MessageSquare,
-  ArrowLeft,
-  Settings,
-  MoreVertical,
-  Camera,
-  X,
-  Menu,
-  MessageCircle,
-  List
+import {
+  Search,
+  Filter,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { cn } from '../ui/utils';
-import { Separator } from '../ui/separator';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 
 // --- Types & Mock Data ---
 

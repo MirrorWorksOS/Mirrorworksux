@@ -1,33 +1,20 @@
 import React, { useState } from 'react';
-import { 
-  Mic, 
-  Search, 
-  Sparkles, 
-  AlertTriangle, 
-  Clock, 
-  TrendingUp, 
-  Calendar, 
-  Wrench, 
-  Package, 
-  User, 
-  Play, 
-  Pause, 
-  StopCircle, 
-  X, 
-  CheckCircle2, 
-  ArrowRight,
+import {
+  Mic,
+  Sparkles,
+  AlertTriangle,
+  Clock,
+  X,
+  CheckCircle2,
   Info,
   MoreHorizontal
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/card';
-import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
-import { ScrollArea } from '../ui/scroll-area';
+import { Card, CardContent, CardFooter } from '../ui/card';
 import { Separator } from '../ui/separator';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogPortal, DialogOverlay } from '../ui/dialog';
+import { Dialog, DialogTitle, DialogDescription, DialogPortal, DialogOverlay } from '../ui/dialog';
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { motion, AnimatePresence } from "motion/react";
 import { cn } from '../ui/utils';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 
