@@ -130,11 +130,11 @@ export function PurchaseOrders() {
 
       <div className="flex items-center gap-3">
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-card border-[var(--border)] rounded text-sm" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
+          <Input placeholder="Search purchase orders…" className="h-12 rounded-full border-[var(--neutral-200)] bg-background pl-10 text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
+        <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 
       <div className="flex gap-0 border-b border-[var(--border)]">

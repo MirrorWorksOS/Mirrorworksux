@@ -55,13 +55,12 @@ export function AgentFAB() {
             <button
               onClick={toggleOpen}
               className={cn(
-                'relative w-14 h-14 rounded-2xl',
+                'ai-card-glow relative w-14 h-14 rounded-2xl',
+                hasProactiveInsight && 'ai-card-glow--animating',
                 'flex items-center justify-center',
                 'bg-[var(--mw-mirage)]',
-                'shadow-lg shadow-black/20',
-                'hover:bg-[var(--mw-agent)] hover:shadow-xl hover:shadow-[var(--mw-agent)]/35',
                 'hover:scale-105 active:scale-95',
-                'transition-all duration-200 ease-[var(--ease-standard)]',
+                'transition-transform duration-200 ease-[var(--ease-standard)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-agent)] focus-visible:ring-offset-2',
               )}
               aria-label="Open Agent AI assistant"

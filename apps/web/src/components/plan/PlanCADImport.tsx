@@ -76,7 +76,7 @@ function getFileFormat(ext: string): string {
 
 // ── Component ───────────────────────────────────────────────────────
 
-export function PlanCADImport() {
+export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -234,6 +234,8 @@ export function PlanCADImport() {
           ) : undefined
         }
       />
+
+      {headerExtras}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         {/* Left column — Drop zone + file list */}

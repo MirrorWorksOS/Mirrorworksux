@@ -44,7 +44,7 @@ function formatCurrency(amount: number): string {
   return `AUD ${amount.toFixed(2)}`;
 }
 
-export function FinishLibrary() {
+export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const { finishes, removeFinish, resetToSeed } = useFinishLibraryStore();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | FinishType>('all');
@@ -88,6 +88,8 @@ export function FinishLibrary() {
           </Button>
         </div>
       </div>
+
+      {headerExtras}
 
       {/* Controls */}
       <div className="flex items-center gap-2">

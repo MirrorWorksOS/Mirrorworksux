@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/components/ui/utils";
-import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
 import { MirrorWorksAgentCard } from "@/components/shared/ai/MirrorWorksAgentCard";
 
 
@@ -134,14 +133,10 @@ export function AiCommandBar({
 
   return (
     <>
-      <BorderGlow
-        borderRadius={9999}
-        edgeSensitivity={10}
-        glowRadius={36}
-        glowIntensity={0.192}
-        coneSpread={30}
-        fillOpacity={0.132}
+      <div
         className={cn(
+          "ai-card-glow rounded-full bg-card",
+          thinking && "ai-card-glow--animating",
           "focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/40",
           className,
         )}
@@ -173,7 +168,7 @@ export function AiCommandBar({
           <span className="sr-only">Send</span>
         </Button>
       </form>
-      </BorderGlow>
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="gap-4 sm:max-w-lg">

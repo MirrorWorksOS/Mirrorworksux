@@ -111,7 +111,7 @@ export function AgentPanel() {
               duration: 0.25,
               ease: [0.2, 0, 0, 1],
             }}
-            className="fixed z-50 bottom-6 right-6 flex flex-col bg-[var(--card)] dark:bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden"
+            className="ai-card-glow fixed z-50 bottom-6 right-6 flex flex-col bg-[var(--card)] dark:bg-[var(--card)] rounded-2xl overflow-hidden"
             style={{
               width: dims.width,
               height: dims.height,

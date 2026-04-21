@@ -1025,6 +1025,67 @@ html {
   --spot-color: var(--spot-color-dark) !important;
 }
 
+/* ── AI card glow — MirrorWorks Agent surfaces ──
+   Shape-agnostic box-shadow halo — the consumer owns border-radius and
+   background. Because the shadow sits on the element itself, the halo always
+   follows the element's own border-radius: no larger-than-card layers, no
+   masks, no corner artifacts. Works on pills (rounded-full), cards, circles.
+   Hover boosts; loading/streaming pulses. */
+.ai-card-glow {
+  transition: box-shadow 0.35s var(--ease-standard);
+  box-shadow:
+    0 0 0 1px hsl(172 68% 58% / 0.13),
+    0 0 12px 0 hsl(172 68% 58% / 0.09),
+    0 0 28px 4px hsl(172 68% 58% / 0.045);
+}
+
+.ai-card-glow:hover {
+  box-shadow:
+    0 0 0 1px hsl(172 68% 58% / 0.28),
+    0 0 18px 1px hsl(172 68% 58% / 0.16),
+    0 0 40px 7px hsl(172 68% 58% / 0.08);
+}
+
+.dark .ai-card-glow {
+  box-shadow:
+    0 0 0 1px hsl(172 68% 58% / 0.18),
+    0 0 14px 0 hsl(172 68% 58% / 0.13),
+    0 0 32px 5px hsl(172 68% 58% / 0.065);
+}
+
+.dark .ai-card-glow:hover {
+  box-shadow:
+    0 0 0 1px hsl(172 68% 58% / 0.36),
+    0 0 20px 2px hsl(172 68% 58% / 0.22),
+    0 0 46px 9px hsl(172 68% 58% / 0.12);
+}
+
+/* Loading / streaming — pulse between baseline and a brighter halo */
+@keyframes ai-card-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px hsl(172 68% 58% / 0.14),
+      0 0 12px 0 hsl(172 68% 58% / 0.09),
+      0 0 30px 4px hsl(172 68% 58% / 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px hsl(172 68% 58% / 0.32),
+      0 0 20px 2px hsl(172 68% 58% / 0.20),
+      0 0 44px 9px hsl(172 68% 58% / 0.10);
+  }
+}
+
+.ai-card-glow--animating {
+  animation: ai-card-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-card-glow--animating {
+    animation: none;
+  }
+}
+
 /* Agent message bubble — subtle gradient border glow for Agent responses */
 .agent-message-bubble {
   position: relative;

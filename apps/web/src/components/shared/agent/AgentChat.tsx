@@ -195,8 +195,8 @@ export function AgentChat({ currentModule }: AgentChatProps) {
       )}
 
       {/* Input Bar */}
-      <div className="px-3 pb-3 pt-1">
-        <div className="flex items-center gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] border border-[var(--border)] rounded-2xl px-3 py-2 transition-colors hover:border-[var(--mw-agent)] hover:ring-1 hover:ring-[var(--mw-agent)]/25 focus-within:border-[var(--mw-agent)] focus-within:ring-1 focus-within:ring-[var(--mw-agent)]/25">
+      <div className="px-4 pb-4 pt-4">
+        <div className="ai-card-glow flex items-center gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] rounded-2xl px-3 py-2">
           <div className="shrink-0 self-center" aria-hidden>
             <AgentLogomarkAnimated size={26} animating={isTyping} />
           </div>
@@ -214,9 +214,9 @@ export function AgentChat({ currentModule }: AgentChatProps) {
             onClick={handleSend}
             disabled={!inputValue.trim() || isTyping}
             className={cn(
-              'p-2 rounded-xl transition-all shrink-0',
+              'ai-card-glow p-2 rounded-xl shrink-0 bg-transparent',
               inputValue.trim() && !isTyping
-                ? 'bg-[var(--mw-agent)] text-white hover:bg-[var(--mw-agent-600)] shadow-sm'
+                ? 'text-[var(--mw-agent)]'
                 : 'text-[var(--neutral-300)] dark:text-[var(--neutral-400)] cursor-not-allowed',
             )}
             aria-label="Send message"
@@ -224,7 +224,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[10px] text-[var(--neutral-400)] text-center mt-1.5">
+        <p className="text-[10px] text-[var(--neutral-400)] text-center mt-3">
           MirrorWorks Agent is simulated in this prototype.
         </p>
       </div>
@@ -248,7 +248,7 @@ function EmptyState({
   const welcomeText = getWelcomeMessage(currentModule);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-6 pt-14 pb-8">
+    <div className="flex flex-col items-center justify-center h-full px-4 pt-20 pb-4">
       {/* Agent Avatar */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
@@ -286,9 +286,9 @@ function EmptyState({
           <button
             key={action.label}
             onClick={() => onQuickAction(action.prompt)}
-            className="w-full text-left px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--mw-agent)] hover:bg-[var(--mw-agent)] dark:hover:border-[var(--mw-agent)] dark:hover:bg-[var(--mw-agent)] transition-colors group"
+            className="ai-card-glow w-full text-left px-4 py-3 rounded-xl bg-[var(--card)] group"
           >
-            <span className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-500)] group-hover:text-[var(--mw-mirage)] dark:group-hover:text-[var(--mw-mirage)] transition-colors">
+            <span className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-500)] group-hover:text-foreground transition-colors">
               {action.label}
             </span>
           </button>
