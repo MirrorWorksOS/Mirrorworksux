@@ -8,6 +8,19 @@ User doc: [`docs/user/modules/book/stock-valuation.md`](../../../user/modules/bo
 - **Overlap:** Inventory/materials shape overlaps with Plan/Buy stock views. Book lens is valuation (cost × qty × age).
 - **TODO:** add `bookService.getStockValuation()`; share `Material`/`StockItem` type with Plan; tier gate (Produce+ or Expand+).
 
+## Costing methods
+The `costingMethod` select offers five options (see PR #14 for naming alignment with Global Shop):
+
+| Value | Label | Notes |
+|---|---|---|
+| `fifo` | FIFO | First-in, first-out |
+| `lifo` | LIFO | Last-in, first-out |
+| `weighted_average` | **Weighted Average (AVCO)** | Renamed from "Weighted average" to match industry naming |
+| `standard` | Standard Cost | Uses product-level standard cost |
+| `actual` | **Actual Cost** | NEW — uses real consumed cost buckets from `JobCostDetail` rather than a formula |
+
+Product-level tiles on `ProductDetail.tsx` mirror these options and display per-method unit cost in the cost-breakdown grid.
+
 ## Components Used
 - `@/components/shared/cards/DarkAccentCard`
 - `@/components/shared/cards/KpiStatCard`

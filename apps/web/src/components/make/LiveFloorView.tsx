@@ -15,7 +15,17 @@
  */
 
 import { useState, useEffect } from 'react';
-import { CheckCircle2, Clock, AlertTriangle, Wrench, Zap, Activity } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Wrench,
+  Zap,
+  Activity,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/components/ui/utils';
@@ -342,15 +352,59 @@ function OperatorCard({ op, now }: { op: ActiveOperator; now: number }) {
   );
 }
 
+// ─── Dark-mode lock: force the whole app into dark while Live Floor is mounted ─
+// Direct DOM manipulation (rather than setTheme) avoids writing to theme storage
+// so the user's preference is preserved when they leave the tab.
+
+function useForceDarkMode() {
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains('dark');
+    if (!wasDark) {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+    return () => {
+      if (!wasDark) {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      }
+    };
+  }, []);
+}
+
 // ─── Main view ───────────────────────────────────────────────────────
 
 export function LiveFloorView() {
   const [now, setNow] = useState(() => Date.now());
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useForceDarkMode();
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Escape key exits expanded mode — matches browser fullscreen conventions
+  useEffect(() => {
+    if (!isExpanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsExpanded(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isExpanded]);
+
+  // Prevent body scroll while the overlay is open
+  useEffect(() => {
+    if (!isExpanded) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isExpanded]);
 
   // On-track operator count (active + under estimate)
   const onTrack = activeOperators.filter((op) => {
@@ -360,45 +414,108 @@ export function LiveFloorView() {
   }).length;
   const activeCount = activeOperators.filter((op) => op.status === 'active').length;
 
-  return (
-    // Force dark theme + full-bleed bg regardless of app theme, so the tab
-    // reads as a distinct wall display. -m-8 cancels ModuleDashboard's p-8.
-    <div className="dark -m-8 min-h-[calc(100vh-140px)] bg-[var(--neutral-950,_#0a0a0a)] p-8 text-white">
-      <div className="mx-auto flex max-w-[1800px] flex-col gap-8">
-        <ShiftHeader now={now} onTrackCount={onTrack} totalOperators={activeCount} />
+  const body = (
+    <div className="mx-auto flex max-w-[1800px] flex-col gap-8">
+      <ShiftHeader now={now} onTrackCount={onTrack} totalOperators={activeCount} />
 
-        <section aria-label="Machine status summary">
-          <SummaryRibbon machines={centralMachines} />
-        </section>
+      <section aria-label="Machine status summary">
+        <SummaryRibbon machines={centralMachines} />
+      </section>
 
-        <section aria-label="Machines">
-          <h2 className="mb-4 text-2xl font-medium uppercase tracking-widest text-white/60">
-            Machines
+      <section aria-label="Machines">
+        <h2 className="mb-4 text-2xl font-medium uppercase tracking-widest text-white/60">
+          Machines
+        </h2>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {centralMachines.map((m) => (
+            <MachineAndonCard key={m.id} machine={m} />
+          ))}
+        </div>
+      </section>
+
+      <section aria-label="Operators">
+        <div className="mb-4 flex items-baseline gap-4">
+          <h2 className="text-2xl font-medium uppercase tracking-widest text-white/60">
+            Operators
           </h2>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {centralMachines.map((m) => (
-              <MachineAndonCard key={m.id} machine={m} />
-            ))}
-          </div>
-        </section>
-
-        <section aria-label="Operators">
-          <div className="mb-4 flex items-baseline gap-4">
-            <h2 className="text-2xl font-medium uppercase tracking-widest text-white/60">
-              Operators
-            </h2>
-            <span className="flex items-center gap-2 text-sm text-white/40">
-              <Activity className="h-4 w-4" aria-hidden />
-              Live — updates every second
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {activeOperators.map((op) => (
-              <OperatorCard key={op.id} op={op} now={now} />
-            ))}
-          </div>
-        </section>
-      </div>
+          <span className="flex items-center gap-2 text-sm text-white/40">
+            <Activity className="h-4 w-4" aria-hidden />
+            Live — updates every second
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {activeOperators.map((op) => (
+            <OperatorCard key={op.id} op={op} now={now} />
+          ))}
+        </div>
+      </section>
     </div>
+  );
+
+  const expandButton = (
+    <button
+      type="button"
+      onClick={() => setIsExpanded((v) => !v)}
+      aria-label={isExpanded ? 'Exit full screen' : 'Expand to full screen'}
+      title={isExpanded ? 'Exit full screen (Esc)' : 'Expand to full screen'}
+      className="inline-flex h-12 items-center gap-2 rounded-[var(--shape-md)] border border-white/15 bg-white/5 px-4 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]"
+    >
+      {isExpanded ? (
+        <>
+          <Minimize2 className="h-5 w-5" aria-hidden />
+          Exit full screen
+        </>
+      ) : (
+        <>
+          <Maximize2 className="h-5 w-5" aria-hidden />
+          Full screen
+        </>
+      )}
+    </button>
+  );
+
+  return (
+    <>
+      {/* Inline (tab) view — always mounted so the exit animation reveals it
+          without a layout jump. When the overlay is open it's hidden behind. */}
+      <div
+        className="dark -m-8 min-h-[calc(100vh-140px)] bg-[var(--neutral-950,_#0a0a0a)] p-8 text-white"
+        aria-hidden={isExpanded}
+      >
+        <div className="mx-auto max-w-[1800px]">
+          <div className="mb-6 flex justify-end">{expandButton}</div>
+          {body}
+        </div>
+      </div>
+
+
+      {/* Expanded overlay — animated in/out with easing */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            key="live-floor-expanded"
+            initial={{ opacity: 0, scale: 0.985 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.985 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="dark fixed inset-0 z-[60] overflow-y-auto bg-[var(--neutral-950,_#0a0a0a)] p-8 text-white"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Live floor — full screen"
+          >
+            <div className="pointer-events-none sticky top-0 z-10 mb-6 flex justify-end">
+              <div className="pointer-events-auto">{expandButton}</div>
+            </div>
+            <motion.div
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
+            >
+              {body}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

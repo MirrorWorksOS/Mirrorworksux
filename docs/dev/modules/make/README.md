@@ -12,7 +12,8 @@ Production supervisors, team leaders, and operators in office-mode views.
 - Execute module-specific configuration/setup from settings or control pages.
 
 ## Main Routes/Pages
-- [Make Dashboard](./dashboard.md) — `/make`
+- [Make Dashboard](./dashboard.md) — `/make` (tabs: Overview · Live floor · Quality)
+- [Live Floor](./live-floor.md) — `/make` (Live floor tab — wall-display Andon board)
 - [Schedule](./schedule.md) — `/make/schedule`
 - [Shop Floor](./shop-floor.md) — `/make/shop-floor`
 - [Manufacturing Orders](./manufacturing-orders.md) — `/make/manufacturing-orders`
