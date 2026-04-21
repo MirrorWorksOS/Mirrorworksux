@@ -641,6 +641,10 @@ export interface BatchLot {
   status: BatchStatus;
   supplierId?: string;
   supplierName?: string;
+  /** Heat number / cast lot — required for AS/NZS + ISO metal traceability. */
+  heatNumber?: string;
+  /** Link to the supplier material certificate PDF. */
+  certUrl?: string;
   children?: BatchLot[];
 }
 

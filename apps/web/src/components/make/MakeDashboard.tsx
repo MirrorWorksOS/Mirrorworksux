@@ -1,15 +1,16 @@
 /**
- * Make Dashboard - Andon Board with machine status grid
- * Touch-optimized for shop floor displays
+ * MakeDashboard — manager-facing overview.
  *
- * TASK 1: AI Feed integrated below command bar
- * TASK 2: Schedule Gantt strip has rich hover tooltips
- * TASK 3: Work orders elevated to top with larger cards
+ * Desk-browser view: KPIs, active/scheduled work orders, today's Gantt,
+ * quality alerts, OEE trend, throughput vs target.
+ *
+ * The shop-floor Andon board (machines + live operator timers) lives on
+ * the `Live floor` tab (`LiveFloorView.tsx`) — designed for wall displays.
  */
 
 import { useState } from 'react';
 import {
-  Wrench, AlertTriangle, CheckCircle2, Clock, Zap,
+  AlertTriangle, CheckCircle2,
   ShieldAlert, TrendingUp, Play, ClipboardCheck,
   ScanBarcode, Printer, TimerOff, BarChart3, Activity,
 } from 'lucide-react';
@@ -32,28 +33,6 @@ import {
   HoverCardContent,
 } from '../ui/hover-card';
 
-
-type MachineStatus = 'running' | 'idle' | 'down' | 'maintenance' | 'setup';
-
-interface Machine {
-  id: string;
-  name: string;
-  workCenter: string;
-  status: MachineStatus;
-  currentJob?: string;
-  operator?: string;
-  utilizationToday: number;
-}
-
-const mockMachines: Machine[] = centralMachines.map((m) => ({
-  id: m.id,
-  name: m.name,
-  workCenter: m.workCenter,
-  status: m.status as MachineStatus,
-  currentJob: m.currentJobNumber,
-  operator: m.operatorName,
-  utilizationToday: m.utilizationToday,
-}));
 
 /** Mock work orders for the dashboard work-order cards and schedule tooltips */
 interface DashboardWorkOrder {
@@ -93,16 +72,6 @@ const getWoStatusConfig = (status: DashboardWorkOrder['status']) => {
     case 'scheduled': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]', label: 'Scheduled', dot: 'bg-[var(--neutral-400)]' };
     case 'completed': return { bg: 'bg-[var(--mw-success-light)] dark:bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]', label: 'Completed', dot: 'bg-[var(--mw-success)]' };
     case 'pending': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-500)]', label: 'Pending', dot: 'bg-[var(--neutral-400)]' };
-  }
-};
-
-const getStatusColor = (status: MachineStatus) => {
-  switch (status) {
-    case 'running': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: CheckCircle2, label: 'Running' };
-    case 'idle': return { bg: 'bg-[var(--mw-warning)]', text: 'text-[#1A1A1A]', icon: Clock, label: 'Idle' };
-    case 'down': return { bg: 'bg-[var(--mw-error)]', text: 'text-white', icon: AlertTriangle, label: 'Down' };
-    case 'maintenance': return { bg: 'bg-[var(--mw-mirage)]', text: 'text-white', icon: Wrench, label: 'Maintenance' };
-    case 'setup': return { bg: 'bg-[var(--mw-amber)]', text: 'text-[#1A1A1A]', icon: Zap, label: 'Setup' };
   }
 };
 
@@ -235,9 +204,8 @@ const makeTabs = [
 
 export function MakeDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const runningCount = mockMachines.filter(m => m.status === 'running').length;
-  const downCount = mockMachines.filter(m => m.status === 'down').length;
-  const avgUtilization = Math.round(mockMachines.reduce((sum, m) => sum + m.utilizationToday, 0) / mockMachines.length);
+  const runningCount = centralMachines.filter(m => m.status === 'running').length;
+  const avgUtilization = Math.round(centralMachines.reduce((sum, m) => sum + m.utilizationToday, 0) / centralMachines.length);
 
   const activeWOs = dashboardWorkOrders.filter((wo) => wo.status === 'in_progress');
   const scheduledWOs = dashboardWorkOrders.filter((wo) => wo.status === 'scheduled');
@@ -382,7 +350,7 @@ export function MakeDashboard() {
           <KpiStatCard
             layout="compact"
             label="Active Orders"
-            value={`${runningCount}/${mockMachines.length}`}
+            value={`${runningCount}/${centralMachines.length}`}
             icon={CheckCircle2}
             iconSurface="key"
             valueClassName="text-3xl font-bold"
@@ -425,83 +393,6 @@ export function MakeDashboard() {
           />
         </motion.div>
       </div>
-
-      {/* Machine Status Grid - LARGE TOUCH TARGETS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockMachines.map((machine) => {
-          const statusConfig = getStatusColor(machine.status);
-          const StatusIcon = statusConfig.icon;
-
-          return (
-            <motion.div key={machine.id} variants={staggerItem}>
-              <Card className={cn(
-                "rounded-[var(--shape-lg)] p-6 cursor-pointer transition-all duration-[var(--duration-medium1)] border-4",
-                statusConfig.bg,
-                statusConfig.text
-              )}>
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h2 className="text-2xl font-medium mb-2">{machine.name}</h2>
-                    <p className="text-base opacity-90">{machine.workCenter}</p>
-                  </div>
-                  <StatusIcon className="w-12 h-12" strokeWidth={1.5} aria-hidden />
-                </div>
-
-                <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>
-                  {machine.currentJob && (
-                    <div>
-                      <p className="text-xs opacity-75 mb-2">Current Job</p>
-                      <p className="text-lg font-medium tabular-nums">{machine.currentJob}</p>
-                    </div>
-                  )}
-                  {machine.operator && (
-                    <div>
-                      <p className="text-xs opacity-75 mb-2">Operator</p>
-                      <p className="text-base font-medium">{machine.operator}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-xs opacity-75 mb-2">Utilization Today</p>
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 h-3 bg-black bg-opacity-20 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-card rounded-full transition-all duration-[var(--duration-medium1)]"
-                          style={{ width: `${machine.utilizationToday}%` }}
-                        />
-                      </div>
-                      <span className="text-lg font-medium tabular-nums min-w-[60px]">
-                        {machine.utilizationToday}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'currentColor', opacity: 0.3 }}>
-                  <Badge className="w-full justify-center py-3 text-base font-medium bg-white/20 text-current border-0">
-                    {statusConfig.label}
-                  </Badge>
-                </div>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Legend */}
-      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
-        <h3 className="text-sm font-medium text-[var(--neutral-500)] mb-4">Status legend</h3>
-        <div className="flex flex-wrap gap-4">
-          {(['running', 'idle', 'setup', 'down', 'maintenance'] as MachineStatus[]).map(status => {
-            const config = getStatusColor(status);
-            return (
-              <div key={status} className="flex items-center gap-2">
-                <div className={cn("w-6 h-6 rounded", config.bg)} />
-                <span className="text-sm text-foreground">{config.label}</span>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
 
       {/* Quality Alerts */}
       <motion.div variants={staggerItem}>
