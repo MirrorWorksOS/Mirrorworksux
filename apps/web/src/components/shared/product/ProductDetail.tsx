@@ -1014,11 +1014,12 @@ function AccountingTab() {
 
         <div>
           <label className="text-sm text-[var(--neutral-500)] mb-3 block">Inventory Valuation Method</label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
               { id: 'manual', label: 'Manual', sub: 'Standard cost' },
+              { id: 'actual', label: 'Actual Cost', sub: 'Real purchase cost' },
               { id: 'fifo', label: 'FIFO', sub: 'First In First Out' },
-              { id: 'avco', label: 'AVCO', sub: 'Average Cost' },
+              { id: 'avco', label: 'Weighted Average (AVCO)', sub: 'Average Cost' },
               { id: 'lifo', label: 'LIFO', sub: 'Last In First Out' },
             ].map((m) => (
               <button

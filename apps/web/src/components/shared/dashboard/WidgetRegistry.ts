@@ -157,6 +157,15 @@ export const WIDGET_TEMPLATES: WidgetTemplate[] = [
     modules: ["sell"],
   },
   {
+    type: "shop-floor-leaderboard",
+    label: "Operator Leaderboard",
+    description: "Top operators by units produced, on-time %, and quality score",
+    icon: "Trophy",
+    defaultSize: "md",
+    category: "list",
+    modules: ["make"],
+  },
+  {
     type: "approval-queue",
     label: "Approval Queue",
     description: "Pending approvals requiring action",
