@@ -80,7 +80,8 @@ export function StockValuation() {
               <SelectContent>
                 <SelectItem value="fifo">FIFO</SelectItem>
                 <SelectItem value="lifo">LIFO</SelectItem>
-                <SelectItem value="wavg">Weighted average</SelectItem>
+                <SelectItem value="wavg">Weighted Average (AVCO)</SelectItem>
+                <SelectItem value="actual">Actual Cost</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
