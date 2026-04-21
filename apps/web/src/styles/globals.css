@@ -832,8 +832,17 @@ html {
 .glow-card {
   --edge-proximity: 0;
   --cursor-angle: 45deg;
+  /* Cursor position — card-relative % (set by JS on pointer move) */
   --cursor-x: 50%;
   --cursor-y: 50%;
+  /* Cursor position — edge-light-relative % (larger element, offset by glow-padding) */
+  --cursor-x-outer: 50%;
+  --cursor-y-outer: 50%;
+  /* Ellipse radii for physically-circular spotlight (computed by JS ResizeObserver) */
+  --cursor-rx: 40%;
+  --cursor-ry: 75%;
+  --cursor-rx-outer: 38%;
+  --cursor-ry-outer: 70%;
   --edge-sensitivity: 30;
   --color-sensitivity: calc(var(--edge-sensitivity) + 20);
   --border-radius: 28px;
@@ -890,11 +899,12 @@ html {
 
   opacity: calc(0.34 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
 
-  /* Radial spotlight from cursor position — works correctly on any rectangle
-     (conic-from-center only works for circles; it misses long edges on flat cards) */
+  /* Radial spotlight at cursor position — shape-agnostic, works on any rectangle.
+     Uses JS-computed ellipse radii so the spotlight is physically circular in screen px.
+     NOTE: 'circle <percentage>' is invalid CSS — must use 'ellipse rx% ry%'. */
   mask-image:
     radial-gradient(
-      circle calc(var(--cone-spread) * 1.5%)
+      ellipse var(--cursor-rx, 40%) var(--cursor-ry, 75%)
       at var(--cursor-x, 50%) var(--cursor-y, 50%),
       black 0%,
       transparent 100%
@@ -934,11 +944,12 @@ html {
   pointer-events: none;
   z-index: 2;
 
-  /* Wider radial spotlight for the outer diffuse glow — same cursor-tracking approach */
+  /* Wider radial spotlight for the outer diffuse glow.
+     Uses edge-light-relative coordinates (element is larger than card by glow-padding on all sides). */
   mask-image:
     radial-gradient(
-      circle calc(var(--cone-spread) * 2%)
-      at var(--cursor-x, 50%) var(--cursor-y, 50%),
+      ellipse var(--cursor-rx-outer, 38%) var(--cursor-ry-outer, 70%)
+      at var(--cursor-x-outer, 50%) var(--cursor-y-outer, 50%),
       black 0%,
       transparent 100%
     );

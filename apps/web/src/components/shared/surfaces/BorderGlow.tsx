@@ -1,8 +1,12 @@
 /**
  * BorderGlow — Edge-tracking glow effect for AI surfaces.
- * Adapted from ReactBits BorderGlow. CSS custom properties track
- * cursor angle + edge proximity; conic-gradient masks and layered
- * box-shadows create a directional glow that follows the pointer.
+ * Adapted from ReactBits BorderGlow. CSS custom properties drive a radial
+ * spotlight mask that follows the cursor, illuminating whichever section of
+ * the border is nearest the pointer.
+ *
+ * Approach: radial-gradient(ellipse rx ry at cursor-x cursor-y) — NOT conic.
+ * Conic-from-center fails on rectangular cards because corners subtend large
+ * angular ranges from centre; `ellipse` at the cursor position is shape-agnostic.
  *
  * AI element: --mw-yellow-400, --mw-agent, #C084FC accent colors.
  */
@@ -14,7 +18,7 @@ import { useReducedMotion } from '@/components/shared/motion/use-reduced-motion'
 export interface BorderGlowProps {
   children?: ReactNode;
   className?: string;
-  /** Opacity threshold 0–100: lower values make the glow appear when the pointer is farther from the edge (more “reach”). */
+  /** Opacity threshold 0–100: lower values make the glow appear when the pointer is farther from the edge (more "reach"). */
   edgeSensitivity?: number;
   /** HSL values as "h s l" — e.g. "172 68 58" for mw-agent teal */
   glowColor?: string;
@@ -22,12 +26,17 @@ export interface BorderGlowProps {
   borderRadius?: number;
   glowRadius?: number;
   glowIntensity?: number;
+  /**
+   * Controls spotlight size. Scales the pixel radius of the radial spotlight
+   * relative to the card's shorter dimension: radius_px = min(w,h) × (coneSpread / 40).
+   * Higher → larger illuminated section of border.
+   */
   coneSpread?: number;
   animated?: boolean;
   colors?: string[];
   fillOpacity?: number;
   /**
-   * `directional` — conic mask (pointer follows glow). `uniform` — full rounded-rectangle border ring + soft halo (smoother on small cards).
+   * `directional` — radial spotlight follows pointer. `uniform` — full border ring + soft halo.
    */
   perimeter?: 'directional' | 'uniform';
 }
@@ -132,6 +141,43 @@ export function BorderGlow({
     return degrees;
   }, [getCenterOfElement]);
 
+  /**
+   * Compute ellipse radii so the radial spotlight is physically circular in
+   * screen pixels regardless of the card's aspect ratio.
+   *
+   * CSS `ellipse x% y%` uses percentages of the *element* box, so a 400×160
+   * card needs different x/y% to produce equal pixel radii on both axes.
+   *
+   * Also computes outer radii for the edge-light element (which is larger than
+   * the card by glowRadius on every side).
+   */
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const update = () => {
+      const { width, height } = card.getBoundingClientRect();
+      if (!width || !height) return;
+
+      // Spotlight radius in px: scales with shorter card dimension + coneSpread
+      const rPx = Math.min(width, height) * (coneSpread / 40);
+      card.style.setProperty('--cursor-rx', `${((rPx / width) * 100).toFixed(1)}%`);
+      card.style.setProperty('--cursor-ry', `${((rPx / height) * 100).toFixed(1)}%`);
+
+      // Edge-light element is larger by glowRadius on every side
+      const rPxOuter = rPx * 1.4;
+      const outerW = width + 2 * glowRadius;
+      const outerH = height + 2 * glowRadius;
+      card.style.setProperty('--cursor-rx-outer', `${((rPxOuter / outerW) * 100).toFixed(1)}%`);
+      card.style.setProperty('--cursor-ry-outer', `${((rPxOuter / outerH) * 100).toFixed(1)}%`);
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(card);
+    return () => ro.disconnect();
+  }, [coneSpread, glowRadius]);
+
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
@@ -142,10 +188,17 @@ export function BorderGlow({
     const angle = getCursorAngle(card, x, y);
     card.style.setProperty('--edge-proximity', `${(edge * 100).toFixed(3)}`);
     card.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
-    // Card-relative percentages for the radial spotlight mask
+
+    // Card-relative % for ::before mask (element has inset: 0, same size as card)
     card.style.setProperty('--cursor-x', `${((x / rect.width) * 100).toFixed(2)}%`);
     card.style.setProperty('--cursor-y', `${((y / rect.height) * 100).toFixed(2)}%`);
-  }, [getEdgeProximity, getCursorAngle]);
+
+    // Edge-light-relative % (element is glowRadius larger on every side)
+    const outerW = rect.width + 2 * glowRadius;
+    const outerH = rect.height + 2 * glowRadius;
+    card.style.setProperty('--cursor-x-outer', `${(((x + glowRadius) / outerW) * 100).toFixed(2)}%`);
+    card.style.setProperty('--cursor-y-outer', `${(((y + glowRadius) / outerH) * 100).toFixed(2)}%`);
+  }, [getEdgeProximity, getCursorAngle, glowRadius]);
 
   useEffect(() => {
     if (!animated || prefersReduced || !cardRef.current) return;
@@ -154,14 +207,18 @@ export function BorderGlow({
     const angleStart = 110;
     const angleEnd = 465;
 
-    // Converts the rotating sweep angle to a card-relative (x%, y%) cursor position
-    // that traces an ellipse around the card perimeter (approximation good enough for animation)
+    // Converts sweep angle to card-relative (x%, y%) by tracing an ellipse
+    // spanning 0–100% on both axes (border-hugging approximation for animation)
     const setPositionFromAngle = (deg: number) => {
       const rad = ((deg - 90) * Math.PI) / 180;
       const px = 50 + 50 * Math.cos(rad);
       const py = 50 + 50 * Math.sin(rad);
-      card.style.setProperty('--cursor-x', `${px.toFixed(1)}%`);
-      card.style.setProperty('--cursor-y', `${py.toFixed(1)}%`);
+      const pxStr = `${px.toFixed(1)}%`;
+      const pyStr = `${py.toFixed(1)}%`;
+      card.style.setProperty('--cursor-x', pxStr);
+      card.style.setProperty('--cursor-y', pyStr);
+      card.style.setProperty('--cursor-x-outer', pxStr);
+      card.style.setProperty('--cursor-y-outer', pyStr);
     };
 
     card.classList.add('sweep-active');
