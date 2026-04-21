@@ -975,16 +975,12 @@ html {
   isolation: isolate;
 }
 
-/* Uniform perimeter — always-on soft halo ring (small cards / feed).
-   No mesh gradient, no directional conic wedge, no hover dependency.
-   Visible and consistent along the full border at rest. Hover adds a
-   subtle brightness bump via the edge-proximity boost. */
-
-/* Disable the coloured mesh-gradient border entirely — it's a directional-mode
-   layer whose unmasked corners bleed through as faint blue/purple on idle
-   uniform cards. Uniform relies solely on the edge-light halo for its ring. */
+/* Uniform perimeter — full rounded border ring; no directional conic wedge (small cards / feed) */
 .glow-card.glow-card--uniform::before {
-  display: none !important;
+  mask-image: none;
+  -webkit-mask: none;
+  /* +20% vs directional ::before (0.34) */
+  opacity: calc(0.408 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
 }
 
 .glow-card.glow-card--uniform::after {
@@ -993,36 +989,21 @@ html {
   pointer-events: none;
 }
 
-/* Override the global "hide edge-light at idle" rule for uniform — the halo
-   is the primary treatment here and must be visible at rest. */
-.glow-card.glow-card--uniform > .edge-light,
-.glow-card.glow-card--uniform:not(:hover):not(.sweep-active) > .edge-light {
+.glow-card.glow-card--uniform > .edge-light {
   mask-image: none;
   -webkit-mask: none;
-  opacity: 1;
+  /* +20% vs directional edge-light (0.22) */
+  opacity: calc(0.264 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
 }
 
 .glow-card.glow-card--uniform > .edge-light::before {
   inset: 0;
-  /* Soft, even halo around the full perimeter. Alpha levels chosen to match
-     the +15% intent above the AiCommandBar baseline while staying ambient. */
+  /* Softer, even halo; fallback alphas +20% vs directional stack */
   box-shadow:
-    0 0 0 1px var(--glow-color-40, hsl(172deg 68% 58% / 22%)),
-    0 0 10px 1px var(--glow-color-40, hsl(172deg 68% 58% / 18%)),
-    0 0 22px 4px var(--glow-color-30, hsl(172deg 68% 58% / 14%)),
-    0 0 40px 8px var(--glow-color-20, hsl(172deg 68% 58% / 10%)),
-    0 0 64px 14px var(--glow-color-10, hsl(172deg 68% 58% / 6%));
-  transition: box-shadow 0.4s ease-out;
-}
-
-/* Hover — slightly brighter, same shape (no colour shift, no stroke shift) */
-.glow-card.glow-card--uniform:hover > .edge-light::before {
-  box-shadow:
-    0 0 0 1px var(--glow-color-40, hsl(172deg 68% 58% / 30%)),
-    0 0 12px 2px var(--glow-color-40, hsl(172deg 68% 58% / 24%)),
-    0 0 28px 5px var(--glow-color-30, hsl(172deg 68% 58% / 18%)),
-    0 0 48px 10px var(--glow-color-20, hsl(172deg 68% 58% / 12%)),
-    0 0 72px 16px var(--glow-color-10, hsl(172deg 68% 58% / 8%));
+    0 0 0 1px var(--glow-color-40, hsl(172deg 68% 58% / 19%)),
+    0 0 18px 3px var(--glow-color-30, hsl(172deg 68% 58% / 14%)),
+    0 0 36px 8px var(--glow-color-20, hsl(172deg 68% 58% / 10%)),
+    0 0 52px 12px var(--glow-color-10, hsl(172deg 68% 58% / 6%));
 }
 
 /* SpotlightCard — swap to light color in dark mode */
