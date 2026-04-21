@@ -12,13 +12,15 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
-import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { cn } from '@/components/ui/utils';
 
 export function StepReviewConfirm() {
   const { files, mappings, previewRecords, setPreviewRecords, toggleRecordExclusion, goToNextStep, goToPreviousStep, sessionId, setSessionStatus } =
     useBridge();
   const [loading, setLoading] = useState(true);
   const [warningsOnly, setWarningsOnly] = useState(false);
+  const [previewEntity, setPreviewEntity] = useState<string>('');
 
   useEffect(() => {
     let cancelled = false;
@@ -51,6 +53,13 @@ export function StepReviewConfirm() {
       cancelled = true;
     };
   }, [files, sessionId, previewRecords, setPreviewRecords]);
+
+  useEffect(() => {
+    const keys = Object.keys(previewRecords);
+    if (keys.length > 0 && !previewEntity) {
+      setPreviewEntity(keys[0]);
+    }
+  }, [previewRecords, previewEntity]);
 
   const entities = files
     .filter((f) => f.analysisStatus === 'complete')
@@ -218,6 +227,66 @@ export function StepReviewConfirm() {
             </div>
           );
         })
+      )}
+
+      {/* Preview in context */}
+      {Object.keys(previewRecords).length > 0 && (
+        <div className="mt-8 space-y-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="size-5 text-[var(--mw-yellow-400)]" />
+            <h3 className="text-base font-medium">Preview in context</h3>
+          </div>
+          <p className="text-sm text-[var(--neutral-500)]">
+            Browse sample records as they will appear in MirrorWorks before importing.
+          </p>
+
+          <div className="flex gap-1 border-b border-[var(--neutral-200)] overflow-x-auto">
+            {Object.keys(previewRecords).map(entity => (
+              <button
+                key={entity}
+                onClick={() => setPreviewEntity(entity)}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium border-b-2 -mb-[2px] whitespace-nowrap transition-colors",
+                  previewEntity === entity
+                    ? "border-[var(--mw-yellow-400)] text-[var(--neutral-900)]"
+                    : "border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-700)]"
+                )}
+              >
+                {entity}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(previewRecords[previewEntity] ?? [])
+              .filter(r => !r.excluded)
+              .slice(0, 5)
+              .map(record => (
+                <Card key={record.rowNumber} className="p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[var(--neutral-400)] tabular-nums">
+                      Row {record.rowNumber}
+                    </span>
+                    {record.warnings.length > 0 && (
+                      <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">
+                        {record.warnings.length} warning{record.warnings.length > 1 ? 's' : ''}
+                      </Badge>
+                    )}
+                  </div>
+                  {Object.entries(record.data).slice(0, 4).map(([key, value]) => (
+                    <div key={key} className="flex items-start gap-2 text-sm">
+                      <span className="shrink-0 text-[var(--neutral-400)] min-w-[80px] capitalize">
+                        {key.replace(/_/g, ' ')}
+                      </span>
+                      <span className="text-foreground truncate font-medium">
+                        {String(value ?? '—')}
+                      </span>
+                    </div>
+                  ))}
+                </Card>
+              ))}
+          </div>
+        </div>
       )}
 
       <div className="flex items-center justify-between pt-2">
