@@ -891,7 +891,7 @@ export const capaRecords: CapaRecord[] = [
 
 export const batchLots: BatchLot[] = [
   {
-    id: 'batch-001', lotNumber: 'LOT-MS3-2026-042', type: 'raw_material', material: 'Mild Steel 3mm Sheet', qty: 10, date: '2026-03-15', status: 'active', supplierId: 'sup-001', supplierName: 'Hunter Steel Co',
+    id: 'batch-001', lotNumber: 'LOT-MS3-2026-042', type: 'raw_material', material: 'Mild Steel 3mm Sheet', qty: 10, date: '2026-03-15', status: 'active', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', heatNumber: 'H-2026-4521-BL',
     children: [
       {
         id: 'batch-002', lotNumber: 'WIP-BKT-2026-001', type: 'wip', material: 'Bracket blanks — cut', qty: 200, date: '2026-03-18', status: 'active',
@@ -902,7 +902,7 @@ export const batchLots: BatchLot[] = [
     ],
   },
   {
-    id: 'batch-004', lotNumber: 'LOT-SS5-2026-018', type: 'raw_material', material: 'Stainless 304 5mm Plate', qty: 12, date: '2026-03-22', status: 'active', supplierId: 'sup-002', supplierName: 'Pacific Metals',
+    id: 'batch-004', lotNumber: 'LOT-SS5-2026-018', type: 'raw_material', material: 'Stainless 304 5mm Plate', qty: 12, date: '2026-03-22', status: 'active', supplierId: 'sup-002', supplierName: 'Pacific Metals', heatNumber: 'H-2026-3308-SS', certUrl: 'https://example.com/certs/H-2026-3308-SS.pdf',
     children: [
       { id: 'batch-005', lotNumber: 'WIP-PLT-2026-002', type: 'wip', material: 'Base plate blanks — cut', qty: 50, date: '2026-03-24', status: 'active' },
     ],
@@ -1166,3 +1166,30 @@ export const mockUploadScenarios: Record<string, UploadAnalysisResult> = {
     },
   },
 };
+
+// ─── Live Floor — Active Operator Mock Data ───────────────────────────────────
+// startedAt is relative to the fixed reference 2026-04-21T01:00:00.000Z so that
+// elapsed times produce a spread of green / yellow / red progress states on render.
+
+export interface ActiveOperator {
+  id: string;
+  name: string;
+  initials: string;
+  woNumber: string;
+  operationName: string;
+  machine: string;
+  estimatedMinutes: number;
+  startedAt: string; // ISO timestamp
+  status: 'active' | 'paused' | 'break';
+}
+
+export const activeOperators: ActiveOperator[] = [
+  { id: 'op-001', name: 'Sarah Chen',    initials: 'SC', woNumber: 'WO-2026-0412', operationName: 'Laser Cut',        machine: 'Trumpf L3030',    estimatedMinutes: 45, startedAt: '2026-04-21T00:40:00.000Z', status: 'active' },
+  { id: 'op-002', name: 'David Lee',     initials: 'DL', woNumber: 'WO-2026-0408', operationName: 'Press Brake',      machine: 'Amada HFE',       estimatedMinutes: 30, startedAt: '2026-04-21T00:32:00.000Z', status: 'active' },
+  { id: 'op-003', name: 'James Murray',  initials: 'JM', woNumber: 'WO-2026-0415', operationName: 'TIG Weld',         machine: 'Lincoln Electric', estimatedMinutes: 60, startedAt: '2026-04-21T00:50:00.000Z', status: 'active' },
+  { id: 'op-004', name: 'Emma Wilson',   initials: 'EW', woNumber: 'WO-2026-0410', operationName: 'Deburr',           machine: 'Grinder-02',      estimatedMinutes: 20, startedAt: '2026-04-21T00:55:00.000Z', status: 'active' },
+  { id: 'op-005', name: 'Marcus Rivera', initials: 'MR', woNumber: 'WO-2026-0411', operationName: 'Powder Coat Prep', machine: 'Blast Cabinet',   estimatedMinutes: 35, startedAt: '2026-04-21T00:45:00.000Z', status: 'paused' },
+  { id: 'op-006', name: 'Aisha Patel',   initials: 'AP', woNumber: 'WO-2026-0413', operationName: 'Assembly',         machine: 'Bench-04',        estimatedMinutes: 90, startedAt: '2026-04-21T00:10:00.000Z', status: 'active' },
+  { id: 'op-007', name: 'Tom Baker',     initials: 'TB', woNumber: 'WO-2026-0416', operationName: 'QC Inspection',    machine: 'CMM-01',          estimatedMinutes: 25, startedAt: '2026-04-21T01:00:00.000Z', status: 'break'  },
+  { id: 'op-008', name: 'Lisa Nguyen',   initials: 'LN', woNumber: 'WO-2026-0414', operationName: 'Plasma Cut',       machine: 'Hypertherm X45',  estimatedMinutes: 40, startedAt: '2026-04-21T00:30:00.000Z', status: 'active' },
+];
