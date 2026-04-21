@@ -142,7 +142,6 @@ export function MirrorWorksAgentCard({
         glowIntensity={0.221}
         coneSpread={30}
         fillOpacity={0.152}
-        perimeter="uniform"
         animated={isAnimated}
         className="bg-card"
       >
