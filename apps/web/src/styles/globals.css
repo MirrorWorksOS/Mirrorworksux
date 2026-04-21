@@ -832,6 +832,8 @@ html {
 .glow-card {
   --edge-proximity: 0;
   --cursor-angle: 45deg;
+  --cursor-x: 50%;
+  --cursor-y: 50%;
   --edge-sensitivity: 30;
   --color-sensitivity: calc(var(--edge-sensitivity) + 20);
   --border-radius: 28px;
@@ -888,13 +890,14 @@ html {
 
   opacity: calc(0.34 * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
 
+  /* Radial spotlight from cursor position — works correctly on any rectangle
+     (conic-from-center only works for circles; it misses long edges on flat cards) */
   mask-image:
-    conic-gradient(
-      from var(--cursor-angle) at center,
-      black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 26) * 1%),
-      transparent calc((100 - var(--cone-spread) - 26) * 1%),
-      black calc((100 - var(--cone-spread)) * 1%)
+    radial-gradient(
+      circle calc(var(--cone-spread) * 1.5%)
+      at var(--cursor-x, 50%) var(--cursor-y, 50%),
+      black 0%,
+      transparent 100%
     );
 }
 
@@ -931,13 +934,13 @@ html {
   pointer-events: none;
   z-index: 2;
 
+  /* Wider radial spotlight for the outer diffuse glow — same cursor-tracking approach */
   mask-image:
-    conic-gradient(
-      from var(--cursor-angle) at center,
-      black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 26) * 1%),
-      transparent calc((100 - var(--cone-spread) - 26) * 1%),
-      black calc((100 - var(--cone-spread)) * 1%)
+    radial-gradient(
+      circle calc(var(--cone-spread) * 2%)
+      at var(--cursor-x, 50%) var(--cursor-y, 50%),
+      black 0%,
+      transparent 100%
     );
 
   opacity: calc(0.22 * (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));

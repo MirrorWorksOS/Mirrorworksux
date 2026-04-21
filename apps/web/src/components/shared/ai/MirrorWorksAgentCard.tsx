@@ -136,7 +136,7 @@ export function MirrorWorksAgentCard({
           separate stroke. DO NOT add `border` to the inner div — that's the
           double-stroke bug we're avoiding. */}
       <BorderGlow
-        borderRadius={16}
+        borderRadius={22}
         edgeSensitivity={10}
         glowRadius={22}
         glowIntensity={0.221}

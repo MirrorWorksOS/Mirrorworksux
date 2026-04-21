@@ -142,6 +142,9 @@ export function BorderGlow({
     const angle = getCursorAngle(card, x, y);
     card.style.setProperty('--edge-proximity', `${(edge * 100).toFixed(3)}`);
     card.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
+    // Card-relative percentages for the radial spotlight mask
+    card.style.setProperty('--cursor-x', `${((x / rect.width) * 100).toFixed(2)}%`);
+    card.style.setProperty('--cursor-y', `${((y / rect.height) * 100).toFixed(2)}%`);
   }, [getEdgeProximity, getCursorAngle]);
 
   useEffect(() => {
@@ -150,15 +153,31 @@ export function BorderGlow({
     const cleanups: (() => void)[] = [];
     const angleStart = 110;
     const angleEnd = 465;
+
+    // Converts the rotating sweep angle to a card-relative (x%, y%) cursor position
+    // that traces an ellipse around the card perimeter (approximation good enough for animation)
+    const setPositionFromAngle = (deg: number) => {
+      const rad = ((deg - 90) * Math.PI) / 180;
+      const px = 50 + 50 * Math.cos(rad);
+      const py = 50 + 50 * Math.sin(rad);
+      card.style.setProperty('--cursor-x', `${px.toFixed(1)}%`);
+      card.style.setProperty('--cursor-y', `${py.toFixed(1)}%`);
+    };
+
     card.classList.add('sweep-active');
     card.style.setProperty('--cursor-angle', `${angleStart}deg`);
+    setPositionFromAngle(angleStart);
 
     cleanups.push(animateValue({ duration: 500, onUpdate: v => card.style.setProperty('--edge-proximity', `${v}`) }));
     cleanups.push(animateValue({ ease: easeInCubic, duration: 1500, end: 50, onUpdate: v => {
-      card.style.setProperty('--cursor-angle', `${(angleEnd - angleStart) * (v / 100) + angleStart}deg`);
+      const a = (angleEnd - angleStart) * (v / 100) + angleStart;
+      card.style.setProperty('--cursor-angle', `${a.toFixed(3)}deg`);
+      setPositionFromAngle(a);
     }}));
     cleanups.push(animateValue({ ease: easeOutCubic, delay: 1500, duration: 2250, start: 50, end: 100, onUpdate: v => {
-      card.style.setProperty('--cursor-angle', `${(angleEnd - angleStart) * (v / 100) + angleStart}deg`);
+      const a = (angleEnd - angleStart) * (v / 100) + angleStart;
+      card.style.setProperty('--cursor-angle', `${a.toFixed(3)}deg`);
+      setPositionFromAngle(a);
     }}));
     cleanups.push(animateValue({ ease: easeInCubic, delay: 2500, duration: 1500, start: 100, end: 0,
       onUpdate: v => card.style.setProperty('--edge-proximity', `${v}`),
