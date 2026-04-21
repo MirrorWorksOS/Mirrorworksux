@@ -314,42 +314,94 @@ function ChartWidgetContent({ type }: { type: string }) {
 
 /* -- List content -------------------------------------------------- */
 
-function ListWidgetContent({ type }: { type: string }) {
-  const lists: Record<string, { items: { label: string; meta: string }[] }> = {
-    "pipeline-health": {
-      items: [
-        { label: "Weighted pipeline", meta: "$1.2M" },
-        { label: "Stalled deals (>30d)", meta: "4 deals" },
-        { label: "At-risk deals", meta: "2 deals ($280K)" },
-        { label: "Avg deal velocity", meta: "22 days" },
-      ],
-    },
-    leaderboard: {
-      items: [
-        { label: "Sarah Chen", meta: "$142K \u00b7 18 deals" },
-        { label: "Marcus Rivera", meta: "$128K \u00b7 15 deals" },
-        { label: "Aisha Patel", meta: "$115K \u00b7 21 deals" },
-        { label: "James Wu", meta: "$98K \u00b7 12 deals" },
-      ],
-    },
-    "approval-queue": {
-      items: [
-        { label: "PO-1247 \u2013 Steel supply", meta: "Pending \u00b7 2h ago" },
-        { label: "QUO-892 \u2013 Handrail project", meta: "Pending \u00b7 5h ago" },
-        { label: "INV-3310 \u2013 Credit note", meta: "Pending \u00b7 1d ago" },
-      ],
-    },
-    "upcoming-tasks": {
-      items: [
-        { label: "Laser cutting \u2013 Job #4521", meta: "Due today" },
-        { label: "QC inspection \u2013 Job #4518", meta: "Due tomorrow" },
-        { label: "Powder coating \u2013 Job #4515", meta: "Due Wed" },
-        { label: "Shipping prep \u2013 Job #4510", meta: "Due Thu" },
-      ],
-    },
-  };
+type ListItem = { label: string; meta: string };
+type RankedListItem = { rank: number; label: string; meta: string };
 
-  const data = lists[type];
+const SIMPLE_LISTS: Record<string, { items: ListItem[] }> = {
+  "pipeline-health": {
+    items: [
+      { label: "Weighted pipeline", meta: "$1.2M" },
+      { label: "Stalled deals (>30d)", meta: "4 deals" },
+      { label: "At-risk deals", meta: "2 deals ($280K)" },
+      { label: "Avg deal velocity", meta: "22 days" },
+    ],
+  },
+  leaderboard: {
+    items: [
+      { label: "Sarah Chen", meta: "$142K \u00b7 18 deals" },
+      { label: "Marcus Rivera", meta: "$128K \u00b7 15 deals" },
+      { label: "Aisha Patel", meta: "$115K \u00b7 21 deals" },
+      { label: "James Wu", meta: "$98K \u00b7 12 deals" },
+    ],
+  },
+  "approval-queue": {
+    items: [
+      { label: "PO-1247 \u2013 Steel supply", meta: "Pending \u00b7 2h ago" },
+      { label: "QUO-892 \u2013 Handrail project", meta: "Pending \u00b7 5h ago" },
+      { label: "INV-3310 \u2013 Credit note", meta: "Pending \u00b7 1d ago" },
+    ],
+  },
+  "upcoming-tasks": {
+    items: [
+      { label: "Laser cutting \u2013 Job #4521", meta: "Due today" },
+      { label: "QC inspection \u2013 Job #4518", meta: "Due tomorrow" },
+      { label: "Powder coating \u2013 Job #4515", meta: "Due Wed" },
+      { label: "Shipping prep \u2013 Job #4510", meta: "Due Thu" },
+    ],
+  },
+};
+
+const RANKED_LISTS: Record<string, { items: RankedListItem[] }> = {
+  "shop-floor-leaderboard": {
+    items: [
+      { rank: 1, label: "Sarah Chen", meta: "142 units \u00b7 97% on-time \u00b7 99.2% quality" },
+      { rank: 2, label: "David Lee", meta: "128 units \u00b7 94% on-time \u00b7 98.8% quality" },
+      { rank: 3, label: "James Murray", meta: "115 units \u00b7 91% on-time \u00b7 99.5% quality" },
+      { rank: 4, label: "Emma Wilson", meta: "98 units \u00b7 96% on-time \u00b7 97.1% quality" },
+    ],
+  },
+};
+
+function ListWidgetContent({ type }: { type: string }) {
+  const rankedData = RANKED_LISTS[type];
+  if (rankedData) {
+    return (
+      <ul className="space-y-3">
+        {rankedData.items.map((item) => {
+          const badgeClass =
+            item.rank === 1
+              ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]"
+              : item.rank <= 3
+                ? "bg-[var(--neutral-200)] text-[var(--neutral-700)]"
+                : "bg-transparent text-[var(--neutral-400)]";
+
+          return (
+            <li
+              key={item.rank}
+              className="flex items-center gap-3 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0"
+            >
+              <span
+                className={cn(
+                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] tabular-nums font-medium",
+                  badgeClass,
+                )}
+              >
+                #{item.rank}
+              </span>
+              <span className="flex-1 truncate text-sm text-foreground">
+                {item.label}
+              </span>
+              <span className="shrink-0 text-xs text-[var(--neutral-500)]">
+                {item.meta}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
+  const data = SIMPLE_LISTS[type];
   if (!data) return null;
 
   return (
