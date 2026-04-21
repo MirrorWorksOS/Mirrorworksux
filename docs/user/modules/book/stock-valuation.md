@@ -16,6 +16,12 @@ Complete stock valuation work and move records to the next stage.
 - Page header with title, subtitle, and action buttons.
 - KPI/summary card strip.
 - Charts and trend cards.
+- **Costing method selector** with five options:
+  - **FIFO** (first in, first out)
+  - **LIFO** (last in, first out)
+  - **Weighted Average (AVCO)** — standard industry name
+  - **Standard Cost** — based on product-level standard cost
+  - **Actual Cost** — based on real consumed cost from the job
 - Form controls for editing/creation.
 
 ## Data Shown
