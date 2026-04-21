@@ -25,6 +25,7 @@ import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { toast } from 'sonner';
 import { machines as centralMachines } from '@/services';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
+import { LiveFloorView } from './LiveFloorView';
 import {
   HoverCard,
   HoverCardTrigger,
@@ -226,7 +227,11 @@ function ScheduleBlockTooltip({ block }: { block: ScheduleBlock }) {
 }
 
 
-const makeTabs = [{ key: 'overview', label: 'Overview' }];
+const makeTabs = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'live-floor', label: 'Live floor' },
+  { key: 'quality', label: 'Quality' },
+];
 
 export function MakeDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -246,6 +251,11 @@ export function MakeDashboard() {
       onTabChange={setActiveTab}
       aiScope="make"
     >
+      {activeTab === 'live-floor' && <LiveFloorView />}
+      {activeTab === 'quality' && (
+        <div className="py-12 text-center text-[var(--neutral-400)]">Quality analytics coming soon</div>
+      )}
+      {activeTab === 'overview' && (
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
 
       {/* TASK 1 — AI Feed below command bar */}
@@ -680,6 +690,7 @@ export function MakeDashboard() {
         </motion.div>
       </div>
       </motion.div>
+      )}
     </ModuleDashboard>
   );
 }
