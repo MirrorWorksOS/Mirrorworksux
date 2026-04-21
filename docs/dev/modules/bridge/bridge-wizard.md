@@ -1,20 +1,26 @@
 # Bridge Wizard
 
 ## Summary
-8-step onboarding wizard that ingests customer data (CSV / manual) into MirrorWorks and maps it to MW entities. See `StepReviewConfirm` for the post-import validation + sandbox preview.
+Dynamic-step onboarding wizard that ingests customer data (CSV / manual) into MirrorWorks and maps it to MW entities. See `StepReviewConfirm` for the post-import validation + sandbox preview.
 
 ## Route
 `/bridge`
 
-## Steps
-1. Source select — where does the data live (Odoo export, Xero, CSV, manual)
-2. Scope questions — what modules they want to onboard
-3. File upload — CSV / XLSX ingest
-4. Field mapping — source columns → MW fields
-5. Manual entry — gap-fill
-6. **Review / Confirm** — validation table + *Preview in context* sandbox
-7. Import results — success / failure counts
-8. Team setup — invite users
+## Steps (dynamic, 3–8 depending on path)
+The stepper shows only the steps relevant to the chosen source systems. Logic lives in `getActiveSteps()` in `useBridge.ts`.
+
+| Key | Shown when | Purpose |
+|---|---|---|
+| `source` | always | Pick source system(s) — Odoo export, Xero, CSV, manual |
+| `scope` | source needs scope questions | Which modules to onboard |
+| `upload` | source requires a file | CSV / XLSX ingest |
+| `mapping` | files uploaded | Source columns → MW fields |
+| `manual_entry` | no file was uploaded | Gap-fill |
+| `review` | always | Validation table + *Preview in context* sandbox |
+| `results` | always | Success / failure counts |
+| `team_setup` | user opted into employees | Invite users |
+
+Common CSV-upload path renders as a 5-step stepper: **Source → Upload → Enter data → Review → Results**.
 
 ## Review / Confirm step — Preview in context
 Added in PR #15. After the `MwDataTable` validation preview, the Review step now renders a **"Preview in context"** section:

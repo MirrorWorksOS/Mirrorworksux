@@ -58,24 +58,25 @@ export interface AgentCardProps {
   className?: string;
 }
 
-const TONE_STYLES: Record<AgentCardTone, { accent: string; chip: string; icon: React.ElementType }> = {
+/**
+ * Tone communicates intent via the status chip only — no border stroke on the
+ * card itself. The BorderGlow provides the sole edge treatment (matching the
+ * app-level AI search bar) so the card doesn't end up with a double outline.
+ */
+const TONE_STYLES: Record<AgentCardTone, { chip: string; icon: React.ElementType }> = {
   neutral: {
-    accent: 'border-[var(--border)]',
     chip: 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
     icon: CircleAlert,
   },
   opportunity: {
-    accent: 'border-[var(--mw-info)]/25',
     chip: 'bg-[var(--mw-info)]/10 text-[var(--mw-info)]',
     icon: CircleCheck,
   },
   risk: {
-    accent: 'border-[var(--mw-warning)]/25',
     chip: 'bg-[var(--mw-warning)]/12 text-[var(--mw-yellow-700)] dark:text-[var(--mw-yellow-400)]',
     icon: TriangleAlert,
   },
   success: {
-    accent: 'border-[var(--mw-green)]/25',
     chip: 'bg-[var(--mw-green)]/12 text-[var(--mw-green)]',
     icon: CircleCheck,
   },
@@ -130,18 +131,22 @@ export function MirrorWorksAgentCard({
       spotlightColor="rgba(77, 221, 201, 0.07)"
       spotlightColorDark="rgba(125, 232, 217, 0.1)"
     >
+      {/* Edge glow matches the app-level AI search bar (AiCommandBar) at +15%
+          intensity so the card reads as a distinctive agent surface without a
+          separate stroke. DO NOT add `border` to the inner div — that's the
+          double-stroke bug we're avoiding. */}
       <BorderGlow
         borderRadius={16}
         edgeSensitivity={10}
         glowRadius={22}
-        glowIntensity={0.23}
+        glowIntensity={0.221}
         coneSpread={30}
-        fillOpacity={0.158}
+        fillOpacity={0.152}
         perimeter="uniform"
         animated={isAnimated}
         className="bg-card"
       >
-        <div className={cn('rounded-[var(--shape-lg)] border bg-card p-4', toneStyle.accent)}>
+        <div className={cn('rounded-[var(--shape-lg)] bg-card p-4')}>
           <div className="flex items-start gap-3">
             <div className="shrink-0 pt-0.5">
               <AgentLogomarkAnimated size={brandVariant === 'compact' ? 18 : 22} animating={isAnimated} />
