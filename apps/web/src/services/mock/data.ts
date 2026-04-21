@@ -1193,3 +1193,11 @@ export const activeOperators: ActiveOperator[] = [
   { id: 'op-007', name: 'Tom Baker',     initials: 'TB', woNumber: 'WO-2026-0416', operationName: 'QC Inspection',    machine: 'CMM-01',          estimatedMinutes: 25, startedAt: '2026-04-21T01:00:00.000Z', status: 'break'  },
   { id: 'op-008', name: 'Lisa Nguyen',   initials: 'LN', woNumber: 'WO-2026-0414', operationName: 'Plasma Cut',       machine: 'Hypertherm X45',  estimatedMinutes: 40, startedAt: '2026-04-21T00:30:00.000Z', status: 'active' },
 ];
+
+// ─── Shop Floor Leaderboard (Make dashboard widget) ──────────────────
+export const shopFloorLeaderboardItems = [
+  { label: 'Sarah Chen', meta: '142 units \u00b7 97% on-time \u00b7 99.2% quality' },
+  { label: 'David Lee', meta: '128 units \u00b7 94% on-time \u00b7 98.8% quality' },
+  { label: 'James Murray', meta: '115 units \u00b7 91% on-time \u00b7 99.5% quality' },
+  { label: 'Emma Wilson', meta: '98 units \u00b7 96% on-time \u00b7 97.1% quality' },
+];

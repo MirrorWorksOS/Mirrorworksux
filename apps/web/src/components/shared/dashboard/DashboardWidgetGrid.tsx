@@ -41,6 +41,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
 import { KpiStatCard } from "@/components/shared/cards/KpiStatCard";
+import { shopFloorLeaderboardItems } from "@/services/mock/data";
 import type { WidgetConfig } from "./WidgetRegistry";
 import { WIDGET_TEMPLATES } from "./WidgetRegistry";
 
@@ -353,12 +354,10 @@ const SIMPLE_LISTS: Record<string, { items: ListItem[] }> = {
 
 const RANKED_LISTS: Record<string, { items: RankedListItem[] }> = {
   "shop-floor-leaderboard": {
-    items: [
-      { rank: 1, label: "Sarah Chen", meta: "142 units \u00b7 97% on-time \u00b7 99.2% quality" },
-      { rank: 2, label: "David Lee", meta: "128 units \u00b7 94% on-time \u00b7 98.8% quality" },
-      { rank: 3, label: "James Murray", meta: "115 units \u00b7 91% on-time \u00b7 99.5% quality" },
-      { rank: 4, label: "Emma Wilson", meta: "98 units \u00b7 96% on-time \u00b7 97.1% quality" },
-    ],
+    items: shopFloorLeaderboardItems.map((item, i) => ({
+      rank: i + 1,
+      ...item,
+    })),
   },
 };
 
