@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
+import { PillNav } from '@/components/shared/navigation/PillNav';
 import { toast } from 'sonner';
 
 type POStatus = 'Draft' | 'Sent' | 'Acknowledged' | 'Partial' | 'Received' | 'Cancelled';
@@ -130,22 +131,19 @@ export function PurchaseOrders() {
 
       <div className="flex items-center gap-3">
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
-          <Input placeholder="Search purchase orders..." className="pl-9 h-10 bg-card border-[var(--border)] rounded text-sm" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
+          <Input placeholder="Search purchase orders…" className="h-12 rounded-full border-[var(--neutral-200)] bg-background pl-10 text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
-        <Button variant="outline" size="sm" className="h-10 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
+        <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 
-      <div className="flex gap-0 border-b border-[var(--border)]">
-        {TABS.map(tab => (
-          <button key={tab.label} onClick={() => setActiveTab(tab.label)}
-            className={cn("px-4 py-3 text-sm relative transition-colors", activeTab === tab.label ? "text-foreground font-medium" : "text-[var(--neutral-500)]")}>
-            {tab.label} <span className="text-xs">({tab.count})</span>
-            {activeTab === tab.label && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}
-          </button>
-        ))}
-      </div>
+      <PillNav
+        tabs={TABS.map(t => ({ key: t.label, label: t.label, count: t.count }))}
+        value={activeTab}
+        onValueChange={setActiveTab}
+        aria-label="Purchase order status filter"
+      />
 
       <ToolbarSummaryBar
         segments={[

@@ -5,9 +5,9 @@
  * Follows PlanJobDetail / SellOpportunityPage pattern.
  */
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, Save, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Clock, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -15,7 +15,7 @@ import {
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
 import { IconWell } from '@/components/shared/icons/IconWell';
-import { toast } from 'sonner';
 import { manufacturingOrders } from '@/services';
 import { OperatorChat } from '@/components/make/OperatorChat';
 import { MaterialConsumption } from '@/components/make/MaterialConsumption';

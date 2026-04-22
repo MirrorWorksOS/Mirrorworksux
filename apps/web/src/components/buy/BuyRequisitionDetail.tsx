@@ -14,9 +14,7 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { toast } from 'sonner';
 import { requisitions, employees, purchaseOrders } from '@/services';
 
@@ -155,38 +153,63 @@ export function BuyRequisitionDetail() {
           </div>
         );
 
-      case 'line-items':
+      case 'line-items': {
+        type ReqItem = (typeof req.items)[number];
+        const columns: MwColumnDef<ReqItem>[] = [
+          {
+            key: 'productId',
+            header: 'Item',
+            tooltip: 'Product SKU',
+            cell: (item) => <span className="font-medium tabular-nums">{item.productId}</span>,
+          },
+          {
+            key: 'description',
+            header: 'Description',
+            cell: (item) => <span className="text-foreground">{item.description}</span>,
+          },
+          {
+            key: 'qty',
+            header: 'Qty',
+            headerClassName: 'text-right',
+            cell: (item) => <span className="tabular-nums">{item.qty}</span>,
+            className: 'text-right',
+          },
+          {
+            key: 'estimatedCost',
+            header: 'Est. Cost',
+            headerClassName: 'text-right',
+            cell: (item) => <span className="tabular-nums">{fmtCurrency(item.estimatedCost)}</span>,
+            className: 'text-right',
+          },
+          {
+            key: 'total',
+            header: 'Total',
+            headerClassName: 'text-right',
+            cell: (item) => (
+              <span className="font-medium tabular-nums">
+                {fmtCurrency(item.qty * item.estimatedCost)}
+              </span>
+            ),
+            className: 'text-right',
+          },
+        ];
+
         return (
-          <Card className="p-0 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Item</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Qty</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Est. Cost</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {req.items.map((item, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-sm font-medium tabular-nums">{item.productId}</TableCell>
-                    <TableCell className="text-sm">{item.description}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums">{item.qty}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums">{fmtCurrency(item.estimatedCost)}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums font-medium">{fmtCurrency(item.qty * item.estimatedCost)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="flex justify-end p-4 border-t border-[var(--border)]">
+          <div className="space-y-4">
+            <MwDataTable<ReqItem>
+              columns={columns}
+              data={req.items}
+              keyExtractor={(_, i) => i}
+              striped
+            />
+            <div className="flex justify-end px-2">
               <div className="text-sm font-medium text-foreground tabular-nums">
                 Total: {fmtCurrency(req.total)}
               </div>
             </div>
-          </Card>
+          </div>
         );
+      }
 
       case 'approvals':
         return (

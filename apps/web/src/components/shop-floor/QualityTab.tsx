@@ -26,6 +26,7 @@ import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PillNav } from '@/components/shared/navigation/PillNav';
 
 // --- Types & Mock Data ---
 
@@ -180,41 +181,28 @@ export function QualityTab() {
 
   return (
     <div className="flex flex-col h-full bg-[var(--app-canvas)] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
-      
-      {/* Action button row (heading provided by PageHeader in MakeQuality wrapper) */}
-      <div className="flex justify-end mb-8 flex-shrink-0">
+
+      {/* Tab strip with inline primary action — sits directly under the PageHeader */}
+      <div className="flex items-center justify-between gap-4 mb-8 flex-shrink-0">
+        <PillNav
+          tabs={[
+            { key: 'overview', label: 'Overview' },
+            { key: 'active-issues', label: 'Active Issues' },
+            { key: 'inspections', label: 'Inspections' },
+            { key: 'reports', label: 'Reports' },
+          ]}
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as Tab)}
+          className="w-auto"
+          listClassName="w-fit"
+          aria-label="Quality sections"
+        />
         <Button
           onClick={() => setShowLogModal(true)}
-          className="h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium px-6 shadow-sm border border-[var(--mw-yellow-400)]/20"
+          className="h-10 shrink-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium px-5 shadow-sm border border-[var(--mw-yellow-400)]/20"
         >
-          <Plus className="w-5 h-5 mr-2" /> Log Issue
+          <Plus className="w-4 h-4 mr-2" /> Log Issue
         </Button>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex items-center gap-1 border-b border-[var(--neutral-200)] mb-8 overflow-x-auto flex-shrink-0">
-        {[
-          { id: 'overview', label: 'Overview' },
-          { id: 'active-issues', label: 'Active Issues' },
-          { id: 'inspections', label: 'Inspections' },
-          { id: 'reports', label: 'Reports' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as Tab)}
-            className={cn(
-              "h-10 px-6 text-sm font-medium transition-all relative whitespace-nowrap",
-              activeTab === tab.id 
-                ? "text-[var(--neutral-800)]" 
-                : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]"
-            )}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--mw-yellow-400)] rounded-t-sm" />
-            )}
-          </button>
-        ))}
       </div>
 
       {/* Overview Content */}

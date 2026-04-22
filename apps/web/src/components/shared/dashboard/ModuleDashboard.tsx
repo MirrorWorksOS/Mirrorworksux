@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/components/ui/utils";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PillNav } from "@/components/shared/navigation/PillNav";
 import { fadeVariants } from "@/components/shared/motion/motion-variants";
 import {
   AiCommandBar,
@@ -104,39 +104,12 @@ export function ModuleDashboard({
         onAddWidget={handleAddWidget}
       />
 
-      <Tabs
+      <PillNav
+        tabs={tabs}
         value={activeTab}
         onValueChange={onTabChange}
-        className="flex w-full flex-col gap-0"
-      >
-        <TabsList className="h-auto w-full justify-start gap-8 rounded-none border-b border-[var(--neutral-200)] bg-transparent dark:bg-transparent p-0 shadow-none backdrop-blur-none">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <TabsTrigger
-                key={tab.key}
-                id={`dashboard-tab-${tab.key}`}
-                value={tab.key}
-                className={cn(
-                  "relative inline-flex h-auto items-center gap-2 rounded-none border-0 bg-transparent px-0 py-3 text-sm shadow-none",
-                  "text-[var(--neutral-500)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
-                  "hover:text-foreground",
-                  "focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]/50 focus-visible:ring-offset-2",
-                  "data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:font-medium data-[state=active]:shadow-none",
-                  "after:absolute after:right-0 after:bottom-0 after:left-0 after:h-1 after:origin-center after:scale-x-0 after:bg-[var(--mw-yellow-400)] after:transition-transform after:duration-[var(--duration-medium1)] after:ease-[var(--ease-standard)]",
-                  "data-[state=active]:after:scale-x-100",
-                  "[&>[data-slot=tab-indicator]]:hidden",
-                )}
-              >
-                {Icon ? (
-                  <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
-                ) : null}
-                {tab.label}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-      </Tabs>
+        aria-label={`${title} sections`}
+      />
 
       <div
         role="tabpanel"

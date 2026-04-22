@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { purchaseOrders } from "@/services";
 
@@ -530,13 +531,72 @@ export function BuyOrderDetail() {
       /* ============================================================ */
       /*  LINE ITEMS                                                   */
       /* ============================================================ */
-      case "line-items":
+      case "line-items": {
+        const columns: MwColumnDef<POLineItem>[] = [
+          {
+            key: "product",
+            header: "Product",
+            tooltip: "Product SKU",
+            cell: (li) => <span className="font-medium tabular-nums">{li.product}</span>,
+          },
+          {
+            key: "description",
+            header: "Description",
+            cell: (li) => <span className="text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{li.description}</span>,
+          },
+          {
+            key: "qtyOrdered",
+            header: "Ordered",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{li.qtyOrdered}</span>,
+            className: "text-right",
+          },
+          {
+            key: "qtyReceived",
+            header: "Received",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{li.qtyReceived}</span>,
+            className: "text-right",
+          },
+          {
+            key: "unitPrice",
+            header: "Unit Price",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{fmtCurrency(li.unitPrice)}</span>,
+            className: "text-right",
+          },
+          {
+            key: "total",
+            header: "Total",
+            headerClassName: "text-right",
+            cell: (li) => <span className="font-medium tabular-nums">{fmtCurrency(li.total)}</span>,
+            className: "text-right",
+          },
+          {
+            key: "status",
+            header: "Status",
+            cell: (li) => (
+              <StatusBadge
+                variant={
+                  li.status === "Received" ? "success"
+                    : li.status === "Partial" ? "warning"
+                      : "neutral"
+                }
+                withDot
+              >
+                {li.status}
+              </StatusBadge>
+            ),
+          },
+        ];
+
+        const totalOrdered = lineItems.reduce((s, li) => s + li.qtyOrdered, 0);
+        const totalValue = lineItems.reduce((s, li) => s + li.total, 0);
+
         return (
-          <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
-            <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-foreground">
-                Line items
-              </h2>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h2 className="text-base font-medium text-foreground">Line items</h2>
               <Button
                 className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
                 onClick={() => toast("Add line item coming soon")}
@@ -545,59 +605,25 @@ export function BuyOrderDetail() {
                 Add item
               </Button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-100)]/10 hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-100)]/10">
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Ordered</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Received</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Unit Price</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Total</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lineItems.map((li) => (
-                  <TableRow key={li.id} className="min-h-14">
-                    <TableCell className="text-sm font-medium tabular-nums">{li.product}</TableCell>
-                    <TableCell className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{li.description}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{li.qtyOrdered}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{li.qtyReceived}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{fmtCurrency(li.unitPrice)}</TableCell>
-                    <TableCell className="text-right text-sm font-medium tabular-nums">{fmtCurrency(li.total)}</TableCell>
-                    <TableCell>
-                      <StatusBadge
-                        variant={
-                          li.status === "Received" ? "success"
-                            : li.status === "Partial" ? "warning"
-                              : li.status === "Draft" ? "neutral"
-                                : "neutral"
-                        }
-                        withDot
-                      >
-                        {li.status}
-                      </StatusBadge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {/* Line items summary footer */}
-            <div className="border-t border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-100)]/5 px-6 py-4">
-              <div className="flex justify-end gap-8">
-                <div className="text-sm">
-                  <span className="text-[var(--neutral-500)]">Total ordered: </span>
-                  <span className="font-medium tabular-nums text-foreground">{lineItems.reduce((s, li) => s + li.qtyOrdered, 0)} units</span>
-                </div>
-                <div className="text-sm">
-                  <span className="text-[var(--neutral-500)]">Total value: </span>
-                  <span className="font-medium tabular-nums text-foreground">{fmtCurrency(lineItems.reduce((s, li) => s + li.total, 0))}</span>
-                </div>
+            <MwDataTable<POLineItem>
+              columns={columns}
+              data={lineItems}
+              keyExtractor={(li) => li.id}
+              striped
+            />
+            <div className="flex justify-end gap-8 px-2">
+              <div className="text-sm">
+                <span className="text-[var(--neutral-500)]">Total ordered: </span>
+                <span className="font-medium tabular-nums text-foreground">{totalOrdered} units</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-[var(--neutral-500)]">Total value: </span>
+                <span className="font-medium tabular-nums text-foreground">{fmtCurrency(totalValue)}</span>
               </div>
             </div>
-          </Card>
+          </div>
         );
+      }
 
       /* ============================================================ */
       /*  DELIVERY                                                     */

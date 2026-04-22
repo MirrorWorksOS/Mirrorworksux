@@ -51,12 +51,13 @@ function Tabs({
   );
 }
 
-function TabsList({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsListPrimitive>) {
+const TabsList = React.forwardRef<
+  React.ElementRef<typeof TabsListPrimitive>,
+  React.ComponentProps<typeof TabsListPrimitive>
+>(function TabsList({ className, ...props }, ref) {
   return (
     <TabsListPrimitive
+      ref={ref}
       data-slot="tabs-list"
       className={cn(
         "inline-flex min-h-11 w-fit min-w-0 max-w-full items-center justify-center gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-[var(--neutral-100)]/80 p-1 backdrop-blur-sm dark:bg-[var(--neutral-200)]/40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
@@ -65,19 +66,18 @@ function TabsList({
       {...props}
     />
   );
-}
+});
 
-function TabsTrigger({
-  className,
-  children,
-  value,
-  ...props
-}: React.ComponentProps<typeof TabsTriggerPrimitive>) {
+const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsTriggerPrimitive>,
+  React.ComponentProps<typeof TabsTriggerPrimitive>
+>(function TabsTrigger({ className, children, value, ...props }, ref) {
   const ctx = React.useContext(SmoothTabsContext);
   const isActive = ctx.value === value;
 
   return (
     <TabsTriggerPrimitive
+      ref={ref}
       data-slot="tabs-trigger"
       value={value}
       className={cn(
@@ -107,7 +107,7 @@ function TabsTrigger({
       </span>
     </TabsTriggerPrimitive>
   );
-}
+});
 
 function TabsContent({
   className,

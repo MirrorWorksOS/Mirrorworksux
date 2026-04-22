@@ -10,9 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
@@ -142,47 +140,64 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
         {/* Left — Main content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Line items */}
-          <Card className="p-0 overflow-hidden">
-            <div className="p-4 border-b border-[var(--border)]">
-              <h4 className="text-sm font-medium text-foreground">Line Items</h4>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Description</TableHead>
-                  <TableHead className="text-xs text-right">Qty</TableHead>
-                  <TableHead className="text-xs text-right">Unit Price</TableHead>
-                  <TableHead className="text-xs text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quote.lineItems.map((li, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-sm">{li.description}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums">{li.qty}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums">{fmtCurrency(li.unitPrice)}</TableCell>
-                    <TableCell className="text-sm text-right tabular-nums font-medium">{fmtCurrency(li.total)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="p-4 border-t border-[var(--border)] flex justify-end">
-              <div className="space-y-1 text-right">
-                <div className="flex justify-between gap-8 text-sm">
-                  <span className="text-[var(--neutral-500)]">Subtotal</span>
-                  <span className="tabular-nums font-medium">{fmtCurrency(subtotal)}</span>
-                </div>
-                <div className="flex justify-between gap-8 text-sm">
-                  <span className="text-[var(--neutral-500)]">GST (10%)</span>
-                  <span className="tabular-nums">{fmtCurrency(subtotal * 0.1)}</span>
-                </div>
-                <div className="flex justify-between gap-8 text-base font-medium pt-1 border-t border-[var(--border)]">
-                  <span>Total (inc. GST)</span>
-                  <span className="tabular-nums">{fmtCurrency(subtotal * 1.1)}</span>
+          {(() => {
+            type QuoteLineItem = (typeof quote.lineItems)[number];
+            const columns: MwColumnDef<QuoteLineItem>[] = [
+              {
+                key: 'description',
+                header: 'Description',
+                cell: (li) => <span className="text-foreground">{li.description}</span>,
+              },
+              {
+                key: 'qty',
+                header: 'Qty',
+                headerClassName: 'text-right',
+                cell: (li) => <span className="tabular-nums">{li.qty}</span>,
+                className: 'text-right',
+              },
+              {
+                key: 'unitPrice',
+                header: 'Unit Price',
+                headerClassName: 'text-right',
+                cell: (li) => <span className="tabular-nums">{fmtCurrency(li.unitPrice)}</span>,
+                className: 'text-right',
+              },
+              {
+                key: 'total',
+                header: 'Total',
+                headerClassName: 'text-right',
+                cell: (li) => <span className="font-medium tabular-nums">{fmtCurrency(li.total)}</span>,
+                className: 'text-right',
+              },
+            ];
+            return (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Line Items</h4>
+                <MwDataTable<QuoteLineItem>
+                  columns={columns}
+                  data={quote.lineItems}
+                  keyExtractor={(_, i) => i}
+                  striped
+                />
+                <div className="flex justify-end">
+                  <div className="space-y-1 text-right">
+                    <div className="flex justify-between gap-8 text-sm">
+                      <span className="text-[var(--neutral-500)]">Subtotal</span>
+                      <span className="tabular-nums font-medium">{fmtCurrency(subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between gap-8 text-sm">
+                      <span className="text-[var(--neutral-500)]">GST (10%)</span>
+                      <span className="tabular-nums">{fmtCurrency(subtotal * 0.1)}</span>
+                    </div>
+                    <div className="flex justify-between gap-8 text-base font-medium pt-1 border-t border-[var(--border)]">
+                      <span>Total (inc. GST)</span>
+                      <span className="tabular-nums">{fmtCurrency(subtotal * 1.1)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            );
+          })()}
 
           {/* Delivery estimate */}
           <Card className="p-4 flex items-center gap-3">

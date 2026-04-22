@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 
 /* ------------------------------------------------------------------ */
@@ -462,48 +463,74 @@ export function SellOrderDetail() {
       /* ============================================================ */
       /*  LINE ITEMS                                                   */
       /* ============================================================ */
-      case "line-items":
+      case "line-items": {
+        const columns: MwColumnDef<LineItem>[] = [
+          {
+            key: "product",
+            header: "Product",
+            tooltip: "Product SKU",
+            cell: (li) => <span className="font-medium tabular-nums">{li.product}</span>,
+          },
+          {
+            key: "description",
+            header: "Description",
+            cell: (li) => <span className="text-[var(--neutral-600)]">{li.description}</span>,
+          },
+          {
+            key: "qty",
+            header: "Qty",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{li.qty}</span>,
+            className: "text-right",
+          },
+          {
+            key: "unitPrice",
+            header: "Unit Price",
+            tooltip: "Price per unit excl. GST",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{fmt(li.unitPrice)}</span>,
+            className: "text-right",
+          },
+          {
+            key: "total",
+            header: "Total",
+            tooltip: "Line total excl. GST",
+            headerClassName: "text-right",
+            cell: (li) => <span className="font-medium tabular-nums">{fmt(li.total)}</span>,
+            className: "text-right",
+          },
+          {
+            key: "status",
+            header: "Status",
+            cell: (li) => (
+              <Badge className="border-0 bg-[var(--neutral-100)] text-foreground text-xs">
+                {li.status}
+              </Badge>
+            ),
+          },
+        ];
+
         return (
-          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
-            <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-foreground">
-                Line items
-              </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h2 className="text-base font-medium text-foreground">Line items</h2>
+              <Button
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
+                onClick={() => toast('Add line item coming soon')}
+              >
                 <Package className="mr-2 h-4 w-4" />
                 Add item
               </Button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[var(--neutral-100)] hover:bg-[var(--neutral-100)]">
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Qty</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Unit Price</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Total</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {MOCK_LINE_ITEMS.map((li) => (
-                  <TableRow key={li.id} className="min-h-14">
-                    <TableCell className="text-sm font-medium tabular-nums">{li.product}</TableCell>
-                    <TableCell className="text-sm text-[var(--neutral-600)]">{li.description}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{li.qty}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{fmt(li.unitPrice)}</TableCell>
-                    <TableCell className="text-right text-sm font-medium tabular-nums">{fmt(li.total)}</TableCell>
-                    <TableCell>
-                      <Badge className="border-0 bg-[var(--neutral-100)] text-foreground text-xs">
-                        {li.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+            <MwDataTable<LineItem>
+              columns={columns}
+              data={MOCK_LINE_ITEMS}
+              keyExtractor={(li) => li.id}
+              striped
+            />
+          </div>
         );
+      }
 
       /* ============================================================ */
       /*  FULFILMENT                                                   */

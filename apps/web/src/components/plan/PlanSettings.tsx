@@ -2,15 +2,13 @@
  * Plan Settings — Implements ARCH 00 group-based permissions model
  * Panels: General, Products, Reports, Access & Permissions
  */
-import React, { useState } from 'react';
-import { Settings, Package, BarChart3, Lock } from 'lucide-react';
+import { useState } from 'react';
+import { Settings, Package, BarChart3 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Separator } from '../ui/separator';
-import { cn } from '../ui/utils';
 import { toast } from 'sonner';
 import {
   ModuleSettingsLayout,

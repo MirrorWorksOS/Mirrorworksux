@@ -4,18 +4,17 @@
  * v2: Enhanced node types, visual canvas with branching, add-step buttons.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Zap, Sparkles, RefreshCw, Bell, GitBranch,
   ShoppingCart, Calendar, Settings2, Mail, Pause,
-  Plus, Clock, Timer,
+  Plus, Timer,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '../ui/utils';
 
 const NODE_W = 220;
 const CANVAS_W = 940;
-const CANVAS_H = 1260;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

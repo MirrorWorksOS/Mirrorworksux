@@ -134,7 +134,7 @@ const machineStatusBadge = (s: MachineCard['status']) => {
 /* Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export function PlanNCConnect() {
+export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const [selectedFile, setSelectedFile] = useState<string | null>('mounting-bracket-v3.nc');
 
   return (
@@ -155,6 +155,8 @@ export function PlanNCConnect() {
           </Button>
         }
       />
+
+      {headerExtras}
 
       <div className="grid grid-cols-1 gap-6 px-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         {/* Left column — file management + G-code preview */}

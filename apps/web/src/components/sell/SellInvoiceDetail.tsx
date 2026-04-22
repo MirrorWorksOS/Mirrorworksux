@@ -37,6 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 
 /* ------------------------------------------------------------------ */
@@ -453,64 +454,87 @@ export function SellInvoiceDetail() {
       /* ============================================================ */
       /*  LINE ITEMS                                                   */
       /* ============================================================ */
-      case "line-items":
+      case "line-items": {
+        const columns: MwColumnDef<InvoiceLineItem>[] = [
+          {
+            key: "item",
+            header: "Item",
+            tooltip: "Invoiced item SKU",
+            cell: (li) => <span className="font-medium tabular-nums">{li.item}</span>,
+          },
+          {
+            key: "description",
+            header: "Description",
+            cell: (li) => <span className="text-[var(--neutral-600)]">{li.description}</span>,
+          },
+          {
+            key: "qty",
+            header: "Qty",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{li.qty}</span>,
+            className: "text-right",
+          },
+          {
+            key: "unitPrice",
+            header: "Unit Price",
+            headerClassName: "text-right",
+            cell: (li) => <span className="tabular-nums">{fmt(li.unitPrice)}</span>,
+            className: "text-right",
+          },
+          {
+            key: "tax",
+            header: "Tax",
+            cell: (li) => <span className="text-xs text-[var(--neutral-500)]">{li.tax}</span>,
+          },
+          {
+            key: "total",
+            header: "Total",
+            tooltip: "Line total incl. tax",
+            headerClassName: "text-right",
+            cell: (li) => <span className="font-medium tabular-nums">{fmt(li.total)}</span>,
+            className: "text-right",
+          },
+        ];
+
         return (
-          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
-            <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-base font-medium text-foreground">
-                Line items
-              </h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Add line item coming soon')}>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h2 className="text-base font-medium text-foreground">Line items</h2>
+              <Button
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
+                onClick={() => toast('Add line item coming soon')}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Line Item
               </Button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[var(--neutral-100)] hover:bg-[var(--neutral-100)]">
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Item</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Qty</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Unit Price</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Tax</TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {MOCK_LINE_ITEMS.map((li) => (
-                  <TableRow key={li.id} className="min-h-14">
-                    <TableCell className="text-sm font-medium tabular-nums">{li.item}</TableCell>
-                    <TableCell className="text-sm text-[var(--neutral-600)]">{li.description}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{li.qty}</TableCell>
-                    <TableCell className="text-right text-sm tabular-nums">{fmt(li.unitPrice)}</TableCell>
-                    <TableCell className="text-xs text-[var(--neutral-500)]">{li.tax}</TableCell>
-                    <TableCell className="text-right text-sm font-medium tabular-nums">{fmt(li.total)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <MwDataTable<InvoiceLineItem>
+              columns={columns}
+              data={MOCK_LINE_ITEMS}
+              keyExtractor={(li) => li.id}
+              striped
+            />
 
-            {/* Totals row */}
-            <div className="border-t border-[var(--border)] px-6 py-4">
-              <div className="flex justify-end">
-                <div className="w-64 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--neutral-500)]">Subtotal</span>
-                    <span className="font-medium tabular-nums">{fmt(invoice.subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--neutral-500)]">GST ({invoice.taxRate}%)</span>
-                    <span className="font-medium tabular-nums">{fmt(invoice.tax)}</span>
-                  </div>
-                  <div className="flex justify-between border-t border-[var(--border)] pt-2">
-                    <span className="font-medium text-foreground">Total</span>
-                    <span className="text-lg font-bold tabular-nums">{fmt(invoice.total)}</span>
-                  </div>
+            {/* Totals */}
+            <div className="flex justify-end">
+              <div className="w-64 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--neutral-500)]">Subtotal</span>
+                  <span className="font-medium tabular-nums">{fmt(invoice.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--neutral-500)]">GST ({invoice.taxRate}%)</span>
+                  <span className="font-medium tabular-nums">{fmt(invoice.tax)}</span>
+                </div>
+                <div className="flex justify-between border-t border-[var(--border)] pt-2">
+                  <span className="font-medium text-foreground">Total</span>
+                  <span className="text-lg font-bold tabular-nums">{fmt(invoice.total)}</span>
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
         );
+      }
 
       /* ============================================================ */
       /*  PAYMENT HISTORY                                              */

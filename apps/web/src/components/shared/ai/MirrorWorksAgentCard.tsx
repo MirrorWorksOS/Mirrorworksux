@@ -3,8 +3,6 @@ import { ChevronDown, ChevronUp, CircleAlert, CircleCheck, TriangleAlert } from 
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/utils';
-import { BorderGlow } from '@/components/shared/surfaces/BorderGlow';
-import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { AgentLogomarkAnimated } from '@/components/shared/agent/AgentLogomarkAnimated';
 
 export type AgentCardTone = 'neutral' | 'opportunity' | 'risk' | 'success';
@@ -60,8 +58,9 @@ export interface AgentCardProps {
 
 /**
  * Tone communicates intent via the status chip only — no border stroke on the
- * card itself. The BorderGlow provides the sole edge treatment (matching the
- * app-level AI search bar) so the card doesn't end up with a double outline.
+ * card itself. The `.ai-card-glow` class provides the sole edge treatment —
+ * a pure box-shadow halo that respects the card's border-radius. Do NOT add
+ * a `border` class to the root — that's the double-stroke bug we're avoiding.
  */
 const TONE_STYLES: Record<AgentCardTone, { chip: string; icon: React.ElementType }> = {
   neutral: {
@@ -124,29 +123,14 @@ export function MirrorWorksAgentCard({
   const showDetail = Boolean(detailContent) && (evidenceLevel === 'always-visible' || expanded);
 
   return (
-    <SpotlightCard
-      radius="rounded-[var(--shape-lg)]"
-      overflow="visible"
-      className={cn('min-h-0', className)}
-      spotlightColor="rgba(77, 221, 201, 0.07)"
-      spotlightColorDark="rgba(125, 232, 217, 0.1)"
+    <div
+      className={cn(
+        'ai-card-glow rounded-[var(--shape-lg)] bg-card p-4',
+        isAnimated && 'ai-card-glow--animating',
+        className,
+      )}
     >
-      {/* Edge glow matches the app-level AI search bar (AiCommandBar) at +15%
-          intensity so the card reads as a distinctive agent surface without a
-          separate stroke. DO NOT add `border` to the inner div — that's the
-          double-stroke bug we're avoiding. */}
-      <BorderGlow
-        borderRadius={22}
-        edgeSensitivity={10}
-        glowRadius={22}
-        glowIntensity={0.221}
-        coneSpread={30}
-        fillOpacity={0.152}
-        animated={isAnimated}
-        className="bg-card"
-      >
-        <div className={cn('rounded-[var(--shape-lg)] bg-card p-4')}>
-          <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3">
             <div className="shrink-0 pt-0.5">
               <AgentLogomarkAnimated size={brandVariant === 'compact' ? 18 : 22} animating={isAnimated} />
             </div>
@@ -225,7 +209,5 @@ export function MirrorWorksAgentCard({
             </div>
           </div>
         </div>
-      </BorderGlow>
-    </SpotlightCard>
   );
 }

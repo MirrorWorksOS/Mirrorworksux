@@ -21,8 +21,6 @@ import {
   mwSubtleHoverTransition,
   mwSuggestionLabelClass,
 } from "@/lib/dashboard-ui";
-import { BorderGlow } from "@/components/shared/surfaces/BorderGlow";
-
 export interface AgentBarProps {
   user: MockUserContext;
   className?: string;
@@ -123,19 +121,12 @@ export function AgentBar({ user, className }: AgentBarProps) {
         </p>
       </div>
 
-      <BorderGlow
-        borderRadius={24}
-        animated
-        edgeSensitivity={10}
-        glowRadius={36}
-        glowIntensity={0.192}
-        coneSpread={30}
-        fillOpacity={0.132}
+      <div
         className={cn(
-          "shadow-[var(--elevation-2)]",
-          "transition-[box-shadow,transform] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
+          "ai-card-glow rounded-[var(--shape-2xl)] bg-card",
+          "transition-transform duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
           "hover:-translate-y-px",
-          "focus-within:shadow-[0_0_0_2px_var(--mw-yellow-400-20)] focus-within:translate-y-0",
+          "focus-within:translate-y-0",
         )}
       >
       <form
@@ -212,7 +203,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
           </div>
         </div>
       </form>
-      </BorderGlow>
+      </div>
     </div>
   );
 }
