@@ -3,14 +3,14 @@
  * Navigates to MakeManufacturingOrderDetail on row click.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Factory } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
-import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { MwDataTable } from '@/components/shared/data/MwDataTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -48,13 +48,6 @@ const MO_DATA: ManufacturingOrder[] = manufacturingOrders.map((mo) => ({
   workOrders: mo.workOrders,
   operator: mo.operatorName.split(' ').map((n, i) => i === 0 ? `${n[0]}.` : n).join(' '),
 }));
-
-const STATUS_MAP: Record<string, string> = {
-  draft: 'Draft',
-  confirmed: 'Confirmed',
-  in_progress: 'In Progress',
-  done: 'Done',
-};
 
 export function MakeManufacturingOrders() {
   const navigate = useNavigate();

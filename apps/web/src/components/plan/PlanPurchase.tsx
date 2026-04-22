@@ -3,7 +3,7 @@
  * Material requirements by job, suggested POs grouped by supplier,
  * stock-level indicators, and bulk actions.
  */
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ShoppingCart,
   AlertTriangle,
@@ -13,13 +13,11 @@ import {
   Plus,
   FileText,
   ExternalLink,
-  Search,
   Package,
   Truck,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
@@ -29,7 +27,6 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarFilterPills, ToolbarSummaryBar, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
-import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { toast } from 'sonner';
 
 // ── Mock Data ───────────────────────────────────────────────────────

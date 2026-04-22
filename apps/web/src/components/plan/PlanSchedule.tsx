@@ -5,11 +5,10 @@
  * Reuses shared GanttChart and ScheduleCalendar components.
  */
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import { Calendar as CalendarIcon, ChartGantt } from 'lucide-react';
 import { addDays } from 'date-fns';
-import { cn } from '../ui/utils';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -50,12 +49,6 @@ const JOBS: ScheduleJob[] = [
   { id: '5', jobNumber: 'JOB-2026-0011', name: 'Machine Guards', customer: 'Kemppi Australia', startDay: -5, durationDays: 8, status: 'completed', color: STATUS_COLORS.completed, progress: 100 },
   { id: '6', jobNumber: 'JOB-2026-0016', name: 'Aluminium Enclosures', customer: 'Hunter Steel Co', startDay: 15, durationDays: 10, status: 'scheduled', color: STATUS_COLORS.scheduled, progress: 0 },
 ];
-
-const STATUS_LABELS: Record<string, string> = {
-  active: 'Active',
-  scheduled: 'Scheduled',
-  completed: 'Completed',
-};
 
 export function PlanSchedule() {
   const location = useLocation();
@@ -135,20 +128,16 @@ export function PlanSchedule() {
 
       {/* Gantt View */}
       {viewMode === 'gantt' && (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto">
-          <GanttChart tasks={ganttTasks} startDate={ganttStart} endDate={ganttEnd} />
-        </div>
+        <GanttChart tasks={ganttTasks} startDate={ganttStart} endDate={ganttEnd} />
       )}
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="flex-1 overflow-auto">
-          <ScheduleCalendar
-            events={calendarEvents}
-            month={calendarMonth}
-            onMonthChange={setCalendarMonth}
-          />
-        </div>
+        <ScheduleCalendar
+          events={calendarEvents}
+          month={calendarMonth}
+          onMonthChange={setCalendarMonth}
+        />
       )}
 
       <div className="space-y-4 border-t border-[var(--border)] pt-6">

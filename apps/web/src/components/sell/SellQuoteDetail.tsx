@@ -15,9 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { cn } from '@/components/ui/utils';
 import { toast } from 'sonner';
 import { quotes, opportunities, customers } from '@/services';
@@ -215,38 +213,61 @@ export function SellQuoteDetail() {
           </div>
         );
 
-      case 'line-items':
+      case 'line-items': {
+        type LineItem = (typeof quote.lineItems)[number];
+        const columns: MwColumnDef<LineItem>[] = [
+          {
+            key: 'productId',
+            header: 'Product',
+            tooltip: 'Product SKU',
+            cell: (li) => <span className="font-medium tabular-nums">{li.productId}</span>,
+          },
+          {
+            key: 'description',
+            header: 'Description',
+            cell: (li) => <span className="text-foreground">{li.description}</span>,
+          },
+          {
+            key: 'qty',
+            header: 'Qty',
+            headerClassName: 'text-right',
+            cell: (li) => <span className="tabular-nums">{li.qty}</span>,
+            className: 'text-right',
+          },
+          {
+            key: 'unitPrice',
+            header: 'Unit Price',
+            tooltip: 'Price per unit excl. GST',
+            headerClassName: 'text-right',
+            cell: (li) => <span className="tabular-nums">{fmtCurrency(li.unitPrice)}</span>,
+            className: 'text-right',
+          },
+          {
+            key: 'total',
+            header: 'Total',
+            tooltip: 'Line total excl. GST',
+            headerClassName: 'text-right',
+            cell: (li) => <span className="font-medium tabular-nums">{fmtCurrency(li.total)}</span>,
+            className: 'text-right',
+          },
+        ];
+
         return (
-          <Card className="p-0 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Product</TableHead>
-                  <TableHead className="text-xs">Description</TableHead>
-                  <TableHead className="text-xs text-right">Qty</TableHead>
-                  <TableHead className="text-xs text-right">Unit Price</TableHead>
-                  <TableHead className="text-xs text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quote.lineItems.map((li, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="text-xs font-medium tabular-nums">{li.productId}</TableCell>
-                    <TableCell className="text-xs">{li.description}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{li.qty}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{fmtCurrency(li.unitPrice)}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums font-medium">{fmtCurrency(li.total)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="flex justify-end p-4 border-t border-[var(--border)]">
+          <div className="space-y-4">
+            <MwDataTable<LineItem>
+              columns={columns}
+              data={quote.lineItems}
+              keyExtractor={(li, i) => `${li.productId}-${i}`}
+              striped
+            />
+            <div className="flex justify-end px-2">
               <div className="text-sm font-medium text-foreground tabular-nums">
                 Subtotal: {fmtCurrency(subtotal)}
               </div>
             </div>
-          </Card>
+          </div>
         );
+      }
 
       case 'ai-analysis':
         return <QuoteHeuristicPanel quoteId={quote.id} />;

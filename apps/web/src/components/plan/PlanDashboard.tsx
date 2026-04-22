@@ -2,8 +2,8 @@
  * Plan Dashboard - Production planning KPIs + action cards in bento grid (§4.1)
  */
 
-import React, { useState } from 'react';
-import { Calendar, Clock, AlertTriangle, TrendingUp, Package, Plus, ClipboardList, CalendarDays, ArrowRight, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Clock, TrendingUp, Package, Plus, ClipboardList, CalendarDays, ArrowRight, ChevronRight } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';

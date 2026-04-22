@@ -96,6 +96,140 @@ const MODE_CONFIG: Record<AssistantMode, {
 
 // ── Mock response logic ───────────────────────────────────────────────
 
+/** Pull a plausible order quantity from natural-language prompts (e.g. "for 24 …", "10× …"). */
+function parseQuoteQuantity(input: string, lower: string): number {
+  const forNum = /\bfor\s+(\d{1,6})\b/i.exec(input);
+  if (forNum) return Math.max(1, parseInt(forNum[1], 10));
+  const xQty =
+    /\b(\d{1,6})\s*(?:x|×|pcs?|pieces?|units?|each|ea\.?)\b/i.exec(lower);
+  if (xQty) return Math.max(1, parseInt(xQty[1], 10));
+  const lead = /^(\d{1,6})\s+/.exec(lower.trim());
+  if (lead) return Math.max(1, parseInt(lead[1], 10));
+  const any = /\b(\d{1,6})\b/.exec(lower);
+  return any ? Math.max(1, parseInt(any[1], 10)) : 10;
+}
+
+/**
+ * Map agent-bar prompts to realistic catalogue-style line copy (not the command string).
+ */
+function mockPrimaryLineFromPrompt(input: string, lower: string, qty: number): LineItemInput {
+  if (
+    lower.includes('structural bracket') ||
+    (lower.includes('bracket') && lower.includes('structural'))
+  ) {
+    return {
+      description: 'Structural steel bracket',
+      sku: 'FAB-BRACKET-01',
+      qty,
+      unit: 'each',
+      unitCost: 450,
+      margin: 25,
+      unitPrice: 600,
+    };
+  }
+
+  if (
+    lower.includes('control panel enclosure') ||
+    (lower.includes('powder') && lower.includes('enclosure')) ||
+    (lower.includes('powder-coated') && lower.includes('panel'))
+  ) {
+    return {
+      description: 'Powder-coated control panel enclosure',
+      sku: 'ENCL-CPC-PC',
+      qty,
+      unit: 'each',
+      unitCost: 85,
+      margin: 25,
+      unitPrice: 113,
+    };
+  }
+
+  if (lower.includes('server rack') || lower.includes('rack enclosure')) {
+    return {
+      description: 'Server rack enclosure — welded frame',
+      sku: 'RACK-SRV-42U',
+      qty,
+      unit: 'each',
+      unitCost: 320,
+      margin: 25,
+      unitPrice: 427,
+    };
+  }
+
+  if (lower.includes('aluminium panel') || lower.includes('aluminum panel')) {
+    return {
+      description: 'Aluminium face panel — brushed',
+      sku: 'PANEL-ALU-FACE',
+      qty,
+      unit: 'each',
+      unitCost: 95,
+      margin: 25,
+      unitPrice: 127,
+    };
+  }
+
+  const cleaned = cleanPromptToProductTitle(input, lower);
+  return {
+    description: cleaned,
+    sku: 'CUSTOM-001',
+    qty,
+    unit: 'each',
+    unitCost: 45,
+    margin: 25,
+    unitPrice: 60,
+  };
+}
+
+function cleanPromptToProductTitle(input: string, lower: string): string {
+  const genericRfQ = lower.includes('from the customer rfq') || lower.trim() === 'generate line items from the customer rfq';
+  if (genericRfQ) {
+    return 'Custom fabricated item — see RFQ notes';
+  }
+
+  let rest = input
+    .replace(/^(build a )?draft quote for\s+/i, '')
+    .replace(/^generate line items for\s+/i, '')
+    .replace(/\s+from the customer rfq\s*\.?$/i, '')
+    .trim();
+
+  rest = rest.replace(/^\d{1,6}\s+/, '').trim();
+  rest = rest.replace(/\s+with\s+.+$/i, '').trim();
+  rest = rest.replace(/\s*[.,;]\s*$/g, '').trim();
+
+  if (!rest) return 'Custom fabricated item';
+
+  const words = rest.split(/\s+/).filter(Boolean);
+  const capped = words
+    .slice(0, 12)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+  return capped.length > 80 ? `${capped.slice(0, 77)}…` : capped;
+}
+
+function mockFabricationLabourLine(lower: string, qty: number): LineItemInput {
+  const welding = lower.includes('weld');
+  const coating = lower.includes('coat') || lower.includes('powder');
+  const label =
+    welding && coating
+      ? 'Welding, coating & fabrication labour'
+      : welding
+        ? 'Welding & fabrication labour'
+        : coating
+          ? 'Coating & fabrication labour'
+          : 'Fabrication labour';
+
+  const hours = Math.max(1, Math.ceil(qty * 0.5));
+  return {
+    description: label,
+    sku: 'LABOUR-FAB',
+    qty: hours,
+    unit: 'hr',
+    unitCost: 55,
+    margin: 42,
+    unitPrice: 95,
+  };
+}
+
 function detectIntent(input: string, customer: string, mode: AssistantMode): AssistantResponse {
   const lower = input.toLowerCase();
 
@@ -135,18 +269,16 @@ function detectIntent(input: string, customer: string, mode: AssistantMode): Ass
       };
   }
 
-  // Default: line item suggestion
-  const qty = (/(\d+)\s*(x|×|units?|pcs?|pieces?|each)/i.exec(lower) ?? [])[1];
-  const parsedQty = qty ? parseInt(qty) : 10;
+  // Default: line item suggestion (realistic product names — not the raw prompt text)
+  const parsedQty = parseQuoteQuantity(input, lower);
+  const primary = mockPrimaryLineFromPrompt(input, lower, parsedQty);
+  const labour = mockFabricationLabourLine(lower, parsedQty);
 
   return {
     type: 'line-items',
     title: 'Draft line items ready for review',
-    body: `Based on "${input}", here are draft line items ready for review before they are added to the quote:`,
-    items: [
-      { description: input.length > 50 ? input.slice(0, 50) + '…' : input, sku: '', qty: parsedQty, unit: 'each', unitCost: 45, margin: 25, unitPrice: 60 },
-      { description: 'Fabrication Labour', sku: 'LABOUR-FAB', qty: Math.ceil(parsedQty * 0.5), unit: 'hr', unitCost: 55, margin: 42, unitPrice: 95 },
-    ],
+    body: `Based on your request, here are draft line items ready for review before they are added to the quote:`,
+    items: [primary, labour],
   };
 }
 

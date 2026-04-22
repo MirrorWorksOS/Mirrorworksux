@@ -14,6 +14,7 @@ import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
 import { ChartCard } from '@/components/shared/charts/ChartCard';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
+import { PillNav } from '@/components/shared/navigation/PillNav';
 
 const trendData = [
   { month: 'Mar', raw: 120000, wip: 65000, finished: 45000 },
@@ -162,17 +163,14 @@ export function StockValuation() {
 
       {/* Tabs + Table */}
       <Card className="bg-card rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
-        <div className="flex border-b border-[var(--border)]">
-          {TABS.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              className={cn(
-                "px-4 py-3 text-sm relative transition-colors",
-                activeTab === tab ? "text-foreground font-medium" : "text-[var(--neutral-500)] hover:text-foreground font-normal"
-              )}>
-              {tab}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--mw-yellow-400)] rounded-t" />}
-            </button>
-          ))}
+        <div className="px-4 pt-4">
+          <PillNav
+            tabs={TABS.map(t => ({ key: t, label: t }))}
+            value={activeTab}
+            onValueChange={setActiveTab}
+            listClassName="w-fit"
+            aria-label="Stock category"
+          />
         </div>
 
         {activeTab === 'Raw Materials' && (

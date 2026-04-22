@@ -36,8 +36,8 @@ export interface GanttChartProps {
 }
 
 const LABEL_W = 200;
-const ROW_H = 40;
-const HEADER_H = 40;
+const ROW_H = 60;
+const HEADER_H = 48;
 /** Minimum day column width when the chart must scroll horizontally */
 const MIN_DAY_W = 10;
 /** Fallback before first resize measurement */
@@ -140,7 +140,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full min-w-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card shadow-xs",
+        "relative w-full min-w-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card shadow-xs p-4",
         className,
       )}
     >
@@ -242,7 +242,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                   y={barY}
                   width={bw}
                   height={barH}
-                  rx={4}
+                  rx={barH / 2}
                   fill={fill}
                   fillOpacity={0.2}
                   stroke={fill}
@@ -262,7 +262,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
                   y={barY}
                   width={(bw * pct) / 100}
                   height={barH}
-                  rx={4}
+                  rx={barH / 2}
                   fill={fill}
                   pointerEvents="none"
                   style={{

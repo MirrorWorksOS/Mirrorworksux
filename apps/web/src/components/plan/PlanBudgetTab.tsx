@@ -5,9 +5,8 @@
  * Note: 'purchase' displays as 'Subcontract' in UI
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AlertCircle, DollarSign, Receipt, Clock, BarChart3 } from 'lucide-react';
-import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';

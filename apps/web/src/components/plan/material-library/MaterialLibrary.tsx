@@ -10,8 +10,6 @@ import React, { useMemo, useState } from 'react';
 import { Search, Plus, Trash2, RotateCcw, Layers, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -19,16 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { useMaterialLibraryStore } from '@/store/materialLibraryStore';
-import { MATERIAL_TYPE_LABELS, type MaterialType } from '@/lib/material-library/types';
+import { MATERIAL_TYPE_LABELS, type Material, type MaterialType } from '@/lib/material-library/types';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { PageToolbar, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 
 const TYPE_FILTER_OPTIONS: { value: 'all' | MaterialType; label: string }[] = [
   { value: 'all', label: 'All types' },
@@ -40,6 +34,14 @@ const TYPE_FILTER_OPTIONS: { value: 'all' | MaterialType; label: string }[] = [
   { value: 'angle', label: 'Angle' },
   { value: 'flat_bar', label: 'Flat bar' },
   { value: 'round_bar', label: 'Round bar' },
+];
+
+const SUMMARY_COLORS = [
+  'var(--mw-yellow-400)',
+  'var(--mw-mirage)',
+  'var(--neutral-400)',
+  'var(--mw-yellow-600)',
+  'var(--neutral-300)',
 ];
 
 function formatCost(amount: number, currency: string, unit: string): string {
@@ -57,6 +59,94 @@ function formatStockSizes(sizes: { width?: number; length?: number; thickness?: 
       return '—';
     })
     .join(', ');
+}
+
+function buildColumns(removeMaterial: (id: string) => void): MwColumnDef<Material>[] {
+  return [
+    {
+      key: 'code',
+      header: 'Code',
+      tooltip: 'Material code',
+      className: 'font-mono text-xs tabular-nums text-[var(--neutral-500)]',
+      cell: (m) => m.code,
+    },
+    {
+      key: 'name',
+      header: 'Name',
+      tooltip: 'Material name',
+      cell: (m) => (
+        <div className="flex items-center gap-2">
+          <Layers className="h-4 w-4 shrink-0 text-[var(--neutral-400)]" strokeWidth={1.5} />
+          <span className="font-medium text-foreground">{m.name}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'type',
+      header: 'Type',
+      tooltip: 'Stock form factor',
+      cell: (m) => (
+        <span className="inline-flex rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-600)] dark:bg-[var(--neutral-900)] dark:text-[var(--neutral-400)]">
+          {MATERIAL_TYPE_LABELS[m.type]}
+        </span>
+      ),
+    },
+    {
+      key: 'grade',
+      header: 'Grade',
+      tooltip: 'Material grade',
+      className: 'text-[var(--neutral-500)]',
+      cell: (m) => m.grade,
+    },
+    {
+      key: 'density',
+      header: 'Density',
+      tooltip: 'Density kg/m³',
+      headerClassName: 'text-right',
+      className: 'text-right tabular-nums text-[var(--neutral-500)]',
+      cell: (m) => `${m.densityKgM3} kg/m³`,
+    },
+    {
+      key: 'cost',
+      header: 'Cost',
+      tooltip: 'Unit cost',
+      cell: (m) => formatCost(m.cost.amount, m.cost.currency, m.cost.unit),
+    },
+    {
+      key: 'stockSizes',
+      header: 'Stock sizes',
+      tooltip: 'Available stock dimensions',
+      className: 'max-w-[220px] truncate text-[var(--neutral-500)]',
+      cell: (m) => formatStockSizes(m.stockSizes),
+    },
+    {
+      key: 'suppliers',
+      header: 'Suppliers',
+      tooltip: 'Preferred suppliers',
+      className: 'text-[var(--neutral-500)]',
+      cell: (m) => m.suppliers.map((s) => s.name).join(', ') || '—',
+    },
+    {
+      key: 'actions',
+      header: '',
+      headerClassName: 'w-[1%] whitespace-nowrap',
+      className: 'w-[1%] whitespace-nowrap',
+      cell: (m) => (
+        <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => removeMaterial(m.id)}
+            title="Remove"
+          >
+            <Trash2 className="h-4 w-4 text-destructive" strokeWidth={1.5} />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 }
 
 export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
@@ -77,126 +167,112 @@ export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNo
     });
   }, [materials, search, typeFilter]);
 
+  const columns = useMemo(() => buildColumns(removeMaterial), [removeMaterial]);
+
+  const summarySegments = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of filtered) {
+      const label = MATERIAL_TYPE_LABELS[m.type];
+      map.set(label, (map.get(label) ?? 0) + 1);
+    }
+    return [...map.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, value], i) => ({
+        key: label,
+        label,
+        value,
+        color: SUMMARY_COLORS[i % SUMMARY_COLORS.length],
+      }));
+  }, [filtered]);
+
+  const subtitle =
+    filtered.length === materials.length
+      ? `${materials.length} materials`
+      : `${filtered.length} of ${materials.length} materials · filter active`;
+
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Layers className="h-5 w-5 text-[var(--mw-yellow-500)]" />
-            <h1 className="text-2xl font-bold text-foreground">Material Library</h1>
+    <PageShell>
+      <PageHeader
+        title="Material Library"
+        subtitle={subtitle}
+        actions={
+          <div className="flex flex-wrap items-center gap-2 justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={resetToSeed}
+            >
+              <RotateCcw className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+              Reset to seed
+            </Button>
+            <Button type="button" className="h-10 gap-2" disabled title="Inline editing in v2">
+              <Plus className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+              New material
+            </Button>
+            <p className="max-w-md rounded-[var(--shape-lg)] bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
+              Source-of-truth for sheet, tube, RHS, angle, and bar stock used by{' '}
+              <span className="font-medium">Product Studio</span>. Master data may also be managed in
+              Control when connected.
+            </p>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Source-of-truth for sheet, tube, RHS, angle, and bar stock used by Product Studio.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={resetToSeed} className="gap-1.5 text-xs">
-            <RotateCcw className="h-3.5 w-3.5" />
-            Reset to seed
-          </Button>
-          <Button size="sm" className="gap-1.5 text-xs" disabled title="Inline editing in v2">
-            <Plus className="h-3.5 w-3.5" />
-            New material
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {headerExtras}
 
-      {/* Controls */}
-      <div className="flex items-center gap-2">
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+      <PageToolbar className="items-end">
+        <div className="relative w-full sm:w-80 shrink-0">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--neutral-400)]"
+            strokeWidth={1.5}
+          />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, code, or grade…"
-            className="h-9 pl-8 text-xs"
+            className="h-10 rounded-[var(--shape-lg)] border-transparent bg-[var(--neutral-100)] pl-10 text-sm"
           />
         </div>
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as 'all' | MaterialType)}>
-          <SelectTrigger className="h-9 w-40 text-xs">
+          <SelectTrigger className="h-10 w-44 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {TYPE_FILTER_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value} className="text-xs">
+              <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Badge variant="outline" className="text-[10px]">
+        <ToolbarSpacer />
+        <span className="text-xs tabular-nums text-[var(--neutral-500)]">
           {filtered.length} of {materials.length}
-        </Badge>
-      </div>
+        </span>
+      </PageToolbar>
 
-      {/* Table */}
-      <Card className="overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-[10px] uppercase tracking-wider">Code</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Name</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Type</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Grade</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Density</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Cost</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Stock sizes</TableHead>
-              <TableHead className="text-[10px] uppercase tracking-wider">Suppliers</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="py-12 text-center">
-                  <Package className="mx-auto mb-2 h-10 w-10 text-[var(--neutral-400)]" />
-                  <p className="text-sm text-muted-foreground">No materials match your filters.</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((m) => (
-                <TableRow key={m.id} className="hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-900)]">
-                  <TableCell className="font-mono text-[11px] text-muted-foreground">{m.code}</TableCell>
-                  <TableCell className="text-xs font-medium">{m.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-[10px]">
-                      {MATERIAL_TYPE_LABELS[m.type]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground">{m.grade}</TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground">{m.densityKgM3} kg/m³</TableCell>
-                  <TableCell className="text-[11px]">{formatCost(m.cost.amount, m.cost.currency, m.cost.unit)}</TableCell>
-                  <TableCell className="max-w-[220px] truncate text-[11px] text-muted-foreground" title={formatStockSizes(m.stockSizes)}>
-                    {formatStockSizes(m.stockSizes)}
-                  </TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground">
-                    {m.suppliers.map((s) => s.name).join(', ') || '—'}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => removeMaterial(m.id)}
-                      title="Remove"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      {summarySegments.length > 0 ? (
+        <ToolbarSummaryBar segments={summarySegments} formatValue={(v) => String(v)} />
+      ) : null}
 
-      <p className="text-[10px] text-muted-foreground">
-        Inline editing and "New material" form land in the next pass. The store and types are
-        already wired to support full CRUD — see <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-800)]">useMaterialLibraryStore</code>.
+      <MwDataTable
+        columns={columns}
+        data={filtered}
+        keyExtractor={(m) => m.id}
+        emptyState={
+          <div className="flex flex-col items-center justify-center gap-2 py-8">
+            <Package className="h-10 w-10 text-[var(--neutral-400)]" strokeWidth={1.5} />
+            <p className="text-sm text-muted-foreground">No materials match your filters.</p>
+          </div>
+        }
+      />
+
+      <p className="text-xs text-muted-foreground">
+        Inline editing and &quot;New material&quot; form land in the next pass. The store and types are
+        already wired to support full CRUD — see{' '}
+        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-800)]">useMaterialLibraryStore</code>.
       </p>
-    </div>
+    </PageShell>
   );
 }

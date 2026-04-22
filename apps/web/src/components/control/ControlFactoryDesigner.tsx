@@ -9,7 +9,7 @@ import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router';
 import {
   Layout, ZoomIn, ZoomOut, Undo2, Redo2, Save, Upload, Download,
-  Grid3x3, Magnet, Trash2, RotateCw, Copy,
+  Grid3x3, Magnet, Trash2, Copy,
   // Machine icons
   Cog, Zap, ArrowDownUp, CircleDot, Flame, Disc3,
   // Zone icons
@@ -38,7 +38,6 @@ import {
 } from '@/components/animate-ui/primitives/animate/tooltip';
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetPortal,
   SheetOverlay,
