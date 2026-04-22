@@ -86,6 +86,7 @@ export function StepReviewConfirm() {
   const totalRecords = entities.reduce((acc, e) => acc + e.activeCount, 0);
   const totalWarnings = entities.reduce((acc, e) => acc + e.warningCount, 0);
   const totalExcluded = entities.reduce((acc, e) => acc + e.excludedCount, 0);
+  const previewEntityKeys = Object.keys(previewRecords);
 
   const handleImport = () => {
     setSessionStatus('importing');
@@ -229,27 +230,32 @@ export function StepReviewConfirm() {
         })
       )}
 
-      {/* Preview in context */}
-      {Object.keys(previewRecords).length > 0 && (
+      {/**
+       * Preview in context — lets customers visually confirm their mappings
+       * produce the right MirrorWorks records before committing the import.
+       * Grouped by entity type; renders up to 5 sample cards per entity.
+       */}
+      {previewEntityKeys.length > 0 && (
         <div className="mt-8 space-y-4">
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-5 text-[var(--mw-yellow-400)]" />
             <h3 className="text-base font-medium">Preview in context</h3>
           </div>
-          <p className="text-sm text-[var(--neutral-500)]">
-            Browse sample records as they will appear in MirrorWorks before importing.
+          <p className="text-sm text-muted-foreground">
+            Browse sample records as they will appear in MirrorWorks. Verify data looks correct before importing.
           </p>
 
-          <div className="flex gap-1 border-b border-[var(--neutral-200)] overflow-x-auto">
-            {Object.keys(previewRecords).map(entity => (
+          <div className="flex gap-2 border-b border-[var(--neutral-200)] overflow-x-auto">
+            {previewEntityKeys.map((entity) => (
               <button
                 key={entity}
+                type="button"
                 onClick={() => setPreviewEntity(entity)}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium border-b-2 -mb-[2px] whitespace-nowrap transition-colors",
+                  'px-3 py-2 text-sm font-medium border-b-2 -mb-[2px] whitespace-nowrap capitalize transition-colors',
                   previewEntity === entity
-                    ? "border-[var(--mw-yellow-400)] text-[var(--neutral-900)]"
-                    : "border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-700)]"
+                    ? 'border-[var(--mw-yellow-400)] text-[var(--neutral-900)]'
+                    : 'border-transparent text-[var(--neutral-500)] hover:text-[var(--neutral-700)]'
                 )}
               >
                 {entity}
@@ -259,32 +265,29 @@ export function StepReviewConfirm() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {(previewRecords[previewEntity] ?? [])
-              .filter(r => !r.excluded)
+              .filter((r) => !r.excluded)
               .slice(0, 5)
-              .map(record => (
-                <Card key={record.rowNumber} className="p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-[var(--neutral-400)] tabular-nums">
-                      Row {record.rowNumber}
-                    </span>
-                    {record.warnings.length > 0 && (
-                      <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">
-                        {record.warnings.length} warning{record.warnings.length > 1 ? 's' : ''}
-                      </Badge>
-                    )}
-                  </div>
-                  {Object.entries(record.data).slice(0, 4).map(([key, value]) => (
-                    <div key={key} className="flex items-start gap-2 text-sm">
-                      <span className="shrink-0 text-[var(--neutral-400)] min-w-[80px] capitalize">
-                        {key.replace(/_/g, ' ')}
-                      </span>
-                      <span className="text-foreground truncate font-medium">
-                        {String(value ?? '—')}
-                      </span>
+              .map((record) => {
+                const fields = Object.entries(record.data).slice(0, 4);
+                return (
+                  <Card key={record.rowNumber} variant="flat" className="p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground tabular-nums">Row {record.rowNumber}</span>
+                      {record.warnings.length > 0 && (
+                        <Badge variant="outline" className="text-[10px] text-[var(--mw-warning)] border-[var(--mw-warning)]">
+                          {record.warnings.length} warning{record.warnings.length > 1 ? 's' : ''}
+                        </Badge>
+                      )}
                     </div>
-                  ))}
-                </Card>
-              ))}
+                    {fields.map(([key, value]) => (
+                      <div key={key} className="flex justify-between text-sm gap-2">
+                        <span className="shrink-0 text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                        <span className="text-foreground truncate font-medium text-right">{String(value ?? '—')}</span>
+                      </div>
+                    ))}
+                  </Card>
+                );
+              })}
           </div>
         </div>
       )}
