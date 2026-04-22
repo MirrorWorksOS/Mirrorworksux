@@ -2,8 +2,10 @@
  * PlanMachineIO — unified entry point for CAD import and NC Connect.
  *
  * Replaces the standalone /plan/cad-import and /plan/nc-connect sidebar
- * entries; old routes redirect here. Children own their own PageShell &
- * page header, so this wrapper renders just a tab strip on top.
+ * entries; old routes redirect here. Children own their own PageShell +
+ * PageHeader, and this wrapper injects the tab strip as `headerExtras` so
+ * the tabs render DIRECTLY BELOW the child's breadcrumb + title — matching
+ * the standard pattern (breadcrumb at top, nav below).
  */
 
 import React, { useState, useMemo } from 'react';
@@ -35,20 +37,18 @@ export function PlanMachineIO() {
     navigate(`/plan/machine-io?tab=${value}`, { replace: true });
   };
 
-  return (
-    <div>
-      {/* Tab strip — sits above the child page's own header */}
-      <div className="mx-auto max-w-7xl px-6 pt-6">
-        <Tabs value={tab} onValueChange={handleTabChange}>
-          <TabsList>
-            <TabsTrigger value="cad-import">CAD Import</TabsTrigger>
-            <TabsTrigger value="nc-connect">NC Connect</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+  const tabStrip = (
+    <Tabs value={tab} onValueChange={handleTabChange}>
+      <TabsList>
+        <TabsTrigger value="cad-import">CAD Import</TabsTrigger>
+        <TabsTrigger value="nc-connect">NC Connect</TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
 
-      {/* Active page — child owns its own PageShell & header */}
-      {tab === 'cad-import' ? <PlanCADImport /> : <PlanNCConnect />}
-    </div>
+  return tab === 'cad-import' ? (
+    <PlanCADImport headerExtras={tabStrip} />
+  ) : (
+    <PlanNCConnect headerExtras={tabStrip} />
   );
 }

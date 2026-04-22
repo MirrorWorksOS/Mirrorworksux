@@ -3,11 +3,10 @@
  * libraries. A thin tab wrapper that mounts the existing pages unchanged.
  *
  * Replaces the standalone /plan/material-library and /plan/finish-library
- * sidebar entries; old routes redirect here.
- *
- * Note: child library pages (`MaterialLibrary`, `FinishLibrary`) own their
- * own padding container and h1, so this wrapper renders just a tab strip
- * above the active child — no duplicated headers.
+ * sidebar entries; old routes redirect here. Children own their own padding
+ * + h1, and this wrapper injects the tab strip as `headerExtras` so the tabs
+ * render DIRECTLY BELOW the child's title — matching the standard pattern
+ * (breadcrumb/title at top, nav below).
  */
 
 import React, { useState, useMemo } from 'react';
@@ -39,20 +38,18 @@ export function PlanLibraries() {
     navigate(`/plan/libraries?tab=${value}`, { replace: true });
   };
 
-  return (
-    <div>
-      {/* Tab strip — sits above the child page's own h1 */}
-      <div className="mx-auto max-w-7xl px-6 pt-6">
-        <Tabs value={tab} onValueChange={handleTabChange}>
-          <TabsList>
-            <TabsTrigger value="materials">Materials</TabsTrigger>
-            <TabsTrigger value="finishes">Finishes</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+  const tabStrip = (
+    <Tabs value={tab} onValueChange={handleTabChange}>
+      <TabsList>
+        <TabsTrigger value="materials">Materials</TabsTrigger>
+        <TabsTrigger value="finishes">Finishes</TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
 
-      {/* Active library — child owns its own padding & header */}
-      {tab === 'materials' ? <MaterialLibrary /> : <FinishLibrary />}
-    </div>
+  return tab === 'materials' ? (
+    <MaterialLibrary headerExtras={tabStrip} />
+  ) : (
+    <FinishLibrary headerExtras={tabStrip} />
   );
 }

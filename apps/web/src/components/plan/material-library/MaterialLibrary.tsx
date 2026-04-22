@@ -59,7 +59,7 @@ function formatStockSizes(sizes: { width?: number; length?: number; thickness?: 
     .join(', ');
 }
 
-export function MaterialLibrary() {
+export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const { materials, removeMaterial, resetToSeed } = useMaterialLibraryStore();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | MaterialType>('all');
@@ -101,6 +101,8 @@ export function MaterialLibrary() {
           </Button>
         </div>
       </div>
+
+      {headerExtras}
 
       {/* Controls */}
       <div className="flex items-center gap-2">
