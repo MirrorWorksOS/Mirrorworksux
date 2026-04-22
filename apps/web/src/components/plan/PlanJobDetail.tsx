@@ -17,6 +17,7 @@ import { PlanIntelligenceHubTab } from './PlanIntelligenceHubTab';
 import { PlanBudgetTab } from './PlanBudgetTab';
 import { PlanTravellersTab } from './PlanTravellersTab';
 import { useTravellerStore, isTravellerReadyForRelease } from '@/store/travellerStore';
+import { useShallow } from 'zustand/react/shallow';
 import type { PermissionKey } from '@mirrorworks/contracts';
 import {
   Dialog,
@@ -64,7 +65,7 @@ export function PlanJobDetail() {
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
   const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>('traveller-001');
 
-  const jobId = 'JOB-2026-0012';
+  const jobId = 'JOB-2026-0015';
   const quoteId = 'Q-2026-0055';
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
   const activePermissionUser = useMemo(
@@ -87,9 +88,11 @@ export function PlanJobDetail() {
   const canReleaseTraveller = hasPlanPermission('traveller.release');
   const canViewAllTravellers = hasPlanPermission('traveller.view_all');
 
-  const travellers = useTravellerStore((state) =>
-    state.travellers.filter(
-      (packet) => packet.jobRef === jobId || (canViewAllTravellers && packet.status === 'released'),
+  const travellers = useTravellerStore(
+    useShallow((state) =>
+      state.travellers.filter(
+        (packet) => packet.jobRef === jobId || (canViewAllTravellers && packet.status === 'released'),
+      ),
     ),
   );
   const releaseTraveller = useTravellerStore((state) => state.releaseTraveller);
@@ -111,8 +114,8 @@ export function PlanJobDetail() {
       base.push({ id: 'budget', label: 'Budget' });
     }
     base.push(
-      { id: 'intelligence', label: 'Intelligence Hub' },
       { id: 'schedule', label: 'Schedule', count: 9 },
+      { id: 'intelligence', label: 'Intelligence Hub' },
     );
     return base;
   }, [hasBudgetAccess, travellers.length]);
@@ -126,7 +129,7 @@ export function PlanJobDetail() {
       case 'schedule':
         return <PlanScheduleTab />;
       case 'intelligence':
-        return <PlanIntelligenceHubTab />;
+        return <PlanIntelligenceHubTab onOpenBudget={() => setActiveTab('budget')} />;
       case 'budget':
         return (
           <PlanBudgetTab
@@ -183,14 +186,14 @@ export function PlanJobDetail() {
         breadcrumbs={[
           { label: 'Plan', href: '/plan' },
           { label: 'Jobs', href: '/plan/jobs' },
-          { label: 'Server Rack Chassis' },
+          { label: 'Differential Assembly' },
         ]}
-        title="Server Rack Chassis"
+        title="Differential Assembly"
         subtitle={
           <>
             <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{jobId}</span>
-            <span>TechCorp Industries</span>
-            <span className="tabular-nums">$20,000</span>
+            <span>Drivetrain Dynamics Pty Ltd</span>
+            <span className="tabular-nums">$185,000</span>
           </>
         }
         metaRow={

@@ -29,6 +29,9 @@ import { manufacturingOrders } from '@/services';
 import { OperatorChat } from '@/components/make/OperatorChat';
 import { MaterialConsumption } from '@/components/make/MaterialConsumption';
 import { useTravellerStore } from '@/store/travellerStore';
+import { useShallow } from 'zustand/react/shallow';
+import { BomRoutingTree } from '@/components/plan/BomRoutingTree';
+import { getDifferentialAssembly } from '@/components/plan/BomRoutingTree.data';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -95,8 +98,8 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'work', label: 'Work' },
   { id: 'issues', label: 'Issues' },
-  { id: 'intelligence', label: 'Intelligence Hub' },
   { id: 'documents', label: 'Documents' },
+  { id: 'intelligence', label: 'Intelligence Hub' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -116,8 +119,11 @@ export function MakeManufacturingOrderDetail() {
   const [shiftPaused, setShiftPaused] = useState(false);
 
   const mo = id ? MO_BY_ID[id] : undefined;
-  const travellerPackets = useTravellerStore((state) =>
-    state.travellers.filter((packet) => packet.jobRef === mo?.jobNumber),
+  const assembly = useMemo(() => getDifferentialAssembly('make'), []);
+  const travellerPackets = useTravellerStore(
+    useShallow((state) =>
+      state.travellers.filter((packet) => packet.jobRef === mo?.jobNumber),
+    ),
   );
   const primaryTravellerPacket = useMemo(
     () =>
@@ -250,6 +256,9 @@ export function MakeManufacturingOrderDetail() {
                   </div>
                 </div>
               </Card>
+
+              {/* Integrated BOM + routing (inherited from Plan, read-only) */}
+              <BomRoutingTree assembly={assembly} mode="make" />
 
               <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">

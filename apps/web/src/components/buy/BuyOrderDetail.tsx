@@ -20,6 +20,8 @@ import {
   type JobWorkspaceTabConfig,
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { AIInsightCard } from "@/components/shared/ai/AIInsightCard";
+import { AuditTimeline } from "@/components/shared/audit/AuditTimeline";
+import { AuditTimelineSheet } from "@/components/shared/audit/AuditTimelineSheet";
 import { StatusBadge } from "@/components/shared/data/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +39,7 @@ import {
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { purchaseOrders } from "@/services";
+import { auditService } from "@/services/auditService";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -75,13 +78,6 @@ interface POLineItem {
   unitPrice: number;
   total: number;
   status: string;
-}
-
-interface ActivityEvent {
-  id: string;
-  date: string;
-  action: string;
-  user: string;
 }
 
 interface RelatedDoc {
@@ -148,35 +144,6 @@ const MOCK_LINE_ITEMS: Record<string, POLineItem[]> = {
   "po-005": [
     { id: "li-1", product: "BKT-001", description: "Mounting Bracket 90deg -- Mild Steel", qtyOrdered: 100, qtyReceived: 0, unitPrice: 24.5, total: 2450, status: "Draft" },
     { id: "li-2", product: "CTR-008", description: "Cable Tray Support 600mm", qtyOrdered: 30, qtyReceived: 0, unitPrice: 38.0, total: 1140, status: "Draft" },
-  ],
-};
-
-const MOCK_ACTIVITIES: Record<string, ActivityEvent[]> = {
-  "po-001": [
-    { id: "act-1", date: "2026-03-15", action: "Purchase order created", user: "Priya Sharma" },
-    { id: "act-2", date: "2026-03-15", action: "Sent to Hunter Steel Co", user: "Priya Sharma" },
-    { id: "act-3", date: "2026-03-16", action: "Acknowledged by supplier", user: "System" },
-  ],
-  "po-002": [
-    { id: "act-1", date: "2026-03-12", action: "Purchase order created", user: "Mike Thompson" },
-    { id: "act-2", date: "2026-03-12", action: "Sent to Pacific Metals", user: "Mike Thompson" },
-    { id: "act-3", date: "2026-03-13", action: "Acknowledged by supplier", user: "System" },
-    { id: "act-4", date: "2026-03-18", action: "Partial shipment dispatched", user: "System" },
-    { id: "act-5", date: "2026-03-22", action: "Partial receipt recorded (GR-2026-0035)", user: "Warehouse" },
-  ],
-  "po-003": [
-    { id: "act-1", date: "2026-03-10", action: "Purchase order created", user: "Priya Sharma" },
-    { id: "act-2", date: "2026-03-10", action: "Sent to Sydney Welding Supply", user: "Priya Sharma" },
-    { id: "act-3", date: "2026-03-12", action: "Acknowledged by supplier", user: "System" },
-    { id: "act-4", date: "2026-03-18", action: "Shipment dispatched (TRK-20260320-087)", user: "System" },
-    { id: "act-5", date: "2026-03-20", action: "Goods received in full (GR-2026-0034)", user: "Warehouse" },
-  ],
-  "po-004": [
-    { id: "act-1", date: "2026-03-08", action: "Purchase order created", user: "Mike Thompson" },
-    { id: "act-2", date: "2026-03-08", action: "Sent to BHP Suppliers", user: "Mike Thompson" },
-  ],
-  "po-005": [
-    { id: "act-1", date: "2026-03-19", action: "Draft purchase order created", user: "Priya Sharma" },
   ],
 };
 
@@ -255,19 +222,20 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 export function BuyOrderDetail() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const order = id ? PO_DETAILS[id] : undefined;
   const lineItems = id ? MOCK_LINE_ITEMS[id] ?? [] : [];
-  const activities = id ? MOCK_ACTIVITIES[id] ?? [] : [];
+  const auditEventCount = id ? auditService.list('purchase_order', id).length : 0;
   const relatedDocs = id ? MOCK_RELATED_DOCS[id] ?? [] : [];
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
       if (t.id === "line-items") return { ...t, count: lineItems.length };
-      if (t.id === "activity") return { ...t, count: activities.length };
+      if (t.id === "activity") return { ...t, count: auditEventCount };
       return { ...t };
     });
-  }, [lineItems.length, activities.length]);
+  }, [lineItems.length, auditEventCount]);
 
   if (!order) {
     return (
@@ -420,6 +388,27 @@ export function BuyOrderDetail() {
                   <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{order.notes}</p>
                 </Card>
               )}
+
+              {/* Recent activity (mini timeline) */}
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-base font-medium text-foreground">Recent activity</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 text-xs text-[var(--neutral-500)]"
+                    onClick={() => setHistoryOpen(true)}
+                  >
+                    View full history
+                  </Button>
+                </div>
+                <AuditTimeline
+                  entityType="purchase_order"
+                  entityId={order.id}
+                  variant="mini"
+                  limit={3}
+                />
+              </Card>
 
               {/* Related documents */}
               {relatedDocs.length > 0 && (
@@ -732,22 +721,25 @@ export function BuyOrderDetail() {
       case "activity":
         return (
           <div className="space-y-6">
-            {/* Activity timeline */}
+            {/* Audit history — full timeline */}
             <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
-              <h2 className="mb-6 text-base font-medium text-foreground">Activity timeline</h2>
-              <ol className="relative border-l-2 border-[var(--neutral-200)] dark:border-[var(--border)] ml-3 space-y-6">
-                {[...activities].reverse().map((evt) => (
-                  <li key={evt.id} className="ml-6">
-                    <div className="absolute -left-[9px] mt-1.5 h-4 w-4 rounded-full border-2 border-[var(--neutral-200)] dark:border-[var(--border)] bg-card" />
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-medium text-foreground">{evt.action}</span>
-                      <span className="text-xs text-[var(--neutral-500)]">
-                        {fmtDate(evt.date)} &middot; {evt.user}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-medium text-foreground">Audit history</h2>
+                  <p className="mt-0.5 text-xs text-[var(--neutral-500)]">
+                    Append-only record of every change. Retained for compliance.
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 text-xs text-[var(--neutral-500)]"
+                  onClick={() => setHistoryOpen(true)}
+                >
+                  Open in drawer
+                </Button>
+              </div>
+              <AuditTimeline entityType="purchase_order" entityId={order.id} variant="full" />
             </Card>
 
             {/* Comments placeholder */}
@@ -782,6 +774,14 @@ export function BuyOrderDetail() {
   };
 
   return (
+    <>
+    <AuditTimelineSheet
+      entityType="purchase_order"
+      entityId={order.id}
+      entityLabel={order.poNumber}
+      open={historyOpen}
+      onOpenChange={setHistoryOpen}
+    />
     <JobWorkspaceLayout
       breadcrumbs={[
         { label: "Buy", href: "/buy" },
@@ -870,5 +870,6 @@ export function BuyOrderDetail() {
       onTabChange={setActiveTab}
       renderTabPanel={renderTabPanel}
     />
+    </>
   );
 }

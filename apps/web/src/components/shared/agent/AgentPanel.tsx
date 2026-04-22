@@ -52,7 +52,7 @@ function getModuleFromPath(pathname: string): AgentModule {
 // ---------------------------------------------------------------------------
 
 const PANEL_SIZES = {
-  compact: { width: 400, height: 520 },
+  compact: { width: 400, height: 600 },
   expanded: { width: 480, height: '85vh' as const },
 };
 
@@ -111,7 +111,7 @@ export function AgentPanel() {
               duration: 0.25,
               ease: [0.2, 0, 0, 1],
             }}
-            className="ai-card-glow fixed z-50 bottom-6 right-6 flex flex-col bg-[var(--card)] dark:bg-[var(--card)] rounded-2xl overflow-hidden"
+            className="fixed z-50 bottom-6 right-6 flex flex-col bg-[var(--card)] dark:bg-[var(--card)] rounded-2xl overflow-hidden border border-[var(--border)] shadow-xl"
             style={{
               width: dims.width,
               height: dims.height,

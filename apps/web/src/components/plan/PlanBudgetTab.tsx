@@ -6,8 +6,10 @@
  */
 
 import { useState } from 'react';
-import { AlertCircle, DollarSign, Receipt, Clock, BarChart3 } from 'lucide-react';
+import { AlertCircle, DollarSign, Receipt, Clock, BarChart3, Save, Send, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -146,6 +148,37 @@ export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: 
       variants={staggerContainer}
       className="p-6 space-y-6 bg-[var(--neutral-100)]"
     >
+      {/* Agent Budget Insight Card */}
+      <motion.div variants={staggerItem}>
+        <MirrorWorksAgentCard
+          title="Margin and delivery watch"
+          suggestion="Labour is tracking 8% under budget, but a late delivery on PO-0089 could still erode margin if it slips past Friday."
+          tone="risk"
+          statusText="Updated 2 minutes ago"
+          primaryAction={{
+            label: 'Open Intelligence Hub',
+            onClick: () => onOpenIntelligence?.(),
+          }}
+          secondaryAction={{
+            label: refreshing ? 'Refreshing…' : 'Refresh',
+            onClick: handleRefreshInsight,
+            disabled: refreshing,
+            loading: refreshing,
+          }}
+          detailContent={
+            <div className="space-y-2">
+              <p>Quoted margin: {mockBudgetData.quotedMargin.toFixed(1)}%</p>
+              <p>Current margin: {mockBudgetData.currentMargin.toFixed(1)}%</p>
+              <p>Projected margin at completion: {mockBudgetData.projectedMargin.toFixed(1)}%</p>
+              <p>Comparable historical jobs finished between $23,200 and $24,100 final spend.</p>
+            </div>
+          }
+          evidenceLevel="expandable"
+          detailLabel="Evidence"
+          state={refreshing ? 'loading' : 'suggested'}
+        />
+      </motion.div>
+
       {/* Budget Summary - 4 Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Budget */}
@@ -385,36 +418,24 @@ export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: 
         </Card>
       </motion.div>
 
-      {/* Agent Budget Insight Card */}
+      {/* Footer actions */}
       <motion.div variants={staggerItem}>
-        <MirrorWorksAgentCard
-          title="Margin and delivery watch"
-          suggestion="Labour is tracking 8% under budget, but a late delivery on PO-0089 could still erode margin if it slips past Friday."
-          tone="risk"
-          statusText="Updated 2 minutes ago"
-          primaryAction={{
-            label: 'Open Intelligence Hub',
-            onClick: () => onOpenIntelligence?.(),
-          }}
-          secondaryAction={{
-            label: refreshing ? 'Refreshing…' : 'Refresh',
-            onClick: handleRefreshInsight,
-            disabled: refreshing,
-            loading: refreshing,
-          }}
-          detailContent={
-            <div className="space-y-2">
-              <p>Quoted margin: {mockBudgetData.quotedMargin.toFixed(1)}%</p>
-              <p>Current margin: {mockBudgetData.currentMargin.toFixed(1)}%</p>
-              <p>Projected margin at completion: {mockBudgetData.projectedMargin.toFixed(1)}%</p>
-              <p>Comparable historical jobs finished between $23,200 and $24,100 final spend.</p>
-            </div>
-          }
-          evidenceLevel="expandable"
-          detailLabel="Evidence"
-          state={refreshing ? 'loading' : 'suggested'}
-        />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Budget saved')}>
+            <Save className="w-4 h-4 mr-2" />
+            Save
+          </Button>
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Budget report sent')}>
+            <Send className="w-4 h-4 mr-2" />
+            Send Report
+          </Button>
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Share link copied')}>
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+        </div>
       </motion.div>
+
     </motion.div>
   );
 }

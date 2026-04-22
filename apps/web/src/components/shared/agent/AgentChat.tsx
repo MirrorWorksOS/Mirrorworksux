@@ -195,7 +195,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
       )}
 
       {/* Input Bar */}
-      <div className="px-4 pb-4 pt-4">
+      <div className="px-4 pb-5 pt-5">
         <div className="ai-card-glow flex items-center gap-2 bg-[var(--input-background)] dark:bg-[var(--input-background)] rounded-2xl px-3 py-2">
           <div className="shrink-0 self-center" aria-hidden>
             <AgentLogomarkAnimated size={26} animating={isTyping} />
@@ -224,7 +224,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[10px] text-[var(--neutral-400)] text-center mt-3">
+        <p className="text-[10px] text-[var(--neutral-400)] text-center mt-4">
           MirrorWorks Agent is simulated in this prototype.
         </p>
       </div>
@@ -248,13 +248,13 @@ function EmptyState({
   const welcomeText = getWelcomeMessage(currentModule);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4 pt-20 pb-4">
+    <div className="flex flex-col items-center justify-center h-full px-4 pt-16 pb-6">
       {/* Agent Avatar */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.2, 0, 0, 1] }}
-        className="mb-4"
+        className="mb-6"
       >
         <AgentLogomark size={48} />
       </motion.div>
@@ -264,9 +264,9 @@ function EmptyState({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.3 }}
-        className="text-center mb-6"
+        className="text-center mb-8"
       >
-        <h3 className="text-xl font-semibold text-foreground mb-2">MirrorWorks Agent</h3>
+        <h3 className="text-xl font-semibold text-foreground mb-3">MirrorWorks Agent</h3>
         <p className="text-xs text-[var(--neutral-500)] leading-relaxed max-w-[280px]">
           One assistant across the whole operation. Ask about your work, review recommendations, and move faster.
         </p>
@@ -277,16 +277,16 @@ function EmptyState({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.3 }}
-        className="w-full space-y-2"
+        className="w-full space-y-3"
       >
-        <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-400)] text-center mb-2">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-400)] text-center mb-4">
           Suggested Prompts
         </p>
         {quickActions.map((action) => (
           <button
             key={action.label}
             onClick={() => onQuickAction(action.prompt)}
-            className="ai-card-glow w-full text-left px-4 py-3 rounded-xl bg-[var(--card)] group"
+            className="ai-card-glow w-full text-left px-4 py-3.5 rounded-xl bg-[var(--card)] group"
           >
             <span className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-500)] group-hover:text-foreground transition-colors">
               {action.label}

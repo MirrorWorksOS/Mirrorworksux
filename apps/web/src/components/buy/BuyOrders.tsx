@@ -147,7 +147,7 @@ export function BuyOrders() {
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New purchase order coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/buy/orders/new')}>
           New PO
         </ToolbarPrimaryButton>
       </PageToolbar>

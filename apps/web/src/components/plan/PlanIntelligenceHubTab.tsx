@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Save, Send, Share2, Upload, Download, Camera, Paperclip, FileText, Clock, Mail, Phone, Eye } from 'lucide-react';
+import { Sparkles, Save, Send, Share2, Upload, Download, Camera, Paperclip, FileText, FileSpreadsheet, Ruler, Clock, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -11,9 +11,11 @@ import { AISuggestion } from '@/components/shared/ai/AISuggestion';
 import { MirrorWorksAgentCard } from '@/components/shared/ai/MirrorWorksAgentCard';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { toast } from 'sonner';
-import { AIFeed } from '@/components/shared/ai/AIFeed';
+interface PlanIntelligenceHubTabProps {
+  onOpenBudget?: () => void;
+}
 
-export function PlanIntelligenceHubTab() {
+export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabProps = {}) {
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
 
@@ -32,8 +34,6 @@ export function PlanIntelligenceHubTab() {
 
   return (
     <div className="p-6 space-y-6">
-      <AIFeed module="plan" initialCount={3} />
-
       {/* AI Suggestions */}
       <AISuggestion
         title="Critical path risk"
@@ -247,7 +247,7 @@ export function PlanIntelligenceHubTab() {
           statusText="Updated 2 hours ago"
           primaryAction={{
             label: 'View full budget',
-            onClick: () => toast.success('Opening budget details'),
+            onClick: () => onOpenBudget?.(),
           }}
           detailContent={
             <div className="space-y-2">
@@ -290,20 +290,18 @@ export function PlanIntelligenceHubTab() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
           {[
-            { name: 'Drawing Set 01', type: 'PDF', date: '2 days ago', color: 'bg-[var(--mw-error)]' },
-            { name: 'Drawing Set 02', type: 'PDF', date: '2 days ago', color: 'bg-[var(--mw-error)]' },
-            { name: 'Drawing Set 03', type: 'PDF', date: '2 days ago', color: 'bg-[var(--mw-error)]' },
-            { name: 'Drawing Set 04', type: 'PDF', date: '2 days ago', color: 'bg-[var(--mw-error)]' },
-            { name: 'Bill of Materials', type: 'XLSX', date: '3 days ago', color: 'bg-[var(--mw-mirage)]' },
-            { name: 'BOM - Revision 2', type: 'XLSX', date: '1 day ago', color: 'bg-[var(--mw-mirage)]' }
+            { name: 'Ring Gear Drawing', type: 'PDF', date: '2 days ago', icon: Ruler },
+            { name: 'Pinion Shaft Drawing', type: 'PDF', date: '2 days ago', icon: Ruler },
+            { name: 'Spider Gear Drawing', type: 'PDF', date: '2 days ago', icon: Ruler },
+            { name: 'Assembly Drawing', type: 'PDF', date: '2 days ago', icon: Ruler },
+            { name: 'Differential BOM', type: 'XLSX', date: '3 days ago', icon: FileSpreadsheet },
+            { name: 'BOM - Revision 2', type: 'XLSX', date: '1 day ago', icon: FileSpreadsheet }
           ].map((file, i) => (
             <div
               key={i}
               className="border border-[var(--border)] rounded-[var(--shape-lg)] p-4 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer"
             >
-              <div className={cn('w-10 h-10 rounded flex items-center justify-center mb-3', file.color)}>
-                <FileText className="w-5 h-5 text-white" />
-              </div>
+              <IconWell icon={file.icon} surface="onLight" className="mb-3" />
               <h4 className=" text-xs font-medium text-foreground mb-1 truncate">
                 {file.name}
               </h4>

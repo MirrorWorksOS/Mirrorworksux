@@ -36,6 +36,7 @@ const SellCustomerPortal = React.lazy(() => import('./components/sell/SellCustom
 // Buy Module
 const BuyDashboard = React.lazy(() => import('./components/buy/BuyDashboard').then(m => ({ default: m.BuyDashboard })));
 const BuyOrders = React.lazy(() => import('./components/buy/BuyOrders').then(m => ({ default: m.BuyOrders })));
+const BuyNewOrder = React.lazy(() => import('./components/buy/BuyNewOrder').then(m => ({ default: m.BuyNewOrder })));
 const BuyRequisitions = React.lazy(() => import('./components/buy/BuyRequisitions').then(m => ({ default: m.BuyRequisitions })));
 const BuyReceipts = React.lazy(() => import('./components/buy/BuyReceipts').then(m => ({ default: m.BuyReceipts })));
 const BuySuppliers = React.lazy(() => import('./components/buy/BuySuppliers').then(m => ({ default: m.BuySuppliers })));
@@ -272,6 +273,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <L><BuyDashboard /></L> },
           { path: 'orders', element: <L><BuyOrders /></L> },
+          { path: 'orders/new', element: <L><BuyNewOrder /></L> },
           { path: 'orders/:id', element: <L><BuyOrderDetail /></L> },
           { path: 'requisitions', element: <L><BuyRequisitions /></L> },
           { path: 'requisitions/:id', element: <L><BuyRequisitionDetail /></L> },
