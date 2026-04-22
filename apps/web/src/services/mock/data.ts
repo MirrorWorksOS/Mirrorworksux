@@ -907,6 +907,9 @@ export const batchLots: BatchLot[] = [
       { id: 'batch-005', lotNumber: 'WIP-PLT-2026-002', type: 'wip', material: 'Base plate blanks — cut', qty: 50, date: '2026-03-24', status: 'active' },
     ],
   },
+  {
+    id: 'batch-006', lotNumber: 'LOT-RD12-2026-007', type: 'raw_material', material: 'Mild Steel Round Bar 12mm', qty: 40, date: '2026-04-05', status: 'active', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', heatNumber: 'H-2026-5814-RD', certUrl: '/mock/certs/H-2026-5814.pdf',
+  },
 ];
 
 export const materialConsumption: MaterialConsumptionLine[] = [

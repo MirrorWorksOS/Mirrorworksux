@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ChevronRight, ChevronDown, Layers, Package, Box } from "lucide-react";
+import { ChevronRight, ChevronDown, Layers, Package, Box, ExternalLink } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -99,6 +99,24 @@ function LotNode({ lot, depth = 0 }: { lot: BatchLot; depth?: number }) {
               <span className="font-mono text-sm font-medium text-foreground">
                 {lot.lotNumber}
               </span>
+              {lot.heatNumber && (
+                <span className="text-xs text-[var(--neutral-500)] tabular-nums">
+                  Heat: {lot.heatNumber}
+                </span>
+              )}
+              {lot.certUrl && (
+                <a
+                  href={lot.certUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Open material certificate for ${lot.lotNumber}`}
+                >
+                  <ExternalLink
+                    className="size-3.5 text-[var(--neutral-500)] hover:text-[var(--neutral-900)]"
+                    strokeWidth={1.5}
+                  />
+                </a>
+              )}
               <Badge variant="outline" className="text-[10px]">
                 {TYPE_LABEL[lot.type]}
               </Badge>
