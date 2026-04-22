@@ -41,6 +41,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
 import { KpiStatCard } from "@/components/shared/cards/KpiStatCard";
+import { shopFloorLeaderboardItems } from "@/services/mock/data";
 import type { WidgetConfig } from "./WidgetRegistry";
 import { WIDGET_TEMPLATES } from "./WidgetRegistry";
 
@@ -353,12 +354,10 @@ const SIMPLE_LISTS: Record<string, { items: ListItem[] }> = {
 
 const RANKED_LISTS: Record<string, { items: RankedListItem[] }> = {
   "shop-floor-leaderboard": {
-    items: [
-      { rank: 1, label: "Sarah Chen", meta: "142 units \u00b7 97% on-time \u00b7 99.2% quality" },
-      { rank: 2, label: "David Lee", meta: "128 units \u00b7 94% on-time \u00b7 98.8% quality" },
-      { rank: 3, label: "James Murray", meta: "115 units \u00b7 91% on-time \u00b7 99.5% quality" },
-      { rank: 4, label: "Emma Wilson", meta: "98 units \u00b7 96% on-time \u00b7 97.1% quality" },
-    ],
+    items: shopFloorLeaderboardItems.map((item, i) => ({
+      rank: i + 1,
+      ...item,
+    })),
   },
 };
 
@@ -368,17 +367,27 @@ function ListWidgetContent({ type }: { type: string }) {
     return (
       <ul className="space-y-3">
         {rankedData.items.map((item) => {
-          const badgeClass =
-            item.rank === 1
-              ? "bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]"
-              : item.rank <= 3
-                ? "bg-[var(--neutral-200)] text-[var(--neutral-700)]"
-                : "bg-transparent text-[var(--neutral-400)]";
+          const isFirst = item.rank === 1;
+          const badgeClass = isFirst
+            ? "text-[var(--mw-mirage)]"
+            : item.rank <= 3
+              ? "bg-[var(--neutral-200)] text-[var(--neutral-700)]"
+              : "bg-transparent text-[var(--neutral-400)]";
+          const textColorClass = isFirst
+            ? "text-[var(--mw-mirage)]"
+            : "text-foreground";
+          const metaColorClass = isFirst
+            ? "text-[var(--mw-mirage)]"
+            : "text-[var(--neutral-500)]";
 
           return (
             <li
               key={item.rank}
-              className="flex items-center gap-3 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0"
+              className={cn(
+                "flex items-center gap-3 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0",
+                isFirst &&
+                  "rounded-[var(--shape-md)] border-0 bg-[var(--mw-yellow-400)] px-2 py-1.5",
+              )}
             >
               <span
                 className={cn(
@@ -386,12 +395,16 @@ function ListWidgetContent({ type }: { type: string }) {
                   badgeClass,
                 )}
               >
-                #{item.rank}
+                {isFirst ? (
+                  <Trophy className="h-3 w-3" strokeWidth={2} aria-hidden />
+                ) : (
+                  `#${item.rank}`
+                )}
               </span>
-              <span className="flex-1 truncate text-sm text-foreground">
+              <span className={cn("flex-1 truncate text-sm", textColorClass, isFirst && "font-medium")}>
                 {item.label}
               </span>
-              <span className="shrink-0 text-xs text-[var(--neutral-500)]">
+              <span className={cn("shrink-0 text-xs tabular-nums font-medium", metaColorClass)}>
                 {item.meta}
               </span>
             </li>
