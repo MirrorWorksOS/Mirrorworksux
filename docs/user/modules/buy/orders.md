@@ -11,7 +11,7 @@ Complete purchase orders work and move records to the next stage.
 
 ## Primary Actions
 - Search and filter records.
-- Create or add records/items.
+- **Create PO** — opens the full [new-order builder](./new-order.md) at `/buy/orders/new`.
 - Open related pages and record detail views.
 
 ## Key UI Sections

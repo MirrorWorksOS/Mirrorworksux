@@ -51,6 +51,7 @@ import type {
   WorkCentre,
   MrpNode,
   ShiftAssignment,
+  EmployeeShift,
   NestingSheet,
   BomGeneratorLine,
   CapaRecord,
@@ -89,6 +90,57 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Key account — server rack & mounting bracket work. 60-day terms.',
     createdAt: '2024-06-15',
+    contacts: [
+      {
+        id: 'cust-001-c1',
+        customerId: 'cust-001',
+        name: 'James Hartley',
+        email: 'james@techcorp.com.au',
+        phone: '+61 2 9001 2345',
+        title: 'Procurement Lead',
+        role: 'admin',
+        status: 'active',
+        invitedAt: '2024-06-16T10:00:00Z',
+        acceptedAt: '2024-06-16T14:22:00Z',
+        lastLoginAt: '2026-04-22T08:15:00Z',
+        isPrimaryBilling: true,
+      },
+      {
+        id: 'cust-001-c2',
+        customerId: 'cust-001',
+        name: 'Priya Shah',
+        email: 'priya@techcorp.com.au',
+        phone: '+61 2 9001 2378',
+        title: 'Finance Controller',
+        role: 'lead',
+        status: 'active',
+        invitedAt: '2025-03-02T09:00:00Z',
+        acceptedAt: '2025-03-02T11:40:00Z',
+        lastLoginAt: '2026-04-21T16:02:00Z',
+      },
+      {
+        id: 'cust-001-c3',
+        customerId: 'cust-001',
+        name: 'Marcus Chen',
+        email: 'marcus.chen@techcorp.com.au',
+        title: 'Mechanical Engineer',
+        role: 'team',
+        status: 'invited',
+        invitedAt: '2026-04-18T11:30:00Z',
+      },
+      {
+        id: 'cust-001-c4',
+        customerId: 'cust-001',
+        name: 'Sofia Rossi',
+        email: 'sofia@techcorp.com.au',
+        title: 'Former Procurement Assistant',
+        role: 'team',
+        status: 'revoked',
+        invitedAt: '2024-11-01T09:00:00Z',
+        acceptedAt: '2024-11-01T10:15:00Z',
+        revokedAt: '2026-02-14T13:00:00Z',
+      },
+    ],
   },
   {
     id: 'cust-002',
@@ -105,6 +157,22 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Sub-assembly partner — repeat bracket & chassis orders.',
     createdAt: '2024-09-01',
+    contacts: [
+      {
+        id: 'cust-002-c1',
+        customerId: 'cust-002',
+        name: 'Dale Nguyen',
+        email: 'dale@pacificfab.com.au',
+        phone: '+61 3 9422 1100',
+        title: 'Operations Manager',
+        role: 'admin',
+        status: 'active',
+        invitedAt: '2024-09-05T08:00:00Z',
+        acceptedAt: '2024-09-05T09:12:00Z',
+        lastLoginAt: '2026-04-20T11:30:00Z',
+        isPrimaryBilling: true,
+      },
+    ],
   },
   {
     id: 'cust-003',
@@ -848,6 +916,71 @@ export const shiftAssignments: ShiftAssignment[] = [
   { id: 'shift-008', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
   { id: 'shift-009', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 2, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
   { id: 'shift-010', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
+];
+
+/**
+ * Employee-level shift schedule for the Shift Manager calendar.
+ * Covers Mon–Sun (1=Mon … 0=Sun) for each active employee in `employees`.
+ * Office roles (Sales, Planning, Purchasing) default to 9–5 Mon–Fri;
+ * Production / QC / Logistics operate on shift patterns Mon–Sat.
+ */
+export const employeeShifts: EmployeeShift[] = [
+  // Sarah Chen — Sales Manager (office)
+  { id: 'es-001', employeeId: 'emp-001', employeeName: 'Sarah Chen', employeeInitials: 'SC', department: 'Sales', role: 'Sales Manager', dayOfWeek: 1, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-002', employeeId: 'emp-001', employeeName: 'Sarah Chen', employeeInitials: 'SC', department: 'Sales', role: 'Sales Manager', dayOfWeek: 2, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-003', employeeId: 'emp-001', employeeName: 'Sarah Chen', employeeInitials: 'SC', department: 'Sales', role: 'Sales Manager', dayOfWeek: 3, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-004', employeeId: 'emp-001', employeeName: 'Sarah Chen', employeeInitials: 'SC', department: 'Sales', role: 'Sales Manager', dayOfWeek: 4, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-005', employeeId: 'emp-001', employeeName: 'Sarah Chen', employeeInitials: 'SC', department: 'Sales', role: 'Sales Manager', dayOfWeek: 5, shift: 'day', startTime: '09:00', endTime: '15:00' },
+
+  // Mike Thompson — Estimator (office)
+  { id: 'es-006', employeeId: 'emp-002', employeeName: 'Mike Thompson', employeeInitials: 'MT', department: 'Sales', role: 'Estimator / Account Manager', dayOfWeek: 1, shift: 'day', startTime: '08:30', endTime: '17:00' },
+  { id: 'es-007', employeeId: 'emp-002', employeeName: 'Mike Thompson', employeeInitials: 'MT', department: 'Sales', role: 'Estimator / Account Manager', dayOfWeek: 2, shift: 'day', startTime: '08:30', endTime: '17:00' },
+  { id: 'es-008', employeeId: 'emp-002', employeeName: 'Mike Thompson', employeeInitials: 'MT', department: 'Sales', role: 'Estimator / Account Manager', dayOfWeek: 4, shift: 'day', startTime: '08:30', endTime: '17:00' },
+  { id: 'es-009', employeeId: 'emp-002', employeeName: 'Mike Thompson', employeeInitials: 'MT', department: 'Sales', role: 'Estimator / Account Manager', dayOfWeek: 5, shift: 'day', startTime: '08:30', endTime: '17:00' },
+
+  // Emma Wilson — Production Planner
+  { id: 'es-010', employeeId: 'emp-003', employeeName: 'Emma Wilson', employeeInitials: 'EW', department: 'Planning', role: 'Production Planner', dayOfWeek: 1, shift: 'day', startTime: '07:00', endTime: '15:30' },
+  { id: 'es-011', employeeId: 'emp-003', employeeName: 'Emma Wilson', employeeInitials: 'EW', department: 'Planning', role: 'Production Planner', dayOfWeek: 2, shift: 'day', startTime: '07:00', endTime: '15:30' },
+  { id: 'es-012', employeeId: 'emp-003', employeeName: 'Emma Wilson', employeeInitials: 'EW', department: 'Planning', role: 'Production Planner', dayOfWeek: 3, shift: 'day', startTime: '07:00', endTime: '15:30' },
+  { id: 'es-013', employeeId: 'emp-003', employeeName: 'Emma Wilson', employeeInitials: 'EW', department: 'Planning', role: 'Production Planner', dayOfWeek: 4, shift: 'day', startTime: '07:00', endTime: '15:30' },
+  { id: 'es-014', employeeId: 'emp-003', employeeName: 'Emma Wilson', employeeInitials: 'EW', department: 'Planning', role: 'Production Planner', dayOfWeek: 5, shift: 'day', startTime: '07:00', endTime: '15:30' },
+
+  // David Lee — CNC Operator (day + arvo rotation)
+  { id: 'es-015', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-016', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-017', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-004', workCentreName: 'Machining', dayOfWeek: 3, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'es-018', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-004', workCentreName: 'Machining', dayOfWeek: 4, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'es-019', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 5, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-020', employeeId: 'emp-004', employeeName: 'David Lee', employeeInitials: 'DL', department: 'Production', role: 'CNC Operator / Machinist', workCentreId: 'wc-001', workCentreName: 'Cutting', dayOfWeek: 6, shift: 'day', startTime: '06:00', endTime: '12:00' },
+
+  // Priya Sharma — Procurement (office)
+  { id: 'es-021', employeeId: 'emp-005', employeeName: 'Priya Sharma', employeeInitials: 'PS', department: 'Purchasing', role: 'Procurement Officer', dayOfWeek: 1, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-022', employeeId: 'emp-005', employeeName: 'Priya Sharma', employeeInitials: 'PS', department: 'Purchasing', role: 'Procurement Officer', dayOfWeek: 2, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-023', employeeId: 'emp-005', employeeName: 'Priya Sharma', employeeInitials: 'PS', department: 'Purchasing', role: 'Procurement Officer', dayOfWeek: 3, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-024', employeeId: 'emp-005', employeeName: 'Priya Sharma', employeeInitials: 'PS', department: 'Purchasing', role: 'Procurement Officer', dayOfWeek: 4, shift: 'day', startTime: '09:00', endTime: '17:00' },
+  { id: 'es-025', employeeId: 'emp-005', employeeName: 'Priya Sharma', employeeInitials: 'PS', department: 'Purchasing', role: 'Procurement Officer', dayOfWeek: 5, shift: 'day', startTime: '09:00', endTime: '15:00' },
+
+  // James Murray — Welder (day shift mostly)
+  { id: 'es-026', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 1, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-027', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 2, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-028', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 3, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-029', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 4, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-030', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 5, shift: 'day', startTime: '06:00', endTime: '14:00' },
+  { id: 'es-031', employeeId: 'emp-006', employeeName: 'James Murray', employeeInitials: 'JM', department: 'Production', role: 'Welder / Boilermaker', workCentreId: 'wc-003', workCentreName: 'Welding', dayOfWeek: 6, shift: 'day', startTime: '06:00', endTime: '12:00' },
+
+  // Anh Nguyen — QC Inspector
+  { id: 'es-032', employeeId: 'emp-007', employeeName: 'Anh Nguyen', employeeInitials: 'AN', department: 'QC', role: 'Quality Inspector', dayOfWeek: 1, shift: 'day', startTime: '07:00', endTime: '15:00' },
+  { id: 'es-033', employeeId: 'emp-007', employeeName: 'Anh Nguyen', employeeInitials: 'AN', department: 'QC', role: 'Quality Inspector', dayOfWeek: 2, shift: 'day', startTime: '07:00', endTime: '15:00' },
+  { id: 'es-034', employeeId: 'emp-007', employeeName: 'Anh Nguyen', employeeInitials: 'AN', department: 'QC', role: 'Quality Inspector', dayOfWeek: 3, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'es-035', employeeId: 'emp-007', employeeName: 'Anh Nguyen', employeeInitials: 'AN', department: 'QC', role: 'Quality Inspector', dayOfWeek: 4, shift: 'afternoon', startTime: '14:00', endTime: '22:00' },
+  { id: 'es-036', employeeId: 'emp-007', employeeName: 'Anh Nguyen', employeeInitials: 'AN', department: 'QC', role: 'Quality Inspector', dayOfWeek: 5, shift: 'day', startTime: '07:00', endTime: '15:00' },
+
+  // Tom Bradshaw — Warehouse / Dispatch
+  { id: 'es-037', employeeId: 'emp-008', employeeName: 'Tom Bradshaw', employeeInitials: 'TB', department: 'Logistics', role: 'Warehouse / Dispatch', dayOfWeek: 1, shift: 'day', startTime: '06:30', endTime: '14:30' },
+  { id: 'es-038', employeeId: 'emp-008', employeeName: 'Tom Bradshaw', employeeInitials: 'TB', department: 'Logistics', role: 'Warehouse / Dispatch', dayOfWeek: 2, shift: 'day', startTime: '06:30', endTime: '14:30' },
+  { id: 'es-039', employeeId: 'emp-008', employeeName: 'Tom Bradshaw', employeeInitials: 'TB', department: 'Logistics', role: 'Warehouse / Dispatch', dayOfWeek: 3, shift: 'day', startTime: '06:30', endTime: '14:30' },
+  { id: 'es-040', employeeId: 'emp-008', employeeName: 'Tom Bradshaw', employeeInitials: 'TB', department: 'Logistics', role: 'Warehouse / Dispatch', dayOfWeek: 4, shift: 'day', startTime: '06:30', endTime: '14:30' },
+  { id: 'es-041', employeeId: 'emp-008', employeeName: 'Tom Bradshaw', employeeInitials: 'TB', department: 'Logistics', role: 'Warehouse / Dispatch', dayOfWeek: 5, shift: 'day', startTime: '06:30', endTime: '14:30' },
 ];
 
 export const nestingSheets: NestingSheet[] = [

@@ -102,8 +102,6 @@ const mockSpendData = [
 ];
 
 
-const getProgressColor = (pct: number) => getChartScaleColour(Math.min(100, pct));
-
 export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: PlanBudgetTabProps) {
   const [dateRange, setDateRange] = useState<'all' | 'month' | 'week'>('all');
   const [refreshing, setRefreshing] = useState(false);
@@ -130,7 +128,6 @@ export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: 
   }
 
   const utilizationPercent = (mockBudgetData.totalSpent / mockBudgetData.totalBudget) * 100;
-  const totalVariance = mockBudgetData.remaining;
   const totalActual = mockCategories.reduce((sum, cat) => sum + cat.actual, 0);
   const totalBudgeted = mockCategories.reduce((sum, cat) => sum + cat.budget, 0);
 

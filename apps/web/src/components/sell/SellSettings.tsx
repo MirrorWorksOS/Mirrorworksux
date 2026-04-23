@@ -2,9 +2,16 @@
  * Sell Settings — Implements ARCH 00 group-based permissions model
  * Panels: General, Leads & Pipeline, Quoting, Payments, Activities, Analytics, Integrations, Access & Permissions
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import { Settings, Target, FileText, CreditCard, Calendar, BarChart3, Plug, Lock, Plus, Trash2, Mail, Phone } from 'lucide-react';
+import { Settings, Target, FileText, CreditCard, Calendar, BarChart3, Plug, Lock, Plus, Trash2, Mail, Phone, UserCircle2 } from 'lucide-react';
+import {
+  usePortalPreferences,
+  usePortalPreferencesAdmin,
+  defaultPortalPreferences,
+  type PortalPreferences,
+} from './portalPreferences';
+import { customers } from '@/services';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -31,6 +38,16 @@ const sellPermissionKeys: PermissionKey[] = [
   { key: 'quotes.create', label: 'Create quotes', description: 'Create and edit quotes/estimates', type: 'boolean' },
   { key: 'invoices.create', label: 'Create invoices', description: 'Generate and send invoices', type: 'boolean' },
   { key: 'pricing.edit', label: 'Edit pricing', description: 'Change product prices and margins', type: 'boolean' },
+  { key: 'portal.access', label: 'Customer portal preview', description: 'Preview the read-only customer portal', type: 'boolean' },
+  { key: 'portal.configure', label: 'Configure portal', description: 'Toggle which portal sections customers see', type: 'boolean' },
+  { key: 'portal.invitations.send', label: 'Send portal invitations', description: 'Invite customer contacts to the portal', type: 'boolean' },
+  { key: 'portal.invitations.revoke', label: 'Revoke portal access', description: 'Revoke a portal contact and invalidate pending invitations', type: 'boolean' },
+  { key: 'portal.customers.impersonate', label: 'Impersonate customer', description: 'View the portal as a specific customer would see it', type: 'boolean' },
+  { key: 'portal.subscriptions.view', label: 'View customer subscriptions', description: 'See the plan card and usage in the portal', type: 'boolean' },
+  { key: 'portal.subscriptions.modify', label: 'Modify customer subscriptions', description: 'Change tier, billing cycle, payment method', type: 'boolean' },
+  { key: 'portal.subscriptions.cancel', label: 'Cancel customer subscriptions', description: 'Request cancel (still gated on plan.closable)', type: 'boolean' },
+  { key: 'portal.markup.create', label: 'Create 3D markups', description: 'Add new review pins to a quote model', type: 'boolean' },
+  { key: 'portal.markup.resolve', label: 'Resolve 3D markups', description: 'Mark markups as resolved or won\u2019t fix', type: 'boolean' },
   { key: 'settings.access', label: 'Settings access', description: 'Access this settings panel', type: 'boolean' },
   { key: 'reports.access', label: 'Reports access', description: 'View analytics and reports', type: 'boolean' },
 ];
@@ -48,6 +65,7 @@ const sellDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'crm.access': 'true', 'pipeline.visibility': 'all',
       'quotes.create': 'true', 'invoices.create': 'false', 'pricing.edit': 'false',
+      'portal.access': 'true', 'portal.configure': 'false',
       'settings.access': 'false', 'reports.access': 'false',
     },
   },
@@ -61,6 +79,7 @@ const sellDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'own', 'crm.access': 'true', 'pipeline.visibility': 'own',
       'quotes.create': 'true', 'invoices.create': 'false', 'pricing.edit': 'true',
+      'portal.access': 'true', 'portal.configure': 'false',
       'settings.access': 'false', 'reports.access': 'false',
     },
   },
@@ -74,6 +93,7 @@ const sellDefaultGroups: PermissionGroup[] = [
     permissions: {
       'documents.scope': 'all', 'crm.access': 'true', 'pipeline.visibility': 'all',
       'quotes.create': 'false', 'invoices.create': 'false', 'pricing.edit': 'false',
+      'portal.access': 'true', 'portal.configure': 'true',
       'settings.access': 'false', 'reports.access': 'false',
     },
   },
@@ -513,6 +533,292 @@ function IntegrationsPanel() {
   );
 }
 
+// ── Portal Panel ──
+function PortalPanel() {
+  // v2 schema: tenant-level defaults + per-customer overrides.
+  const { tenant, perCustomer, updateTenant, resetCustomer } =
+    usePortalPreferencesAdmin();
+  // Keep the local hook for a simple "preview" flow so existing tests that
+  // use usePortalPreferences() still import successfully.
+  const [, update] = usePortalPreferences(null);
+  // Whatever the caller passes to `update` must hit the tenant layer (null id).
+  void update;
+
+  const toggles: Array<{
+    key: keyof PortalPreferences;
+    label: string;
+    description: string;
+  }> = [
+    {
+      key: 'showShipping',
+      label: 'Shipping status',
+      description:
+        'Show the shipment-by-stage chart and in-flight shipment list. Pulled from Ship module.',
+    },
+    {
+      key: 'showQuotes',
+      label: 'Quotes section',
+      description:
+        'Surface open quotes in the portal so customers can accept or decline online. Disable to keep quote acceptance manual.',
+    },
+    {
+      key: 'allowInvoiceDownload',
+      label: 'Invoice PDF download',
+      description:
+        'Allow customers to download PDF copies of their invoices. When off, customers can view invoice details but not download.',
+    },
+    {
+      key: 'allowDeliveryNoteDownload',
+      label: 'Delivery note download',
+      description:
+        'Allow customers to download signed delivery notes and POD from the shipping panel.',
+    },
+    {
+      key: 'allowOnlinePayment',
+      label: 'Online payment link',
+      description:
+        'Show a "Pay online" button on unpaid invoices that opens a hosted payment session.',
+    },
+    {
+      key: 'showMarkup',
+      label: '3D model review',
+      description:
+        'Surface threaded markups on the 3D model of each quote so customers can flag regions for the engineer.',
+    },
+    {
+      key: 'showSubscriptionUsage',
+      label: 'Show subscription usage',
+      description:
+        'Render the usage meters (seats, docs, storage) on the subscription card. Turn off if your customers should not see these numbers.',
+    },
+    {
+      key: 'allowProfileEdit',
+      label: 'Self-service profile edit',
+      description:
+        'Let customers edit their shipping address and contact details from the portal header.',
+    },
+    {
+      key: 'showActivities',
+      label: 'Activity feed',
+      description:
+        'Show the most recent calls, emails, and meetings related to this customer. Off by default because activity notes may be internal.',
+    },
+  ];
+
+  const prefs = tenant;
+  const customerOverrideIds = Object.keys(perCustomer);
+
+  return (
+    <div className="space-y-8 max-w-[720px]">
+      <SaveRow />
+
+      <div>
+        <SectionLabel>Portal visibility</SectionLabel>
+        <p className="text-xs text-[var(--neutral-500)] mb-4">
+          The customer portal is always read-only. Orders, invoices, and shipping
+          are never editable by customers — these toggles only control which
+          sections they can see. Preview what the customer sees in{' '}
+          <a
+            href="/sell/portal"
+            className="text-foreground underline-offset-2 hover:underline"
+          >
+            Sell → Customer Portal
+          </a>
+          .
+        </p>
+        <div className="space-y-4">
+          {toggles.map((t) => (
+            <div
+              key={t.key}
+              className="flex items-start justify-between gap-6 py-3 border-b border-[var(--neutral-100)] last:border-0"
+            >
+              <div>
+                <p className="text-sm font-medium text-foreground">{t.label}</p>
+                <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                  {t.description}
+                </p>
+              </div>
+              <Switch
+                checked={prefs[t.key]}
+                onCheckedChange={(v) => updateTenant({ [t.key]: v })}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Per-customer overrides</SectionLabel>
+        <p className="text-xs text-[var(--neutral-500)] mb-4">
+          Tenant defaults above apply to every customer. If a customer has
+          opted-in or opted-out of a specific section, it shows up here. Reset
+          to inherit the tenant default again.
+        </p>
+        {customerOverrideIds.length === 0 ? (
+          <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-[var(--neutral-50)] px-4 py-6 text-center text-xs text-[var(--neutral-500)]">
+            No customer-specific overrides yet. Change a toggle from the{' '}
+            <a
+              href="/sell/portal"
+              className="text-foreground underline-offset-2 hover:underline"
+            >
+              portal preview
+            </a>{' '}
+            with a specific customer selected to create one.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {customerOverrideIds.map((cid) => {
+              const cust = customers.find((c) => c.id === cid);
+              const override = perCustomer[cid];
+              const diffs = Object.entries(override ?? {}).map(([k, v]) => {
+                const key = k as keyof PortalPreferences;
+                const def = defaultPortalPreferences[key];
+                return { key, override: v as boolean, def: def as boolean };
+              });
+              return (
+                <div
+                  key={cid}
+                  className="flex items-start justify-between gap-4 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      {cust?.company ?? cid}
+                    </p>
+                    <p className="mt-0.5 text-xs text-[var(--neutral-500)]">
+                      {diffs.length} override{diffs.length === 1 ? '' : 's'}:
+                      <span className="ml-1 text-[var(--neutral-700)]">
+                        {diffs
+                          .map(
+                            (d) =>
+                              `${String(d.key)}=${d.override ? 'on' : 'off'}`,
+                          )
+                          .join(' · ')}
+                      </span>
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => resetCustomer(cid)}
+                  >
+                    Reset to default
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <SectionLabel>Access</SectionLabel>
+        <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4 text-sm">
+          <p className="font-medium text-foreground">
+            Who can preview and configure the portal
+          </p>
+          <p className="text-xs text-[var(--neutral-500)] mt-1">
+            The portal surface is controlled by several group permissions in{' '}
+            <span className="font-mono text-[var(--neutral-700)]">
+              sell.portal.*
+            </span>
+            :
+          </p>
+          <ul className="mt-3 space-y-2 text-xs text-[var(--neutral-600)]">
+            <li>
+              <Badge variant="outline" className="mr-2 font-mono">
+                portal.access
+              </Badge>
+              Preview the portal as a customer sees it.
+            </li>
+            <li>
+              <Badge variant="outline" className="mr-2 font-mono">
+                portal.configure
+              </Badge>
+              Change the toggles above — controls what customers see.
+            </li>
+            <li>
+              <Badge variant="outline" className="mr-2 font-mono">
+                portal.invitations.send / revoke
+              </Badge>
+              Invite or remove portal contacts from the Customer detail page.
+            </li>
+            <li>
+              <Badge variant="outline" className="mr-2 font-mono">
+                portal.subscriptions.*
+              </Badge>
+              View, modify, or cancel a customer's plan from the portal.
+            </li>
+            <li>
+              <Badge variant="outline" className="mr-2 font-mono">
+                portal.markup.*
+              </Badge>
+              Create, reply to, or resolve 3D-model markups on quotes.
+            </li>
+          </ul>
+          <p className="text-xs text-[var(--neutral-500)] mt-3">
+            Assign these in{' '}
+            <a
+              href="/sell/settings?panel=access"
+              className="text-foreground underline-offset-2 hover:underline"
+            >
+              Access & Permissions
+            </a>{' '}
+            or review org-wide access in{' '}
+            <a
+              href="/control/groups"
+              className="text-foreground underline-offset-2 hover:underline"
+            >
+              Control → Groups
+            </a>
+            .
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Customer sign-in</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">
+              Portal URL
+            </Label>
+            <Input
+              defaultValue="https://portal.alliancemetal.com.au/"
+              className="h-12 border-[var(--border)] rounded-[var(--shape-md)] font-mono text-sm"
+              readOnly
+            />
+            <p className="text-xs text-[var(--neutral-500)] mt-1">
+              Customers sign in using email magic-links. No passwords are stored.
+            </p>
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)]">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                Require customer contact to be verified
+              </p>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                Only contacts flagged as verified can sign in to the portal.
+              </p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                Email customers when a quote is ready
+              </p>
+              <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                Sends a portal link whenever a quote transitions to Sent.
+              </p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Root ──
 const settingsPanels: SettingsPanel[] = [
   { key: 'general', label: 'General', icon: Settings, component: GeneralPanel },
@@ -520,6 +826,7 @@ const settingsPanels: SettingsPanel[] = [
   { key: 'quoting', label: 'Quoting', icon: FileText, component: QuotingPanel },
   { key: 'payments', label: 'Payments', icon: CreditCard, component: PaymentsPanel },
   { key: 'activities', label: 'Activities', icon: Calendar, component: ActivitiesPanel },
+  { key: 'portal', label: 'Portal', icon: UserCircle2, component: PortalPanel },
   { key: 'analytics', label: 'Analytics', icon: BarChart3, component: AnalyticsPanel },
   { key: 'integrations', label: 'Integrations', icon: Plug, component: IntegrationsPanel },
 ];

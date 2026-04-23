@@ -3,7 +3,7 @@
  * Responsive grid with search, filters, and view toggle
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';

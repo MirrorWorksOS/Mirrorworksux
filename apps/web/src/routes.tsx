@@ -129,6 +129,8 @@ const ControlWorkflowDesigner = React.lazy(() => import('./components/control/Co
 const ControlFactoryDesigner = React.lazy(() => import('./components/control/ControlFactoryDesigner').then(m => ({ default: m.ControlFactoryDesigner })));
 const ControlEmptyStates = React.lazy(() => import('./components/control/ControlEmptyStates').then(m => ({ default: m.ControlEmptyStates })));
 const ControlProcessBuilder = React.lazy(() => import('./components/control/ControlProcessBuilder').then(m => ({ default: m.ControlProcessBuilder })));
+const ControlOperations = React.lazy(() => import('./components/control/ControlOperations').then(m => ({ default: m.ControlOperations })));
+const ControlRoutes = React.lazy(() => import('./components/control/ControlRoutes').then(m => ({ default: m.ControlRoutes })));
 const ControlGamification = React.lazy(() => import('./components/control/ControlGamification').then(m => ({ default: m.ControlGamification })));
 const ControlShiftManager = React.lazy(() => import('./components/control/ControlShiftManager').then(m => ({ default: m.ControlShiftManager })));
 const ControlMaintenance = React.lazy(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
@@ -404,6 +406,8 @@ export const router = createBrowserRouter([
           ) },
           { path: 'factory-layout', element: <L><ControlFactoryDesigner /></L> },
           { path: 'process-builder', element: <L><ControlProcessBuilder /></L> },
+          { path: 'operations', element: <L><ControlOperations /></L> },
+          { path: 'routes', element: <L><ControlRoutes /></L> },
           { path: 'locations', element: <L><ControlLocations /></L> },
           { path: 'machines', element: <L><ControlMachines /></L> },
           { path: 'inventory', element: <L><ControlInventory /></L> },

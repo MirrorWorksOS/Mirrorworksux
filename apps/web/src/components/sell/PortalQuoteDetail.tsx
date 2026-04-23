@@ -17,6 +17,9 @@ import {
 import { StatusBadge, type StatusKey } from '@/components/shared/data/StatusBadge';
 import { PortalQuoteChat } from '@/components/sell/PortalQuoteChat';
 import { PortalRevisionTracker } from '@/components/sell/PortalRevisionTracker';
+import { PortalMarkupViewer } from '@/components/sell/PortalMarkupViewer';
+import { usePortalPreferences } from '@/components/sell/portalPreferences';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import type { Quote } from '@/types/entities';
 
@@ -93,10 +96,24 @@ function StatusTimeline({ quote }: { quote: Quote }) {
 export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: PortalQuoteDetailProps) {
   const [revisionDialogOpen, setRevisionDialogOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
+  const { viewingCustomerId } = useAuth();
+  const [prefs] = usePortalPreferences(viewingCustomerId);
 
   const subtotal = quote.lineItems.reduce((s, li) => s + li.total, 0);
   const currentVersion = quote.revisions?.length ?? 1;
   const isActionable = quote.status === 'sent' || quote.status === 'draft';
+
+  // Quote has a 3D model if any uploaded file ends in .glb/.gltf, OR the
+  // demo quote id matches the seeded asset. Real impl = dedicated
+  // `quote.modelFile` field.
+  const modelSrc = (() => {
+    const file = quote.uploadedFiles?.find((f) => /\.glb$|\.gltf$/i.test(f.name));
+    if (file) return `/models/${file.name}`;
+    // Fall back to the demo asset for q-001 so the seed markups have a model.
+    if (quote.id === 'q-001') return '/models/diff.glb';
+    return null;
+  })();
+  const showMarkup = prefs.showMarkup && !!modelSrc;
 
   const handleRequestRevision = () => {
     if (!revisionNotes.trim()) return;
@@ -198,6 +215,18 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
               </div>
             );
           })()}
+
+          {/* 3D model review — gated on per-customer pref + presence of a model */}
+          {showMarkup && modelSrc && (
+            <PortalMarkupViewer
+              entityKind="quote"
+              entityId={quote.id}
+              modelSrc={modelSrc}
+              modelRef={modelSrc.split('/').pop() ?? 'model.glb'}
+              revision={`rev-${currentVersion}`}
+              customerId={viewingCustomerId}
+            />
+          )}
 
           {/* Delivery estimate */}
           <Card className="p-4 flex items-center gap-3">

@@ -3,8 +3,8 @@
  * Route: /sell/quotes/:id
  */
 
-import React, { useState, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router';
+import { useState, useMemo } from 'react';
+import { useParams, Link } from 'react-router';
 import { ArrowLeft, Download, Mail, Send, FileText } from 'lucide-react';
 import {
   JobWorkspaceLayout,
@@ -63,7 +63,6 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 
 export function SellQuoteDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   const quote = id ? QUOTE_BY_ID[id] : undefined;

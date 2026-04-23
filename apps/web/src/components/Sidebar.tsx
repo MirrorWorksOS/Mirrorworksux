@@ -359,6 +359,8 @@ export const menuConfig: MenuItem[] = [
           { label: 'Factory Designer', path: '/control/factory-layout' },
           { label: 'Process Builder', path: '/control/process-builder' },
           { label: 'Machines', path: '/control/machines' },
+          { label: 'Operations', path: '/control/operations' },
+          { label: 'Routes', path: '/control/routes' },
           { label: 'Locations', path: '/control/locations' },
         ],
       },

@@ -42,6 +42,7 @@ import type {
 export interface Customer {
   id: string;
   company: string;
+  /** Legacy primary-contact name. Prefer `contacts[]` for portal flows. */
   contact: string;
   email: string;
   phone: string;
@@ -54,6 +55,35 @@ export interface Customer {
   status: CustomerStatus;
   notes: string;
   createdAt: string;
+  /** Customer-portal contacts (multi-user). Falls back to legacy `contact`+`email` if empty. */
+  contacts?: CustomerContact[];
+}
+
+/** Role governs what a customer contact can do inside the portal. Mirrors internal admin/lead/team. */
+export type CustomerContactRole = 'admin' | 'lead' | 'team';
+
+/** Invitation/access state for a single customer contact. */
+export type CustomerContactStatus =
+  | 'invited'          // invite sent, not yet accepted
+  | 'active'           // accepted + can log in
+  | 'revoked'          // explicitly removed from portal
+  | 'pending';         // added but no invite yet
+
+export interface CustomerContact {
+  id: string;
+  customerId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  title?: string;
+  role: CustomerContactRole;
+  status: CustomerContactStatus;
+  invitedAt?: string;
+  acceptedAt?: string;
+  revokedAt?: string;
+  lastLoginAt?: string;
+  /** If true, this is the primary billing contact surfaced on invoices. */
+  isPrimaryBilling?: boolean;
 }
 
 export interface Product {
@@ -530,6 +560,29 @@ export interface ShiftAssignment {
   endTime: string;
 }
 
+/**
+ * Employee-level shift assignment for the Shift Manager calendar.
+ * References an Employee and optionally a work centre. Rows in the
+ * Shift Manager grid are employees (grouped by department), columns
+ * are weekdays, and cells hold zero or more EmployeeShift blocks.
+ */
+export interface EmployeeShift {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeInitials: string;
+  department: string;
+  role: string;
+  /** 0 = Sunday, 1 = Monday, …, 6 = Saturday */
+  dayOfWeek: number;
+  shift: 'day' | 'afternoon' | 'night';
+  startTime: string;
+  endTime: string;
+  /** Optional work centre the employee is scheduled to. Omitted for Sales / Office / etc. */
+  workCentreId?: string;
+  workCentreName?: string;
+}
+
 /** Nesting sheet result */
 export interface NestingSheet {
   id: string;
@@ -937,3 +990,171 @@ export interface QuarterlyTarget {
   current: number;
   status: 'complete' | 'active' | 'upcoming';
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// CUSTOMER PORTAL — subscriptions, invitations, attachments, markup
+// (Added 2026-04-23 — see docs/dev/modules/sell/customer-portal.md §P1)
+// ═══════════════════════════════════════════════════════════════════════
+
+/** MirrorWorks pricing tier codes. */
+export type SubscriptionTier = 'pilot' | 'produce' | 'expand' | 'excel';
+
+/** Subscription billing status. */
+export type SubscriptionStatus =
+  | 'trial'
+  | 'active'
+  | 'past_due'
+  | 'grace'           // cancelled but inside 30-day grace
+  | 'cancelled';
+
+export interface Subscription {
+  id: string;
+  customerId: string;
+  tier: SubscriptionTier;
+  planName: string;           // e.g. "Produce — monthly"
+  status: SubscriptionStatus;
+  billingCycle: 'monthly' | 'annual';
+  seats: number;
+  seatsUsed: number;
+  startDate: string;
+  renewalDate: string;
+  cancelAt?: string;
+  closedAt?: string;
+  mrrAud: number;
+  nextInvoiceDate?: string;
+  nextInvoiceAmount?: number;
+  paymentMethodLabel?: string; // "Visa •••• 4242"
+  /** Finance opt-in for self-service cancel. Default false. */
+  closable: boolean;
+  usage: {
+    docsThisMonth: number;
+    docsCap: number;
+    storageGb: number;
+    storageCapGb: number;
+  };
+}
+
+export interface SubscriptionEvent {
+  id: string;
+  subscriptionId: string;
+  type:
+    | 'created'
+    | 'upgraded'
+    | 'downgrade_requested'
+    | 'cycle_changed'
+    | 'payment_method_updated'
+    | 'cancel_requested'
+    | 'reactivated'
+    | 'payment_failed'
+    | 'renewed';
+  actorContactId: string | null;
+  actorSide: 'customer' | 'internal' | 'system';
+  occurredAt: string;
+  notes?: string;
+  metadata?: Record<string, unknown>;
+}
+
+// ── Attachments (PDF pipeline) ──────────────────────────────────────
+
+export type AttachmentEntityType =
+  | 'quote'
+  | 'sales_order'
+  | 'invoice'
+  | 'shipment'
+  | 'markup'
+  | 'purchase_order';
+
+export type AttachmentKind =
+  | 'quote_pdf'
+  | 'signed_quote'
+  | 'invoice_pdf'
+  | 'delivery_note'
+  | 'proof_of_delivery'
+  | 'markup_image'
+  | 'other';
+
+export interface Attachment {
+  id: string;
+  entityType: AttachmentEntityType;
+  entityId: string;
+  kind: AttachmentKind;
+  filename: string;
+  mimeType: string;
+  sizeBytes: number;
+  /** Data URL or mock blob URL. Real impl = S3/Supabase signed URL. */
+  url: string;
+  /** Who/what produced this artifact. */
+  generatedBy: 'system' | 'customer' | 'internal';
+  generatedAt: string;
+  /** Locks visibility to the portal. Default true once generated. */
+  customerVisible: boolean;
+}
+
+// ── Portal invitations ──────────────────────────────────────────────
+
+export interface PortalInvitation {
+  id: string;
+  customerId: string;
+  contactId: string;        // references CustomerContact.id
+  email: string;
+  role: CustomerContactRole;
+  invitedByEmployeeId: string;
+  invitedAt: string;
+  /** Expires if not accepted within 14 days. */
+  expiresAt: string;
+  acceptedAt?: string;
+  revokedAt?: string;
+  /** Short token the invite URL carries. 8-char alnum. */
+  token: string;
+}
+
+// ── 3D model markup + threaded comments ────────────────────────────
+
+export type MarkupStatus = 'open' | 'resolved' | 'wont_fix';
+
+export type MarkupEntityKind = 'quote' | 'sales_order' | 'job';
+
+export interface MarkupAnchor {
+  /** PartNode id resolved via mesh name convention in the loaded GLB. */
+  partId: string;
+  /** Local-space point on the part (relative to part's local origin). */
+  pointLocal: [number, number, number];
+  /** Local-space surface normal (used to float pin off-surface). */
+  normalLocal: [number, number, number];
+  /** Captured camera pose so "jump to this view" reproduces the look. */
+  cameraPose?: {
+    position: [number, number, number];
+    target: [number, number, number];
+    fov: number;
+  };
+}
+
+export interface ModelMarkup {
+  id: string;
+  entityKind: MarkupEntityKind;
+  entityId: string;         // quoteId / orderId / jobId
+  modelRef: string;         // e.g. "diff.glb" — identifier for the loaded asset
+  revision: string;         // e.g. "rev-1" — anchor invalidates on revision change
+  anchor: MarkupAnchor;
+  authorContactId: string;  // customer-contact id OR employee id
+  authorSide: 'customer' | 'internal';
+  createdAt: string;
+  status: MarkupStatus;
+  resolvedAt?: string;
+  resolvedByContactId?: string;
+  /** Denormalised thread. First message duplicates the markup's "opening comment". */
+  thread: MarkupComment[];
+}
+
+export interface MarkupComment {
+  id: string;
+  markupId: string;
+  authorContactId: string;
+  authorSide: 'customer' | 'internal';
+  body: string;
+  createdAt: string;
+  editedAt?: string;
+}
+
+// ── Shipment → delivery-note attachment convenience type ───────────
+// (Actual storage goes through `Attachment` with kind='delivery_note')

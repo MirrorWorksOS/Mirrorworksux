@@ -31,6 +31,7 @@ import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { customers, opportunities, quotes, salesOrders, sellInvoices, sellActivities, employees } from '@/services';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
+import { PortalContactsPanel } from './PortalContactsPanel';
 
 // ============================================================
 // Mock Data — built from centralised @/services/mock exports
@@ -675,18 +676,27 @@ export function SellCustomerDetail() {
         {/* Contacts Tab */}
         {activeTab === 'contacts' && (
           <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-foreground">All contacts at {customer.company}</h2>
-              <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
-            </div>
-            <MwDataTable<any>
-              columns={contactColumns}
-              data={allContacts}
-              keyExtractor={(_c: any, i: number) => `contact-${i}`}
-              selectable
-              onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
-              onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
+            {/* Portal access — real CustomerContact records from the service */}
+            <PortalContactsPanel
+              customerId={customer.id}
+              customerCompany={customer.company}
             />
+
+            {/* Legacy CRM contacts table (unchanged mock) */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium text-foreground">CRM contacts at {customer.company}</h2>
+                <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
+              </div>
+              <MwDataTable<any>
+                columns={contactColumns}
+                data={allContacts}
+                keyExtractor={(_c: any, i: number) => `contact-${i}`}
+                selectable
+                onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
+                onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
+              />
+            </div>
           </div>
         )}
 

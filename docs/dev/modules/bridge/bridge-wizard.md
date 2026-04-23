@@ -30,6 +30,8 @@ Added in PR #15. After the `MwDataTable` validation preview, the Review step now
 
 State: `previewEntity` (`useState<string | null>`); auto-seeded via `useEffect` with the first entity that has preview records.
 
+**2026-04-22 polish (PR #25)**: section restyled — cards use shared `variant="flat"`, warning chips use `--mw-warning` tokens (was raw amber), key/value rows flipped to `justify-between` for legibility, tab labels auto-capitalise, and `previewEntityKeys` is now memoised once per render. Behaviour unchanged.
+
 ## User Intent
 Complete guided setup with clear progression, live validation, and confidence in the mapping before committing.
 

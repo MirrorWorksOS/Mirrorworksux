@@ -39,6 +39,8 @@ export interface PartNode {
   ncReady?: boolean;
   inputs?: MaterialInput[];
   operations?: OperationNode[];
+  /** CAD render / photo URL — square aspect, transparent background preferred. */
+  imageUrl?: string;
 }
 
 export interface AssemblyNode {
@@ -47,4 +49,6 @@ export interface AssemblyNode {
   qty: number;
   cost: number;
   parts: PartNode[];
+  /** Hero CAD render of the full assembly. */
+  imageUrl?: string;
 }

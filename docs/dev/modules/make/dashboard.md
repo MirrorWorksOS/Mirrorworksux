@@ -55,10 +55,19 @@ Machine Status Grid + legend have **moved** to the Live floor tab (commit `a8906
 ## Dependencies
 - `@/services` (for `machines`)
 
+## Widgets (shared dashboard grid)
+
+A Make-scoped "Operator Leaderboard" widget is registered in `apps/web/src/components/shared/dashboard/WidgetRegistry.ts` as `shop-floor-leaderboard` (icon `Trophy`, category `list`, modules `['make']`). Added 2026-04-22 (commit `4eeef1fb`, PR [#23](https://github.com/matthewjquigley/Mirrorworksux/pull/23)).
+
+- Data source: `shopFloorLeaderboardItems` in `apps/web/src/services/mock/data.ts` (four ranked operators with `units · on-time % · quality %`).
+- Rendering: `DashboardWidgetGrid.tsx::ListWidgetContent` — ranked list branch. Rank 1 gets the `--mw-yellow-400` card treatment and a `Trophy` icon instead of a `#1` badge; ranks 2–3 get a neutral pill; ranks 4+ get a transparent pill.
+- Uses dark text on the yellow card (per the app-wide yellow-bg = dark-text convention).
+
 ## Known Gaps / Questions
 - In-file mock WO + schedule data. Real impl needs `makeService.getDashboardWorkOrders()` + shift-aware schedule shape.
 - Quick Action buttons are toast-only; wire to `jobStore`, `travellerStore`, scan station, etc.
 - Quality tab is a placeholder.
+- Operator leaderboard metrics are static strings — no aggregation from real traveller / QC data yet.
 
 ## Related Files
 - `apps/web/src/components/make/MakeDashboard.tsx`

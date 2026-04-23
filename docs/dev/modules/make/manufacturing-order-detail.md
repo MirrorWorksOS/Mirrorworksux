@@ -30,7 +30,16 @@ Inspect one record deeply and complete context-specific follow-up actions.
 - success
 - populated
 
+## BOM + routing view (2026-04-22)
+
+The MO detail now renders the shared `<BomRoutingTree assembly={assembly} mode="make" />` — same tree Plan → Job detail → Production tab authors, but in read-only mode with live op status. The demo assembly comes from `@/components/plan/BomRoutingTree.data` (`getDifferentialAssembly()`).
+
+See [BomRoutingTree dev doc](../plan/bom-routing-tree.md).
+
+![MO detail Overview with read-only "Routing & inputs" tree](../../../audits/screenshots/make/mo-detail-bomroutingtree.png)
+
 ## Components Used
+- `@/components/plan/BomRoutingTree` *(added 2026-04-22, mode="make")*
 - `@/components/make/MaterialConsumption`
 - `@/components/make/OperatorChat`
 - `@/components/shared/ai/AIFeed`
@@ -39,12 +48,7 @@ Inspect one record deeply and complete context-specific follow-up actions.
 - `@/components/shared/data/StatusBadge`
 - `@/components/shared/icons/IconWell`
 - `@/components/shared/layout/JobWorkspaceLayout`
-- `@/components/ui/avatar`
-- `@/components/ui/badge`
-- `@/components/ui/button`
-- `@/components/ui/card`
-- `@/components/ui/input`
-- `@/components/ui/label`
+- `@/components/ui/avatar` / `badge` / `button` / `card` / `input` / `label`
 
 ## Logic / Behaviour
 - Local state drives search/filter and derived visible lists.

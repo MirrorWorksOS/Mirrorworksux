@@ -13,6 +13,7 @@ import type {
   ToolingItem,
   ControlDocument,
   ShiftAssignment,
+  EmployeeShift,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -80,5 +81,11 @@ export const controlService = {
   async getShiftAssignments(): Promise<ShiftAssignment[]> {
     await delay();
     return mock.shiftAssignments;
+  },
+
+  /** Employee-level shift schedule (rows in the Shift Manager calendar). */
+  async getEmployeeShifts(): Promise<EmployeeShift[]> {
+    await delay();
+    return mock.employeeShifts;
   },
 };

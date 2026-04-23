@@ -3,7 +3,7 @@
  * Columns: Order #, Customer, Date, Status, Total, Actions
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, Download, MoreVertical, ExternalLink } from 'lucide-react';

@@ -151,7 +151,6 @@ export function QuoteUploadZone({ onAddItems }: QuoteUploadZoneProps) {
 
   const checkedCount = checked.size;
   const fileType = fileName ? detectFileType(fileName) : 'document';
-  const FileIcon = FILE_TYPE_ICONS[fileType] ?? FileText;
   const activeStageIndex = PIPELINE_STAGES.findIndex(stage => stage.key === activeStage);
 
   return (

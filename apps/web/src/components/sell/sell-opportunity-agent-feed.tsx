@@ -1,4 +1,3 @@
-import React from "react";
 import { TrendingUp, DollarSign, AlertTriangle, Users } from "lucide-react";
 
 import type { FeedItem } from "@/components/shared/ai/AIFeed";

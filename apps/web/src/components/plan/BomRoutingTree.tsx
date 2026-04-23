@@ -5,15 +5,18 @@
  * a single tree where every part shows its material inputs AND the sequence
  * of operations that produce it — no more tab-hopping between BOM and routing.
  *
- * Plan mode lets the planner add/edit rows; Make mode is read-only and shows
- * live op status.
+ * Plan mode lets the planner add/edit/reorder rows; Make mode is read-only and
+ * shows live op status. Drag-and-drop reorder uses react-dnd; the "Add op"
+ * picker reads from the Control → Operations Library service.
  */
 
 import { useMemo, useState } from 'react';
 import {
-  ChevronRight, Cog, Package, ShoppingCart, FileText, Search,
-  Plus, Rows3, ListTree, Download,
+  ChevronRight, Cog, ShoppingCart, FileText, Search,
+  Plus, Rows3, ListTree, Download, GripVertical, Route,
 } from 'lucide-react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from '@/components/ui/collapsible';
@@ -21,12 +24,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Popover, PopoverContent, PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+} from '@/components/ui/command';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { PartThumbnail } from '@/components/shared/product/PartThumbnail';
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from '@/components/ui/sheet';
 import { cn } from '@/components/ui/utils';
+import {
+  operationsLibraryService,
+  routesLibraryService,
+  type StandardOperation,
+  type StandardRoute,
+} from '@/services';
 import type {
   AssemblyNode, OperationNode, OperationStatus, PartNode,
 } from './BomRoutingTree.types';
@@ -57,7 +73,24 @@ const statusText: Record<OperationStatus, string> = {
   pending: 'Pending',
 };
 
-export function BomRoutingTree({
+const OP_DND_TYPE = 'bom-routing-op';
+
+/** Shape carried by react-dnd while dragging an op chip. */
+interface OpDragItem {
+  partId: string;
+  index: number;
+}
+
+export function BomRoutingTree(props: BomRoutingTreeProps) {
+  // Wrap in a feature-local DndProvider so the tree works regardless of host page.
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <BomRoutingTreeInner {...props} />
+    </DndProvider>
+  );
+}
+
+function BomRoutingTreeInner({
   assembly,
   mode = 'plan',
   defaultExpandedPartIds,
@@ -68,7 +101,11 @@ export function BomRoutingTree({
   const [search, setSearch] = useState('');
   const [selectedOp, setSelectedOp] = useState<{ op: OperationNode; part: PartNode } | null>(null);
 
-  const firstMakeId = assembly.parts.find((p) => p.kind === 'make')?.id;
+  // Local mutable copy of parts so reorder / add-op survive within the session.
+  // Production wiring would push back through planService.
+  const [parts, setParts] = useState<PartNode[]>(assembly.parts);
+
+  const firstMakeId = parts.find((p) => p.kind === 'make')?.id;
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
     const defaults = defaultExpandedPartIds ?? (firstMakeId ? [firstMakeId] : []);
     return defaults.reduce((acc, id) => ({ ...acc, [id]: true }), {});
@@ -76,7 +113,7 @@ export function BomRoutingTree({
 
   const filteredParts = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return assembly.parts.filter((p) => {
+    return parts.filter((p) => {
       if (kindFilter !== 'all' && p.kind !== kindFilter) return false;
       if (!q) return true;
       return (
@@ -85,11 +122,11 @@ export function BomRoutingTree({
         p.operations?.some((o) => o.name.toLowerCase().includes(q) || o.workCentre.toLowerCase().includes(q))
       );
     });
-  }, [assembly.parts, kindFilter, search]);
+  }, [parts, kindFilter, search]);
 
   const totals = useMemo(() => {
-    const makeParts = assembly.parts.filter((p) => p.kind === 'make');
-    const buyParts = assembly.parts.filter((p) => p.kind === 'buy');
+    const makeParts = parts.filter((p) => p.kind === 'make');
+    const buyParts = parts.filter((p) => p.kind === 'buy');
     const ops = makeParts.flatMap((p) => p.operations ?? []);
     const totalMinutes = ops.reduce((s, o) => s + o.minutes, 0);
     const opsDone = ops.filter((o) => o.status === 'done').length;
@@ -100,12 +137,69 @@ export function BomRoutingTree({
       totalMinutes,
       opsDone,
     };
-  }, [assembly.parts]);
+  }, [parts]);
 
   const readonly = mode === 'make';
 
   const toggle = (id: string) =>
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  /** Re-sequence ops 1..n after a reorder / add. */
+  const renumber = (ops: OperationNode[]): OperationNode[] =>
+    ops.map((op, i) => ({ ...op, sequence: i + 1 }));
+
+  const reorderOps = (partId: string, from: number, to: number) => {
+    if (from === to) return;
+    setParts((prev) =>
+      prev.map((p) => {
+        if (p.id !== partId || !p.operations) return p;
+        const next = [...p.operations];
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        return { ...p, operations: renumber(next) };
+      }),
+    );
+  };
+
+  const addOpFromLibrary = (partId: string, std: StandardOperation) => {
+    setParts((prev) =>
+      prev.map((p) => {
+        if (p.id !== partId) return p;
+        const ops = p.operations ?? [];
+        const newOp: OperationNode = {
+          id: `op-${partId}-${Date.now()}`,
+          sequence: ops.length + 1,
+          name: std.name,
+          workCentre: std.defaultWorkCentre,
+          minutes: std.defaultMinutes,
+          status: 'pending',
+          subcontract: std.isSubcontract,
+        };
+        return { ...p, operations: [...ops, newOp] };
+      }),
+    );
+  };
+
+  const applyRoute = (partId: string, route: StandardRoute) => {
+    const resolved = routesLibraryService.resolve(route);
+    setParts((prev) =>
+      prev.map((p) => {
+        if (p.id !== partId) return p;
+        const existing = p.operations ?? [];
+        const startSeq = existing.length;
+        const additions: OperationNode[] = resolved.map((step, i) => ({
+          id: `op-${partId}-${Date.now()}-${i}`,
+          sequence: startSeq + i + 1,
+          name: step.operation.name,
+          workCentre: step.operation.defaultWorkCentre,
+          minutes: step.minutesOverride ?? step.operation.defaultMinutes,
+          status: 'pending',
+          subcontract: step.operation.isSubcontract,
+        }));
+        return { ...p, operations: [...existing, ...additions] };
+      }),
+    );
+  };
 
   return (
     <>
@@ -187,21 +281,26 @@ export function BomRoutingTree({
           </div>
         </div>
 
-        {/* ---------------------------------------------- Assembly summary */}
-        <div className="px-6 py-4 bg-[var(--mw-mirage)] text-white flex items-center gap-4">
-          <IconWell icon={Cog} surface="key" size="sm" />
+        {/* ---------------------------------------------- Assembly summary (light) */}
+        <div className="px-6 py-4 bg-[var(--neutral-50)] border-b border-[var(--border)] flex items-center gap-4">
+          <PartThumbnail
+            imageUrl={assembly.imageUrl}
+            alt={assembly.name}
+            size="lg"
+            fallbackIcon={Cog}
+          />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">{assembly.name}</p>
-            <p className="text-xs text-white/70 tabular-nums">{assembly.partNumber}</p>
+            <p className="text-sm font-medium text-foreground">{assembly.name}</p>
+            <p className="text-xs text-[var(--neutral-500)] tabular-nums">{assembly.partNumber}</p>
           </div>
           <div className="flex items-center gap-6 text-xs tabular-nums">
             <div className="text-right">
-              <p className="text-white/60">Qty</p>
-              <p className="text-sm font-medium">{assembly.qty}</p>
+              <p className="text-[var(--neutral-500)]">Qty</p>
+              <p className="text-sm font-medium text-foreground">{assembly.qty}</p>
             </div>
             <div className="text-right">
-              <p className="text-white/60">Value</p>
-              <p className="text-sm font-medium">{formatCurrency(assembly.cost)}</p>
+              <p className="text-[var(--neutral-500)]">Value</p>
+              <p className="text-sm font-medium text-foreground">{formatCurrency(assembly.cost)}</p>
             </div>
           </div>
         </div>
@@ -218,6 +317,9 @@ export function BomRoutingTree({
                 open={Boolean(expanded[part.id])}
                 onToggle={() => toggle(part.id)}
                 onOpClick={(op) => setSelectedOp({ op, part })}
+                onReorderOp={(from, to) => reorderOps(part.id, from, to)}
+                onAddOp={(std) => addOpFromLibrary(part.id, std)}
+                onApplyRoute={(route) => applyRoute(part.id, route)}
                 readonly={readonly}
               />
             ))}
@@ -338,10 +440,15 @@ interface PartRowProps {
   open: boolean;
   onToggle: () => void;
   onOpClick: (op: OperationNode) => void;
+  onReorderOp: (from: number, to: number) => void;
+  onAddOp: (std: StandardOperation) => void;
+  onApplyRoute: (route: StandardRoute) => void;
   readonly: boolean;
 }
 
-function PartRow({ part, open, onToggle, onOpClick, readonly }: PartRowProps) {
+function PartRow({
+  part, open, onToggle, onOpClick, onReorderOp, onAddOp, onApplyRoute, readonly,
+}: PartRowProps) {
   const isBuy = part.kind === 'buy';
   const opsDone = part.operations?.filter((o) => o.status === 'done').length ?? 0;
   const opsTotal = part.operations?.length ?? 0;
@@ -361,10 +468,11 @@ function PartRow({ part, open, onToggle, onOpClick, readonly }: PartRowProps) {
               isBuy && 'opacity-0',
             )}
           />
-          <IconWell
-            icon={isBuy ? ShoppingCart : Package}
-            surface={isBuy ? 'onDark' : 'onLight'}
-            size="sm"
+          <PartThumbnail
+            imageUrl={part.imageUrl}
+            alt={part.name}
+            size="md"
+            fallbackIcon={isBuy ? ShoppingCart : undefined}
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -451,44 +559,38 @@ function PartRow({ part, open, onToggle, onOpClick, readonly }: PartRowProps) {
               <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] mb-1.5">
                 Operations
               </p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 items-center">
                 {part.operations.map((op, idx) => (
-                  <button
+                  <OpChip
                     key={op.id}
-                    type="button"
+                    op={op}
+                    index={idx}
+                    partId={part.id}
+                    isLast={idx === (part.operations?.length ?? 0) - 1}
+                    readonly={readonly}
                     onClick={() => onOpClick(op)}
-                    className={cn(
-                      'group/op inline-flex items-center gap-2 rounded-[var(--shape-sm)] border px-2.5 py-1.5 text-xs transition-colors',
-                      op.status === 'in_progress'
-                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
-                        : op.status === 'done'
-                          ? 'border-[var(--mw-green)]/30 bg-[var(--mw-green)]/5'
-                          : 'border-[var(--border)] bg-card hover:bg-[var(--neutral-50)]',
-                    )}
-                  >
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-white text-[10px] font-medium tabular-nums">
-                      {op.sequence}
-                    </span>
-                    <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusDot[op.status])} />
-                    <span className="font-medium text-foreground">{op.name}</span>
-                    <span className="text-[var(--neutral-500)]">· {op.workCentre}</span>
-                    <span className="text-[var(--neutral-500)] tabular-nums">· {op.minutes}m</span>
-                    {op.subcontract && (
-                      <span className="text-[10px] uppercase tracking-wider text-[var(--mw-amber)]">· sub</span>
-                    )}
-                    {idx < (part.operations?.length ?? 0) - 1 && (
-                      <ChevronRight className="h-3 w-3 text-[var(--neutral-300)] -mr-1" />
-                    )}
-                  </button>
+                    onReorder={onReorderOp}
+                  />
                 ))}
                 {!readonly && (
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-[var(--shape-sm)] border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground transition-colors"
-                  >
-                    <Plus className="h-3 w-3" /> Add op
-                  </button>
+                  <>
+                    <AddOpButton onAdd={onAddOp} />
+                    <ApplyRouteButton onApply={onApplyRoute} />
+                  </>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* No-ops state — first-time planners need an obvious entry point */}
+          {!readonly && (!part.operations || part.operations.length === 0) && (
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] mb-1.5">
+                Operations
+              </p>
+              <div className="flex flex-wrap gap-1.5 items-center">
+                <AddOpButton onAdd={onAddOp} />
+                <ApplyRouteButton onApply={onApplyRoute} />
               </div>
             </div>
           )}
@@ -502,7 +604,7 @@ function PartRow({ part, open, onToggle, onOpClick, readonly }: PartRowProps) {
     return (
       <div className="w-full px-6 py-3.5 flex items-center gap-3 hover:bg-[var(--neutral-50)] transition-colors">
         <span className="w-4 shrink-0" aria-hidden />
-        <IconWell icon={ShoppingCart} surface="onDark" size="sm" />
+        <PartThumbnail imageUrl={part.imageUrl} alt={part.name} size="md" fallbackIcon={ShoppingCart} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-medium text-foreground">{part.name}</span>
@@ -527,6 +629,202 @@ function PartRow({ part, open, onToggle, onOpClick, readonly }: PartRowProps) {
     <Collapsible open={open} onOpenChange={onToggle}>
       {content}
     </Collapsible>
+  );
+}
+
+/* ---------------------------------------------- Op chip (draggable) */
+
+interface OpChipProps {
+  op: OperationNode;
+  index: number;
+  partId: string;
+  isLast: boolean;
+  readonly: boolean;
+  onClick: () => void;
+  onReorder: (from: number, to: number) => void;
+}
+
+function OpChip({ op, index, partId, isLast, readonly, onClick, onReorder }: OpChipProps) {
+  const [, drop] = useDrop<OpDragItem>(
+    () => ({
+      accept: OP_DND_TYPE,
+      canDrop: (dragged) => dragged.partId === partId,
+      hover(dragged) {
+        if (readonly || dragged.partId !== partId || dragged.index === index) return;
+        onReorder(dragged.index, index);
+        dragged.index = index;
+      },
+    }),
+    [index, partId, onReorder, readonly],
+  );
+
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: OP_DND_TYPE,
+      item: { partId, index },
+      canDrag: !readonly,
+      collect: (m) => ({ isDragging: m.isDragging() }),
+    }),
+    [partId, index, readonly],
+  );
+
+  return (
+    <>
+      <div
+        ref={readonly ? undefined : drop}
+        className={cn(
+          'inline-flex items-center group/op',
+          isDragging && 'opacity-40',
+        )}
+      >
+        <button
+          ref={readonly ? undefined : drag}
+          type="button"
+          onClick={onClick}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-[var(--shape-sm)] border px-2.5 py-1.5 text-xs transition-colors',
+            op.status === 'in_progress'
+              ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
+              : op.status === 'done'
+                ? 'border-[var(--mw-green)]/30 bg-[var(--mw-green)]/5'
+                : 'border-[var(--border)] bg-card hover:bg-[var(--neutral-50)]',
+            !readonly && 'cursor-grab active:cursor-grabbing',
+          )}
+        >
+          {!readonly && (
+            <GripVertical
+              className="h-3 w-3 text-[var(--neutral-300)] opacity-0 group-hover/op:opacity-100 transition-opacity -ml-0.5"
+              aria-hidden
+            />
+          )}
+          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-white text-[10px] font-medium tabular-nums">
+            {op.sequence}
+          </span>
+          <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusDot[op.status])} />
+          <span className="font-medium text-foreground">{op.name}</span>
+          <span className="text-[var(--neutral-500)]">· {op.workCentre}</span>
+          <span className="text-[var(--neutral-500)] tabular-nums">· {op.minutes}m</span>
+          {op.subcontract && (
+            <span className="text-[10px] uppercase tracking-wider text-[var(--mw-amber)]">· sub</span>
+          )}
+        </button>
+      </div>
+      {!isLast && (
+        <ChevronRight className="h-3 w-3 text-[var(--neutral-300)] -mx-0.5 shrink-0" aria-hidden />
+      )}
+    </>
+  );
+}
+
+/* ---------------------------------------------- Add op picker */
+
+function AddOpButton({ onAdd }: { onAdd: (std: StandardOperation) => void }) {
+  const [open, setOpen] = useState(false);
+  const library = useMemo(() => operationsLibraryService.list(), []);
+  const grouped = useMemo(() => {
+    const byCategory: Record<string, StandardOperation[]> = {};
+    library.forEach((op) => {
+      const key = op.category ?? 'Other';
+      (byCategory[key] ??= []).push(op);
+    });
+    return byCategory;
+  }, [library]);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 rounded-[var(--shape-sm)] border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground transition-colors"
+        >
+          <Plus className="h-3 w-3" /> Add op
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="p-0 w-72">
+        <Command>
+          <CommandInput placeholder="Search operations…" className="h-9" />
+          <CommandList className="max-h-80">
+            <CommandEmpty>No operations found.</CommandEmpty>
+            {Object.entries(grouped).map(([category, ops]) => (
+              <CommandGroup key={category} heading={category}>
+                {ops.map((op) => (
+                  <CommandItem
+                    key={op.id}
+                    value={`${op.name} ${op.defaultWorkCentre}`}
+                    onSelect={() => {
+                      onAdd(op);
+                      setOpen(false);
+                    }}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{op.name}</p>
+                      <p className="text-[10px] text-[var(--neutral-500)] truncate">
+                        {op.defaultWorkCentre} · {op.defaultMinutes}m
+                        {op.isSubcontract && ' · subcontract'}
+                      </p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+        <div className="border-t border-[var(--border)] px-3 py-2 text-[10px] text-[var(--neutral-500)] flex items-center justify-between">
+          <span>From Control → Operations</span>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/* ---------------------------------------------- Apply route */
+
+function ApplyRouteButton({ onApply }: { onApply: (route: StandardRoute) => void }) {
+  const [open, setOpen] = useState(false);
+  const routes = useMemo(() => routesLibraryService.list(), []);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 rounded-[var(--shape-sm)] border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-blue)] hover:text-foreground transition-colors"
+        >
+          <Route className="h-3 w-3" /> Apply route…
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="p-0 w-80">
+        <Command>
+          <CommandInput placeholder="Search routes…" className="h-9" />
+          <CommandList className="max-h-80">
+            <CommandEmpty>No routes found.</CommandEmpty>
+            <CommandGroup heading="Standard routes">
+              {routes.map((route) => (
+                <CommandItem
+                  key={route.id}
+                  value={`${route.name} ${route.category ?? ''}`}
+                  onSelect={() => {
+                    onApply(route);
+                    setOpen(false);
+                  }}
+                  className="flex flex-col items-start gap-0.5"
+                >
+                  <p className="text-sm font-medium">{route.name}</p>
+                  {route.description && (
+                    <p className="text-[10px] text-[var(--neutral-500)]">{route.description}</p>
+                  )}
+                  <p className="text-[10px] text-[var(--neutral-400)] tabular-nums">{route.steps.length} ops</p>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+        <div className="border-t border-[var(--border)] px-3 py-2 text-[10px] text-[var(--neutral-500)] flex items-center justify-between">
+          <span>From Control → Routes</span>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

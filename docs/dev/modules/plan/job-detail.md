@@ -10,7 +10,19 @@ Developer-focused sections to extract:
 - States
 - Route params (`:id`)
 
+## Production tab rebuild (2026-04-22)
+
+`PlanProductionTab` was collapsed from three nested tab bars + a modal BOM into a single view built around the shared `<BomRoutingTree mode="plan" />`. The 3D `GlbViewer` and 2D `DrawingViewer` sit below the tree as visual aids (sample asset at `public/models/diff.glb`).
+
+See [BomRoutingTree dev doc](./bom-routing-tree.md) and [3D viewers dev doc](../../shared/3d-viewers.md).
+
+![Production tab — BomRoutingTree + operations rail](../../../audits/screenshots/plan/job-detail-production.png)
+
 ## Components Used
+- `@/components/plan/BomRoutingTree` *(added 2026-04-22 to PlanProductionTab)*
+- `@/components/shared/3d/GlbViewer` *(new 2026-04-22)*
+- `@/components/shared/3d/DrawingViewer` *(new 2026-04-22)*
+- `@/components/shared/product/BomOverlay` *(new 2026-04-22)*
 - `@/components/shared/data/ProgressBar`
 - `@/components/shared/layout/JobWorkspaceLayout`
 - `apps/web/src/components/ui/button.tsx`

@@ -2,7 +2,7 @@
  * Sell New Quote — full quote builder with line items table
  * Customer selection, dates, terms, BOM-linked line items, margin calculation, totals
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Trash2, ChevronDown, FileText, X, Sparkles, ArrowLeft, Check, PencilLine } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
