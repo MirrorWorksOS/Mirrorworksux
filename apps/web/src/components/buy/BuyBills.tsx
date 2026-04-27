@@ -61,6 +61,23 @@ function MatchDots({ ms }: { ms: Bill['matchStatus'] }) {
 export function BuyBills() {
   const [search,   setSearch]   = useState('');
   const [selected, setSelected] = useState<Bill | null>(null);
+  const [showNewBill, setShowNewBill] = useState(false);
+  const [draftBillNumber, setDraftBillNumber] = useState('');
+  const [draftSupplier,   setDraftSupplier]   = useState('');
+  const [draftAmount,     setDraftAmount]     = useState(0);
+  const [draftInvoiceDate, setDraftInvoiceDate] = useState('');
+  const [draftDueDate,    setDraftDueDate]    = useState('');
+
+  const handleCreateBill = () => {
+    // TODO(backend): bills.create({ billNumber, supplier, amount, invoiceDate, dueDate })
+    toast.success(`Bill ${draftBillNumber || 'NEW'} created`);
+    setShowNewBill(false);
+    setDraftBillNumber('');
+    setDraftSupplier('');
+    setDraftAmount(0);
+    setDraftInvoiceDate('');
+    setDraftDueDate('');
+  };
 
   const filtered = BILLS.filter(b =>
     b.billNumber.toLowerCase().includes(search.toLowerCase()) ||
@@ -107,7 +124,7 @@ export function BuyBills() {
         title="Bills"
         subtitle={`$${totals.matched.toLocaleString()} matched${totals.issues > 0 ? ` · ${totals.issues} require attention` : ''}`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => toast('New bill coming soon')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => setShowNewBill(true)}>
             <Plus className="w-4 h-4" /> New bill
           </Button>
         }
@@ -208,13 +225,63 @@ export function BuyBills() {
               {selected.status === 'mismatch' && (
                 <div className="flex gap-3">
                   <Button className="flex-1 bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white h-11 text-sm" onClick={() => toast.success('Bill rejected')}>Reject</Button>
-                  <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm" onClick={() => toast('Supplier query coming soon')}>Query supplier</Button>
+                  <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm" onClick={() => {
+                    // TODO(backend): bills.querySupplier(selected.id)
+                    toast.success(`Query sent to ${selected.supplier}`);
+                  }}>Query supplier</Button>
                 </div>
               )}
             </div>
           </SheetContent>
         </Sheet>
       )}
+
+      <Sheet open={showNewBill} onOpenChange={setShowNewBill}>
+        <SheetContent className="w-[480px] sm:max-w-[480px] p-0 overflow-y-auto border-l border-[var(--border)]">
+          <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+            <SheetTitle className="text-base font-medium text-foreground">New Bill</SheetTitle>
+            <SheetDescription className="text-[var(--neutral-500)] text-xs">
+              Manually enter a supplier bill. Three-way matching will resolve once linked to a PO and GRN.
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="p-6 space-y-4">
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium text-foreground">Bill number <span className="text-[var(--mw-error)]">*</span></label>
+              <Input value={draftBillNumber} onChange={(e) => setDraftBillNumber(e.target.value)} placeholder="BILL-XXXX" />
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium text-foreground">Supplier <span className="text-[var(--mw-error)]">*</span></label>
+              <Input value={draftSupplier} onChange={(e) => setDraftSupplier(e.target.value)} placeholder="Supplier name" />
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium text-foreground">Amount</label>
+              <Input type="number" min={0} step="0.01" value={draftAmount} onChange={(e) => setDraftAmount(Number(e.target.value))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">Invoice date</label>
+                <Input type="date" value={draftInvoiceDate} onChange={(e) => setDraftInvoiceDate(e.target.value)} />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">Due date</label>
+                <Input type="date" value={draftDueDate} onChange={(e) => setDraftDueDate(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 pt-0 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowNewBill(false)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={handleCreateBill}
+              disabled={!draftBillNumber.trim() || !draftSupplier.trim()}
+            >
+              Create bill
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </PageShell>
   );
 }

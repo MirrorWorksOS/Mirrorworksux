@@ -68,6 +68,34 @@ const relativeTime = (iso: string) => {
  */
 const mockCustomers: Record<string, any> = {};
 
+// Blank-form factory for create-mode rendering at `/sell/crm/new`.
+// In mock mode the new id is local-only; the backend mutation will
+// replace this with the real generated id.
+const createBlankCustomer = (): any => ({
+  id: `new-${Date.now()}`,
+  company: '',
+  abn: '',
+  industry: '',
+  website: '',
+  annualRevenue: 0,
+  employeeCount: 0,
+  accountOwner: '',
+  status: 'active',
+  types: ['Customer'],
+  primaryContact: { name: '', title: '', email: '', phone: '', mobile: '', preferred: 'email' },
+  address: { street: '', city: '', state: '', postcode: '', country: 'Australia' },
+  additionalContacts: [],
+  financial: { lifetimeRevenue: 0, outstanding: 0, avgPaymentTerms: 'Net 30', creditLimit: 0, paymentRating: 'green' },
+  tags: [],
+  source: '',
+  notes: '',
+  opportunities: [],
+  recentQuotes: [],
+  recentOrders: [],
+  activity: [],
+  invoices: [],
+});
+
 customers.forEach((c, idx) => {
   // Derive related records for this customer
   const custOpps = opportunities.filter(o => o.customerId === c.id);
@@ -231,7 +259,32 @@ export function SellCustomerDetail() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const customer = mockCustomers[id || 'cust-001'] || mockCustomers['cust-001'];
+  const isNew = !id || id === 'new';
+  const customer = isNew ? createBlankCustomer() : (mockCustomers[id] ?? null);
+
+  const handleSave = () => {
+    // TODO(backend): isNew ? customers.create(customer) : customers.update(customer.id, customer)
+    if (isNew) {
+      toast.success('Customer created');
+      navigate(`/sell/crm/${customer.id}`, { replace: true });
+    } else {
+      toast.success('Customer saved');
+    }
+  };
+
+  if (!isNew && !customer) {
+    return (
+      <PageShell>
+        <div className="p-6 space-y-4">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => navigate('/sell/crm')}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to customers
+          </Button>
+          <p className="text-sm text-muted-foreground">Customer not found.</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   const allContacts = [
     { name: customer.primaryContact.name, role: customer.primaryContact.title, email: customer.primaryContact.email, phone: customer.primaryContact.phone, isPrimary: true },
@@ -301,19 +354,30 @@ export function SellCustomerDetail() {
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl font-medium text-foreground">
-              {customer.company}
+              {isNew ? 'New Customer' : customer.company}
             </h1>
-            {customer.types.map((t: string) => (
+            {!isNew && customer.types.map((t: string) => (
               <Badge key={t} className={cn('rounded text-xs px-2 py-0.5 border-0', typeStyle(t))}>{t}</Badge>
             ))}
-            <StatusBadge variant={accountStatusVariant(customer.status)}>
-              {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
-            </StatusBadge>
+            {!isNew && (
+              <StatusBadge variant={accountStatusVariant(customer.status)}>
+                {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+              </StatusBadge>
+            )}
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium" onClick={() => navigate('/sell/quotes/new')}>
-              New quote
-            </Button>
+            {isNew ? (
+              <Button className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium" onClick={handleSave}>
+                Save
+              </Button>
+            ) : (
+              <Button
+                className="h-10 px-5 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium"
+                onClick={() => navigate(`/sell/quotes/new?customerId=${customer.id}`)}
+              >
+                New quote
+              </Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="p-2 hover:bg-[var(--neutral-100)] rounded transition-colors">

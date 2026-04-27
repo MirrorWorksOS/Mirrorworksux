@@ -3,8 +3,9 @@
  * Large touch targets for shop floor use with gloved hands
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CheckCircle2, Scan, Camera } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -44,6 +45,22 @@ const mockPOs: POForReceipt[] = purchaseOrders
 export function BuyReceipts() {
   const [selectedPO, setSelectedPO] = useState<POForReceipt | null>(null);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [barcodeInput, setBarcodeInput] = useState('');
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleBarcodeSubmit = () => {
+    // TODO(backend): receipts.scanBarcode(selectedPO.id, barcodeInput) — match SKU and increment received qty.
+    if (!barcodeInput.trim()) return;
+    toast.success(`Scanned ${barcodeInput.trim()}`);
+    setBarcodeInput('');
+    setScannerOpen(false);
+  };
+
+  const handlePhotoChosen = (file: File) => {
+    // TODO(backend): receipts.uploadPhoto(selectedPO.id, file) — attach to receipt record.
+    toast.success(`Photo "${file.name}" attached to receipt`);
+  };
 
   const handleReceive = () => {
     toast.success('Goods receipt confirmed');
@@ -104,14 +121,26 @@ export function BuyReceipts() {
 
           {/* Barcode Scanner (placeholder) */}
           <div className="flex gap-3 mb-6">
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => toast('Barcode scanner coming soon')}>
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => setScannerOpen(true)}>
               <Scan className="w-6 h-6 mr-3" />
               Scan Barcode
             </Button>
-            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => toast('Camera capture coming soon')}>
+            <Button variant="outline" className="flex-1 h-20 text-base border-[var(--border)] hover:bg-[var(--neutral-100)]" onClick={() => cameraInputRef.current?.click()}>
               <Camera className="w-6 h-6 mr-3" />
               Take Photo
             </Button>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handlePhotoChosen(file);
+                e.target.value = '';
+              }}
+            />
           </div>
 
           {/* Items to Receive */}
@@ -178,6 +207,39 @@ export function BuyReceipts() {
         </Card>
       )}
     </motion.div>
+
+    <Sheet open={scannerOpen} onOpenChange={setScannerOpen}>
+      <SheetContent className="w-[420px] sm:max-w-[420px] p-0 overflow-y-auto border-l border-[var(--border)]">
+        <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+          <SheetTitle className="text-base font-medium text-foreground">Scan barcode</SheetTitle>
+          <SheetDescription className="text-[var(--neutral-500)] text-xs">
+            Type or scan a barcode. Will match against this PO's expected items.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="p-6 space-y-4">
+          <div className="grid gap-1.5">
+            <label className="text-sm font-medium text-foreground">Barcode</label>
+            <Input
+              autoFocus
+              value={barcodeInput}
+              onChange={(e) => setBarcodeInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleBarcodeSubmit(); }}
+              placeholder="e.g. 0123456789012"
+            />
+          </div>
+        </div>
+        <div className="p-6 pt-0 flex justify-end gap-2">
+          <Button variant="outline" onClick={() => setScannerOpen(false)}>Cancel</Button>
+          <Button
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+            onClick={handleBarcodeSubmit}
+            disabled={!barcodeInput.trim()}
+          >
+            Scan
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
     </PageShell>
   );
 }

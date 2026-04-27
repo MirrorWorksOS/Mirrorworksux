@@ -4,7 +4,8 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowRight,
@@ -76,6 +77,23 @@ const MOCK_BY_ID: Record<string, Opportunity> = Object.fromEntries(
     },
   ]),
 );
+
+// Blank-form factory for create-mode rendering (`/sell/opportunities/new`).
+// In mock mode the new id is local-only; the future backend mutation will
+// replace this with the real generated id.
+const createBlankOpportunity = (defaults?: Partial<Opportunity>): Opportunity => ({
+  id: `new-${Date.now()}`,
+  title: '',
+  customer: '',
+  value: 0,
+  expectedClose: '',
+  assignedTo: 'YOU',
+  priority: 'medium',
+  stage: 'new',
+  probabilityPercent: 25,
+  tags: [],
+  ...defaults,
+});
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: "new", label: "New", color: "var(--neutral-500)" },
@@ -154,18 +172,36 @@ const PRIORITY_BADGE: Record<
 export function SellOpportunityPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
-  const base = id ? MOCK_BY_ID[id] : undefined;
+  const isNew = !id || id === 'new';
+  const stageParam = searchParams.get('stage') as Stage | null;
+  const base = isNew
+    ? createBlankOpportunity(stageParam ? { stage: stageParam } : undefined)
+    : (id ? MOCK_BY_ID[id] : undefined);
   const [opp, setOpp] = useState<Opportunity | null>(base ?? null);
 
   React.useEffect(() => {
-    if (id && MOCK_BY_ID[id]) {
+    if (isNew) {
+      setOpp(createBlankOpportunity(stageParam ? { stage: stageParam } : undefined));
+    } else if (id && MOCK_BY_ID[id]) {
       setOpp(MOCK_BY_ID[id]);
     } else {
       setOpp(null);
     }
-  }, [id]);
+  }, [id, isNew, stageParam]);
+
+  const handleSave = () => {
+    if (!opp) return;
+    // TODO(backend): isNew ? opportunities.create(opp) : opportunities.update(opp.id, opp)
+    if (isNew) {
+      toast.success('Opportunity created');
+      navigate(`/sell/opportunities/${opp.id}`, { replace: true });
+    } else {
+      toast.success('Opportunity saved');
+    }
+  };
 
   const tabConfig = useMemo(() => {
     const q = MOCK_QUOTES.length;
@@ -845,15 +881,19 @@ export function SellOpportunityPage() {
       breadcrumbs={[
         { label: "Sell", href: "/sell" },
         { label: "Opportunities", href: "/sell/opportunities" },
-        { label: opp.title },
+        { label: isNew ? 'New' : opp.title },
       ]}
-      title={opp.title}
+      title={isNew ? 'New Opportunity' : opp.title}
       subtitle={
-        <>
-          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{opp.id.toUpperCase()}</span>
-          <span>{opp.customer}</span>
-          <span className="tabular-nums">${opp.value.toLocaleString()}</span>
-        </>
+        isNew ? (
+          <span>Fill out the details below and click Save to create.</span>
+        ) : (
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{opp.id.toUpperCase()}</span>
+            <span>{opp.customer}</span>
+            <span className="tabular-nums">${opp.value.toLocaleString()}</span>
+          </>
+        )
       }
       metaRow={
         <>
@@ -881,20 +921,29 @@ export function SellOpportunityPage() {
               Back
             </Link>
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]">
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={handleSave}>
             <Save className="mr-2 h-4 w-4" />
             Save
           </Button>
           <Button
             className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-            onClick={() => navigate("/sell/quotes/new")}
+            onClick={() => {
+              const params = new URLSearchParams({ opportunityId: opp.id });
+              if (opp.customer) params.set('customer', opp.customer);
+              navigate(`/sell/quotes/new?${params.toString()}`);
+            }}
+            disabled={isNew}
           >
             <FileText className="mr-2 h-4 w-4" />
             New quote
           </Button>
           <Button
             className="h-12 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
-            onClick={() => navigate("/sell/orders")}
+            onClick={() => {
+              // TODO(backend): opportunities.convertToOrder(opp.id) — server creates the order and returns its id
+              navigate(`/sell/orders/new?opportunityId=${opp.id}`);
+            }}
+            disabled={isNew}
           >
             <ArrowRight className="mr-2 h-4 w-4" />
             Convert to Sales Order

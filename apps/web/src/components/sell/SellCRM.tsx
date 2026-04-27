@@ -4,7 +4,6 @@
  */
 
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Grid3x3, List, Plus, Phone, Mail, DollarSign, Briefcase } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -59,7 +58,7 @@ export function SellCRM() {
             { key: 'list', icon: List, label: 'List view' },
           ]}
         />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New customer form coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/crm/new')}>
           New Customer
         </ToolbarPrimaryButton>
       </PageToolbar>
@@ -155,7 +154,7 @@ export function SellCRM() {
             icon={Briefcase}
             title="No customers found"
             description="Try adjusting your search or create a new customer to get started"
-            action={{ label: "Create Customer", onClick: () => toast('New customer form coming soon'), icon: Plus }}
+            action={{ label: "Create Customer", onClick: () => navigate('/sell/crm/new'), icon: Plus }}
           />
         </Card>
       )}

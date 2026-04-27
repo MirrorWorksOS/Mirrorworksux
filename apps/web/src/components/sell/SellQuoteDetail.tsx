@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router';
+import { useNavigate, useParams, Link } from 'react-router';
 import { ArrowLeft, Download, Mail, Send, FileText } from 'lucide-react';
 import {
   JobWorkspaceLayout,
@@ -63,6 +63,7 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 
 export function SellQuoteDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   const quote = id ? QUOTE_BY_ID[id] : undefined;
@@ -183,7 +184,10 @@ export function SellQuoteDetail() {
               <div className="pt-4 border-t border-[var(--border)] space-y-2">
                 <Button
                   className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-                  onClick={() => toast.success('Quote sent to customer')}
+                  onClick={() => {
+                    // TODO(backend): quotes.send(quote.id) — server emails the quote and updates status.
+                    toast.success('Quote sent to customer');
+                  }}
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Send Quote
@@ -191,7 +195,10 @@ export function SellQuoteDetail() {
                 <Button
                   variant="outline"
                   className="w-full border-[var(--border)]"
-                  onClick={() => toast.success('Converting to order…')}
+                  onClick={() => {
+                    // TODO(backend): quotes.convertToOrder(quote.id) — server creates the order and returns its id.
+                    navigate(`/sell/orders/new?quoteId=${quote.id}`);
+                  }}
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Convert to Sales Order
@@ -329,12 +336,18 @@ export function SellQuoteDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Link>
           </Button>
-          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast('Downloading PDF…')}>
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => {
+            // TODO(backend): quotes.exportPdf(quote.id) — server returns a download URL.
+            toast('Downloading PDF…');
+          }}>
             <Download className="mr-2 h-4 w-4" /> Download PDF
           </Button>
           <Button
             className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-            onClick={() => toast.success('Quote emailed to customer')}
+            onClick={() => {
+              // TODO(backend): quotes.sendEmail(quote.id) — server sends the quote and logs the activity.
+              toast.success('Quote emailed to customer');
+            }}
           >
             <Mail className="mr-2 h-4 w-4" /> Email Quote
           </Button>

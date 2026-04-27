@@ -134,7 +134,7 @@ export function SellProducts() {
             { key: 'list', icon: List, label: 'List view' },
           ]}
         />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New product form coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/products/new')}>
           New Product
         </ToolbarPrimaryButton>
       </PageToolbar>
@@ -243,7 +243,7 @@ export function SellProducts() {
             icon={Package}
             title="No products found"
             description="Try adjusting your search or create a new product"
-            action={{ label: "Create Product", onClick: () => toast('New product form coming soon'), icon: Plus }}
+            action={{ label: "Create Product", onClick: () => navigate('/sell/products/new'), icon: Plus }}
           />
         </Card>
       )}

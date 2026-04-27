@@ -57,18 +57,20 @@ const QUICK_CREATE_ITEMS: QuickCreateItem[] = [
   // Sell
   { label: 'Quote', icon: FileText, shortcut: '⌘Q', description: 'New sales quote', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/quotes/new' },
   { label: 'Invoice', icon: Receipt, description: 'New sales invoice', module: 'Sell', roles: ['sales', 'finance', 'admin'], action: '/sell/invoices/new' },
-  { label: 'Opportunity', icon: Target, description: 'Track a new deal', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/opportunities' },
-  { label: 'Lead', icon: Users, description: 'New prospect', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/crm' },
-  { label: 'Sales Order', icon: ShoppingCart, description: 'New sales order', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/orders' },
+  { label: 'Opportunity', icon: Target, description: 'Track a new deal', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/opportunities/new' },
+  { label: 'Lead', icon: Users, description: 'New prospect', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/crm/new' },
+  { label: 'Sales Order', icon: ShoppingCart, description: 'New sales order', module: 'Sell', roles: ['sales', 'admin'], action: '/sell/orders/new' },
   // Plan
+  // TODO(backend): jobs.create — wire to /plan/jobs/new once the Plan create flow exists.
   { label: 'Job', icon: Briefcase, shortcut: '⌘J', description: 'Create production job', module: 'Plan', roles: ['production', 'admin'], action: 'toast' },
   { label: 'Quality Plan', icon: Shield, description: 'New QC plan', module: 'Plan', roles: ['production', 'admin'], action: '/plan/qc-planning' },
   // Make
+  // TODO(backend): manufacturingOrders.create — wire to /make/manufacturing-orders/new once the Make create flow exists.
   { label: 'Manufacturing Order', icon: ClipboardList, shortcut: '⌘M', description: 'Create MO', module: 'Make', roles: ['production', 'admin'], action: 'toast' },
   // Buy
-  { label: 'Purchase Order', icon: ShoppingCart, description: 'Create PO', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/orders' },
-  { label: 'Requisition', icon: ClipboardList, description: 'New purchase request', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/requisitions' },
-  { label: 'RFQ', icon: FileText, description: 'Request for quote', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/rfqs' },
+  { label: 'Purchase Order', icon: ShoppingCart, description: 'Create PO', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/orders/new' },
+  { label: 'Requisition', icon: ClipboardList, description: 'New purchase request', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/requisitions/new' },
+  { label: 'RFQ', icon: FileText, description: 'Request for quote', module: 'Buy', roles: ['purchasing', 'admin'], action: '/buy/rfqs?new=1' },
   // Ship
   { label: 'Shipment', icon: Truck, description: 'New shipment', module: 'Ship', roles: ['shipping', 'admin'], action: '/ship/shipping' },
   // Book

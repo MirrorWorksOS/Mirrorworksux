@@ -1731,8 +1731,24 @@ export interface ProductDetailProps {
 export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
   const { id: routeProductId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isNew = !routeProductId || routeProductId === 'new';
   const studioProductId =
     module === 'plan' ? studioProductIdForCatalogId(routeProductId) : null;
+
+  const handleSaveProduct = () => {
+    // TODO(backend): isNew ? products.create(product) : products.update(product.id, product)
+    if (isNew) {
+      toast.success('Product created');
+      navigate(`/${module}/products/new-${Date.now()}`, { replace: true });
+    } else {
+      toast.success('Product saved');
+    }
+  };
+
+  const handleNewQuoteFromProduct = () => {
+    if (isNew) return;
+    navigate(`/sell/quotes/new?productId=${routeProductId}`);
+  };
 
   const openProductStudio = () => {
     if (studioProductId) {
@@ -1759,18 +1775,18 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       {/* ── Header ──────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-xl font-medium text-foreground">{PRODUCT.name}</h1>
-          {PRODUCT.capabilities.map((cap) => (
+          <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : PRODUCT.name}</h1>
+          {!isNew && PRODUCT.capabilities.map((cap) => (
             <Badge key={cap} className={cn('border-0 text-xs', capabilityColors[cap] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
               {cap}
             </Badge>
           ))}
-          {PRODUCT.traceable && (
+          {!isNew && PRODUCT.traceable && (
             <Badge variant="outline" className="border-[var(--border)] text-xs">Traceable</Badge>
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {module === 'plan' && (
+          {module === 'plan' && !isNew && (
             <Button
               type="button"
               variant="outline"
@@ -1781,8 +1797,10 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
               Product Studio
             </Button>
           )}
-          <Button variant="outline" className="h-9 border-[var(--border)] text-sm" onClick={() => toast.success('Product saved')}>Save</Button>
-          <Button className="h-9 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 text-sm" onClick={() => toast('New quote coming soon')}>New Quote</Button>
+          <Button variant="outline" className="h-9 border-[var(--border)] text-sm" onClick={handleSaveProduct}>Save</Button>
+          {!isNew && (
+            <Button className="h-9 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 text-sm" onClick={handleNewQuoteFromProduct}>New Quote</Button>
+          )}
         </div>
       </div>
 

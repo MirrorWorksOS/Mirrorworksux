@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, useSearchParams, Link } from "react-router";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
@@ -61,8 +61,15 @@ function newRow(): LineRow {
 
 export function SellNewInvoice() {
   const navigate = useNavigate();
-  const [customer, setCustomer] = useState<string>("");
-  const [poReference, setPoReference] = useState("");
+  const [searchParams] = useSearchParams();
+
+  // Optional context from launches: Order → Invoice, Quote → Invoice, Customer → Invoice.
+  const linkedCustomer = searchParams.get('customer') ?? searchParams.get('customerId') ?? '';
+  const linkedOrderId  = searchParams.get('orderId') ?? '';
+  const linkedQuoteId  = searchParams.get('quoteId') ?? '';
+
+  const [customer, setCustomer] = useState<string>(linkedCustomer);
+  const [poReference, setPoReference] = useState(linkedOrderId || linkedQuoteId);
   const [issueDate, setIssueDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );

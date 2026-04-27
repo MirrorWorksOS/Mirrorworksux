@@ -155,7 +155,7 @@ export function SellInvoices() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => navigate(`/sell/invoices/${inv.id}`)}>View details</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast('Edit invoice coming soon')}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`/sell/invoices/${inv.id}?edit=1`)}>Edit</DropdownMenuItem>
               <DropdownMenuItem onClick={() => toast.success('Invoice duplicated')}>Duplicate</DropdownMenuItem>
               <DropdownMenuItem onClick={() => toast('Invoice deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
             </DropdownMenuContent>

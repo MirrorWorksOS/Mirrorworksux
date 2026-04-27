@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router';
+import { useNavigate, useParams, Link } from 'react-router';
 import { ArrowLeft, Mail, Phone, Star, Package, Clock, TrendingUp, FileText } from 'lucide-react';
 import {
   JobWorkspaceLayout,
@@ -29,6 +29,18 @@ import { suppliers, purchaseOrders, bills } from '@/services';
 
 const SUP_BY_ID = Object.fromEntries(suppliers.map((s) => [s.id, s]));
 
+const createBlankSupplier = () => ({
+  id: `new-${Date.now()}`,
+  company: '',
+  contact: '',
+  email: '',
+  phone: '',
+  category: '',
+  paymentTerms: 'Net 30',
+  onTimePercent: 0,
+  rating: 0,
+});
+
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -51,9 +63,21 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 
 export function BuySupplierDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const supplier = id ? SUP_BY_ID[id] : undefined;
+  const isNew = !id || id === 'new';
+  const supplier = isNew ? createBlankSupplier() : (id ? SUP_BY_ID[id] : undefined);
+
+  const handleSave = () => {
+    // TODO(backend): isNew ? suppliers.create(supplier) : suppliers.update(supplier.id, supplier)
+    if (isNew && supplier) {
+      toast.success('Supplier created');
+      navigate(`/buy/suppliers/${supplier.id}`, { replace: true });
+    } else {
+      toast.success('Supplier saved');
+    }
+  };
 
   const supplierPOs = useMemo(
     () => (supplier ? purchaseOrders.filter((po) => po.supplierId === supplier.id) : []),
@@ -252,23 +276,31 @@ export function BuySupplierDetail() {
       breadcrumbs={[
         { label: 'Buy', href: '/buy' },
         { label: 'Suppliers', href: '/buy/suppliers' },
-        { label: supplier.company },
+        { label: isNew ? 'New' : supplier.company },
       ]}
-      title={supplier.company}
+      title={isNew ? 'New Supplier' : supplier.company}
       subtitle={
-        <span className="text-sm text-[var(--neutral-500)]">
-          {supplier.contact} &middot; {supplier.category} &middot; {supplier.paymentTerms}
-        </span>
+        isNew ? (
+          <span className="text-sm text-[var(--neutral-500)]">
+            Fill out the details below and click Save to create.
+          </span>
+        ) : (
+          <span className="text-sm text-[var(--neutral-500)]">
+            {supplier.contact} &middot; {supplier.category} &middot; {supplier.paymentTerms}
+          </span>
+        )
       }
       metaRow={
-        <div className="flex items-center gap-2">
-          <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
-            {supplier.category}
-          </Badge>
-          <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
-            {supplier.onTimePercent}% on-time
-          </Badge>
-        </div>
+        isNew ? null : (
+          <div className="flex items-center gap-2">
+            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
+              {supplier.category}
+            </Badge>
+            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs">
+              {supplier.onTimePercent}% on-time
+            </Badge>
+          </div>
+        )
       }
       headerActions={
         <>
@@ -277,15 +309,29 @@ export function BuySupplierDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Link>
           </Button>
-          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast('Composing email…')}>
-            <Mail className="mr-2 h-4 w-4" /> Email
-          </Button>
-          <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-            onClick={() => toast.success('New PO created')}
-          >
-            <FileText className="mr-2 h-4 w-4" /> New PO
-          </Button>
+          {isNew ? (
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" className="border-[var(--border)]" onClick={() => {
+                // TODO(backend): suppliers.composeEmail(supplier.id)
+                toast('Composing email…');
+              }}>
+                <Mail className="mr-2 h-4 w-4" /> Email
+              </Button>
+              <Button
+                className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+                onClick={() => navigate(`/buy/orders/new?supplierId=${supplier.id}`)}
+              >
+                <FileText className="mr-2 h-4 w-4" /> New PO
+              </Button>
+            </>
+          )}
         </>
       }
       tabs={tabConfig}

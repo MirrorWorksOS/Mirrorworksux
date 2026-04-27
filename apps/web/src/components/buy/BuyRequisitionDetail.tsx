@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router';
+import { useNavigate, useParams, Link } from 'react-router';
 import { ArrowLeft, CheckCircle2, XCircle, Send, Printer } from 'lucide-react';
 import {
   JobWorkspaceLayout,
@@ -56,11 +56,34 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
+const createBlankRequisition = () => ({
+  id: `new-${Date.now()}`,
+  reqNumber: 'REQ-NEW',
+  requestorId: '',
+  requestorName: '',
+  date: new Date().toISOString().slice(0, 10),
+  status: 'draft' as const,
+  items: [] as any[],
+  total: 0,
+});
+
 export function BuyRequisitionDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const req = id ? REQ_BY_ID[id] : undefined;
+  const isNew = !id || id === 'new';
+  const req = isNew ? createBlankRequisition() : (id ? REQ_BY_ID[id] : undefined);
+
+  const handleSave = () => {
+    // TODO(backend): isNew ? requisitions.create(req) : requisitions.update(req.id, req)
+    if (isNew && req) {
+      toast.success('Requisition created');
+      navigate(`/buy/requisitions/${req.id}`, { replace: true });
+    } else {
+      toast.success('Requisition saved');
+    }
+  };
 
   const tabConfig = useMemo(() => {
     if (!req) return DEFAULT_TABS;
@@ -257,20 +280,28 @@ export function BuyRequisitionDetail() {
       breadcrumbs={[
         { label: 'Buy', href: '/buy' },
         { label: 'Requisitions', href: '/buy/requisitions' },
-        { label: req.reqNumber },
+        { label: isNew ? 'New' : req.reqNumber },
       ]}
-      title={`Requisition ${req.reqNumber}`}
+      title={isNew ? 'New Requisition' : `Requisition ${req.reqNumber}`}
       subtitle={
-        <span className="text-sm text-[var(--neutral-500)]">
-          {req.requestorName} &middot; {fmtDate(req.date)} &middot; {fmtCurrency(req.total)}
-        </span>
+        isNew ? (
+          <span className="text-sm text-[var(--neutral-500)]">
+            Fill out the details below and click Save to create.
+          </span>
+        ) : (
+          <span className="text-sm text-[var(--neutral-500)]">
+            {req.requestorName} &middot; {fmtDate(req.date)} &middot; {fmtCurrency(req.total)}
+          </span>
+        )
       }
       metaRow={
-        <div className="flex items-center gap-2">
-          <StatusBadge status={req.status === 'pending_approval' ? 'pending' : req.status}>
-            {STATUS_LABEL[req.status] ?? req.status}
-          </StatusBadge>
-        </div>
+        isNew ? null : (
+          <div className="flex items-center gap-2">
+            <StatusBadge status={req.status === 'pending_approval' ? 'pending' : req.status}>
+              {STATUS_LABEL[req.status] ?? req.status}
+            </StatusBadge>
+          </div>
+        )
       }
       headerActions={
         <>
@@ -279,15 +310,29 @@ export function BuyRequisitionDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Link>
           </Button>
-          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast('Printing…')}>
-            <Printer className="mr-2 h-4 w-4" /> Print
-          </Button>
-          <Button
-            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-            onClick={() => toast.success('Converting to PO…')}
-          >
-            <Send className="mr-2 h-4 w-4" /> Convert to PO
-          </Button>
+          {isNew ? (
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" className="border-[var(--border)]" onClick={() => toast('Printing…')}>
+                <Printer className="mr-2 h-4 w-4" /> Print
+              </Button>
+              <Button
+                className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+                onClick={() => {
+                  // TODO(backend): requisitions.convertToPO(req.id) — server creates the PO and returns its id
+                  navigate(`/buy/orders/new?requisitionId=${req.id}`);
+                }}
+              >
+                <Send className="mr-2 h-4 w-4" /> Convert to PO
+              </Button>
+            </>
+          )}
         </>
       }
       tabs={tabConfig}

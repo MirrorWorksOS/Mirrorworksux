@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
 import { cn } from '../ui/utils';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { getChartScaleColour } from '@/components/shared/charts/chart-theme';
@@ -77,13 +77,18 @@ const fmtCurrency = (n: number) =>
 // ── Component ─────────────────────────────────────────────
 export function SellNewQuote() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const quoteNumber = 'Q-2026-0048';
 
-  const [customer, setCustomer] = useState('');
+  // Optional context from "New quote" launches (Opportunity → New quote, Customer → New quote, Product → quote)
+  const opportunityId = searchParams.get('opportunityId') ?? '';
+  const linkedCustomer = searchParams.get('customer') ?? searchParams.get('customerId') ?? '';
+
+  const [customer, setCustomer] = useState(linkedCustomer);
   const [quoteDate, setQuoteDate] = useState('2026-03-20');
   const [expiryDate, setExpiryDate] = useState('2026-04-19');
   const [terms, setTerms] = useState('net30');
-  const [ref, setRef] = useState('');
+  const [ref, setRef] = useState(opportunityId);
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<LineItem[]>([newLine()]);
   const [reviewLines, setReviewLines] = useState<ReviewLineItem[]>([]);

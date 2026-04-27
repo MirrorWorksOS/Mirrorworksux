@@ -4,7 +4,9 @@
  *
  * Note: PO approval is separated from PO creation by default (segregation of duties).
  */
+import { useState } from 'react';
 import { Settings, Users, BarChart3, Plus, Trash2 } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -150,6 +152,23 @@ function GeneralPanel() {
 // ── Suppliers Panel ──
 function SuppliersPanel() {
   const categories = ['Raw Materials', 'Consumables', 'Equipment', 'Components', 'Services'];
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState('');
+  const [draftThreshold, setDraftThreshold] = useState(0);
+  const [draftApprover, setDraftApprover] = useState('');
+
+  const openEdit = (category: string) => {
+    setEditingCategory(category);
+    setDraftName(category);
+    setDraftThreshold(0);
+    setDraftApprover('');
+  };
+
+  const saveEdit = () => {
+    // TODO(backend): settings.updateApprovalLevel({ category, name, threshold, approver })
+    toast.success(`Approval level for "${draftName}" saved`);
+    setEditingCategory(null);
+  };
 
   return (
     <div className="space-y-8 max-w-[640px]">
@@ -198,7 +217,7 @@ function SuppliersPanel() {
             <div key={c} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
               <span className="text-sm text-foreground font-medium">{c}</span>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)]" onClick={() => toast('Edit approval level coming soon')}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)]" onClick={() => openEdit(c)}>Edit</Button>
                 <button className="text-[var(--neutral-400)] hover:text-[var(--mw-error)] transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -227,6 +246,41 @@ function SuppliersPanel() {
           ))}
         </div>
       </div>
+
+      <Sheet open={!!editingCategory} onOpenChange={(open) => !open && setEditingCategory(null)}>
+        <SheetContent className="w-[420px] sm:max-w-[420px] p-0 overflow-y-auto border-l border-[var(--border)]">
+          <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+            <SheetTitle className="text-base font-medium text-foreground">Edit approval level</SheetTitle>
+            <SheetDescription className="text-[var(--neutral-500)] text-xs">
+              Configure the threshold and approver for this category.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="p-6 space-y-4">
+            <div className="grid gap-1.5">
+              <Label className="text-sm">Category name</Label>
+              <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label className="text-sm">Threshold (AUD)</Label>
+              <Input type="number" min={0} step="100" value={draftThreshold} onChange={(e) => setDraftThreshold(Number(e.target.value))} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label className="text-sm">Approver</Label>
+              <Input value={draftApprover} onChange={(e) => setDraftApprover(e.target.value)} placeholder="e.g. Procurement Manager" />
+            </div>
+          </div>
+          <div className="p-6 pt-0 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setEditingCategory(null)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={saveEdit}
+              disabled={!draftName.trim()}
+            >
+              Save
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

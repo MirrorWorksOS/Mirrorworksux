@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, MoreVertical, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { motion } from 'motion/react';
@@ -68,6 +69,7 @@ const getStatusBadge = (status: ReqStatus) => {
 };
 
 export function BuyRequisitions() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'all' | ReqStatus>('all');
   const [search, setSearch] = useState('');
 
@@ -131,7 +133,7 @@ export function BuyRequisitions() {
           </div>
         )}
         {req.status !== 'submitted' && (
-          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-all duration-200 ease-[var(--ease-standard)]" onClick={(e) => { e.stopPropagation(); toast('Requisition actions coming soon'); }}>
+          <button className="p-1 hover:bg-[var(--neutral-100)] rounded transition-all duration-200 ease-[var(--ease-standard)]" onClick={(e) => { e.stopPropagation(); navigate(`/buy/requisitions/${req.id}`); }}>
             <MoreVertical className="w-4 h-4 text-[var(--neutral-500)]" />
           </button>
         )}
@@ -176,7 +178,7 @@ export function BuyRequisitions() {
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New requisition coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/buy/requisitions/new')}>
           New Requisition
         </ToolbarPrimaryButton>
       </PageToolbar>

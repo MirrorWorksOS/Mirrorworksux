@@ -86,7 +86,7 @@ export function SellOrders() {
           <AnimatedDownload className="w-4 h-4" />
           Export
         </Button>
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New sales order form coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/orders/new')}>
           New Sales Order
         </ToolbarPrimaryButton>
       </PageToolbar>
@@ -169,7 +169,7 @@ export function SellOrders() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => navigate(`/sell/orders/${order.id}`)}>View details</DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => toast('Edit order coming soon')}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/sell/orders/${order.id}?edit=1`)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => toast.success('Order duplicated')}>Duplicate</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => toast('Order deleted')} className="text-[var(--mw-error)]">Delete</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -195,7 +195,7 @@ export function SellOrders() {
             icon={Plus}
             title="No orders yet"
             description="Create your first sales order to get started"
-            action={{ label: "Create Sales Order", onClick: () => toast('New sales order form coming soon'), icon: Plus }}
+            action={{ label: "Create Sales Order", onClick: () => navigate('/sell/orders/new'), icon: Plus }}
           />
         </Card>
       )}

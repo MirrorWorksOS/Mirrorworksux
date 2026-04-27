@@ -191,7 +191,10 @@ export function BuySuppliers() {
           title="Suppliers"
           subtitle={`${filteredSuppliers.length} total suppliers`}
           actions={
-            <Button className="group h-12 min-h-[48px] bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-600)]">
+            <Button
+              onClick={() => navigate('/buy/suppliers/new')}
+              className="group h-12 min-h-[48px] bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-600)]"
+            >
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New Supplier
             </Button>

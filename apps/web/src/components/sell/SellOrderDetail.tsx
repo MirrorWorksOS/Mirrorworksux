@@ -5,7 +5,7 @@
 
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useParams, Link } from "react-router";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router";
 import {
   ArrowLeft,
   Download,
@@ -48,8 +48,8 @@ interface SellOrder {
   title: string;
   customer: string;
   value: number;
-  status: OrderStatus;
-  opportunityId: string;
+  status: OrderStatus | 'Draft';
+  opportunityId?: string;
   jobId?: string;
   orderDate: string;
   expectedDelivery: string;
@@ -85,6 +85,28 @@ interface DocFile {
 /* ------------------------------------------------------------------ */
 /*  Mock data                                                          */
 /* ------------------------------------------------------------------ */
+
+// Blank-form factory for create-mode rendering at `/sell/orders/new`.
+const createBlankOrder = (defaults?: Partial<SellOrder>): SellOrder => ({
+  id: `new-${Date.now()}`,
+  soNumber: 'SO-NEW',
+  title: '',
+  customer: '',
+  value: 0,
+  status: 'Draft',
+  orderDate: new Date().toISOString().slice(0, 10),
+  expectedDelivery: '',
+  paymentTerms: 'Net 30',
+  subtotal: 0,
+  tax: 0,
+  total: 0,
+  paid: 0,
+  shippingAddress: '',
+  shippingMethod: 'Standard Freight',
+  itemsShipped: 0,
+  itemsTotal: 0,
+  ...defaults,
+});
 
 const MOCK_ORDERS: Record<string, SellOrder> = {
   "so-001": {
@@ -230,17 +252,65 @@ const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
 
 export function SellOrderDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const editParam = searchParams.get('edit') === '1';
 
-  const order = id ? MOCK_ORDERS[id] : undefined;
+  const isNew = !id || id === 'new';
+  const order = isNew
+    ? createBlankOrder({
+        // Prefill from related entity when launched from a quote/opportunity
+        opportunityId: searchParams.get('opportunityId') ?? undefined,
+        customer: searchParams.get('customer') ?? '',
+      })
+    : (id ? MOCK_ORDERS[id] : undefined);
+  const editMode = isNew || editParam;
+
+  const handleSave = () => {
+    // TODO(backend): isNew ? salesOrders.create(order) : salesOrders.update(order.id, order)
+    if (isNew) {
+      toast.success('Sales order created');
+      navigate(`/sell/orders/${order!.id}`, { replace: true });
+    } else {
+      toast.success('Sales order saved');
+    }
+  };
+
+  // Local-state mirrors so Add Line Item / Upload behave like real edits in mock mode.
+  const [lineItems, setLineItems] = useState<LineItem[]>(isNew ? [] : MOCK_LINE_ITEMS);
+  const [documents, setDocuments] = useState<DocFile[]>(isNew ? [] : MOCK_DOCUMENTS);
+
+  const handleAddLineItem = () => {
+    // TODO(backend): salesOrders.addLineItem(order.id, blank)
+    setLineItems((prev) => [
+      ...prev,
+      { id: `li-${Date.now()}`, product: '', description: '', qty: 1, unitPrice: 0, total: 0, status: 'Pending' },
+    ]);
+  };
+
+  const handleUploadDocument = (file: File) => {
+    // TODO(backend): documents.upload(order.id, file) — returns the persisted DocFile.
+    const sizeKb = Math.max(1, Math.round(file.size / 1024));
+    setDocuments((prev) => [
+      ...prev,
+      {
+        id: `doc-${Date.now()}`,
+        name: file.name,
+        size: sizeKb < 1024 ? `${sizeKb} KB` : `${(sizeKb / 1024).toFixed(1)} MB`,
+        date: new Date().toISOString().slice(0, 10),
+      },
+    ]);
+    toast.success(`Uploaded ${file.name}`);
+  };
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
-      if (t.id === "line-items") return { ...t, count: MOCK_LINE_ITEMS.length };
-      if (t.id === "documents") return { ...t, count: MOCK_DOCUMENTS.length };
+      if (t.id === "line-items") return { ...t, count: lineItems.length };
+      if (t.id === "documents") return { ...t, count: documents.length };
       return { ...t };
     });
-  }, []);
+  }, [lineItems.length, documents.length]);
 
   if (!order) {
     return (
@@ -311,12 +381,16 @@ export function SellOrderDetail() {
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">Linked opportunity</Label>
                     <div className="mt-1">
-                      <Link
-                        to={`/sell/opportunities/${order.opportunityId}`}
-                        className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
-                      >
-                        {order.opportunityId.toUpperCase()}
-                      </Link>
+                      {order.opportunityId ? (
+                        <Link
+                          to={`/sell/opportunities/${order.opportunityId}`}
+                          className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
+                        >
+                          {order.opportunityId.toUpperCase()}
+                        </Link>
+                      ) : (
+                        <Input readOnly className="h-12 border-[var(--border)] text-[var(--neutral-400)]" value="No opportunity linked" />
+                      )}
                     </div>
                   </div>
                   <div>
@@ -371,7 +445,7 @@ export function SellOrderDetail() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {MOCK_LINE_ITEMS.slice(0, 3).map((li) => (
+                    {lineItems.slice(0, 3).map((li) => (
                       <TableRow key={li.id} className="min-h-14">
                         <TableCell className="text-sm">{li.product}</TableCell>
                         <TableCell className="text-right text-sm tabular-nums">{li.qty}</TableCell>
@@ -516,7 +590,7 @@ export function SellOrderDetail() {
               <h2 className="text-base font-medium text-foreground">Line items</h2>
               <Button
                 className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
-                onClick={() => toast('Add line item coming soon')}
+                onClick={handleAddLineItem}
               >
                 <Package className="mr-2 h-4 w-4" />
                 Add item
@@ -524,7 +598,7 @@ export function SellOrderDetail() {
             </div>
             <MwDataTable<LineItem>
               columns={columns}
-              data={MOCK_LINE_ITEMS}
+              data={lineItems}
               keyExtractor={(li) => li.id}
               striped
             />
@@ -616,13 +690,22 @@ export function SellOrderDetail() {
           <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-base font-medium text-foreground">Documents</h2>
-              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Upload document coming soon')}>
+              <label className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 inline-flex items-center px-4 rounded-md cursor-pointer">
                 <FileText className="mr-2 h-4 w-4" />
                 Upload
-              </Button>
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUploadDocument(file);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
             </div>
             <ul className="divide-y divide-[var(--border)]">
-              {MOCK_DOCUMENTS.map((doc) => (
+              {documents.map((doc) => (
                 <li key={doc.id} className="flex items-center justify-between px-6 py-4">
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 shrink-0 text-[var(--neutral-500)]" />
@@ -655,25 +738,33 @@ export function SellOrderDetail() {
         { label: "Sales Orders", href: "/sell/orders" },
         { label: order.soNumber },
       ]}
-      title={order.title}
+      title={isNew ? 'New Sales Order' : order.title}
       subtitle={
-        <>
-          <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{order.soNumber}</span>
-          <span>{order.customer}</span>
-          <span className="tabular-nums">${order.value.toLocaleString()}</span>
-        </>
+        isNew ? (
+          <span>Fill out the details below and click Save to create.</span>
+        ) : (
+          <>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{order.soNumber}</span>
+            <span>{order.customer}</span>
+            <span className="tabular-nums">${order.value.toLocaleString()}</span>
+          </>
+        )
       }
       metaRow={
-        <>
-          <Badge className={cn("rounded-full px-2.5 py-0.5 text-xs", STATUS_BADGE[order.status])}>
-            {order.status}
-          </Badge>
-          <Badge variant="outline" className="rounded-full border-[var(--border)]">
-            <Link to={`/sell/opportunities/${order.opportunityId}`} className="hover:underline">
-              Opportunity
-            </Link>
-          </Badge>
-        </>
+        isNew ? null : (
+          <>
+            <Badge className={cn("rounded-full px-2.5 py-0.5 text-xs", STATUS_BADGE[order.status])}>
+              {order.status}
+            </Badge>
+            {order.opportunityId && (
+              <Badge variant="outline" className="rounded-full border-[var(--border)]">
+                <Link to={`/sell/opportunities/${order.opportunityId}`} className="hover:underline">
+                  Opportunity
+                </Link>
+              </Badge>
+            )}
+          </>
+        )
       }
       headerActions={
         <>
@@ -683,14 +774,25 @@ export function SellOrderDetail() {
               Back
             </Link>
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Email sent to customer')}>
-            <Mail className="mr-2 h-4 w-4" />
-            Email Customer
-          </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Printing\u2026'); window.print(); }}>
-            <Printer className="mr-2 h-4 w-4" />
-            Print Order
-          </Button>
+          {editMode ? (
+            <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={handleSave}>
+              Save
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => {
+                // TODO(backend): salesOrders.sendEmail(order.id)
+                toast.success('Email sent to customer');
+              }}>
+                <Mail className="mr-2 h-4 w-4" />
+                Email Customer
+              </Button>
+              <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => { toast('Printing\u2026'); window.print(); }}>
+                <Printer className="mr-2 h-4 w-4" />
+                Print Order
+              </Button>
+            </>
+          )}
         </>
       }
       tabs={tabConfig}

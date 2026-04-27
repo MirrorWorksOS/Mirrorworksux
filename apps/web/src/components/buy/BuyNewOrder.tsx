@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import {
   ArrowLeft, FileText, Plus, Trash2, AlertTriangle, FileInput, Sparkles,
 } from 'lucide-react';
@@ -92,16 +92,21 @@ function priceAnomaly(line: LineItem): { deltaPct: number; historical: number } 
 // ── Component ─────────────────────────────────────────────
 export function BuyNewOrder() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const poNumber = useMemo(nextPoNumber, []);
   const today = '2026-04-22';
 
-  const [supplierId, setSupplierId] = useState<string>('');
+  // Optional context from launches: Supplier → New PO, Requisition → Convert to PO.
+  const linkedSupplierId    = searchParams.get('supplierId') ?? '';
+  const linkedRequisitionId = searchParams.get('requisitionId') ?? '';
+
+  const [supplierId, setSupplierId] = useState<string>(linkedSupplierId);
   const [orderDate, setOrderDate] = useState(today);
   const [deliveryDate, setDeliveryDate] = useState(addDays(today, 7));
   const [paymentTerms, setPaymentTerms] = useState('Net 30');
   const [shippingMethod, setShippingMethod] = useState('Road Freight');
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [jobId, setJobId] = useState<string>('');
+  const [jobId, setJobId] = useState<string>(linkedRequisitionId);
   const [supplierNotes, setSupplierNotes] = useState('');
   const [internalNotes, setInternalNotes] = useState('');
   const [lines, setLines] = useState<LineItem[]>([newLine()]);
@@ -508,7 +513,7 @@ export function BuyNewOrder() {
                       variant="outline"
                       size="sm"
                       className="h-9 gap-1.5 border-[var(--border)]"
-                      onClick={() => toast('Requisition picker coming soon')}
+                      onClick={() => navigate('/buy/requisitions')}
                     >
                       <FileInput className="w-3.5 h-3.5" />
                       Import from Requisition

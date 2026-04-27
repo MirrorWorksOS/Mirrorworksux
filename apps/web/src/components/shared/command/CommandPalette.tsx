@@ -311,10 +311,12 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
   const ACTIONS: ActionItem[] = useMemo(() => [
     { label: 'Create Quote', icon: FileText, section: 'Sell', description: 'New sales quote', shortcut: '⌘Q', roles: ['sales', 'admin'], action: () => navigate('/sell/quotes/new') },
     { label: 'Create Invoice', icon: Receipt, section: 'Sell', description: 'New sales invoice', roles: ['sales', 'finance', 'admin'], action: () => navigate('/sell/invoices/new') },
-    { label: 'New Opportunity', icon: Target, section: 'Sell', description: 'Track a new deal', roles: ['sales', 'admin'], action: () => navigate('/sell/opportunities') },
+    { label: 'New Opportunity', icon: Target, section: 'Sell', description: 'Track a new deal', roles: ['sales', 'admin'], action: () => navigate('/sell/opportunities/new') },
+    // TODO(backend): jobs.create — wire to /plan/jobs/new once Plan create flow exists.
     { label: 'New Job', icon: Briefcase, section: 'Plan', description: 'Create production job', roles: ['production', 'admin'], action: () => toast('New job form coming soon') },
+    // TODO(backend): manufacturingOrders.create — wire to /make/manufacturing-orders/new once Make create flow exists.
     { label: 'New Manufacturing Order', icon: ClipboardList, section: 'Make', description: 'Create MO', shortcut: '⌘M', roles: ['production', 'admin'], action: () => toast('New MO form coming soon') },
-    { label: 'New Purchase Order', icon: ShoppingCart, section: 'Buy', description: 'Create PO', roles: ['purchasing', 'admin'], action: () => navigate('/buy/orders') },
+    { label: 'New Purchase Order', icon: ShoppingCart, section: 'Buy', description: 'Create PO', roles: ['purchasing', 'admin'], action: () => navigate('/buy/orders/new') },
     { label: 'Create Shipment', icon: Truck, section: 'Ship', description: 'New shipment', roles: ['shipping', 'admin'], action: () => navigate('/ship/shipping') },
     { label: 'Import Data', icon: Upload, section: 'Control', description: 'MirrorWorks Bridge', roles: ['admin'], action: () => navigate('/control/mirrorworks-bridge') },
     { label: 'Invite Team Member', icon: Users, section: 'Control', description: 'Add to workspace', roles: ['admin'], action: () => navigate('/control/people') },

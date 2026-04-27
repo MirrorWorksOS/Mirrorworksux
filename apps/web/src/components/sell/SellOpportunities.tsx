@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Plus, DollarSign, Calendar, Flag } from 'lucide-react';
 import { InlineEmpty } from '@/components/shared/feedback/EmptyState';
@@ -99,7 +98,7 @@ export function SellOpportunities() {
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search opportunities…" />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New opportunity form coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/sell/opportunities/new')}>
           New Opportunity
         </ToolbarPrimaryButton>
       </PageToolbar>
@@ -123,7 +122,7 @@ export function SellOpportunities() {
               >
                 <div className="flex items-center justify-between px-0.5 pb-1 text-xs text-[var(--neutral-500)]">
                   <span className="tabular-nums">${stageValue.toLocaleString()}</span>
-                  <button type="button" className="p-1 hover:bg-[var(--border)] rounded transition-colors" aria-label="Add opportunity" onClick={() => toast('New opportunity form coming soon')}>
+                  <button type="button" className="p-1 hover:bg-[var(--border)] rounded transition-colors" aria-label="Add opportunity" onClick={() => navigate(`/sell/opportunities/new?stage=${stage.key}`)}>
                     <Plus className="w-4 h-4 text-[var(--neutral-500)]" />
                   </button>
                 </div>

@@ -225,9 +225,20 @@ export function BuyOrderDetail() {
   const [historyOpen, setHistoryOpen] = useState(false);
 
   const order = id ? PO_DETAILS[id] : undefined;
-  const lineItems = id ? MOCK_LINE_ITEMS[id] ?? [] : [];
   const auditEventCount = id ? auditService.list('purchase_order', id).length : 0;
   const relatedDocs = id ? MOCK_RELATED_DOCS[id] ?? [] : [];
+
+  // Local-state mirror so Add line item / Edit mode behave like real edits in mock mode.
+  const [lineItems, setLineItems] = useState<POLineItem[]>(id && MOCK_LINE_ITEMS[id] ? MOCK_LINE_ITEMS[id] : []);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleAddLineItem = () => {
+    // TODO(backend): purchaseOrders.addLineItem(order.id, blank)
+    setLineItems((prev) => [
+      ...prev,
+      { id: `pl-${Date.now()}`, product: '', description: '', qtyOrdered: 1, qtyReceived: 0, unitPrice: 0, total: 0, status: 'Pending' },
+    ]);
+  };
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
@@ -588,7 +599,7 @@ export function BuyOrderDetail() {
               <h2 className="text-base font-medium text-foreground">Line items</h2>
               <Button
                 className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
-                onClick={() => toast("Add line item coming soon")}
+                onClick={handleAddLineItem}
               >
                 <Package className="mr-2 h-4 w-4" />
                 Add item
@@ -828,10 +839,16 @@ export function BuyOrderDetail() {
           <Button
             variant="outline"
             className="h-12 border-[var(--border)]"
-            onClick={() => toast("Edit mode coming soon")}
+            onClick={() => {
+              // TODO(backend): purchaseOrders.update(order.id, ...) once edit form fields are wired.
+              if (editMode) {
+                toast.success('Order saved');
+              }
+              setEditMode((v) => !v);
+            }}
           >
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {editMode ? 'Save' : 'Edit'}
           </Button>
           {order.status === "draft" && (
             <Button

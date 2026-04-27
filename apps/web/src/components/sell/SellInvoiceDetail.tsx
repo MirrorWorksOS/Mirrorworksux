@@ -24,6 +24,7 @@ import {
   type JobWorkspaceTabConfig,
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -288,13 +289,50 @@ export function SellInvoiceDetail() {
 
   const invoice = id ? MOCK_INVOICES[id] : undefined;
 
+  // Local-state mirrors so Add Line Item / Record Payment behave like real edits in mock mode.
+  const [lineItems, setLineItems] = useState<InvoiceLineItem[]>(MOCK_LINE_ITEMS);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentEvent[]>(MOCK_PAYMENT_HISTORY);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState('Bank transfer');
+  const [paymentDate,   setPaymentDate]   = useState(() => new Date().toISOString().slice(0, 10));
+
+  const handleAddLineItem = () => {
+    // TODO(backend): invoices.addLineItem(invoice.id, blank)
+    setLineItems((prev) => [
+      ...prev,
+      { id: `il-${Date.now()}`, item: '', description: '', qty: 1, unitPrice: 0, tax: 'GST', total: 0 },
+    ]);
+  };
+
+  const openRecordPayment = () => {
+    setPaymentAmount(invoice ? Math.max(0, invoice.balanceDue ?? invoice.total - (invoice.amountPaid ?? 0)) : 0);
+    setPaymentDialogOpen(true);
+  };
+
+  const handleRecordPayment = () => {
+    // TODO(backend): invoices.recordPayment(invoice.id, { amount, method, date })
+    setPaymentHistory((prev) => [
+      ...prev,
+      {
+        id: `pe-${Date.now()}`,
+        icon: 'payment',
+        title: `Payment received — $${paymentAmount.toFixed(2)}`,
+        description: `${paymentMethod} · ${paymentDate}`,
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+    setPaymentDialogOpen(false);
+    toast.success('Payment recorded');
+  };
+
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
-      if (t.id === "line-items") return { ...t, count: MOCK_LINE_ITEMS.length };
-      if (t.id === "payment-history") return { ...t, count: MOCK_PAYMENT_HISTORY.length };
+      if (t.id === "line-items") return { ...t, count: lineItems.length };
+      if (t.id === "payment-history") return { ...t, count: paymentHistory.length };
       return { ...t };
     });
-  }, []);
+  }, [lineItems.length, paymentHistory.length]);
 
   if (!invoice) {
     return (
@@ -437,7 +475,7 @@ export function SellInvoiceDetail() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {MOCK_LINE_ITEMS.slice(0, 3).map((li) => (
+                    {lineItems.slice(0, 3).map((li) => (
                       <TableRow key={li.id} className="min-h-14">
                         <TableCell className="text-sm">{li.item}</TableCell>
                         <TableCell className="text-right text-sm tabular-nums">{li.qty}</TableCell>
@@ -502,7 +540,7 @@ export function SellInvoiceDetail() {
               <h2 className="text-base font-medium text-foreground">Line items</h2>
               <Button
                 className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
-                onClick={() => toast('Add line item coming soon')}
+                onClick={handleAddLineItem}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Line Item
@@ -510,7 +548,7 @@ export function SellInvoiceDetail() {
             </div>
             <MwDataTable<InvoiceLineItem>
               columns={columns}
-              data={MOCK_LINE_ITEMS}
+              data={lineItems}
               keyExtractor={(li) => li.id}
               striped
             />
@@ -548,7 +586,7 @@ export function SellInvoiceDetail() {
                   <h2 className="text-base font-medium text-foreground">Payment history</h2>
                   <p className="text-xs text-[var(--neutral-500)]">Timeline of invoice events and payments</p>
                 </div>
-                <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={() => toast('Record payment coming soon')}>
+                <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12" onClick={openRecordPayment}>
                   <DollarSign className="mr-2 h-4 w-4" />
                   Record Payment
                 </Button>
@@ -557,7 +595,7 @@ export function SellInvoiceDetail() {
               {/* Timeline */}
               <div className="space-y-6 relative">
                 <div className="absolute left-[15px] top-4 bottom-4 w-[2px] bg-[var(--neutral-200)]" />
-                {MOCK_PAYMENT_HISTORY.map((evt) => (
+                {paymentHistory.map((evt) => (
                   <div key={evt.id} className="flex items-start gap-4 relative">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-card bg-[var(--neutral-100)] z-10">
                       {EVENT_ICON[evt.icon]}
@@ -635,22 +673,31 @@ export function SellInvoiceDetail() {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Syncing invoice to Xero...')}>
+              <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => {
+                // TODO(backend): integrations.xero.syncInvoice(invoice.id)
+                toast.success('Syncing invoice to Xero...');
+              }}>
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Sync to Xero
               </Button>
             </TooltipTrigger>
             <TooltipContent>Sync this invoice to Xero accounting</TooltipContent>
           </Tooltip>
-          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Invoice sent')}>
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => {
+            // TODO(backend): invoices.sendEmail(invoice.id)
+            toast.success('Invoice sent');
+          }}>
             <Mail className="mr-2 h-4 w-4" />
             Send Invoice
           </Button>
-          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => toast.success('Downloading PDF\u2026')}>
+          <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => {
+            // TODO(backend): invoices.exportPdf(invoice.id)
+            toast.success('Downloading PDF\u2026');
+          }}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={() => toast('Record payment coming soon')}>
+          <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={openRecordPayment}>
             <DollarSign className="mr-2 h-4 w-4" />
             Record Payment
           </Button>
@@ -659,7 +706,53 @@ export function SellInvoiceDetail() {
       tabs={tabConfig}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      renderTabPanel={renderTabPanel}
+      renderTabPanel={(tabId) => (
+        <>
+          {renderTabPanel(tabId)}
+          {tabId === "payment-history" && (
+            <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Record payment</DialogTitle>
+                  <DialogDescription>
+                    Log a payment received for this invoice. Will appear in payment history.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-2">
+                  <div className="grid gap-1.5">
+                    <Label className="text-sm">Amount</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={paymentAmount}
+                      onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                    />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-sm">Method</Label>
+                    <Input value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} placeholder="Bank transfer / Card / Cheque" />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-sm">Date</Label>
+                    <Input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setPaymentDialogOpen(false)}>Cancel</Button>
+                  <Button
+                    className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                    onClick={handleRecordPayment}
+                    disabled={paymentAmount <= 0}
+                  >
+                    Record payment
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+        </>
+      )}
     />
   );
 }

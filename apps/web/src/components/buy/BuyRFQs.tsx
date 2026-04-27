@@ -2,7 +2,8 @@
  * Buy RFQs — Request for Quotation management
  * Full list with supplier comparison modal
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Search, ChevronRight, Check, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -150,6 +151,41 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
 export function BuyRFQs() {
   const [search,      setSearch]      = useState('');
   const [selectedRFQ, setSelectedRFQ] = useState<RFQ | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showNewRFQ,  setShowNewRFQ]  = useState(searchParams.get('new') === '1');
+
+  // Open the new-RFQ sheet whenever the URL has `?new=1` (e.g. arriving from Quick Create).
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setShowNewRFQ(true);
+    }
+  }, [searchParams]);
+
+  // When the sheet closes, scrub `?new=1` from the URL so it doesn't reopen.
+  const handleNewRFQOpenChange = (open: boolean) => {
+    setShowNewRFQ(open);
+    if (!open && searchParams.get('new')) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('new');
+      setSearchParams(next, { replace: true });
+    }
+  };
+  const [draftTitle,    setDraftTitle]    = useState('');
+  const [draftSku,      setDraftSku]      = useState('');
+  const [draftQty,      setDraftQty]      = useState(1);
+  const [draftSuppliers, setDraftSuppliers] = useState(0);
+  const [draftDueDate,  setDraftDueDate]  = useState('');
+
+  const handleCreateRFQ = () => {
+    // TODO(backend): rfqs.create({ title, sku, qty, suppliers, dueDate })
+    toast.success(`RFQ for "${draftTitle || 'New RFQ'}" created`);
+    handleNewRFQOpenChange(false);
+    setDraftTitle('');
+    setDraftSku('');
+    setDraftQty(1);
+    setDraftSuppliers(0);
+    setDraftDueDate('');
+  };
 
   const filtered = RFQS.filter(r =>
     r.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -194,7 +230,7 @@ export function BuyRFQs() {
         title="RFQs"
         subtitle={`${RFQS.filter(r => r.status === 'open').length} open · ${RFQS.filter(r => r.status === 'awarded').length} awarded`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => toast('New RFQ coming soon')}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10" onClick={() => setShowNewRFQ(true)}>
             <AnimatedPlus className="w-4 h-4" /> New RFQ
           </Button>
         }
@@ -227,6 +263,55 @@ export function BuyRFQs() {
       />
 
       {selectedRFQ && <RFQDetail rfq={selectedRFQ} onClose={() => setSelectedRFQ(null)} />}
+
+      <Sheet open={showNewRFQ} onOpenChange={handleNewRFQOpenChange}>
+        <SheetContent className="w-[480px] sm:max-w-[480px] p-0 overflow-y-auto border-l border-[var(--border)]">
+          <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+            <SheetTitle className="text-base font-medium text-foreground">New RFQ</SheetTitle>
+            <SheetDescription className="text-[var(--neutral-500)] text-xs">
+              Send a request for quotation to selected suppliers.
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="p-6 space-y-4">
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium text-foreground">Title <span className="text-[var(--mw-error)]">*</span></label>
+              <Input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="e.g. 6mm structural plate" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">SKU</label>
+                <Input value={draftSku} onChange={(e) => setDraftSku(e.target.value)} placeholder="PROD-XXX" />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">Quantity</label>
+                <Input type="number" min={1} value={draftQty} onChange={(e) => setDraftQty(Number(e.target.value))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">Suppliers invited</label>
+                <Input type="number" min={0} value={draftSuppliers} onChange={(e) => setDraftSuppliers(Number(e.target.value))} />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium text-foreground">Due date</label>
+                <Input type="date" value={draftDueDate} onChange={(e) => setDraftDueDate(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 pt-0 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowNewRFQ(false)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={handleCreateRFQ}
+              disabled={!draftTitle.trim()}
+            >
+              Create RFQ
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </PageShell>
   );
 }
