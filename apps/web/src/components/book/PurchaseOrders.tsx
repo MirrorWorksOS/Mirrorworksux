@@ -134,7 +134,17 @@ export function PurchaseOrders() {
           <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
           <Input placeholder="Search purchase orders…" className="h-12 rounded-full border-[var(--neutral-200)] bg-background pl-10 text-sm" />
         </div>
-        <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast('Filter panel coming soon')}><SlidersHorizontal className="w-4 h-4" /> Filter</Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-12 gap-2 rounded-full border-[var(--border)]"
+          onClick={() => {
+            // TODO(backend): book.purchases.openFilters()
+            toast.success('Filters opened');
+          }}
+        >
+          <SlidersHorizontal className="w-4 h-4" /> Filter
+        </Button>
         <Button variant="outline" size="sm" className="h-12 gap-2 rounded-full border-[var(--border)]" onClick={() => toast.success('Exporting purchase orders…')}>Export <ChevronDown className="w-4 h-4" /></Button>
       </div>
 

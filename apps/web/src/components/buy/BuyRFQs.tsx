@@ -133,7 +133,10 @@ function RFQDetail({ rfq, onClose }: { rfq: RFQ; onClose: () => void }) {
                       <Button size="sm" className={cn('w-full mt-3 h-12 text-xs gap-1', q.aiPick
                         ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
                         : 'bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white'
-                      )} onClick={() => toast.success(`Awarded to ${q.supplier}`)}>
+                      )} onClick={() => {
+                        // TODO(backend): rfqs.awardTo(rfq.id, q.supplierId)
+                        toast.success(`Awarded to ${q.supplier}`);
+                      }}>
                         <Check className="w-4 h-4" /> Award to {q.supplier.split(' ')[0]}
                       </Button>
                     )}

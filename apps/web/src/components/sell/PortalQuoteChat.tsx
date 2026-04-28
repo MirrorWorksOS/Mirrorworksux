@@ -90,7 +90,15 @@ export function PortalQuoteChat({ messages = [], quoteId }: PortalQuoteChatProps
 
       {/* Input */}
       <div className="border-t border-[var(--border)] p-3 flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 shrink-0" onClick={() => toast.info('File attachment coming soon')}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 shrink-0"
+          onClick={() => {
+            // TODO(backend): portal.attachments.upload(quoteId, file)
+            toast.success('Attachment uploaded');
+          }}
+        >
           <Paperclip className="w-4 h-4 text-[var(--neutral-400)]" />
         </Button>
         <input

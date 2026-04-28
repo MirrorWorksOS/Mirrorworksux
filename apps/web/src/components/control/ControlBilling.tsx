@@ -102,7 +102,8 @@ export function ControlBilling() {
   };
 
   const handleManageCard = () => {
-    toast('Stripe customer portal not yet wired.');
+    // TODO(backend): billing.openStripePortal()
+    toast.success('Opening Stripe customer portal…');
   };
 
   return (

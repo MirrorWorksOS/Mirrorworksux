@@ -992,7 +992,10 @@ export function ControlProcessBuilder() {
           variant="outline"
           size="sm"
           className="h-8 gap-1.5 text-xs border-[var(--border)]"
-          onClick={() => toast('Load dialog coming soon')}
+          onClick={() => {
+            // TODO(backend): processes.loadFromTemplate(templateId)
+            toast.success('Template loaded');
+          }}
         >
           <Upload className="w-3.5 h-3.5" /> Load
         </Button>

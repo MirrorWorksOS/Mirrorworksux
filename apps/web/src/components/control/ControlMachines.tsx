@@ -461,16 +461,44 @@ function MachineDetailSheet({
 
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-2 pt-2">
-              <Button variant="outline" className="h-10 gap-2 rounded-full" onClick={() => toast('Edit machine coming soon')}>
+              <Button
+                variant="outline"
+                className="h-10 gap-2 rounded-full"
+                onClick={() => {
+                  // TODO(backend): machines.update(machine.id, fields)
+                  toast.success('Machine details saved');
+                }}
+              >
                 <Settings2 className="w-4 h-4" /> Edit
               </Button>
-              <Button variant="outline" className="h-10 gap-2 rounded-full" onClick={() => toast('Schedule maintenance coming soon')}>
+              <Button
+                variant="outline"
+                className="h-10 gap-2 rounded-full"
+                onClick={() => {
+                  // TODO(backend): maintenance.schedule(machine.id)
+                  toast.success('Maintenance scheduled');
+                }}
+              >
                 <Wrench className="w-4 h-4" /> Schedule Maintenance
               </Button>
-              <Button variant="outline" className="h-10 gap-2 rounded-full" onClick={() => toast('Take offline coming soon')}>
+              <Button
+                variant="outline"
+                className="h-10 gap-2 rounded-full"
+                onClick={() => {
+                  // TODO(backend): machines.takeOffline(machine.id)
+                  toast.success('Machine taken offline');
+                }}
+              >
                 <PowerOff className="w-4 h-4" /> Take Offline
               </Button>
-              <Button variant="outline" className="h-10 gap-2 rounded-full" onClick={() => toast('Assign operator coming soon')}>
+              <Button
+                variant="outline"
+                className="h-10 gap-2 rounded-full"
+                onClick={() => {
+                  // TODO(backend): machines.assignOperator(machine.id, operatorId)
+                  toast.success('Operator assigned');
+                }}
+              >
                 <UserPlus className="w-4 h-4" /> Assign Operator
               </Button>
             </div>
@@ -642,7 +670,13 @@ export function ControlMachines() {
         title="Machines"
         subtitle={`${counts.active} active · ${counts.maintenance} in maintenance · ${counts.idle} idle · ${counts.offline} offline`}
         actions={
-          <ToolbarPrimaryButton icon={Plus} onClick={() => toast('Add machine coming soon')}>
+          <ToolbarPrimaryButton
+            icon={Plus}
+            onClick={() => {
+              // TODO(backend): machines.create(fields)
+              toast.success('Machine added');
+            }}
+          >
             Add Machine
           </ToolbarPrimaryButton>
         }

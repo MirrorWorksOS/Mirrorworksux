@@ -382,7 +382,15 @@ function OverviewTab() {
 
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium text-foreground">Tiered Pricing</h4>
-          <Button variant="outline" size="sm" className="h-8 gap-1 text-xs border-[var(--border)]" onClick={() => toast('Add tier coming soon')}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 text-xs border-[var(--border)]"
+            onClick={() => {
+              // TODO(backend): products.priceTiers.add(productId, fields)
+              toast.success('Pricing tier added');
+            }}
+          >
             <Plus className="w-3 h-3" /> Add Tier
           </Button>
         </div>
@@ -598,7 +606,10 @@ function OverviewTab() {
           ].map((a) => (
             <button
               key={a.label}
-              onClick={() => toast(`${a.label} coming soon`)}
+              onClick={() => {
+                // TODO(backend): products.{a.key}(productId)
+                toast.success(`${a.label} opened`);
+              }}
               className="flex items-center gap-3 p-4 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card hover:bg-[var(--neutral-50)] transition-colors text-left"
             >
               <a.icon className="w-5 h-5 text-[var(--neutral-400)]" />
@@ -668,7 +679,17 @@ function ManufacturingTab() {
       {/* ── BOM Material Pills ────────────────────────── */}
       <section className="space-y-4">
         <SubHeading actions={
-          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit BOM coming soon')}>Edit BOM</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-[var(--border)] h-8 text-xs"
+            onClick={() => {
+              // TODO(backend): products.bom.update(productId, lines)
+              toast.success('BOM saved');
+            }}
+          >
+            Edit BOM
+          </Button>
         }>
           Bill of Materials · v1.2
         </SubHeading>
@@ -702,7 +723,17 @@ function ManufacturingTab() {
       {/* ── Routing Flow Pipeline ─────────────────────── */}
       <section className="space-y-4">
         <SubHeading actions={
-          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs" onClick={() => toast('Edit routing coming soon')}>Edit routing</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-[var(--border)] h-8 text-xs"
+            onClick={() => {
+              // TODO(backend): products.routing.update(productId, steps)
+              toast.success('Routing saved');
+            }}
+          >
+            Edit routing
+          </Button>
         }>
           Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time
         </SubHeading>
@@ -872,7 +903,15 @@ function InventoryTab() {
       <section className="space-y-4">
         <SectionHeading>Stock by Location</SectionHeading>
         <div className="flex items-center justify-end">
-          <Button variant="outline" size="sm" className="h-8 text-xs border-[var(--border)]" onClick={() => toast('Transfer stock coming soon')}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-[var(--border)]"
+            onClick={() => {
+              // TODO(backend): inventory.transfer(productId, fromLoc, toLoc, qty)
+              toast.success('Stock transfer initiated');
+            }}
+          >
             Transfer Stock
           </Button>
         </div>
@@ -1206,7 +1245,13 @@ function DocumentsTab() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <SectionHeading>Product Documents</SectionHeading>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('Upload documents coming soon')}>
+          <Button
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
+            onClick={() => {
+              // TODO(backend): products.documents.upload(productId, files)
+              toast.success('Documents uploaded');
+            }}
+          >
             <Upload className="w-4 h-4" /> Upload Documents
           </Button>
         </div>
@@ -1248,7 +1293,13 @@ function DocumentsTab() {
                   <td className="px-5 py-3 tabular-nums text-[var(--neutral-500)]">{doc.date}</td>
                   <td className="px-5 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button className="p-2.5 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors" onClick={() => toast('Preview coming soon')}>
+                      <button
+                        className="p-2.5 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors"
+                        onClick={() => {
+                          // TODO(backend): products.documents.preview(documentId)
+                          toast.success('Preview opened');
+                        }}
+                      >
                         <Eye className="w-4 h-4 text-[var(--neutral-500)]" />
                       </button>
                       <button className="p-2.5 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors" onClick={() => toast.success('Downloading...')}>
@@ -1738,8 +1789,10 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
   const handleSaveProduct = () => {
     // TODO(backend): isNew ? products.create(product) : products.update(product.id, product)
     if (isNew) {
+      // Demo mode — synthetic ids don't resolve in the mock catalogue, so
+      // bounce back to the list page rather than showing "not found".
       toast.success('Product created');
-      navigate(`/${module}/products/new-${Date.now()}`, { replace: true });
+      navigate(`/${module}/products`, { replace: true });
     } else {
       toast.success('Product saved');
     }

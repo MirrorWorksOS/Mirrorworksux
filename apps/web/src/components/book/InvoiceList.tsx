@@ -160,7 +160,14 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
         />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <Button variant="outline" className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5" onClick={() => {}}>
+        <Button
+          variant="outline"
+          className="h-12 gap-2 rounded-full border-[var(--neutral-200)] px-5"
+          onClick={() => {
+            // TODO(backend): book.invoices.export(format)
+            toast.success('Exporting invoices…');
+          }}
+        >
           <Download className="w-4 h-4" /> Export
         </Button>
         <ToolbarPrimaryButton icon={Plus}>

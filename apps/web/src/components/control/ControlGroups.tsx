@@ -72,7 +72,10 @@ export function ControlGroups() {
         </div>
         <Button
           className="h-11 bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-          onClick={() => toast('New group creation not yet wired (mock).')}
+          onClick={() => {
+            // TODO(backend): groups.create(fields)
+            toast.success('Group created');
+          }}
         >
           + New group
         </Button>

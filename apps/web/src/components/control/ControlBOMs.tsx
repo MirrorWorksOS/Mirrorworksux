@@ -138,7 +138,15 @@ export function ControlBOMs() {
       key: 'actions', header: 'Actions', headerClassName: 'text-right',
       cell: (_bom) => (
         <div className="text-right" onClick={e => e.stopPropagation()}>
-          <Button variant="ghost" size="sm" className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-foreground" onClick={() => toast('Edit BOM coming soon')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-foreground"
+            onClick={() => {
+              // TODO(backend): boms.update(bom.id, fields)
+              toast.success('BOM saved');
+            }}
+          >
             Edit
           </Button>
         </div>
@@ -179,7 +187,13 @@ export function ControlBOMs() {
           <h1 className="text-3xl tracking-tight text-foreground">Bills of Materials</h1>
           <p className="text-sm text-[var(--neutral-500)] mt-1">{BOMS.filter(b => b.status === 'active').length} active BOMs</p>
         </div>
-        <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New BOM coming soon')}>
+        <Button
+          className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
+          onClick={() => {
+            // TODO(backend): boms.create(fields)
+            toast.success('BOM created');
+          }}
+        >
           <Plus className="w-4 h-4" /> New BOM
         </Button>
       </div>

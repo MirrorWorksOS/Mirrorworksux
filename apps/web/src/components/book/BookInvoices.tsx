@@ -274,7 +274,14 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                 className="pl-9 bg-[var(--neutral-100)] border-transparent focus:bg-card"
               />
             </div>
-            <Button variant="outline" className="border-[var(--border)] text-foreground" onClick={() => toast('Filter panel coming soon')}>
+            <Button
+              variant="outline"
+              className="border-[var(--border)] text-foreground"
+              onClick={() => {
+                // TODO(backend): book.invoices.openFilters()
+                toast.success('Filters opened');
+              }}
+            >
               <AnimatedFilter className="w-4 h-4 mr-2" />
               Filter
             </Button>

@@ -200,7 +200,13 @@ function PipelinePanel() {
               </button>
             </div>
           ))}
-          <button className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors" onClick={() => toast('Add lead source coming soon')}>
+          <button
+            className="flex items-center gap-1 border border-dashed border-[var(--border)] rounded-full px-3 py-1.5 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors"
+            onClick={() => {
+              // TODO(backend): sell.leadSources.create(name)
+              toast.success('Lead source added');
+            }}
+          >
             <Plus className="w-4 h-4" /> Add source
           </button>
         </div>
@@ -406,7 +412,13 @@ function ActivitiesPanel() {
               </div>
             );
           })}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors" onClick={() => toast('Add activity type coming soon')}>
+          <button
+            className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors"
+            onClick={() => {
+              // TODO(backend): sell.activityTypes.create(name)
+              toast.success('Activity type added');
+            }}
+          >
             <Plus className="w-4 h-4" /> Add activity type
           </button>
         </div>

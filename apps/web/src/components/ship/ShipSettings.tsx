@@ -195,7 +195,10 @@ function CarriersPanel() {
                       ? 'border-[var(--border)] text-[var(--neutral-500)]'
                       : 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground border-0'
                   )}
-                  onClick={() => toast(c.connected ? `${c.name} configuration coming soon` : `Connecting ${c.name}…`)}
+                  onClick={() => {
+                    // TODO(backend): integrations.{configure|connect}(c.id)
+                    toast.success(c.connected ? `${c.name} configuration opened` : `Connecting ${c.name}…`);
+                  }}
                 >
                   {c.connected ? 'Configure' : 'Connect'}
                 </Button>

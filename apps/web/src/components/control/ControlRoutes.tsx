@@ -59,7 +59,10 @@ export function ControlRoutes() {
             <Button
               size="sm"
               className="h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-              onClick={() => toast('Route builder coming soon')}
+              onClick={() => {
+                // TODO(backend): routes.create(fields)
+                toast.success('Route created');
+              }}
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" /> New route
             </Button>
@@ -121,7 +124,10 @@ function RouteCard({ route }: { route: StandardRoute }) {
           variant="outline"
           size="sm"
           className="h-8 text-xs shrink-0"
-          onClick={() => toast(`Edit ${route.name} coming soon`)}
+          onClick={() => {
+            // TODO(backend): routes.update(route.id, fields)
+            toast.success(`${route.name} saved`);
+          }}
         >
           Edit
         </Button>

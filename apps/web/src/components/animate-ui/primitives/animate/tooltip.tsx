@@ -209,17 +209,18 @@ function TooltipArrow({
   const { side, open } = useRenderedTooltip();
   const { context, arrowRef } = useFloatingContext();
   const { transition, globalId } = useGlobalTooltip();
-  // TODO: update animate-ui — React 19 ref types
-  // @ts-expect-error React 19 ref types — upstream animate-ui
-  React.useImperativeHandle(ref, () => arrowRef.current as SVGSVGElement);
+  // forwardRef's `ref` is LegacyRef (allows string refs); useImperativeHandle
+  // wants the modern Ref<T>. Narrow the cast on assignment, not on a string-form ref.
+  React.useImperativeHandle(
+    ref as React.Ref<SVGSVGElement>,
+    () => (arrowRef as React.RefObject<SVGSVGElement | null>).current as SVGSVGElement,
+  );
 
   const deg = { top: 0, right: 90, bottom: 180, left: -90 }[side];
 
   return (
     <MotionTooltipArrow
-      // TODO: update animate-ui — React 19 ref types
-      // @ts-expect-error React 19 ref types — upstream animate-ui
-      ref={arrowRef}
+      ref={arrowRef as React.Ref<SVGSVGElement>}
       context={context}
       layout
       layoutId={`${globalId}-arrow`}
@@ -432,9 +433,12 @@ function TooltipTrigger({
   } = useGlobalTooltip();
 
   const triggerRef = React.useRef<HTMLDivElement | null>(null);
-  // TODO: update animate-ui — React 19 ref types
-  // @ts-expect-error React 19 ref types — upstream animate-ui
-  React.useImperativeHandle(ref, () => triggerRef.current as HTMLDivElement);
+  // forwardRef ref is LegacyRef; narrow to the modern Ref<HTMLDivElement>
+  // before handing off to useImperativeHandle.
+  React.useImperativeHandle(
+    ref as React.Ref<HTMLDivElement>,
+    () => triggerRef.current as HTMLDivElement,
+  );
 
   const suppressNextFocusRef = React.useRef(false);
 

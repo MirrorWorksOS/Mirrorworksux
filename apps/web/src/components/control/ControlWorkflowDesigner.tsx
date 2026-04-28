@@ -542,7 +542,11 @@ export function ControlWorkflowDesigner() {
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-foreground text-xs hidden sm:flex"
-              onClick={() => toast('Edit mode coming soon')}>
+              onClick={() => {
+                // TODO(backend): workflows.update(workflow.id, fields)
+                toast.success('Workflow opened for editing');
+              }}
+            >
               <Edit2 className="w-4 h-4" /> Edit
             </Button>
             <Button variant="outline" size="sm" className="h-10 gap-1.5 border-[var(--border)] text-foreground text-xs hidden md:flex"

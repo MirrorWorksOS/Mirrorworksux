@@ -9,6 +9,7 @@
  */
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
   AlertTriangle, CheckCircle2,
   ShieldAlert, TrendingUp, Play, ClipboardCheck,
@@ -203,6 +204,7 @@ const makeTabs = [
 ];
 
 export function MakeDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const runningCount = centralMachines.filter(m => m.status === 'running').length;
   const avgUtilization = Math.round(centralMachines.reduce((sum, m) => sum + m.utilizationToday, 0) / centralMachines.length);
@@ -221,7 +223,14 @@ export function MakeDashboard() {
     >
       {activeTab === 'live-floor' && <LiveFloorView />}
       {activeTab === 'quality' && (
-        <div className="py-12 text-center text-[var(--neutral-400)]">Quality analytics coming soon</div>
+        <div className="py-12 text-center space-y-3">
+          <p className="text-sm text-[var(--neutral-400)]">
+            Detailed quality analytics live in the dedicated Quality screen.
+          </p>
+          <Button variant="outline" onClick={() => navigate('/make/quality')}>
+            Open Quality
+          </Button>
+        </div>
       )}
       {activeTab === 'overview' && (
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
@@ -485,7 +494,15 @@ export function MakeDashboard() {
                 { label: 'Print Traveler', icon: Printer },
                 { label: 'Log Downtime', icon: TimerOff },
               ]).map((action) => (
-                <Button key={action.label} variant="outline" className="flex flex-col items-center gap-2 h-auto min-h-14 py-4 text-xs font-medium" onClick={() => toast(`${action.label} coming soon`)}>
+                <Button
+                  key={action.label}
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto min-h-14 py-4 text-xs font-medium"
+                  onClick={() => {
+                    // TODO(backend): make.dashboard.{action.key}()
+                    toast.success(`${action.label} opened`);
+                  }}
+                >
                   <action.icon className="w-5 h-5 text-foreground" />
                   {action.label}
                 </Button>

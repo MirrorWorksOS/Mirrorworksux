@@ -218,13 +218,27 @@ export function BuyBills() {
               </div>
 
               {selected.status === 'matched' && (
-                <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-11" onClick={() => toast.success('Bill approved for payment')}>
+                <Button
+                  className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-11"
+                  onClick={() => {
+                    // TODO(backend): bills.approveForPayment(bill.id, approverId)
+                    toast.success('Bill approved for payment');
+                  }}
+                >
                   Approve for payment
                 </Button>
               )}
               {selected.status === 'mismatch' && (
                 <div className="flex gap-3">
-                  <Button className="flex-1 bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white h-11 text-sm" onClick={() => toast.success('Bill rejected')}>Reject</Button>
+                  <Button
+                    className="flex-1 bg-[var(--mw-mirage)] hover:bg-[var(--neutral-800)] text-white h-11 text-sm"
+                    onClick={() => {
+                      // TODO(backend): bills.reject(bill.id, reason)
+                      toast.success('Bill rejected');
+                    }}
+                  >
+                    Reject
+                  </Button>
                   <Button variant="outline" className="flex-1 border-[var(--border)] h-11 text-sm" onClick={() => {
                     // TODO(backend): bills.querySupplier(selected.id)
                     toast.success(`Query sent to ${selected.supplier}`);

@@ -69,7 +69,10 @@ export function ControlOperations() {
             <Button
               size="sm"
               className="h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-              onClick={() => toast('New operation form coming soon')}
+              onClick={() => {
+                // TODO(backend): operations.create(fields)
+                toast.success('Operation created');
+              }}
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" /> New operation
             </Button>

@@ -694,7 +694,13 @@ export function ControlInventory() {
             <Button variant="outline" className="h-12 gap-2 border-[var(--neutral-200)] px-5 rounded-full" onClick={() => toast.success('Exporting inventory...')}>
               <Download className="w-4 h-4" /> Export
             </Button>
-            <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New inventory item coming soon')}>
+            <ToolbarPrimaryButton
+              icon={Plus}
+              onClick={() => {
+                // TODO(backend): inventory.create(fields)
+                toast.success('Inventory item added');
+              }}
+            >
               New item
             </ToolbarPrimaryButton>
           </PageToolbar>

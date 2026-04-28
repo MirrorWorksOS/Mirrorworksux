@@ -427,9 +427,9 @@ function HighlightItem<T extends React.ElementType>({
   React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
   const refCallback = React.useCallback((node: HTMLElement | null) => {
-    // TODO: update animate-ui — RefObject.current under React 19
-    // @ts-expect-error React 19 ref types — upstream animate-ui
-    localRef.current = node as HTMLDivElement;
+    // Cast through MutableRefObject so we can write `.current` even though
+    // useRef returns a RefObject typed readonly under React 19.
+    (localRef as React.MutableRefObject<HTMLDivElement | null>).current = node as HTMLDivElement | null;
   }, []);
 
   React.useEffect(() => {

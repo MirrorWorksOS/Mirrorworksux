@@ -29,9 +29,10 @@ function mergeRefs<T>(
       if (typeof ref === 'function') {
         ref(node);
       } else {
-        // TODO: update animate-ui — RefObject.current assignment under React 19
-        // @ts-expect-error React 19 ref types — upstream animate-ui
-        (ref as React.RefObject<T | null>).current = node;
+        // React 19 narrowed RefObject.current to readonly. mergeRefs is the
+        // canonical write site, so cast through MutableRefObject which is
+        // still writable. Replaces a TODO that pointed at animate-ui upstream.
+        (ref as React.MutableRefObject<T | null>).current = node;
       }
     });
   };

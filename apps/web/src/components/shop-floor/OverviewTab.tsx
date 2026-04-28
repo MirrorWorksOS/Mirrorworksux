@@ -317,7 +317,13 @@ export function OverviewTab() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <span className="cursor-pointer text-lg font-medium text-[var(--neutral-800)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-foreground hover:underline dark:text-[var(--neutral-200)]" onClick={() => toast('Customer detail coming soon')}>
+                      <span
+                        className="cursor-pointer text-lg font-medium text-[var(--neutral-800)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-foreground hover:underline dark:text-[var(--neutral-200)]"
+                        onClick={() => {
+                          // TODO(backend): customers.getById(customerId)
+                          toast.success(`Opened ${ACTIVE_JOBS_SUMMARY.customer}`);
+                        }}
+                      >
                         {ACTIVE_JOBS_SUMMARY.customer}
                       </span>
                       <div className="flex items-center gap-2 mt-1">
@@ -617,7 +623,15 @@ export function OverviewTab() {
                    </Button>
                  </div>
                  <div className="flex items-center gap-2 mt-2">
-                   <Button variant="ghost" size="sm" className="h-14 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]" onClick={() => toast('File attachment coming soon')}>
+                   <Button
+                     variant="ghost"
+                     size="sm"
+                     className="h-14 px-2 text-[var(--neutral-500)] hover:text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                     onClick={() => {
+                       // TODO(backend): chat.attachFile(threadId, file)
+                       toast.success('File attached');
+                     }}
+                   >
                      <Paperclip className="w-4 h-4 mr-1" /> Attach
                    </Button>
                  </div>

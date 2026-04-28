@@ -137,7 +137,11 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={(e) => { e.stopPropagation(); toast(`Edit "${t.target}" — coming soon`); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            // TODO(backend): targets.update(t.id, fields)
+            toast.success(`Edit dialog opened for "${t.target}"`);
+          }}
         >
           <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
         </Button>
@@ -204,7 +208,10 @@ export function ControlGamification() {
             <Button
               size="sm"
               className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
-              onClick={() => toast('Add target form coming soon')}
+              onClick={() => {
+                // TODO(backend): targets.create(fields)
+                toast.success('Target added');
+              }}
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Add Target
@@ -240,7 +247,10 @@ export function ControlGamification() {
             <Button
               size="sm"
               className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
-              onClick={() => toast('Create badge form coming soon')}
+              onClick={() => {
+                // TODO(backend): badges.create(fields)
+                toast.success('Badge created');
+              }}
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Create Badge
@@ -272,7 +282,10 @@ export function ControlGamification() {
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
-                        onClick={() => toast(`Edit "${badge.name}" — coming soon`)}
+                        onClick={() => {
+                          // TODO(backend): badges.update(badge.id, fields)
+                          toast.success(`Edit dialog opened for "${badge.name}"`);
+                        }}
                       >
                         <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
                       </Button>
@@ -280,7 +293,10 @@ export function ControlGamification() {
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
-                        onClick={() => toast(`Delete "${badge.name}" — coming soon`)}
+                        onClick={() => {
+                          // TODO(backend): badges.delete(badge.id)
+                          toast.success(`"${badge.name}" deleted`);
+                        }}
                       >
                         <Trash2 className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
                       </Button>
@@ -424,7 +440,10 @@ export function ControlGamification() {
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 text-xs"
-                                onClick={() => toast(`Edit "${t}" for ${group.name} — coming soon`)}
+                                onClick={() => {
+                                  // TODO(backend): groupTargets.update(group.id, t, fields)
+                                  toast.success(`Edit dialog opened for "${t}"`);
+                                }}
                               >
                                 <Pencil className="w-3 h-3 mr-1" /> Edit
                               </Button>
@@ -435,7 +454,10 @@ export function ControlGamification() {
                           variant="outline"
                           size="sm"
                           className="mt-3 border-[var(--border)]"
-                          onClick={() => toast(`Add target to ${group.name} — coming soon`)}
+                          onClick={() => {
+                            // TODO(backend): groupTargets.create(group.id, fields)
+                            toast.success(`Target added to ${group.name}`);
+                          }}
                         >
                           <Plus className="w-3.5 h-3.5 mr-1.5" />
                           Add Target

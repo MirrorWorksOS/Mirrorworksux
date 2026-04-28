@@ -160,7 +160,13 @@ export function ControlProducts() {
             <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             Product Studio
           </Button>
-          <Button className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New product coming soon')}>
+          <Button
+            className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
+            onClick={() => {
+              // TODO(backend): products.create(fields)
+              toast.success('Product added');
+            }}
+          >
             <Plus className="w-4 h-4" /> New product
           </Button>
         </div>

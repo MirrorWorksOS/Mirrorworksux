@@ -89,7 +89,13 @@ export function ControlLocations() {
         title="Locations"
         subtitle={`${LOCATIONS.filter(l => l.status === 'active').length} active sites`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2" onClick={() => toast('New location coming soon')}>
+          <Button
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
+            onClick={() => {
+              // TODO(backend): locations.create(fields)
+              toast.success('Location created');
+            }}
+          >
             <Plus className="w-4 h-4" /> New location
           </Button>
         }

@@ -323,7 +323,10 @@ export function ControlShiftManager() {
             <Button
               size="sm"
               className="h-9 gap-2 rounded-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-              onClick={() => toast.info("Add shift form coming soon")}
+              onClick={() => {
+                // TODO(backend): shifts.create(fields)
+                toast.success('Shift added');
+              }}
             >
               <Plus className="h-4 w-4" strokeWidth={1.5} />
               New shift

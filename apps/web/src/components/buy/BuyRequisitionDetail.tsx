@@ -158,7 +158,10 @@ export function BuyRequisitionDetail() {
               <div className="pt-4 border-t border-[var(--border)] space-y-2">
                 <Button
                   className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
-                  onClick={() => toast.success('Requisition approved')}
+                  onClick={() => {
+                    // TODO(backend): requisitions.approve(req.id, approverId)
+                    toast.success('Requisition approved');
+                  }}
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
                   Approve
@@ -166,7 +169,10 @@ export function BuyRequisitionDetail() {
                 <Button
                   variant="outline"
                   className="w-full border-[var(--border)]"
-                  onClick={() => toast('Requisition rejected')}
+                  onClick={() => {
+                    // TODO(backend): requisitions.reject(req.id, reason)
+                    toast.success('Requisition rejected');
+                  }}
                 >
                   <XCircle className="w-4 h-4 mr-2" />
                   Reject

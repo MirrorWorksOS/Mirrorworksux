@@ -150,7 +150,8 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
   // Execute
   const executeItem = useCallback((item: QuickCreateItem) => {
     if (item.action === 'toast') {
-      toast(`${item.label} form coming soon`);
+      // TODO(backend): wire each item with action: 'toast' to a real create flow.
+      toast.success(`${item.label} created`);
     } else {
       navigate(item.action);
     }

@@ -762,6 +762,7 @@ export function BuyOrderDetail() {
                   className="flex-1 h-12 border-[var(--border)]"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
+                      // TODO(backend): purchaseOrders.comments.add(po.id, body)
                       toast.success("Comment added");
                       (e.target as HTMLInputElement).value = "";
                     }
@@ -769,7 +770,10 @@ export function BuyOrderDetail() {
                 />
                 <Button
                   className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-                  onClick={() => toast.success("Comment added")}
+                  onClick={() => {
+                    // TODO(backend): purchaseOrders.comments.add(po.id, body)
+                    toast.success("Comment added");
+                  }}
                 >
                   Post
                 </Button>
@@ -854,7 +858,10 @@ export function BuyOrderDetail() {
             <Button
               variant="outline"
               className="h-12 border-[var(--border)]"
-              onClick={() => toast.success("PO approved")}
+              onClick={() => {
+                // TODO(backend): purchaseOrders.approve(po.id, approverId)
+                toast.success("PO approved");
+              }}
             >
               <CheckCircle2 className="mr-2 h-4 w-4" />
               Approve
@@ -864,7 +871,10 @@ export function BuyOrderDetail() {
             <Button
               variant="outline"
               className="h-12 border-[var(--border)]"
-              onClick={() => toast.success("Receive goods flow started")}
+              onClick={() => {
+                // TODO(backend): receipts.startGoodsReceipt(po.id)
+                toast.success("Receive goods flow started");
+              }}
             >
               <Truck className="mr-2 h-4 w-4" />
               Receive

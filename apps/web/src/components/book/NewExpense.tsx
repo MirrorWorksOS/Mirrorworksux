@@ -139,8 +139,25 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" className="h-12 px-6 border-[var(--border)] text-foreground rounded-full" onClick={() => toast.success('Expense saved as draft')}>Save as Draft</Button>
-            <Button className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground rounded-full" onClick={() => toast.success('Expense submitted for approval')}>Submit for Approval</Button>
+            <Button
+              variant="outline"
+              className="h-12 px-6 border-[var(--border)] text-foreground rounded-full"
+              onClick={() => {
+                // TODO(backend): book.expenses.saveDraft(fields)
+                toast.success('Expense saved as draft');
+              }}
+            >
+              Save as Draft
+            </Button>
+            <Button
+              className="h-12 px-6 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground rounded-full"
+              onClick={() => {
+                // TODO(backend): book.expenses.submitForApproval(fields)
+                toast.success('Expense submitted for approval');
+              }}
+            >
+              Submit for Approval
+            </Button>
           </div>
         </Card>
 

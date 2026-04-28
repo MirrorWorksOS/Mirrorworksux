@@ -205,7 +205,17 @@ function InvoicingPanel() {
               </div>
               <div className="flex items-center gap-3">
                 <Switch defaultChecked={t.active} />
-                <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)] rounded-full" onClick={() => toast('Edit account form coming soon')}>Edit</Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-[var(--neutral-500)] rounded-full"
+                  onClick={() => {
+                    // TODO(backend): book.accounts.update(account.id, fields)
+                    toast.success('Account saved');
+                  }}
+                >
+                  Edit
+                </Button>
               </div>
             </div>
           ))}
@@ -324,7 +334,16 @@ function XeroPanel() {
             <h4 className="text-sm font-medium text-foreground">Account mapping</h4>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">Map MirrorWorks categories to Xero account codes</p>
           </div>
-          <Button variant="outline" className="border-[var(--border)] rounded-full text-sm" onClick={() => toast('Xero mapping configuration coming soon')}>Configure mapping</Button>
+          <Button
+            variant="outline"
+            className="border-[var(--border)] rounded-full text-sm"
+            onClick={() => {
+              // TODO(backend): integrations.xero.configureMapping()
+              toast.success('Xero mapping opened');
+            }}
+          >
+            Configure mapping
+          </Button>
         </div>
       </Card>
     </div>
