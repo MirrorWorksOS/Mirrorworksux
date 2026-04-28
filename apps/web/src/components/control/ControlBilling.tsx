@@ -1,12 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Check, CreditCard, TrendingUp, Users, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/components/ui/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   CURRENT_SUBSCRIPTION,
   TIERS,
@@ -17,15 +24,19 @@ import {
   type TierName,
 } from '@/lib/subscription';
 import { useCurrentUser } from '@/lib/auth';
+import { AICreditsCard } from './AICreditsCard';
 
-const MODULES_WITH_LIMITS = ['Sell', 'Plan', 'Make'];
-const TIER_ORDER: TierName[] = ['Pilot', 'Produce', 'Expand', 'Excel'];
+const MODULES_WITH_LIMITS = ['Sell', 'Plan', 'Make', 'Org'];
+const TIER_ORDER: TierName[] = ['Trial', 'Make', 'Run', 'Operate', 'Enterprise'];
 
 function priceForTier(tier: TierName, cycle: 'annual' | 'monthly'): string {
   const t = TIERS[tier];
   const price = cycle === 'annual' ? t.priceAnnual : t.priceMonthly;
+  if (price === null) return 'Quoted';
   if (price === 0) return 'Free';
-  return `$${price}/user/mo`;
+  return cycle === 'annual'
+    ? `$${price}/yr ($${t.priceAnnualEffectiveMonthly?.toFixed(0) ?? price}/mo)`
+    : `$${price}/mo`;
 }
 
 function tierFeatureSummary(tier: TierName): string[] {
@@ -43,6 +54,7 @@ export function ControlBilling() {
   const user = useCurrentUser();
   const currentTier = CURRENT_SUBSCRIPTION.tier;
   const cycle = CURRENT_SUBSCRIPTION.billingCycle;
+  const [pendingTier, setPendingTier] = useState<TierName | null>(null);
 
   const usageRows = useMemo(() => {
     const rows: { module: string; metric: string; current: number; limit: number; pct: number }[] = [];
@@ -74,7 +86,24 @@ export function ControlBilling() {
   }
 
   const handleChangeTier = (target: TierName) => {
-    toast.success(`Requested upgrade to ${target} — billing integration not yet wired.`);
+    setPendingTier(target);
+  };
+
+  const confirmTierChange = () => {
+    if (!pendingTier) return;
+    const direction =
+      TIER_ORDER.indexOf(pendingTier) > TIER_ORDER.indexOf(currentTier) ? 'Upgrade' : 'Downgrade';
+    // TODO(backend): isUpgrade ? subscription.upgradeTo(pendingTier) : subscription.requestDowngrade(pendingTier)
+    if (direction === 'Upgrade') {
+      toast.success(`Upgraded to ${pendingTier}`, {
+        description: 'New features are available immediately. Charged the prorated difference today.',
+      });
+    } else {
+      toast.success(`Downgrade to ${pendingTier} requested`, {
+        description: 'Finance will action at next renewal. New limits apply from then.',
+      });
+    }
+    setPendingTier(null);
   };
 
   const handleManageCard = () => {
@@ -103,7 +132,7 @@ export function ControlBilling() {
           value={maxUsers === null
             ? `${CURRENT_SUBSCRIPTION.currentUsers}`
             : `${CURRENT_SUBSCRIPTION.currentUsers} / ${maxUsers}`}
-          subtext={maxUsers === null ? 'Unlimited on Excel' : `${userPct}% of seats`}
+          subtext={maxUsers === null ? 'Unlimited on Enterprise' : `${userPct}% of seats`}
         />
         <DarkAccentCard
           icon={TrendingUp}
@@ -145,9 +174,11 @@ export function ControlBilling() {
         </div>
       </Card>
 
+      <AICreditsCard />
+
       <div>
         <h2 className="mb-4 text-lg font-semibold">Compare plans</h2>
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           {TIER_ORDER.map(tier => {
             const isCurrent = tier === currentTier;
             const currentIdx = TIER_ORDER.indexOf(currentTier);
@@ -199,6 +230,50 @@ export function ControlBilling() {
         Tier changes take effect immediately. Downgrades prorate against your next invoice; upgrades charge the difference today.
         See the <a className="underline" href="/pricing" onClick={e => e.preventDefault()}>full pricing page</a> for feature-by-feature comparison.
       </Card>
+
+      <Dialog open={pendingTier !== null} onOpenChange={(open) => { if (!open) setPendingTier(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {pendingTier && TIER_ORDER.indexOf(pendingTier) > TIER_ORDER.indexOf(currentTier)
+                ? `Upgrade to ${pendingTier}?`
+                : `Downgrade to ${pendingTier}?`}
+            </DialogTitle>
+            <DialogDescription>
+              {pendingTier && (() => {
+                const isUpgrade = TIER_ORDER.indexOf(pendingTier) > TIER_ORDER.indexOf(currentTier);
+                const cycleLabel = cycle === 'annual' ? '/yr' : '/mo';
+                const targetPrice = cycle === 'annual' ? TIERS[pendingTier].priceAnnual : TIERS[pendingTier].priceMonthly;
+                const priceLabel = targetPrice === null ? 'Quoted' : `$${targetPrice}/user${cycleLabel}`;
+                return isUpgrade ? (
+                  <>
+                    Moving from <strong>{currentTier}</strong> to <strong>{pendingTier}</strong>{' '}
+                    ({priceLabel}). Charged the prorated difference today; new feature access is
+                    available immediately. Tier limits update at the same time.
+                  </>
+                ) : (
+                  <>
+                    Downgrading from <strong>{currentTier}</strong> to <strong>{pendingTier}</strong>{' '}
+                    ({priceLabel}). New billing applies from your next renewal{' '}
+                    ({CURRENT_SUBSCRIPTION.renewalDate}). Existing data above the lower tier's caps stays available but new entries will be blocked once you exceed the new limits.
+                  </>
+                );
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingTier(null)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+              onClick={confirmTierChange}
+            >
+              {pendingTier && TIER_ORDER.indexOf(pendingTier) > TIER_ORDER.indexOf(currentTier)
+                ? `Confirm upgrade`
+                : `Request downgrade`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

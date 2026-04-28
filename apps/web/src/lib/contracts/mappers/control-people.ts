@@ -51,14 +51,17 @@ function toMembershipStatus(status: LegacyUser['status']): MembershipStatus {
 
 function toSubscriptionTier(tier: typeof CURRENT_SUBSCRIPTION.tier): SubscriptionTier {
   switch (tier) {
-    case 'Produce':
-      return 'produce';
-    case 'Expand':
-      return 'expand';
-    case 'Excel':
-      return 'excel';
+    case 'Make':
+      return 'make';
+    case 'Run':
+      return 'run';
+    case 'Operate':
+      return 'operate';
+    case 'Enterprise':
+      return 'enterprise';
+    case 'Trial':
     default:
-      return 'pilot';
+      return 'trial';
   }
 }
 
@@ -203,11 +206,13 @@ function buildTierFeatureGrants(): TierFeatureGrant[] {
 
   return Object.entries(FEATURE_GATES).flatMap(([module, gates]) =>
     gates.map((gate) => {
+      // Lowest tier where the gate flips on. Trial inherits Operate access,
+      // so we look at the paid tiers in order from cheapest to enterprise.
       const requiredTier: SubscriptionTier =
-        gate.tiers.Pilot ? 'pilot' :
-        gate.tiers.Produce ? 'produce' :
-        gate.tiers.Expand ? 'expand' :
-        'excel';
+        gate.tiers.Make ? 'make' :
+        gate.tiers.Run ? 'run' :
+        gate.tiers.Operate ? 'operate' :
+        'enterprise';
 
       return {
         featureKey: `${module.toLowerCase()}.${gate.feature}`,
@@ -217,7 +222,7 @@ function buildTierFeatureGrants(): TierFeatureGrant[] {
         requiredTier,
       };
     }),
-  ).filter((grant) => grant.requiredTier === tier || grant.allowed || grant.requiredTier !== 'pilot');
+  ).filter((grant) => grant.requiredTier === tier || grant.allowed || grant.requiredTier !== 'make');
 }
 
 export function buildMockAuthState(activeUserId = mockUsers[0]?.id ?? '1'): AuthState {

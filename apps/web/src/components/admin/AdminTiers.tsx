@@ -9,15 +9,14 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { TIERS, FEATURE_GATES, type TierName } from '@/lib/subscription';
 
-const TIER_ORDER: TierName[] = ['Pilot', 'Produce', 'Expand', 'Excel'];
+const TIER_ORDER: TierName[] = ['Trial', 'Make', 'Run', 'Operate', 'Enterprise'];
 
 export function AdminTiers() {
-  const [draftPrices, setDraftPrices] = useState<Record<TierName, { annual: number; monthly: number }>>(() => ({
-    Pilot: { annual: TIERS.Pilot.priceAnnual, monthly: TIERS.Pilot.priceMonthly },
-    Produce: { annual: TIERS.Produce.priceAnnual, monthly: TIERS.Produce.priceMonthly },
-    Expand: { annual: TIERS.Expand.priceAnnual, monthly: TIERS.Expand.priceMonthly },
-    Excel: { annual: TIERS.Excel.priceAnnual, monthly: TIERS.Excel.priceMonthly },
-  }));
+  const [draftPrices, setDraftPrices] = useState<Record<TierName, { annual: number | null; monthly: number | null }>>(() =>
+    Object.fromEntries(
+      TIER_ORDER.map(t => [t, { annual: TIERS[t].priceAnnual, monthly: TIERS[t].priceMonthly }]),
+    ) as Record<TierName, { annual: number | null; monthly: number | null }>,
+  );
 
   const allFeatures = useMemo(() => {
     const rows: { module: string; feature: string; label: string; tiers: Record<TierName, boolean> }[] = [];
@@ -49,7 +48,7 @@ export function AdminTiers() {
           <h2 className="text-base font-semibold">Pricing & limits</h2>
           <Button size="sm" onClick={handleSave}>Save changes</Button>
         </div>
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           {TIER_ORDER.map(tier => (
             <Card key={tier} className="bg-slate-950 p-4 text-slate-100">
               <div className="mb-3 flex items-center justify-between">
@@ -63,7 +62,9 @@ export function AdminTiers() {
                   <Label className="text-xs text-slate-400">Annual $/user/mo</Label>
                   <Input
                     type="number" min={0}
-                    value={draftPrices[tier].annual}
+                    value={draftPrices[tier].annual ?? ''}
+                    placeholder={draftPrices[tier].annual === null ? 'Quoted' : ''}
+                    disabled={draftPrices[tier].annual === null}
                     onChange={e => handlePriceChange(tier, 'annual', e.target.value)}
                     className="bg-slate-900 text-slate-100"
                   />
@@ -72,7 +73,9 @@ export function AdminTiers() {
                   <Label className="text-xs text-slate-400">Monthly $/user/mo</Label>
                   <Input
                     type="number" min={0}
-                    value={draftPrices[tier].monthly}
+                    value={draftPrices[tier].monthly ?? ''}
+                    placeholder={draftPrices[tier].monthly === null ? 'Quoted' : ''}
+                    disabled={draftPrices[tier].monthly === null}
                     onChange={e => handlePriceChange(tier, 'monthly', e.target.value)}
                     className="bg-slate-900 text-slate-100"
                   />

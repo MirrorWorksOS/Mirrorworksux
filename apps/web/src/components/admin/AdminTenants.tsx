@@ -17,12 +17,12 @@ interface MockTenant {
 }
 
 const MOCK_TENANTS: MockTenant[] = [
-  { id: 't-alliance-metal', name: 'Alliance Metal Fabrication', tier: 'Produce', users: 8, renewalDate: '2025-10-03', status: 'active' },
-  { id: 't-harbour-weld', name: 'Harbour Welding Co.', tier: 'Expand', users: 27, renewalDate: '2026-06-14', status: 'active' },
-  { id: 't-apex-sheet', name: 'Apex Sheet Metal', tier: 'Excel', users: 54, renewalDate: '2026-08-22', status: 'active' },
-  { id: 't-southlands', name: 'Southlands Fabrication', tier: 'Pilot', users: 2, renewalDate: '—', status: 'trialing' },
-  { id: 't-pioneer', name: 'Pioneer Steelworks', tier: 'Produce', users: 14, renewalDate: '2025-12-01', status: 'overdue' },
-  { id: 't-brightline', name: 'Brightline Engineering', tier: 'Expand', users: 31, renewalDate: '2026-01-18', status: 'suspended' },
+  { id: 't-alliance-metal', name: 'Alliance Metal Fabrication', tier: 'Run', users: 8, renewalDate: '2025-10-03', status: 'active' },
+  { id: 't-harbour-weld', name: 'Harbour Welding Co.', tier: 'Operate', users: 27, renewalDate: '2026-06-14', status: 'active' },
+  { id: 't-apex-sheet', name: 'Apex Sheet Metal', tier: 'Enterprise', users: 54, renewalDate: '2026-08-22', status: 'active' },
+  { id: 't-southlands', name: 'Southlands Fabrication', tier: 'Trial', users: 2, renewalDate: '—', status: 'trialing' },
+  { id: 't-pioneer', name: 'Pioneer Steelworks', tier: 'Make', users: 14, renewalDate: '2025-12-01', status: 'overdue' },
+  { id: 't-brightline', name: 'Brightline Engineering', tier: 'Operate', users: 31, renewalDate: '2026-01-18', status: 'suspended' },
 ];
 
 const STATUS_META: Record<MockTenant['status'], { label: string; className: string }> = {
@@ -32,7 +32,7 @@ const STATUS_META: Record<MockTenant['status'], { label: string; className: stri
   suspended: { label: 'Suspended', className: 'bg-red-500/20 text-red-300 border-red-500/30' },
 };
 
-const TIER_ORDER: TierName[] = ['Pilot', 'Produce', 'Expand', 'Excel'];
+const TIER_ORDER: TierName[] = ['Trial', 'Make', 'Run', 'Operate', 'Enterprise'];
 
 export function AdminTenants() {
   const [tenants, setTenants] = useState<MockTenant[]>(MOCK_TENANTS);

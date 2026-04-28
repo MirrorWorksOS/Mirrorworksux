@@ -91,10 +91,11 @@ interface PortalSubscriptionSectionProps {
   outstandingInvoicesCount: number;
 }
 
-function formatAud(value: number): string {
-  return value.toLocaleString('en-AU', {
+function formatAud(value: number | null | undefined): string {
+  if (value === null || value === undefined) return 'Quoted';
+  return value.toLocaleString('en-US', {
     style: 'currency',
-    currency: 'AUD',
+    currency: 'USD',
     maximumFractionDigits: 0,
   });
 }
@@ -199,7 +200,7 @@ export function PortalSubscriptionSection({
         actorSide: identity.kind === 'customer' ? 'customer' : 'internal',
       });
       const tierIdx = (t: SubscriptionTier) =>
-        ['pilot', 'produce', 'expand', 'excel'].indexOf(t);
+        ['trial', 'make', 'run', 'operate', 'enterprise'].indexOf(t);
       const isUpgrade = tierIdx(selectedTier) > tierIdx(sub.tier);
       toast.success(
         isUpgrade
@@ -570,9 +571,14 @@ export function PortalSubscriptionSection({
                     )}
                   </div>
                   <p className="mt-1 text-xs text-[var(--neutral-500)]">
-                    {formatAud(t.monthlyAud)}/mo or{' '}
-                    {formatAud(t.annualAud)}/yr · {t.seatsIncluded} seats ·{' '}
-                    {t.docsCap} docs · {t.storageCapGb} GB
+                    {t.monthlyAud === null
+                      ? 'Quoted'
+                      : `${formatAud(t.monthlyAud)}/user/mo or ${formatAud(t.annualAud)}/user/yr`}
+                    {t.aiCreditsPerMonth !== null && (
+                      <> · {t.aiCreditsPerMonth.toLocaleString()} AI actions/mo</>
+                    )}
+                    {t.aiCreditsPerMonth === null && <> · Unlimited AI</>}
+                    {t.storageCapGb !== null && <> · {t.storageCapGb} GB storage</>}
                   </p>
                   <ul className="mt-2 space-y-0.5 text-xs text-[var(--neutral-600)]">
                     {t.features.slice(0, 3).map((f) => (
