@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,12 +39,12 @@ export function AdminTiers() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-white">Tier catalog</h1>
-        <p className="mt-1 text-sm text-slate-400">Define pricing, user limits, and feature availability across all tenants.</p>
+        <p className="mt-1 text-sm text-slate-400">Define pricing and feature availability across all tenants.</p>
       </div>
 
       <Card className="bg-slate-900 p-6 text-slate-100">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold">Pricing & limits</h2>
+          <h2 className="text-base font-semibold">Pricing</h2>
           <Button size="sm" onClick={handleSave}>Save changes</Button>
         </div>
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
@@ -53,9 +52,6 @@ export function AdminTiers() {
             <Card key={tier} className="bg-slate-950 p-4 text-slate-100">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-semibold">{tier}</h3>
-                <Badge variant="secondary">
-                  {TIERS[tier].maxUsers === null ? 'Unlimited' : `${TIERS[tier].maxUsers} users`}
-                </Badge>
               </div>
               <div className="space-y-3">
                 <div>

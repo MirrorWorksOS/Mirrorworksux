@@ -25,8 +25,6 @@ export interface TierConfig {
   priceAnnual: number | null;
   /** Annual price expressed as a per-user/month rate. `null` if no annual price. */
   priceAnnualEffectiveMonthly: number | null;
-  /** Max users on this tier (`null` = unlimited / negotiated). */
-  maxUsers: number | null;
   /** AI actions included per month. `null` = unlimited. */
   aiCreditsPerMonth: number | null;
 }
@@ -75,7 +73,6 @@ export const TIERS: Record<TierName, TierConfig> = {
     priceMonthly: 0,
     priceAnnual: 0,
     priceAnnualEffectiveMonthly: 0,
-    maxUsers: null, // Operate-tier feature access during 30-day trial
     aiCreditsPerMonth: 2000,
   },
   Make: {
@@ -83,7 +80,6 @@ export const TIERS: Record<TierName, TierConfig> = {
     priceMonthly: 29,
     priceAnnual: 296,
     priceAnnualEffectiveMonthly: 24.67,
-    maxUsers: 9,
     aiCreditsPerMonth: 750,
   },
   Run: {
@@ -91,7 +87,6 @@ export const TIERS: Record<TierName, TierConfig> = {
     priceMonthly: 49,
     priceAnnual: 500,
     priceAnnualEffectiveMonthly: 41.67,
-    maxUsers: 24,
     aiCreditsPerMonth: 5000,
   },
   Operate: {
@@ -99,7 +94,6 @@ export const TIERS: Record<TierName, TierConfig> = {
     priceMonthly: 119,
     priceAnnual: 1214,
     priceAnnualEffectiveMonthly: 101.17,
-    maxUsers: 49,
     aiCreditsPerMonth: 20000,
   },
   Enterprise: {
@@ -107,7 +101,6 @@ export const TIERS: Record<TierName, TierConfig> = {
     priceMonthly: null,
     priceAnnual: null,
     priceAnnualEffectiveMonthly: null,
-    maxUsers: null,
     aiCreditsPerMonth: null,
   },
 };

@@ -41,8 +41,6 @@ function priceForTier(tier: TierName, cycle: 'annual' | 'monthly'): string {
 
 function tierFeatureSummary(tier: TierName): string[] {
   const features: string[] = [];
-  const maxUsers = TIERS[tier].maxUsers;
-  features.push(maxUsers === null ? 'Unlimited users' : `Up to ${maxUsers} users`);
   for (const moduleKey of Object.keys(FEATURE_GATES)) {
     const on = FEATURE_GATES[moduleKey].filter(g => g.tiers[tier]).map(g => g.label);
     if (on.length > 0) features.push(`${moduleKey}: ${on.join(', ')}`);
@@ -70,9 +68,6 @@ export function ControlBilling() {
     }
     return rows.sort((a, b) => b.pct - a.pct);
   }, []);
-
-  const maxUsers = TIERS[currentTier].maxUsers;
-  const userPct = maxUsers === null ? 0 : Math.round((CURRENT_SUBSCRIPTION.currentUsers / maxUsers) * 100);
 
   if (!user.isOwner) {
     return (
@@ -128,11 +123,9 @@ export function ControlBilling() {
         />
         <DarkAccentCard
           icon={Users}
-          label="Users"
-          value={maxUsers === null
-            ? `${CURRENT_SUBSCRIPTION.currentUsers}`
-            : `${CURRENT_SUBSCRIPTION.currentUsers} / ${maxUsers}`}
-          subtext={maxUsers === null ? 'Unlimited on Enterprise' : `${userPct}% of seats`}
+          label="Licensed seats"
+          value={`${CURRENT_SUBSCRIPTION.currentUsers}`}
+          subtext="Active users"
         />
         <DarkAccentCard
           icon={TrendingUp}

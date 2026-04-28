@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { TIERS, type TierName } from '@/lib/subscription';
+import { type TierName } from '@/lib/subscription';
 
 interface MockTenant {
   id: string;
@@ -93,7 +93,6 @@ export function AdminTenants() {
           </TableHeader>
           <TableBody>
             {filtered.map(t => {
-              const maxUsers = TIERS[t.tier].maxUsers;
               const status = STATUS_META[t.status];
               return (
                 <TableRow key={t.id} className="border-slate-800">
@@ -105,7 +104,7 @@ export function AdminTenants() {
                     <Badge variant="outline" className={status.className}>{status.label}</Badge>
                   </TableCell>
                   <TableCell className="tabular-nums text-slate-200">
-                    {maxUsers === null ? t.users : `${t.users} / ${maxUsers}`}
+                    {t.users}
                   </TableCell>
                   <TableCell className="text-slate-300">{t.renewalDate}</TableCell>
                   <TableCell>
