@@ -11,7 +11,6 @@ import { CalendarDays, Sun, Sunset, Moon } from "lucide-react";
 
 import { staggerContainer, staggerItem } from "@/components/shared/motion/motion-variants";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { planService } from "@/services";
 import type { ShiftAssignment } from "@/types/entities";
 

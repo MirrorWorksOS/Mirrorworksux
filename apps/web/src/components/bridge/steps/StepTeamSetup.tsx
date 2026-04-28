@@ -15,7 +15,6 @@ import { ConfidenceDot } from '@/components/shared/ConfidenceDot';
 import { cn } from '@/components/ui/utils';
 import {
   ChevronDown,
-  Users,
   CheckCircle,
   Loader2,
   BarChart3,

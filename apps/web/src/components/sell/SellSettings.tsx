@@ -19,7 +19,6 @@ import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import {
   ModuleSettingsLayout,
@@ -182,7 +181,7 @@ function PipelinePanel() {
               <span className="flex-1 text-sm text-foreground font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[var(--neutral-500)]">Probability</span>
-                <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[var(--border)] text-right  rounded-lg" />
+                <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[var(--border)] text-right rounded-lg" />
                 <span className="text-sm text-[var(--neutral-500)]">%</span>
               </div>
             </div>
@@ -218,7 +217,7 @@ function PipelinePanel() {
           ].map(r => (
             <div key={r.rule} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
               <span className="text-sm text-foreground">{r.rule}</span>
-              <span className={cn('text-sm  font-medium', r.points.startsWith('+') ? 'text-foreground' : 'text-[var(--mw-error)]')}>
+              <span className={cn('text-sm font-medium', r.points.startsWith('+') ? 'text-foreground' : 'text-[var(--mw-error)]')}>
                 {r.points}
               </span>
             </div>
@@ -241,7 +240,7 @@ function QuotingPanel() {
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="Q-2026-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
-              <span className="text-xs text-[var(--neutral-500)] ">Preview: Q-2026-0047</span>
+              <span className="text-xs text-[var(--neutral-500)]">Preview: Q-2026-0047</span>
             </div>
           </div>
           <div>
@@ -291,7 +290,7 @@ function QuotingPanel() {
             <div key={r.label} className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">{r.label}</span>
               <div className="flex items-center gap-2">
-                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-lg w-24 text-right " />
+                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-lg w-24 text-right" />
                 <span className="text-sm text-[var(--neutral-500)]">{r.suffix}</span>
               </div>
             </div>
@@ -337,7 +336,7 @@ function PaymentsPanel() {
                   </div>
                   <p className="text-xs text-[var(--neutral-500)] mt-0.5">{integ.description}</p>
                   {integ.connected && integ.accountId && (
-                    <p className="text-xs text-[var(--neutral-500)]  mt-1">{integ.accountId}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-1">{integ.accountId}</p>
                   )}
                 </div>
               </div>
@@ -363,11 +362,11 @@ function PaymentsPanel() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
-            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] " />
+            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-[var(--shape-md)]" />
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Account number</Label>
-            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] " />
+            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-[var(--shape-md)]" />
           </div>
         </div>
         <div className="mt-4 flex justify-end">

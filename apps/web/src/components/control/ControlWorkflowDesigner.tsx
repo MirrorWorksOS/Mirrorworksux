@@ -27,7 +27,6 @@ import {
 import { cn } from '../ui/utils';
 import { WorkflowCanvas, WORKFLOW_DATA, type WFNode } from './WorkflowCanvas';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
-import { IconWell } from '@/components/shared/icons/IconWell';
 import { Route as AnimatedRoute } from '@/components/animate-ui/icons/route';
 import { Progress } from '../ui/progress';
 
@@ -254,6 +253,10 @@ function NodeDetailPanel({
   node: WFNode;
   onClose: () => void;
 }) {
+  const configPct = node.props.length > 0
+    ? Math.min(100, Math.round((node.props.filter(([, v]) => v).length / Math.max(node.props.length, 1)) * 100))
+    : 0;
+
   return (
     <div className="w-[300px] flex-shrink-0 border-l border-[var(--border)] bg-card flex flex-col overflow-hidden">
       {/* Header */}
@@ -332,11 +335,11 @@ function NodeDetailPanel({
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">Configuration</p>
             <span className="text-xs tabular-nums text-[var(--mw-success)]">
-              {node.props.length > 0 ? Math.min(100, Math.round((node.props.filter(([, v]) => v).length / Math.max(node.props.length, 1)) * 100)) : 0}%
+              {configPct}%
             </span>
           </div>
           <Progress
-            value={node.props.length > 0 ? Math.min(100, Math.round((node.props.filter(([, v]) => v).length / Math.max(node.props.length, 1)) * 100)) : 0}
+            value={configPct}
             className="h-1.5 bg-[var(--neutral-200)]"
           />
         </div>

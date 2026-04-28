@@ -3,7 +3,7 @@
  * Data table with expandable revision history per document.
  */
 import { useState, useEffect } from "react";
-import { FileText, ChevronRight, Clock } from "lucide-react";
+import { FileText, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 
 import { controlService } from "@/services";

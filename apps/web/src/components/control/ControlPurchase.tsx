@@ -2,7 +2,7 @@
  * Control Purchase — procurement configuration and supplier defaults
  */
 import React, { useState } from 'react';
-import { ShoppingBag, Settings, Users, FileText, Bell } from 'lucide-react';
+import { Settings, Users, FileText, Bell } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
+import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
 
 
@@ -54,7 +54,7 @@ function GeneralPanel() {
             <Label className="text-sm mb-2 block font-medium">PO prefix</Label>
             <div className="flex gap-3 items-center">
               <Input defaultValue="PO-" className="h-12 border-[var(--border)] rounded-xl bg-[var(--neutral-100)] w-28" />
-              <span className="text-xs text-[var(--neutral-500)] ">Preview: PO-0089</span>
+              <span className="text-xs text-[var(--neutral-500)]">Preview: PO-0089</span>
             </div>
           </div>
           <div>
@@ -140,7 +140,7 @@ function ApprovalPanel() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-[var(--neutral-500)]">{r.suffix}</span>
-                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-xl w-28 text-right " />
+                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-xl w-28 text-right" />
               </div>
             </div>
           ))}
@@ -187,7 +187,7 @@ function SuppliersPanel() {
                   <div className="flex-1 h-1.5 bg-[var(--neutral-200)] rounded-full overflow-hidden">
                     <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${s.value}%` }} />
                   </div>
-                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[var(--border)] rounded-xl text-right  text-sm" />
+                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[var(--border)] rounded-xl text-right text-sm" />
                   <span className="text-sm text-[var(--neutral-500)]">%</span>
                 </div>
               ))}

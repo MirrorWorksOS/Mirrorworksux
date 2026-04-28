@@ -13,7 +13,6 @@ import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { staggerContainer, staggerItem } from "@/components/shared/motion/motion-variants";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { KpiStatCard } from "@/components/shared/cards/KpiStatCard";

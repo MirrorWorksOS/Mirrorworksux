@@ -8,6 +8,7 @@ import {
   TabsList as TabsListPrimitive,
   TabsTrigger as TabsTriggerPrimitive,
   TabsContent as TabsContentPrimitive,
+  useTabs,
 } from "@/components/animate-ui/primitives/radix/tabs";
 import { cn } from "./utils";
 
@@ -21,32 +22,44 @@ function Tabs({
   value,
   defaultValue,
   onValueChange,
+  children,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive>) {
   const id = React.useId();
-  const [current, setCurrent] = React.useState(value ?? defaultValue);
-
-  React.useEffect(() => {
-    if (value !== undefined) setCurrent(value);
-  }, [value]);
-
-  const handleChange = (v: string) => {
-    setCurrent(v);
-    onValueChange?.(v);
-  };
+  const layoutId = `tab-pill-${id}`;
 
   return (
-    <SmoothTabsContext.Provider
-      value={{ value: current, layoutId: `tab-pill-${id}` }}
+    <TabsPrimitive
+      data-slot="tabs"
+      className={cn("flex flex-col gap-2", className)}
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      {...props}
     >
-      <TabsPrimitive
-        data-slot="tabs"
-        className={cn("flex flex-col gap-2", className)}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={handleChange}
-        {...props}
-      />
+      <SmoothTabsBridge layoutId={layoutId}>{children}</SmoothTabsBridge>
+    </TabsPrimitive>
+  );
+}
+
+/**
+ * Reads the single source of truth (useTabs, from the animate-ui primitive)
+ * and exposes it via SmoothTabsContext so TabsTrigger can animate its pill
+ * with `layoutId`. No local state — prevents setState ping-pong with the
+ * controlled primitive beneath.
+ */
+function SmoothTabsBridge({
+  layoutId,
+  children,
+}: {
+  layoutId: string;
+  children?: React.ReactNode;
+}) {
+  const { value } = useTabs();
+  const ctx = React.useMemo(() => ({ value, layoutId }), [value, layoutId]);
+  return (
+    <SmoothTabsContext.Provider value={ctx}>
+      {children}
     </SmoothTabsContext.Provider>
   );
 }

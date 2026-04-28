@@ -2,11 +2,10 @@
  * Plan Activities — Production calendar (month grid) with optional list view
  */
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Calendar as CalendarIcon, List, Plus } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
-import { Badge } from '../ui/badge';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';

@@ -5,7 +5,7 @@
  * and Accept/Edit actions per row.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import {
   Sparkles,
@@ -13,7 +13,6 @@ import {
   FileText,
   Check,
   Pencil,
-  RotateCw,
 } from "lucide-react";
 
 import { staggerContainer, staggerItem } from "@/components/shared/motion/motion-variants";

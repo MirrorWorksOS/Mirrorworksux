@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
 import {
   motion,
-  AnimatePresence,
   type HTMLMotionProps,
   type Transition,
 } from 'motion/react';
@@ -100,20 +99,16 @@ function TabsContent({
   ...props
 }: TabsContentProps) {
   return (
-    <AnimatePresence mode="wait">
-      <TabsPrimitive.Content asChild forceMount={forceMount} value={value}>
-        <motion.div
-          data-slot="tabs-content"
-          layout
-          layoutDependency={value}
-          initial={{ opacity: 0, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, filter: 'blur(4px)' }}
-          transition={transition}
-          {...props}
-        />
-      </TabsPrimitive.Content>
-    </AnimatePresence>
+    <TabsPrimitive.Content asChild forceMount={forceMount} value={value}>
+      <motion.div
+        data-slot="tabs-content"
+        initial={{ opacity: 0, filter: 'blur(4px)' }}
+        animate={{ opacity: 1, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, filter: 'blur(4px)' }}
+        transition={transition}
+        {...props}
+      />
+    </TabsPrimitive.Content>
   );
 }
 
@@ -179,6 +174,7 @@ export {
   TabsTrigger,
   TabsContent,
   TabsContents,
+  useTabs,
   type TabsProps,
   type TabsHighlightProps,
   type TabsHighlightItemProps,
