@@ -341,7 +341,7 @@ export function ModuleSettingsLayout({
   panels,
   permissionKeys,
   defaultGroups,
-  tierName = 'Produce',
+  tierName = 'Run',
 }: ModuleSettingsLayoutProps) {
   const allPanels: SettingsPanel[] = [
     ...panels,

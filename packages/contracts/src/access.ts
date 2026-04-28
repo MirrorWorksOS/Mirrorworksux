@@ -96,7 +96,7 @@ export interface PermissionCatalog {
 export interface TierFeatureDefinition {
   key: FeatureKey;
   module: ModuleKey | 'design' | 'global';
-  requiredTier: 'pilot' | 'produce' | 'expand' | 'excel';
+  requiredTier: 'trial' | 'make' | 'run' | 'operate' | 'enterprise';
 }
 
 export type { TierFeatureGrant };

@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { ExternalLink } from 'lucide-react';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
@@ -25,13 +26,14 @@ interface PlanUsageCardProps {
 }
 
 export function PlanUsageCard({ moduleName, tierName }: PlanUsageCardProps) {
+  const navigate = useNavigate();
   const tier = tierName ?? CURRENT_SUBSCRIPTION.tier;
   const metrics = getModuleUsage(moduleName);
   const nextTier = getNextTier(tier);
   const renewalDate = new Date(CURRENT_SUBSCRIPTION.renewalDate);
 
-  // Excel tier has no limits to display
-  if (tier === 'Excel') return null;
+  // Enterprise tier has no caps — nothing to surface here.
+  if (tier === 'Enterprise') return null;
 
   return (
     <Card className="bg-card border border-border rounded-[var(--shape-lg)] overflow-hidden mt-6">
@@ -90,11 +92,12 @@ export function PlanUsageCard({ moduleName, tierName }: PlanUsageCardProps) {
         </div>
       </div>
 
-      {/* Upgrade CTA */}
+      {/* Upgrade CTA — Task 3: jump to /control/billing instead of dead-ending. */}
       {nextTier && (
         <div className="px-6 pb-6">
           <Button
             className="bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white gap-2"
+            onClick={() => navigate('/control/billing')}
           >
             Upgrade plan
             <ExternalLink className="w-4 h-4" />

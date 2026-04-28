@@ -21,51 +21,55 @@ import { auditService } from './auditService';
 
 // ── Mock seed ─────────────────────────────────────────────────
 
+// Mock subscriptions seeded with new pricing model. `mrrAud` historically held
+// AUD; we now store USD per-month (8 seats × Run monthly = $392) — see
+// docs/SAL 02 — Pricing Tiers and Strategy.xlsx for canonical USD pricing.
 const SUBSCRIPTIONS: Subscription[] = [
   {
     id: 'sub-001',
     customerId: 'cust-001',
-    tier: 'expand',
-    planName: 'Expand — monthly',
+    tier: 'run',
+    planName: 'Run — monthly',
     status: 'active',
     billingCycle: 'monthly',
-    seats: 10,
+    seats: 8,
     seatsUsed: 7,
     startDate: '2025-06-01',
     renewalDate: '2026-05-01',
-    mrrAud: 1900,
+    mrrAud: 8 * 49,
     nextInvoiceDate: '2026-05-01',
-    nextInvoiceAmount: 1900,
+    nextInvoiceAmount: 8 * 49,
     paymentMethodLabel: 'Visa •••• 4242',
     closable: false,
     usage: {
       docsThisMonth: 187,
       docsCap: 500,
       storageGb: 14.2,
-      storageCapGb: 50,
+      storageCapGb: 500,
     },
   },
   {
     id: 'sub-002',
     customerId: 'cust-002',
-    tier: 'produce',
-    planName: 'Produce — annual',
+    tier: 'make',
+    planName: 'Make — annual',
     status: 'active',
     billingCycle: 'annual',
     seats: 5,
     seatsUsed: 3,
     startDate: '2024-09-01',
     renewalDate: '2026-09-01',
-    mrrAud: 450,
+    // Annual list price × seats / 12 → effective monthly (≈ $123.33)
+    mrrAud: Math.round((5 * 296) / 12),
     nextInvoiceDate: '2026-09-01',
-    nextInvoiceAmount: 5400,
+    nextInvoiceAmount: 5 * 296,
     paymentMethodLabel: 'Direct debit — CBA',
     closable: true,
     usage: {
       docsThisMonth: 42,
-      docsCap: 200,
+      docsCap: 250,
       storageGb: 3.1,
-      storageCapGb: 20,
+      storageCapGb: 50,
     },
   },
 ];
@@ -78,7 +82,7 @@ const EVENTS: SubscriptionEvent[] = [
     actorContactId: 'cust-001-c1',
     actorSide: 'customer',
     occurredAt: '2025-06-01T09:00:00Z',
-    notes: 'Initial Produce plan (monthly).',
+    notes: 'Initial Make plan (monthly).',
   },
   {
     id: 'sev-002',
@@ -87,7 +91,7 @@ const EVENTS: SubscriptionEvent[] = [
     actorContactId: 'cust-001-c1',
     actorSide: 'customer',
     occurredAt: '2025-11-14T14:22:00Z',
-    notes: 'Upgraded Produce → Expand. Pro-rated $760 for remainder of cycle.',
+    notes: 'Upgraded Make → Run. Pro-rated $80 for remainder of cycle.',
   },
   {
     id: 'sev-003',
@@ -110,76 +114,106 @@ const EVENTS: SubscriptionEvent[] = [
 ];
 
 // ── Tier catalogue (customer-visible pricing) ─────────────────
+// Source: docs/SAL 02 — Pricing Tiers and Strategy.xlsx (USD, per user/month).
+// `monthlyAud` / `annualAud` field names retained for callsite compatibility
+// but values are USD; rename later if the customer-portal product diverges.
 
 export interface TierDescriptor {
   tier: SubscriptionTier;
   displayName: string;
-  monthlyAud: number;
-  annualAud: number;
-  seatsIncluded: number;
-  docsCap: number;
-  storageCapGb: number;
+  /** Per-user monthly price (USD). `null` for Trial (free) and Enterprise (quoted). */
+  monthlyAud: number | null;
+  /** Per-user annual price billed upfront (USD). `null` for Trial and Enterprise. */
+  annualAud: number | null;
+  /** AI actions / month included with the tier. `null` = unlimited. */
+  aiCreditsPerMonth: number | null;
+  /** Sites / locations cap. `null` = unlimited / negotiated. */
+  sitesIncluded: number | null;
+  /** Storage cap in GB. `null` = unlimited / negotiated. */
+  storageCapGb: number | null;
   features: string[];
   highlight?: string;
 }
 
 export const TIER_CATALOGUE: TierDescriptor[] = [
   {
-    tier: 'pilot',
-    displayName: 'Pilot',
+    tier: 'trial',
+    displayName: 'Trial',
     monthlyAud: 0,
     annualAud: 0,
-    seatsIncluded: 3,
-    docsCap: 50,
-    storageCapGb: 5,
-    features: ['Quote access', 'Order tracking', 'Email support'],
-  },
-  {
-    tier: 'produce',
-    displayName: 'Produce',
-    monthlyAud: 450,
-    annualAud: 4500,
-    seatsIncluded: 5,
-    docsCap: 200,
-    storageCapGb: 20,
+    aiCreditsPerMonth: 2000,
+    sitesIncluded: null,
+    storageCapGb: null,
     features: [
-      'Everything in Pilot',
-      'Invoice PDFs + online payment',
-      '3D model review on quotes',
-      'Business-hours support',
+      '30-day free trial',
+      'Operate-tier feature access during trial',
+      'Email support',
     ],
   },
   {
-    tier: 'expand',
-    displayName: 'Expand',
-    monthlyAud: 1900,
-    annualAud: 19000,
-    seatsIncluded: 10,
-    docsCap: 500,
+    tier: 'make',
+    displayName: 'Make',
+    monthlyAud: 29,
+    annualAud: 296,
+    aiCreditsPerMonth: 750,
+    sitesIncluded: 1,
     storageCapGb: 50,
     features: [
-      'Everything in Produce',
-      'Delivery notes + POD',
-      'Shared 3D markup threads',
-      'Subscription billing',
+      'Single site, up to 9 seats',
+      '750 AI actions / month',
+      '10 machines, 1,000 API calls / day',
+      'Email support',
+    ],
+  },
+  {
+    tier: 'run',
+    displayName: 'Run',
+    monthlyAud: 49,
+    annualAud: 500,
+    aiCreditsPerMonth: 5000,
+    sitesIncluded: 2,
+    storageCapGb: 500,
+    features: [
+      'Everything in Make',
+      'Up to 2 sites, 24 seats',
+      '5,000 AI actions / month',
+      '50 machines, 25,000 API calls / day',
+      'Customer Portal, RFQs, Bills, Returns',
       'Priority support',
     ],
     highlight: 'Most popular',
   },
   {
-    tier: 'excel',
-    displayName: 'Excel',
-    monthlyAud: 4900,
-    annualAud: 49000,
-    seatsIncluded: 25,
-    docsCap: 2000,
-    storageCapGb: 250,
+    tier: 'operate',
+    displayName: 'Operate',
+    monthlyAud: 119,
+    annualAud: 1214,
+    aiCreditsPerMonth: 20000,
+    sitesIncluded: 3,
+    storageCapGb: 2000,
     features: [
-      'Everything in Expand',
-      'Custom SLA + dedicated CSM',
-      'SSO / SAML + audit exports',
-      'Sandbox tenant for testing',
-      'Anytime support',
+      'Everything in Run',
+      'Up to 3 sites, 49 seats',
+      '20,000 AI actions / month',
+      '200 machines, 50,000 API calls / day',
+      'Predictive scheduling, SSO/SCIM, 4-hr SLA',
+      'Vendor Comparison, MRP Suggestions, Reorder Rules',
+    ],
+  },
+  {
+    tier: 'enterprise',
+    displayName: 'Enterprise',
+    monthlyAud: null,
+    annualAud: null,
+    aiCreditsPerMonth: null,
+    sitesIncluded: null,
+    storageCapGb: null,
+    features: [
+      'Quoted ($60k–$150k / yr typical)',
+      'Multi-factory + custom data residency',
+      'SOC 2 audit reports, dedicated CSM',
+      'Custom SLA, custom AI fine-tuning',
+      'Compliance packs (AS9100, IATF, ISO 13485, ITAR)',
     ],
   },
 ];
@@ -222,7 +256,7 @@ export const subscriptionService = {
     const sub = SUBSCRIPTIONS.find((s) => s.id === input.subscriptionId);
     if (!sub) throw new Error(`Unknown subscription: ${input.subscriptionId}`);
 
-    const tierOrder: SubscriptionTier[] = ['pilot', 'produce', 'expand', 'excel'];
+    const tierOrder: SubscriptionTier[] = ['trial', 'make', 'run', 'operate', 'enterprise'];
     const fromIdx = tierOrder.indexOf(sub.tier);
     const toIdx = tierOrder.indexOf(input.toTier);
     const isUpgrade = toIdx > fromIdx;
@@ -246,11 +280,15 @@ export const subscriptionService = {
       const desc = describeTier(input.toTier);
       sub.tier = input.toTier;
       sub.planName = `${desc.displayName} — ${sub.billingCycle}`;
-      sub.seats = Math.max(sub.seats, desc.seatsIncluded);
-      sub.mrrAud =
-        sub.billingCycle === 'monthly' ? desc.monthlyAud : desc.annualAud / 12;
-      sub.usage.docsCap = desc.docsCap;
-      sub.usage.storageCapGb = desc.storageCapGb;
+      // Per-seat pricing now; mrrAud holds USD effective monthly.
+      const monthly = desc.monthlyAud;
+      const annual = desc.annualAud;
+      if (monthly !== null && annual !== null) {
+        sub.mrrAud =
+          sub.billingCycle === 'monthly' ? sub.seats * monthly : (sub.seats * annual) / 12;
+      }
+      // Storage cap now per-tier (50 / 500 / 2000 GB or null for Trial/Enterprise).
+      if (desc.storageCapGb !== null) sub.usage.storageCapGb = desc.storageCapGb;
     }
     // Downgrades are deferred — no state change to the subscription itself.
     return { subscription: sub, event };
@@ -268,8 +306,12 @@ export const subscriptionService = {
     sub.billingCycle = input.toCycle;
     const desc = describeTier(sub.tier);
     sub.planName = `${desc.displayName} — ${input.toCycle}`;
-    sub.mrrAud =
-      input.toCycle === 'monthly' ? desc.monthlyAud : desc.annualAud / 12;
+    const monthly = desc.monthlyAud;
+    const annual = desc.annualAud;
+    if (monthly !== null && annual !== null) {
+      sub.mrrAud =
+        input.toCycle === 'monthly' ? sub.seats * monthly : (sub.seats * annual) / 12;
+    }
     EVENTS.push({
       id: `sev-${Math.random().toString(36).slice(2, 10)}`,
       subscriptionId: sub.id,

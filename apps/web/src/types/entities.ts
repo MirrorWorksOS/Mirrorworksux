@@ -996,8 +996,8 @@ export interface QuarterlyTarget {
 // (Added 2026-04-23 — see docs/dev/modules/sell/customer-portal.md §P1)
 // ═══════════════════════════════════════════════════════════════════════
 
-/** MirrorWorks pricing tier codes. */
-export type SubscriptionTier = 'pilot' | 'produce' | 'expand' | 'excel';
+/** MirrorWorks pricing tier codes. Source: docs/SAL 02 — Pricing Tiers and Strategy.xlsx */
+export type SubscriptionTier = 'trial' | 'make' | 'run' | 'operate' | 'enterprise';
 
 /** Subscription billing status. */
 export type SubscriptionStatus =

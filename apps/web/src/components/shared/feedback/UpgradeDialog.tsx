@@ -135,7 +135,11 @@ export function UpgradeDialog({
               </Badge>
               <p className="text-sm font-medium text-foreground">{tier}</p>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">
-                {TIERS[tier].priceAnnual === 0 ? 'Free' : `$${TIERS[tier].priceAnnual}/user/mo`}
+                {TIERS[tier].priceAnnual === null
+                  ? 'Quoted'
+                  : TIERS[tier].priceAnnual === 0
+                    ? 'Free'
+                    : `$${TIERS[tier].priceAnnual}/yr`}
               </p>
               <p className="text-xs text-[var(--neutral-500)] mt-1">
                 {limit} {metricLabel}
@@ -148,10 +152,12 @@ export function UpgradeDialog({
               </Badge>
               <p className="text-sm font-medium text-foreground">{nextTier}</p>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">
-                ${TIERS[nextTier].priceAnnual}/user/mo
+                {TIERS[nextTier].priceAnnual === null
+                  ? 'Quoted'
+                  : `$${TIERS[nextTier].priceAnnual}/yr`}
               </p>
               <p className="text-xs text-[var(--neutral-500)] mt-1">
-                {nextTier === 'Excel' ? 'Unlimited' : 'More'} {metricLabel}
+                {nextTier === 'Enterprise' ? 'Unlimited' : 'More'} {metricLabel}
               </p>
             </div>
           </div>

@@ -290,7 +290,7 @@ export const mockActivity: ActivityEvent[] = [
     id: 'a4', actorName: 'Alex Morgan', actorId: 'u-alex-morgan',
     message: 'Subscription tier changed', timestamp: '2 weeks ago',
     category: 'tier', targetType: 'tenant', targetLabel: 'Alliance Metal Fabrication',
-    occurredAt: '2026-04-03T10:00:00Z', before: 'Pilot', after: 'Produce',
+    occurredAt: '2026-04-03T10:00:00Z', before: 'Trial', after: 'Make',
   },
   {
     id: 'a5', actorName: 'Mike Thompson', actorId: 'u-mike-thompson',

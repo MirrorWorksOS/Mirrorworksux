@@ -13,6 +13,6 @@ export type ModuleKey =
   | 'buy'
   | 'control';
 
-export type SubscriptionTier = 'pilot' | 'produce' | 'expand' | 'excel';
+export type SubscriptionTier = 'trial' | 'make' | 'run' | 'operate' | 'enterprise';
 
 export type ScopeValue = 'own' | 'all';
