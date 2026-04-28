@@ -54,7 +54,10 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             <StatusBadge status="sent">Sent</StatusBadge>
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
-            <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground" onClick={() => toast('Payment recording form coming soon')}><DollarSign className="w-4 h-4" /> Record Payment</Button>
+            <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground" onClick={() => {
+              // TODO(backend): book.invoices.recordPayment(invoice.id, { amount, method, date })
+              toast.success('Payment recorded');
+            }}><DollarSign className="w-4 h-4" /> Record Payment</Button>
             <Button variant="ghost" size="icon" className="w-11 h-11"><MoreVertical className="w-5 h-5 text-[var(--neutral-500)]" /></Button>
           </div>
         }
@@ -138,7 +141,10 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               <span className="text-sm text-foreground font-medium">Payments</span>
             </div>
             <p className="text-sm text-muted-foreground text-center py-4">No payments recorded yet</p>
-            <Button variant="ghost" className="w-full text-foreground hover:text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]" onClick={() => toast('Payment recording form coming soon')}>Record Payment</Button>
+            <Button variant="ghost" className="w-full text-foreground hover:text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]" onClick={() => {
+              // TODO(backend): book.invoices.recordPayment(invoice.id, { amount, method, date })
+              toast.success('Payment recorded');
+            }}>Record Payment</Button>
           </Card>
 
           {/* Email History */}

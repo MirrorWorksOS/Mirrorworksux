@@ -2,6 +2,7 @@
  * Buy Agreements — Blanket Purchase Agreements with spend tracking
  */
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Plus, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -15,7 +16,24 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 
 
-const AGREEMENTS = [
+export interface BuyAgreement {
+  id: string;
+  agreementNumber: string;
+  supplier: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  value: number;
+  used: number;
+  committed: number;
+  status: 'active' | 'near-limit' | 'exhausted' | 'expired';
+  contact: string;
+  phone: string;
+  terms: string;
+  discount: string;
+}
+
+export const AGREEMENTS: BuyAgreement[] = [
   {
     id: '1', agreementNumber: 'BPA-2026-003', supplier: 'Hunter Steel Co',
     category: 'Raw Materials', startDate: 'Jan 2026', endDate: 'Dec 2026',
@@ -56,6 +74,7 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; b
 };
 
 export function BuyAgreements() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
 
   const filtered = AGREEMENTS.filter(a =>
@@ -72,7 +91,10 @@ export function BuyAgreements() {
         title="Blanket agreements"
         subtitle={`${AGREEMENTS.filter(a => a.status === 'active').length} active${AGREEMENTS.filter(a => a.status === 'near-limit').length > 0 ? ` · ${AGREEMENTS.filter(a => a.status === 'near-limit').length} near limit` : ''}`}
         actions={
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10">
+          <Button
+            onClick={() => navigate('/buy/agreements/new')}
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 h-10"
+          >
             <Plus className="w-4 h-4" /> New agreement
           </Button>
         }
@@ -113,6 +135,7 @@ export function BuyAgreements() {
               <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                 <Card
                   variant="flat"
+                  onClick={() => navigate(`/buy/agreements/${agr.id}`)}
                   className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                 >
                 <div className="flex items-start justify-between mb-3">

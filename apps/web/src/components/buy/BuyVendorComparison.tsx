@@ -76,19 +76,52 @@ function StarRating({ rating, max = 5 }: { rating: number; max?: number }) {
   );
 }
 
+const SELECTION_STORAGE_KEY = 'mw:buy:vendorComparison';
+
+function loadStoredSelection(): string[] | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(SELECTION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : null;
+  } catch {
+    return null;
+  }
+}
+
 export function BuyVendorComparison() {
   const [vendors, setVendors] = useState<VendorComparisonData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => {
+    const stored = loadStoredSelection();
+    return stored ? new Set(stored) : new Set();
+  });
+  const [hydratedFromStorage, setHydratedFromStorage] = useState(() => {
+    return loadStoredSelection() !== null;
+  });
 
   useEffect(() => {
     buyService.getVendorComparison().then((data) => {
       setVendors(data);
-      // Pre-select first 3
-      setSelectedIds(new Set(data.slice(0, 3).map((v) => v.supplierId)));
+      // Honour persisted selection; only fall back to "first 3" when nothing was saved.
+      if (!hydratedFromStorage) {
+        setSelectedIds(new Set(data.slice(0, 3).map((v) => v.supplierId)));
+        setHydratedFromStorage(true);
+      }
       setLoading(false);
     });
-  }, []);
+  }, [hydratedFromStorage]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // TODO(backend): vendorComparisons.update(currentUser, Array.from(selectedIds))
+    try {
+      window.localStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(Array.from(selectedIds)));
+    } catch {
+      // Storage write failures are non-fatal; selection still works in-session.
+    }
+  }, [selectedIds]);
 
   const selectedVendors = vendors.filter((v) =>
     selectedIds.has(v.supplierId),

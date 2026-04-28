@@ -44,6 +44,7 @@ const BuyRFQs = React.lazy(() => import('./components/buy/BuyRFQs').then(m => ({
 const BuyBills = React.lazy(() => import('./components/buy/BuyBills').then(m => ({ default: m.BuyBills })));
 const BuyProducts = React.lazy(() => import('./components/buy/BuyProducts').then(m => ({ default: m.BuyProducts })));
 const BuyAgreements = React.lazy(() => import('./components/buy/BuyAgreements').then(m => ({ default: m.BuyAgreements })));
+const BuyAgreementDetail = React.lazy(() => import('./components/buy/BuyAgreementDetail').then(m => ({ default: m.BuyAgreementDetail })));
 const BuyReports = React.lazy(() => import('./components/buy/BuyReports').then(m => ({ default: m.BuyReports })));
 const BuySettings = React.lazy(() => import('./components/buy/BuySettings').then(m => ({ default: m.BuySettings })));
 const BuyRequisitionDetail = React.lazy(() => import('./components/buy/BuyRequisitionDetail').then(m => ({ default: m.BuyRequisitionDetail })));
@@ -81,6 +82,8 @@ const MakeDashboard = React.lazy(() => import('./components/make/MakeDashboard')
 const MakeSchedule = React.lazy(() => import('./components/make/MakeSchedule').then(m => ({ default: m.MakeSchedule })));
 const MakeManufacturingOrders = React.lazy(() => import('./components/make/MakeManufacturingOrders').then(m => ({ default: m.MakeManufacturingOrders })));
 const MakeManufacturingOrderDetail = React.lazy(() => import('./components/make/MakeManufacturingOrderDetail').then(m => ({ default: m.MakeManufacturingOrderDetail })));
+const MakeWorkOrders = React.lazy(() => import('./components/make/MakeWorkOrders').then(m => ({ default: m.MakeWorkOrders })));
+const MakeWorkOrderDetail = React.lazy(() => import('./components/make/MakeWorkOrderDetail').then(m => ({ default: m.MakeWorkOrderDetail })));
 // MakeTimeClock deprecated — clock-in now lives in /floor. Left the module
 // file on disk so legacy deep links elsewhere in the codebase still resolve,
 // but we no longer wire it into a route.
@@ -293,6 +296,8 @@ export const router = createBrowserRouter([
           { path: 'products', element: <L><BuyProducts /></L> },
           { path: 'products/:id', element: <L><BuyProductDetail /></L> },
           { path: 'agreements', element: <L><BuyAgreements /></L> },
+          { path: 'agreements/new', element: <L><BuyAgreementDetail /></L> },
+          { path: 'agreements/:id', element: <L><BuyAgreementDetail /></L> },
           { path: 'mrp-suggestions', element: <L><BuyMrpSuggestions /></L> },
           { path: 'planning-grid', element: <L><BuyPlanningGrid /></L> },
           { path: 'vendor-comparison', element: <L><BuyVendorComparison /></L> },
@@ -308,6 +313,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <L><PlanDashboard /></L> },
           { path: 'jobs', element: <L><PlanJobs /></L> },
+          { path: 'jobs/new', element: <L><PlanJobDetail /></L> },
           { path: 'jobs/:id', element: <L><PlanJobDetail /></L> },
           // Activities folded into Schedule's calendar view
           { path: 'activities', element: <Navigate to="/plan/schedule?view=calendar" replace /> },
@@ -350,7 +356,11 @@ export const router = createBrowserRouter([
           { path: 'schedule', element: <L><MakeSchedule /></L> },
           { path: 'shop-floor', element: <L><MakeShopFloor /></L> },
           { path: 'manufacturing-orders', element: <L><MakeManufacturingOrders /></L> },
+          { path: 'manufacturing-orders/new', element: <L><MakeManufacturingOrderDetail /></L> },
           { path: 'manufacturing-orders/:id', element: <L><MakeManufacturingOrderDetail /></L> },
+          { path: 'work-orders', element: <L><MakeWorkOrders /></L> },
+          { path: 'work-orders/new', element: <L><MakeWorkOrderDetail /></L> },
+          { path: 'work-orders/:id', element: <L><MakeWorkOrderDetail /></L> },
           // /make/time-clock → moved into unified kiosk (FloorClockIn). The old
           // office-chrome time-clock screen is kept under the hood as a legacy
           // fallback but the canonical URL is now /floor.
@@ -363,6 +373,7 @@ export const router = createBrowserRouter([
           { path: 'job-traveler/:id', element: <L><MakeJobTraveler /></L> },
           { path: 'capa', element: <L><MakeCapa /></L> },
           { path: 'products', element: <L><MakeProducts /></L> },
+          { path: 'products/new', element: <L><MakeProductDetail /></L> },
           { path: 'products/:id', element: <L><MakeProductDetail /></L> },
           { path: 'settings', element: <L><MakeSettings /></L> },
         ],
@@ -374,6 +385,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <L><ShipDashboard /></L> },
           { path: 'orders', element: <L><ShipOrders /></L> },
+          { path: 'orders/new', element: <L><ShipOrders /></L> },
+          { path: 'orders/:id', element: <L><ShipOrders /></L> },
           { path: 'packaging', element: <L><ShipPackaging /></L> },
           { path: 'shipping', element: <L><ShipShipping /></L> },
           { path: 'tracking', element: <L><ShipTracking /></L> },

@@ -1,8 +1,9 @@
 /**
  * Ship Orders — token-aligned to standard design system
  */
-import React, { useCallback, useState } from 'react';
-import { LayoutGrid, List, Truck } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import { LayoutGrid, List, Plus, Truck } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
@@ -16,6 +17,11 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -108,16 +114,95 @@ const orderColumns: MwColumnDef<Order>[] = [
   { key: 'progress', header: 'Progress', tooltip: 'Fulfilment progress', headerClassName: 'w-28', cell: (o) => <ProgressBar value={o.progress} size="sm" showLabel /> },
 ];
 
+interface ShipmentIssue {
+  id: string;
+  shipmentId: string;
+  title: string;
+  severity: 'low' | 'medium' | 'high';
+  notes: string;
+  createdAt: string;
+}
+
 export function ShipOrders() {
+  const navigate = useNavigate();
+  const { id: routeId } = useParams<{ id: string }>();
+  const isNewRoute = routeId === 'new';
   const [view, setView] = useState<'kanban' | 'list'>('kanban');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>(ORDERS);
   const [bolOpen, setBolOpen] = useState(false);
+  const [issueDialogOpen, setIssueDialogOpen] = useState(false);
+  const [issueDraft, setIssueDraft] = useState<{ title: string; severity: ShipmentIssue['severity']; notes: string }>({
+    title: '',
+    severity: 'medium',
+    notes: '',
+  });
+  const [issues, setIssues] = useState<ShipmentIssue[]>([]);
 
   const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
     setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
   }, []);
+
+  // URL-driven drawer: when routed at /ship/orders/:id, open the matching
+  // shipment automatically so deep links and refreshes both work.
+  useEffect(() => {
+    if (!routeId || routeId === 'new') {
+      return;
+    }
+    const match = orders.find((o) => o.id === routeId);
+    if (match) {
+      setSelected(match);
+    }
+  }, [routeId, orders]);
+
+  const openShipment = (order: Order) => {
+    setSelected(order);
+    navigate(`/ship/orders/${order.id}`, { replace: false });
+  };
+
+  const closeShipment = () => {
+    setSelected(null);
+    if (routeId) {
+      navigate('/ship/orders', { replace: false });
+    }
+  };
+
+  const advanceStage = () => {
+    if (!selected) return;
+    const idx = STAGES.indexOf(selected.stage);
+    const nextStage = STAGES[Math.min(idx + 1, STAGES.length - 1)];
+    if (nextStage === selected.stage) {
+      toast(`Order is already ${nextStage}`);
+      return;
+    }
+    setOrders((prev) => prev.map((o) => (o.id === selected.id ? { ...o, stage: nextStage } : o)));
+    setSelected((prev) => (prev ? { ...prev, stage: nextStage } : prev));
+    // TODO(backend): shipments.advanceStage(selected.id, nextStage)
+    toast.success(`Advanced to ${nextStage}`);
+  };
+
+  const submitIssue = () => {
+    if (!selected || !issueDraft.title.trim()) {
+      toast('Add an issue title before saving.');
+      return;
+    }
+    const next: ShipmentIssue = {
+      id: `issue-${Date.now()}`,
+      shipmentId: selected.id,
+      title: issueDraft.title.trim(),
+      severity: issueDraft.severity,
+      notes: issueDraft.notes.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    setIssues((prev) => [next, ...prev]);
+    setIssueDialogOpen(false);
+    setIssueDraft({ title: '', severity: 'medium', notes: '' });
+    // TODO(backend): shipments.flagIssue(selected.id, next)
+    toast.success('Issue flagged');
+  };
+
+  const issuesForSelected = selected ? issues.filter((i) => i.shipmentId === selected.id) : [];
 
   const pickCount = orders.filter(o => o.stage === 'Pick').length;
   const packCount = orders.filter(o => o.stage === 'Pack').length;
@@ -154,6 +239,9 @@ export function ShipOrders() {
             { key: 'list', icon: List, label: 'List view' },
           ]}
         />
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/ship/orders/new')}>
+          Create shipment
+        </ToolbarPrimaryButton>
       </PageToolbar>
 
       {/* Kanban */}
@@ -174,7 +262,7 @@ export function ShipOrders() {
                 >
                   {stageOrders.map(order => (
                     <KanbanCard key={order.id} id={order.id} type={KANBAN_ITEM_TYPE} className="p-0">
-                      <OrderCardContent order={order} onClick={() => setSelected(order)} />
+                      <OrderCardContent order={order} onClick={() => openShipment(order)} />
                     </KanbanCard>
                   ))}
                 </KanbanColumn>
@@ -191,7 +279,7 @@ export function ShipOrders() {
             columns={orderColumns}
             data={orders}
             keyExtractor={(o) => o.id}
-            onRowClick={(o) => setSelected(o)}
+            onRowClick={(o) => openShipment(o)}
             selectable
             onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
             onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
@@ -200,7 +288,7 @@ export function ShipOrders() {
       )}
 
       {/* Detail Sheet */}
-      <Sheet open={!!selected} onOpenChange={() => setSelected(null)}>
+      <Sheet open={!!selected} onOpenChange={(open) => { if (!open) closeShipment(); }}>
         <SheetContent className="w-[420px] sm:max-w-[420px] p-0 overflow-y-auto border-l border-[var(--border)]" aria-describedby={undefined}>
           <SheetTitle className="sr-only">Order details</SheetTitle>
           {selected && (
@@ -246,18 +334,211 @@ export function ShipOrders() {
                 </Dialog>
 
                 <div className="flex gap-4">
-                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={() => toast.success('Order advanced to next stage')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={advanceStage}>
                     Advance stage
                   </button>
-                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors" onClick={() => toast('Issue flagged on order')}>
+                  <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors" onClick={() => setIssueDialogOpen(true)}>
                     Flag issue
                   </button>
                 </div>
+
+                {issuesForSelected.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">Issues</span>
+                    <div className="space-y-2">
+                      {issuesForSelected.map((issue) => (
+                        <div key={issue.id} className="rounded-md border border-[var(--border)] p-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-foreground">{issue.title}</p>
+                            <StatusBadge variant={issue.severity === 'high' ? 'error' : issue.severity === 'medium' ? 'warning' : 'neutral'}>
+                              {issue.severity}
+                            </StatusBadge>
+                          </div>
+                          {issue.notes && (
+                            <p className="text-xs text-[var(--neutral-500)] mt-1">{issue.notes}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* New shipment sheet — auto-opens when route is /ship/orders/new */}
+      <Sheet
+        open={isNewRoute}
+        onOpenChange={(open) => { if (!open) navigate('/ship/orders'); }}
+      >
+        <SheetContent className="w-[460px] sm:max-w-[460px] p-0 overflow-y-auto border-l border-[var(--border)]" aria-describedby={undefined}>
+          <SheetTitle className="sr-only">Create shipment</SheetTitle>
+          <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+            <p className="text-xl font-medium text-foreground">New shipment</p>
+            <SheetDescription className="text-[var(--neutral-500)]">
+              Capture the order header; pick/pack/ship steps run on the floor.
+            </SheetDescription>
+          </SheetHeader>
+          <NewShipmentForm
+            onCancel={() => navigate('/ship/orders')}
+            onCreate={(draft) => {
+              const newOrder: Order = {
+                id: `SH-${String(Date.now()).slice(-3)}`,
+                customer: draft.customer || 'New Customer',
+                items: Number(draft.items) || 0,
+                weight: draft.weight || '0 kg',
+                carrier: draft.carrier || 'Unassigned',
+                due: draft.due || '—',
+                stage: 'Pick',
+                progress: 0,
+              };
+              setOrders((prev) => [newOrder, ...prev]);
+              // TODO(backend): shipments.create(newOrder)
+              toast.success(`Shipment ${newOrder.id} created`);
+              navigate(`/ship/orders/${newOrder.id}`);
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+
+      {/* Flag-issue dialog */}
+      <Dialog open={issueDialogOpen} onOpenChange={setIssueDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Flag issue</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">Title</Label>
+              <Input
+                value={issueDraft.title}
+                onChange={(e) => setIssueDraft({ ...issueDraft, title: e.target.value })}
+                placeholder="What's wrong?"
+                className="mt-1 h-10 border-[var(--border)]"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">Severity</Label>
+              <div className="mt-2 flex gap-2">
+                {(['low', 'medium', 'high'] as const).map((s) => (
+                  <Button
+                    key={s}
+                    type="button"
+                    variant={issueDraft.severity === s ? 'default' : 'outline'}
+                    className={cn(
+                      'flex-1 h-10 capitalize',
+                      issueDraft.severity === s
+                        ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
+                        : 'border-[var(--border)]',
+                    )}
+                    onClick={() => setIssueDraft({ ...issueDraft, severity: s })}
+                  >
+                    {s}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
+              <Textarea
+                value={issueDraft.notes}
+                onChange={(e) => setIssueDraft({ ...issueDraft, notes: e.target.value })}
+                placeholder="Add details for the receiving team…"
+                className="mt-1 min-h-24 border-[var(--border)]"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" className="border-[var(--border)]" onClick={() => setIssueDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+                onClick={submitIssue}
+              >
+                Flag issue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageShell>
+  );
+}
+
+interface NewShipmentDraft {
+  customer: string;
+  items: string;
+  weight: string;
+  carrier: string;
+  due: string;
+}
+
+function NewShipmentForm({ onCancel, onCreate }: { onCancel: () => void; onCreate: (draft: NewShipmentDraft) => void }) {
+  const [draft, setDraft] = useState<NewShipmentDraft>({ customer: '', items: '', weight: '', carrier: '', due: '' });
+
+  return (
+    <div className="px-6 py-6 space-y-4">
+      <div>
+        <Label className="text-xs text-[var(--neutral-500)]">Customer</Label>
+        <Input
+          value={draft.customer}
+          onChange={(e) => setDraft({ ...draft, customer: e.target.value })}
+          placeholder="Customer name"
+          className="mt-1 h-10 border-[var(--border)]"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs text-[var(--neutral-500)]">Items</Label>
+          <Input
+            type="number"
+            value={draft.items}
+            onChange={(e) => setDraft({ ...draft, items: e.target.value })}
+            placeholder="0"
+            className="mt-1 h-10 border-[var(--border)] tabular-nums"
+          />
+        </div>
+        <div>
+          <Label className="text-xs text-[var(--neutral-500)]">Weight</Label>
+          <Input
+            value={draft.weight}
+            onChange={(e) => setDraft({ ...draft, weight: e.target.value })}
+            placeholder="e.g. 12.4 kg"
+            className="mt-1 h-10 border-[var(--border)]"
+          />
+        </div>
+      </div>
+      <div>
+        <Label className="text-xs text-[var(--neutral-500)]">Carrier</Label>
+        <Input
+          value={draft.carrier}
+          onChange={(e) => setDraft({ ...draft, carrier: e.target.value })}
+          placeholder="StarTrack / Toll / DHL…"
+          className="mt-1 h-10 border-[var(--border)]"
+        />
+      </div>
+      <div>
+        <Label className="text-xs text-[var(--neutral-500)]">Due</Label>
+        <Input
+          value={draft.due}
+          onChange={(e) => setDraft({ ...draft, due: e.target.value })}
+          placeholder="e.g. 2d / Today"
+          className="mt-1 h-10 border-[var(--border)]"
+        />
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <Button variant="outline" className="border-[var(--border)]" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+          onClick={() => onCreate(draft)}
+        >
+          Create shipment
+        </Button>
+      </div>
+    </div>
   );
 }

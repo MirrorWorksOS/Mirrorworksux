@@ -208,7 +208,7 @@ export function PlanJobs() {
               { key: 'card', icon: LayoutGrid, label: 'Card view' },
             ]}
           />
-          <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New job form coming soon')}>
+          <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/plan/jobs/new')}>
             Create Job
           </ToolbarPrimaryButton>
         </PageToolbar>

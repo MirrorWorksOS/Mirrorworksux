@@ -7,7 +7,6 @@
  */
 
 import { useEffect, useRef } from "react";
-// @ts-expect-error three has no type declarations installed
 import * as THREE from "three";
 import { cn } from "@/components/ui/utils";
 import { useReducedMotion } from "@/components/shared/motion/use-reduced-motion";

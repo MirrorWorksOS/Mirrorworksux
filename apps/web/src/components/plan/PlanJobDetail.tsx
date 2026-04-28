@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, useParams, Link } from 'react-router';
 import { ArrowLeft, Plus, Save, ChevronRight, SendToBack, ShieldAlert } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { PageShell } from '@/components/shared/layout/PageShell';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
@@ -59,13 +63,19 @@ const DOCUMENT_FLOW = [
 
 export function PlanJobDetail() {
   const navigate = useNavigate();
+  const { id: routeId } = useParams<{ id: string }>();
+  const isNew = !routeId || routeId === 'new';
+
   const userRole = 'Manager' as 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
   const [activeTab, setActiveTab] = useState('overview');
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
   const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>('traveller-001');
 
-  const jobId = 'JOB-2026-0015';
+  // Use the route id when present so deep links resolve correctly; fall back
+  // to the legacy hard-coded job for any other entry (preserves behaviour for
+  // callers that mounted this component without a /:id route).
+  const jobId = !isNew && routeId ? routeId : 'JOB-2026-0015';
   const quoteId = 'Q-2026-0055';
   const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
   const activePermissionUser = useMemo(
@@ -180,6 +190,12 @@ export function PlanJobDetail() {
       ]
     : [];
 
+  // Brand-new job: render a focused create form. We branch here (after all
+  // hooks) so existing callers and deep links keep working unchanged.
+  if (isNew) {
+    return <PlanJobCreateForm onCancel={() => navigate('/plan/jobs')} />;
+  }
+
   return (
     <Dialog open={isReleaseDialogOpen} onOpenChange={setIsReleaseDialogOpen}>
       <JobWorkspaceLayout
@@ -283,7 +299,7 @@ export function PlanJobDetail() {
             ) : null}
             <Button
               className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-              onClick={() => navigate('/make/manufacturing-orders')}
+              onClick={() => navigate(`/make/manufacturing-orders/new?jobId=${jobId}`)}
             >
               <Plus className="mr-2 h-4 w-4" />
               Create manufacturing order
@@ -364,5 +380,105 @@ export function PlanJobDetail() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// PlanJobCreateForm — minimal create form for /plan/jobs/new
+// ---------------------------------------------------------------------------
+
+function PlanJobCreateForm({ onCancel }: { onCancel: () => void }) {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [customer, setCustomer] = useState('');
+  const [value, setValue] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [notes, setNotes] = useState('');
+
+  const handleSave = () => {
+    // TODO(backend): jobs.create({ title, customer, value, dueDate, notes })
+    const stubId = `JOB-NEW-${Date.now()}`;
+    toast.success('Job created');
+    navigate(`/plan/jobs/${stubId}`, { replace: true });
+  };
+
+  return (
+    <PageShell>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs text-[var(--neutral-500)] mb-1">
+            <Link to="/plan/jobs" className="hover:underline">Plan / Jobs</Link>
+            <span className="mx-1">/</span>
+            <span>New</span>
+          </p>
+          <h1 className="text-2xl font-medium text-foreground">New Job</h1>
+          <p className="text-sm text-[var(--neutral-500)] mt-1">
+            Capture the customer brief; production fields populate after release.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" className="h-10 border-[var(--border)]" onClick={onCancel}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Cancel
+          </Button>
+          <Button
+            className="h-10 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+            onClick={handleSave}
+          >
+            <Save className="mr-2 h-4 w-4" /> Save
+          </Button>
+        </div>
+      </div>
+
+      <Card className="p-6 space-y-5 max-w-3xl">
+        <h2 className="text-sm font-medium text-foreground">Job details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Title</Label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Differential Assembly"
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Customer</Label>
+            <Input
+              value={customer}
+              onChange={(e) => setCustomer(e.target.value)}
+              placeholder="Drivetrain Dynamics Pty Ltd"
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Value</Label>
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="$0"
+              className="mt-1 h-10 border-[var(--border)] tabular-nums"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Due date</Label>
+            <Input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+        </div>
+        <div>
+          <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Brief, scope, special requirements…"
+            className="mt-1 min-h-24 border-[var(--border)]"
+          />
+        </div>
+      </Card>
+    </PageShell>
   );
 }

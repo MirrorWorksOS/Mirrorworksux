@@ -91,7 +91,7 @@ export function MakeManufacturingOrders() {
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search manufacturing orders…" />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => toast('New manufacturing order form coming soon')}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/make/manufacturing-orders/new')}>
           New MO
         </ToolbarPrimaryButton>
       </PageToolbar>

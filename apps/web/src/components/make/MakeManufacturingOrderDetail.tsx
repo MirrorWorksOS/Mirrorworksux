@@ -6,8 +6,11 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Receipt, Play, Pause, AlertTriangle, Timer } from 'lucide-react';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router';
+import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Receipt, Play, Pause, AlertTriangle, Timer, Save } from 'lucide-react';
+import { PageShell } from '@/components/shared/layout/PageShell';
+import { jobs } from '@/services';
+import { toast } from 'sonner';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -111,6 +114,7 @@ type SummaryFilterKey = 'status' | 'priority' | 'machine' | 'due';
 export function MakeManufacturingOrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isNew = !id || id === 'new';
   const [activeTab, setActiveTab] = useState('overview');
   const [woSearch, setWoSearch] = useState('');
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
@@ -141,6 +145,13 @@ export function MakeManufacturingOrderDetail() {
       return { ...t };
     });
   }, []);
+
+  // Brand-new MO: render a focused create form. The full production layout
+  // assumes work orders, traveller packets, and an existing job linkage that
+  // a fresh MO can't have yet.
+  if (isNew) {
+    return <ManufacturingOrderCreateForm />;
+  }
 
   if (!mo) {
     return (
@@ -789,5 +800,134 @@ export function MakeManufacturingOrderDetail() {
         />
       )}
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ManufacturingOrderCreateForm — minimal create form for /make/manufacturing-orders/new
+// ---------------------------------------------------------------------------
+
+function ManufacturingOrderCreateForm() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const prefilledJobId = searchParams.get('jobId') ?? '';
+  const prefilledJob = useMemo(
+    () => (prefilledJobId
+      ? jobs.find((j) => j.id === prefilledJobId || j.jobNumber === prefilledJobId)
+      : undefined),
+    [prefilledJobId],
+  );
+
+  const [moNumber, setMoNumber] = useState('');
+  const [productName, setProductName] = useState('');
+  const [jobNumber, setJobNumber] = useState(prefilledJob?.jobNumber ?? prefilledJobId);
+  const [customer, setCustomer] = useState(prefilledJob?.customerName ?? '');
+  const [dueDate, setDueDate] = useState('');
+  const [quantity, setQuantity] = useState('');
+
+  const handleSave = () => {
+    // TODO(backend): manufacturingOrders.create({ moNumber, productName, jobNumber, customer, dueDate, quantity })
+    const stubId = `mo-new-${Date.now()}`;
+    toast.success('Manufacturing order created');
+    navigate(`/make/manufacturing-orders/${stubId}`, { replace: true });
+  };
+
+  return (
+    <PageShell>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs text-[var(--neutral-500)] mb-1">
+            <Link to="/make/manufacturing-orders" className="hover:underline">Make / Manufacturing orders</Link>
+            <span className="mx-1">/</span>
+            <span>New</span>
+          </p>
+          <h1 className="text-2xl font-medium text-foreground">New Manufacturing Order</h1>
+          {prefilledJob ? (
+            <p className="text-sm text-[var(--neutral-500)] mt-1">
+              Linked to <span className="font-medium tabular-nums text-foreground">{prefilledJob.jobNumber}</span> · {prefilledJob.customerName}
+            </p>
+          ) : (
+            <p className="text-sm text-[var(--neutral-500)] mt-1">
+              Capture the order header; work orders are added after release.
+            </p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="h-10 border-[var(--border)]"
+            onClick={() => navigate('/make/manufacturing-orders')}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Cancel
+          </Button>
+          <Button
+            className="h-10 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+            onClick={handleSave}
+          >
+            <Save className="mr-2 h-4 w-4" /> Save
+          </Button>
+        </div>
+      </div>
+
+      <Card className="p-6 space-y-5 max-w-3xl">
+        <h2 className="text-sm font-medium text-foreground">Order details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">MO Number</Label>
+            <Input
+              value={moNumber}
+              onChange={(e) => setMoNumber(e.target.value)}
+              placeholder="MO-2026-NNNN"
+              className="mt-1 h-10 border-[var(--border)] tabular-nums"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Product</Label>
+            <Input
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              placeholder="Differential Assembly"
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Job</Label>
+            <Input
+              value={jobNumber}
+              onChange={(e) => setJobNumber(e.target.value)}
+              placeholder="JOB-2026-NNNN"
+              className="mt-1 h-10 border-[var(--border)] tabular-nums"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Customer</Label>
+            <Input
+              value={customer}
+              onChange={(e) => setCustomer(e.target.value)}
+              placeholder="Customer name"
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Due date</Label>
+            <Input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="mt-1 h-10 border-[var(--border)]"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Quantity</Label>
+            <Input
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="0"
+              className="mt-1 h-10 border-[var(--border)] tabular-nums"
+            />
+          </div>
+        </div>
+      </Card>
+    </PageShell>
   );
 }

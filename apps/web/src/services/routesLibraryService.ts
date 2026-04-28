@@ -110,11 +110,12 @@ export const routesLibraryService = {
     return ROUTES.find((r) => r.id === id);
   },
   resolve(route: StandardRoute): ResolvedRouteStep[] {
-    return route.steps
-      .map((step) => {
-        const op = operationsLibraryService.byId(step.operationId);
-        return op ? { operation: op, minutesOverride: step.minutesOverride } : null;
-      })
-      .filter((s): s is ResolvedRouteStep => s !== null);
+    return route.steps.flatMap((step) => {
+      const op = operationsLibraryService.byId(step.operationId);
+      if (!op) return [];
+      const resolved: ResolvedRouteStep = { operation: op };
+      if (step.minutesOverride !== undefined) resolved.minutesOverride = step.minutesOverride;
+      return [resolved];
+    });
   },
 };
