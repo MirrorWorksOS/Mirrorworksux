@@ -31,6 +31,13 @@ export interface ClickSparkProps {
   /** Duration in ms — default 400 */
   duration?: number;
   className?: string;
+  /**
+   * Caller-provided onClick. Composed with the spark trigger so this
+   * wrapper plays nicely with Radix `asChild` triggers (Popover,
+   * Dropdown, etc.) — Radix passes its own onClick via asChild and we
+   * don't want to clobber it.
+   */
+  onClick?: (e: MouseEvent<HTMLDivElement>) => void;
 }
 
 let sparkId = 0;
@@ -42,6 +49,7 @@ export function ClickSpark({
   sparkRadius = 20,
   duration = 400,
   className,
+  onClick,
 }: ClickSparkProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [sparks, setSparks] = useState<Spark[]>([]);
@@ -49,6 +57,10 @@ export function ClickSpark({
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
+      // Always run the caller's onClick first so it isn't swallowed,
+      // even when reduced motion is on.
+      onClick?.(e);
+
       if (prefersReduced) return;
       const el = containerRef.current;
       if (!el) return;
@@ -72,7 +84,7 @@ export function ClickSpark({
         );
       }, duration);
     },
-    [prefersReduced, sparkCount, duration],
+    [prefersReduced, sparkCount, duration, onClick],
   );
 
   return (
