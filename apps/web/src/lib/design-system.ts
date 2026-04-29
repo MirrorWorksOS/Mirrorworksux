@@ -41,6 +41,24 @@ export const colors = {
   mirage: '#1A2732',      // Dark buttons, dark badges, sidebar, pipeline cards
   offWhite: '#F8F7F4',    // Warm grouped card background
 
+  /**
+   * Mirage tonal scale — derived from `mirage` via color-mix in globals.css.
+   * Use these for canvas surfaces, hairlines, and structural fills that should
+   * sit in the brand family instead of pure neutral gray. The numeric values
+   * below are the resolved light-mode swatches (mixed with offWhite); dark
+   * mode tracks --mw-mirage automatically through the CSS color-mix.
+   */
+  mirage50:  '#F1F1ED',
+  mirage100: '#E9EAE7',
+  mirage200: '#D5D8D7',
+  mirage300: '#B7BCBF',
+  mirage400: '#888F94',
+  mirage500: '#5A656C',
+  mirage600: '#2E3D49',
+  mirage700: '#1A2732',
+  mirage800: '#161F2A',
+  mirage900: '#101820',
+
   // Status Colours (dots and badges only — never card backgrounds)
   success: '#36B37E',
   info: '#0052CC',

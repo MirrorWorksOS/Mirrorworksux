@@ -116,12 +116,12 @@ const CANVAS_HEIGHT = 1000;
 
 const PALETTE_ITEMS: Record<ElementCategory, PaletteItem[]> = {
   machines: [
-    { type: 'cnc', label: 'CNC Machine', icon: <Cog className="w-4 h-4" />, category: 'machines', defaultWidth: 120, defaultHeight: 80, defaultColor: 'var(--neutral-400)' },
-    { type: 'laser', label: 'Laser Cutter', icon: <Zap className="w-4 h-4" />, category: 'machines', defaultWidth: 140, defaultHeight: 80, defaultColor: 'var(--neutral-400)' },
-    { type: 'press', label: 'Press Brake', icon: <ArrowDownUp className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 80, defaultColor: 'var(--neutral-400)' },
-    { type: 'lathe', label: 'Lathe', icon: <CircleDot className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 60, defaultColor: 'var(--neutral-400)' },
-    { type: 'welder', label: 'Welder', icon: <Flame className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 80, defaultColor: 'var(--neutral-400)' },
-    { type: 'grinder', label: 'Grinder', icon: <Disc3 className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 60, defaultColor: 'var(--neutral-400)' },
+    { type: 'cnc', label: 'CNC Machine', icon: <Cog className="w-4 h-4" />, category: 'machines', defaultWidth: 120, defaultHeight: 80, defaultColor: 'var(--mw-mirage-300)' },
+    { type: 'laser', label: 'Laser Cutter', icon: <Zap className="w-4 h-4" />, category: 'machines', defaultWidth: 140, defaultHeight: 80, defaultColor: 'var(--mw-mirage-300)' },
+    { type: 'press', label: 'Press Brake', icon: <ArrowDownUp className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 80, defaultColor: 'var(--mw-mirage-300)' },
+    { type: 'lathe', label: 'Lathe', icon: <CircleDot className="w-4 h-4" />, category: 'machines', defaultWidth: 100, defaultHeight: 60, defaultColor: 'var(--mw-mirage-300)' },
+    { type: 'welder', label: 'Welder', icon: <Flame className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 80, defaultColor: 'var(--mw-mirage-300)' },
+    { type: 'grinder', label: 'Grinder', icon: <Disc3 className="w-4 h-4" />, category: 'machines', defaultWidth: 80, defaultHeight: 60, defaultColor: 'var(--mw-mirage-300)' },
   ],
   zones: [
     { type: 'production', label: 'Production', icon: <Factory className="w-4 h-4" />, category: 'zones', defaultWidth: 300, defaultHeight: 200, defaultColor: 'var(--mw-blue)' },
@@ -139,8 +139,8 @@ const PALETTE_ITEMS: Record<ElementCategory, PaletteItem[]> = {
     { type: 'floor', label: 'Floor', icon: <LayoutGrid className="w-4 h-4" />, category: 'infrastructure', defaultWidth: 400, defaultHeight: 400, defaultColor: 'var(--neutral-400)' },
   ],
   people: [
-    { type: 'operator', label: 'Operator Station', icon: <User className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-blue)' },
-    { type: 'supervisor', label: 'Supervisor Station', icon: <Shield className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-amber)' },
+    { type: 'operator', label: 'Operator Station', icon: <User className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-mirage-400)' },
+    { type: 'supervisor', label: 'Supervisor Station', icon: <Shield className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-yellow-500)' },
   ],
   'text-shapes': [
     { type: 'text', label: 'Text Label', icon: <Type className="w-4 h-4" />, category: 'text-shapes', defaultWidth: 120, defaultHeight: 40, defaultColor: 'var(--neutral-900)' },
@@ -170,13 +170,13 @@ function createMockLayout(): FactoryElement[] {
     { id: 'zone-finished', type: 'storage', category: 'zones', name: 'Finished Goods', x: 1300, y: 40, width: 260, height: 200, color: 'var(--mw-success)', rotation: 0 },
     { id: 'zone-loading', type: 'loading-dock', category: 'zones', name: 'Loading Dock', x: 1300, y: 800, width: 260, height: 160, color: 'var(--mw-success)', rotation: 0 },
     { id: 'zone-qc', type: 'quality-lab', category: 'zones', name: 'Quality Lab', x: 1040, y: 40, width: 200, height: 160, color: 'var(--mw-info)', rotation: 0 },
-    { id: 'cnc-1', type: 'cnc', category: 'machines', name: 'CNC Machine #1', x: 400, y: 100, width: 120, height: 80, color: 'var(--neutral-400)', rotation: 0, status: 'Active', operator: 'John Smith' },
-    { id: 'cnc-2', type: 'cnc', category: 'machines', name: 'CNC Machine #2', x: 400, y: 240, width: 120, height: 80, color: 'var(--neutral-400)', rotation: 0, status: 'Active', operator: 'Sarah Lee' },
-    { id: 'laser-1', type: 'laser', category: 'machines', name: 'Laser Cutter #1', x: 600, y: 100, width: 140, height: 80, color: 'var(--neutral-400)', rotation: 0, status: 'Active', operator: 'Mike Chen' },
-    { id: 'press-1', type: 'press', category: 'machines', name: 'Press Brake #1', x: 600, y: 240, width: 100, height: 80, color: 'var(--neutral-400)', rotation: 0, status: 'Maintenance' },
-    { id: 'op-1', type: 'operator', category: 'people', name: 'Station A', x: 380, y: 200, width: 40, height: 40, color: 'var(--mw-blue)', rotation: 0 },
-    { id: 'op-2', type: 'operator', category: 'people', name: 'Station B', x: 560, y: 200, width: 40, height: 40, color: 'var(--mw-blue)', rotation: 0 },
-    { id: 'op-3', type: 'operator', category: 'people', name: 'Station C', x: 740, y: 200, width: 40, height: 40, color: 'var(--mw-blue)', rotation: 0 },
+    { id: 'cnc-1', type: 'cnc', category: 'machines', name: 'CNC Machine #1', x: 400, y: 100, width: 120, height: 80, color: 'var(--mw-mirage-300)', rotation: 0, status: 'Active', operator: 'John Smith' },
+    { id: 'cnc-2', type: 'cnc', category: 'machines', name: 'CNC Machine #2', x: 400, y: 240, width: 120, height: 80, color: 'var(--mw-mirage-300)', rotation: 0, status: 'Active', operator: 'Sarah Lee' },
+    { id: 'laser-1', type: 'laser', category: 'machines', name: 'Laser Cutter #1', x: 600, y: 100, width: 140, height: 80, color: 'var(--mw-mirage-300)', rotation: 0, status: 'Active', operator: 'Mike Chen' },
+    { id: 'press-1', type: 'press', category: 'machines', name: 'Press Brake #1', x: 600, y: 240, width: 100, height: 80, color: 'var(--mw-mirage-300)', rotation: 0, status: 'Maintenance' },
+    { id: 'op-1', type: 'operator', category: 'people', name: 'Station A', x: 380, y: 200, width: 40, height: 40, color: 'var(--mw-mirage-400)', rotation: 0 },
+    { id: 'op-2', type: 'operator', category: 'people', name: 'Station B', x: 560, y: 200, width: 40, height: 40, color: 'var(--mw-mirage-400)', rotation: 0 },
+    { id: 'op-3', type: 'operator', category: 'people', name: 'Station C', x: 740, y: 200, width: 40, height: 40, color: 'var(--mw-mirage-400)', rotation: 0 },
   ];
 }
 
@@ -534,10 +534,10 @@ export function ControlFactoryDesigner() {
   // ------------------------------------------------------------------
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col bg-neutral-50 dark:bg-neutral-900">
+    <div className="flex h-[calc(100vh-64px)] flex-col bg-[var(--pb-canvas-bg)]">
       {/* TOP TOOLBAR */}
       <TooltipProvider>
-      <div className="flex h-12 items-center gap-2 border-b border-[var(--border)] bg-white px-3 dark:bg-neutral-800">
+      <div className="flex h-12 items-center gap-2 border-b border-[var(--pb-hairline)] bg-card px-3">
         <AnimatedCog className="h-4 w-4 text-[var(--mw-yellow-600)]" />
         <h1 className="mr-2 text-sm font-semibold text-foreground">Factory Designer</h1>
         <div className="h-5 w-px bg-[var(--border)]" />
@@ -662,13 +662,22 @@ export function ControlFactoryDesigner() {
       <ResizablePanelGroup direction="horizontal" className="flex-1">
         {/* LEFT SIDEBAR — Element Palette */}
         <ResizablePanel defaultSize={16} minSize={12} maxSize={25}>
-          <div className="flex h-full flex-col border-r border-[var(--border)] bg-white dark:bg-neutral-800">
-            <div className="border-b border-[var(--border)] p-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">Elements</p>
+          <div className="flex h-full flex-col border-r border-[var(--pb-hairline)] bg-card">
+            <div className="border-b border-[var(--pb-hairline)] px-4 py-3">
+              <p
+                className="uppercase text-[var(--mw-mirage-500)]"
+                style={{
+                  fontSize: 'var(--font-label-small)',
+                  letterSpacing: 'var(--tracking-label-small)',
+                  fontWeight: 500,
+                }}
+              >
+                Elements
+              </p>
             </div>
 
             {/* Category tabs */}
-            <div className="border-b border-[var(--border)] p-2">
+            <div className="border-b border-[var(--pb-hairline)] px-3 py-2">
               <ToggleGroup
                 type="single"
                 value={activeCategory}
@@ -680,7 +689,12 @@ export function ControlFactoryDesigner() {
                   <ToggleGroupItem
                     key={cat}
                     value={cat}
-                    className="flex-1 text-[10px] px-1.5 h-7 data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[#2C2C2C]"
+                    className="flex-1 px-1.5 h-7 data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[var(--mw-yellow-900)]"
+                    style={{
+                      fontSize: 'var(--font-label-small)',
+                      letterSpacing: 'var(--tracking-label-small)',
+                      fontWeight: 500,
+                    }}
                   >
                     {CATEGORY_LABELS[cat]}
                   </ToggleGroupItem>
@@ -689,8 +703,8 @@ export function ControlFactoryDesigner() {
             </div>
 
             {/* Draggable items */}
-            <div className="flex-1 overflow-y-auto p-2">
-              <div className="space-y-1">
+            <div className="flex-1 overflow-y-auto px-3 py-3">
+              <div className="space-y-2">
                 {PALETTE_ITEMS[activeCategory].map((item) => (
                   <PaletteItemCard key={item.type} item={item} />
                 ))}
@@ -705,7 +719,7 @@ export function ControlFactoryDesigner() {
         <ResizablePanel defaultSize={62}>
           <div
             ref={canvasContainerRef}
-            className="relative h-full overflow-hidden bg-neutral-50 dark:bg-neutral-900"
+            className="relative h-full overflow-hidden bg-[var(--pb-canvas-bg)]"
             onMouseDown={handleCanvasMouseDown}
             onMouseMove={handleCanvasMouseMove}
             onMouseUp={handleCanvasMouseUp}
@@ -730,7 +744,7 @@ export function ControlFactoryDesigner() {
               <defs>
                 {/* Grid pattern */}
                 <pattern id="grid-dots" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse">
-                  <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r="1" className="fill-neutral-300 dark:fill-neutral-600" />
+                  <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r="1" fill="var(--pb-grid-dot)" />
                 </pattern>
                 {/* MD3 Elevation filters */}
                 <filter id="fd-elevation-1" x="-10%" y="-10%" width="130%" height="140%">
@@ -745,13 +759,13 @@ export function ControlFactoryDesigner() {
                 </filter>
               </defs>
 
-              {/* Canvas background */}
+              {/* Canvas background — warm off-white anchored on mirage */}
               <rect
                 x={0}
                 y={0}
                 width={CANVAS_WIDTH}
                 height={CANVAS_HEIGHT}
-                className="fill-neutral-50 dark:fill-neutral-900"
+                fill="var(--pb-canvas-bg)"
                 data-canvas-bg="true"
                 rx={8}
               />
@@ -769,15 +783,15 @@ export function ControlFactoryDesigner() {
                 />
               )}
 
-              {/* Canvas border */}
+              {/* Canvas border — mirage hairline */}
               <rect
                 x={0}
                 y={0}
                 width={CANVAS_WIDTH}
                 height={CANVAS_HEIGHT}
                 fill="none"
-                className="stroke-neutral-200 dark:stroke-neutral-700"
-                strokeWidth={2}
+                stroke="var(--pb-hairline)"
+                strokeWidth={1}
                 rx={8}
                 pointerEvents="none"
               />
@@ -982,16 +996,33 @@ function PaletteItemCard({ item }: { item: PaletteItem }) {
     <div
       draggable
       onDragStart={handleDragStart}
-      className="flex cursor-grab items-center gap-2.5 rounded-lg border border-transparent px-2.5 py-2 transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] shadow-[var(--elevation-0)] hover:border-[var(--border)] hover:bg-[var(--neutral-100)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:cursor-grabbing dark:hover:bg-neutral-700"
+      className="flex cursor-grab items-center gap-3 rounded-[var(--shape-md)] border border-transparent px-3 py-2.5 shadow-[var(--elevation-0)] hover:border-[var(--pb-hairline)] hover:bg-[var(--mw-mirage-50)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:cursor-grabbing active:scale-[1.02] active:shadow-[var(--elevation-3)] transition-all duration-150 ease-[cubic-bezier(0.2,0,0,1)]"
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-neutral-700 dark:text-neutral-300">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-sm)] bg-[var(--mw-mirage-100)] text-[var(--mw-mirage-700)]">
         {item.icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-medium text-foreground">{item.label}</p>
-        <p className="text-[10px] text-[var(--neutral-500)]">{item.defaultWidth} x {item.defaultHeight}</p>
+        <p
+          className="truncate text-foreground"
+          style={{
+            fontSize: 'var(--font-label-medium)',
+            letterSpacing: 'var(--tracking-label-medium)',
+            fontWeight: 500,
+          }}
+        >
+          {item.label}
+        </p>
+        <p
+          className="text-[var(--mw-mirage-500)]"
+          style={{
+            fontSize: 'var(--font-label-small)',
+            letterSpacing: 'var(--tracking-label-small)',
+          }}
+        >
+          {item.defaultWidth} × {item.defaultHeight}
+        </p>
       </div>
-      <GripVertical className="h-3.5 w-3.5 shrink-0 text-[var(--neutral-400)]" />
+      <GripVertical className="h-3.5 w-3.5 shrink-0 text-[var(--mw-mirage-300)]" />
     </div>
   );
 }
@@ -1014,29 +1045,39 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
     : undefined;
 
   if (element.category === 'people') {
-    // Render as circle
+    // Render as mirage-tinted circle (or yellow-tinted for supervisor)
     const cx = element.x + element.width / 2;
     const cy = element.y + element.height / 2;
     const r = element.width / 2;
+    const ring = element.color || 'var(--mw-mirage-400)';
 
     return (
       <g
         onMouseDown={handleMouseDown}
         style={{ cursor: 'move' }}
         transform={transform}
+        filter={isSelected ? 'url(#selection-glow)' : undefined}
       >
-        {/* Selection ring */}
+        {/* Selection ring — solid yellow */}
         {isSelected && (
-          <circle cx={cx} cy={cy} r={r + 4} fill="none" stroke="var(--mw-yellow-400)" strokeWidth={2.5} strokeDasharray="6 3" filter="url(#selection-glow)" />
+          <circle cx={cx} cy={cy} r={r + 3} fill="none" stroke="var(--mw-yellow-400)" strokeWidth={1.5} />
         )}
-        {/* Circle body */}
-        <circle cx={cx} cy={cy} r={r} fill={element.color} fillOpacity={0.2} stroke={element.color} strokeWidth={1.5} />
-        {/* Icon placeholder */}
-        <text x={cx} y={cy - 4} textAnchor="middle" fontSize={14} fill={element.color}>
+        {/* Circle body — cream fill in the brand family, ring in mirage/yellow */}
+        <circle cx={cx} cy={cy} r={r} fill="var(--pb-people-fill)" stroke={ring} strokeWidth={1.5} />
+        {/* Icon */}
+        <text x={cx} y={cy - 2} textAnchor="middle" fontSize={14} fill="var(--mw-mirage-700)">
           <tspan>&#x1F464;</tspan>
         </text>
-        {/* Label */}
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={8} className="fill-foreground" fontWeight={500}>
+        {/* Label — sits below the circle so it doesn't crowd the icon */}
+        <text
+          x={cx}
+          y={cy + r + 12}
+          textAnchor="middle"
+          fontSize="var(--font-label-small)"
+          letterSpacing="var(--tracking-label-small)"
+          className="fill-[var(--mw-mirage-700)]"
+          fontWeight={500}
+        >
           {element.name}
         </text>
       </g>
@@ -1253,29 +1294,31 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
       transform={transform}
       filter={isSelected ? 'url(#selection-glow)' : 'url(#fd-elevation-1)'}
     >
+      {/* Selection ring — solid 1.5px yellow ring; halo provided by selection-glow filter on the parent <g> */}
       {isSelected && (
         <rect
-          x={element.x - 4}
-          y={element.y - 4}
-          width={element.width + 8}
-          height={element.height + 8}
+          x={element.x - 3}
+          y={element.y - 3}
+          width={element.width + 6}
+          height={element.height + 6}
           fill="none"
           stroke="var(--mw-yellow-400)"
-          strokeWidth={2.5}
-          rx={10}
+          strokeWidth={1.5}
+          rx={16}
         />
       )}
+      {/* Machine card — off-white fill with mirage hairline */}
       <rect
         x={element.x}
         y={element.y}
         width={element.width}
         height={element.height}
-        className="fill-neutral-200 dark:fill-neutral-700"
-        stroke={isSelected ? 'var(--mw-yellow-400)' : 'var(--border)'}
-        strokeWidth={isSelected ? 0 : 1}
-        rx={8}
+        fill="var(--pb-canvas-bg)"
+        stroke={element.color || 'var(--mw-mirage-300)'}
+        strokeWidth={1}
+        rx={14}
       />
-      {/* Status indicator dot */}
+      {/* Status indicator dot — semantic, kept untouched */}
       {element.status && (
         <circle cx={element.x + element.width - 10} cy={element.y + 10} r={4} fill={statusColor} />
       )}
@@ -1284,19 +1327,21 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
         x={element.x + element.width / 2}
         y={element.y + element.height / 2 - 2}
         textAnchor="middle"
-        fontSize={10}
-        className="fill-foreground"
-        fontWeight={600}
+        fontSize="var(--font-label-medium)"
+        letterSpacing="var(--tracking-label-medium)"
+        className="fill-[var(--mw-mirage-700)]"
+        fontWeight={500}
       >
         {element.name}
       </text>
-      {/* Machine dimensions */}
+      {/* Machine status / type sub-label */}
       <text
         x={element.x + element.width / 2}
         y={element.y + element.height / 2 + 12}
         textAnchor="middle"
-        fontSize={8}
-        className="fill-[var(--neutral-500)]"
+        fontSize="var(--font-label-small)"
+        letterSpacing="var(--tracking-label-small)"
+        className="fill-[var(--mw-mirage-500)]"
       >
         {element.status ?? element.type}
       </text>
