@@ -11,14 +11,33 @@ import type { BillOfLading } from "@/types/entities";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
+
+type BolItem = BillOfLading["items"][number];
+
+const bolColumns: MwColumnDef<BolItem>[] = [
+  { key: "description", header: "Description", cell: (item) => item.description },
+  {
+    key: "qty",
+    header: "Qty",
+    headerClassName: "text-right",
+    className: "text-right font-mono",
+    cell: (item) => item.qty,
+  },
+  {
+    key: "weight",
+    header: "Weight (kg)",
+    headerClassName: "text-right",
+    className: "text-right font-mono",
+    cell: (item) => item.weightKg.toFixed(1),
+  },
+  {
+    key: "freightClass",
+    header: "Freight Class",
+    className: "text-[var(--neutral-500)]",
+    cell: (item) => item.freightClass,
+  },
+];
 
 export function ShipBillOfLading() {
   const [bol, setBol] = useState<BillOfLading | null>(null);
@@ -108,32 +127,12 @@ export function ShipBillOfLading() {
 
       {/* Items table */}
       <Card variant="flat" className="p-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Qty</TableHead>
-              <TableHead className="text-right">Weight (kg)</TableHead>
-              <TableHead>Freight Class</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {bol.items.map((item, i) => (
-              <TableRow key={i}>
-                <TableCell>{item.description}</TableCell>
-                <TableCell className="text-right font-mono">
-                  {item.qty}
-                </TableCell>
-                <TableCell className="text-right font-mono">
-                  {item.weightKg.toFixed(1)}
-                </TableCell>
-                <TableCell className="text-[var(--neutral-500)]">
-                  {item.freightClass}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <MwDataTable<BolItem>
+          columns={bolColumns}
+          data={bol.items}
+          keyExtractor={(_, i) => i}
+          className="border-0 shadow-none"
+        />
 
         {/* Totals */}
         <div className="mt-4 flex justify-end border-t border-[var(--neutral-200)] pt-4">
