@@ -2,7 +2,7 @@
  * Control BOMs — Bill of Materials management
  * Full list with expandable BOM lines
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { motion } from 'motion/react';
@@ -12,6 +12,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { BomEditorSheet, type BomDraft, type BomLineDraft } from './BomEditorSheet';
 
 
 interface BOMLine {
@@ -97,11 +98,37 @@ const bomLineColumns: MwColumnDef<BOMLine>[] = [
 export function ControlBOMs() {
   const [search,    setSearch]   = useState('');
   const [expanded,  setExpanded] = useState<Set<string>>(new Set());
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editing, setEditing] = useState<BomDraft | undefined>();
 
   const filtered = BOMS.filter(b =>
     b.product.toLowerCase().includes(search.toLowerCase()) ||
     b.sku.toLowerCase().includes(search.toLowerCase())
   );
+
+  const subAssemblyOptions = useMemo(
+    () => BOMS.map((b) => ({ id: b.id, product: b.product, sku: b.sku })),
+    [],
+  );
+
+  const openEdit = (bom: BOM) => {
+    setEditing({
+      id: bom.id,
+      product: bom.product,
+      sku: bom.sku,
+      version: bom.version,
+      status: bom.status,
+      lines: bom.lines.map<BomLineDraft>((l, i) => ({
+        key: `existing-${bom.id}-${i}`,
+        kind: l.type,
+        sku: l.sku,
+        description: l.description,
+        qty: l.qty,
+        unit: l.unit,
+      })),
+    });
+    setEditorOpen(true);
+  };
 
   const toggle = (id: string) => {
     setExpanded(prev => {
@@ -136,16 +163,13 @@ export function ControlBOMs() {
     },
     {
       key: 'actions', header: 'Actions', headerClassName: 'text-right',
-      cell: (_bom) => (
+      cell: (bom) => (
         <div className="text-right" onClick={e => e.stopPropagation()}>
           <Button
             variant="ghost"
             size="sm"
             className="h-12 min-h-[48px] text-xs text-[var(--neutral-500)] hover:text-foreground"
-            onClick={() => {
-              // TODO(backend): boms.update(bom.id, fields)
-              toast.success('BOM saved');
-            }}
+            onClick={() => openEdit(bom)}
           >
             Edit
           </Button>
@@ -190,8 +214,8 @@ export function ControlBOMs() {
         <Button
           className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
           onClick={() => {
-            // TODO(backend): boms.create(fields)
-            toast.success('BOM created');
+            setEditing(undefined);
+            setEditorOpen(true);
           }}
         >
           <Plus className="w-4 h-4" /> New BOM
@@ -240,6 +264,13 @@ export function ControlBOMs() {
           </div>
         );
       })}
+
+      <BomEditorSheet
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        bom={editing}
+        availableSubAssemblies={subAssemblyOptions}
+      />
     </motion.div>
   );
 }
