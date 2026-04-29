@@ -28,14 +28,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { purchaseOrders } from "@/services";
@@ -372,24 +364,28 @@ export function BuyOrderDetail() {
                     View all
                   </Button>
                 </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product</TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">Qty</TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lineItems.slice(0, 3).map((li) => (
-                      <TableRow key={li.id} className="min-h-14">
-                        <TableCell className="text-sm">{li.product}</TableCell>
-                        <TableCell className="text-right text-sm tabular-nums">{li.qtyOrdered}</TableCell>
-                        <TableCell className="text-right text-sm font-medium tabular-nums">{fmtCurrency(li.total)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <MwDataTable<typeof lineItems[number]>
+                  columns={[
+                    { key: "product", header: "Product", className: "text-sm", cell: (li) => li.product },
+                    {
+                      key: "qty",
+                      header: "Qty",
+                      headerClassName: "text-right",
+                      className: "text-right text-sm tabular-nums",
+                      cell: (li) => li.qtyOrdered,
+                    },
+                    {
+                      key: "total",
+                      header: "Total",
+                      headerClassName: "text-right",
+                      className: "text-right text-sm font-medium tabular-nums",
+                      cell: (li) => fmtCurrency(li.total),
+                    },
+                  ]}
+                  data={lineItems.slice(0, 3)}
+                  keyExtractor={(li) => li.id}
+                  className="border-0 shadow-none rounded-none"
+                />
               </Card>
 
               {/* Notes */}
@@ -687,41 +683,55 @@ export function BuyOrderDetail() {
               <div className="border-b border-[var(--border)] px-6 py-4">
                 <h2 className="text-base font-medium text-foreground">Line item receiving</h2>
               </div>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-100)]/10 hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-100)]/10">
-                    <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product</TableHead>
-                    <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Ordered</TableHead>
-                    <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Received</TableHead>
-                    <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">Outstanding</TableHead>
-                    <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {lineItems.map((li) => (
-                    <TableRow key={li.id} className="min-h-14">
-                      <TableCell className="text-sm font-medium tabular-nums">{li.product}</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{li.qtyOrdered}</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{li.qtyReceived}</TableCell>
-                      <TableCell className={cn("text-right text-sm tabular-nums", (li.qtyOrdered - li.qtyReceived) > 0 && "text-[var(--mw-error)]")}>
+              <MwDataTable<typeof lineItems[number]>
+                columns={[
+                  { key: "product", header: "Product", className: "text-sm font-medium tabular-nums", cell: (li) => li.product },
+                  {
+                    key: "ordered",
+                    header: "Ordered",
+                    headerClassName: "text-right",
+                    className: "text-right text-sm tabular-nums",
+                    cell: (li) => li.qtyOrdered,
+                  },
+                  {
+                    key: "received",
+                    header: "Received",
+                    headerClassName: "text-right",
+                    className: "text-right text-sm tabular-nums",
+                    cell: (li) => li.qtyReceived,
+                  },
+                  {
+                    key: "outstanding",
+                    header: "Outstanding",
+                    headerClassName: "text-right",
+                    cell: (li) => (
+                      <span className={cn("text-right text-sm tabular-nums", (li.qtyOrdered - li.qtyReceived) > 0 && "text-[var(--mw-error)]")}>
                         {li.qtyOrdered - li.qtyReceived}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge
-                          variant={
-                            li.qtyReceived >= li.qtyOrdered ? "success"
-                              : li.qtyReceived > 0 ? "warning"
-                                : "neutral"
-                          }
-                          withDot
-                        >
-                          {li.qtyReceived >= li.qtyOrdered ? "Complete" : li.qtyReceived > 0 ? "Partial" : "Pending"}
-                        </StatusBadge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </span>
+                    ),
+                    className: "text-right",
+                  },
+                  {
+                    key: "status",
+                    header: "Status",
+                    cell: (li) => (
+                      <StatusBadge
+                        variant={
+                          li.qtyReceived >= li.qtyOrdered ? "success"
+                            : li.qtyReceived > 0 ? "warning"
+                              : "neutral"
+                        }
+                        withDot
+                      >
+                        {li.qtyReceived >= li.qtyOrdered ? "Complete" : li.qtyReceived > 0 ? "Partial" : "Pending"}
+                      </StatusBadge>
+                    ),
+                  },
+                ]}
+                data={lineItems}
+                keyExtractor={(li) => li.id}
+                className="border-0 shadow-none rounded-none"
+              />
             </Card>
           </div>
         );
