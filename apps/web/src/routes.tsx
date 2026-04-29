@@ -168,6 +168,7 @@ const InvoiceDetail = lazyWithRetry(() => import('./components/book/InvoiceDetai
 const JobCostDetail = lazyWithRetry(() => import('./components/book/JobCostDetail').then(m => ({ default: m.JobCostDetail })));
 const BookWipValuation = lazyWithRetry(() => import('./components/book/BookWipValuation').then(m => ({ default: m.BookWipValuation })));
 const BookCostVariance = lazyWithRetry(() => import('./components/book/BookCostVariance').then(m => ({ default: m.BookCostVariance })));
+const BookPurchaseOrderDetail = lazyWithRetry(() => import('./components/book/BookPurchaseOrderDetail').then(m => ({ default: m.BookPurchaseOrderDetail })));
 
 // ---------------------------------------------------------------------------
 // Suspense wrapper for lazy routes
@@ -199,6 +200,10 @@ function BookJobCostDetailRoute() {
       onBack={() => navigateBackOrTo(navigate, appRoutes.bookJobCosts().path)}
     />
   );
+}
+
+function BookPurchaseOrderRoute() {
+  return <BookPurchaseOrderDetail />;
 }
 
 export const router = createBrowserRouter([
@@ -480,6 +485,8 @@ export const router = createBrowserRouter([
           { path: 'invoices/:id', element: <L><BookInvoiceDetailRoute /></L> },
           { path: 'expenses', element: <L><ExpenseKanban /></L> },
           { path: 'purchases', element: <L><PurchaseOrders /></L> },
+          { path: 'purchases/new', element: <L><BookPurchaseOrderRoute /></L> },
+          { path: 'purchases/:id', element: <L><BookPurchaseOrderRoute /></L> },
           { path: 'job-costs', element: <L><JobProfitability /></L> },
           { path: 'job-costs/:id', element: <L><BookJobCostDetailRoute /></L> },
           { path: 'wip', element: <L><BookWipValuation /></L> },

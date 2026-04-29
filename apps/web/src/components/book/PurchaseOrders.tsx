@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { PlusCircle, Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, CheckCircle, AlertCircle, Circle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -49,6 +50,7 @@ const MatchIcon = ({ match }: { match: string }) => {
 };
 
 export function PurchaseOrders() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
 
   // Compute summary totals by status
@@ -123,7 +125,10 @@ export function PurchaseOrders() {
       <PageHeader
         title="Purchase orders"
         actions={
-          <Button className="h-12 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
+          <Button
+            onClick={() => navigate('/book/purchases/new')}
+            className="h-12 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+          >
             <PlusCircle className="h-5 w-5" /> New PO
           </Button>
         }
@@ -169,6 +174,7 @@ export function PurchaseOrders() {
         keyExtractor={(po) => po.id}
         striped
         selectable
+        onRowClick={(po) => navigate(`/book/purchases/${po.id}`)}
         onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
         onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
       />
