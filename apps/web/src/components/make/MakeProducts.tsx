@@ -464,30 +464,30 @@ export function MakeProducts() {
                   Bill of Materials
                 </Label>
                 <div className="rounded-xl border border-[var(--border)] overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-muted/50 text-muted-foreground text-xs">
-                        <th className="text-left px-3 py-2 font-medium">Material</th>
-                        <th className="text-right px-3 py-2 font-medium">Qty</th>
-                        <th className="text-left px-3 py-2 font-medium">Unit</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {BOM_MATERIALS[moProduct.id].map((m, i) => (
-                        <tr
-                          key={i}
-                          className={cn(
-                            'text-foreground',
-                            i !== BOM_MATERIALS[moProduct.id].length - 1 && 'border-b border-[var(--border)]',
-                          )}
-                        >
-                          <td className="px-3 py-2">{m.material}</td>
-                          <td className="px-3 py-2 text-right tabular-nums">{m.qty}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{m.unit}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <MwDataTable<{ material: string; qty: string; unit: string }>
+                    columns={[
+                      {
+                        key: 'material',
+                        header: 'Material',
+                        cell: (m) => m.material,
+                      },
+                      {
+                        key: 'qty',
+                        header: 'Qty',
+                        headerClassName: 'text-right',
+                        cell: (m) => <span className="tabular-nums">{m.qty}</span>,
+                        className: 'text-right',
+                      },
+                      {
+                        key: 'unit',
+                        header: 'Unit',
+                        cell: (m) => <span className="text-muted-foreground">{m.unit}</span>,
+                      },
+                    ]}
+                    data={BOM_MATERIALS[moProduct.id]}
+                    keyExtractor={(_, i) => i}
+                    className="border-0 shadow-none rounded-none"
+                  />
                 </div>
               </div>
             )}
