@@ -66,7 +66,6 @@ export function PlanJobDetail() {
   const { id: routeId } = useParams<{ id: string }>();
   const isNew = !routeId || routeId === 'new';
 
-  const userRole = 'Manager' as 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
   const [activeTab, setActiveTab] = useState('overview');
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
@@ -77,7 +76,6 @@ export function PlanJobDetail() {
   // callers that mounted this component without a /:id route).
   const jobId = !isNew && routeId ? routeId : 'JOB-2026-0015';
   const quoteId = 'Q-2026-0055';
-  const hasBudgetAccess = ['Scheduler', 'Manager', 'Admin'].includes(userRole);
   const activePermissionUser = useMemo(
     () =>
       peopleUsers.find((user) => user.name === mockUserContext.displayName) ??
@@ -95,6 +93,7 @@ export function PlanJobDetail() {
         grant.value === true,
     );
 
+  const canViewBudget = hasPlanPermission('budget.visibility');
   const canReleaseTraveller = hasPlanPermission('traveller.release');
   const canViewAllTravellers = hasPlanPermission('traveller.view_all');
 
@@ -120,7 +119,7 @@ export function PlanJobDetail() {
       { id: 'production', label: 'Production', count: 4 },
       { id: 'travellers', label: 'Travellers', count: travellers.length },
     ];
-    if (hasBudgetAccess) {
+    if (canViewBudget) {
       base.push({ id: 'budget', label: 'Budget' });
     }
     base.push(
@@ -128,7 +127,7 @@ export function PlanJobDetail() {
       { id: 'intelligence', label: 'Intelligence Hub' },
     );
     return base;
-  }, [hasBudgetAccess, travellers.length]);
+  }, [canViewBudget, travellers.length]);
 
   const renderTabPanel = (tab: string) => {
     switch (tab) {
@@ -144,7 +143,7 @@ export function PlanJobDetail() {
         return (
           <PlanBudgetTab
             jobId={jobId}
-            userRole={userRole}
+            canViewBudget={canViewBudget}
             quoteId={quoteId}
             onOpenIntelligence={() => setActiveTab('intelligence')}
           />
@@ -260,7 +259,7 @@ export function PlanJobDetail() {
                   <div>
                     <p className="text-sm font-medium">Traveller control point</p>
                     <p className="text-xs text-[var(--neutral-500)]">
-                      Operators can view and execute released travellers only.
+                      Released travellers only — request release access from your Plan lead.
                     </p>
                   </div>
                   <StatusBadge variant={selectedTravellerReleased ? 'accent' : selectedTravellerReady ? 'info' : 'warning'}>
@@ -356,8 +355,8 @@ export function PlanJobDetail() {
 
             <Card variant="flat" className="border-[var(--border)] p-4">
               <p className="text-sm text-[var(--neutral-600)]">
-                Operators can view and execute released travellers only. If something is missing,
-                place the traveller on hold and notify planning.
+                Released travellers can be viewed and executed by anyone with traveller access. If
+                something is missing, place the traveller on hold and notify planning.
               </p>
             </Card>
           </div>

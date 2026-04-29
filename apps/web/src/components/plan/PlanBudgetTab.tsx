@@ -1,5 +1,5 @@
 /**
- * Plan Budget Tab - Restricted to Scheduler/Manager/Admin roles
+ * Plan Budget Tab - gated by the `budget.visibility` Plan permission (ARCH 00)
  * Shows budget summary, category breakdown, spend vs plan chart, and AI insights
  * Per PLAN 05 database schema: categories are materials, labour, purchase, overhead
  * Note: 'purchase' displays as 'Subcontract' in UI
@@ -34,7 +34,7 @@ import { IconWell } from '@/components/shared/icons/IconWell';
 
 interface PlanBudgetTabProps {
   jobId: string;
-  userRole: 'Operator' | 'Supervisor' | 'Scheduler' | 'Manager' | 'Admin';
+  canViewBudget: boolean;
   quoteId?: string;
   onOpenIntelligence?: () => void;
 }
@@ -102,12 +102,11 @@ const mockSpendData = [
 ];
 
 
-export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: PlanBudgetTabProps) {
+export function PlanBudgetTab({ jobId, canViewBudget, quoteId, onOpenIntelligence }: PlanBudgetTabProps) {
   const [dateRange, setDateRange] = useState<'all' | 'month' | 'week'>('all');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Role check
-  if (!['Scheduler', 'Manager', 'Admin'].includes(userRole)) {
+  if (!canViewBudget) {
     return (
       <div className="p-6">
         <Card className="border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6">
@@ -118,7 +117,8 @@ export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: 
                 Access Restricted
               </h3>
               <p className="mt-1 text-xs text-[var(--neutral-600)]">
-                Budget information is only visible to Scheduler, Manager, and Admin roles.
+                Budget visibility is granted via Plan group permissions. Ask your Plan lead or
+                Admin to add you to a group with budget access.
               </p>
             </div>
           </div>
@@ -323,7 +323,7 @@ export function PlanBudgetTab({ jobId, userRole, quoteId, onOpenIntelligence }: 
 
       {/* Spend vs Plan Chart */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className=" text-base font-medium text-foreground">
               Spend vs Plan
