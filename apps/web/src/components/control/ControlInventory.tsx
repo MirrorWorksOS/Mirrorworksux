@@ -288,7 +288,7 @@ interface StocktakeCount {
   unit: string;
 }
 
-function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [step, setStep] = useState<StocktakeStep>('location');
   const [selectedLocation, setSelectedLocation] = useState('A-01-03');
   const [counts, setCounts] = useState<StocktakeCount[]>([]);
@@ -498,7 +498,7 @@ function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenChange: 
 // New Adjustment Dialog
 // ---------------------------------------------------------------------------
 
-function NewAdjustmentDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function NewAdjustmentDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [adjType, setAdjType] = useState<AdjustmentType>('Damage');
   const [adjItem, setAdjItem] = useState('');
   const [adjLocation, setAdjLocation] = useState('');
@@ -583,7 +583,7 @@ function NewAdjustmentDialog({ open, onOpenChange }: { open: boolean; onOpenChan
 // New Transfer Dialog
 // ---------------------------------------------------------------------------
 
-function NewTransferDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function NewTransferDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [fromLoc, setFromLoc] = useState('');
   const [toLoc, setToLoc] = useState('');
   const [transferItem, setTransferItem] = useState('');

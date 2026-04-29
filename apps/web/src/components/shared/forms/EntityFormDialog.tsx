@@ -19,10 +19,14 @@ export interface EntityFormDialogProps {
   description?: string;
   /** Submit button label — defaults to "Save" */
   submitLabel?: string;
+  /** Disable the submit button (e.g. while validating) */
+  submitDisabled?: boolean;
   onSubmit: () => void;
   children: React.ReactNode;
   /** Extra width class — defaults to "max-w-lg" */
   widthClass?: string;
+  /** Additional className applied to DialogContent */
+  className?: string;
 }
 
 export function EntityFormDialog({
@@ -31,9 +35,11 @@ export function EntityFormDialog({
   title,
   description,
   submitLabel = 'Save',
+  submitDisabled = false,
   onSubmit,
   children,
   widthClass = 'max-w-lg',
+  className,
 }: EntityFormDialogProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +49,7 @@ export function EntityFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`${widthClass} rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6`}
+        className={[`${widthClass} rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6`, className].filter(Boolean).join(' ')}
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">{title}</DialogTitle>
@@ -60,6 +66,7 @@ export function EntityFormDialog({
           <div className="space-y-2 pt-1">
             <Button
               type="submit"
+              disabled={submitDisabled}
               className="h-12 w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
             >
               {submitLabel}

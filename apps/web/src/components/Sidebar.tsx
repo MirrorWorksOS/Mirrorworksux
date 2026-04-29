@@ -367,7 +367,6 @@ export const menuConfig: MenuItem[] = [
       {
         heading: 'Inventory & Products',
         items: [
-          { label: 'Inventory', path: '/control/inventory' },
           { label: 'Products', path: '/control/products' },
           { label: 'Product Studio', path: '/plan/product-studio' },
           { label: 'BOMs', path: '/control/boms' },

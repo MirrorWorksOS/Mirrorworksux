@@ -126,7 +126,11 @@ const ShipScanToShip = lazyWithRetry(() => import('./components/ship/ShipScanToS
 const ControlDashboard = lazyWithRetry(() => import('./components/control/ControlDashboard').then(m => ({ default: m.ControlDashboard })));
 const ControlLocations = lazyWithRetry(() => import('./components/control/ControlLocations').then(m => ({ default: m.ControlLocations })));
 const ControlMachines = lazyWithRetry(() => import('./components/control/ControlMachines').then(m => ({ default: m.ControlMachines })));
-const ControlInventory = lazyWithRetry(() => import('./components/control/ControlInventory').then(m => ({ default: m.ControlInventory })));
+// ControlInventory and ControlPurchase pages deleted.
+// /control/inventory → redirects to /control/products (Stocktake/Adjustment/Transfer
+// wizards now surface as Products toolbar buttons; see ControlProducts.tsx).
+// /control/purchase → redirects to /buy/settings (Approvals/Notifications panels
+// merged into BuySettings).
 const ControlPeople = lazyWithRetry(() => import('./components/control/ControlPeople').then(m => ({ default: m.ControlPeople })));
 const ControlProducts = lazyWithRetry(() => import('./components/control/ControlProducts').then(m => ({ default: m.ControlProducts })));
 const ControlBOMs = lazyWithRetry(() => import('./components/control/ControlBOMs').then(m => ({ default: m.ControlBOMs })));
@@ -439,7 +443,8 @@ export const router = createBrowserRouter([
           { path: 'routes', element: <L><ControlRoutes /></L> },
           { path: 'locations', element: <L><ControlLocations /></L> },
           { path: 'machines', element: <L><ControlMachines /></L> },
-          { path: 'inventory', element: <L><ControlInventory /></L> },
+          { path: 'inventory', element: <Navigate to="/control/products" replace /> },
+          { path: 'purchase', element: <Navigate to="/buy/settings" replace /> },
           { path: 'people', element: <L><ControlPeople /></L> },
           { path: 'groups', element: <L><ControlGroups /></L> },
           { path: 'products', element: <L><ControlProducts /></L> },

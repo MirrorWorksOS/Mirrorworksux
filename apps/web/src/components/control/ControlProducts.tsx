@@ -2,13 +2,12 @@
  * Control Products — product master data catalogue
  */
 import React, { useMemo, useState } from 'react';
-import { Plus, Package, Boxes } from 'lucide-react';
+import { Plus, Package, Boxes, ClipboardCheck, ArrowLeftRight, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
 import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { toast } from 'sonner';
@@ -17,6 +16,11 @@ import { FilterBar } from '@/components/shared/layout/FilterBar';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
+import {
+  StocktakeWizard,
+  NewAdjustmentDialog,
+  NewTransferDialog,
+} from './ControlInventory';
 
 
 const PRODUCTS = [
@@ -121,6 +125,9 @@ export function ControlProducts() {
   const [search,   setSearch]   = useState('');
   const [category, setCategory] = useState('All');
   const [type,     setType]     = useState('All');
+  const [stocktakeOpen, setStocktakeOpen] = useState(false);
+  const [adjustmentOpen, setAdjustmentOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
 
   const columns = useMemo(() => buildControlProductColumns(navigate), [navigate]);
 
@@ -155,6 +162,33 @@ export function ControlProducts() {
             type="button"
             variant="outline"
             className="h-12 min-h-[48px] border-[var(--border)] gap-2"
+            onClick={() => setStocktakeOpen(true)}
+          >
+            <ClipboardCheck className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+            Stocktake
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 min-h-[48px] border-[var(--border)] gap-2"
+            onClick={() => setAdjustmentOpen(true)}
+          >
+            <Pencil className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+            Adjustment
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 min-h-[48px] border-[var(--border)] gap-2"
+            onClick={() => setTransferOpen(true)}
+          >
+            <ArrowLeftRight className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+            Transfer
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 min-h-[48px] border-[var(--border)] gap-2"
             onClick={() => navigate('/plan/product-studio')}
           >
             <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
@@ -162,10 +196,7 @@ export function ControlProducts() {
           </Button>
           <Button
             className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
-            onClick={() => {
-              // TODO(backend): products.create(fields)
-              toast.success('Product added');
-            }}
+            onClick={() => navigate('/make/products/new')}
           >
             <Plus className="w-4 h-4" /> New product
           </Button>
@@ -187,6 +218,7 @@ export function ControlProducts() {
         data={filtered}
         keyExtractor={(p) => p.id}
         selectable
+        onRowClick={(p) => navigate(`/make/products/${p.id}`)}
         onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
         onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
         filterBar={
@@ -214,6 +246,10 @@ export function ControlProducts() {
         }
         emptyState={<EmptyState variant="inline" title="No products match your filters." />}
       />
+
+      <StocktakeWizard open={stocktakeOpen} onOpenChange={setStocktakeOpen} />
+      <NewAdjustmentDialog open={adjustmentOpen} onOpenChange={setAdjustmentOpen} />
+      <NewTransferDialog open={transferOpen} onOpenChange={setTransferOpen} />
     </motion.div>
   );
 }
