@@ -23,14 +23,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { buyService } from "@/services";
 import type { ReorderRule } from "@/types/entities";
@@ -129,47 +122,45 @@ export function BuyReorderRules() {
                 Loading reorder rules...
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Material</TableHead>
-                    <TableHead>Grade</TableHead>
-                    <TableHead className="text-right">Min</TableHead>
-                    <TableHead className="text-right">Max</TableHead>
-                    <TableHead className="text-right">
-                      Current Stock
-                    </TableHead>
-                    <TableHead className="text-right">
-                      Reorder Point
-                    </TableHead>
-                    <TableHead>Preferred Supplier</TableHead>
-                    <TableHead className="text-center">Auto-PO</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rules.map((rule) => {
-                    const isBelowReorder =
-                      rule.currentStock < rule.reorderPoint;
-                    return (
-                      <TableRow key={rule.id}>
-                        <TableCell className="font-medium text-foreground">
-                          {rule.material}
-                        </TableCell>
-                        <TableCell className="font-mono text-sm text-[var(--neutral-600)]">
-                          {rule.grade}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-[var(--neutral-500)]">
-                          {rule.minStock}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-[var(--neutral-500)]">
-                          {rule.maxStock}
-                        </TableCell>
-                        <TableCell
+              <MwDataTable<ReorderRule>
+                columns={[
+                  {
+                    key: "material",
+                    header: "Material",
+                    className: "font-medium text-foreground",
+                    cell: (rule) => rule.material,
+                  },
+                  {
+                    key: "grade",
+                    header: "Grade",
+                    className: "font-mono text-sm text-[var(--neutral-600)]",
+                    cell: (rule) => rule.grade,
+                  },
+                  {
+                    key: "min",
+                    header: "Min",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums text-[var(--neutral-500)]",
+                    cell: (rule) => rule.minStock,
+                  },
+                  {
+                    key: "max",
+                    header: "Max",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums text-[var(--neutral-500)]",
+                    cell: (rule) => rule.maxStock,
+                  },
+                  {
+                    key: "current",
+                    header: "Current Stock",
+                    headerClassName: "text-right",
+                    cell: (rule) => {
+                      const isBelowReorder = rule.currentStock < rule.reorderPoint;
+                      return (
+                        <span
                           className={cn(
                             "text-right font-mono tabular-nums font-medium",
-                            isBelowReorder
-                              ? "text-[var(--mw-error)]"
-                              : "text-foreground",
+                            isBelowReorder ? "text-[var(--mw-error)]" : "text-foreground",
                           )}
                         >
                           {rule.currentStock}
@@ -179,28 +170,45 @@ export function BuyReorderRules() {
                               strokeWidth={1.5}
                             />
                           )}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums">
-                          {rule.reorderPoint}
-                        </TableCell>
-                        <TableCell className="text-[var(--neutral-600)]">
-                          {rule.preferredSupplierName}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex justify-center">
-                            <Switch
-                              checked={rule.autoPoEnabled}
-                              onCheckedChange={(checked: boolean) =>
-                                handleToggle(rule.id, checked)
-                              }
-                            />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                        </span>
+                      );
+                    },
+                    className: "text-right",
+                  },
+                  {
+                    key: "reorder",
+                    header: "Reorder Point",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums",
+                    cell: (rule) => rule.reorderPoint,
+                  },
+                  {
+                    key: "supplier",
+                    header: "Preferred Supplier",
+                    className: "text-[var(--neutral-600)]",
+                    cell: (rule) => rule.preferredSupplierName,
+                  },
+                  {
+                    key: "autoPo",
+                    header: "Auto-PO",
+                    headerClassName: "text-center",
+                    className: "text-center",
+                    cell: (rule) => (
+                      <div className="flex justify-center">
+                        <Switch
+                          checked={rule.autoPoEnabled}
+                          onCheckedChange={(checked: boolean) =>
+                            handleToggle(rule.id, checked)
+                          }
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+                data={rules}
+                keyExtractor={(rule) => rule.id}
+                className="border-0 shadow-none"
+              />
             )}
           </Card>
         </motion.div>

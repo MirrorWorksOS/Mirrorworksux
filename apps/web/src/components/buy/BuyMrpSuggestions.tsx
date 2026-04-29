@@ -23,14 +23,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { buyService } from "@/services";
 import type { MrpSuggestion } from "@/types/entities";
 
@@ -126,67 +119,80 @@ export function BuyMrpSuggestions() {
                 Loading MRP suggestions...
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Material</TableHead>
-                    <TableHead>Grade</TableHead>
-                    <TableHead className="text-right">Qty Needed</TableHead>
-                    <TableHead className="text-right">Current Stock</TableHead>
-                    <TableHead className="text-right">Shortfall</TableHead>
-                    <TableHead>Suggested Supplier</TableHead>
-                    <TableHead className="text-right">
-                      Est. Cost (AUD)
-                    </TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {suggestions.map((row) => {
-                    const isCreated = createdIds.has(row.id);
-                    return (
-                      <TableRow key={row.id}>
-                        <TableCell className="font-medium text-foreground">
-                          {row.material}
-                        </TableCell>
-                        <TableCell className="font-mono text-sm text-[var(--neutral-600)]">
-                          {row.grade}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums">
-                          {row.totalQtyNeeded}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums">
-                          {row.currentStock}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-[var(--mw-error)]">
-                          {row.shortfall}
-                        </TableCell>
-                        <TableCell className="text-[var(--neutral-600)]">
-                          {row.suggestedSupplierName}
-                        </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums font-medium">
-                          ${row.estimatedCostAud.toLocaleString("en-AU")}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            variant={isCreated ? "outline" : "default"}
-                            disabled={isCreated}
-                            onClick={() => handleCreatePo(row)}
-                            className="gap-1.5"
-                          >
-                            <PackagePlus
-                              className="h-3.5 w-3.5"
-                              strokeWidth={1.5}
-                            />
-                            {isCreated ? "Created" : "Create PO"}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <MwDataTable<MrpSuggestion>
+                columns={[
+                  {
+                    key: "material",
+                    header: "Material",
+                    className: "font-medium text-foreground",
+                    cell: (row) => row.material,
+                  },
+                  {
+                    key: "grade",
+                    header: "Grade",
+                    className: "font-mono text-sm text-[var(--neutral-600)]",
+                    cell: (row) => row.grade,
+                  },
+                  {
+                    key: "qtyNeeded",
+                    header: "Qty Needed",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums",
+                    cell: (row) => row.totalQtyNeeded,
+                  },
+                  {
+                    key: "stock",
+                    header: "Current Stock",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums",
+                    cell: (row) => row.currentStock,
+                  },
+                  {
+                    key: "shortfall",
+                    header: "Shortfall",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums text-[var(--mw-error)]",
+                    cell: (row) => row.shortfall,
+                  },
+                  {
+                    key: "supplier",
+                    header: "Suggested Supplier",
+                    className: "text-[var(--neutral-600)]",
+                    cell: (row) => row.suggestedSupplierName,
+                  },
+                  {
+                    key: "cost",
+                    header: "Est. Cost (AUD)",
+                    headerClassName: "text-right",
+                    className: "text-right font-mono tabular-nums font-medium",
+                    cell: (row) => `$${row.estimatedCostAud.toLocaleString("en-AU")}`,
+                  },
+                  {
+                    key: "action",
+                    header: "Action",
+                    headerClassName: "text-right",
+                    className: "text-right",
+                    cell: (row) => {
+                      const isCreated = createdIds.has(row.id);
+                      return (
+                        <Button
+                          size="sm"
+                          variant={isCreated ? "outline" : "default"}
+                          disabled={isCreated}
+                          onClick={() => handleCreatePo(row)}
+                          className="gap-1.5"
+                        >
+                          <PackagePlus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          {isCreated ? "Created" : "Create PO"}
+                        </Button>
+                      );
+                    },
+                  },
+                ]}
+                data={suggestions}
+                keyExtractor={(row) => row.id}
+                className="border-0 shadow-none"
+              />
             )}
           </Card>
         </motion.div>

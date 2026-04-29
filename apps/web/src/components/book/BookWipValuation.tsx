@@ -13,15 +13,7 @@ import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { KpiStatCard } from "@/components/shared/cards/KpiStatCard";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
-import { Card } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 
 function fmtAud(v: number): string {
@@ -32,6 +24,72 @@ function fmtAud(v: number): string {
     maximumFractionDigits: 0,
   });
 }
+
+const wipColumns: MwColumnDef<WipValuation>[] = [
+  {
+    key: "jobNumber",
+    header: "Job #",
+    className: "font-mono font-medium",
+    cell: (row) => row.jobNumber,
+  },
+  { key: "customer", header: "Customer", cell: (row) => row.customerName },
+  {
+    key: "percent",
+    header: "% Complete",
+    cell: (row) => (
+      <div className="flex items-center gap-3">
+        <div className="h-2 w-24 overflow-hidden rounded-full bg-[var(--neutral-200)]">
+          <div
+            className={cn(
+              "h-full rounded-full transition-all",
+              row.percentComplete >= 75
+                ? "bg-[var(--mw-success)]"
+                : row.percentComplete >= 40
+                  ? "bg-[var(--chart-scale-mid)]"
+                  : "bg-[var(--chart-scale-low)]",
+            )}
+            style={{ width: `${row.percentComplete}%` }}
+          />
+        </div>
+        <span className="font-mono text-xs text-[var(--neutral-500)]">
+          {row.percentComplete}%
+        </span>
+      </div>
+    ),
+  },
+  {
+    key: "costs",
+    header: "Costs Incurred",
+    headerClassName: "text-right",
+    className: "text-right font-mono",
+    cell: (row) => fmtAud(row.costsIncurred),
+  },
+  {
+    key: "earned",
+    header: "Value Earned",
+    headerClassName: "text-right",
+    className: "text-right font-mono",
+    cell: (row) => fmtAud(row.valueEarned),
+  },
+  {
+    key: "balance",
+    header: "WIP Balance",
+    headerClassName: "text-right",
+    cell: (row) => (
+      <span
+        className={cn(
+          "text-right font-mono font-medium",
+          row.wipBalance > 0
+            ? "text-foreground"
+            : "text-[var(--neutral-500)]",
+        )}
+      >
+        {fmtAud(row.wipBalance)}
+      </span>
+    ),
+    className: "text-right",
+  },
+];
 
 export function BookWipValuation() {
   const [data, setData] = useState<WipValuation[]>([]);
@@ -71,66 +129,11 @@ export function BookWipValuation() {
 
       {/* Data table */}
       <motion.div variants={staggerItem}>
-        <Card variant="flat" className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Job #</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>% Complete</TableHead>
-                <TableHead className="text-right">Costs Incurred</TableHead>
-                <TableHead className="text-right">Value Earned</TableHead>
-                <TableHead className="text-right">WIP Balance</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="font-mono font-medium">
-                    {row.jobNumber}
-                  </TableCell>
-                  <TableCell>{row.customerName}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-24 overflow-hidden rounded-full bg-[var(--neutral-200)]">
-                        <div
-                          className={cn(
-                            "h-full rounded-full transition-all",
-                            row.percentComplete >= 75
-                              ? "bg-[var(--mw-success)]"
-                              : row.percentComplete >= 40
-                                ? "bg-[var(--chart-scale-mid)]"
-                                : "bg-[var(--chart-scale-low)]",
-                          )}
-                          style={{ width: `${row.percentComplete}%` }}
-                        />
-                      </div>
-                      <span className="font-mono text-xs text-[var(--neutral-500)]">
-                        {row.percentComplete}%
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtAud(row.costsIncurred)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtAud(row.valueEarned)}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      "text-right font-mono font-medium",
-                      row.wipBalance > 0
-                        ? "text-foreground"
-                        : "text-[var(--neutral-500)]",
-                    )}
-                  >
-                    {fmtAud(row.wipBalance)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <MwDataTable<WipValuation>
+          columns={wipColumns}
+          data={data}
+          keyExtractor={(row) => row.id}
+        />
       </motion.div>
     </PageShell>
   );
