@@ -1,31 +1,41 @@
 # Tooling
 
 ## Summary
-Tooling screen. Behavior is documented from current component implementation.
+Tooling inventory page. Lists every consumable + reusable tool in the factory along with its location, expected life, last service, and (new) the machine it's linked to.
 
 ## Route
 `/control/tooling`
 
 ## User Intent
-Complete tooling work and move records to the next stage.
+Maintain a tool register so operators can find what they need, schedule calibration, and replace consumables before they're worn out.
 
 ## Primary Actions
-- Review current records and execute available CTA actions.
+- *Add tool* — opens [`ToolingFormDialog`](apps/web/src/components/control/ToolingFormDialog.tsx) (landed 2026-04-29).
+- Filter / search across tool ID, type, location, linked machine.
+
+### Create / edit form fields
+- **Tool ID** *(required)* — your internal asset code, e.g. `TL-001`.
+- **Template** *(optional)* — pick from a 19-template standard library grouped into 5 categories (Cutting, Forming, Welding, Measuring, Workholding). Selecting a template pre-fills *Type* and *Description*.
+- **Type / Description** — free text, pre-filled from the template if one was selected.
+- **Location** — where the tool lives (e.g. *Tool crib Bay A*).
+- **Linked machine** *(optional)* — the machine the tool is paired with. Displayed in a new *Linked Machine* column on the tooling table.
+- **Expected life (days)** — informational only at this stage.
+- **Last service / Calibration due** dates.
 
 ## Key UI Sections
-- Page header with title, subtitle, and action buttons.
-- Primary table/list region for records.
+- Page header with *Add tool* CTA.
+- Primary table: tool ID, type, description, location, linked machine, life %, status, calibration due.
 
 ## Data Shown
-- Page-specific records and controls shown in current UI implementation.
+- Tool register entries.
 
 ## States
 - default
-- error
-- success
+- empty
+- success (after add)
 - populated
 
 ## Design / UX Notes
-- No explicit mock marker in this file; verify real-data behavior in integration testing.
-- No explicit placeholder text found in current component.
-- Action persistence paths are not fully visible in this component alone.
+- The standard library lives in [`apps/web/src/services/toolingLibrary.ts`](apps/web/src/services/toolingLibrary.ts) — 19 templates × 5 categories. To extend the library, add an entry there; the dialog picks it up automatically.
+- The *Cutting* category currently has 7 templates (end mill, drill, tap, reamer, insert, saw blade, laser nozzle); other categories are smaller. Worth growing as the SME catalogue stabilises.
+- `linkedMachineId` / `linkedMachineName` are new fields on `ToolingItem` — older mock entries may show *—* in the Linked Machine column.

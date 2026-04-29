@@ -218,3 +218,41 @@ In rough priority order:
 ## Output
 
 This file. Authoring the new dev/user docs is deferred to an interactive session, in keeping with the precedent set in every prior daily run since 2026-04-26 (rationale: the gap docs benefit from author judgement on tone, screenshot capture, and contract-level accuracy that's hard to get right inside an autonomous run). The shipping artefacts for today are the **9 commits** documented above (the +3534 lines of Control wiring + retone) — those are self-documenting in their commit bodies and the inline doc-comments on the new components.
+
+## Documentation closure pass — autonomous run, late 2026-04-30
+
+A second documentation run executed later the same day picked up follow-up items 3, 4, 5, 6, and 8 from the list above. Items closed:
+
+| # | Doc | What landed |
+|---|---|---|
+| 3 | [`docs/dev/modules/control/operations.md`](docs/dev/modules/control/operations.md) + [user equivalent](docs/user/modules/control/operations.md) | Full developer notes (component shape, state reset behaviour, validation, mock backend) + user-facing intent + form-field reference. |
+| 3 | [`docs/dev/modules/control/routes.md`](docs/dev/modules/control/routes.md) + [user equivalent](docs/user/modules/control/routes.md) | Editor-sheet contract (`DraftStep`, `totalMinutes` memoisation, drag-reorder primitive) + user intent + step-chip palette callout. |
+| 4 | [`docs/dev/modules/control/boms.md`](docs/dev/modules/control/boms.md) + [user equivalent](docs/user/modules/control/boms.md) | `BomLineKind` union, `BomDraft` shape, `availableSubAssemblies` contract, multi-tier nesting note (no recursive render at this layer). |
+| 5 | [`docs/user/modules/control/README.md`](docs/user/modules/control/README.md) | Inventory + Purchase Control moved into a *Redirects* section; new pages (Operations / Routes / Audit / Billing / Groups) added; `ControlPurchase.tsx` dropped from Important Components; new dialog file list added. |
+| 6 | [`docs/dev/modules/control/inventory.md`](docs/dev/modules/control/inventory.md) + [purchase.md](docs/dev/modules/control/purchase.md) + [user inventory.md](docs/user/modules/control/inventory.md) + [user purchase.md](docs/user/modules/control/purchase.md) | Each rewritten as a redirect-stub that names the replacement page + migration notes for new dev work. |
+| 8 | [`docs/dev/shared/operation-category-colors.md`](docs/dev/shared/operation-category-colors.md) | New shared doc — 7-key palette, `getCategoryColors()` API, current consumers, "adding a new consumer" recipe. |
+
+Beyond the prioritised list, the closure pass also refreshed four module docs that the new dialogs touched but which still carried 2026-04-18 stub content:
+
+- [`docs/dev/modules/control/maintenance.md`](docs/dev/modules/control/maintenance.md) + [user equivalent](docs/user/modules/control/maintenance.md) — `MaintenanceFormDialog` contract, `MACHINES_LIST` cross-import call-out, status-transition note.
+- [`docs/dev/modules/control/tooling.md`](docs/dev/modules/control/tooling.md) + [user equivalent](docs/user/modules/control/tooling.md) — `ToolingFormDialog` contract, **full 19-template × 5-category catalogue table**, `defaultProps` "not yet rendered" note, `linkedMachineId` field.
+- [`docs/dev/modules/control/gamification.md`](docs/dev/modules/control/gamification.md) + [user equivalent](docs/user/modules/control/gamification.md) — `TargetFormDialog` + `BadgeFormDialog` contracts, 14-icon palette, `flag` → `UilBookmark` substitution note, `targetColumns` scope-fix history pointer to `554a651c`.
+- [`docs/dev/modules/control/people.md`](docs/dev/modules/control/people.md) + [user equivalent](docs/user/modules/control/people.md) — `GroupFormDialog` contract, **bug-grade gap flagged**: dialog has no `onSave` prop and currently fires-and-forgets.
+
+### Items still open
+
+- **#1 / #2** — working-tree changelog commit + residual merge state. Not autonomous-safe; deferred.
+- **#7** — screenshots for the four newly-wired Control dialogs. Deferred (requires running the dev server + UI capture; not autonomous-safe today).
+- **#9** — duplicate retone commit investigation. Deferred (history-rewrite-adjacent).
+- **#10** — 9-day-old `buy-new-order-wip` stash. Deferred.
+- **#11** — carry-over follow-ups from 2026-04-29 evening + morning sections. Deferred.
+
+### Net change from this pass
+
+| | |
+|---|---|
+| Files updated | 14 (4 new dev docs + 4 user docs + 4 redirect stubs + 1 README + 1 shared doc) |
+| Net lines | ≈+650 (additive; old stubs replaced in place) |
+| Coverage closed | All Control pages with create/edit dialogs landed 2026-04-29 → 2026-04-30 now have aligned dev + user docs that name the new components and contracts. |
+
+The two structural gaps still listed in *Documentation gaps surfaced today* (the Operations / Routes / BOMs section above) are now closed; the rest of that section's prose remains accurate as a snapshot of the gap **before** this pass and is left intact for traceability.

@@ -1,33 +1,44 @@
 # Maintenance
 
 ## Summary
-Maintenance screen. Behavior is documented from current component implementation.
+Maintenance schedule + history page. Shows scheduled, in-progress, and completed maintenance for every machine in the factory.
 
 ## Route
 `/control/maintenance`
 
 ## User Intent
-Complete maintenance work and move records to the next stage.
+Schedule preventive and corrective maintenance against machines, track progress, and review history.
 
 ## Primary Actions
-- Switch tabs/sub-views within the page.
+- *Schedule maintenance* — opens [`MaintenanceFormDialog`](apps/web/src/components/control/MaintenanceFormDialog.tsx) in create mode (landed 2026-04-29).
+- Click any row in the schedule table to open the same dialog in edit mode.
+- Tab between *Schedule* and *History* views.
+- Filter / search across machine, type, technician.
+
+### Create / edit form fields
+- **Machine** *(required)* — choose from the machines registered in Control → Machines (mock list of 8 in current build).
+- **Type** — *Preventive* (planned) or *Corrective* (reactive).
+- **Description** — free text describing the work.
+- **Scheduled date** *(required)*.
+- **Estimated cost** — optional numeric value.
+- **Assigned to** — technician name.
 
 ## Key UI Sections
-- Page header with title, subtitle, and action buttons.
-- KPI/summary card strip.
-- Primary table/list region for records.
-- Tabbed content regions.
+- Page header with *Schedule maintenance* CTA.
+- KPI/summary card strip (open jobs, due-this-week, overdue).
+- Tabbed schedule + history tables, both backed by the shared `MwDataTable`.
 
 ## Data Shown
-- Page-specific records and controls shown in current UI implementation.
+- Schedule: machine, type, description, scheduled date, technician, status, est. cost.
+- History: completion date, downtime, actual cost.
 
 ## States
 - default
-- error
-- success
+- empty
+- success (after schedule/edit)
 - populated
 
 ## Design / UX Notes
-- No explicit mock marker in this file; verify real-data behavior in integration testing.
-- No explicit placeholder text found in current component.
-- Action persistence paths are not fully visible in this component alone.
+- The dialog wraps the shared [`EntityFormDialog`](../../../dev/shared/EntityFormDialog.md) and closes on submit success.
+- New records are created with `status = 'scheduled'`; status transitions are made elsewhere in the page (start / complete buttons on the row).
+- Backend wiring is mocked — `onSave` updates parent state and fires a toast; production will hand the payload to `controlService.upsertMaintenance`.

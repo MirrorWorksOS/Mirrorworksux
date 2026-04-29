@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   buildStorageKey,
   readStorageJson,
+  readStorageValue,
   removeStorageValue,
   writeStorageJson,
+  writeStorageValue,
 } from '@/lib/platform/storage';
 
 describe('storage smoke', () => {
@@ -20,9 +22,9 @@ describe('storage smoke', () => {
 
   it('falls back safely for invalid json payloads', () => {
     const key = buildStorageKey('custom', 'invalid-json');
-    localStorage.setItem(key, '{bad');
+    writeStorageValue(key, '{bad');
 
     expect(readStorageJson(key, { ok: false })).toEqual({ ok: false });
-    expect(localStorage.getItem(key)).toBeNull();
+    expect(readStorageValue(key)).toBeNull();
   });
 });
