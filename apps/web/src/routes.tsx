@@ -1,12 +1,15 @@
 /**
  * Routes - Complete routing configuration for all modules
- * Uses React.lazy for code splitting — each module loads on demand.
+ * Uses `lazyWithRetry` for code splitting — each module loads on demand,
+ * with one-shot reload recovery for stale chunks after a deploy.
  */
 
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { createBrowserRouter, Navigate, useNavigate, useParams } from 'react-router';
 import { Layout } from './components/Layout';
 import { WelcomeDashboard } from './components/WelcomeDashboard';
+import { RouteErrorBoundary } from './components/RouteErrorBoundary';
+import { lazyWithRetry } from '@/lib/lazy-with-retry';
 import { appRoutes, navigateBackOrTo } from '@/lib/navigation/routes';
 
 // ---------------------------------------------------------------------------
@@ -14,157 +17,157 @@ import { appRoutes, navigateBackOrTo } from '@/lib/navigation/routes';
 // ---------------------------------------------------------------------------
 
 // Sell Module
-const SellDashboard = React.lazy(() => import('./components/sell/SellDashboard').then(m => ({ default: m.SellDashboard })));
-const SellCRM = React.lazy(() => import('./components/sell/SellCRM').then(m => ({ default: m.SellCRM })));
-const SellOpportunities = React.lazy(() => import('./components/sell/SellOpportunities').then(m => ({ default: m.SellOpportunities })));
-const SellOpportunityPage = React.lazy(() => import('./components/sell/SellOpportunityPage').then(m => ({ default: m.SellOpportunityPage })));
-const SellOrders = React.lazy(() => import('./components/sell/SellOrders').then(m => ({ default: m.SellOrders })));
-const SellInvoices = React.lazy(() => import('./components/sell/SellInvoices').then(m => ({ default: m.SellInvoices })));
-const SellProducts = React.lazy(() => import('./components/sell/SellProducts').then(m => ({ default: m.SellProducts })));
-const SellSettings = React.lazy(() => import('./components/sell/SellSettings').then(m => ({ default: m.SellSettings })));
-const SellQuotes = React.lazy(() => import('./components/sell/SellQuotes').then(m => ({ default: m.SellQuotes })));
-const SellActivities = React.lazy(() => import('./components/sell/SellActivities').then(m => ({ default: m.SellActivities })));
-const SellNewQuote = React.lazy(() => import('./components/sell/SellNewQuote').then(m => ({ default: m.SellNewQuote })));
-const SellProductDetail = React.lazy(() => import('./components/sell/SellProductDetail').then(m => ({ default: m.SellProductDetail })));
-const SellCustomerDetail = React.lazy(() => import('./components/sell/SellCustomerDetail').then(m => ({ default: m.SellCustomerDetail })));
-const SellOrderDetail = React.lazy(() => import('./components/sell/SellOrderDetail').then(m => ({ default: m.SellOrderDetail })));
-const SellInvoiceDetail = React.lazy(() => import('./components/sell/SellInvoiceDetail').then(m => ({ default: m.SellInvoiceDetail })));
-const SellNewInvoice = React.lazy(() => import('./components/sell/SellNewInvoice').then(m => ({ default: m.SellNewInvoice })));
-const SellQuoteDetail = React.lazy(() => import('./components/sell/SellQuoteDetail').then(m => ({ default: m.SellQuoteDetail })));
-const SellCustomerPortal = React.lazy(() => import('./components/sell/SellCustomerPortal').then(m => ({ default: m.SellCustomerPortal })));
+const SellDashboard = lazyWithRetry(() => import('./components/sell/SellDashboard').then(m => ({ default: m.SellDashboard })));
+const SellCRM = lazyWithRetry(() => import('./components/sell/SellCRM').then(m => ({ default: m.SellCRM })));
+const SellOpportunities = lazyWithRetry(() => import('./components/sell/SellOpportunities').then(m => ({ default: m.SellOpportunities })));
+const SellOpportunityPage = lazyWithRetry(() => import('./components/sell/SellOpportunityPage').then(m => ({ default: m.SellOpportunityPage })));
+const SellOrders = lazyWithRetry(() => import('./components/sell/SellOrders').then(m => ({ default: m.SellOrders })));
+const SellInvoices = lazyWithRetry(() => import('./components/sell/SellInvoices').then(m => ({ default: m.SellInvoices })));
+const SellProducts = lazyWithRetry(() => import('./components/sell/SellProducts').then(m => ({ default: m.SellProducts })));
+const SellSettings = lazyWithRetry(() => import('./components/sell/SellSettings').then(m => ({ default: m.SellSettings })));
+const SellQuotes = lazyWithRetry(() => import('./components/sell/SellQuotes').then(m => ({ default: m.SellQuotes })));
+const SellActivities = lazyWithRetry(() => import('./components/sell/SellActivities').then(m => ({ default: m.SellActivities })));
+const SellNewQuote = lazyWithRetry(() => import('./components/sell/SellNewQuote').then(m => ({ default: m.SellNewQuote })));
+const SellProductDetail = lazyWithRetry(() => import('./components/sell/SellProductDetail').then(m => ({ default: m.SellProductDetail })));
+const SellCustomerDetail = lazyWithRetry(() => import('./components/sell/SellCustomerDetail').then(m => ({ default: m.SellCustomerDetail })));
+const SellOrderDetail = lazyWithRetry(() => import('./components/sell/SellOrderDetail').then(m => ({ default: m.SellOrderDetail })));
+const SellInvoiceDetail = lazyWithRetry(() => import('./components/sell/SellInvoiceDetail').then(m => ({ default: m.SellInvoiceDetail })));
+const SellNewInvoice = lazyWithRetry(() => import('./components/sell/SellNewInvoice').then(m => ({ default: m.SellNewInvoice })));
+const SellQuoteDetail = lazyWithRetry(() => import('./components/sell/SellQuoteDetail').then(m => ({ default: m.SellQuoteDetail })));
+const SellCustomerPortal = lazyWithRetry(() => import('./components/sell/SellCustomerPortal').then(m => ({ default: m.SellCustomerPortal })));
 
 // Buy Module
-const BuyDashboard = React.lazy(() => import('./components/buy/BuyDashboard').then(m => ({ default: m.BuyDashboard })));
-const BuyOrders = React.lazy(() => import('./components/buy/BuyOrders').then(m => ({ default: m.BuyOrders })));
-const BuyNewOrder = React.lazy(() => import('./components/buy/BuyNewOrder').then(m => ({ default: m.BuyNewOrder })));
-const BuyRequisitions = React.lazy(() => import('./components/buy/BuyRequisitions').then(m => ({ default: m.BuyRequisitions })));
-const BuyReceipts = React.lazy(() => import('./components/buy/BuyReceipts').then(m => ({ default: m.BuyReceipts })));
-const BuySuppliers = React.lazy(() => import('./components/buy/BuySuppliers').then(m => ({ default: m.BuySuppliers })));
-const BuyRFQs = React.lazy(() => import('./components/buy/BuyRFQs').then(m => ({ default: m.BuyRFQs })));
-const BuyBills = React.lazy(() => import('./components/buy/BuyBills').then(m => ({ default: m.BuyBills })));
-const BuyProducts = React.lazy(() => import('./components/buy/BuyProducts').then(m => ({ default: m.BuyProducts })));
-const BuyAgreements = React.lazy(() => import('./components/buy/BuyAgreements').then(m => ({ default: m.BuyAgreements })));
-const BuyAgreementDetail = React.lazy(() => import('./components/buy/BuyAgreementDetail').then(m => ({ default: m.BuyAgreementDetail })));
-const BuyReports = React.lazy(() => import('./components/buy/BuyReports').then(m => ({ default: m.BuyReports })));
-const BuySettings = React.lazy(() => import('./components/buy/BuySettings').then(m => ({ default: m.BuySettings })));
-const BuyRequisitionDetail = React.lazy(() => import('./components/buy/BuyRequisitionDetail').then(m => ({ default: m.BuyRequisitionDetail })));
-const BuySupplierDetail = React.lazy(() => import('./components/buy/BuySupplierDetail').then(m => ({ default: m.BuySupplierDetail })));
-const BuyOrderDetail = React.lazy(() => import('./components/buy/BuyOrderDetail').then(m => ({ default: m.BuyOrderDetail })));
-const BuyProductDetail = React.lazy(() => import('./components/buy/BuyProductDetail').then(m => ({ default: m.BuyProductDetail })));
-const BuyMrpSuggestions = React.lazy(() => import('./components/buy/BuyMrpSuggestions').then(m => ({ default: m.BuyMrpSuggestions })));
-const BuyPlanningGrid = React.lazy(() => import('./components/buy/BuyPlanningGrid').then(m => ({ default: m.BuyPlanningGrid })));
-const BuyVendorComparison = React.lazy(() => import('./components/buy/BuyVendorComparison').then(m => ({ default: m.BuyVendorComparison })));
-const BuyReorderRules = React.lazy(() => import('./components/buy/BuyReorderRules').then(m => ({ default: m.BuyReorderRules })));
+const BuyDashboard = lazyWithRetry(() => import('./components/buy/BuyDashboard').then(m => ({ default: m.BuyDashboard })));
+const BuyOrders = lazyWithRetry(() => import('./components/buy/BuyOrders').then(m => ({ default: m.BuyOrders })));
+const BuyNewOrder = lazyWithRetry(() => import('./components/buy/BuyNewOrder').then(m => ({ default: m.BuyNewOrder })));
+const BuyRequisitions = lazyWithRetry(() => import('./components/buy/BuyRequisitions').then(m => ({ default: m.BuyRequisitions })));
+const BuyReceipts = lazyWithRetry(() => import('./components/buy/BuyReceipts').then(m => ({ default: m.BuyReceipts })));
+const BuySuppliers = lazyWithRetry(() => import('./components/buy/BuySuppliers').then(m => ({ default: m.BuySuppliers })));
+const BuyRFQs = lazyWithRetry(() => import('./components/buy/BuyRFQs').then(m => ({ default: m.BuyRFQs })));
+const BuyBills = lazyWithRetry(() => import('./components/buy/BuyBills').then(m => ({ default: m.BuyBills })));
+const BuyProducts = lazyWithRetry(() => import('./components/buy/BuyProducts').then(m => ({ default: m.BuyProducts })));
+const BuyAgreements = lazyWithRetry(() => import('./components/buy/BuyAgreements').then(m => ({ default: m.BuyAgreements })));
+const BuyAgreementDetail = lazyWithRetry(() => import('./components/buy/BuyAgreementDetail').then(m => ({ default: m.BuyAgreementDetail })));
+const BuyReports = lazyWithRetry(() => import('./components/buy/BuyReports').then(m => ({ default: m.BuyReports })));
+const BuySettings = lazyWithRetry(() => import('./components/buy/BuySettings').then(m => ({ default: m.BuySettings })));
+const BuyRequisitionDetail = lazyWithRetry(() => import('./components/buy/BuyRequisitionDetail').then(m => ({ default: m.BuyRequisitionDetail })));
+const BuySupplierDetail = lazyWithRetry(() => import('./components/buy/BuySupplierDetail').then(m => ({ default: m.BuySupplierDetail })));
+const BuyOrderDetail = lazyWithRetry(() => import('./components/buy/BuyOrderDetail').then(m => ({ default: m.BuyOrderDetail })));
+const BuyProductDetail = lazyWithRetry(() => import('./components/buy/BuyProductDetail').then(m => ({ default: m.BuyProductDetail })));
+const BuyMrpSuggestions = lazyWithRetry(() => import('./components/buy/BuyMrpSuggestions').then(m => ({ default: m.BuyMrpSuggestions })));
+const BuyPlanningGrid = lazyWithRetry(() => import('./components/buy/BuyPlanningGrid').then(m => ({ default: m.BuyPlanningGrid })));
+const BuyVendorComparison = lazyWithRetry(() => import('./components/buy/BuyVendorComparison').then(m => ({ default: m.BuyVendorComparison })));
+const BuyReorderRules = lazyWithRetry(() => import('./components/buy/BuyReorderRules').then(m => ({ default: m.BuyReorderRules })));
 
 // Plan Module
-const PlanDashboard = React.lazy(() => import('./components/plan/PlanDashboard').then(m => ({ default: m.PlanDashboard })));
-const PlanJobs = React.lazy(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
-const PlanJobDetail = React.lazy(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
-const PlanSchedule = React.lazy(() => import('./components/plan/PlanSchedule').then(m => ({ default: m.PlanSchedule })));
-const PlanPurchase = React.lazy(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
-const PlanQCPlanning = React.lazy(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
-const PlanProducts = React.lazy(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
-const PlanProductDetail = React.lazy(() => import('./components/plan/PlanProductDetail').then(m => ({ default: m.PlanProductDetail })));
-const PlanSettings = React.lazy(() => import('./components/plan/PlanSettings').then(m => ({ default: m.PlanSettings })));
-const ProductStudio = React.lazy(() => import('./components/plan/product-studio/ProductStudio').then(m => ({ default: m.ProductStudio })));
-const ProductStudioV2 = React.lazy(() => import('./components/plan/product-studio/blockly-v2/ProductStudioV2').then(m => ({ default: m.ProductStudioV2 })));
+const PlanDashboard = lazyWithRetry(() => import('./components/plan/PlanDashboard').then(m => ({ default: m.PlanDashboard })));
+const PlanJobs = lazyWithRetry(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
+const PlanJobDetail = lazyWithRetry(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
+const PlanSchedule = lazyWithRetry(() => import('./components/plan/PlanSchedule').then(m => ({ default: m.PlanSchedule })));
+const PlanPurchase = lazyWithRetry(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
+const PlanQCPlanning = lazyWithRetry(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
+const PlanProducts = lazyWithRetry(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
+const PlanProductDetail = lazyWithRetry(() => import('./components/plan/PlanProductDetail').then(m => ({ default: m.PlanProductDetail })));
+const PlanSettings = lazyWithRetry(() => import('./components/plan/PlanSettings').then(m => ({ default: m.PlanSettings })));
+const ProductStudio = lazyWithRetry(() => import('./components/plan/product-studio/ProductStudio').then(m => ({ default: m.ProductStudio })));
+const ProductStudioV2 = lazyWithRetry(() => import('./components/plan/product-studio/blockly-v2/ProductStudioV2').then(m => ({ default: m.ProductStudioV2 })));
 // PlanLibraries statically imports MaterialLibrary + FinishLibrary
-const PlanLibraries = React.lazy(() => import('./components/plan/PlanLibraries').then(m => ({ default: m.PlanLibraries })));
+const PlanLibraries = lazyWithRetry(() => import('./components/plan/PlanLibraries').then(m => ({ default: m.PlanLibraries })));
 // PlanMachineIO statically imports PlanCADImport + PlanNCConnect
-const PlanMachineIO = React.lazy(() => import('./components/plan/PlanMachineIO').then(m => ({ default: m.PlanMachineIO })));
-const PlanWhatIf = React.lazy(() => import('./components/plan/PlanWhatIf').then(m => ({ default: m.PlanWhatIf })));
-const PlanNesting = React.lazy(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
-const PlanMrp = React.lazy(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
-const PlanSheetCalculator = React.lazy(() => import('./components/plan/PlanSheetCalculator').then(m => ({ default: m.PlanSheetCalculator })));
+const PlanMachineIO = lazyWithRetry(() => import('./components/plan/PlanMachineIO').then(m => ({ default: m.PlanMachineIO })));
+const PlanWhatIf = lazyWithRetry(() => import('./components/plan/PlanWhatIf').then(m => ({ default: m.PlanWhatIf })));
+const PlanNesting = lazyWithRetry(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
+const PlanMrp = lazyWithRetry(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
+const PlanSheetCalculator = lazyWithRetry(() => import('./components/plan/PlanSheetCalculator').then(m => ({ default: m.PlanSheetCalculator })));
 
 // Make Module
-const MakeDashboard = React.lazy(() => import('./components/make/MakeDashboard').then(m => ({ default: m.MakeDashboard })));
-const MakeSchedule = React.lazy(() => import('./components/make/MakeSchedule').then(m => ({ default: m.MakeSchedule })));
-const MakeManufacturingOrders = React.lazy(() => import('./components/make/MakeManufacturingOrders').then(m => ({ default: m.MakeManufacturingOrders })));
-const MakeManufacturingOrderDetail = React.lazy(() => import('./components/make/MakeManufacturingOrderDetail').then(m => ({ default: m.MakeManufacturingOrderDetail })));
-const MakeWorkOrders = React.lazy(() => import('./components/make/MakeWorkOrders').then(m => ({ default: m.MakeWorkOrders })));
-const MakeWorkOrderDetail = React.lazy(() => import('./components/make/MakeWorkOrderDetail').then(m => ({ default: m.MakeWorkOrderDetail })));
+const MakeDashboard = lazyWithRetry(() => import('./components/make/MakeDashboard').then(m => ({ default: m.MakeDashboard })));
+const MakeSchedule = lazyWithRetry(() => import('./components/make/MakeSchedule').then(m => ({ default: m.MakeSchedule })));
+const MakeManufacturingOrders = lazyWithRetry(() => import('./components/make/MakeManufacturingOrders').then(m => ({ default: m.MakeManufacturingOrders })));
+const MakeManufacturingOrderDetail = lazyWithRetry(() => import('./components/make/MakeManufacturingOrderDetail').then(m => ({ default: m.MakeManufacturingOrderDetail })));
+const MakeWorkOrders = lazyWithRetry(() => import('./components/make/MakeWorkOrders').then(m => ({ default: m.MakeWorkOrders })));
+const MakeWorkOrderDetail = lazyWithRetry(() => import('./components/make/MakeWorkOrderDetail').then(m => ({ default: m.MakeWorkOrderDetail })));
 // MakeTimeClock deprecated — clock-in now lives in /floor. Left the module
 // file on disk so legacy deep links elsewhere in the codebase still resolve,
 // but we no longer wire it into a route.
-// const MakeTimeClock = React.lazy(() => import('./components/make/MakeTimeClock').then(m => ({ default: m.MakeTimeClock })));
-const MakeQuality = React.lazy(() => import('./components/make/MakeQuality').then(m => ({ default: m.MakeQuality })));
-const MakeProducts = React.lazy(() => import('./components/make/MakeProducts').then(m => ({ default: m.MakeProducts })));
-const MakeProductDetail = React.lazy(() => import('./components/make/MakeProductDetail').then(m => ({ default: m.MakeProductDetail })));
-const MakeSettings = React.lazy(() => import('./components/make/MakeSettings').then(m => ({ default: m.MakeSettings })));
-const MakeShopFloor = React.lazy(() => import('./components/make/MakeShopFloor').then(m => ({ default: m.MakeShopFloor })));
+// const MakeTimeClock = lazyWithRetry(() => import('./components/make/MakeTimeClock').then(m => ({ default: m.MakeTimeClock })));
+const MakeQuality = lazyWithRetry(() => import('./components/make/MakeQuality').then(m => ({ default: m.MakeQuality })));
+const MakeProducts = lazyWithRetry(() => import('./components/make/MakeProducts').then(m => ({ default: m.MakeProducts })));
+const MakeProductDetail = lazyWithRetry(() => import('./components/make/MakeProductDetail').then(m => ({ default: m.MakeProductDetail })));
+const MakeSettings = lazyWithRetry(() => import('./components/make/MakeSettings').then(m => ({ default: m.MakeSettings })));
+const MakeShopFloor = lazyWithRetry(() => import('./components/make/MakeShopFloor').then(m => ({ default: m.MakeShopFloor })));
 // MakeScanStation deprecated — scanning a traveler is only meaningful
 // inside a clocked-in kiosk session (see /floor). Kept the module file
 // but no longer routed.
-// const MakeScanStation = React.lazy(() => import('./components/make/MakeScanStation').then(m => ({ default: m.MakeScanStation })));
-const MakeScrapAnalysis = React.lazy(() => import('./components/make/MakeScrapAnalysis').then(m => ({ default: m.MakeScrapAnalysis })));
-const MakeJobTraveler = React.lazy(() => import('./components/make/MakeJobTraveler').then(m => ({ default: m.MakeJobTraveler })));
-const MakeCapa = React.lazy(() => import('./components/make/MakeCapa').then(m => ({ default: m.MakeCapa })));
+// const MakeScanStation = lazyWithRetry(() => import('./components/make/MakeScanStation').then(m => ({ default: m.MakeScanStation })));
+const MakeScrapAnalysis = lazyWithRetry(() => import('./components/make/MakeScrapAnalysis').then(m => ({ default: m.MakeScrapAnalysis })));
+const MakeJobTraveler = lazyWithRetry(() => import('./components/make/MakeJobTraveler').then(m => ({ default: m.MakeJobTraveler })));
+const MakeCapa = lazyWithRetry(() => import('./components/make/MakeCapa').then(m => ({ default: m.MakeCapa })));
 
 // Floor Mode (kiosk) — sibling of Layout, no sidebar / no banners / no AgentFAB
-const FloorModeLayout = React.lazy(() => import('./components/floor/FloorModeLayout').then(m => ({ default: m.FloorModeLayout })));
-const FloorHome = React.lazy(() => import('./components/floor/FloorHome').then(m => ({ default: m.FloorHome })));
-const FloorRun = React.lazy(() => import('./components/floor/FloorRun').then(m => ({ default: m.FloorRun })));
+const FloorModeLayout = lazyWithRetry(() => import('./components/floor/FloorModeLayout').then(m => ({ default: m.FloorModeLayout })));
+const FloorHome = lazyWithRetry(() => import('./components/floor/FloorHome').then(m => ({ default: m.FloorHome })));
+const FloorRun = lazyWithRetry(() => import('./components/floor/FloorRun').then(m => ({ default: m.FloorRun })));
 
 // Ship Module
-const ShipDashboard = React.lazy(() => import('./components/ship/ShipDashboard').then(m => ({ default: m.ShipDashboard })));
-const ShipOrders = React.lazy(() => import('./components/ship/ShipOrders').then(m => ({ default: m.ShipOrders })));
-const ShipPackaging = React.lazy(() => import('./components/ship/ShipPackaging').then(m => ({ default: m.ShipPackaging })));
-const ShipShipping = React.lazy(() => import('./components/ship/ShipShipping').then(m => ({ default: m.ShipShipping })));
-const ShipTracking = React.lazy(() => import('./components/ship/ShipTracking').then(m => ({ default: m.ShipTracking })));
-const ShipReturns = React.lazy(() => import('./components/ship/ShipReturns').then(m => ({ default: m.ShipReturns })));
-const ShipWarehouse = React.lazy(() => import('./components/ship/ShipWarehouse').then(m => ({ default: m.ShipWarehouse })));
-const ShipReports = React.lazy(() => import('./components/ship/ShipReports').then(m => ({ default: m.ShipReports })));
-const ShipSettings = React.lazy(() => import('./components/ship/ShipSettings').then(m => ({ default: m.ShipSettings })));
-const ShipCarrierRates = React.lazy(() => import('./components/ship/ShipCarrierRates').then(m => ({ default: m.ShipCarrierRates })));
-const ShipScanToShip = React.lazy(() => import('./components/ship/ShipScanToShip').then(m => ({ default: m.ShipScanToShip })));
+const ShipDashboard = lazyWithRetry(() => import('./components/ship/ShipDashboard').then(m => ({ default: m.ShipDashboard })));
+const ShipOrders = lazyWithRetry(() => import('./components/ship/ShipOrders').then(m => ({ default: m.ShipOrders })));
+const ShipPackaging = lazyWithRetry(() => import('./components/ship/ShipPackaging').then(m => ({ default: m.ShipPackaging })));
+const ShipShipping = lazyWithRetry(() => import('./components/ship/ShipShipping').then(m => ({ default: m.ShipShipping })));
+const ShipTracking = lazyWithRetry(() => import('./components/ship/ShipTracking').then(m => ({ default: m.ShipTracking })));
+const ShipReturns = lazyWithRetry(() => import('./components/ship/ShipReturns').then(m => ({ default: m.ShipReturns })));
+const ShipWarehouse = lazyWithRetry(() => import('./components/ship/ShipWarehouse').then(m => ({ default: m.ShipWarehouse })));
+const ShipReports = lazyWithRetry(() => import('./components/ship/ShipReports').then(m => ({ default: m.ShipReports })));
+const ShipSettings = lazyWithRetry(() => import('./components/ship/ShipSettings').then(m => ({ default: m.ShipSettings })));
+const ShipCarrierRates = lazyWithRetry(() => import('./components/ship/ShipCarrierRates').then(m => ({ default: m.ShipCarrierRates })));
+const ShipScanToShip = lazyWithRetry(() => import('./components/ship/ShipScanToShip').then(m => ({ default: m.ShipScanToShip })));
 
 // Control Module
-const ControlDashboard = React.lazy(() => import('./components/control/ControlDashboard').then(m => ({ default: m.ControlDashboard })));
-const ControlLocations = React.lazy(() => import('./components/control/ControlLocations').then(m => ({ default: m.ControlLocations })));
-const ControlMachines = React.lazy(() => import('./components/control/ControlMachines').then(m => ({ default: m.ControlMachines })));
-const ControlInventory = React.lazy(() => import('./components/control/ControlInventory').then(m => ({ default: m.ControlInventory })));
-const ControlPurchase = React.lazy(() => import('./components/control/ControlPurchase').then(m => ({ default: m.ControlPurchase })));
-const ControlPeople = React.lazy(() => import('./components/control/ControlPeople').then(m => ({ default: m.ControlPeople })));
-const ControlProducts = React.lazy(() => import('./components/control/ControlProducts').then(m => ({ default: m.ControlProducts })));
-const ControlBOMs = React.lazy(() => import('./components/control/ControlBOMs').then(m => ({ default: m.ControlBOMs })));
-const ControlWorkflowDesigner = React.lazy(() => import('./components/control/ControlWorkflowDesigner').then(m => ({ default: m.ControlWorkflowDesigner })));
-const ControlFactoryDesigner = React.lazy(() => import('./components/control/ControlFactoryDesigner').then(m => ({ default: m.ControlFactoryDesigner })));
-const ControlEmptyStates = React.lazy(() => import('./components/control/ControlEmptyStates').then(m => ({ default: m.ControlEmptyStates })));
-const ControlProcessBuilder = React.lazy(() => import('./components/control/ControlProcessBuilder').then(m => ({ default: m.ControlProcessBuilder })));
-const ControlOperations = React.lazy(() => import('./components/control/ControlOperations').then(m => ({ default: m.ControlOperations })));
-const ControlRoutes = React.lazy(() => import('./components/control/ControlRoutes').then(m => ({ default: m.ControlRoutes })));
-const ControlGamification = React.lazy(() => import('./components/control/ControlGamification').then(m => ({ default: m.ControlGamification })));
-const ControlShiftManager = React.lazy(() => import('./components/control/ControlShiftManager').then(m => ({ default: m.ControlShiftManager })));
-const ControlMaintenance = React.lazy(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
-const ControlTooling = React.lazy(() => import('./components/control/ControlTooling').then(m => ({ default: m.ControlTooling })));
-const ControlDocuments = React.lazy(() => import('./components/control/ControlDocuments').then(m => ({ default: m.ControlDocuments })));
-const ControlBilling = React.lazy(() => import('./components/control/ControlBilling').then(m => ({ default: m.ControlBilling })));
-const ControlAudit = React.lazy(() => import('./components/control/ControlAudit').then(m => ({ default: m.ControlAudit })));
-const ControlGroups = React.lazy(() => import('./components/control/ControlGroups').then(m => ({ default: m.ControlGroups })));
-const MirrorWorksBridge = React.lazy(() => import('./components/control/MirrorWorksBridge').then(m => ({ default: m.MirrorWorksBridge })));
+const ControlDashboard = lazyWithRetry(() => import('./components/control/ControlDashboard').then(m => ({ default: m.ControlDashboard })));
+const ControlLocations = lazyWithRetry(() => import('./components/control/ControlLocations').then(m => ({ default: m.ControlLocations })));
+const ControlMachines = lazyWithRetry(() => import('./components/control/ControlMachines').then(m => ({ default: m.ControlMachines })));
+const ControlInventory = lazyWithRetry(() => import('./components/control/ControlInventory').then(m => ({ default: m.ControlInventory })));
+const ControlPurchase = lazyWithRetry(() => import('./components/control/ControlPurchase').then(m => ({ default: m.ControlPurchase })));
+const ControlPeople = lazyWithRetry(() => import('./components/control/ControlPeople').then(m => ({ default: m.ControlPeople })));
+const ControlProducts = lazyWithRetry(() => import('./components/control/ControlProducts').then(m => ({ default: m.ControlProducts })));
+const ControlBOMs = lazyWithRetry(() => import('./components/control/ControlBOMs').then(m => ({ default: m.ControlBOMs })));
+const ControlWorkflowDesigner = lazyWithRetry(() => import('./components/control/ControlWorkflowDesigner').then(m => ({ default: m.ControlWorkflowDesigner })));
+const ControlFactoryDesigner = lazyWithRetry(() => import('./components/control/ControlFactoryDesigner').then(m => ({ default: m.ControlFactoryDesigner })));
+const ControlEmptyStates = lazyWithRetry(() => import('./components/control/ControlEmptyStates').then(m => ({ default: m.ControlEmptyStates })));
+const ControlProcessBuilder = lazyWithRetry(() => import('./components/control/ControlProcessBuilder').then(m => ({ default: m.ControlProcessBuilder })));
+const ControlOperations = lazyWithRetry(() => import('./components/control/ControlOperations').then(m => ({ default: m.ControlOperations })));
+const ControlRoutes = lazyWithRetry(() => import('./components/control/ControlRoutes').then(m => ({ default: m.ControlRoutes })));
+const ControlGamification = lazyWithRetry(() => import('./components/control/ControlGamification').then(m => ({ default: m.ControlGamification })));
+const ControlShiftManager = lazyWithRetry(() => import('./components/control/ControlShiftManager').then(m => ({ default: m.ControlShiftManager })));
+const ControlMaintenance = lazyWithRetry(() => import('./components/control/ControlMaintenance').then(m => ({ default: m.ControlMaintenance })));
+const ControlTooling = lazyWithRetry(() => import('./components/control/ControlTooling').then(m => ({ default: m.ControlTooling })));
+const ControlDocuments = lazyWithRetry(() => import('./components/control/ControlDocuments').then(m => ({ default: m.ControlDocuments })));
+const ControlBilling = lazyWithRetry(() => import('./components/control/ControlBilling').then(m => ({ default: m.ControlBilling })));
+const ControlAudit = lazyWithRetry(() => import('./components/control/ControlAudit').then(m => ({ default: m.ControlAudit })));
+const ControlGroups = lazyWithRetry(() => import('./components/control/ControlGroups').then(m => ({ default: m.ControlGroups })));
+const MirrorWorksBridge = lazyWithRetry(() => import('./components/control/MirrorWorksBridge').then(m => ({ default: m.MirrorWorksBridge })));
 
 // Platform Admin (super_admin only) — separate chrome, not in tenant Layout
-const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
-const AdminTiers = React.lazy(() => import('./components/admin/AdminTiers').then(m => ({ default: m.AdminTiers })));
-const AdminTenants = React.lazy(() => import('./components/admin/AdminTenants').then(m => ({ default: m.AdminTenants })));
-const BridgeWizard = React.lazy(() => import('./components/bridge/BridgeWizard').then(m => ({ default: m.BridgeWizard })));
-const Notifications = React.lazy(() => import('./components/Notifications').then(m => ({ default: m.Notifications })));
+const AdminLayout = lazyWithRetry(() => import('./components/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
+const AdminTiers = lazyWithRetry(() => import('./components/admin/AdminTiers').then(m => ({ default: m.AdminTiers })));
+const AdminTenants = lazyWithRetry(() => import('./components/admin/AdminTenants').then(m => ({ default: m.AdminTenants })));
+const BridgeWizard = lazyWithRetry(() => import('./components/bridge/BridgeWizard').then(m => ({ default: m.BridgeWizard })));
+const Notifications = lazyWithRetry(() => import('./components/Notifications').then(m => ({ default: m.Notifications })));
 
 // Book Module
-const BudgetOverview = React.lazy(() => import('./components/book/BudgetOverview').then(m => ({ default: m.BudgetOverview })));
-const BookDashboard = React.lazy(() => import('./components/book/BookDashboard').then(m => ({ default: m.BookDashboard })));
-const BookInvoices = React.lazy(() => import('./components/book/BookInvoices').then(m => ({ default: m.BookInvoices })));
-const ExpenseKanban = React.lazy(() => import('./components/book/ExpenseKanban').then(m => ({ default: m.ExpenseKanban })));
-const PurchaseOrders = React.lazy(() => import('./components/book/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
-const JobProfitability = React.lazy(() => import('./components/book/JobProfitability').then(m => ({ default: m.JobProfitability })));
-const StockValuation = React.lazy(() => import('./components/book/StockValuation').then(m => ({ default: m.StockValuation })));
-const ReportsGallery = React.lazy(() => import('./components/book/ReportsGallery').then(m => ({ default: m.ReportsGallery })));
-const BookSettings = React.lazy(() => import('./components/book/BookSettings').then(m => ({ default: m.BookSettings })));
-const InvoiceDetail = React.lazy(() => import('./components/book/InvoiceDetail').then(m => ({ default: m.InvoiceDetail })));
-const JobCostDetail = React.lazy(() => import('./components/book/JobCostDetail').then(m => ({ default: m.JobCostDetail })));
-const BookWipValuation = React.lazy(() => import('./components/book/BookWipValuation').then(m => ({ default: m.BookWipValuation })));
-const BookCostVariance = React.lazy(() => import('./components/book/BookCostVariance').then(m => ({ default: m.BookCostVariance })));
+const BudgetOverview = lazyWithRetry(() => import('./components/book/BudgetOverview').then(m => ({ default: m.BudgetOverview })));
+const BookDashboard = lazyWithRetry(() => import('./components/book/BookDashboard').then(m => ({ default: m.BookDashboard })));
+const BookInvoices = lazyWithRetry(() => import('./components/book/BookInvoices').then(m => ({ default: m.BookInvoices })));
+const ExpenseKanban = lazyWithRetry(() => import('./components/book/ExpenseKanban').then(m => ({ default: m.ExpenseKanban })));
+const PurchaseOrders = lazyWithRetry(() => import('./components/book/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
+const JobProfitability = lazyWithRetry(() => import('./components/book/JobProfitability').then(m => ({ default: m.JobProfitability })));
+const StockValuation = lazyWithRetry(() => import('./components/book/StockValuation').then(m => ({ default: m.StockValuation })));
+const ReportsGallery = lazyWithRetry(() => import('./components/book/ReportsGallery').then(m => ({ default: m.ReportsGallery })));
+const BookSettings = lazyWithRetry(() => import('./components/book/BookSettings').then(m => ({ default: m.BookSettings })));
+const InvoiceDetail = lazyWithRetry(() => import('./components/book/InvoiceDetail').then(m => ({ default: m.InvoiceDetail })));
+const JobCostDetail = lazyWithRetry(() => import('./components/book/JobCostDetail').then(m => ({ default: m.JobCostDetail })));
+const BookWipValuation = lazyWithRetry(() => import('./components/book/BookWipValuation').then(m => ({ default: m.BookWipValuation })));
+const BookCostVariance = lazyWithRetry(() => import('./components/book/BookCostVariance').then(m => ({ default: m.BookCostVariance })));
 
 // ---------------------------------------------------------------------------
 // Suspense wrapper for lazy routes
@@ -211,6 +214,7 @@ export const router = createBrowserRouter([
   {
     path: '/floor',
     element: <L><FloorModeLayout /></L>,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <L><FloorHome /></L> },
       { path: 'run/:workOrderId', element: <L><FloorRun /></L> },
@@ -226,6 +230,7 @@ export const router = createBrowserRouter([
   {
     path: '/admin',
     element: <L><AdminLayout /></L>,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <Navigate to="/admin/tiers" replace /> },
       { path: 'tiers', element: <L><AdminTiers /></L> },
@@ -235,6 +240,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         index: true,
