@@ -100,7 +100,7 @@ export function MachineFormDialog({
   const handleSubmit = () => {
     if (!valid) {
       toast.error('Name, manufacturer, and model are required.');
-      return false;
+      return;
     }
     const out: MachineFormValues = {
       ...form,
@@ -112,6 +112,7 @@ export function MachineFormDialog({
     };
     onSave?.(out);
     toast.success(isEdit ? 'Machine saved' : 'Machine added');
+    onOpenChange(false);
   };
 
   return (

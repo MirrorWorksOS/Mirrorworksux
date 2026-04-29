@@ -108,7 +108,7 @@ export function LocationFormDialog({
   const handleSubmit = () => {
     if (!valid) {
       toast.error('Name and address are required.');
-      return false;
+      return;
     }
     onSave?.({
       ...form,
@@ -119,6 +119,7 @@ export function LocationFormDialog({
       floorArea: form.floorArea.trim(),
     });
     toast.success(isEdit ? 'Location saved' : 'Location created');
+    onOpenChange(false);
   };
 
   return (
