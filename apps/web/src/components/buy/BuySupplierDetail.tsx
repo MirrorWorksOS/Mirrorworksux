@@ -16,9 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { cn } from '@/components/ui/utils';
 import { toast } from 'sonner';
 import { suppliers, purchaseOrders, bills } from '@/services';
@@ -186,84 +184,122 @@ export function BuySupplierDetail() {
 
       case 'purchase-orders':
         return (
-          <Card className="p-0 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">PO #</TableHead>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Delivery</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs text-right">Total</TableHead>
-                  <TableHead className="text-xs text-right">Received</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {supplierPOs.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-xs text-[var(--neutral-500)] py-8">
-                      No purchase orders found for this supplier.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {supplierPOs.map((po) => (
-                  <TableRow key={po.id}>
-                    <TableCell className="text-xs font-medium tabular-nums">{po.poNumber}</TableCell>
-                    <TableCell className="text-xs tabular-nums text-[var(--neutral-500)]">{fmtDate(po.date)}</TableCell>
-                    <TableCell className="text-xs tabular-nums text-[var(--neutral-500)]">{fmtDate(po.deliveryDate)}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={po.status === 'acknowledged' ? 'approved' : po.status === 'partial' ? 'in_progress' : po.status}>
-                        {po.status}
-                      </StatusBadge>
-                    </TableCell>
-                    <TableCell className="text-xs text-right tabular-nums font-medium">{fmtCurrency(po.total)}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{fmtCurrency(po.received)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+          <MwDataTable<typeof supplierPOs[number]>
+            columns={[
+              {
+                key: 'po',
+                header: 'PO #',
+                headerClassName: 'text-xs',
+                className: 'text-xs font-medium tabular-nums',
+                cell: (po) => po.poNumber,
+              },
+              {
+                key: 'date',
+                header: 'Date',
+                headerClassName: 'text-xs',
+                className: 'text-xs tabular-nums text-[var(--neutral-500)]',
+                cell: (po) => fmtDate(po.date),
+              },
+              {
+                key: 'delivery',
+                header: 'Delivery',
+                headerClassName: 'text-xs',
+                className: 'text-xs tabular-nums text-[var(--neutral-500)]',
+                cell: (po) => fmtDate(po.deliveryDate),
+              },
+              {
+                key: 'status',
+                header: 'Status',
+                headerClassName: 'text-xs',
+                cell: (po) => (
+                  <StatusBadge status={po.status === 'acknowledged' ? 'approved' : po.status === 'partial' ? 'in_progress' : po.status}>
+                    {po.status}
+                  </StatusBadge>
+                ),
+              },
+              {
+                key: 'total',
+                header: 'Total',
+                headerClassName: 'text-xs text-right',
+                className: 'text-xs text-right tabular-nums font-medium',
+                cell: (po) => fmtCurrency(po.total),
+              },
+              {
+                key: 'received',
+                header: 'Received',
+                headerClassName: 'text-xs text-right',
+                className: 'text-xs text-right tabular-nums',
+                cell: (po) => fmtCurrency(po.received),
+              },
+            ]}
+            data={supplierPOs}
+            keyExtractor={(po) => po.id}
+            emptyState={
+              <div className="text-center text-xs text-[var(--neutral-500)] py-8">
+                No purchase orders found for this supplier.
+              </div>
+            }
+          />
         );
 
       case 'bills':
         return (
-          <Card className="p-0 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Bill #</TableHead>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Due</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs text-right">Amount</TableHead>
-                  <TableHead className="text-xs text-right">Paid</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {supplierBills.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-xs text-[var(--neutral-500)] py-8">
-                      No bills found for this supplier.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {supplierBills.map((bill) => (
-                  <TableRow key={bill.id}>
-                    <TableCell className="text-xs font-medium tabular-nums">{bill.billNumber}</TableCell>
-                    <TableCell className="text-xs tabular-nums text-[var(--neutral-500)]">{fmtDate(bill.date)}</TableCell>
-                    <TableCell className="text-xs tabular-nums text-[var(--neutral-500)]">{fmtDate(bill.dueDate)}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={bill.status === 'received' ? 'sent' : bill.status}>
-                        {bill.status}
-                      </StatusBadge>
-                    </TableCell>
-                    <TableCell className="text-xs text-right tabular-nums font-medium">{fmtCurrency(bill.amount)}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums">{fmtCurrency(bill.paidAmount)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+          <MwDataTable<typeof supplierBills[number]>
+            columns={[
+              {
+                key: 'bill',
+                header: 'Bill #',
+                headerClassName: 'text-xs',
+                className: 'text-xs font-medium tabular-nums',
+                cell: (bill) => bill.billNumber,
+              },
+              {
+                key: 'date',
+                header: 'Date',
+                headerClassName: 'text-xs',
+                className: 'text-xs tabular-nums text-[var(--neutral-500)]',
+                cell: (bill) => fmtDate(bill.date),
+              },
+              {
+                key: 'due',
+                header: 'Due',
+                headerClassName: 'text-xs',
+                className: 'text-xs tabular-nums text-[var(--neutral-500)]',
+                cell: (bill) => fmtDate(bill.dueDate),
+              },
+              {
+                key: 'status',
+                header: 'Status',
+                headerClassName: 'text-xs',
+                cell: (bill) => (
+                  <StatusBadge status={bill.status === 'received' ? 'sent' : bill.status}>
+                    {bill.status}
+                  </StatusBadge>
+                ),
+              },
+              {
+                key: 'amount',
+                header: 'Amount',
+                headerClassName: 'text-xs text-right',
+                className: 'text-xs text-right tabular-nums font-medium',
+                cell: (bill) => fmtCurrency(bill.amount),
+              },
+              {
+                key: 'paid',
+                header: 'Paid',
+                headerClassName: 'text-xs text-right',
+                className: 'text-xs text-right tabular-nums',
+                cell: (bill) => fmtCurrency(bill.paidAmount),
+              },
+            ]}
+            data={supplierBills}
+            keyExtractor={(bill) => bill.id}
+            emptyState={
+              <div className="text-center text-xs text-[var(--neutral-500)] py-8">
+                No bills found for this supplier.
+              </div>
+            }
+          />
         );
 
       default:
