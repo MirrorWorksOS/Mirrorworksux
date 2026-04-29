@@ -21,6 +21,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { SettingsRow } from '@/components/shared/settings/SettingsRow';
 import { toast } from 'sonner';
 
 // ── Permission keys for Ship module (from ARCH 00 §4.6) ──
@@ -245,10 +246,10 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Ship dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={w.label}>
               <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>

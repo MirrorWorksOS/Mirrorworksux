@@ -22,6 +22,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { SettingsRow } from '@/components/shared/settings/SettingsRow';
 
 // ── Permission keys for Buy module (from ARCH 00 §4.8) ──
 const buyPermissionKeys: PermissionKey[] = [
@@ -118,10 +119,10 @@ function GeneralPanel() {
             { label: '$1,000 – $10,000', approver: 'Manager' },
             { label: 'Over $10,000', approver: 'Director' },
           ].map(t => (
-            <div key={t.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={t.label}>
               <span className="text-sm text-foreground">{t.label}</span>
               <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
-            </div>
+            </SettingsRow>
           ))}
           <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
             <Plus className="w-4 h-4" /> Add threshold
@@ -214,7 +215,7 @@ function SuppliersPanel() {
         <SectionLabel>Product categories</SectionLabel>
         <div className="space-y-2">
           {categories.map(c => (
-            <div key={c} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
+            <SettingsRow key={c} interactive>
               <span className="text-sm text-foreground font-medium">{c}</span>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" className="text-xs text-[var(--neutral-500)]" onClick={() => openEdit(c)}>Edit</Button>
@@ -222,7 +223,7 @@ function SuppliersPanel() {
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </div>
+            </SettingsRow>
           ))}
           <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
             <Plus className="w-4 h-4" /> Add category
@@ -304,10 +305,10 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which reports appear in the Buy reports gallery.</p>
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={r.label}>
               <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>

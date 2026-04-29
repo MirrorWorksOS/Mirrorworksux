@@ -23,6 +23,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { SettingsRow } from '@/components/shared/settings/SettingsRow';
 import { toast } from 'sonner';
 
 // ── Permission keys for Book module (from ARCH 00 §4.7) ──
@@ -198,7 +199,7 @@ function InvoicingPanel() {
             { name: 'Credit Note', active: true },
             { name: 'Proforma', active: false },
           ].map(t => (
-            <div key={t.name} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={t.name}>
               <div className="flex items-center gap-3">
                 <FileText className="w-4 h-4 text-[var(--neutral-500)]" />
                 <span className="text-sm text-foreground font-medium">{t.name}</span>
@@ -217,7 +218,7 @@ function InvoicingPanel() {
                   Edit
                 </Button>
               </div>
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>
@@ -371,10 +372,10 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which reports appear in the Book reports gallery.</p>
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={r.label}>
               <span className="text-sm text-foreground">{r.label}</span>
               <Switch defaultChecked={r.enabled} />
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>

@@ -28,6 +28,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '../shared/settings/ModuleSettingsLayout';
+import { SettingsRow } from '../shared/settings/SettingsRow';
 
 // ── Permission keys for Sell module (from ARCH 00 §4.3) ──
 const sellPermissionKeys: PermissionKey[] = [
@@ -176,7 +177,7 @@ function PipelinePanel() {
         <SectionLabel>Pipeline stages</SectionLabel>
         <div className="space-y-2">
           {stages.map(s => (
-            <div key={s.name} className="flex items-center gap-4 bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 hover:bg-[var(--neutral-100)] transition-colors">
+            <SettingsRow key={s.name} interactive className="!justify-start gap-4">
               <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
               <span className="flex-1 text-sm text-foreground font-medium">{s.name}</span>
               <div className="flex items-center gap-2">
@@ -184,7 +185,7 @@ function PipelinePanel() {
                 <Input defaultValue={`${s.probability}`} type="number" className="w-20 h-8 text-sm border-[var(--border)] text-right rounded-lg" />
                 <span className="text-sm text-[var(--neutral-500)]">%</span>
               </div>
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>
@@ -403,13 +404,13 @@ function ActivitiesPanel() {
           {activityTypes.map(a => {
             const Icon = a.icon;
             return (
-              <div key={a.name} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+              <SettingsRow key={a.name}>
                 <div className="flex items-center gap-3">
                   <Icon className="w-4 h-4 text-foreground" />
                   <span className="text-sm text-foreground font-medium">{a.name}</span>
                 </div>
                 <Switch defaultChecked={a.enabled} />
-              </div>
+              </SettingsRow>
             );
           })}
           <button
@@ -463,10 +464,10 @@ function AnalyticsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Sell dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={w.label}>
               <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>

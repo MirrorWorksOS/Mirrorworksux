@@ -18,6 +18,7 @@ import {
   type PermissionGroup,
   type SettingsPanel,
 } from '@/components/shared/settings/ModuleSettingsLayout';
+import { SettingsRow } from '@/components/shared/settings/SettingsRow';
 
 // ── Permission keys for Make module (from ARCH 00 §4.5) ──
 const makePermissionKeys: PermissionKey[] = [
@@ -229,10 +230,10 @@ function ReportsPanel() {
         <p className="text-sm text-[var(--neutral-500)] mb-4">Choose which widgets appear on the Make dashboard.</p>
         <div className="space-y-2">
           {widgets.map(w => (
-            <div key={w.label} className="flex items-center justify-between bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+            <SettingsRow key={w.label}>
               <span className="text-sm text-foreground">{w.label}</span>
               <Switch defaultChecked={w.enabled} />
-            </div>
+            </SettingsRow>
           ))}
         </div>
       </div>
