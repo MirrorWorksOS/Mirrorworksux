@@ -175,3 +175,185 @@ In rough priority order:
 ## Output
 
 This file. The substantive UX deliverable for today (`UX-COMPLETENESS-AUDIT-2026-04-29.md`) was already authored before this scheduled run executed; the changelog summarises both that and the four code commits, and catalogues the dev/user-doc gaps the new code creates. Authoring those gap-fill docs is a scoped writing task deferred to an interactive session, per the same reasoning given on 2026-04-26 / 2026-04-27 / 2026-04-28.
+
+---
+
+# Evening update — 2026-04-29 design-system sweep
+
+> Authored by the second `documentation` scheduled run of the day (22:00 +1000). The morning section above (run at 03:34 UTC) captured the pricing-tier rewrite + dead-end-flow closure; since then **40+ additional commits** landed as a coordinated design-system sweep, plus a new `book/purchase-orders/:id` detail screen.
+
+## Verification (evening run)
+
+| Check | Result |
+|---|---|
+| `git log -1` | `0e5705e4` (2026-04-29 21:56 +1000) — *docs(audits): mark design-system follow-up backlog with what landed* |
+| `git log --since="24 hours ago"` | **47 commits** (vs 6 at the morning run) |
+| Total diff over 24 hours | **120 files changed, +6279 / −2403 lines** |
+| Working tree | clean |
+| Stash | `stash@{0}: buy-new-order-wip — pre-main-pull stash 2026-04-22` (still unchanged, day 8) |
+
+## What changed this afternoon / evening
+
+The sweep was driven by a fresh design audit ([apps/web/src/audits/design-system-audit-2026-04-29.md](apps/web/src/audits/design-system-audit-2026-04-29.md), authored against `src/guidelines/DesignSystem.md`) that catalogued 24 findings: 7 P1 + 9 P2 + 8 P3. The follow-up note ([apps/web/src/audits/design-system-followup-2026-04-29.md](apps/web/src/audits/design-system-followup-2026-04-29.md)) tracks what landed; commit `0e5705e4` updated it again at the end of the day to mark items done.
+
+> **Doc location quirk.** The two audit files live under `apps/web/src/audits/` (alongside the codebase) rather than `docs/audits/`. They appear to be intentionally co-located with the code they describe, but they're **not** discoverable from `docs/audits/AUDIT-SUMMARY-DEV.md`. Worth a follow-up to either move them or cross-link.
+
+### 1. Stale-chunk recovery + new audit doc — `a38eca83`
+
+Adds [`lazyWithRetry`](apps/web/src/lib/lazy-with-retry.ts) wrapper + [`RouteErrorBoundary`](apps/web/src/components/RouteErrorBoundary.tsx) so users on a stale build no longer get blank-screen-on-route-change after a deploy. The boundary catches dynamic-import failures, surfaces a "Refresh to load the latest version" UI, and the wrapper retries once after a 250 ms delay before propagating. Wired into every `lazy(...)` route in `routes.tsx`. The companion audit doc (`design-system-audit-2026-04-29.md`) ships in the same commit.
+
+### 2. Page background standardisation — `45a64ddb`, `fefd026e`, `d6ef7df9`
+
+Two distinct issues, three commits:
+
+- **9 pages** had their root `<div>` overridden with `bg-[var(--neutral-100)]` (darker than `--app-canvas`), breaking the standard canvas. Reverted to canvas.
+- **9 surfaces** were using literal `bg-white` instead of `bg-card` — `bg-card` is `#FFFFFF` in light and `#1A2732` in dark, so the dark mode was short-circuiting. Standing rule from memory: *"never modify existing light mode styles when implementing dark mode."* Pure light-mode-preserving swap.
+
+### 3. Faux-card → `<Card>` — `f956bbdd`, `51a3756a`
+
+15 hand-rolled `<div className="bg-white border rounded-lg ...">` blocks converted to the shared `<Card>` primitive: 3 simple cases + 12 deeply-nested ones (e.g. inside dialogs, drawers, settings rows). Wins consistency on radius (`--shape-lg` 22px), shadow (`--card-shadow-rest`), and dark-mode handling.
+
+### 4. SettingsRow shared component — `75bf132e`
+
+New [`SettingsRow`](apps/web/src/components/shared/settings/SettingsRow.tsx) — flex row with `bg-card` + border + `p-3` chrome + optional `interactive` prop. 11 inline `<div>`-with-the-same-classes sites across the six module Settings pages migrated to use it.
+
+```tsx
+<SettingsRow interactive>
+  <span>Label</span>
+  <Switch />
+</SettingsRow>
+```
+
+### 5. Raw `<Table>` → `MwDataTable` — 16 commits, ~30 tables migrated
+
+The biggest single change of the day. The sweep covered:
+
+| Module | Files migrated | Commits |
+|---|---|---|
+| Sell | `SellOpportunityPage` (3 tables), `SellOrderDetail`, `SellInvoiceDetail`, `SellNewInvoice`, `SellCustomerPortal` (Orders + Invoices) | `f40c9035`, `32da9781`, `276083a1` |
+| Make | in-dialog BOM table | `09a7aacf` |
+| Plan | BOM-generator review, operation routing, material-consumption, subcontracting | `4ee7f30a`, `2e52d10e`, `ed4a82c9` |
+| Buy | agreement → linked POs, supplier detail PO + bills tabs, order detail line-items + receiving | `67804132`, `c8927f23`, `824629f7` |
+| Ship | bill-of-lading items, carrier-rates | `fe37fa0b`, `82ad1431` |
+| Book / Make / Buy | WIP / MRP / reorder-rules | `f1506e39` |
+| Control | audit log, groups list, maintenance schedule + history, operations library, tooling | `42916269`, `e6857d36`, `51aa2c4f`, `2dfed4cf`, `7d6ad02c` |
+| MwDataTable itself | new `expandable` prop + `BookCostVariance` + `ControlDocuments` migrated | `e965a0d2` |
+
+Files still on raw `<Table>` are documented in the follow-up note: `AdminTenants` / `AdminTiers` (slate-themed dark admin console — would clash with `MwDataTable`'s brand-light hover), and `BuyPlanningGrid` (week-by-week demand-vs-supply grid; not a flat list — closer to a spreadsheet). The original `BookCostVariance` + `ControlDocuments` blocker (expandable drill-down rows) was resolved by adding `expandable` to `MwDataTable`.
+
+### 6. Redundant `<Card>` className strip — `10b13c07`, `cf7ad975`
+
+74 redundant Card overrides removed across **two patterns**:
+
+- **Pattern 1** (35 sites, `10b13c07`) — `<Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] ...">`. All four are baked into the variant. Removing them eliminates drift (the card had `--shape-lg` once but a className override could pin a different radius).
+- **Pattern 2** (39 sites, `cf7ad975`) — same plus `shadow-xs`, which fights `--card-shadow-rest`.
+
+`PlanBudgetTab` and `PlanJobDetail` were skipped from Pattern 1 because they had an in-flight `userRole → canViewBudget` permission rename — that rename then landed in `5faf32e8` (replaces a legacy `UserRole` union with the canonical `budget.visibility` permission key, evaluated via the same `hasPlanPermission` lookup), so those Card cleanups can now proceed in a follow-up.
+
+### 7. Primitive polish — `03ce9e62`
+
+Four targeted improvements to the shared component layer:
+
+1. **Alert** — `rounded-lg` (Tailwind 8px) → `rounded-[var(--shape-lg)]` (22px). Now matches the Card it usually sits next to. No in-tree consumers today; theoretical ripple.
+2. **`Card variant="interactive"`** — same rest chrome as `flat`, lifts to `--card-shadow-elevated` on hover, sets `cursor-pointer`. For clickable list rows / KPI cards / "open this" tiles. Adopted on `EntityCard` + 6 list-grid pages in the same-day follow-up commit `2e5cfd91`.
+3. **Button `active:` pressed-state** — wires the previously-defined `--state-pressed` token (10% layer) into every interactive variant (default / destructive / outline / secondary / ghost). Each gains a slight darken on click — primary actions feel tactile.
+4. **PageHeader breadcrumb dedup** — `PageHeader` was rolling its own `<nav><Link><ChevronRight></span>` markup; the [`ui/breadcrumb.tsx`](apps/web/src/components/ui/breadcrumb.tsx) primitive existed but was unused. Now `PageHeader` composes `Breadcrumb / BreadcrumbList / BreadcrumbItem / BreadcrumbSeparator`. ARIA semantics (`aria-current="page"`) live in one place.
+
+### 8. KPI tile animation — `bc10fe01`, `abe26c08`
+
+`KpiStatCard` gained an opt-in `animatedValue` + `format` prop — passing a number triggers a `framer-motion` spring animation from 0 to the target. Adopted across **20 KPI tiles** spanning Sell, Buy, Plan, Make, Book dashboards.
+
+```tsx
+<KpiStatCard
+  label="Monthly Revenue"
+  animatedValue={287500}
+  format={(n) => `$${n.toLocaleString()}`}
+/>
+```
+
+### 9. ToolbarPrimaryButton ClickSpark + StatusBadge pulse — `8814c1ca`, `9d4e7197`
+
+- `ClickSpark` (existed but had near-zero adoption) wrapped around every `ToolbarPrimaryButton`. Single change → ripples to every "New Customer / New Quote / New Order / New PO" pill across the app.
+- `StatusBadge` now pulses its leading dot for `live` / `in-progress` states. ~10 lines in [shared/data/StatusBadge.tsx](apps/web/src/components/shared/data/StatusBadge.tsx).
+
+### 10. RouteBreadcrumbs helper — `dd29518e`
+
+New [`RouteBreadcrumbs`](apps/web/src/components/shared/layout/RouteBreadcrumbs.tsx) + [`navigation/breadcrumbs.ts`](apps/web/src/lib/navigation/breadcrumbs.ts) lib. `PageHeader` now auto-derives breadcrumbs from React Router matches when the `breadcrumbs` prop is omitted. Eliminates per-file boilerplate going forward — closes the 45-page gap flagged in the audit.
+
+### 11. DarkAccentCard / portal welcome banner rebrand — `b40e2e6a`
+
+Both surfaces previously rendered with a dark mirage background + white text. Rebranded to a light surface — the brand language for "welcome / hero" is now consistent with the rest of the portal. *Pure light-mode change* per the standing memory rule.
+
+### 12. MirrorView CAD-style refresh + portal model feedback — `a38b944b`
+
+- **MirrorView** (Plan → Jobs → MirrorView) — repainted to read like a CAD review viewer: off-white canvas, brushed-steel material with self/contact shadows, Autodesk-APS-style floating toolbar (reset / select / pan / orbit / measure / comment) at the bottom. Pan/orbit/reset are wired through a new imperative API on `GlbViewer`; the rest are illustrative.
+- **Portal** — new free-form **Model Feedback** feed under the 3D canvas, distinct from spatial markups + the quote-level chat. Persists via the existing `markupService` using a sentinel `partId` so the spatial markup list filters cleanly.
+- New shared component: [`MirrorViewToolbar`](apps/web/src/components/shared/3d/MirrorViewToolbar.tsx).
+
+### 13. Book → Purchase Order detail (NEW page) — `df806915`
+
+[`BookPurchaseOrderDetail`](apps/web/src/components/book/BookPurchaseOrderDetail.tsx) — dual-mode (create + view/edit):
+- **Create mode** — supplier picker, dates, inline line items, notes, totals, AI supplier recommendation, price-anomaly banner.
+- **View mode** — read-only layout, `StatusBadge`, 3-way match indicator, status-appropriate actions (Edit / Send / Download PDF / Cancel PO).
+
+New routes registered: `/book/purchases/new` and `/book/purchases/:id` (new before `:id` to avoid param collision). The "New PO" button in `PurchaseOrders` and the table row clicks both wired via `useNavigate`. *This was not yet covered by the morning section's documentation gap list — see new gap below.*
+
+### 14. Permission-resolver unit tests — `021a4d03`
+
+New [`permission-resolver.test.ts`](apps/web/src/test/unit/permission-resolver.test.ts) covers `resolveEffectivePermissions` plus an integration shape against the auth-state store. Co-lands with the `5faf32e8` legacy-role-gate fix above.
+
+### 15. Husky + lint-staged pre-commit hook — `5f6f4c19`
+
+New `.husky/pre-commit` runs `lint-staged`. Ensures the typecheck / lint discipline that landed in this morning's `a1b53d43` doesn't regress.
+
+### 16. Tabs single-source-of-truth (carried-over working-tree change) — `46af0e0c`
+
+The tabs primitive refactor flagged in the morning section's "Working-tree changes" list **did land** — `46af0e0c chore: tabs single-source-of-truth + lint sweep`. Ships the `useTabs()` hook + `SmoothTabsBridge` and the bundle of dead-import / className-whitespace cleanups in one commit.
+
+## Headline numbers
+
+| Surface | Count |
+|---|---|
+| Tables migrated to `MwDataTable` | ~30 across 16 files (+1 expandable variant) |
+| Redundant `<Card>` className overrides stripped | 74 |
+| Faux-card `<div>`s → `<Card>` | 15 |
+| `bg-white` → `bg-card` swaps | 9 |
+| Page-bg over-darkenings reverted | 9 |
+| `KpiStatCard` tiles wired to spring-animate | 20 |
+| `Card variant="interactive"` adopted | 1 EntityCard + 6 list-grids |
+| New shared components | `SettingsRow`, `RouteBreadcrumbs`, `MirrorViewToolbar`, `RouteErrorBoundary`, `lazyWithRetry`, `BookPurchaseOrderDetail`, `PortalModelFeedback` |
+| New primitive variants / props | `Card variant="interactive"`, `Button active:`, `MwDataTable.expandable`, `KpiStatCard.animatedValue+format`, `StatusBadge` pulse |
+| Audit docs landed | 2 (`design-system-audit-2026-04-29.md`, `design-system-followup-2026-04-29.md`) |
+
+## New documentation gaps surfaced this evening
+
+Three gaps are *new this afternoon* and add to the morning section's gap list:
+
+1. **Book → Purchase Order detail (NEW page)** — `df806915` ships [`BookPurchaseOrderDetail`](apps/web/src/components/book/BookPurchaseOrderDetail.tsx) with two modes (create + view/edit) and a non-trivial UX (AI supplier rec, price-anomaly banner, 3-way match indicator). Neither `docs/dev/modules/book/` nor `docs/user/modules/book/` reference the detail page (`purchases.md` exists for the list; no `purchase-order-detail.md`).
+2. **MirrorView toolbar + portal model feedback** — `a38b944b` ships [`MirrorViewToolbar`](apps/web/src/components/shared/3d/MirrorViewToolbar.tsx) and [`PortalModelFeedback`](apps/web/src/components/sell/PortalModelFeedback.tsx). The `docs/dev/shared/3d-viewers.md` doc covers viewers but not the new toolbar; the portal markup viewer doc doesn't mention the new feedback feed.
+3. **`SettingsRow` + `RouteBreadcrumbs` shared components** — both new, both adopted in 10+ sites, neither has a `docs/dev/shared/` entry. The audit follow-up has good usage snippets that can seed those docs.
+
+## Updates to morning-section "Suggested follow-ups" (items 1–8 above)
+
+| # | Morning ask | Status this evening |
+|---|---|---|
+| 1 | Author `docs/dev/modules/control/billing.md` + user doc | ⏳ still open |
+| 2 | Commit working-tree tabs primitive refactor | ✅ done in `46af0e0c` |
+| 3 | Commit dead-import + className whitespace cleanups | ✅ done — same `46af0e0c` |
+| 4 | Link audit deliverables from `AUDIT-SUMMARY-DEV.md` | ⏳ still open; **now 4 audits to link**: `UX-COMPLETENESS-AUDIT-2026-04-28`, `-04-29`, `PERFORMANCE-AUDIT-2026-04-28`, plus `design-system-audit-2026-04-29` + `-followup-2026-04-29` (the latter two live under `apps/web/src/audits/` rather than `docs/audits/`) |
+| 5 | Author make/work-orders + buy/agreement-detail docs | ⏳ still open |
+| 6 | Capture screenshots for the three new surfaces | ⏳ still open; **add Book Purchase Order detail and MirrorView refresh** to the screenshot backlog |
+| 7 | Author `/new`-pattern note in `docs/dev/architecture/` | ⏳ still open |
+| 8 | Triage / clear the `buy-new-order-wip` stash | ⏳ still open (day 8) |
+
+## Suggested follow-ups (evening additions)
+
+1. **Author `docs/dev/shared/SettingsRow.md` + `docs/dev/shared/RouteBreadcrumbs.md`** — two new primitives with documented APIs in the audit follow-up; copy-paste those snippets into proper shared-component docs.
+2. **Author `docs/dev/modules/book/purchase-order-detail.md` + user equivalent** — mirror the structure of `book/invoice-detail.md`. Include the dual-mode (create + view/edit) pattern (now repeated across the codebase since `fb992c26`).
+3. **Cross-link the in-repo `apps/web/src/audits/` audits from `docs/audits/AUDIT-SUMMARY-DEV.md`** — both `design-system-audit-2026-04-29.md` and `-followup-2026-04-29.md` are substantive and discoverable only via `find`. Either move them into `docs/audits/` (consistent with the rest of the audit corpus) or add a "co-located audits" section to the summary index.
+4. **Drop `BookCostVariance` + `ControlDocuments` from "expandable blocker" list in any future design-system audit** — `e965a0d2` resolved that blocker by adding `expandable` to `MwDataTable`.
+5. **Drop `PlanBudgetTab` + `PlanJobDetail` from the "blocked on permission rename" list** — `5faf32e8` shipped the rename, so those Card cleanups can now proceed.
+
+## Output (evening run)
+
+This evening-update section. The substantive shipping artefact for this run is the **40+ commits** that comprise the design-system sweep itself — those are documented inline in the in-repo audit follow-up and don't need duplication. The doc gaps listed above are scoped writing tasks deferred to interactive sessions, in keeping with the precedent set on 2026-04-26 / 2026-04-27 / 2026-04-28 / this morning's run.

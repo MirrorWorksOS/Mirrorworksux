@@ -1,50 +1,16 @@
 # Developer stub — control/purchase.md
 
-<!-- TODO: migrate developer-only content from docs/user/modules/control/purchase.md here. -->
+> **Page deleted on 2026-04-29.** `ControlPurchase.tsx` (304 lines) was removed in commit `b7ba9ae7`. `/control/purchase` is now a `<Navigate to="/buy/settings" replace />` in [`routes.tsx`](apps/web/src/routes.tsx).
 
-This file is a placeholder created during the 2026-04-18 Control module migration. The
-source document at `docs/user/modules/control/purchase.md` is a Mixed-classification doc (user
-intent + component/dependency references in one file). It has not been split yet.
+## What replaced it
+Each of the four panels (General / Approvals / Suppliers / Notifications / Reports) became a section inside [`apps/web/src/components/buy/BuySettings.tsx`](apps/web/src/components/buy/BuySettings.tsx). The Sidebar's *Purchase* link now points at `/buy/settings`.
 
-## Sections to migrate
+## Off-spec role labels normalised
+The legacy panel had three role pickers using *Supervisor* / *Manager* / *Director*. Per the [access role vocabulary](../../../../.claude/projects/-Users-mattquigley-Documents-GitHub-Mirrorworksux/memory/project_access_role_vocab.md) (only three canonical roles), those labels were rewritten to `team` / `lead` / `admin` during the merge.
 
-- Components Used (component import list)
-- Logic / Behaviour (state model, derivations)
-- Dependencies (stores, services, hooks)
-- Design / UX Notes (dev-relevant caveats only)
-- Known Gaps / Questions (dev-facing)
-- Related Files
+## Migration notes for new development
+- Do not re-create `ControlPurchase.tsx`. Add new procurement-settings work to `BuySettings`.
+- If the merged settings page grows large enough to warrant splitting, do so by panel (e.g. `BuyApprovalsSettings.tsx`) rather than by tenant scope.
 
-User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
-States) remain in `docs/user/modules/control/purchase.md` until a human editor does the split.
-
-## Components Used
-- `@/components/shared/motion/motion-variants`
-- `apps/web/src/components/ui/button.tsx`
-- `apps/web/src/components/ui/card.tsx`
-- `apps/web/src/components/ui/input.tsx`
-- `apps/web/src/components/ui/label.tsx`
-- `apps/web/src/components/ui/switch.tsx`
-- `apps/web/src/components/ui/select.tsx`
-- `apps/web/src/components/ui/separator.tsx`
-- `apps/web/src/components/ui/utils.tsx`
-
-## Logic / Behaviour
-- Behavior is largely client-side React state and memoized derivations.
-
-## Dependencies
-- No explicit store/service/hook dependency imported in this component.
-
-## Known Gaps / Questions
-- Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
-
-## Related Files
-- `apps/web/src/components/control/ControlPurchase.tsx`
-- `apps/web/src/components/ui/button.tsx`
-- `apps/web/src/components/ui/card.tsx`
-- `apps/web/src/components/ui/input.tsx`
-- `apps/web/src/components/ui/label.tsx`
-- `apps/web/src/components/ui/switch.tsx`
-- `apps/web/src/components/ui/select.tsx`
-- `apps/web/src/components/ui/separator.tsx`
-- `apps/web/src/components/ui/utils.tsx`
+## See also
+- [`docs/dev/modules/buy/settings.md`](../buy/settings.md) — replacement home for all Purchase Control panels.

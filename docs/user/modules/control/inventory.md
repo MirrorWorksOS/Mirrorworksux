@@ -1,40 +1,20 @@
 # Inventory
 
-## Summary
-Inventory screen. Current implementation includes mock/seed data paths.
+> **Folded into Products on 2026-04-29.** `/control/inventory` is now a redirect to `/control/products`. The Stocktake / Adjustment / Transfer wizards still exist and are surfaced as toolbar buttons on the Products page.
 
 ## Route
-`/control/inventory`
+`/control/inventory` → redirects to `/control/products`
 
-## User Intent
-Complete inventory work and move records to the next stage.
+## What replaced it
+- **List + detail of inventory records** — now part of [Products](./products.md) (`/control/products`).
+- **Stocktake / Adjustment / Transfer wizards** — surfaced as toolbar buttons at the top of the Products page. The wizard components (`StocktakeWizard`, `NewAdjustmentDialog`, `NewTransferDialog`) remain defined in `ControlInventory.tsx` and are imported by `ControlProducts.tsx`.
 
-## Primary Actions
-- Search and filter records.
-- Create or add records/items.
-- Switch tabs/sub-views within the page.
-- Use modal/sheet interactions for edits and quick actions.
+## Why it changed
+Inventory and Products were two views of the same underlying data. Folding them removes the empty-shell page the audit flagged on 2026-04-28 and consolidates the toolbar actions where users actually look for them.
 
-## Key UI Sections
-- Page header with title, subtitle, and action buttons.
-- KPI/summary card strip.
-- Primary table/list region for records.
-- Charts and trend cards.
-- Tabbed content regions.
-- Form controls for editing/creation.
+## Migrating links / bookmarks
+Anything that linked to `/control/inventory` will redirect transparently — no action required.
 
-## Data Shown
-- Product/material/BOM and inventory planning records.
-- Current page includes mock/seed data sources (inferred from code).
-
-## States
-- default
-- empty
-- error
-- success
-- populated
-
-## Design / UX Notes
-- Mock/seed records are present; edge-case realism may be limited.
-- Placeholder/legacy text suggests unfinished UX in parts of this page.
-- Some CTAs provide confirmation toasts without obvious persistence in-file.
+## See also
+- [Products](./products.md) — replacement page.
+- [BOMs](./boms.md) — multi-tier editor landed alongside this consolidation.

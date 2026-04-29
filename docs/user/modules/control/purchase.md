@@ -1,29 +1,20 @@
 # Purchase Control
 
-## Summary
-Purchase Control screen. Behavior is documented from current component implementation.
+> **Merged into Buy Settings on 2026-04-29.** `/control/purchase` is now a redirect to `/buy/settings`. The four panels (General / Approvals / Suppliers / Notifications / Reports) live there now.
 
 ## Route
-`/control/purchase`
+`/control/purchase` → redirects to `/buy/settings`
 
-## User Intent
-Complete purchase control work and move records to the next stage.
+## What replaced it
+- **General / Approvals / Suppliers / Notifications / Reports panels** — all five panels are now sections inside [Buy → Settings](../buy/settings.md) (`/buy/settings`).
+- **Sidebar entry** — the *Purchase* link in the sidebar now points at `/buy/settings`.
+- **Off-spec role labels** — the legacy *Supervisor* / *Manager* / *Director* labels were normalised to the canonical `team` / `lead` / `admin` set as part of the merge.
 
-## Primary Actions
-- Create or add records/items.
+## Why it changed
+Purchase Control was a tenant-scoped settings surface; it logically belongs alongside the rest of the Buy-module configuration rather than under Control's master-data tier.
 
-## Key UI Sections
-- Form controls for editing/creation.
+## Migrating links / bookmarks
+Anything that linked to `/control/purchase` will redirect transparently — no action required.
 
-## Data Shown
-- Procurement transactions, supplier records, and sourcing comparisons.
-
-## States
-- default
-- success
-- populated
-
-## Design / UX Notes
-- No explicit mock marker in this file; verify real-data behavior in integration testing.
-- No explicit placeholder text found in current component.
-- Some CTAs provide confirmation toasts without obvious persistence in-file.
+## See also
+- [Buy → Settings](../buy/settings.md) — replacement home for all Purchase Control panels.

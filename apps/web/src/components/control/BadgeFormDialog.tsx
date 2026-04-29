@@ -18,7 +18,7 @@ import UilAward from '@iconscout/react-unicons/icons/uil-award';
 import UilRocket from '@iconscout/react-unicons/icons/uil-rocket';
 import UilMountain from '@iconscout/react-unicons/icons/uil-mountains';
 import UilTarget from '@iconscout/react-unicons/icons/uil-meeting-board';
-import UilFlag from '@iconscout/react-unicons/icons/uil-flag';
+import UilFlag from '@iconscout/react-unicons/icons/uil-bookmark';
 
 type UniconIcon = React.ComponentType<{ color?: string; size?: string | number; className?: string }>;
 

@@ -1,58 +1,21 @@
 # Developer stub — control/inventory.md
 
-<!-- TODO: migrate developer-only content from docs/user/modules/control/inventory.md here. -->
+> **Page consolidated on 2026-04-29.** `/control/inventory` is now a `<Navigate to="/control/products" replace />` in [`routes.tsx`](apps/web/src/routes.tsx). The Inventory page no longer renders.
 
-This file is a placeholder created during the 2026-04-18 Control module migration. The
-source document at `docs/user/modules/control/inventory.md` is a Mixed-classification doc (user
-intent + component/dependency references in one file). It has not been split yet.
+## What still lives in `ControlInventory.tsx`
+The file at [`apps/web/src/components/control/ControlInventory.tsx`](apps/web/src/components/control/ControlInventory.tsx) was **not** deleted — three wizard components are defined there and re-exported for re-use on Products:
 
-## Sections to migrate
+- `StocktakeWizard`
+- `NewAdjustmentDialog`
+- `NewTransferDialog`
 
-- Components Used (component import list)
-- Logic / Behaviour (state model, derivations)
-- Dependencies (stores, services, hooks)
-- Design / UX Notes (dev-relevant caveats only)
-- Known Gaps / Questions (dev-facing)
-- Related Files
+[`ControlProducts.tsx`](apps/web/src/components/control/ControlProducts.tsx) imports the three and surfaces them as toolbar buttons (Stocktake / Adjustment / Transfer) at the top of the Products page.
 
-User-facing sections (Summary, User Intent, Primary Actions, Key UI Sections, Data Shown,
-States) remain in `docs/user/modules/control/inventory.md` until a human editor does the split.
+## Migration notes for new development
+- New inventory-related work should land on Products, not here.
+- The `ControlInventory.tsx` file should be considered a **wizard module** — keep the wizard components there but do not re-add a default export that mounts the legacy page.
+- If the wizards need to grow, consider extracting each into its own file (e.g. `wizards/StocktakeWizard.tsx`) so this file can be retired entirely.
 
-## Components Used
-- `@/components/shared/charts/chart-theme`
-- `@/components/shared/data/MwDataTable`
-- `@/components/shared/data/StatusBadge`
-- `@/components/shared/feedback/EmptyState`
-- `@/components/shared/layout/PageHeader`
-- `@/components/shared/layout/PageShell`
-- `@/components/shared/layout/PageToolbar`
-- `@/components/shared/layout/ToolbarPrimaryButton`
-- `@/components/shared/motion/motion-variants`
-- `@/components/ui/utils`
-- `apps/web/src/components/ui/button.tsx`
-- `apps/web/src/components/ui/tabs.tsx`
-- `apps/web/src/components/ui/dialog.tsx`
-- `apps/web/src/components/ui/input.tsx`
-
-## Logic / Behaviour
-- Local state drives search/filter and derived visible lists.
-- Client-side sorting/grouping appears in list preparation.
-- Behavior is largely client-side React state and memoized derivations.
-- Mode/tab switching is implemented through local state and/or query params.
-
-## Dependencies
-- No explicit store/service/hook dependency imported in this component.
-
-## Known Gaps / Questions
-- Code includes explicit placeholder/legacy markers; some interactions are transitional.
-- Page appears mock/seed-backed; production API integration path is unclear from this file alone.
-- Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
-
-## Related Files
-- `apps/web/src/components/control/ControlInventory.tsx`
-- `apps/web/src/components/ui/button.tsx`
-- `apps/web/src/components/ui/tabs.tsx`
-- `apps/web/src/components/ui/dialog.tsx`
-- `apps/web/src/components/ui/input.tsx`
-- `apps/web/src/components/ui/label.tsx`
-- `apps/web/src/components/ui/textarea.tsx`
+## See also
+- [`docs/dev/modules/control/products.md`](./products.md) — replacement page.
+- [`docs/dev/modules/control/boms.md`](./boms.md) — multi-tier `BomEditorSheet` landed alongside this consolidation.
