@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { GroupDetailSheet } from './people/GroupDetailSheet';
 import { AccessResolutionPopover } from './people/AccessResolutionPopover';
@@ -125,98 +125,111 @@ export function ControlGroups() {
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-32">Module</TableHead>
-              <TableHead>Group</TableHead>
-              <TableHead className="w-24">Members</TableHead>
-              <TableHead className="w-28">Type</TableHead>
-              <TableHead className="w-40 text-right">Edit permissions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map(group => {
-              const meta = moduleColors[group.module];
-              const settingsPath = settingsPathFor(group.module);
-              const overlaps = findGroupOverlaps(group.id);
-              return (
-                <TableRow key={group.id}>
-                  <TableCell>
-                    <div
-                      className="inline-flex rounded-full px-3 py-1 text-xs"
-                      style={{ backgroundColor: meta.bg, color: meta.text }}
-                    >
-                      {moduleLabels[group.module]}
+        <MwDataTable<PeopleGroupView>
+          columns={[
+            {
+              key: 'module',
+              header: 'Module',
+              headerClassName: 'w-32',
+              cell: (group) => {
+                const meta = moduleColors[group.module];
+                return (
+                  <div
+                    className="inline-flex rounded-full px-3 py-1 text-xs"
+                    style={{ backgroundColor: meta.bg, color: meta.text }}
+                  >
+                    {moduleLabels[group.module]}
+                  </div>
+                );
+              },
+            },
+            {
+              key: 'group',
+              header: 'Group',
+              cell: (group) => {
+                const overlaps = findGroupOverlaps(group.id);
+                return (
+                  <button
+                    type="button"
+                    onClick={() => openGroup(group)}
+                    className="text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground hover:underline">{group.name}</span>
+                      {overlaps.length > 0 && (
+                        <TooltipProvider delayDuration={150}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--mw-yellow-50,theme(colors.yellow.100))] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-800)]">
+                                <AlertTriangle className="h-3 w-3 text-[var(--mw-yellow-500)]" />
+                                Overlaps {overlaps.length}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[260px] text-xs">
+                              <p className="mb-1 font-medium">High member overlap</p>
+                              <ul className="space-y-0.5 text-[var(--neutral-600)]">
+                                {overlaps.map((o) => (
+                                  <li key={o.otherGroup.id}>
+                                    {o.otherGroup.name}: {o.sharedMemberIds.length} shared ({Math.round(o.sharedRatio * 100)}%)
+                                  </li>
+                                ))}
+                              </ul>
+                              <p className="mt-1.5 text-[var(--neutral-500)]">
+                                Consider merging or differentiating permissions — users in both will get the broadest union.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <button
-                      type="button"
-                      onClick={() => openGroup(group)}
-                      className="text-left"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground hover:underline">{group.name}</span>
-                        {overlaps.length > 0 && (
-                          <TooltipProvider delayDuration={150}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--mw-yellow-50,theme(colors.yellow.100))] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-800)]">
-                                  <AlertTriangle className="h-3 w-3 text-[var(--mw-yellow-500)]" />
-                                  Overlaps {overlaps.length}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-[260px] text-xs">
-                                <p className="mb-1 font-medium">High member overlap</p>
-                                <ul className="space-y-0.5 text-[var(--neutral-600)]">
-                                  {overlaps.map(o => (
-                                    <li key={o.otherGroup.id}>
-                                      {o.otherGroup.name}: {o.sharedMemberIds.length} shared ({Math.round(o.sharedRatio * 100)}%)
-                                    </li>
-                                  ))}
-                                </ul>
-                                <p className="mt-1.5 text-[var(--neutral-500)]">
-                                  Consider merging or differentiating permissions — users in both will get the broadest union.
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{group.description}</div>
-                    </button>
-                  </TableCell>
-                  <TableCell className="tabular-nums">{group.memberCount}</TableCell>
-                  <TableCell>
-                    {group.isDefault
-                      ? <Badge variant="secondary">Default</Badge>
-                      : <Badge>Custom</Badge>}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {settingsPath ? (
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link to={settingsPath}>
-                          {moduleLabels[group.module]} Settings
-                          <ArrowUpRight className="ml-1 h-3 w-3" />
-                        </Link>
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            {filtered.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
-                  No groups match the current filter.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                    <div className="text-xs text-muted-foreground">{group.description}</div>
+                  </button>
+                );
+              },
+            },
+            {
+              key: 'members',
+              header: 'Members',
+              headerClassName: 'w-24',
+              className: 'tabular-nums',
+              cell: (group) => group.memberCount,
+            },
+            {
+              key: 'type',
+              header: 'Type',
+              headerClassName: 'w-28',
+              cell: (group) =>
+                group.isDefault ? <Badge variant="secondary">Default</Badge> : <Badge>Custom</Badge>,
+            },
+            {
+              key: 'actions',
+              header: 'Edit permissions',
+              headerClassName: 'w-40 text-right',
+              className: 'text-right',
+              cell: (group) => {
+                const settingsPath = settingsPathFor(group.module);
+                return settingsPath ? (
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to={settingsPath}>
+                      {moduleLabels[group.module]} Settings
+                      <ArrowUpRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                );
+              },
+            },
+          ]}
+          data={filtered}
+          keyExtractor={(g) => g.id}
+          className="border-0 shadow-none"
+          emptyState={
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              No groups match the current filter.
+            </div>
+          }
+        />
 
         <div className="mt-4 text-xs text-muted-foreground">
           Group identity (name, description, membership) is managed here. Permissions are edited in each module's Settings screen so module leads keep ownership of what their groups can do.
