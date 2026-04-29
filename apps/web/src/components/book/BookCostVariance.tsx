@@ -3,7 +3,7 @@
  * and drill-down table per job showing category breakdown.
  */
 import { useState, useEffect, useMemo } from "react";
-import { DollarSign, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from "motion/react";
 import {
   BarChart,
@@ -24,15 +24,7 @@ import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { KpiStatCard } from "@/components/shared/cards/KpiStatCard";
 import { ChartCard } from "@/components/shared/charts/ChartCard";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
-import { Card } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { Badge } from "@/components/ui/badge";
 import {
   MW_CHART_COLOURS,
@@ -56,7 +48,6 @@ function fmtAud(v: number): string {
 
 export function BookCostVariance() {
   const [records, setRecords] = useState<CostVarianceRecord[]>([]);
-  const [expandedJob, setExpandedJob] = useState<string | null>(null);
 
   useEffect(() => {
     bookService.getCostVariance().then(setRecords);
@@ -196,123 +187,114 @@ export function BookCostVariance() {
 
       {/* Drill-down table */}
       <motion.div variants={staggerItem}>
-        <Card variant="flat" className="p-6">
-          <h3 className="mb-4 text-base font-medium text-foreground">
-            Variance by Job
-          </h3>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-8" />
-                <TableHead>Job #</TableHead>
-                <TableHead className="text-right">Budget</TableHead>
-                <TableHead className="text-right">Actual</TableHead>
-                <TableHead className="text-right">Variance</TableHead>
-                <TableHead className="text-right">Variance %</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {jobGroups.map((group) => {
-                const isExpanded = expandedJob === group.jobId;
+        <h3 className="mb-4 text-base font-medium text-foreground">
+          Variance by Job
+        </h3>
+        <MwDataTable<typeof jobGroups[number]>
+          columns={[
+            {
+              key: "jobNumber",
+              header: "Job #",
+              className: "font-mono font-medium",
+              cell: (g) => g.jobNumber,
+            },
+            {
+              key: "budget",
+              header: "Budget",
+              headerClassName: "text-right",
+              className: "text-right font-mono",
+              cell: (g) => fmtAud(g.budget),
+            },
+            {
+              key: "actual",
+              header: "Actual",
+              headerClassName: "text-right",
+              className: "text-right font-mono",
+              cell: (g) => fmtAud(g.actual),
+            },
+            {
+              key: "variance",
+              header: "Variance",
+              headerClassName: "text-right",
+              cell: (g) => (
+                <span
+                  className={cn(
+                    "text-right font-mono font-medium",
+                    g.variance > 0 ? "text-[var(--mw-error)]" : "text-[var(--mw-success)]",
+                  )}
+                >
+                  {g.variance > 0 ? "+" : ""}
+                  {fmtAud(g.variance)}
+                </span>
+              ),
+              className: "text-right",
+            },
+            {
+              key: "variancePct",
+              header: "Variance %",
+              headerClassName: "text-right",
+              className: "text-right",
+              cell: (g) => {
                 const varPct =
-                  group.budget > 0
-                    ? ((group.variance / group.budget) * 100).toFixed(1)
-                    : "0.0";
-
+                  g.budget > 0 ? ((g.variance / g.budget) * 100).toFixed(1) : "0.0";
                 return (
-                  <>
-                    <TableRow
-                      key={group.jobId}
-                      className="cursor-pointer hover:bg-[var(--neutral-50)]"
-                      onClick={() =>
-                        setExpandedJob(isExpanded ? null : group.jobId)
-                      }
-                    >
-                      <TableCell>
-                        <ChevronRight
-                          className={cn(
-                            "h-4 w-4 text-[var(--neutral-400)] transition-transform",
-                            isExpanded && "rotate-90",
-                          )}
-                          strokeWidth={1.5}
-                        />
-                      </TableCell>
-                      <TableCell className="font-mono font-medium">
-                        {group.jobNumber}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {fmtAud(group.budget)}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {fmtAud(group.actual)}
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          "text-right font-mono font-medium",
-                          group.variance > 0
-                            ? "text-[var(--mw-error)]"
-                            : "text-[var(--mw-success)]",
-                        )}
-                      >
-                        {group.variance > 0 ? "+" : ""}
-                        {fmtAud(group.variance)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "font-mono",
-                            group.variance > 0
-                              ? "border-[var(--mw-error)] text-[var(--mw-error)]"
-                              : "border-[var(--mw-success)] text-[var(--mw-success)]",
-                          )}
-                        >
-                          {group.variance > 0 ? "+" : ""}
-                          {varPct}%
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-
-                    {/* Category breakdown rows */}
-                    {isExpanded &&
-                      group.categories.map((cat) => (
-                        <TableRow
-                          key={cat.id}
-                          className="bg-[var(--neutral-50)]"
-                        >
-                          <TableCell />
-                          <TableCell className="pl-8 text-sm capitalize text-[var(--neutral-500)]">
-                            {cat.category}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {fmtAud(cat.budgetAmount)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {fmtAud(cat.actualAmount)}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right font-mono text-sm",
-                              cat.varianceAmount > 0
-                                ? "text-[var(--mw-error)]"
-                                : "text-[var(--mw-success)]",
-                            )}
-                          >
-                            {cat.varianceAmount > 0 ? "+" : ""}
-                            {fmtAud(cat.varianceAmount)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm text-[var(--neutral-500)]">
-                            {cat.variancePercent > 0 ? "+" : ""}
-                            {cat.variancePercent.toFixed(1)}%
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "font-mono",
+                      g.variance > 0
+                        ? "border-[var(--mw-error)] text-[var(--mw-error)]"
+                        : "border-[var(--mw-success)] text-[var(--mw-success)]",
+                    )}
+                  >
+                    {g.variance > 0 ? "+" : ""}
+                    {varPct}%
+                  </Badge>
                 );
-              })}
-            </TableBody>
-          </Table>
-        </Card>
+              },
+            },
+          ]}
+          data={jobGroups}
+          keyExtractor={(g) => g.jobId}
+          expandable={{
+            renderExpanded: (g) => (
+              <div className="px-4 py-3">
+                <table className="w-full">
+                  <tbody>
+                    {g.categories.map((cat) => (
+                      <tr key={cat.id} className="text-sm">
+                        <td className="pl-8 py-2 capitalize text-[var(--neutral-500)]">
+                          {cat.category}
+                        </td>
+                        <td className="text-right font-mono py-2">
+                          {fmtAud(cat.budgetAmount)}
+                        </td>
+                        <td className="text-right font-mono py-2">
+                          {fmtAud(cat.actualAmount)}
+                        </td>
+                        <td
+                          className={cn(
+                            "text-right font-mono py-2",
+                            cat.varianceAmount > 0
+                              ? "text-[var(--mw-error)]"
+                              : "text-[var(--mw-success)]",
+                          )}
+                        >
+                          {cat.varianceAmount > 0 ? "+" : ""}
+                          {fmtAud(cat.varianceAmount)}
+                        </td>
+                        <td className="text-right font-mono py-2 text-[var(--neutral-500)]">
+                          {cat.variancePercent > 0 ? "+" : ""}
+                          {cat.variancePercent.toFixed(1)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ),
+          }}
+        />
       </motion.div>
     </PageShell>
   );

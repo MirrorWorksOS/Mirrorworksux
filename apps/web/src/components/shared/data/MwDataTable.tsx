@@ -22,7 +22,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { Download, Trash2, Upload, X } from "lucide-react";
+import { ChevronRight, Download, Trash2, Upload, X } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 
 /* ------------------------------------------------------------------ */
@@ -71,6 +71,20 @@ interface MwDataTableProps<T> {
   onDelete?: (selectedKeys: Set<string | number>) => void;
   /** Called when the default "Import" bulk action is clicked */
   onImport?: () => void;
+
+  /* ---- Expandable rows ---- */
+  /**
+   * Enable per-row expansion. Renders a leading chevron column that
+   * toggles a sub-row containing `renderExpanded(row)` content. Sub-rows
+   * span the full width of the table.
+   */
+  expandable?: {
+    /** Render the expanded content for a given row. Returns React nodes
+     *  that will be placed inside a single full-width TableCell. */
+    renderExpanded: (row: T, index: number) => React.ReactNode;
+    /** Hide the chevron for rows that have no expanded content (default false). */
+    isExpandable?: (row: T, index: number) => boolean;
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -93,11 +107,24 @@ function MwDataTable<T>({
   onExport,
   onDelete,
   onImport,
+  expandable,
 }: MwDataTableProps<T>) {
   /* Internal selection state (uncontrolled mode) */
   const [internalKeys, setInternalKeys] = React.useState<
     Set<string | number>
   >(new Set());
+
+  /* Internal expanded-row state */
+  const [expandedKeys, setExpandedKeys] = React.useState<Set<string | number>>(
+    new Set(),
+  );
+  const toggleExpanded = (key: string | number) => {
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   const selected = controlledKeys ?? internalKeys;
   const setSelected = React.useCallback(
@@ -126,7 +153,7 @@ function MwDataTable<T>({
 
   const clearSelection = () => setSelected(new Set());
 
-  const totalCols = columns.length + (selectable ? 1 : 0);
+  const totalCols = columns.length + (selectable ? 1 : 0) + (expandable ? 1 : 0);
 
   /* ---- Render ---- */
   return (
@@ -237,6 +264,7 @@ function MwDataTable<T>({
                 />
               </TableHead>
             )}
+            {expandable && <TableHead className="w-8" />}
             {columns.map((col) => (
               <TableHead
                 key={col.key}
@@ -273,46 +301,77 @@ function MwDataTable<T>({
             data.map((row, index) => {
               const key = keyExtractor(row, index);
               const isSelected = selected.has(key);
+              const isExpanded = expandedKeys.has(key);
+              const canExpand =
+                expandable !== undefined &&
+                (expandable.isExpandable ? expandable.isExpandable(row, index) : true);
+              const handleRowClick = canExpand
+                ? () => toggleExpanded(key)
+                : onRowClick
+                  ? () => onRowClick(row, index)
+                  : undefined;
 
               return (
-                <TableRow
-                  key={key}
-                  onClick={
-                    onRowClick ? () => onRowClick(row, index) : undefined
-                  }
-                  data-state={isSelected ? "selected" : undefined}
-                  className={cn(
-                    "group min-h-[56px] border-b border-[var(--neutral-100)]",
-                    /* Gradient hover with easing */
-                    "transition-all duration-200 ease-[var(--ease-standard)]",
-                    "hover:bg-gradient-to-r hover:from-[var(--mw-yellow-50)] hover:to-[var(--mw-yellow-50)]/0",
-                    "hover:shadow-[inset_3px_0_0_var(--mw-yellow-400)]",
-                    onRowClick && "cursor-pointer",
-                    striped && index % 2 === 1 && "bg-[var(--neutral-50)]",
-                    isSelected &&
-                      "bg-[var(--mw-yellow-50)] shadow-[inset_3px_0_0_var(--mw-yellow-400)]",
+                <React.Fragment key={key}>
+                  <TableRow
+                    onClick={handleRowClick}
+                    data-state={isSelected ? "selected" : undefined}
+                    className={cn(
+                      "group min-h-[56px] border-b border-[var(--neutral-100)]",
+                      /* Gradient hover with easing */
+                      "transition-all duration-200 ease-[var(--ease-standard)]",
+                      "hover:bg-gradient-to-r hover:from-[var(--mw-yellow-50)] hover:to-[var(--mw-yellow-50)]/0",
+                      "hover:shadow-[inset_3px_0_0_var(--mw-yellow-400)]",
+                      handleRowClick && "cursor-pointer",
+                      striped && index % 2 === 1 && "bg-[var(--neutral-50)]",
+                      isSelected &&
+                        "bg-[var(--mw-yellow-50)] shadow-[inset_3px_0_0_var(--mw-yellow-400)]",
+                    )}
+                  >
+                    {selectable && (
+                      <TableCell className="w-12 px-4 py-3">
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={() => toggleRow(key)}
+                            className="w-[18px] h-[18px]"
+                          />
+                        </div>
+                      </TableCell>
+                    )}
+                    {expandable && (
+                      <TableCell className="w-8 px-2 py-3">
+                        {canExpand && (
+                          <ChevronRight
+                            className={cn(
+                              "h-4 w-4 text-[var(--neutral-400)] transition-transform",
+                              isExpanded && "rotate-90",
+                            )}
+                            strokeWidth={1.5}
+                          />
+                        )}
+                      </TableCell>
+                    )}
+                    {columns.map((col) => (
+                      <TableCell
+                        key={col.key}
+                        className={cn("px-4 py-3 text-sm", col.className)}
+                      >
+                        {col.cell(row, index)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {expandable && isExpanded && canExpand && (
+                    <TableRow className="hover:bg-transparent bg-[var(--neutral-50)] border-b border-[var(--neutral-100)]">
+                      <TableCell
+                        colSpan={totalCols}
+                        className="p-0"
+                      >
+                        {expandable.renderExpanded(row, index)}
+                      </TableCell>
+                    </TableRow>
                   )}
-                >
-                  {selectable && (
-                    <TableCell className="w-12 px-4 py-3">
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() => toggleRow(key)}
-                          className="w-[18px] h-[18px]"
-                        />
-                      </div>
-                    </TableCell>
-                  )}
-                  {columns.map((col) => (
-                    <TableCell
-                      key={col.key}
-                      className={cn("px-4 py-3 text-sm", col.className)}
-                    >
-                      {col.cell(row, index)}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                </React.Fragment>
               );
             })
           )}
