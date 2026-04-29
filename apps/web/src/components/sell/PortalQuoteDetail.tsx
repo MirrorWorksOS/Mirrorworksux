@@ -110,7 +110,7 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
     const file = quote.uploadedFiles?.find((f) => /\.glb$|\.gltf$/i.test(f.name));
     if (file) return `/models/${file.name}`;
     // Fall back to the demo asset for q-001 so the seed markups have a model.
-    if (quote.id === 'q-001') return '/models/diff.glb';
+    if (quote.id === 'q-001' || quote.id === 'qt-001') return '/models/diff.glb';
     return null;
   })();
   const showMarkup = prefs.showMarkup && !!modelSrc;

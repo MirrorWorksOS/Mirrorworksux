@@ -63,6 +63,10 @@ import {
 } from '@/components/ui/select';
 
 import { GlbViewer } from '@/components/shared/3d/GlbViewer';
+import {
+  PortalModelFeedback,
+  MODEL_FEEDBACK_PART_ID,
+} from '@/components/sell/PortalModelFeedback';
 import { markupService } from '@/services';
 import { useAuth } from '@/contexts/AuthContext';
 import type {
@@ -112,19 +116,31 @@ export function PortalMarkupViewer({
   const canResolve = hasPermission('portal.markup.resolve');
 
   // Pull + local mirror so mutations re-render without re-fetching.
-  const [markups, setMarkups] = useState<ModelMarkup[]>(() =>
+  const [allMarkups, setAllMarkups] = useState<ModelMarkup[]>(() =>
     markupService.listFor(entityKind, entityId, {
       scopeCustomerId: customerId,
     }),
   );
 
   const refresh = () => {
-    setMarkups(
+    setAllMarkups(
       markupService.listFor(entityKind, entityId, {
         scopeCustomerId: customerId,
       }),
     );
   };
+
+  // Split spatial markups (pinned to a part) from the free-form feedback feed
+  // (sentinel anchor partId). The feedback feed is rendered separately below
+  // the canvas; spatial markups stay in the right-side threads panel.
+  const markups = useMemo(
+    () => allMarkups.filter((m) => m.anchor.partId !== MODEL_FEEDBACK_PART_ID),
+    [allMarkups],
+  );
+  const feedbackMarkups = useMemo(
+    () => allMarkups.filter((m) => m.anchor.partId === MODEL_FEEDBACK_PART_ID),
+    [allMarkups],
+  );
 
   const actorSide: 'customer' | 'internal' =
     identity.kind === 'customer' ? 'customer' : 'internal';
@@ -273,15 +289,27 @@ export function PortalMarkupViewer({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-        {/* 3D viewer */}
-        <Card variant="flat" className="overflow-hidden p-0">
-          <div className="aspect-[4/3] w-full">
-            <GlbViewer src={modelSrc} className="h-full w-full" />
-          </div>
-          <div className="border-t border-[var(--border)] bg-[var(--neutral-50)] px-3 py-2 text-[11px] text-[var(--neutral-500)]">
-            Drag to orbit · scroll to zoom · right-click to pan
-          </div>
-        </Card>
+        {/* Left column: 3D viewer + free-form feedback feed directly underneath */}
+        <div className="space-y-3">
+          <Card variant="flat" className="overflow-hidden p-0">
+            <div className="aspect-[4/3] w-full">
+              <GlbViewer src={modelSrc} className="h-full w-full" />
+            </div>
+            <div className="border-t border-[var(--border)] bg-[var(--neutral-50)] px-3 py-2 text-[11px] text-[var(--neutral-500)]">
+              Drag to orbit · scroll to zoom · right-click to pan
+            </div>
+          </Card>
+
+          <PortalModelFeedback
+            entityKind={entityKind}
+            entityId={entityId}
+            modelRef={modelRef}
+            revision={revision}
+            customerId={customerId}
+            feedback={feedbackMarkups}
+            onChange={refresh}
+          />
+        </div>
 
         {/* Threads panel */}
         <Card variant="flat" className="overflow-hidden p-0">
