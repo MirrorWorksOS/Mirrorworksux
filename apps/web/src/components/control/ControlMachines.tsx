@@ -52,6 +52,27 @@ interface MaintenanceRecord {
   cost: number;
 }
 
+/**
+ * Machine network / data-link config — used for shop-floor data acquisition
+ * (MQTT broker, OPC-UA endpoint, Modbus TCP gateway, MTConnect agent).
+ * Optional — a machine without a connection isn't wired into live data yet.
+ */
+interface MachineConnection {
+  protocol: 'MQTT' | 'OPC-UA' | 'Modbus TCP' | 'MTConnect' | 'Custom HTTP' | 'None';
+  /** IPv4/IPv6 address or hostname. */
+  host?: string;
+  /** TCP/UDP port. */
+  port?: number;
+  /** Protocol-specific identifier — MQTT topic, OPC-UA node id, Modbus slave id, etc. */
+  endpoint?: string;
+  /** MAC address — useful for asset register / DHCP reservations. */
+  mac?: string;
+  /** Live-link state, normally computed by the connection service. */
+  status?: 'online' | 'offline' | 'disabled' | 'error';
+  /** ISO timestamp of the last successful packet. */
+  lastSeen?: string;
+}
+
 interface Machine {
   id: string;
   name: string;
@@ -75,6 +96,8 @@ interface Machine {
   utilisation: number;
   utilisationHistory: { month: string; value: number }[];
   maintenanceHistory: MaintenanceRecord[];
+  /** Optional networking config — present when the machine is wired up. */
+  connection?: MachineConnection;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,6 +121,15 @@ const MACHINES: Machine[] = [
       { date: '2026-02-18', type: 'Preventive', description: 'Gas nozzle replacement', technician: 'Mike Chen', cost: 320 },
       { date: '2026-01-10', type: 'Corrective', description: 'Beam calibration drift repair', technician: 'Trumpf Service', cost: 1200 },
     ],
+    connection: {
+      protocol: 'OPC-UA',
+      host: '10.10.20.31',
+      port: 4840,
+      endpoint: 'opc.tcp://10.10.20.31:4840/Trumpf/TruLaser',
+      mac: 'B8:27:EB:1C:9A:42',
+      status: 'online',
+      lastSeen: '2026-04-30T08:15:22Z',
+    },
   },
   {
     id: '2', name: 'Laser Cutter #2', type: 'Laser Cutter', status: 'active',
@@ -193,6 +225,15 @@ const MACHINES: Machine[] = [
       { date: '2026-03-01', type: 'Preventive', description: 'Coolant system flush', technician: 'Mike Chen', cost: 350 },
       { date: '2026-02-01', type: 'Preventive', description: 'Way cover and axis lubrication', technician: 'Mike Chen', cost: 280 },
     ],
+    connection: {
+      protocol: 'MTConnect',
+      host: '10.10.20.55',
+      port: 5000,
+      endpoint: '/probe',
+      mac: '00:1B:21:7F:38:15',
+      status: 'error',
+      lastSeen: '2026-03-22T14:02:11Z',
+    },
   },
   {
     id: '8', name: 'Drill Press #1', type: 'Drill Press', status: 'active',
@@ -462,6 +503,69 @@ function MachineDetailSheet({
               <DetailRow label="Tolerances" value={machine.tolerances} />
             </DetailSection>
 
+            {/* Connection — only render when networking is configured */}
+            {machine.connection && (
+              <DetailSection title="Connection">
+                <DetailRow
+                  label="Status"
+                  value={
+                    <ConnectionStatusBadge status={machine.connection.status} />
+                  }
+                />
+                <DetailRow label="Protocol" value={machine.connection.protocol} />
+                {machine.connection.host && (
+                  <DetailRow
+                    label="Address"
+                    value={
+                      <span className="font-mono text-xs">
+                        {machine.connection.host}
+                        {machine.connection.port ? `:${machine.connection.port}` : ''}
+                      </span>
+                    }
+                  />
+                )}
+                {machine.connection.endpoint && (
+                  <DetailRow
+                    label="Endpoint"
+                    value={
+                      <span className="font-mono text-xs break-all">
+                        {machine.connection.endpoint}
+                      </span>
+                    }
+                  />
+                )}
+                {machine.connection.mac && (
+                  <DetailRow
+                    label="MAC"
+                    value={
+                      <span className="font-mono text-xs">
+                        {machine.connection.mac}
+                      </span>
+                    }
+                  />
+                )}
+                {machine.connection.lastSeen && (
+                  <DetailRow
+                    label="Last seen"
+                    value={
+                      <span className="text-xs text-[var(--neutral-500)]">
+                        {formatDate(machine.connection.lastSeen)}
+                      </span>
+                    }
+                  />
+                )}
+              </DetailSection>
+            )}
+            {!machine.connection && (
+              <DetailSection title="Connection">
+                <p className="text-xs text-[var(--neutral-500)]">
+                  Not connected to MirrorWorks. Add a network endpoint via{' '}
+                  <span className="font-medium">Edit machine</span> to enable
+                  live OEE and shop-floor data.
+                </p>
+              </DetailSection>
+            )}
+
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-2 pt-2">
               <Button
@@ -598,12 +702,32 @@ function DetailSection({ title, children }: { title: string; children: React.Rea
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-[var(--neutral-500)]">{label}</span>
-      <span className="text-foreground font-medium">{value}</span>
+    <div className="flex items-start justify-between gap-3 text-sm">
+      <span className="text-[var(--neutral-500)] shrink-0">{label}</span>
+      <span className="text-foreground font-medium text-right break-all">{value}</span>
     </div>
+  );
+}
+
+function ConnectionStatusBadge({
+  status,
+}: {
+  status?: 'online' | 'offline' | 'disabled' | 'error';
+}) {
+  if (!status) return <span className="text-[var(--neutral-400)] text-xs">—</span>;
+  const config = {
+    online: { label: 'Online', dot: 'bg-[var(--mw-success)]', text: 'text-[var(--mw-success)]' },
+    offline: { label: 'Offline', dot: 'bg-[var(--neutral-400)]', text: 'text-[var(--neutral-500)]' },
+    disabled: { label: 'Disabled', dot: 'bg-[var(--neutral-300)]', text: 'text-[var(--neutral-500)]' },
+    error: { label: 'Error', dot: 'bg-[var(--mw-error)]', text: 'text-[var(--mw-error)]' },
+  }[status];
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs">
+      <span className={cn('h-1.5 w-1.5 rounded-full', config.dot)} />
+      <span className={cn('font-medium', config.text)}>{config.label}</span>
+    </span>
   );
 }
 

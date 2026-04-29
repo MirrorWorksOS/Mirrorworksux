@@ -39,6 +39,24 @@ const LOCATIONS = [
   'Site Storage — Newcastle',
 ] as const;
 
+/** Mirrors the MachineConnection shape in ControlMachines.tsx — see there for docs. */
+export type MachineConnectionProtocol =
+  | 'None'
+  | 'MQTT'
+  | 'OPC-UA'
+  | 'Modbus TCP'
+  | 'MTConnect'
+  | 'Custom HTTP';
+
+const CONNECTION_PROTOCOLS: MachineConnectionProtocol[] = [
+  'None',
+  'MQTT',
+  'OPC-UA',
+  'Modbus TCP',
+  'MTConnect',
+  'Custom HTTP',
+];
+
 export interface MachineFormValues {
   id?: string;
   name: string;
@@ -51,12 +69,30 @@ export interface MachineFormValues {
   capacity: string;
   tolerances: string;
   maintenanceInterval: string;
+  connectionProtocol: MachineConnectionProtocol;
+  connectionHost: string;
+  connectionPort: string;
+  connectionEndpoint: string;
+  connectionMac: string;
+}
+
+/** Shape used by the parent — accepts the legacy MachineFormValues OR a
+ *  Machine record with a nested `connection`. The form flattens connection
+ *  fields into form state when populated from edit mode. */
+export interface MachineEditInput extends Partial<MachineFormValues> {
+  connection?: {
+    protocol?: MachineConnectionProtocol;
+    host?: string;
+    port?: number;
+    endpoint?: string;
+    mac?: string;
+  };
 }
 
 interface MachineFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  machine?: Partial<MachineFormValues>;
+  machine?: MachineEditInput;
   onSave?: (m: MachineFormValues) => void;
 }
 
@@ -71,6 +107,11 @@ const EMPTY: MachineFormValues = {
   capacity: '',
   tolerances: '',
   maintenanceInterval: '30 days',
+  connectionProtocol: 'None',
+  connectionHost: '',
+  connectionPort: '',
+  connectionEndpoint: '',
+  connectionMac: '',
 };
 
 export function MachineFormDialog({
@@ -84,7 +125,21 @@ export function MachineFormDialog({
 
   useEffect(() => {
     if (!open) return;
-    setForm({ ...EMPTY, ...machine });
+    const conn = machine?.connection;
+    const { connection: _omit, ...rest } = machine ?? {};
+    void _omit; // silence unused destructure warning
+    setForm({
+      ...EMPTY,
+      ...rest,
+      connectionProtocol:
+        conn?.protocol ?? machine?.connectionProtocol ?? 'None',
+      connectionHost: conn?.host ?? machine?.connectionHost ?? '',
+      connectionPort:
+        conn?.port !== undefined ? String(conn.port) : machine?.connectionPort ?? '',
+      connectionEndpoint:
+        conn?.endpoint ?? machine?.connectionEndpoint ?? '',
+      connectionMac: conn?.mac ?? machine?.connectionMac ?? '',
+    });
   }, [open, machine]);
 
   const set = <K extends keyof MachineFormValues>(
@@ -230,6 +285,117 @@ export function MachineFormDialog({
           placeholder="30 days"
         />
       </MwFormField>
+
+      {/* Connection — networking config for live data ingest */}
+      <div className="rounded-[var(--shape-md)] border border-[var(--border)] p-3 space-y-3">
+        <div>
+          <div className="text-sm font-medium text-foreground">Connection</div>
+          <div className="text-xs text-[var(--neutral-500)]">
+            Optional — for live OEE and shop-floor telemetry. Leave protocol
+            as <span className="font-medium">None</span> to skip.
+          </div>
+        </div>
+
+        <MwFormField label="Protocol">
+          <Select
+            value={form.connectionProtocol}
+            onValueChange={(v) =>
+              set('connectionProtocol', v as MachineConnectionProtocol)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CONNECTION_PROTOCOLS.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {p}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </MwFormField>
+
+        {form.connectionProtocol !== 'None' && (
+          <>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                <MwFormField label="Host">
+                  <Input
+                    value={form.connectionHost}
+                    onChange={(e) => set('connectionHost', e.target.value)}
+                    placeholder="10.10.20.31"
+                    className="font-mono text-xs"
+                  />
+                </MwFormField>
+              </div>
+              <MwFormField label="Port">
+                <Input
+                  type="number"
+                  value={form.connectionPort}
+                  onChange={(e) => set('connectionPort', e.target.value)}
+                  placeholder={defaultPortForProtocol(form.connectionProtocol)}
+                  className="font-mono text-xs"
+                />
+              </MwFormField>
+            </div>
+
+            <MwFormField
+              label="Endpoint"
+              description={endpointHint(form.connectionProtocol)}
+            >
+              <Input
+                value={form.connectionEndpoint}
+                onChange={(e) => set('connectionEndpoint', e.target.value)}
+                placeholder={endpointPlaceholder(form.connectionProtocol)}
+                className="font-mono text-xs"
+              />
+            </MwFormField>
+
+            <MwFormField label="MAC address">
+              <Input
+                value={form.connectionMac}
+                onChange={(e) => set('connectionMac', e.target.value)}
+                placeholder="B8:27:EB:1C:9A:42"
+                className="font-mono text-xs"
+              />
+            </MwFormField>
+          </>
+        )}
+      </div>
     </EntityFormDialog>
   );
+}
+
+function defaultPortForProtocol(p: MachineConnectionProtocol): string {
+  switch (p) {
+    case 'MQTT': return '1883';
+    case 'OPC-UA': return '4840';
+    case 'Modbus TCP': return '502';
+    case 'MTConnect': return '5000';
+    case 'Custom HTTP': return '80';
+    default: return '';
+  }
+}
+
+function endpointHint(p: MachineConnectionProtocol): string {
+  switch (p) {
+    case 'MQTT': return 'Topic prefix, e.g. factory/laser-1';
+    case 'OPC-UA': return 'Node id or full opc.tcp:// URL';
+    case 'Modbus TCP': return 'Slave id (1-247) or register range';
+    case 'MTConnect': return 'Probe path, e.g. /probe';
+    case 'Custom HTTP': return 'Path or full URL';
+    default: return '';
+  }
+}
+
+function endpointPlaceholder(p: MachineConnectionProtocol): string {
+  switch (p) {
+    case 'MQTT': return 'factory/laser-1';
+    case 'OPC-UA': return 'opc.tcp://10.10.20.31:4840/Trumpf';
+    case 'Modbus TCP': return '1';
+    case 'MTConnect': return '/probe';
+    case 'Custom HTTP': return '/api/status';
+    default: return '';
+  }
 }
