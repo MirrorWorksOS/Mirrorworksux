@@ -33,14 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
 import type { Opportunity } from "./sell-opportunity-types";
@@ -137,6 +130,27 @@ const MOCK_QUOTES = mockQuotesData.slice(0, 2).map((q) => ({
   value: q.value,
   status: q.status.charAt(0).toUpperCase() + q.status.slice(1),
 }));
+type QuoteRow = (typeof MOCK_QUOTES)[number];
+
+type QuickQuoteRow = { product: string; qty: number; salePrice: number };
+const MOCK_QUICK_QUOTE_ROWS: QuickQuoteRow[] = [
+  { product: "PROD-SR-001", qty: 4, salePrice: 5120 },
+  { product: "LABOUR-FAB", qty: 12, salePrice: 1140 },
+];
+
+type SimilarDealRow = {
+  title: string;
+  customer: string;
+  value: string;
+  result: "Won" | "Lost";
+  similarity: string;
+  won: boolean;
+};
+const MOCK_SIMILAR_DEALS: SimilarDealRow[] = [
+  { title: "Server Rack Assembly", customer: "TechCorp", value: "$38,000", result: "Won", similarity: "92%", won: true },
+  { title: "Data Centre Panels", customer: "Telstra", value: "$55,000", result: "Won", similarity: "85%", won: true },
+  { title: "Equipment Enclosures", customer: "BlueScope", value: "$42,000", result: "Lost", similarity: "78%", won: false },
+];
 
 /** Sell opportunity tab ids — passed to JobWorkspaceLayout. */
 const DEFAULT_SELL_OPPORTUNITY_TABS: JobWorkspaceTabConfig[] = [
@@ -451,41 +465,36 @@ export function SellOpportunityPage() {
                     Open builder
                   </Button>
                 </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                        Product
-                      </TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">
-                        Qty
-                      </TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">
-                        Sale price
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow className="min-h-14">
-                      <TableCell className="text-sm">PROD-SR-001</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">
-                        4
-                      </TableCell>
-                      <TableCell className="text-right text-sm font-medium tabular-nums">
-                        $5,120.00
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-sm">LABOUR-FAB</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">
-                        12
-                      </TableCell>
-                      <TableCell className="text-right text-sm font-medium tabular-nums">
-                        $1,140.00
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+                <MwDataTable<QuickQuoteRow>
+                  columns={[
+                    {
+                      key: "product",
+                      header: "Product",
+                      cell: (r) => <span className="tabular-nums">{r.product}</span>,
+                    },
+                    {
+                      key: "qty",
+                      header: "Qty",
+                      headerClassName: "text-right",
+                      cell: (r) => <span className="tabular-nums">{r.qty}</span>,
+                      className: "text-right",
+                    },
+                    {
+                      key: "salePrice",
+                      header: "Sale price",
+                      headerClassName: "text-right",
+                      cell: (r) => (
+                        <span className="font-medium tabular-nums">
+                          ${r.salePrice.toLocaleString("en-AU", { minimumFractionDigits: 2 })}
+                        </span>
+                      ),
+                      className: "text-right",
+                    },
+                  ]}
+                  data={MOCK_QUICK_QUOTE_ROWS}
+                  keyExtractor={(r) => r.product}
+                  className="border-0 shadow-none rounded-none"
+                />
               </Card>
 
               <div className="flex flex-wrap gap-2">
@@ -562,10 +571,43 @@ export function SellOpportunityPage() {
           </div>
         );
 
-      case "quotes":
+      case "quotes": {
+        const quoteColumns: MwColumnDef<QuoteRow>[] = [
+          {
+            key: "ref",
+            header: "Reference",
+            cell: (q) => (
+              <span className="font-medium tabular-nums text-[var(--mw-info)]">{q.ref}</span>
+            ),
+          },
+          {
+            key: "date",
+            header: "Date",
+            cell: (q) => <span className="text-[var(--neutral-600)]">{q.date}</span>,
+          },
+          {
+            key: "value",
+            header: "Value",
+            headerClassName: "text-right",
+            cell: (q) => (
+              <span className="font-medium tabular-nums">${q.value.toLocaleString()}</span>
+            ),
+            className: "text-right",
+          },
+          {
+            key: "status",
+            header: "Status",
+            cell: (q) => (
+              <Badge className="border-0 bg-[var(--neutral-100)] text-foreground text-xs">
+                {q.status}
+              </Badge>
+            ),
+          },
+        ];
+
         return (
-          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
-            <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-base font-medium text-foreground">
                 Quotes linked to this opportunity
               </h2>
@@ -577,46 +619,16 @@ export function SellOpportunityPage() {
                 New quote
               </Button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[var(--neutral-100)] hover:bg-[var(--neutral-100)]">
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Reference
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Date
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right">
-                    Value
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Status
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {MOCK_QUOTES.map((q) => (
-                  <TableRow key={q.ref} className="min-h-14 cursor-pointer hover:bg-[var(--neutral-50)]" onClick={() => navigate(`/sell/quotes/${q.id}`)}>
-                    <TableCell className="text-sm font-medium tabular-nums text-[var(--mw-info)] hover:underline">
-                      {q.ref}
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--neutral-600)]">
-                      {q.date}
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-medium tabular-nums">
-                      ${q.value.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="border-0 bg-[var(--neutral-100)] text-foreground">
-                        {q.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+            <MwDataTable<QuoteRow>
+              columns={quoteColumns}
+              data={MOCK_QUOTES}
+              keyExtractor={(q) => q.id}
+              striped
+              onRowClick={(q) => navigate(`/sell/quotes/${q.id}`)}
+            />
+          </div>
         );
+      }
 
       case "activities":
         return (
@@ -836,37 +848,60 @@ export function SellOpportunityPage() {
             {/* 5. Similar Deals */}
             <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <h3 className="mb-4 text-sm font-medium text-foreground">Similar Deals</h3>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Title</TableHead>
-                    <TableHead className="text-xs">Customer</TableHead>
-                    <TableHead className="text-xs text-right">Value</TableHead>
-                    <TableHead className="text-xs">Result</TableHead>
-                    <TableHead className="text-xs text-right">Similarity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {[
-                    { title: "Server Rack Assembly", cust: "TechCorp", value: "$38,000", result: "Won", sim: "92%", won: true },
-                    { title: "Data Centre Panels", cust: "Telstra", value: "$55,000", result: "Won", sim: "85%", won: true },
-                    { title: "Equipment Enclosures", cust: "BlueScope", value: "$42,000", result: "Lost", sim: "78%", won: false },
-                  ].map((d) => (
-                    <TableRow key={d.title}>
-                      <TableCell className="text-sm font-medium text-foreground">{d.title}</TableCell>
-                      <TableCell className="text-sm text-[var(--neutral-700)]">{d.cust}</TableCell>
-                      <TableCell className="text-sm tabular-nums text-right text-[var(--neutral-700)]">{d.value}</TableCell>
-                      <TableCell>
-                        <span className={cn("inline-flex items-center gap-1 text-xs font-medium", d.won ? "text-[var(--mw-green)]" : "text-[var(--mw-error)]")}>
-                          {d.won ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
-                          {d.result}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm tabular-nums text-right text-[var(--neutral-700)]">{d.sim}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <MwDataTable<SimilarDealRow>
+                columns={[
+                  {
+                    key: "title",
+                    header: "Title",
+                    cell: (d) => <span className="font-medium text-foreground">{d.title}</span>,
+                  },
+                  {
+                    key: "customer",
+                    header: "Customer",
+                    cell: (d) => <span className="text-[var(--neutral-700)]">{d.customer}</span>,
+                  },
+                  {
+                    key: "value",
+                    header: "Value",
+                    headerClassName: "text-right",
+                    cell: (d) => (
+                      <span className="tabular-nums text-[var(--neutral-700)]">{d.value}</span>
+                    ),
+                    className: "text-right",
+                  },
+                  {
+                    key: "result",
+                    header: "Result",
+                    cell: (d) => (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 text-xs font-medium",
+                          d.won ? "text-[var(--mw-green)]" : "text-[var(--mw-error)]",
+                        )}
+                      >
+                        {d.won ? (
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        ) : (
+                          <XCircle className="h-3.5 w-3.5" />
+                        )}
+                        {d.result}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "similarity",
+                    header: "Similarity",
+                    headerClassName: "text-right",
+                    cell: (d) => (
+                      <span className="tabular-nums text-[var(--neutral-700)]">{d.similarity}</span>
+                    ),
+                    className: "text-right",
+                  },
+                ]}
+                data={MOCK_SIMILAR_DEALS}
+                keyExtractor={(d) => d.title}
+                className="border-0 shadow-none rounded-none"
+              />
             </Card>
           </div>
         );
