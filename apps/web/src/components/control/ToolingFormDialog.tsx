@@ -14,6 +14,9 @@ interface ToolingFormDialogProps {
   onSave: (item: Omit<ToolingItem, 'id' | 'lifePercent' | 'status'> & { id?: string }) => void;
 }
 
+// Radix Select.Item rejects empty-string values; use a sentinel for "no machine linked".
+const NO_MACHINE = '__none__';
+
 export function ToolingFormDialog({ open, onOpenChange, onSave }: ToolingFormDialogProps) {
   const [toolId, setToolId] = useState('');
   const [templateId, setTemplateId] = useState('');
@@ -52,7 +55,8 @@ export function ToolingFormDialog({ open, onOpenChange, onSave }: ToolingFormDia
     if (!toolId.trim()) { toast.error('Tool ID is required'); return; }
     if (!type.trim()) { toast.error('Select a template or enter a type'); return; }
 
-    const machine = MACHINES_LIST.find(m => m.id === linkedMachineId);
+    const realLinkedId = linkedMachineId === NO_MACHINE ? '' : linkedMachineId;
+    const machine = MACHINES_LIST.find(m => m.id === realLinkedId);
 
     onSave({
       toolId,
@@ -61,7 +65,7 @@ export function ToolingFormDialog({ open, onOpenChange, onSave }: ToolingFormDia
       location,
       calibrationDueDate: calibrationDueDate || '—',
       lastServiceDate: lastServiceDate || '—',
-      linkedMachineId: linkedMachineId || undefined,
+      linkedMachineId: realLinkedId || undefined,
       linkedMachineName: machine?.name,
     });
 
@@ -121,12 +125,15 @@ export function ToolingFormDialog({ open, onOpenChange, onSave }: ToolingFormDia
 
         <div>
           <Label className="text-sm mb-2 block font-medium">Linked machine <span className="text-[var(--neutral-400)] font-normal">(optional)</span></Label>
-          <Select value={linkedMachineId} onValueChange={setLinkedMachineId}>
+          <Select
+            value={linkedMachineId === '' ? NO_MACHINE : linkedMachineId}
+            onValueChange={(v) => setLinkedMachineId(v === NO_MACHINE ? '' : v)}
+          >
             <SelectTrigger className="h-12 rounded-xl border-[var(--border)]">
               <SelectValue placeholder="No machine linked" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No machine</SelectItem>
+              <SelectItem value={NO_MACHINE}>No machine</SelectItem>
               {MACHINES_LIST.map(m => (
                 <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
               ))}
