@@ -21,10 +21,53 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { toast } from 'sonner';
+
+const operationColumns: MwColumnDef<StandardOperation>[] = [
+  {
+    key: 'name',
+    header: 'Operation',
+    cell: (op) => (
+      <div>
+        <div className="font-medium text-foreground text-sm">{op.name}</div>
+        {op.description && (
+          <div className="text-xs text-[var(--neutral-500)]">{op.description}</div>
+        )}
+      </div>
+    ),
+  },
+  {
+    key: 'category',
+    header: 'Category',
+    cell: (op) => (
+      <Badge variant="outline" className="text-xs">{op.category ?? '—'}</Badge>
+    ),
+  },
+  {
+    key: 'workCentre',
+    header: 'Default work centre',
+    className: 'text-sm text-[var(--neutral-600)]',
+    cell: (op) => op.defaultWorkCentre,
+  },
+  {
+    key: 'minutes',
+    header: 'Default minutes',
+    headerClassName: 'text-right',
+    className: 'text-right tabular-nums text-sm',
+    cell: (op) => `${op.defaultMinutes}m`,
+  },
+  {
+    key: 'type',
+    header: 'Type',
+    cell: (op) =>
+      op.isSubcontract ? (
+        <StatusBadge variant="info">Subcontract</StatusBadge>
+      ) : (
+        <StatusBadge variant="neutral">In-house</StatusBadge>
+      ),
+  },
+];
 
 export function ControlOperations() {
   const [search, setSearch] = useState('');
@@ -105,31 +148,16 @@ export function ControlOperations() {
           </div>
         </Card>
 
-        <Card variant="flat" className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Operation</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Default work centre</TableHead>
-                <TableHead className="text-right">Default minutes</TableHead>
-                <TableHead>Type</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((op) => (
-                <OperationRow key={op.id} op={op} />
-              ))}
-              {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-sm text-[var(--neutral-500)] py-8">
-                    No operations match this filter.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Card>
+        <MwDataTable<StandardOperation>
+          columns={operationColumns}
+          data={filtered}
+          keyExtractor={(op) => op.id}
+          emptyState={
+            <div className="text-center text-sm text-[var(--neutral-500)] py-8">
+              No operations match this filter.
+            </div>
+          }
+        />
       </motion.div>
     </PageShell>
   );
@@ -153,30 +181,5 @@ function CategoryPill({
     >
       {label}
     </button>
-  );
-}
-
-function OperationRow({ op }: { op: StandardOperation }) {
-  return (
-    <TableRow>
-      <TableCell>
-        <div className="font-medium text-foreground text-sm">{op.name}</div>
-        {op.description && (
-          <div className="text-xs text-[var(--neutral-500)]">{op.description}</div>
-        )}
-      </TableCell>
-      <TableCell>
-        <Badge variant="outline" className="text-xs">{op.category ?? '—'}</Badge>
-      </TableCell>
-      <TableCell className="text-sm text-[var(--neutral-600)]">{op.defaultWorkCentre}</TableCell>
-      <TableCell className="text-right tabular-nums text-sm">{op.defaultMinutes}m</TableCell>
-      <TableCell>
-        {op.isSubcontract ? (
-          <StatusBadge variant="info">Subcontract</StatusBadge>
-        ) : (
-          <StatusBadge variant="neutral">In-house</StatusBadge>
-        )}
-      </TableCell>
-    </TableRow>
   );
 }
