@@ -334,7 +334,7 @@ export function BuyNewOrder() {
 
   // ── Render ─────────────────────────────────────────────
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-[var(--neutral-100)]">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Top bar */}
       <div className="bg-card border-b border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">

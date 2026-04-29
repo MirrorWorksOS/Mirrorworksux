@@ -59,7 +59,7 @@ export function ControlAudit() {
   }, [events]);
 
   return (
-    <div className="space-y-8 bg-[var(--neutral-100)] p-8">
+    <div className="space-y-8 p-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Access audit</h1>
         <p className="mt-1 text-sm text-[var(--neutral-500)]">

@@ -71,7 +71,7 @@ export function ControlBilling() {
 
   if (!user.isOwner) {
     return (
-      <div className="space-y-6 bg-[var(--neutral-100)] p-8">
+      <div className="space-y-6 p-8">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Billing</h1>
         <Card className="p-6 text-sm text-muted-foreground">
           Only the workspace owner can view or change billing. Contact your owner to make changes.
@@ -107,7 +107,7 @@ export function ControlBilling() {
   };
 
   return (
-    <div className="space-y-8 bg-[var(--neutral-100)] p-8">
+    <div className="space-y-8 p-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Billing & subscription</h1>
         <p className="mt-1 text-sm text-[var(--neutral-500)]">

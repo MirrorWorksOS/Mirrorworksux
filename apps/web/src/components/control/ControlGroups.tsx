@@ -62,7 +62,7 @@ export function ControlGroups() {
   };
 
   return (
-    <div className="space-y-8 bg-[var(--neutral-100)] p-8">
+    <div className="space-y-8 p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Groups</h1>

@@ -64,7 +64,7 @@ export function PlanScheduleTab() {
     useOperationTasks(filterMode);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--neutral-100)]">
+    <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="bg-card border-b border-[var(--border)] px-6 py-4">
         <div className="flex items-center justify-between">
