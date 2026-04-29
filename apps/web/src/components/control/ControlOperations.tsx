@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
-import { toast } from 'sonner';
+import { OperationFormDialog } from './OperationFormDialog';
 
 const operationColumns: MwColumnDef<StandardOperation>[] = [
   {
@@ -72,6 +72,8 @@ const operationColumns: MwColumnDef<StandardOperation>[] = [
 export function ControlOperations() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | 'all'>('all');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<StandardOperation | undefined>();
 
   const all = useMemo(() => operationsLibraryService.list(), []);
   const categories = useMemo(() => operationsLibraryService.categories(), []);
@@ -113,8 +115,8 @@ export function ControlOperations() {
               size="sm"
               className="h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
               onClick={() => {
-                // TODO(backend): operations.create(fields)
-                toast.success('Operation created');
+                setEditing(undefined);
+                setDialogOpen(true);
               }}
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" /> New operation
@@ -152,6 +154,10 @@ export function ControlOperations() {
           columns={operationColumns}
           data={filtered}
           keyExtractor={(op) => op.id}
+          onRowClick={(op) => {
+            setEditing(op);
+            setDialogOpen(true);
+          }}
           emptyState={
             <div className="text-center text-sm text-[var(--neutral-500)] py-8">
               No operations match this filter.
@@ -159,6 +165,12 @@ export function ControlOperations() {
           }
         />
       </motion.div>
+
+      <OperationFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        operation={editing}
+      />
     </PageShell>
   );
 }

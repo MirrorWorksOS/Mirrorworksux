@@ -35,6 +35,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { cn } from '@/components/ui/utils';
+import { MachineFormDialog } from './MachineFormDialog';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -402,10 +403,12 @@ function MachineDetailSheet({
   machine,
   open,
   onOpenChange,
+  onEdit,
 }: {
   machine: Machine | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit?: (machine: Machine) => void;
 }) {
   if (!machine) return null;
 
@@ -465,8 +468,8 @@ function MachineDetailSheet({
                 variant="outline"
                 className="h-10 gap-2 rounded-full"
                 onClick={() => {
-                  // TODO(backend): machines.update(machine.id, fields)
-                  toast.success('Machine details saved');
+                  onOpenChange(false);
+                  onEdit?.(machine);
                 }}
               >
                 <Settings2 className="w-4 h-4" /> Edit
@@ -625,6 +628,8 @@ export function ControlMachines() {
   const [view, setView] = useState('grid');
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [machineToEdit, setMachineToEdit] = useState<Machine | null>(null);
 
   const filtered = useMemo(() => {
     return MACHINES.filter(m => {
@@ -673,8 +678,8 @@ export function ControlMachines() {
           <ToolbarPrimaryButton
             icon={Plus}
             onClick={() => {
-              // TODO(backend): machines.create(fields)
-              toast.success('Machine added');
+              setMachineToEdit(null);
+              setFormDialogOpen(true);
             }}
           >
             Add Machine
@@ -736,6 +741,16 @@ export function ControlMachines() {
         machine={selectedMachine}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+        onEdit={(m) => {
+          setMachineToEdit(m);
+          setFormDialogOpen(true);
+        }}
+      />
+
+      <MachineFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        machine={machineToEdit ?? undefined}
       />
     </PageShell>
   );
