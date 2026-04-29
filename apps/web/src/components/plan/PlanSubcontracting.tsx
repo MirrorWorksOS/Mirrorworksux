@@ -12,14 +12,7 @@ import { ExternalLink, Truck, Calendar, DollarSign } from "lucide-react";
 import { staggerContainer, staggerItem } from "@/components/shared/motion/motion-variants";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { planService } from "@/services";
 import type { Operation } from "@/types/entities";
 
@@ -100,56 +93,76 @@ export function PlanSubcontracting() {
           animate="animate"
         >
           <motion.div variants={staggerItem} className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Operation</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Sent</TableHead>
-                  <TableHead>Expected Return</TableHead>
-                  <TableHead>Actual Return</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell className="text-sm font-medium text-foreground">
-                      {row.operationName}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {row.supplierName}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">{row.sendDate}</TableCell>
-                    <TableCell className="font-mono text-xs">{row.expectedReturn}</TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {row.actualReturn ?? (
-                        <span className="text-[var(--neutral-400)]">&mdash;</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-xs">
-                      ${row.cost.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {row.status === "returned" && (
+            <MwDataTable<SubcontractRow>
+              columns={[
+                {
+                  key: "operation",
+                  header: "Operation",
+                  className: "text-sm font-medium text-foreground",
+                  cell: (row) => row.operationName,
+                },
+                {
+                  key: "supplier",
+                  header: "Supplier",
+                  className: "text-sm text-muted-foreground",
+                  cell: (row) => row.supplierName,
+                },
+                {
+                  key: "sent",
+                  header: "Sent",
+                  className: "font-mono text-xs",
+                  cell: (row) => row.sendDate,
+                },
+                {
+                  key: "expected",
+                  header: "Expected Return",
+                  className: "font-mono text-xs",
+                  cell: (row) => row.expectedReturn,
+                },
+                {
+                  key: "actual",
+                  header: "Actual Return",
+                  className: "font-mono text-xs",
+                  cell: (row) =>
+                    row.actualReturn ?? (
+                      <span className="text-[var(--neutral-400)]">—</span>
+                    ),
+                },
+                {
+                  key: "cost",
+                  header: "Cost",
+                  headerClassName: "text-right",
+                  className: "text-right font-mono text-xs",
+                  cell: (row) => `$${row.cost.toLocaleString()}`,
+                },
+                {
+                  key: "status",
+                  header: "Status",
+                  headerClassName: "text-center",
+                  className: "text-center",
+                  cell: (row) => {
+                    if (row.status === "returned")
+                      return (
                         <Badge className="bg-[var(--chart-scale-high)] text-white">
                           Returned
                         </Badge>
-                      )}
-                      {row.status === "sent" && (
+                      );
+                    if (row.status === "sent")
+                      return (
                         <Badge className="bg-[var(--chart-scale-mid)] text-white">
                           In Transit
                         </Badge>
-                      )}
-                      {row.status === "overdue" && (
-                        <Badge variant="destructive">Overdue</Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      );
+                    if (row.status === "overdue")
+                      return <Badge variant="destructive">Overdue</Badge>;
+                    return null;
+                  },
+                },
+              ]}
+              data={rows}
+              keyExtractor={(row) => row.id}
+              className="border-0 shadow-none"
+            />
           </motion.div>
         </motion.div>
       )}

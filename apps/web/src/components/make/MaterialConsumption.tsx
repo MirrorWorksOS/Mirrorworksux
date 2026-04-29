@@ -13,14 +13,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import {
   staggerContainer,
   staggerItem,
@@ -85,44 +78,55 @@ export function MaterialConsumption() {
           </div>
 
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Material</TableHead>
-                  <TableHead className="text-right">Planned</TableHead>
-                  <TableHead className="text-right">Consumed</TableHead>
-                  <TableHead className="text-right">Variance</TableHead>
-                  <TableHead className="text-right">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lines.map((line) => {
-                  const cfg = STATUS_CONFIG[line.status];
-                  return (
-                    <TableRow key={line.id}>
-                      <TableCell className="font-medium">
-                        {line.material}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {line.plannedQty} {line.uom}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {line.consumedQty} {line.uom}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {line.variance > 0 ? "+" : ""}
-                        {line.variance} {line.uom}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant="outline" className={cfg.className}>
-                          {cfg.label}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <MwDataTable<MaterialConsumptionLine>
+              columns={[
+                {
+                  key: "material",
+                  header: "Material",
+                  className: "font-medium",
+                  cell: (line) => line.material,
+                },
+                {
+                  key: "planned",
+                  header: "Planned",
+                  headerClassName: "text-right",
+                  className: "text-right font-mono",
+                  cell: (line) => `${line.plannedQty} ${line.uom}`,
+                },
+                {
+                  key: "consumed",
+                  header: "Consumed",
+                  headerClassName: "text-right",
+                  className: "text-right font-mono",
+                  cell: (line) => `${line.consumedQty} ${line.uom}`,
+                },
+                {
+                  key: "variance",
+                  header: "Variance",
+                  headerClassName: "text-right",
+                  className: "text-right font-mono",
+                  cell: (line) =>
+                    `${line.variance > 0 ? "+" : ""}${line.variance} ${line.uom}`,
+                },
+                {
+                  key: "status",
+                  header: "Status",
+                  headerClassName: "text-right",
+                  className: "text-right",
+                  cell: (line) => {
+                    const cfg = STATUS_CONFIG[line.status];
+                    return (
+                      <Badge variant="outline" className={cfg.className}>
+                        {cfg.label}
+                      </Badge>
+                    );
+                  },
+                },
+              ]}
+              data={lines}
+              keyExtractor={(line) => line.id}
+              className="border-0 shadow-none"
+            />
           </div>
         </motion.div>
       </Card>
