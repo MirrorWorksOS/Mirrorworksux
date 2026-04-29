@@ -12,6 +12,14 @@ const cardVariants = cva(
         flat: "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-[var(--card-shadow-rest)]",
         elevated:
           "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-[var(--card-shadow-elevated)]",
+        /**
+         * Clickable card. Same chrome as flat at rest; lifts to the elevated
+         * shadow on hover so the surface reads as actionable. Pair with an
+         * onClick + role="button" / cursor-pointer at the call site, or wrap
+         * in a Link.
+         */
+        interactive:
+          "bg-card text-card-foreground border border-[var(--neutral-200)] shadow-[var(--card-shadow-rest)] cursor-pointer hover:shadow-[var(--card-shadow-elevated)]",
         dark: "bg-[var(--mw-mirage)] text-white border-none",
         ghost: "bg-card text-card-foreground border-none shadow-none",
       },

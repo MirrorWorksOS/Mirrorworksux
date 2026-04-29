@@ -1,8 +1,15 @@
 import type { ReactNode } from "react";
 import { Fragment } from "react";
 import { Link } from "react-router";
-import { ChevronRight } from "lucide-react";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { cn } from "@/components/ui/utils";
 
 export interface PageHeaderProps {
@@ -29,38 +36,33 @@ export function PageHeader({
     >
       <div className="min-w-0 space-y-2">
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-            {breadcrumbs.map((crumb, index) => {
-              const isLast = index === breadcrumbs.length - 1;
-              return (
-                <Fragment key={`${crumb.label}-${index}`}>
-                  {index > 0 && (
-                    <ChevronRight
-                      aria-hidden
-                      className="h-3 w-3 shrink-0 text-muted-foreground/70"
-                    />
-                  )}
-                  {crumb.href && !isLast ? (
-                    <Link
-                      to={crumb.href}
-                      className="truncate transition-colors hover:text-foreground"
-                    >
-                      {crumb.label}
-                    </Link>
-                  ) : (
-                    <span
-                      className={cn(
-                        "truncate",
-                        isLast && "text-foreground font-medium",
+          <Breadcrumb>
+            <BreadcrumbList className="text-xs">
+              {breadcrumbs.map((crumb, index) => {
+                const isLast = index === breadcrumbs.length - 1;
+                return (
+                  <Fragment key={`${crumb.label}-${index}`}>
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {crumb.href && !isLast ? (
+                        <BreadcrumbLink asChild>
+                          <Link to={crumb.href} className="truncate">
+                            {crumb.label}
+                          </Link>
+                        </BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage
+                          className={cn("truncate", isLast && "font-medium")}
+                        >
+                          {crumb.label}
+                        </BreadcrumbPage>
                       )}
-                    >
-                      {crumb.label}
-                    </span>
-                  )}
-                </Fragment>
-              );
-            })}
-          </nav>
+                    </BreadcrumbItem>
+                  </Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
         )}
         <h1 className="text-2xl sm:text-3xl tracking-tight text-foreground">
           {title}
