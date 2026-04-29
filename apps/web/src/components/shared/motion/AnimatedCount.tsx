@@ -16,6 +16,12 @@ export interface AnimatedCountProps {
   /** Spring stiffness (default tuned for snappy dashboard numbers) */
   stiffness?: number;
   damping?: number;
+  /**
+   * Format the live integer for display (e.g. add `$`, `%`, thousands
+   * separators). Receives the rounded number; default is the integer
+   * itself rendered via `toLocaleString()`.
+   */
+  format?: (n: number) => React.ReactNode;
 }
 
 export function AnimatedCount({
@@ -23,6 +29,7 @@ export function AnimatedCount({
   className,
   stiffness = 52,
   damping = 24,
+  format,
 }: AnimatedCountProps) {
   const mv = useMotionValue(0);
   const spring = useSpring(mv, { stiffness, damping, mass: 0.85 });
@@ -36,5 +43,9 @@ export function AnimatedCount({
     setDisplay(Math.round(latest));
   });
 
-  return <motion.span className={className}>{display}</motion.span>;
+  return (
+    <motion.span className={className}>
+      {format ? format(display) : display.toLocaleString()}
+    </motion.span>
+  );
 }

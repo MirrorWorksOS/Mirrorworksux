@@ -109,7 +109,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Monthly Revenue"
-            value={`$${kpiData.monthlyRevenue.value.toLocaleString()}`}
+            value=""
+            animatedValue={kpiData.monthlyRevenue.value}
+            format={(n) => `$${n.toLocaleString()}`}
             icon={DollarSign}
             iconSurface="key"
             trailing={
@@ -124,7 +126,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Outstanding Invoices"
-            value={`$${kpiData.outstandingInvoices.value.toLocaleString()}`}
+            value=""
+            animatedValue={kpiData.outstandingInvoices.value}
+            format={(n) => `$${n.toLocaleString()}`}
             icon={Receipt}
             trailing={
               <Badge className={badgeNeutral}>
@@ -138,7 +142,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Profit Margin"
-            value={`${kpiData.profitMargin.value}%`}
+            value=""
+            animatedValue={kpiData.profitMargin.value}
+            format={(n) => `${n}%`}
             icon={TrendingUp}
             trailing={
               <Badge className={badgeNeutral}>
@@ -152,7 +158,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Cash Flow"
-            value={`$${kpiData.cashFlow.value.toLocaleString()}`}
+            value=""
+            animatedValue={kpiData.cashFlow.value}
+            format={(n) => `$${n.toLocaleString()}`}
             icon={BarChart3}
             trailing={
               <Badge className={badgeNeutral}>
@@ -166,7 +174,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Overdue Invoices"
-            value={`$${kpiData.overdueInvoices.value.toLocaleString()}`}
+            value=""
+            animatedValue={kpiData.overdueInvoices.value}
+            format={(n) => `$${n.toLocaleString()}`}
             icon={AlertTriangle}
             trailing={
               <Badge className={badgeNeutral}>
@@ -180,7 +190,9 @@ export function SellDashboard() {
         <motion.div variants={staggerItem}>
           <KpiStatCard
             label="Expenses This Month"
-            value={`$${kpiData.expensesThisMonth.value.toLocaleString()}`}
+            value=""
+            animatedValue={kpiData.expensesThisMonth.value}
+            format={(n) => `$${n.toLocaleString()}`}
             icon={CreditCard}
             trailing={
               <Badge className={badgeNeutral}>

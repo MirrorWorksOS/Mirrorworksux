@@ -8,6 +8,7 @@ import {
   LUCIDE_STROKE,
   type IconSurface,
 } from "@/components/shared/icons/IconWell";
+import { AnimatedCount } from "@/components/shared/motion/AnimatedCount";
 import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
 
 export type { IconSurface };
@@ -31,6 +32,17 @@ export interface KpiStatCardProps {
   iconWellClassName?: string;
   /** Compact icon well shape */
   iconWellShape?: "squircle" | "round";
+  /**
+   * Number to spring-animate from 0 → value on mount and on subsequent
+   * changes. When set, replaces the static `value` prop in the headline
+   * slot. Pair with `format` to add `$`/`%`/thousand separators.
+   */
+  animatedValue?: number;
+  /**
+   * Formatter for `animatedValue`. Receives the live rounded integer.
+   * Example: `(n) => `$${n.toLocaleString()}``.
+   */
+  format?: (n: number) => React.ReactNode;
 }
 
 export function KpiStatCard({
@@ -48,7 +60,15 @@ export function KpiStatCard({
   iconSize = "md",
   iconWellClassName,
   iconWellShape = "round",
+  animatedValue,
+  format,
 }: KpiStatCardProps) {
+  const renderedValue =
+    animatedValue !== undefined ? (
+      <AnimatedCount value={animatedValue} format={format} />
+    ) : (
+      value
+    );
   const valueClasses = cn(
     "tabular-nums tracking-tight text-foreground",
     layout === "compact"
@@ -92,7 +112,7 @@ export function KpiStatCard({
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm text-[var(--neutral-500)]">{label}</p>
-            <div className={valueClasses}>{value}</div>
+            <div className={valueClasses}>{renderedValue}</div>
             {footer}
           </div>
           {Icon !== undefined ? (
@@ -134,7 +154,7 @@ export function KpiStatCard({
         {Icon !== undefined && (
           <div className="mb-4">{renderIcon()}</div>
         )}
-        <div className={valueClasses}>{value}</div>
+        <div className={valueClasses}>{renderedValue}</div>
         <p className="mt-1 text-xs font-medium text-[var(--neutral-500)]">
           {label}
         </p>
@@ -169,7 +189,7 @@ export function KpiStatCard({
       <p className="mb-1 text-sm font-medium text-[var(--neutral-500)]">
         {label}
       </p>
-      <div className={valueClasses}>{value}</div>
+      <div className={valueClasses}>{renderedValue}</div>
       {hint !== undefined && hint !== "" ? (
         <p className="mt-2 text-xs text-[var(--neutral-500)]">{hint}</p>
       ) : null}
