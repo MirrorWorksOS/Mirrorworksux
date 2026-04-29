@@ -67,14 +67,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import {
   StatusBadge,
   type StatusKey,
@@ -543,53 +536,52 @@ function OrdersSection({ customerId }: { customerId: string }) {
         title="Your sales orders"
         subtitle="Read-only view. Contact your account manager to request changes."
       />
-      <Card variant="flat">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Order #</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Delivery</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customerOrders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-mono font-medium">
-                  {order.orderNumber}
-                </TableCell>
-                <TableCell className="text-[var(--neutral-600)]">
-                  {order.date}
-                </TableCell>
-                <TableCell className="text-[var(--neutral-600)]">
-                  {order.deliveryDate}
-                </TableCell>
-                <TableCell>
-                  <StatusBadge
-                    status={orderStatusMap[order.status] ?? 'pending'}
-                    withDot
-                  />
-                </TableCell>
-                <TableCell className="text-right font-mono">
-                  {formatCurrency(order.total)}
-                </TableCell>
-              </TableRow>
-            ))}
-            {customerOrders.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-8 text-center text-sm text-[var(--neutral-400)]"
-                >
-                  No orders yet.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+      <MwDataTable<typeof customerOrders[number]>
+        columns={[
+          {
+            key: 'orderNumber',
+            header: 'Order #',
+            className: 'font-mono font-medium',
+            cell: (order) => order.orderNumber,
+          },
+          {
+            key: 'date',
+            header: 'Date',
+            className: 'text-[var(--neutral-600)]',
+            cell: (order) => order.date,
+          },
+          {
+            key: 'delivery',
+            header: 'Delivery',
+            className: 'text-[var(--neutral-600)]',
+            cell: (order) => order.deliveryDate,
+          },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (order) => (
+              <StatusBadge
+                status={orderStatusMap[order.status] ?? 'pending'}
+                withDot
+              />
+            ),
+          },
+          {
+            key: 'total',
+            header: 'Total',
+            headerClassName: 'text-right',
+            className: 'text-right font-mono',
+            cell: (order) => formatCurrency(order.total),
+          },
+        ]}
+        data={customerOrders}
+        keyExtractor={(order) => order.id}
+        emptyState={
+          <div className="py-8 text-center text-sm text-[var(--neutral-400)]">
+            No orders yet.
+          </div>
+        }
+      />
     </motion.div>
   );
 }
@@ -659,93 +651,96 @@ function InvoicesSection({
         title="Your invoices"
         subtitle="Download a copy, pay online, or review what's outstanding."
       />
-      <Card variant="flat">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Invoice #</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Due</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customerInvoices.map((inv) => {
-              const unpaid =
-                inv.status === 'sent' || inv.status === 'overdue';
+      <MwDataTable<typeof customerInvoices[number]>
+        columns={[
+          {
+            key: 'invoiceNumber',
+            header: 'Invoice #',
+            className: 'font-mono font-medium',
+            cell: (inv) => inv.invoiceNumber,
+          },
+          {
+            key: 'date',
+            header: 'Date',
+            className: 'text-[var(--neutral-600)]',
+            cell: (inv) => inv.date,
+          },
+          {
+            key: 'due',
+            header: 'Due',
+            className: 'text-[var(--neutral-600)]',
+            cell: (inv) => inv.dueDate,
+          },
+          {
+            key: 'status',
+            header: 'Status',
+            cell: (inv) => (
+              <StatusBadge
+                status={invoiceStatusMap[inv.status] ?? 'pending'}
+                withDot
+              />
+            ),
+          },
+          {
+            key: 'amount',
+            header: 'Amount',
+            headerClassName: 'text-right',
+            className: 'text-right font-mono',
+            cell: (inv) => formatCurrency(inv.amount),
+          },
+          {
+            key: 'actions',
+            header: 'Actions',
+            headerClassName: 'text-right',
+            className: 'text-right',
+            cell: (inv) => {
+              const unpaid = inv.status === 'sent' || inv.status === 'overdue';
               return (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-mono font-medium">
-                    {inv.invoiceNumber}
-                  </TableCell>
-                  <TableCell className="text-[var(--neutral-600)]">
-                    {inv.date}
-                  </TableCell>
-                  <TableCell className="text-[var(--neutral-600)]">
-                    {inv.dueDate}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      status={invoiceStatusMap[inv.status] ?? 'pending'}
-                      withDot
-                    />
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatCurrency(inv.amount)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleView(inv)}
-                        aria-label={`View ${inv.invoiceNumber}`}
-                      >
-                        <Eye className="h-4 w-4" strokeWidth={1.5} />
-                      </Button>
-                      {allowDownload && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDownload(inv)}
-                          aria-label={`Download ${inv.invoiceNumber}`}
-                        >
-                          <Download className="h-4 w-4" strokeWidth={1.5} />
-                        </Button>
-                      )}
-                      {allowOnlinePayment && unpaid && (
-                        <Button
-                          size="sm"
-                          className="ml-1 h-8 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-                          onClick={() => handlePayOnline(inv)}
-                        >
-                          <CreditCard
-                            className="mr-1 h-3.5 w-3.5"
-                            strokeWidth={1.5}
-                          />
-                          Pay
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <div className="flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleView(inv)}
+                    aria-label={`View ${inv.invoiceNumber}`}
+                  >
+                    <Eye className="h-4 w-4" strokeWidth={1.5} />
+                  </Button>
+                  {allowDownload && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(inv)}
+                      aria-label={`Download ${inv.invoiceNumber}`}
+                    >
+                      <Download className="h-4 w-4" strokeWidth={1.5} />
+                    </Button>
+                  )}
+                  {allowOnlinePayment && unpaid && (
+                    <Button
+                      size="sm"
+                      className="ml-1 h-8 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                      onClick={() => handlePayOnline(inv)}
+                    >
+                      <CreditCard
+                        className="mr-1 h-3.5 w-3.5"
+                        strokeWidth={1.5}
+                      />
+                      Pay
+                    </Button>
+                  )}
+                </div>
               );
-            })}
-            {customerInvoices.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-8 text-center text-sm text-[var(--neutral-400)]"
-                >
-                  No invoices yet.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+            },
+          },
+        ]}
+        data={customerInvoices}
+        keyExtractor={(inv) => inv.id}
+        emptyState={
+          <div className="py-8 text-center text-sm text-[var(--neutral-400)]">
+            No invoices yet.
+          </div>
+        }
+      />
     </motion.div>
   );
 }
