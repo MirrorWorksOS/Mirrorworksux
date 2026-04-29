@@ -3,7 +3,7 @@
  * KPI cards: Overdue count, Avg MTTR, Equipment Availability %.
  */
 import { useState, useEffect, useMemo } from "react";
-import { AlertTriangle, Clock, Activity } from "lucide-react";
+import { AlertTriangle, Clock, Activity, Plus, Pencil } from "lucide-react";
 import { motion } from "motion/react";
 
 import { controlService } from "@/services";
@@ -16,9 +16,10 @@ import { staggerItem } from "@/components/shared/motion/motion-variants";
 import { StatusBadge } from "@/components/shared/data/StatusBadge";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
-
+import { MaintenanceFormDialog } from "./MaintenanceFormDialog";
 function fmtAud(v: number): string {
   return v.toLocaleString("en-AU", {
     style: "currency",
@@ -28,7 +29,9 @@ function fmtAud(v: number): string {
   });
 }
 
-const scheduledColumns: MwColumnDef<MaintenanceRecord>[] = [
+const scheduledColumns = (
+  onEdit: (r: MaintenanceRecord) => void,
+): MwColumnDef<MaintenanceRecord>[] => [
   { key: "machine", header: "Machine", className: "font-medium", cell: (r) => r.machineName },
   {
     key: "type",
@@ -67,6 +70,21 @@ const scheduledColumns: MwColumnDef<MaintenanceRecord>[] = [
         status={r.status as "scheduled" | "in_progress" | "overdue"}
         withDot
       />
+    ),
+  },
+  {
+    key: "actions",
+    header: "",
+    headerClassName: "w-10",
+    cell: (r) => (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0"
+        onClick={(e) => { e.stopPropagation(); onEdit(r); }}
+      >
+        <Pencil className="h-3.5 w-3.5 text-[var(--neutral-500)]" />
+      </Button>
     ),
   },
 ];
@@ -117,6 +135,8 @@ const historyColumns: MwColumnDef<MaintenanceRecord>[] = [
 
 export function ControlMaintenance() {
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<MaintenanceRecord | null>(null);
 
   useEffect(() => {
     controlService.getMaintenanceRecords().then(setRecords);
@@ -173,6 +193,15 @@ export function ControlMaintenance() {
     );
   }, [records]);
 
+  const handleSave = (data: Omit<MaintenanceRecord, 'id'> & { id?: string }) => {
+    setRecords(prev => {
+      if (data.id) {
+        return prev.map(r => r.id === data.id ? { ...r, ...data, id: r.id } : r);
+      }
+      return [...prev, { ...data, id: `mr-new-${Date.now()}` }];
+    });
+  };
+
   return (
     <PageShell>
       <PageHeader
@@ -182,6 +211,16 @@ export function ControlMaintenance() {
           { label: "Control", href: "/control" },
           { label: "Maintenance" },
         ]}
+        actions={
+          <Button
+            size="sm"
+            className="h-9 gap-2 rounded-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+            onClick={() => { setEditingRecord(null); setDialogOpen(true); }}
+          >
+            <Plus className="h-4 w-4" strokeWidth={1.5} />
+            Schedule maintenance
+          </Button>
+        }
       />
 
       {/* KPI cards */}
@@ -230,7 +269,7 @@ export function ControlMaintenance() {
 
           <TabsContent value="schedule">
             <MwDataTable<MaintenanceRecord>
-              columns={scheduledColumns}
+              columns={scheduledColumns((r) => { setEditingRecord(r); setDialogOpen(true); })}
               data={scheduled}
               keyExtractor={(r) => r.id}
               emptyState={
@@ -255,6 +294,13 @@ export function ControlMaintenance() {
           </TabsContent>
         </Tabs>
       </motion.div>
+
+      <MaintenanceFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        initialRecord={editingRecord}
+        onSave={handleSave}
+      />
     </PageShell>
   );
 }

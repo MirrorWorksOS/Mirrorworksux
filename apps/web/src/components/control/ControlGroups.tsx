@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { UsersRound, Layers3, Lock, ArrowUpRight, AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
 import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { GroupDetailSheet } from './people/GroupDetailSheet';
+import { GroupFormDialog } from './people/GroupFormDialog';
 import { AccessResolutionPopover } from './people/AccessResolutionPopover';
 import { findGroupOverlaps } from './people/group-helpers';
 import { moduleColors, moduleLabels, peopleGroups, type PeopleGroupView } from './people/people-data';
@@ -33,6 +33,7 @@ export function ControlGroups() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [selected, setSelected] = useState<PeopleGroupView | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [newGroupOpen, setNewGroupOpen] = useState(false);
 
   const stats = useMemo(() => {
     const total = peopleGroups.length;
@@ -72,10 +73,7 @@ export function ControlGroups() {
         </div>
         <Button
           className="h-11 bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-          onClick={() => {
-            // TODO(backend): groups.create(fields)
-            toast.success('Group created');
-          }}
+          onClick={() => setNewGroupOpen(true)}
         >
           + New group
         </Button>
@@ -237,6 +235,7 @@ export function ControlGroups() {
       </Card>
 
       <GroupDetailSheet group={selected} open={sheetOpen} onOpenChange={setSheetOpen} />
+      <GroupFormDialog open={newGroupOpen} onOpenChange={setNewGroupOpen} />
     </div>
   );
 }

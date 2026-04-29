@@ -33,6 +33,8 @@ import UilStar from '@iconscout/react-unicons/icons/uil-star';
 import UilDiamond from '@iconscout/react-unicons/icons/uil-diamond';
 import UilShield from '@iconscout/react-unicons/icons/uil-shield';
 import UilChartBar from '@iconscout/react-unicons/icons/uil-chart-bar';
+import { TargetFormDialog, type TargetFormData } from './TargetFormDialog';
+import { BadgeFormDialog, type BadgeFormData } from './BadgeFormDialog';
 
 // ── Data ─────────────────────────────────────────────────────────────────
 
@@ -137,11 +139,7 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            // TODO(backend): targets.update(t.id, fields)
-            toast.success(`Edit dialog opened for "${t.target}"`);
-          }}
+          onClick={(e) => { e.stopPropagation(); setEditingTarget({ id: t.id, target: t.target, metric: t.metric, period: t.period, value: t.value, status: t.status, enabled: t.enabled }); setTargetDialogOpen(true); }}
         >
           <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
         </Button>
@@ -178,6 +176,11 @@ export function ControlGamification() {
     quality: false,
   });
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [targetDialogOpen, setTargetDialogOpen] = useState(false);
+  const [editingTarget, setEditingTarget] = useState<TargetFormData | null>(null);
+  const [badgeDialogOpen, setBadgeDialogOpen] = useState(false);
+  const [editingBadge, setEditingBadge] = useState<BadgeFormData | null>(null);
+  const [badges, setBadges] = useState(BADGES);
 
   const toggleTarget = (id: string) => {
     setTargets(prev =>
@@ -188,6 +191,27 @@ export function ControlGamification() {
 
   const toggleMetric = (key: string) => {
     setVisibleMetrics(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleTargetSave = (data: TargetFormData) => {
+    if (data.id) {
+      setTargets(prev => prev.map(t => t.id === data.id ? { ...t, ...data } : t));
+    } else {
+      setTargets(prev => [...prev, { ...data, id: `t-${Date.now()}` }]);
+    }
+  };
+
+  const handleBadgeSave = (data: BadgeFormData) => {
+    const iconMap: Record<string, React.ComponentType<{ color?: string; size?: string | number; className?: string }>> = {
+      trophy: UilTrophy, bolt: UilBolt, crosshair: UilCrosshair, fire: UilFire,
+      star: UilStar, diamond: UilDiamond, shield: UilShield, 'chart-bar': UilChartBar,
+    };
+    const Icon = iconMap[data.iconKey] ?? UilTrophy;
+    if (data.id) {
+      setBadges(prev => prev.map(b => b.id === data.id ? { ...b, name: data.name, description: data.description, Icon } : b));
+    } else {
+      setBadges(prev => [...prev, { id: `b-${Date.now()}`, name: data.name, description: data.description, Icon, earnedBy: 0 }]);
+    }
   };
 
   return (
@@ -208,10 +232,7 @@ export function ControlGamification() {
             <Button
               size="sm"
               className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
-              onClick={() => {
-                // TODO(backend): targets.create(fields)
-                toast.success('Target added');
-              }}
+              onClick={() => { setEditingTarget(null); setTargetDialogOpen(true); }}
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Add Target
@@ -247,10 +268,7 @@ export function ControlGamification() {
             <Button
               size="sm"
               className="bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90"
-              onClick={() => {
-                // TODO(backend): badges.create(fields)
-                toast.success('Badge created');
-              }}
+              onClick={() => { setEditingBadge(null); setBadgeDialogOpen(true); }}
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Create Badge
@@ -258,7 +276,7 @@ export function ControlGamification() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {BADGES.map(badge => (
+            {badges.map(badge => (
               <motion.div key={badge.id} variants={staggerItem}>
                 <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                   <div className="flex items-start gap-3 mb-3">
@@ -282,10 +300,7 @@ export function ControlGamification() {
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
-                        onClick={() => {
-                          // TODO(backend): badges.update(badge.id, fields)
-                          toast.success(`Edit dialog opened for "${badge.name}"`);
-                        }}
+                        onClick={() => { setEditingBadge({ id: badge.id, name: badge.name, description: badge.description, iconKey: 'trophy', criteria: '' }); setBadgeDialogOpen(true); }}
                       >
                         <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
                       </Button>
@@ -471,6 +486,19 @@ export function ControlGamification() {
           </div>
         </motion.section>
       </div>
+
+      <TargetFormDialog
+        open={targetDialogOpen}
+        onOpenChange={setTargetDialogOpen}
+        initialData={editingTarget}
+        onSave={handleTargetSave}
+      />
+      <BadgeFormDialog
+        open={badgeDialogOpen}
+        onOpenChange={setBadgeDialogOpen}
+        initialData={editingBadge}
+        onSave={handleBadgeSave}
+      />
     </PageShell>
   );
 }

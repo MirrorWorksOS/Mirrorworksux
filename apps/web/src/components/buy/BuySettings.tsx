@@ -1,16 +1,15 @@
 /**
  * Buy Settings — Implements ARCH 00 §4.8 group-based permissions model
- * Panels: General, Suppliers, Reports, Access & Permissions
+ * Panels: General, Approvals, Suppliers, Notifications, Reports, Access & Permissions
  *
  * Note: PO approval is separated from PO creation by default (segregation of duties).
  */
 import { useState } from 'react';
-import { Settings, Users, BarChart3, Plus, Trash2 } from 'lucide-react';
+import { Settings, Users, BarChart3, Plus, Trash2, FileText, Bell } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
@@ -109,35 +108,103 @@ function GeneralPanel() {
       </div>
 
       <div>
-        <SectionLabel>Approval thresholds</SectionLabel>
-        <p className="text-sm text-[var(--neutral-500)] mb-4">
-          PO approval is separated from PO creation by default to enforce segregation of duties.
-        </p>
-        <div className="space-y-3">
-          {[
-            { label: 'Under $1,000', approver: 'Supervisor' },
-            { label: '$1,000 – $10,000', approver: 'Manager' },
-            { label: 'Over $10,000', approver: 'Director' },
-          ].map(t => (
-            <SettingsRow key={t.label}>
-              <span className="text-sm text-foreground">{t.label}</span>
-              <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-2">{t.approver}</Badge>
-            </SettingsRow>
-          ))}
-          <button className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-xl p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors">
-            <Plus className="w-4 h-4" /> Add threshold
-          </button>
+        <SectionLabel>Purchase order defaults</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
+            <Select defaultValue="net30">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cod">COD</SelectItem>
+                <SelectItem value="net14">Net 14</SelectItem>
+                <SelectItem value="net30">Net 30</SelectItem>
+                <SelectItem value="net60">Net 60</SelectItem>
+                <SelectItem value="net90">Net 90</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default lead time</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="14" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <span className="text-sm text-[var(--neutral-500)]">days</span>
+            </div>
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Default delivery location</Label>
+            <Select defaultValue="main">
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="main">Main Factory — Silverwater</SelectItem>
+                <SelectItem value="warehouse">Warehouse — Moorebank</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
       <div>
-        <SectionLabel>Procurement preferences</SectionLabel>
+        <SectionLabel>Stock management</SectionLabel>
         <div className="space-y-4">
           {[
-            { label: 'Auto-create POs from MRP requisitions', checked: true },
-            { label: 'Require three quotes for purchases over $5,000', checked: true },
-            { label: 'Notify buyer when goods are received', checked: true },
-            { label: 'Allow partial deliveries', checked: true },
+            { label: 'Auto-generate POs at reorder point', sub: 'Create draft POs when stock reaches minimum level', checked: true },
+            { label: 'Enable three-way matching', sub: 'Match PO, goods receipt, and invoice before payment', checked: true },
+            { label: 'Require goods receipt before invoice', sub: 'Block invoice processing until GRN is confirmed', checked: true },
+            { label: 'Auto-create POs from MRP requisitions', sub: '', checked: true },
+            { label: 'Allow partial deliveries', sub: '', checked: true },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
+              <div>
+                <span className="text-sm text-foreground">{r.label}</span>
+                {r.sub && <p className="text-xs text-[var(--neutral-500)] mt-0.5">{r.sub}</p>}
+              </div>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Approvals Panel ──
+function ApprovalsPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Approval thresholds</SectionLabel>
+        <p className="text-sm text-[var(--neutral-500)] mb-4">
+          PO approval is separated from PO creation by default to enforce segregation of duties.
+        </p>
+        <div className="space-y-4">
+          {[
+            { label: 'Auto-approve under',       value: '1000',  suffix: '$', sub: 'No approval required below this amount' },
+            { label: 'Team approval above',       value: '5000',  suffix: '$', sub: 'Requires team lead sign-off' },
+            { label: 'Lead approval above',       value: '25000', suffix: '$', sub: 'Requires lead sign-off' },
+            { label: 'Admin approval above',      value: '100000', suffix: '$', sub: 'Requires admin approval' },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-3 border-b border-[var(--neutral-100)] last:border-0">
+              <div>
+                <span className="text-sm text-foreground font-medium">{r.label}</span>
+                <p className="text-xs text-[var(--neutral-500)] mt-0.5">{r.sub}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[var(--neutral-500)]">{r.suffix}</span>
+                <Input defaultValue={r.value} type="number" className="h-10 border-[var(--border)] rounded-xl w-28 text-right" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Approval flow</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'Email approver on new PO submission', checked: true },
+            { label: 'Escalate if no response within 24 hours', checked: true },
+            { label: 'Allow approver to edit PO before approving', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
               <span className="text-sm text-foreground">{r.label}</span>
@@ -207,6 +274,49 @@ function SuppliersPanel() {
                 <SelectItem value="eur">EUR</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Supplier evaluation</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Preferred supplier scoring weights</Label>
+            <div className="space-y-3 mt-2">
+              {[
+                { label: 'Price',       value: 30 },
+                { label: 'Quality',     value: 35 },
+                { label: 'Lead time',   value: 20 },
+                { label: 'Reliability', value: 15 },
+              ].map(s => (
+                <div key={s.label} className="flex items-center gap-4">
+                  <span className="text-sm text-foreground w-28">{s.label}</span>
+                  <div className="flex-1 h-1.5 bg-[var(--neutral-200)] rounded-full overflow-hidden">
+                    <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: `${s.value}%` }} />
+                  </div>
+                  <Input defaultValue={`${s.value}`} type="number" className="h-9 w-20 border-[var(--border)] rounded-xl text-right text-sm" />
+                  <span className="text-sm text-[var(--neutral-500)]">%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>RFQ defaults</SectionLabel>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm mb-2 block font-medium">Minimum suppliers to quote</Label>
+            <Input defaultValue="3" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+          </div>
+          <div>
+            <Label className="text-sm mb-2 block font-medium">RFQ expiry period</Label>
+            <div className="flex items-center gap-3">
+              <Input defaultValue="7" type="number" className="h-12 border-[var(--border)] rounded-xl w-24" />
+              <span className="text-sm text-[var(--neutral-500)]">days</span>
+            </div>
           </div>
         </div>
       </div>
@@ -286,6 +396,36 @@ function SuppliersPanel() {
   );
 }
 
+// ── Notifications Panel ──
+function NotificationsPanel() {
+  return (
+    <div className="space-y-8 max-w-[640px]">
+      <SaveRow />
+      <div>
+        <SectionLabel>Purchase notifications</SectionLabel>
+        <div className="space-y-4">
+          {[
+            { label: 'PO submitted for approval',               sub: 'Notify approver when a PO is submitted',    checked: true },
+            { label: 'PO approved or rejected',                 sub: 'Notify requestor of the approval decision', checked: true },
+            { label: 'Goods received against PO',               sub: 'Notify buyer when GRN is confirmed',        checked: true },
+            { label: 'Invoice matched to PO',                   sub: 'Notify accounts when invoice is matched',   checked: true },
+            { label: "PO overdue — supplier hasn't delivered",  sub: 'Alert when expected delivery date is passed', checked: true },
+            { label: 'Reorder point reached',                   sub: 'Alert when stock falls to minimum level',   checked: false },
+          ].map(r => (
+            <div key={r.label} className="flex items-center justify-between py-3 border-b border-[var(--neutral-100)] last:border-0">
+              <div>
+                <span className="text-sm text-foreground font-medium">{r.label}</span>
+                <p className="text-xs text-[var(--neutral-500)] mt-0.5">{r.sub}</p>
+              </div>
+              <Switch defaultChecked={r.checked} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Reports Panel ──
 function ReportsPanel() {
   const reports = [
@@ -342,9 +482,11 @@ function ReportsPanel() {
 
 // ── Root ──
 const settingsPanels: SettingsPanel[] = [
-  { key: 'general', label: 'General', icon: Settings, component: GeneralPanel },
-  { key: 'suppliers', label: 'Suppliers', icon: Users, component: SuppliersPanel },
-  { key: 'reports', label: 'Reports', icon: BarChart3, component: ReportsPanel },
+  { key: 'general',       label: 'General',       icon: Settings,  component: GeneralPanel },
+  { key: 'approvals',     label: 'Approvals',     icon: FileText,  component: ApprovalsPanel },
+  { key: 'suppliers',     label: 'Suppliers',     icon: Users,     component: SuppliersPanel },
+  { key: 'notifications', label: 'Notifications', icon: Bell,      component: NotificationsPanel },
+  { key: 'reports',       label: 'Reports',       icon: BarChart3, component: ReportsPanel },
 ];
 
 export function BuySettings() {

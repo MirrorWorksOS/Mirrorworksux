@@ -23,6 +23,7 @@ import { toast } from "sonner";
 
 import { controlService } from "@/services";
 import type { EmployeeShift } from "@/types/entities";
+import { ShiftFormDialog } from "./ShiftFormDialog";
 
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
@@ -163,6 +164,8 @@ export function ControlShiftManager() {
   const [shifts, setShifts] = useState<EmployeeShift[]>([]);
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  const [shiftDialogOpen, setShiftDialogOpen] = useState(false);
+  const [editingShift, setEditingShift] = useState<EmployeeShift | null>(null);
 
   useEffect(() => {
     controlService.getEmployeeShifts().then(setShifts);
@@ -249,36 +252,28 @@ export function ControlShiftManager() {
       const key = `${emp.id}:${dayOfWeek}`;
       const existing = shiftsByCell.get(key) ?? [];
       if (existing.length > 0) {
-        // Remove all shifts in this cell
-        setShifts((prev) =>
-          prev.filter(
-            (s) => !(s.employeeId === emp.id && s.dayOfWeek === dayOfWeek),
-          ),
-        );
-        toast.info("Shift cleared", {
-          description: `${emp.name} — ${WEEKDAYS.find((w) => w.day === dayOfWeek)?.label}`,
-        });
+        // Open edit dialog for the first shift in the cell
+        setEditingShift(existing[0]);
+        setShiftDialogOpen(true);
       } else {
-        // Add a default day shift
-        const newShift: EmployeeShift = {
-          id: `es-new-${Date.now()}`,
-          employeeId: emp.id,
-          employeeName: emp.name,
-          employeeInitials: emp.initials,
-          department: emp.department,
-          role: emp.role,
-          dayOfWeek,
-          shift: "day",
-          startTime: "09:00",
-          endTime: "17:00",
-        };
-        setShifts((prev) => [...prev, newShift]);
-        toast.success("Shift added", {
-          description: `${emp.name} — ${WEEKDAYS.find((w) => w.day === dayOfWeek)?.label} 09:00–17:00`,
-        });
+        // Open new shift dialog pre-seeded with this employee
+        setEditingShift(null);
+        setShiftDialogOpen(true);
       }
     },
     [shiftsByCell],
+  );
+
+  const handleShiftSave = useCallback(
+    (data: Omit<EmployeeShift, 'id'> & { id?: string }) => {
+      setShifts((prev) => {
+        if (data.id) {
+          return prev.map(s => s.id === data.id ? { ...s, ...data, id: s.id } : s);
+        }
+        return [...prev, { ...data, id: `es-new-${Date.now()}` }];
+      });
+    },
+    [],
   );
 
   const totalShiftCount = shifts.length;
@@ -323,10 +318,7 @@ export function ControlShiftManager() {
             <Button
               size="sm"
               className="h-9 gap-2 rounded-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-              onClick={() => {
-                // TODO(backend): shifts.create(fields)
-                toast.success('Shift added');
-              }}
+              onClick={() => { setEditingShift(null); setShiftDialogOpen(true); }}
             >
               <Plus className="h-4 w-4" strokeWidth={1.5} />
               New shift
@@ -504,6 +496,14 @@ export function ControlShiftManager() {
           </div>
         </Card>
       </motion.div>
+
+      <ShiftFormDialog
+        open={shiftDialogOpen}
+        onOpenChange={setShiftDialogOpen}
+        employees={employees.map(e => ({ id: e.id, name: e.name }))}
+        initialShift={editingShift}
+        onSave={handleShiftSave}
+      />
     </PageShell>
   );
 }

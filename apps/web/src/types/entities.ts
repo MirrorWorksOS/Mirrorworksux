@@ -900,6 +900,9 @@ export interface ToolingItem {
   calibrationDueDate: string;
   status: ToolStatus;
   lastServiceDate: string;
+  /** Optional machine this tool is dedicated to */
+  linkedMachineId?: string;
+  linkedMachineName?: string;
 }
 
 /** Document with revision control */

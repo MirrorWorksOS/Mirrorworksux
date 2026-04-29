@@ -3,7 +3,7 @@
  * calibration tracking, and status badges.
  */
 import { useState, useEffect } from "react";
-import { Wrench } from "lucide-react";
+import { Wrench, Plus } from "lucide-react";
 import { motion } from "motion/react";
 
 import { controlService } from "@/services";
@@ -15,7 +15,9 @@ import { staggerItem } from "@/components/shared/motion/motion-variants";
 import { StatusBadge } from "@/components/shared/data/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
+import { ToolingFormDialog } from "./ToolingFormDialog";
 
 function lifeBarColour(percent: number): string {
   if (percent > 50) return "bg-[var(--mw-success)]";
@@ -57,10 +59,20 @@ function statusLabel(status: ToolingItem["status"]): string {
 
 export function ControlTooling() {
   const [items, setItems] = useState<ToolingItem[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     controlService.getToolingItems().then(setItems);
   }, []);
+
+  const handleSave = (data: Omit<ToolingItem, 'id' | 'lifePercent' | 'status'> & { id?: string }) => {
+    setItems(prev => [...prev, {
+      ...data,
+      id: `ti-new-${Date.now()}`,
+      lifePercent: 100,
+      status: 'available',
+    }]);
+  };
 
   return (
     <PageShell>
@@ -72,10 +84,20 @@ export function ControlTooling() {
           { label: "Tooling" },
         ]}
         actions={
-          <Badge variant="outline" className="gap-1.5">
-            <Wrench className="h-3.5 w-3.5" strokeWidth={1.5} />
-            {items.length} tools
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="gap-1.5">
+              <Wrench className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {items.length} tools
+            </Badge>
+            <Button
+              size="sm"
+              className="h-9 gap-2 rounded-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => setDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4" strokeWidth={1.5} />
+              Add tool
+            </Button>
+          </div>
         }
       />
 
@@ -132,6 +154,12 @@ export function ControlTooling() {
               cell: (item) => item.calibrationDueDate,
             },
             {
+              key: "linkedMachine",
+              header: "Linked Machine",
+              className: "text-sm text-[var(--neutral-500)]",
+              cell: (item) => item.linkedMachineName ?? '—',
+            },
+            {
               key: "status",
               header: "Status",
               cell: (item) => (
@@ -145,6 +173,12 @@ export function ControlTooling() {
           keyExtractor={(item) => item.id}
         />
       </motion.div>
+
+      <ToolingFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSave={handleSave}
+      />
     </PageShell>
   );
 }

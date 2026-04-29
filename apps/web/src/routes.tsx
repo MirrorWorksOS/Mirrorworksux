@@ -127,7 +127,6 @@ const ControlDashboard = lazyWithRetry(() => import('./components/control/Contro
 const ControlLocations = lazyWithRetry(() => import('./components/control/ControlLocations').then(m => ({ default: m.ControlLocations })));
 const ControlMachines = lazyWithRetry(() => import('./components/control/ControlMachines').then(m => ({ default: m.ControlMachines })));
 const ControlInventory = lazyWithRetry(() => import('./components/control/ControlInventory').then(m => ({ default: m.ControlInventory })));
-const ControlPurchase = lazyWithRetry(() => import('./components/control/ControlPurchase').then(m => ({ default: m.ControlPurchase })));
 const ControlPeople = lazyWithRetry(() => import('./components/control/ControlPeople').then(m => ({ default: m.ControlPeople })));
 const ControlProducts = lazyWithRetry(() => import('./components/control/ControlProducts').then(m => ({ default: m.ControlProducts })));
 const ControlBOMs = lazyWithRetry(() => import('./components/control/ControlBOMs').then(m => ({ default: m.ControlBOMs })));
@@ -441,7 +440,6 @@ export const router = createBrowserRouter([
           { path: 'locations', element: <L><ControlLocations /></L> },
           { path: 'machines', element: <L><ControlMachines /></L> },
           { path: 'inventory', element: <L><ControlInventory /></L> },
-          { path: 'purchase', element: <L><ControlPurchase /></L> },
           { path: 'people', element: <L><ControlPeople /></L> },
           { path: 'groups', element: <L><ControlGroups /></L> },
           { path: 'products', element: <L><ControlProducts /></L> },
