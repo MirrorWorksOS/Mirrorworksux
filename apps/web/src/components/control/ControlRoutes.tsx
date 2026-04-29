@@ -24,10 +24,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import { cn } from '@/components/ui/utils';
+import { operationCategoryColor } from '@/lib/operation-category-colors';
+import { RouteEditorSheet } from './RouteEditorSheet';
 
 export function ControlRoutes() {
   const [search, setSearch] = useState('');
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingRoute, setEditingRoute] = useState<StandardRoute | undefined>();
   const all = useMemo(() => routesLibraryService.list(), []);
 
   const filtered = useMemo(() => {
@@ -60,8 +64,8 @@ export function ControlRoutes() {
               size="sm"
               className="h-9 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
               onClick={() => {
-                // TODO(backend): routes.create(fields)
-                toast.success('Route created');
+                setEditingRoute(undefined);
+                setEditorOpen(true);
               }}
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" /> New route
@@ -85,7 +89,14 @@ export function ControlRoutes() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filtered.map((route) => (
-            <RouteCard key={route.id} route={route} />
+            <RouteCard
+              key={route.id}
+              route={route}
+              onEdit={() => {
+                setEditingRoute(route);
+                setEditorOpen(true);
+              }}
+            />
           ))}
           {filtered.length === 0 && (
             <Card variant="flat" className="p-8 text-center text-sm text-[var(--neutral-500)] col-span-full">
@@ -94,11 +105,23 @@ export function ControlRoutes() {
           )}
         </div>
       </motion.div>
+
+      <RouteEditorSheet
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        route={editingRoute}
+      />
     </PageShell>
   );
 }
 
-function RouteCard({ route }: { route: StandardRoute }) {
+function RouteCard({
+  route,
+  onEdit,
+}: {
+  route: StandardRoute;
+  onEdit: () => void;
+}) {
   const resolved = useMemo(() => routesLibraryService.resolve(route), [route]);
   const totalMinutes = resolved.reduce(
     (sum, s) => sum + (s.minutesOverride ?? s.operation.defaultMinutes),
@@ -124,10 +147,7 @@ function RouteCard({ route }: { route: StandardRoute }) {
           variant="outline"
           size="sm"
           className="h-8 text-xs shrink-0"
-          onClick={() => {
-            // TODO(backend): routes.update(route.id, fields)
-            toast.success(`${route.name} saved`);
-          }}
+          onClick={onEdit}
         >
           Edit
         </Button>
@@ -149,17 +169,20 @@ function RouteCard({ route }: { route: StandardRoute }) {
         {resolved.map((step, idx) => {
           const op = step.operation;
           const std = operationsLibraryService.byId(op.id);
+          const colour = operationCategoryColor(op.category);
           return (
             <div key={`${op.id}-${idx}`} className="inline-flex items-center">
               <span
-                className={
-                  'inline-flex items-center gap-1.5 rounded-[var(--shape-sm)] border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-1 text-[11px]'
-                }
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-[var(--shape-sm)] border px-2 py-1 text-[11px]',
+                  colour.bg,
+                  colour.border,
+                )}
               >
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--mw-mirage)] text-white text-[9px] font-medium tabular-nums">
                   {idx + 1}
                 </span>
-                <span className="font-medium text-foreground">{op.name}</span>
+                <span className={cn('font-medium', colour.text)}>{op.name}</span>
                 <span className="text-[var(--neutral-500)] tabular-nums">
                   · {step.minutesOverride ?? std?.defaultMinutes ?? op.defaultMinutes}m
                 </span>

@@ -14,7 +14,11 @@ import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { IconWell } from '@/components/shared/icons/IconWell';
-import { toast } from 'sonner';
+import {
+  LocationFormDialog,
+  type LocationFormValues,
+  type LocationType,
+} from './LocationFormDialog';
 
 
 const LOCATIONS = [
@@ -77,11 +81,27 @@ const TYPE_CONFIG: Record<string, { icon: any; badge: string; text: string }> = 
 
 export function ControlLocations() {
   const [search, setSearch] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<Partial<LocationFormValues> | undefined>();
 
   const filtered = LOCATIONS.filter(l =>
     l.name.toLowerCase().includes(search.toLowerCase()) ||
     l.address.toLowerCase().includes(search.toLowerCase())
   );
+
+  const openEdit = (loc: typeof LOCATIONS[number]) => {
+    setEditing({
+      id: loc.id,
+      name: loc.name,
+      type: loc.type as LocationType,
+      address: loc.address,
+      phone: loc.phone,
+      floorArea: loc.floorArea,
+      zones: loc.zones,
+      status: loc.status as 'active' | 'inactive',
+    });
+    setDialogOpen(true);
+  };
 
   return (
     <PageShell>
@@ -92,8 +112,8 @@ export function ControlLocations() {
           <Button
             className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
             onClick={() => {
-              // TODO(backend): locations.create(fields)
-              toast.success('Location created');
+              setEditing(undefined);
+              setDialogOpen(true);
             }}
           >
             <Plus className="w-4 h-4" /> New location
@@ -122,6 +142,7 @@ export function ControlLocations() {
               <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                 <Card
                   variant="flat"
+                  onClick={() => openEdit(loc)}
                   className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                 >
                 <div className="flex items-start justify-between mb-4">
@@ -180,6 +201,12 @@ export function ControlLocations() {
           );
         })}
       </div>
+
+      <LocationFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        location={editing}
+      />
     </PageShell>
   );
 }
