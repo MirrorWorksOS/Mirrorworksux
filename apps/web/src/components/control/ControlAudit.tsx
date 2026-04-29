@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { mockActivity } from './people/mock-data';
 import type { ActivityEvent, AuditCategory } from './people/types';
 
@@ -28,6 +28,68 @@ function formatDate(iso: string | undefined, fallback: string): string {
     return fallback;
   }
 }
+
+const auditColumns: MwColumnDef<ActivityEvent>[] = [
+  {
+    key: 'when',
+    header: 'When',
+    headerClassName: 'w-40',
+    cell: (e) => (
+      <div className="text-xs text-muted-foreground">
+        <div>{formatDate(e.occurredAt, e.timestamp)}</div>
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{e.timestamp}</div>
+      </div>
+    ),
+  },
+  {
+    key: 'category',
+    header: 'Category',
+    headerClassName: 'w-40',
+    cell: (e) => {
+      const meta = e.category ? CATEGORY_META[e.category] : null;
+      return meta ? (
+        <Badge className={meta.className} variant="secondary">{meta.label}</Badge>
+      ) : (
+        <span className="text-xs text-muted-foreground">—</span>
+      );
+    },
+  },
+  {
+    key: 'actor',
+    header: 'Actor',
+    headerClassName: 'w-48',
+    cell: (e) => <span className="text-sm">{e.actorName}</span>,
+  },
+  {
+    key: 'event',
+    header: 'Event',
+    cell: (e) => <span className="text-sm">{e.message}</span>,
+  },
+  {
+    key: 'target',
+    header: 'Target',
+    cell: (e) => (
+      <span className="text-sm text-muted-foreground">
+        {e.targetLabel ?? '—'}
+        {e.ip && <div className="text-[10px] uppercase tracking-wide">IP {e.ip}</div>}
+      </span>
+    ),
+  },
+  {
+    key: 'change',
+    header: 'Before → After',
+    cell: (e) =>
+      e.before || e.after ? (
+        <span className="text-xs text-muted-foreground">
+          <span className="text-red-600">{e.before ?? '—'}</span>
+          <span className="mx-1">→</span>
+          <span className="text-emerald-700">{e.after ?? '—'}</span>
+        </span>
+      ) : (
+        <span className="text-xs text-muted-foreground">—</span>
+      ),
+  },
+];
 
 export function ControlAudit() {
   const [category, setCategory] = useState<AuditCategory | 'all'>('all');
@@ -105,60 +167,17 @@ export function ControlAudit() {
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-40">When</TableHead>
-              <TableHead className="w-40">Category</TableHead>
-              <TableHead className="w-48">Actor</TableHead>
-              <TableHead>Event</TableHead>
-              <TableHead>Target</TableHead>
-              <TableHead>Before → After</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map(e => {
-              const meta = e.category ? CATEGORY_META[e.category] : null;
-              return (
-                <TableRow key={e.id}>
-                  <TableCell className="text-xs text-muted-foreground">
-                    <div>{formatDate(e.occurredAt, e.timestamp)}</div>
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{e.timestamp}</div>
-                  </TableCell>
-                  <TableCell>
-                    {meta ? (
-                      <Badge className={meta.className} variant="secondary">{meta.label}</Badge>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm">{e.actorName}</TableCell>
-                  <TableCell className="text-sm">{e.message}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {e.targetLabel ?? '—'}
-                    {e.ip && <div className="text-[10px] uppercase tracking-wide">IP {e.ip}</div>}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {e.before || e.after ? (
-                      <span>
-                        <span className="text-red-600">{e.before ?? '—'}</span>
-                        <span className="mx-1">→</span>
-                        <span className="text-emerald-700">{e.after ?? '—'}</span>
-                      </span>
-                    ) : '—'}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            {filtered.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
-                  No events match the current filter.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <MwDataTable<ActivityEvent>
+          columns={auditColumns}
+          data={filtered}
+          keyExtractor={(e) => e.id}
+          className="border-0 shadow-none"
+          emptyState={
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              No events match the current filter.
+            </div>
+          }
+        />
 
         <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1"><CreditCard className="h-3 w-3" /> Append-only log — entries cannot be edited or deleted.</span>
