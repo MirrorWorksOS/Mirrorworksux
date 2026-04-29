@@ -17,9 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { toast } from 'sonner';
 import { purchaseOrders } from '@/services';
 import { AGREEMENTS, type BuyAgreement } from './BuyAgreements';
@@ -206,47 +204,52 @@ export function BuyAgreementDetail() {
 
       case 'linked-pos':
         return (
-          <Card className="p-0 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">PO #</TableHead>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {linkedPOs.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-xs text-[var(--neutral-500)] py-8">
-                      No purchase orders linked to this agreement yet.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {linkedPOs.map((po) => (
-                  <TableRow key={po.id}>
-                    <TableCell className="text-xs font-medium tabular-nums">
-                      <Link to={`/buy/orders/${po.id}`} className="text-[var(--mw-blue)] hover:underline">
-                        {po.poNumber}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-xs tabular-nums text-[var(--neutral-500)]">
-                      {new Date(po.date).toLocaleDateString('en-AU')}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={po.status === 'acknowledged' ? 'approved' : po.status === 'partial' ? 'in_progress' : po.status}>
-                        {po.status}
-                      </StatusBadge>
-                    </TableCell>
-                    <TableCell className="text-xs text-right tabular-nums font-medium">
-                      {fmtCurrency(po.total)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+          <MwDataTable<typeof linkedPOs[number]>
+            columns={[
+              {
+                key: 'po',
+                header: 'PO #',
+                headerClassName: 'text-xs',
+                className: 'text-xs font-medium tabular-nums',
+                cell: (po) => (
+                  <Link to={`/buy/orders/${po.id}`} className="text-[var(--mw-blue)] hover:underline">
+                    {po.poNumber}
+                  </Link>
+                ),
+              },
+              {
+                key: 'date',
+                header: 'Date',
+                headerClassName: 'text-xs',
+                className: 'text-xs tabular-nums text-[var(--neutral-500)]',
+                cell: (po) => new Date(po.date).toLocaleDateString('en-AU'),
+              },
+              {
+                key: 'status',
+                header: 'Status',
+                headerClassName: 'text-xs',
+                cell: (po) => (
+                  <StatusBadge status={po.status === 'acknowledged' ? 'approved' : po.status === 'partial' ? 'in_progress' : po.status}>
+                    {po.status}
+                  </StatusBadge>
+                ),
+              },
+              {
+                key: 'total',
+                header: 'Total',
+                headerClassName: 'text-xs text-right',
+                className: 'text-xs text-right tabular-nums font-medium',
+                cell: (po) => fmtCurrency(po.total),
+              },
+            ]}
+            data={linkedPOs}
+            keyExtractor={(po) => po.id}
+            emptyState={
+              <div className="text-center text-xs text-[var(--neutral-500)] py-8">
+                No purchase orders linked to this agreement yet.
+              </div>
+            }
+          />
         );
 
       case 'documents':
