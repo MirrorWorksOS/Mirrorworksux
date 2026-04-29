@@ -111,7 +111,7 @@ export function SellOpportunityRecommendedActions({
                     type="button"
                     size="sm"
                     variant="outline"
-                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
+                    className={cn(PRIMARY_LEADING, 'bg-card hover:bg-[var(--neutral-50)]')}
                     onClick={() =>
                       openSheet('call', {
                         activityType: 'call',
@@ -149,7 +149,7 @@ export function SellOpportunityRecommendedActions({
                     type="button"
                     size="sm"
                     variant="outline"
-                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
+                    className={cn(PRIMARY_LEADING, 'bg-card hover:bg-[var(--neutral-50)]')}
                     onClick={() => navigate('/sell/quotes/new')}
                   >
                     Open builder
@@ -182,7 +182,7 @@ export function SellOpportunityRecommendedActions({
                     type="button"
                     size="sm"
                     variant="outline"
-                    className={cn(PRIMARY_LEADING, 'bg-white hover:bg-[var(--neutral-50)]')}
+                    className={cn(PRIMARY_LEADING, 'bg-card hover:bg-[var(--neutral-50)]')}
                     onClick={() =>
                       openSheet('visit', {
                         activityType: 'meeting',

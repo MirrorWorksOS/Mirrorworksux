@@ -189,7 +189,7 @@ export function SplitSegmentDateTimePopover({
           aria-label={ariaLabel}
           aria-expanded={open}
           className={cn(
-            "group h-10 min-h-0 w-auto shrink-0 rounded-l-none rounded-r-[var(--shape-md)] border-l-0 bg-white px-2.5 font-normal hover:bg-[var(--neutral-50)] sm:h-12 sm:min-h-[48px] sm:px-3",
+            "group h-10 min-h-0 w-auto shrink-0 rounded-l-none rounded-r-[var(--shape-md)] border-l-0 bg-card px-2.5 font-normal hover:bg-[var(--neutral-50)] sm:h-12 sm:min-h-[48px] sm:px-3",
             "data-[state=open]:bg-[var(--neutral-50)] data-[state=open]:shadow-[inset_0_0_0_1px_var(--neutral-200)]",
             "flex flex-row items-center gap-1.5",
             className,

@@ -226,7 +226,7 @@ export function PortalContactsPanel({
             return (
               <div
                 key={c.id}
-                className="flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-white px-4 py-3"
+                className="flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-card px-4 py-3"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--neutral-200)] text-xs font-semibold text-[var(--mw-mirage)]">
                   {c.name

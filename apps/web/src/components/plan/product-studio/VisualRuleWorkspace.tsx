@@ -239,7 +239,7 @@ function BlockEditor({
     return row(
       <div className="space-y-3">
         {block.branches.map((br, idx) => (
-          <div key={br.id} className="rounded-md bg-white border border-[var(--neutral-200)] p-2 space-y-2">
+          <div key={br.id} className="rounded-md bg-card border border-[var(--neutral-200)] p-2 space-y-2">
             <div className="text-[10px] font-medium text-[var(--mw-mirage)]">
               {br.condition === null ? 'Otherwise (when nothing above matched)' : idx === 0 ? 'When' : 'Else when'}
             </div>
@@ -687,7 +687,7 @@ function VisualRuleWorkspaceInner() {
             </div>
             <div className="space-y-1">
               {engine.variables.map((v) => (
-                <div key={v.id} className="flex items-center justify-between gap-2 text-xs bg-white border border-[var(--neutral-200)] rounded-lg px-2 py-1.5">
+                <div key={v.id} className="flex items-center justify-between gap-2 text-xs bg-card border border-[var(--neutral-200)] rounded-lg px-2 py-1.5">
                   <span className="truncate">{v.label}</span>
                   <span className="text-[10px] text-muted-foreground shrink-0">{v.kind}</span>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => removeVariable(v.id)} disabled={locked}>
@@ -730,7 +730,7 @@ function VisualRuleWorkspaceInner() {
               </Button>
             </div>
             {engine.lookupTables.map((t) => (
-              <div key={t.id} className="border border-[var(--neutral-200)] rounded-lg p-2 space-y-2 bg-white">
+              <div key={t.id} className="border border-[var(--neutral-200)] rounded-lg p-2 space-y-2 bg-card">
                 <Input
                   className="h-7 text-xs"
                   value={t.label}

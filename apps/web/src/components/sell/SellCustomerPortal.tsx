@@ -890,7 +890,7 @@ function PreviewBanner({
               Viewing as
             </span>
             <Select value={customerId} onValueChange={onChangeCustomer}>
-              <SelectTrigger className="h-8 w-[220px] border-[var(--mw-yellow-300)] bg-white text-xs">
+              <SelectTrigger className="h-8 w-[220px] border-[var(--mw-yellow-300)] bg-card text-xs">
                 <SelectValue placeholder="Select customer" />
               </SelectTrigger>
               <SelectContent>
