@@ -369,7 +369,8 @@ export function MakeDashboard() {
           <KpiStatCard
             layout="compact"
             label="Machines Running"
-            value={runningCount}
+            value=""
+            animatedValue={runningCount}
             icon={Activity}
             valueClassName="text-3xl font-bold"
           />
@@ -378,7 +379,9 @@ export function MakeDashboard() {
           <KpiStatCard
             layout="compact"
             label="Completion Rate"
-            value="87%"
+            value=""
+            animatedValue={87}
+            format={(n) => `${n}%`}
             icon={TrendingUp}
             valueClassName="text-3xl font-bold"
           />
@@ -387,7 +390,8 @@ export function MakeDashboard() {
           <KpiStatCard
             layout="compact"
             label="Quality Holds"
-            value={3}
+            value=""
+            animatedValue={3}
             icon={ShieldAlert}
             valueClassName="text-3xl font-bold text-[var(--mw-warning)]"
           />
@@ -396,7 +400,9 @@ export function MakeDashboard() {
           <KpiStatCard
             layout="compact"
             label="OEE Utilisation"
-            value={`${avgUtilization}%`}
+            value=""
+            animatedValue={avgUtilization}
+            format={(n) => `${n}%`}
             icon={BarChart3}
             valueClassName="text-3xl font-bold"
           />
