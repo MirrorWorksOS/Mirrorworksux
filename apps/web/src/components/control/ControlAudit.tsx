@@ -10,12 +10,12 @@ import { mockActivity } from './people/mock-data';
 import type { ActivityEvent, AuditCategory } from './people/types';
 
 const CATEGORY_META: Record<AuditCategory, { label: string; className: string }> = {
-  permission: { label: 'Permission', className: 'bg-blue-100 text-blue-800' },
-  membership: { label: 'Membership', className: 'bg-indigo-100 text-indigo-800' },
-  invite: { label: 'User lifecycle', className: 'bg-emerald-100 text-emerald-800' },
-  tier: { label: 'Tier', className: 'bg-amber-100 text-amber-800' },
-  auth: { label: 'Auth', className: 'bg-slate-100 text-slate-800' },
-  denial: { label: 'Access denied', className: 'bg-red-100 text-red-800' },
+  permission: { label: 'Permission', className: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' },
+  membership: { label: 'Membership', className: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300' },
+  invite: { label: 'User lifecycle', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' },
+  tier: { label: 'Tier', className: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' },
+  auth: { label: 'Auth', className: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200' },
+  denial: { label: 'Access denied', className: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300' },
 };
 
 function formatDate(iso: string | undefined, fallback: string): string {

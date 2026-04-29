@@ -159,7 +159,7 @@ export function DrawingViewer({ src, className }: DrawingViewerProps) {
     <div ref={rootRef} className={className}>
       <div className="grid grid-cols-2 grid-rows-2 gap-px bg-[var(--border)] h-full">
         {(Object.keys(VIEW_LABELS) as ViewKey[]).map((view) => (
-          <div key={view} className="relative bg-white">
+          <div key={view} className="relative bg-white dark:bg-card">
             <div
               data-view={view}
               className="absolute inset-0"

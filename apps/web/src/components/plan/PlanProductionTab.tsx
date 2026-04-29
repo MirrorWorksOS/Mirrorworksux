@@ -129,9 +129,9 @@ export function PlanProductionTab() {
         </div>
 
         <div className="p-6">
-          <div className="aspect-[16/9] bg-white border border-[var(--border)] rounded-[var(--shape-md)] relative overflow-hidden">
+          <div className="aspect-[16/9] bg-white dark:bg-card border border-[var(--border)] rounded-[var(--shape-md)] relative overflow-hidden">
             <DrawingViewer src="/models/diff.glb" className="absolute inset-0" />
-            <div className="absolute bottom-3 right-3 w-48 border border-[var(--neutral-200)] bg-white/90 p-2 pointer-events-none">
+            <div className="absolute bottom-3 right-3 w-48 border border-[var(--neutral-200)] bg-white/90 dark:bg-card/90 p-2 pointer-events-none">
               <p className="text-[9px] font-medium text-[var(--neutral-500)]">MIRRORWORKS</p>
               <p className="text-[8px] text-[var(--neutral-500)]">{activePart?.name}</p>
               <p className="text-[8px] text-[var(--neutral-500)]">Part: {activePart?.partNumber}</p>
