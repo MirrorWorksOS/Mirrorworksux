@@ -12,17 +12,9 @@ import type { CarrierRate } from "@/types/entities";
 import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 
 type SortField = "priceAud" | "estimatedDays";
 
@@ -76,68 +68,72 @@ export function ShipCarrierRates() {
       />
 
       <motion.div variants={staggerItem}>
-        <Card variant="flat" className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Carrier</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>
-                  <button
-                    type="button"
-                    className="inline-flex items-center hover:text-foreground"
-                    onClick={() => handleSort("estimatedDays")}
-                  >
-                    Est. Days
-                    {sortIcon("estimatedDays")}
-                  </button>
-                </TableHead>
-                <TableHead className="text-right">
-                  <button
-                    type="button"
-                    className="inline-flex items-center hover:text-foreground"
-                    onClick={() => handleSort("priceAud")}
-                  >
-                    Price (AUD)
-                    {sortIcon("priceAud")}
-                  </button>
-                </TableHead>
-                <TableHead className="text-center">Pickup Available</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sorted.map((rate) => (
-                <TableRow key={rate.id}>
-                  <TableCell className="font-medium">
-                    {rate.carrierName}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{rate.service}</Badge>
-                  </TableCell>
-                  <TableCell className="font-mono">
-                    {rate.estimatedDays}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    ${rate.priceAud.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {rate.pickupAvailable ? (
-                      <CheckCircle2
-                        className="mx-auto h-4 w-4 text-[var(--mw-success)]"
-                        strokeWidth={1.5}
-                      />
-                    ) : (
-                      <XCircle
-                        className="mx-auto h-4 w-4 text-[var(--neutral-400)]"
-                        strokeWidth={1.5}
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <MwDataTable<CarrierRate>
+          columns={[
+            {
+              key: "carrier",
+              header: "Carrier",
+              className: "font-medium",
+              cell: (rate) => rate.carrierName,
+            },
+            {
+              key: "service",
+              header: "Service",
+              cell: (rate) => <Badge variant="outline">{rate.service}</Badge>,
+            },
+            {
+              key: "days",
+              header: (
+                <button
+                  type="button"
+                  className="inline-flex items-center hover:text-foreground"
+                  onClick={() => handleSort("estimatedDays")}
+                >
+                  Est. Days
+                  {sortIcon("estimatedDays")}
+                </button>
+              ),
+              className: "font-mono",
+              cell: (rate) => rate.estimatedDays,
+            },
+            {
+              key: "price",
+              header: (
+                <button
+                  type="button"
+                  className="inline-flex items-center hover:text-foreground"
+                  onClick={() => handleSort("priceAud")}
+                >
+                  Price (AUD)
+                  {sortIcon("priceAud")}
+                </button>
+              ),
+              headerClassName: "text-right",
+              className: "text-right font-mono",
+              cell: (rate) => `$${rate.priceAud.toFixed(2)}`,
+            },
+            {
+              key: "pickup",
+              header: "Pickup Available",
+              headerClassName: "text-center",
+              className: "text-center",
+              cell: (rate) =>
+                rate.pickupAvailable ? (
+                  <CheckCircle2
+                    className="mx-auto h-4 w-4 text-[var(--mw-success)]"
+                    strokeWidth={1.5}
+                  />
+                ) : (
+                  <XCircle
+                    className="mx-auto h-4 w-4 text-[var(--neutral-400)]"
+                    strokeWidth={1.5}
+                  />
+                ),
+            },
+          ]}
+          data={sorted}
+          keyExtractor={(rate) => rate.id}
+        />
       </motion.div>
     </PageShell>
   );
