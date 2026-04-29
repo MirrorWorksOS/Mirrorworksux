@@ -30,14 +30,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 
@@ -466,24 +458,28 @@ export function SellInvoiceDetail() {
                     View all
                   </Button>
                 </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Item</TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">Qty</TableHead>
-                      <TableHead className="text-xs font-medium uppercase tracking-wider text-muted-foreground text-right tabular-nums">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lineItems.slice(0, 3).map((li) => (
-                      <TableRow key={li.id} className="min-h-14">
-                        <TableCell className="text-sm">{li.item}</TableCell>
-                        <TableCell className="text-right text-sm tabular-nums">{li.qty}</TableCell>
-                        <TableCell className="text-right text-sm font-medium tabular-nums">{fmt(li.total)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <MwDataTable<InvoiceLineItem>
+                  columns={[
+                    { key: "item", header: "Item", className: "text-sm", cell: (li) => li.item },
+                    {
+                      key: "qty",
+                      header: "Qty",
+                      headerClassName: "text-right",
+                      className: "text-right text-sm tabular-nums",
+                      cell: (li) => li.qty,
+                    },
+                    {
+                      key: "total",
+                      header: "Total",
+                      headerClassName: "text-right",
+                      className: "text-right text-sm font-medium tabular-nums",
+                      cell: (li) => fmt(li.total),
+                    },
+                  ]}
+                  data={lineItems.slice(0, 3)}
+                  keyExtractor={(li) => li.id}
+                  className="border-0 shadow-none rounded-none"
+                />
               </Card>
             </div>
           </div>

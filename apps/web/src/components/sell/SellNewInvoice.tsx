@@ -19,14 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -205,106 +198,103 @@ export function SellNewInvoice() {
               Add line
             </Button>
           </div>
-          <div className="overflow-x-auto rounded-[var(--shape-md)] border border-[var(--border)]">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[var(--neutral-50)]">
-                  <TableHead className="text-xs uppercase tracking-wider text-[var(--neutral-500)]">
-                    Item code
-                  </TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-[var(--neutral-500)]">
-                    Description
-                  </TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-[var(--neutral-500)] w-24 text-right tabular-nums">
-                    Qty
-                  </TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-[var(--neutral-500)] w-32 text-right tabular-nums">
-                    Unit price
-                  </TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-[var(--neutral-500)] w-32 text-right tabular-nums">
-                    Line total
-                  </TableHead>
-                  <TableHead className="w-12" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lines.map((row) => {
+          <MwDataTable<LineRow>
+            columns={[
+              {
+                key: "item",
+                header: "Item code",
+                cell: (row) => (
+                  <Input
+                    className="h-9 border-[var(--border)]"
+                    value={row.item}
+                    onChange={(e) => updateLine(row.id, { item: e.target.value })}
+                    placeholder="PROD-001"
+                  />
+                ),
+              },
+              {
+                key: "description",
+                header: "Description",
+                cell: (row) => (
+                  <Input
+                    className="h-9 border-[var(--border)]"
+                    value={row.description}
+                    onChange={(e) => updateLine(row.id, { description: e.target.value })}
+                    placeholder="Description"
+                  />
+                ),
+              },
+              {
+                key: "qty",
+                header: "Qty",
+                headerClassName: "w-24 text-right",
+                className: "w-24",
+                cell: (row) => (
+                  <Input
+                    type="number"
+                    min={0}
+                    className="h-9 border-[var(--border)] text-right tabular-nums"
+                    value={row.qty}
+                    onChange={(e) =>
+                      updateLine(row.id, { qty: Number(e.target.value) || 0 })
+                    }
+                  />
+                ),
+              },
+              {
+                key: "unitPrice",
+                header: "Unit price",
+                headerClassName: "w-32 text-right",
+                className: "w-32",
+                cell: (row) => (
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    className="h-9 border-[var(--border)] text-right tabular-nums"
+                    value={row.unitPrice || ""}
+                    onChange={(e) =>
+                      updateLine(row.id, { unitPrice: Number(e.target.value) || 0 })
+                    }
+                  />
+                ),
+              },
+              {
+                key: "total",
+                header: "Line total",
+                headerClassName: "w-32 text-right",
+                className: "w-32 text-right text-sm font-medium tabular-nums text-foreground",
+                cell: (row) => {
                   const lineTotal =
-                    Math.round(Math.max(0, row.qty) * Math.max(0, row.unitPrice) * 100) /
-                    100;
-                  return (
-                    <TableRow key={row.id}>
-                      <TableCell>
-                        <Input
-                          className="h-9 border-[var(--border)]"
-                          value={row.item}
-                          onChange={(e) =>
-                            updateLine(row.id, { item: e.target.value })
-                          }
-                          placeholder="PROD-001"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          className="h-9 border-[var(--border)]"
-                          value={row.description}
-                          onChange={(e) =>
-                            updateLine(row.id, { description: e.target.value })
-                          }
-                          placeholder="Description"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          min={0}
-                          className="h-9 border-[var(--border)] text-right tabular-nums"
-                          value={row.qty}
-                          onChange={(e) =>
-                            updateLine(row.id, {
-                              qty: Number(e.target.value) || 0,
-                            })
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          className="h-9 border-[var(--border)] text-right tabular-nums"
-                          value={row.unitPrice || ""}
-                          onChange={(e) =>
-                            updateLine(row.id, {
-                              unitPrice: Number(e.target.value) || 0,
-                            })
-                          }
-                        />
-                      </TableCell>
-                      <TableCell className="text-right text-sm font-medium tabular-nums text-foreground">
-                        ${lineTotal.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-[var(--neutral-500)]"
-                          onClick={() => removeLine(row.id)}
-                          aria-label="Remove line"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                    Math.round(Math.max(0, row.qty) * Math.max(0, row.unitPrice) * 100) / 100;
+                  return `$${lineTotal.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`;
+                },
+              },
+              {
+                key: "remove",
+                header: "",
+                headerClassName: "w-12",
+                className: "w-12",
+                cell: (row) => (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-[var(--neutral-500)]"
+                    onClick={() => removeLine(row.id)}
+                    aria-label="Remove line"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ),
+              },
+            ]}
+            data={lines}
+            keyExtractor={(row) => row.id}
+          />
 
           <div className="mt-6 flex flex-col items-end gap-2 border-t border-[var(--border)] pt-4">
             <div className="flex w-full max-w-xs justify-between text-sm text-[var(--neutral-600)]">
