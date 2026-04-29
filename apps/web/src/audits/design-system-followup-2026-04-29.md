@@ -2,6 +2,8 @@
 
 Companion to [`design-system-audit-2026-04-29.md`](./design-system-audit-2026-04-29.md). Captures what's still open after the big multi-commit sweep on 2026-04-29.
 
+> **Update:** Several backlog items in this note have since landed in follow-up commits — `dd29518e` (RouteBreadcrumbs helper), `32da9781` (3 Sell detail pages migrated to `MwDataTable`), `e965a0d2` (`MwDataTable.expandable` + BookCostVariance + ControlDocuments), `9d4e7197` (StatusBadge pulse), `276083a1` (SellCustomerPortal tables), `8814c1ca` (ClickSpark on every `ToolbarPrimaryButton`). The "Backlog" table at the bottom is annotated to reflect what's still open.
+
 ---
 
 ## What landed today
@@ -79,18 +81,21 @@ The 2026-04-03 audit flagged shop-floor (`/floor/*`, `make/shop-floor/*`) as a h
 
 ## Backlog ranked by effort vs impact
 
-| # | Item | Effort | Impact | Notes |
-|---|---|---|---|---|
-| 1 | Sell detail-page tables → `FinancialTable` | Medium-High (~4 files × 5 tables) | High (customer-facing portal) | A2 above |
-| 2 | Breadcrumbs on list views (per-file) | Low | Medium | B above; or build `<RouteBreadcrumbs>` instead |
-| 3 | `BookCostVariance` + `ControlDocuments` migration after `MwDataTable` gets `expandable` | Medium | Medium | A1 above |
-| 4 | PlanBudgetTab + PlanJobDetail Card-class cleanup | Low | Low | C above — wait for permission rename to land |
-| 5 | `StatusBadge` pulse + `ClickSpark`/`SplitText` adoption | Low | Low | D above |
-| 6 | Mobile design pass | High | Medium | F above |
-| 7 | Shop-floor design pass | High | Medium | G above |
-| 8 | Module dashboard shell decision | Medium | Low | E above |
-| 9 | Admin console table migration (or live with mismatch) | Medium | Low | A1 above |
-| 10 | `BuyPlanningGrid` — keep or build `<PlanningGrid>` | Medium | Low | A3 above |
+| # | Item | Status | Effort | Impact | Notes |
+|---|---|---|---|---|---|
+| 1 | Sell detail-page tables → `FinancialTable` | ✅ done in `32da9781` (Order/Invoice/NewInvoice) + `276083a1` (CustomerPortal) | — | High | All four files migrated. Currency line items + per-row actions intact. |
+| 2 | Breadcrumbs on list views | ✅ done in `dd29518e` — `RouteBreadcrumbs` helper added; `PageHeader` auto-derives crumbs from React Router matches | — | Medium | No more per-file boilerplate. |
+| 3 | `BookCostVariance` + `ControlDocuments` migration | ✅ done in `e965a0d2` — `MwDataTable` got `expandable` prop and both files migrated | — | Medium | |
+| 4 | PlanBudgetTab + PlanJobDetail Card-class cleanup | ⏳ still blocked | Low | Low | Wait for the `userRole → canViewBudget` permission rename to land. |
+| 5a | `StatusBadge` pulse | ✅ done in `9d4e7197` | — | Low | |
+| 5b | `SplitText` adoption on dashboard greeting | ✅ already wired (WelcomeDashboard line 265) | — | Low | |
+| 5c | `ClickSpark` adoption | ✅ done in `8814c1ca` — wrapped every `ToolbarPrimaryButton` | — | Low | One change → ripples to every "New Customer / New Quote / New Order" pill. |
+| 5d | List → detail shared-axis transitions | ⏳ still open | High | Medium | Needs cross-page shared element registration (motion `layoutId` doesn't span unmount → mount across separate routes). Multi-day feature; treat as its own task. |
+| 6 | Mobile design pass | ⏳ still open | High | Medium | F above |
+| 7 | Shop-floor design pass | ⏳ still open | High | Medium | G above |
+| 8 | Module dashboard shell decision | ⏳ still open | Medium | Low | E above |
+| 9 | Admin console table migration (or live with mismatch) | ⏳ still open by design | Medium | Low | Slate-themed. Would clash with `MwDataTable` brand-light hover unless `MwDataTable` gets a `dark` variant. |
+| 10 | `BuyPlanningGrid` — keep or build `<PlanningGrid>` | ⏳ still open | Medium | Low | A3 above |
 
 ---
 
