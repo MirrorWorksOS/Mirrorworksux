@@ -94,7 +94,10 @@ const GROUPS: GroupConfig[] = [
 
 const TIME_RANGES = ['Week', 'Month', 'Quarter', 'Year'];
 
-const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRow>[] => [
+const targetColumns = (
+  toggleTarget: (id: string) => void,
+  onEdit: (t: TargetRow) => void,
+): MwColumnDef<TargetRow>[] => [
   {
     key: 'target',
     header: 'Target',
@@ -139,7 +142,7 @@ const targetColumns = (toggleTarget: (id: string) => void): MwColumnDef<TargetRo
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={(e) => { e.stopPropagation(); setEditingTarget({ id: t.id, target: t.target, metric: t.metric, period: t.period, value: t.value, status: t.status, enabled: t.enabled }); setTargetDialogOpen(true); }}
+          onClick={(e) => { e.stopPropagation(); onEdit(t); }}
         >
           <Pencil className="w-3.5 h-3.5 text-[var(--neutral-500)]" />
         </Button>
@@ -249,7 +252,7 @@ export function ControlGamification() {
           />
 
           <MwDataTable
-            columns={targetColumns(toggleTarget)}
+            columns={targetColumns(toggleTarget, (t) => { setEditingTarget({ id: t.id, target: t.target, metric: t.metric, period: t.period, value: t.value, status: t.status, enabled: t.enabled }); setTargetDialogOpen(true); })}
             data={targets}
             keyExtractor={(t) => t.id}
             selectable
