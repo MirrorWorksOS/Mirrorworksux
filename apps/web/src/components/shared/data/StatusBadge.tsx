@@ -122,11 +122,28 @@ const DOT_COLOUR_MAP: Record<NonNullable<VariantProps<typeof statusBadgeVariants
   accent: "bg-[var(--mw-yellow-400)]",
 };
 
+/**
+ * Live statuses that auto-pulse the dot when withDot is on. Override
+ * with the `pulse` prop (true to force on, false to suppress).
+ */
+const LIVE_STATUSES = new Set<string>([
+  "in_progress",
+  "inProgress",
+  "progress",
+  "producing",
+]);
+
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   status?: string;
   priority?: string;
   variant?: VariantProps<typeof statusBadgeVariants>["status"];
   withDot?: boolean;
+  /**
+   * Animate the dot with a soft outer pulse — signals "live / in progress".
+   * Defaults to true for live status keys (`in_progress`, `producing`, etc.)
+   * when `withDot` is on; pass `false` to suppress.
+   */
+  pulse?: boolean;
   children?: React.ReactNode;
 }
 
@@ -135,6 +152,7 @@ function StatusBadge({
   priority,
   variant: variantProp,
   withDot = false,
+  pulse,
   children,
   className,
   ...props
@@ -144,6 +162,8 @@ function StatusBadge({
     (status ? STATUS_VARIANT_MAP[status as StatusKey] : undefined) ??
     (priority ? PRIORITY_VARIANT_MAP[priority as PriorityKey] : undefined) ??
     "neutral";
+
+  const isLive = pulse ?? (status !== undefined && LIVE_STATUSES.has(status));
 
   const label =
     children ??
@@ -158,12 +178,23 @@ function StatusBadge({
       {...props}
     >
       {withDot && (
-        <span
-          className={cn(
-            "w-2 h-2 rounded-full shrink-0",
-            DOT_COLOUR_MAP[resolvedVariant ?? "neutral"],
+        <span className="relative inline-flex h-2 w-2 shrink-0">
+          {isLive && (
+            <span
+              aria-hidden
+              className={cn(
+                "absolute inset-0 rounded-full opacity-60 motion-safe:animate-ping",
+                DOT_COLOUR_MAP[resolvedVariant ?? "neutral"],
+              )}
+            />
           )}
-        />
+          <span
+            className={cn(
+              "relative h-2 w-2 rounded-full",
+              DOT_COLOUR_MAP[resolvedVariant ?? "neutral"],
+            )}
+          />
+        </span>
       )}
       {label}
     </span>
