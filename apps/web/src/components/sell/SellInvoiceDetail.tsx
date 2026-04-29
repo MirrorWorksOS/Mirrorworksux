@@ -364,7 +364,7 @@ export function SellInvoiceDetail() {
             {/* Left column */}
             <div className="space-y-6">
               {/* Invoice details card */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-1 text-base font-medium text-foreground">
                   Invoice details
                 </h2>
@@ -413,7 +413,7 @@ export function SellInvoiceDetail() {
               </Card>
 
               {/* Notes card */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-1 text-base font-medium text-foreground">Notes</h2>
                 <p className="mb-4 text-xs text-[var(--neutral-500)]">Internal notes and payment instructions</p>
                 <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-700)]">
@@ -425,7 +425,7 @@ export function SellInvoiceDetail() {
             {/* Right column (sticky) */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Amounts card */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-4 text-base font-medium text-foreground">Amounts</h2>
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -454,7 +454,7 @@ export function SellInvoiceDetail() {
               </Card>
 
               {/* Quick line items summary */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">Line items</h2>
                   <Button
@@ -580,7 +580,7 @@ export function SellInvoiceDetail() {
       case "payment-history":
         return (
           <div className="space-y-6">
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-medium text-foreground">Payment history</h2>
@@ -613,7 +613,7 @@ export function SellInvoiceDetail() {
             </Card>
 
             {/* Payment summary card */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-medium text-foreground">Payment summary</h2>
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">

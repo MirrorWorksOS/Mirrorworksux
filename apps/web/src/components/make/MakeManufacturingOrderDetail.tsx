@@ -234,7 +234,7 @@ export function MakeManufacturingOrderDetail() {
               </div>
 
               {/* MO Details */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="text-base font-medium text-foreground mb-4">Manufacturing Order Details</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
@@ -271,7 +271,7 @@ export function MakeManufacturingOrderDetail() {
               {/* Integrated BOM + routing (inherited from Plan, read-only) */}
               <BomRoutingTree assembly={assembly} mode="make" />
 
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                   <h2 className="text-base font-medium text-foreground">Traveller packet</h2>
                   {primaryTravellerPacket ? (
@@ -348,7 +348,7 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Work Orders summary */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-medium text-foreground">Work Orders</h2>
                   <Badge variant="secondary" className="border-0 bg-[var(--neutral-100)] text-xs tabular-nums">{WORK_ORDERS.length}</Badge>
@@ -380,7 +380,7 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Schedule */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="text-base font-medium text-foreground mb-4">Schedule</h2>
                 <div className="space-y-3">
                   {WORK_ORDERS.map((wo) => (
@@ -408,7 +408,7 @@ export function MakeManufacturingOrderDetail() {
             {/* Right column */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Shift Performance */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-medium text-foreground">Shift Performance</h2>
                   <Badge variant="softAccent" className="text-xs">
@@ -452,7 +452,7 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Progress */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="text-base font-medium text-foreground mb-4">Overall Progress</h2>
                 <div className="text-center mb-4">
                   <span className="text-3xl font-medium tabular-nums text-foreground">{overallProgress}%</span>
@@ -477,7 +477,7 @@ export function MakeManufacturingOrderDetail() {
               <MaterialConsumption />
 
               {/* Issues */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-medium text-foreground">Active Issues</h2>
                   <Badge variant="secondary" className="border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)] text-xs tabular-nums">
@@ -506,7 +506,7 @@ export function MakeManufacturingOrderDetail() {
               </Card>
 
               {/* Andon Alerts */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-medium text-foreground">Andon Alerts</h2>
                   <Badge variant="secondary" className="border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)] text-xs tabular-nums">2</Badge>
@@ -545,7 +545,7 @@ export function MakeManufacturingOrderDetail() {
               </AIInsightCard>
 
               {/* Cross-module link: Book */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="text-base font-medium text-foreground mb-2">Invoicing</h2>
                 <p className="text-xs text-[var(--neutral-500)] mb-4">Create an invoice in the Book module for this manufacturing order.</p>
                 <Button
@@ -580,7 +580,7 @@ export function MakeManufacturingOrderDetail() {
               </Button>
             </div>
 
-            <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="overflow-hidden">
               {/* MO group header */}
               <div className="border-b border-[var(--border)] bg-[var(--neutral-50)] px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -665,7 +665,7 @@ export function MakeManufacturingOrderDetail() {
           <div className="space-y-6">
             <AIFeed module="make" initialCount={3} />
 
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h3 className="text-sm font-medium text-foreground mb-4">MO Timeline</h3>
               <div className="relative pl-8 space-y-4">
                 <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-[var(--border)]" />
@@ -698,7 +698,7 @@ export function MakeManufacturingOrderDetail() {
                 Upload Document
               </Button>
             </div>
-            <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="overflow-hidden">
               {/* Documents list */}
               {[
                 { name: 'Mounting Bracket Assembly.pdf', type: 'Drawing', size: '2.4 MB', date: 'Dec 5, 2025', icon: FileText },

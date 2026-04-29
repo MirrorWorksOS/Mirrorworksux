@@ -276,7 +276,7 @@ export function SellOpportunityPage() {
         return (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
             <div className="space-y-6">
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
                     <h2 className="text-base font-medium text-foreground">
@@ -451,7 +451,7 @@ export function SellOpportunityPage() {
                 </div>
               </Card>
 
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">
                     Quick quote
@@ -508,7 +508,7 @@ export function SellOpportunityPage() {
             </div>
 
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">
                     Activities
@@ -548,7 +548,7 @@ export function SellOpportunityPage() {
                 </Button>
               </Card>
 
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-3 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">
                     Intelligence Hub
@@ -673,7 +673,7 @@ export function SellOpportunityPage() {
                 </Card>
               ))}
             </div>
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h3 className="mb-4 text-sm font-medium text-foreground">
                 Activity log
               </h3>
@@ -693,7 +693,7 @@ export function SellOpportunityPage() {
             </AIInsightCard>
 
             {/* 1. Win Probability Card */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-foreground">Win Probability</h3>
                 <Badge variant="softAi">AI-powered</Badge>
@@ -732,7 +732,7 @@ export function SellOpportunityPage() {
               />
 
               {/* Deal Velocity */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h3 className="mb-4 text-sm font-medium text-foreground">Deal Velocity</h3>
                 <div className="space-y-4">
                   <div className="flex items-baseline justify-between">
@@ -782,7 +782,7 @@ export function SellOpportunityPage() {
             </div>
 
             {/* 3. Customer Engagement Score */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-foreground">Customer Engagement Score</h3>
                 <span className="text-xs font-medium text-[var(--mw-green)] flex items-center gap-1">
@@ -814,7 +814,7 @@ export function SellOpportunityPage() {
             </Card>
 
             {/* 4. Competitor Intelligence */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h3 className="mb-1 text-sm font-medium text-foreground">Competitor Intelligence</h3>
               <p className="mb-4 text-xs text-[var(--neutral-500)]">Based on customer communication patterns and market data</p>
               <div className="space-y-3">
@@ -846,7 +846,7 @@ export function SellOpportunityPage() {
             </Card>
 
             {/* 5. Similar Deals */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h3 className="mb-4 text-sm font-medium text-foreground">Similar Deals</h3>
               <MwDataTable<SimilarDealRow>
                 columns={[

@@ -137,7 +137,7 @@ export function SellNewInvoice() {
       />
 
       <div className="space-y-6 px-6 pb-6">
-        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+        <Card className="p-6">
           <h2 className="text-base font-medium text-foreground mb-4">
             Header
           </h2>
@@ -189,7 +189,7 @@ export function SellNewInvoice() {
           </div>
         </Card>
 
-        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+        <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-medium text-foreground">
               Line items
@@ -328,7 +328,7 @@ export function SellNewInvoice() {
           </div>
         </Card>
 
-        <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+        <Card className="p-6">
           <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
           <Textarea
             className="mt-1 min-h-[88px] border-[var(--border)]"

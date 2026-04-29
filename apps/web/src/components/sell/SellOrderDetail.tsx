@@ -345,7 +345,7 @@ export function SellOrderDetail() {
             {/* Left column */}
             <div className="space-y-6">
               {/* Order details card */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-1 text-base font-medium text-foreground">
                   Order details
                 </h2>
@@ -424,7 +424,7 @@ export function SellOrderDetail() {
               </Card>
 
               {/* Line items summary */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">Line items</h2>
                   <Button
@@ -460,7 +460,7 @@ export function SellOrderDetail() {
             {/* Right column (sticky) */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Order value card */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-4 text-base font-medium text-foreground">Order value</h2>
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -489,7 +489,7 @@ export function SellOrderDetail() {
               </Card>
 
               {/* Status timeline */}
-              <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="p-6">
                 <h2 className="mb-4 text-base font-medium text-foreground">Status timeline</h2>
                 <ol className="space-y-3">
                   {STATUS_TIMELINE.map((step, i) => {
@@ -613,7 +613,7 @@ export function SellOrderDetail() {
         return (
           <div className="space-y-6">
             {/* Shipping details */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h2 className="mb-1 text-base font-medium text-foreground">Shipping details</h2>
               <p className="mb-6 text-xs text-[var(--neutral-500)]">Delivery address and logistics</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -633,7 +633,7 @@ export function SellOrderDetail() {
             </Card>
 
             {/* Fulfilment progress */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-medium text-foreground">Fulfilment progress</h2>
               <div className="mb-2 flex items-baseline justify-between">
                 <span className="text-sm text-[var(--neutral-600)]">
@@ -652,7 +652,7 @@ export function SellOrderDetail() {
             </Card>
 
             {/* Job link */}
-            <Card className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-medium text-foreground">Production job</h2>
               {order.jobId ? (
                 <div className="flex items-center justify-between">
@@ -687,7 +687,7 @@ export function SellOrderDetail() {
       /* ============================================================ */
       case "documents":
         return (
-          <Card className="border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="overflow-hidden">
             <div className="border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-base font-medium text-foreground">Documents</h2>
               <label className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12 inline-flex items-center px-4 rounded-md cursor-pointer">
