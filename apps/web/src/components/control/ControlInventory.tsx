@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -765,29 +766,29 @@ export function ControlInventory() {
 
           {/* Turnover Rate cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-4">
+            <Card className="dark:border-[var(--neutral-700)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Avg Turnover Rate</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">4.2x</p>
               <p className="text-xs text-[var(--mw-success)] mt-0.5">+0.3 from last month</p>
-            </div>
-            <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-4">
+            </Card>
+            <Card className="dark:border-[var(--neutral-700)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Raw Materials Value</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">
                 {formatCurrency(INVENTORY.filter(i => i.category === 'Raw Materials').reduce((s, i) => s + i.onHand * i.costPrice, 0))}
               </p>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">{INVENTORY.filter(i => i.category === 'Raw Materials').length} items</p>
-            </div>
-            <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-4">
+            </Card>
+            <Card className="dark:border-[var(--neutral-700)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Finished Goods Value</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">
                 {formatCurrency(INVENTORY.filter(i => i.category === 'Finished Goods').reduce((s, i) => s + i.onHand * i.costPrice, 0))}
               </p>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">{INVENTORY.filter(i => i.category === 'Finished Goods').length} items</p>
-            </div>
+            </Card>
           </div>
 
           {/* Stock Value by Location Chart */}
-          <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-5">
+          <Card className="dark:border-[var(--neutral-700)] p-5">
             <h3 className="text-sm font-medium text-foreground mb-4">Stock Value by Location</h3>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -812,10 +813,10 @@ export function ControlInventory() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </Card>
 
           {/* Dead Stock Alerts */}
-          <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-5">
+          <Card className="dark:border-[var(--neutral-700)] p-5">
             <h3 className="text-sm font-medium text-foreground mb-3">Dead Stock Alerts</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-3 bg-[var(--mw-error-light)] dark:bg-[var(--mw-error)]/10 rounded-[var(--shape-md)] p-3">
@@ -835,7 +836,7 @@ export function ControlInventory() {
                 <StatusBadge variant="warning">Low</StatusBadge>
               </div>
             </div>
-          </div>
+          </Card>
         </TabsContent>
 
         {/* ---- Adjustments Tab ---- */}

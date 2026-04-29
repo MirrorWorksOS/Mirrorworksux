@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Save, Send, Share2, Upload, Download, Camera, Paperclip, FileText, FileSpreadsheet, Ruler, Clock, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -63,7 +64,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
       </AISuggestion>
 
       {/* Customer Engagement Timeline */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <h3 className=" text-base font-medium text-foreground mb-6">
           Customer Engagement
         </h3>
@@ -151,7 +152,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
           {/* Event 5 — Quote confirmed (highlighted) */}
           <div className="relative">
             <div className="absolute left-[-29px] w-4 h-4 rounded-full bg-[var(--mw-yellow-400)] border-2 border-card" />
-            <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-4">
+            <Card className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4 text-[var(--mw-yellow-400)]" />
                 <span className=" text-sm font-medium text-foreground">
@@ -164,7 +165,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
               <p className=" text-xs text-[var(--neutral-500)]">
                 Mar 15, 2026 at 9:20 AM · Job MW-001 created automatically
               </p>
-            </div>
+            </Card>
           </div>
 
           {/* Event 6 — Email confirmation sent */}
@@ -186,10 +187,10 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Budget Tracker with AI Insight */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className=" text-base font-medium text-foreground">
@@ -274,10 +275,10 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
             Share
           </Button>
         </div>
-      </div>
+      </Card>
 
       {/* Files Section */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className=" text-base font-medium text-foreground">
             Files
@@ -327,10 +328,10 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
             Share
           </Button>
         </div>
-      </div>
+      </Card>
 
       {/* Chatter - Full View */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <h3 className=" text-base font-medium text-foreground mb-6">
           Chatter
         </h3>
@@ -468,7 +469,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
             Send
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

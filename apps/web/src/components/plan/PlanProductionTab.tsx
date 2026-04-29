@@ -14,6 +14,7 @@ import {
   Maximize2, Printer, Home, Layers, Settings, Camera, Share2,
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
 import { GlbViewer } from '@/components/shared/3d/GlbViewer';
@@ -34,7 +35,7 @@ export function PlanProductionTab() {
       <BomRoutingTree assembly={assembly} mode="plan" />
 
       {/* ---- MirrorView 3D — visual reference for the selected made part ---- */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <Card>
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
             <h2 className="text-lg font-medium text-foreground">MirrorView</h2>
@@ -86,10 +87,10 @@ export function PlanProductionTab() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* ---- 2D Drawing Viewer ---- */}
-      <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
+      <Card>
         <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
             <h2 className="text-lg font-medium text-foreground">2D Drawing</h2>
@@ -118,7 +119,7 @@ export function PlanProductionTab() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
