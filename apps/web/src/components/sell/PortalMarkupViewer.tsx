@@ -523,7 +523,7 @@ function MarkupList({
                   variant="outline"
                   className={`text-[10px] uppercase ${
                     m.status === 'open'
-                      ? 'border-[var(--mw-yellow-400)] bg-white text-[var(--mw-yellow-800)]'
+                      ? 'border-[var(--mw-yellow-400)] bg-card text-[var(--mw-yellow-800)]'
                       : ''
                   }`}
                 >
