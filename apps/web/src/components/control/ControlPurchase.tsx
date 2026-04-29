@@ -268,7 +268,7 @@ export function ControlPurchase() {
       <div className="flex gap-6">
         {/* Left nav */}
         <div className="w-56 flex-shrink-0">
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3 h-fit">
+          <Card className="p-3 h-fit">
             <nav className="space-y-0.5">
               {NAV.map(n => {
                 const Icon = n.icon;
@@ -294,7 +294,7 @@ export function ControlPurchase() {
 
         {/* Right panel */}
         <div className="flex-1 min-w-0">
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card className="p-6">
             <PanelComponent />
           </Card>
         </div>

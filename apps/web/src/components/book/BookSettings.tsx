@@ -279,7 +279,7 @@ function XeroPanel() {
       </Card>
 
       {/* Connection Card */}
-      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--mw-info)] text-sm font-bold text-white">X</div>
@@ -304,7 +304,7 @@ function XeroPanel() {
       </Card>
 
       {/* Sync Entities */}
-      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="p-6">
         <h3 className="text-sm font-medium text-foreground mb-4">Sync entities</h3>
         <div className="space-y-2">
           {syncEntities.map(e => (

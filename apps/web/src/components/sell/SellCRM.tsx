@@ -141,7 +141,7 @@ export function SellCRM() {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <p className="text-sm text-[var(--neutral-500)] text-center">
             List view - Would render SellCRMList component here
           </p>

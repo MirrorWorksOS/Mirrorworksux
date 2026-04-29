@@ -98,7 +98,7 @@ export function ShipDashboard() {
 
       {/* Pipeline */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Fulfilment pipeline</p>
           <div className="flex items-center justify-between">
             {PIPELINE.map((s, i) => (
@@ -160,7 +160,7 @@ export function ShipDashboard() {
 
         {/* Exceptions */}
         <motion.div variants={staggerItem} className="lg:col-span-2">
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 flex flex-col h-full">
+          <Card className="p-6 flex flex-col h-full">
             <p className="text-xs text-[var(--neutral-500)] tracking-widest uppercase mb-4 font-medium">Exceptions</p>
             <div className="flex-1 space-y-4">
               {EXCEPTIONS.map(exc => (

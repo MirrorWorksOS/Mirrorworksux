@@ -371,7 +371,7 @@ export function SellNewQuote() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Header details */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h3 className="text-sm font-medium text-foreground mb-4">Quote details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
@@ -414,7 +414,7 @@ export function SellNewQuote() {
               <QuoteUploadZone onAddItems={addItemsFromUpload} />
 
               {reviewLines.length > 0 && (
-                <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)]">
+                <Card>
                   <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
                     <div>
                       <h3 className="text-sm font-medium text-foreground">Review generated line items</h3>
@@ -491,7 +491,7 @@ export function SellNewQuote() {
               )}
 
               {/* Line items */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+              <Card className="overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
                   <h3 className="text-sm font-medium text-foreground">Line items</h3>
                   <Select onValueChange={v => { if (v) addProductLine(v); }}>
@@ -524,7 +524,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <Label className="text-sm mb-2 block font-medium">Notes to customer</Label>
                 <Textarea
                   value={notes}
@@ -538,7 +538,7 @@ export function SellNewQuote() {
 
             {/* Right — Summary */}
             <div className="space-y-4">
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h3 className="text-sm font-medium text-foreground mb-4">Quote summary</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
@@ -590,7 +590,7 @@ export function SellNewQuote() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+              <Card className="p-6 space-y-4">
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">Quote number</p>
                   <p className="text-sm font-medium tabular-nums">{quoteNumber}</p>

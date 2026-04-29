@@ -307,7 +307,7 @@ export function PlanQCPlanning() {
           const Icon = s.icon;
           return (
             <motion.div key={s.label} variants={staggerItem}>
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
                   <Icon className={cn('w-4 h-4', s.text)} />
                 </div>

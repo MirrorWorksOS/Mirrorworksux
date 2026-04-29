@@ -385,7 +385,7 @@ export function BuyNewOrder() {
             {/* Left column */}
             <div className="lg:col-span-2 space-y-6">
               {/* PO details */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h3 className="text-sm font-medium text-foreground mb-4">Order details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
@@ -492,7 +492,7 @@ export function BuyNewOrder() {
               )}
 
               {/* Line items */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+              <Card className="overflow-hidden">
                 <div className="p-4 border-b border-[var(--border)] flex items-center justify-between gap-3">
                   <h3 className="text-sm font-medium text-foreground">Line items</h3>
                   <div className="flex items-center gap-2">
@@ -558,7 +558,7 @@ export function BuyNewOrder() {
               </Card>
 
               {/* Notes */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+              <Card className="p-6 space-y-4">
                 <div>
                   <Label className="text-sm mb-2 block font-medium">Supplier notes</Label>
                   <Textarea
@@ -584,7 +584,7 @@ export function BuyNewOrder() {
 
             {/* Right column */}
             <div className="space-y-4">
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h3 className="text-sm font-medium text-foreground mb-4">Order summary</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
@@ -619,7 +619,7 @@ export function BuyNewOrder() {
               </Card>
 
               {/* Quick info */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+              <Card className="p-6 space-y-4">
                 <div>
                   <p className="text-xs text-[var(--neutral-500)] mb-1">PO number</p>
                   <p className="text-sm font-medium tabular-nums">{poNumber}</p>

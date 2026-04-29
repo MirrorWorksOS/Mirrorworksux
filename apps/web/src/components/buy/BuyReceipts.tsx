@@ -108,7 +108,7 @@ export function BuyReceipts() {
         </div>
       ) : (
         /* Receipt Entry Form - TOUCH OPTIMIZED */
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-8 max-w-4xl mx-auto">
+        <Card className="p-8 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-medium tabular-nums text-foreground">{selectedPO.poNumber}</h2>

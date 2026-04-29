@@ -452,7 +452,7 @@ export function SellCustomerDetail() {
             {/* Left Column - 2/3 */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Company name" value={customer.company} />
@@ -467,7 +467,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Primary Contact */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <Field label="Name" value={customer.primaryContact.name} />
@@ -495,7 +495,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Address */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-medium text-foreground">Address</h2>
                   <a
@@ -515,7 +515,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Additional Contacts */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <button
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
                   className="flex items-center justify-between w-full"
@@ -550,7 +550,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Financial Summary */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div>
@@ -573,7 +573,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Tags & Notes */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-4">Tags & notes</h2>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {customer.tags.map((tag: string) => (
@@ -593,7 +593,7 @@ export function SellCustomerDetail() {
             {/* Right Column - 1/3 */}
             <div className="space-y-6">
               {/* Activity Timeline */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-foreground">Recent activity</h3>
                   <button className="text-xs text-foreground hover:underline">View all</button>
@@ -617,7 +617,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Active Opportunities */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-foreground">Active opportunities</h3>
                   <button className="text-xs text-foreground hover:underline flex items-center gap-1">
@@ -642,7 +642,7 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Recent Quotes & Orders */}
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <h3 className="text-base font-medium text-foreground mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
                   {[...customer.recentQuotes.slice(0, 3), ...customer.recentOrders.slice(0, 2)].map((item: any, i: number) => (
@@ -804,7 +804,7 @@ export function SellCustomerDetail() {
                 )}>{f}</button>
               ))}
             </div>
-            <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card className="p-6">
               <div className="space-y-6">
                 {customer.activity.map((a: any, i: number) => (
                   <div key={i} className="flex gap-4">

@@ -154,7 +154,7 @@ export function QuoteUploadZone({ onAddItems }: QuoteUploadZoneProps) {
   const activeStageIndex = PIPELINE_STAGES.findIndex(stage => stage.key === activeStage);
 
   return (
-    <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+    <Card className="overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}

@@ -405,7 +405,7 @@ export function MakeDashboard() {
 
       {/* Quality Alerts */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
+        <Card className="p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-medium text-foreground">Quality Alerts</h3>
             <Badge className="bg-[var(--mw-warning)]/10 text-[var(--mw-warning)] border-0">3 Active</Badge>
@@ -437,7 +437,7 @@ export function MakeDashboard() {
 
       {/* TASK 2 — Today's Schedule Gantt Strip with rich hover tooltips */}
       <motion.div variants={staggerItem}>
-        <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card className="p-6">
           <h3 className="text-base font-medium text-foreground mb-4">Today's Schedule</h3>
           <div className="overflow-x-auto">
             {/* Time header */}
@@ -484,7 +484,7 @@ export function MakeDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Quick Actions */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+          <Card className="p-6 h-full">
             <h3 className="text-base font-medium text-foreground mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-3">
               {([
@@ -513,7 +513,7 @@ export function MakeDashboard() {
 
         {/* Real-time OEE Trend */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+          <Card className="p-6 h-full">
             <h3 className="text-base font-medium text-foreground mb-4">Real-time OEE Trend</h3>
             <div className="flex items-end gap-1 h-[140px]">
               {[62, 68, 71, 65, 74, 78, 72, 80, 76, 82, 79, 85].map((val, i) => (
@@ -551,7 +551,7 @@ export function MakeDashboard() {
 
         {/* Throughput vs Target */}
         <motion.div variants={staggerItem}>
-          <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 h-full">
+          <Card className="p-6 h-full">
             <h3 className="text-base font-medium text-foreground mb-4">Throughput vs Target</h3>
             <div className="space-y-3">
               {([

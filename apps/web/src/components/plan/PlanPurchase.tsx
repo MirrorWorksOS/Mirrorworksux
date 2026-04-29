@@ -269,7 +269,7 @@ export function PlanPurchase() {
           const Icon = s.icon;
           return (
             <motion.div key={s.label} variants={staggerItem}>
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+              <Card className="p-6">
                 <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
                   <Icon className={cn('w-4 h-4', s.text)} />
                 </div>
@@ -347,7 +347,7 @@ export function PlanPurchase() {
         <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {SUGGESTED_POS.map((po) => (
             <motion.div key={po.id} variants={staggerItem}>
-              <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+              <Card className="overflow-hidden">
                 <div className="p-5 border-b border-[var(--border)]">
                   <div className="flex items-start justify-between mb-3">
                     <div>
