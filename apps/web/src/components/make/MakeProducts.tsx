@@ -270,8 +270,8 @@ export function MakeProducts() {
                   className="h-full min-h-0"
                 >
                   <Card
-                    variant="flat"
-                    className="group h-full cursor-pointer overflow-hidden border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                    variant="interactive"
+                    className="group h-full overflow-hidden border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                     onClick={() => navigate(`/make/products/${product.id}`)}
                   >
                   <div className="h-40 bg-[var(--neutral-100)] flex items-center justify-center">

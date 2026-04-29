@@ -78,8 +78,8 @@ export function SellCRM() {
                 className="h-full min-h-0"
               >
                 <Card
-                  variant="flat"
-                  className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  variant="interactive"
+                  className="group h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                   onClick={() => navigate(`/sell/crm/${customer.id}`)}
                 >
                 <div className="flex items-start justify-between mb-4">

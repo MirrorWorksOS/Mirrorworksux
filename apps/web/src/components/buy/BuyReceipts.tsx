@@ -83,8 +83,8 @@ export function BuyReceipts() {
             <motion.div key={po.id} variants={staggerItem} className="h-full min-h-0">
               <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                 <Card
-                  variant="flat"
-                  className="h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  variant="interactive"
+                  className="h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                   onClick={() => setSelectedPO(po)}
                 >
                 <div className="flex items-start justify-between mb-3">

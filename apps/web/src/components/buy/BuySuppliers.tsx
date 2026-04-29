@@ -211,8 +211,8 @@ export function BuySuppliers() {
                 <motion.div key={supplier.id} variants={staggerItem} custom={idx} className="h-full min-h-0">
                   <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                     <Card
-                      variant="flat"
-                      className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                      variant="interactive"
+                      className="group h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                       onClick={() => navigate(`/buy/suppliers/${supplier.id}`)}
                     >
                     <div className="mb-4 flex items-start justify-between">

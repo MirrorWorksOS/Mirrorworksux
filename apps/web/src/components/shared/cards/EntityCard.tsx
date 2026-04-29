@@ -32,7 +32,7 @@ export function EntityCard({
       className={cn("h-full min-h-0", className)}
     >
       <Card
-        variant="flat"
+        variant={interactive ? "interactive" : "flat"}
         role={interactive ? "button" : undefined}
         tabIndex={interactive ? 0 : undefined}
         onClick={onClick}
@@ -46,10 +46,7 @@ export function EntityCard({
               }
             : undefined
         }
-        className={cn(
-          "flex h-full min-h-0 flex-col p-6",
-          interactive && "cursor-pointer",
-        )}
+        className="flex h-full min-h-0 flex-col p-6"
       >
         <div className="flex items-start gap-4">
           <div

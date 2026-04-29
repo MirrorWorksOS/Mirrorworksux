@@ -134,9 +134,9 @@ export function BuyAgreements() {
             <motion.div key={agr.id} variants={staggerItem} className="h-full min-h-0">
               <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
                 <Card
-                  variant="flat"
+                  variant="interactive"
                   onClick={() => navigate(`/buy/agreements/${agr.id}`)}
-                  className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+                  className="group h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
                 >
                 <div className="flex items-start justify-between mb-3">
                   <div>
