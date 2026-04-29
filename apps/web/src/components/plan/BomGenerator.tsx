@@ -19,14 +19,7 @@ import { staggerContainer, staggerItem } from "@/components/shared/motion/motion
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { planService } from "@/services";
 import type { BomGeneratorLine } from "@/types/entities";
 import { MirrorWorksAgentCard } from "@/components/shared/ai/MirrorWorksAgentCard";
@@ -192,56 +185,80 @@ export function BomGenerator() {
           </motion.div>
 
           <motion.div variants={staggerItem} className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Part Number</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Material</TableHead>
-                  <TableHead className="text-right">Qty</TableHead>
-                  <TableHead>Operation</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-center">Confidence</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lines.map((line) => (
-                  <TableRow
-                    key={line.id}
-                    className={reviewStatus[line.id] === 'accepted' ? "bg-[var(--chart-scale-high)]/5" : ""}
-                  >
-                    <TableCell className="font-mono text-xs">{line.partNumber}</TableCell>
-                    <TableCell className="text-sm">{line.description}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{line.material}</TableCell>
-                    <TableCell className="text-right font-mono">{line.qty}</TableCell>
-                    <TableCell className="text-sm">{line.operation}</TableCell>
-                    <TableCell>{statusBadge(reviewStatus[line.id])}</TableCell>
-                    <TableCell className="text-center">
-                      {confidenceBadge(line.confidencePercent)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant={reviewStatus[line.id] === 'accepted' ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setLineStatus(line.id, reviewStatus[line.id] === 'accepted' ? 'unresolved' : 'accepted')}
-                        >
-                          <Check className="mr-1 h-3 w-3" strokeWidth={1.5} />
-                          {reviewStatus[line.id] === 'accepted' ? "Accepted" : "Accept"}
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setLineStatus(line.id, 'edited')}>
-                          <Pencil className="h-3 w-3" strokeWidth={1.5} />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setLineStatus(line.id, 'needs_catalog_match')}>
-                          Match
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <MwDataTable<BomGeneratorLine>
+              columns={[
+                {
+                  key: "part",
+                  header: "Part Number",
+                  className: "font-mono text-xs",
+                  cell: (line) => line.partNumber,
+                },
+                {
+                  key: "description",
+                  header: "Description",
+                  className: "text-sm",
+                  cell: (line) => line.description,
+                },
+                {
+                  key: "material",
+                  header: "Material",
+                  className: "text-sm text-muted-foreground",
+                  cell: (line) => line.material,
+                },
+                {
+                  key: "qty",
+                  header: "Qty",
+                  headerClassName: "text-right",
+                  className: "text-right font-mono",
+                  cell: (line) => line.qty,
+                },
+                {
+                  key: "operation",
+                  header: "Operation",
+                  className: "text-sm",
+                  cell: (line) => line.operation,
+                },
+                {
+                  key: "status",
+                  header: "Status",
+                  cell: (line) => statusBadge(reviewStatus[line.id]),
+                },
+                {
+                  key: "confidence",
+                  header: "Confidence",
+                  headerClassName: "text-center",
+                  className: "text-center",
+                  cell: (line) => confidenceBadge(line.confidencePercent),
+                },
+                {
+                  key: "actions",
+                  header: "Actions",
+                  headerClassName: "text-right",
+                  className: "text-right",
+                  cell: (line) => (
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant={reviewStatus[line.id] === 'accepted' ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setLineStatus(line.id, reviewStatus[line.id] === 'accepted' ? 'unresolved' : 'accepted')}
+                      >
+                        <Check className="mr-1 h-3 w-3" strokeWidth={1.5} />
+                        {reviewStatus[line.id] === 'accepted' ? "Accepted" : "Accept"}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => setLineStatus(line.id, 'edited')}>
+                        <Pencil className="h-3 w-3" strokeWidth={1.5} />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => setLineStatus(line.id, 'needs_catalog_match')}>
+                        Match
+                      </Button>
+                    </div>
+                  ),
+                },
+              ]}
+              data={lines}
+              keyExtractor={(line) => line.id}
+              className="border-0 shadow-none"
+            />
           </motion.div>
         </motion.div>
       )}
