@@ -12,15 +12,7 @@ import { Route, Clock } from "lucide-react";
 import { staggerContainer, staggerItem } from "@/components/shared/motion/motion-variants";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { planService } from "@/services";
 import type { Operation } from "@/types/entities";
 
@@ -64,68 +56,85 @@ export function PlanOperationRouting() {
         animate="animate"
       >
         <motion.div variants={staggerItem} className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16">#</TableHead>
-                <TableHead>Operation</TableHead>
-                <TableHead>Work Centre</TableHead>
-                <TableHead className="text-right">Setup</TableHead>
-                <TableHead className="text-right">Run</TableHead>
-                <TableHead className="text-right">Queue</TableHead>
-                <TableHead className="text-right">Move</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {operations.map((op) => (
-                <TableRow key={op.id}>
-                  <TableCell className="font-mono text-xs text-[var(--neutral-500)]">
-                    {op.sequence}
-                  </TableCell>
-                  <TableCell className="text-sm font-medium text-foreground">
+          <MwDataTable<Operation>
+            columns={[
+              {
+                key: "seq",
+                header: "#",
+                headerClassName: "w-16",
+                className: "font-mono text-xs text-[var(--neutral-500)]",
+                cell: (op) => op.sequence,
+              },
+              {
+                key: "operation",
+                header: "Operation",
+                cell: (op) => (
+                  <div className="text-sm font-medium text-foreground">
                     {op.name}
                     {op.isSubcontracted && (
                       <Badge variant="outline" className="ml-2 text-[10px]">
                         Subcontracted
                       </Badge>
                     )}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {op.workCenterName}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatMinutes(op.setupMinutes)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatMinutes(op.runMinutes)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatMinutes(op.queueMinutes)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatMinutes(op.moveMinutes)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-xs font-medium">
-                    {formatMinutes(opTotal(op))}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={7}>
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                    <Clock className="h-4 w-4" strokeWidth={1.5} />
-                    Total Lead Time
                   </div>
-                </TableCell>
-                <TableCell className="text-right font-mono text-sm font-medium text-foreground">
-                  {formatMinutes(totalLeadMinutes)}
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
+                ),
+              },
+              {
+                key: "workCentre",
+                header: "Work Centre",
+                className: "text-sm text-muted-foreground",
+                cell: (op) => op.workCenterName,
+              },
+              {
+                key: "setup",
+                header: "Setup",
+                headerClassName: "text-right",
+                className: "text-right font-mono text-xs",
+                cell: (op) => formatMinutes(op.setupMinutes),
+              },
+              {
+                key: "run",
+                header: "Run",
+                headerClassName: "text-right",
+                className: "text-right font-mono text-xs",
+                cell: (op) => formatMinutes(op.runMinutes),
+              },
+              {
+                key: "queue",
+                header: "Queue",
+                headerClassName: "text-right",
+                className: "text-right font-mono text-xs",
+                cell: (op) => formatMinutes(op.queueMinutes),
+              },
+              {
+                key: "move",
+                header: "Move",
+                headerClassName: "text-right",
+                className: "text-right font-mono text-xs",
+                cell: (op) => formatMinutes(op.moveMinutes),
+              },
+              {
+                key: "total",
+                header: "Total",
+                headerClassName: "text-right",
+                className: "text-right font-mono text-xs font-medium",
+                cell: (op) => formatMinutes(opTotal(op)),
+              },
+            ]}
+            data={operations}
+            keyExtractor={(op) => op.id}
+            className="border-0 shadow-none"
+          />
+
+          <div className="mt-4 flex items-center justify-between border-t border-[var(--neutral-200)] pt-4">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <Clock className="h-4 w-4" strokeWidth={1.5} />
+              Total Lead Time
+            </div>
+            <span className="font-mono text-sm font-medium text-foreground">
+              {formatMinutes(totalLeadMinutes)}
+            </span>
+          </div>
         </motion.div>
       </motion.div>
     </Card>
