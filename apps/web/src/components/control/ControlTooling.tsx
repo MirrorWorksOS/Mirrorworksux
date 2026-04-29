@@ -13,16 +13,8 @@ import { PageShell } from "@/components/shared/layout/PageShell";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { staggerItem } from "@/components/shared/motion/motion-variants";
 import { StatusBadge } from "@/components/shared/data/StatusBadge";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 
 function lifeBarColour(percent: number): string {
@@ -88,66 +80,70 @@ export function ControlTooling() {
       />
 
       <motion.div variants={staggerItem}>
-        <Card variant="flat" className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tool ID</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Life %</TableHead>
-                <TableHead>Calibration Due</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-mono font-medium">
-                    {item.toolId}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{item.type}</Badge>
-                  </TableCell>
-                  <TableCell className="max-w-[240px] truncate text-sm text-[var(--neutral-500)]">
-                    {item.description}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {item.location}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-20 overflow-hidden rounded-full bg-[var(--neutral-200)]">
-                        <div
-                          className={cn(
-                            "h-full rounded-full transition-all",
-                            lifeBarColour(item.lifePercent),
-                          )}
-                          style={{ width: `${item.lifePercent}%` }}
-                        />
-                      </div>
-                      <span className="font-mono text-xs text-[var(--neutral-500)]">
-                        {item.lifePercent}%
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {item.calibrationDueDate}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      status={statusToKey(item.status)}
-                      withDot
-                    >
-                      {statusLabel(item.status)}
-                    </StatusBadge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <MwDataTable<ToolingItem>
+          columns={[
+            {
+              key: "toolId",
+              header: "Tool ID",
+              className: "font-mono font-medium",
+              cell: (item) => item.toolId,
+            },
+            {
+              key: "type",
+              header: "Type",
+              cell: (item) => <Badge variant="outline">{item.type}</Badge>,
+            },
+            {
+              key: "description",
+              header: "Description",
+              className: "max-w-[240px] truncate text-sm text-[var(--neutral-500)]",
+              cell: (item) => item.description,
+            },
+            {
+              key: "location",
+              header: "Location",
+              className: "text-sm",
+              cell: (item) => item.location,
+            },
+            {
+              key: "life",
+              header: "Life %",
+              cell: (item) => (
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-20 overflow-hidden rounded-full bg-[var(--neutral-200)]">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        lifeBarColour(item.lifePercent),
+                      )}
+                      style={{ width: `${item.lifePercent}%` }}
+                    />
+                  </div>
+                  <span className="font-mono text-xs text-[var(--neutral-500)]">
+                    {item.lifePercent}%
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: "calibration",
+              header: "Calibration Due",
+              className: "font-mono text-sm",
+              cell: (item) => item.calibrationDueDate,
+            },
+            {
+              key: "status",
+              header: "Status",
+              cell: (item) => (
+                <StatusBadge status={statusToKey(item.status)} withDot>
+                  {statusLabel(item.status)}
+                </StatusBadge>
+              ),
+            },
+          ]}
+          data={items}
+          keyExtractor={(item) => item.id}
+        />
       </motion.div>
     </PageShell>
   );
