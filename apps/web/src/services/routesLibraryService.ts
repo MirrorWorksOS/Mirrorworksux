@@ -22,6 +22,14 @@ export interface StandardRoute {
   /** Free-text grouping (e.g. "Sheet metal", "Machined parts"). */
   category?: string;
   steps: RouteStep[];
+  /**
+   * Default owner of this route — surfaces as an avatar on the route card.
+   * Optional; routes without an owner show no avatar.
+   */
+  defaultOperator?: {
+    name: string;
+    initials?: string;
+  };
 }
 
 const ROUTES: StandardRoute[] = [
@@ -30,6 +38,7 @@ const ROUTES: StandardRoute[] = [
     name: 'Standard sheet-metal',
     category: 'Sheet metal',
     description: 'Laser cut → deburr → bend → powder coat → inspect',
+    defaultOperator: { name: 'James Wilson', initials: 'JW' },
     steps: [
       { operationId: 'std-op-laser' },
       { operationId: 'std-op-deburr' },
@@ -58,6 +67,7 @@ const ROUTES: StandardRoute[] = [
     name: 'Machined shaft',
     category: 'Machined parts',
     description: 'Saw → turn → mill → grind → inspect',
+    defaultOperator: { name: 'Tom Richards', initials: 'TR' },
     steps: [
       { operationId: 'std-op-saw' },
       { operationId: 'std-op-turn' },
@@ -71,6 +81,7 @@ const ROUTES: StandardRoute[] = [
     name: 'Weldment',
     category: 'Fabrication',
     description: 'Laser cut → bend → weld → blast → powder coat → CMM',
+    defaultOperator: { name: 'Ravi Patel', initials: 'RP' },
     steps: [
       { operationId: 'std-op-laser' },
       { operationId: 'std-op-bend' },

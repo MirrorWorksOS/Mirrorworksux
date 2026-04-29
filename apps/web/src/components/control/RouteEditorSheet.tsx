@@ -363,10 +363,10 @@ function AddOpPicker({ onAdd }: { onAdd: (op: StandardOperation) => void }) {
           Add op
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="p-0 w-72">
+      <PopoverContent align="end" className="p-0 w-72 z-[60]">
         <Command>
           <CommandInput placeholder="Search operations…" className="h-9" />
-          <CommandList className="max-h-80">
+          <CommandList className="max-h-[60vh] overflow-y-auto overscroll-contain">
             <CommandEmpty>No operations found.</CommandEmpty>
             {Object.entries(grouped).map(([cat, ops]) => (
               <CommandGroup key={cat} heading={cat}>
