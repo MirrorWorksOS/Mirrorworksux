@@ -168,7 +168,7 @@ function HeroCard({
     <motion.div variants={staggerItem}>
       <Card
         variant="flat"
-        className="relative overflow-hidden bg-[var(--mw-mirage)] text-white p-6"
+        className="relative overflow-hidden p-6"
       >
         <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
@@ -176,11 +176,11 @@ function HeroCard({
               {initials}
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-white/60">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Welcome back
               </p>
-              <p className="text-xl font-semibold">{customerName}</p>
-              <p className="text-xs text-white/60">
+              <p className="text-xl font-semibold text-foreground">{customerName}</p>
+              <p className="text-xs text-muted-foreground">
                 Signed in to the Alliance Metal customer portal
               </p>
             </div>
@@ -223,12 +223,12 @@ function KpiTile({
   value: number;
 }) {
   return (
-    <div className="rounded-[var(--shape-md)] bg-white/10 px-3 py-2">
-      <div className="flex items-center gap-1.5 text-white/70">
+    <div className="rounded-[var(--shape-md)] border border-border bg-[var(--neutral-50)] dark:bg-card px-3 py-2">
+      <div className="flex items-center gap-1.5 text-muted-foreground">
         {icon}
         <span className="text-[10px] uppercase tracking-wide">{label}</span>
       </div>
-      <p className="mt-0.5 text-xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-0.5 text-xl font-semibold tabular-nums text-foreground">{value}</p>
     </div>
   );
 }
