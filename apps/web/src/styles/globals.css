@@ -75,6 +75,20 @@
   --mw-mirage: #1A2732;
   --mw-off-white: #F8F7F4;
 
+  /* Mirage Tonal Scale — derived from --mw-mirage so dark mode tracks automatically.
+     Use these for canvas surfaces, hairlines, and structural fills that should sit
+     in the brand family instead of pure neutral gray. */
+  --mw-mirage-50:  color-mix(in srgb, var(--mw-mirage)  4%, var(--mw-off-white));
+  --mw-mirage-100: color-mix(in srgb, var(--mw-mirage)  8%, var(--mw-off-white));
+  --mw-mirage-200: color-mix(in srgb, var(--mw-mirage) 16%, var(--mw-off-white));
+  --mw-mirage-300: color-mix(in srgb, var(--mw-mirage) 28%, var(--mw-off-white));
+  --mw-mirage-400: color-mix(in srgb, var(--mw-mirage) 48%, var(--mw-off-white));
+  --mw-mirage-500: color-mix(in srgb, var(--mw-mirage) 68%, var(--mw-off-white));
+  --mw-mirage-600: color-mix(in srgb, var(--mw-mirage) 84%, var(--mw-off-white));
+  --mw-mirage-700: var(--mw-mirage);
+  --mw-mirage-800: color-mix(in srgb, var(--mw-mirage) 88%, #000);
+  --mw-mirage-900: color-mix(in srgb, var(--mw-mirage) 72%, #000);
+
   /* Status Colours — dots and badges only, never card backgrounds */
   --mw-success: #36B37E;
   --mw-info: #0052CC;
@@ -123,12 +137,29 @@
   --mw-error-200: #FECACA;
   --mw-error-600: #DC2626;
 
-  /* Process Builder / Factory Designer — canvas node fills */
-  --pb-process-fill: #FFF3D6;
-  --pb-people-fill: #DBEAFE;
-  --pb-resource-fill: var(--neutral-100);
-  --pb-custom-fill: var(--mw-purple-50);
-  --pb-text-shapes-fill: var(--neutral-50);
+  /* Process Builder / Factory Designer — canvas node fills.
+     Tonal system: yellow stays the active accent for processes; everything
+     structural (people, resources, custom blocks) lives in the mirage family. */
+  --pb-process-fill:       var(--mw-yellow-100);
+  --pb-process-stroke:     var(--mw-yellow-400);
+  --pb-people-fill:        var(--mw-mirage-50);
+  --pb-people-stroke:      var(--mw-mirage-400);
+  --pb-resource-fill:      var(--mw-mirage-100);
+  --pb-resource-stroke:    var(--mw-mirage-300);
+  --pb-custom-fill:        var(--mw-mirage-50);
+  --pb-custom-stroke:      var(--mw-mirage-500);
+  --pb-text-shapes-fill:   var(--neutral-50);
+  --pb-text-shapes-stroke: var(--mw-mirage-200);
+
+  /* Canvas chrome — warmer than pure neutral, anchored on mirage */
+  --pb-canvas-bg:  var(--mw-off-white);
+  --pb-grid-dot:   color-mix(in srgb, var(--mw-mirage) 8%, transparent);
+  --pb-hairline:   color-mix(in srgb, var(--mw-mirage) 12%, transparent);
+
+  /* Flow edge colors — only three on the canvas: material / information / people */
+  --pb-flow-material:    var(--mw-yellow-400);
+  --pb-flow-information: var(--mw-mirage-500);
+  --pb-flow-people:      var(--mw-success);
 
   /* Badge — AI / intelligence (MW Agent wash + Mirage label; on-brand vs blue) */
   --badge-soft-ai-bg: var(--mw-agent-50);
@@ -338,12 +369,40 @@
   --chart-scale-mid: #94A3B3;
   --chart-scale-high: #FFCF4B;
 
-  /* Process Builder / Factory Designer — canvas node fills (dark) */
-  --pb-process-fill: rgba(133, 77, 14, 0.3);
-  --pb-people-fill: rgba(30, 64, 175, 0.3);
-  --pb-resource-fill: #404040;
-  --pb-custom-fill: rgba(107, 33, 168, 0.3);
-  --pb-text-shapes-fill: var(--neutral-100);
+  /* Process Builder / Factory Designer — canvas node fills (dark).
+     Mirror of light tokens; all references resolve through the dark mirage scale.
+     Mirage scale is re-declared here so it picks up the dark --mw-mirage (#243442). */
+  --mw-mirage-50:  color-mix(in srgb, var(--mw-mirage)  6%, var(--neutral-50));
+  --mw-mirage-100: color-mix(in srgb, var(--mw-mirage) 12%, var(--neutral-50));
+  --mw-mirage-200: color-mix(in srgb, var(--mw-mirage) 24%, var(--neutral-50));
+  --mw-mirage-300: color-mix(in srgb, var(--mw-mirage) 40%, var(--neutral-50));
+  --mw-mirage-400: color-mix(in srgb, var(--mw-mirage) 60%, var(--neutral-50));
+  --mw-mirage-500: color-mix(in srgb, var(--mw-mirage) 76%, var(--neutral-50));
+  --mw-mirage-600: color-mix(in srgb, var(--mw-mirage) 88%, var(--neutral-50));
+  --mw-mirage-700: var(--mw-mirage);
+  --mw-mirage-800: color-mix(in srgb, var(--mw-mirage) 70%, #000);
+  --mw-mirage-900: color-mix(in srgb, var(--mw-mirage) 50%, #000);
+
+  --pb-process-fill:       color-mix(in srgb, var(--mw-yellow-400) 18%, var(--neutral-50));
+  --pb-process-stroke:     var(--mw-yellow-400);
+  --pb-people-fill:        var(--mw-mirage-100);
+  --pb-people-stroke:      var(--mw-mirage-400);
+  --pb-resource-fill:      var(--mw-mirage-200);
+  --pb-resource-stroke:    var(--mw-mirage-400);
+  --pb-custom-fill:        var(--mw-mirage-100);
+  --pb-custom-stroke:      var(--mw-mirage-500);
+  --pb-text-shapes-fill:   var(--neutral-100);
+  --pb-text-shapes-stroke: var(--mw-mirage-300);
+
+  /* Canvas chrome (dark) */
+  --pb-canvas-bg:  var(--neutral-50);
+  --pb-grid-dot:   color-mix(in srgb, var(--mw-off-white) 8%, transparent);
+  --pb-hairline:   color-mix(in srgb, var(--mw-off-white) 12%, transparent);
+
+  /* Flow edges (dark) */
+  --pb-flow-material:    var(--mw-yellow-400);
+  --pb-flow-information: var(--mw-mirage-400);
+  --pb-flow-people:      var(--mw-success);
 
   /* Badge — AI chip on dark surfaces */
   --badge-soft-ai-bg: color-mix(in srgb, var(--mw-agent) 24%, var(--neutral-100));

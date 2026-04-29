@@ -150,17 +150,17 @@ const AI_SUGGESTIONS: AILeanSuggestion[] = [
 // ─── Colour config ──────────────────────────────────────────────────────────
 
 const CATEGORY_STYLE: Record<NodeCategory, { bg: string; border: string; shape: string }> = {
-  process:  { bg: 'bg-[var(--mw-yellow-100)] dark:bg-[var(--mw-yellow-50)]',  border: 'border-[var(--mw-yellow-400)]', shape: 'square' },
-  people:   { bg: 'bg-[var(--mw-blue-100)] dark:bg-[var(--mw-blue-50)]',      border: 'border-[var(--mw-blue)]',       shape: 'circle' },
-  resource: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-700)]',      border: 'border-[var(--neutral-400)]',   shape: 'diamond' },
-  custom:   { bg: 'bg-[var(--mw-purple-100)] dark:bg-[var(--mw-purple-50)]',  border: 'border-[var(--mw-purple)]',     shape: 'square' },
-  'text-shapes': { bg: 'bg-[var(--neutral-50)] dark:bg-[var(--neutral-700)]', border: 'border-[var(--neutral-300)]', shape: 'square' },
+  process:       { bg: 'bg-[var(--pb-process-fill)]',     border: 'border-[var(--pb-process-stroke)]',     shape: 'square'  },
+  people:        { bg: 'bg-[var(--pb-people-fill)]',      border: 'border-[var(--pb-people-stroke)]',      shape: 'circle'  },
+  resource:      { bg: 'bg-[var(--pb-resource-fill)]',    border: 'border-[var(--pb-resource-stroke)]',    shape: 'diamond' },
+  custom:        { bg: 'bg-[var(--pb-custom-fill)]',      border: 'border-[var(--pb-custom-stroke)]',      shape: 'square'  },
+  'text-shapes': { bg: 'bg-[var(--pb-text-shapes-fill)]', border: 'border-[var(--pb-text-shapes-stroke)]', shape: 'square'  },
 };
 
 const FLOW_COLORS: Record<FlowType, string> = {
-  material: 'var(--mw-yellow-400)',
-  information: 'var(--mw-blue)',
-  people: 'var(--mw-success)',
+  material:    'var(--pb-flow-material)',
+  information: 'var(--pb-flow-information)',
+  people:      'var(--pb-flow-people)',
 };
 
 const FLOW_LABELS: Record<FlowType, string> = {
@@ -171,7 +171,7 @@ const FLOW_LABELS: Record<FlowType, string> = {
 
 // ─── Geometry constants ─────────────────────────────────────────────────────
 
-const NODE_SIZE = 80;
+const NODE_SIZE = 88;
 const PORT_RADIUS = 6;
 const GRID_SIZE = 24;
 
@@ -239,8 +239,9 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
   return (
     <div
       className={cn(
-        'flex items-center gap-2 p-2 rounded-[var(--shape-md)] border cursor-grab active:cursor-grabbing',
-        'shadow-[var(--elevation-1)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+        'flex items-center gap-3 px-3 py-2.5 rounded-[var(--shape-md)] border cursor-grab active:cursor-grabbing',
+        'shadow-[var(--elevation-1)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:scale-[1.02] active:shadow-[var(--elevation-3)]',
+        'transition-all duration-150 ease-[cubic-bezier(0.2,0,0,1)]',
         style.bg, style.border,
       )}
       draggable
@@ -254,13 +255,22 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
       }}
     >
       <div className={cn(
-        'w-7 h-7 rounded flex items-center justify-center flex-shrink-0 border',
+        'w-8 h-8 rounded-[var(--shape-sm)] flex items-center justify-center flex-shrink-0 border',
         style.bg, style.border,
       )}>
-        <Icon className="w-4 h-4 text-foreground" />
+        <Icon className="w-4 h-4 text-[var(--mw-mirage-700)]" />
       </div>
-      <span className="text-xs font-medium text-foreground truncate">{item.label}</span>
-      <GripVertical className="w-3 h-3 text-[var(--neutral-400)] ml-auto flex-shrink-0" />
+      <span
+        className="font-medium text-foreground truncate"
+        style={{
+          fontSize: 'var(--font-label-medium)',
+          lineHeight: 'var(--line-label-medium)',
+          letterSpacing: 'var(--tracking-label-medium)',
+        }}
+      >
+        {item.label}
+      </span>
+      <GripVertical className="w-3 h-3 text-[var(--mw-mirage-300)] ml-auto flex-shrink-0" />
     </div>
   );
 }
@@ -270,67 +280,72 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
 function CanvasNode({
   node,
   selected,
+  dragging,
   onMouseDown,
   onPortMouseDown,
 }: {
   node: ProcessNode;
   selected: boolean;
+  dragging: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onPortMouseDown: (port: 'top' | 'right' | 'bottom' | 'left', e: React.MouseEvent) => void;
 }) {
-  const style = CATEGORY_STYLE[node.category];
   const Icon = node.icon;
   const ports: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
 
-  const borderColorMap: Record<NodeCategory, string> = {
-    process: 'var(--mw-yellow-400)',
-    people: 'var(--mw-blue)',
-    resource: 'var(--neutral-400)',
-    custom: 'var(--mw-purple)',
-    'text-shapes': 'var(--neutral-300)',
+  // Single source of truth — colors derived from the same --pb-* tokens as CATEGORY_STYLE.
+  const strokeMap: Record<NodeCategory, string> = {
+    process:       'var(--pb-process-stroke)',
+    people:        'var(--pb-people-stroke)',
+    resource:      'var(--pb-resource-stroke)',
+    custom:        'var(--pb-custom-stroke)',
+    'text-shapes': 'var(--pb-text-shapes-stroke)',
   };
-
-  const fillColorMap: Record<NodeCategory, string> = {
-    process: 'var(--pb-process-fill)',
-    people: 'var(--pb-people-fill)',
-    resource: 'var(--pb-resource-fill)',
-    custom: 'var(--pb-custom-fill)',
+  const fillMap: Record<NodeCategory, string> = {
+    process:       'var(--pb-process-fill)',
+    people:        'var(--pb-people-fill)',
+    resource:      'var(--pb-resource-fill)',
+    custom:        'var(--pb-custom-fill)',
     'text-shapes': 'var(--pb-text-shapes-fill)',
   };
 
   const half = NODE_SIZE / 2;
-  const borderColor = borderColorMap[node.category];
+  const strokeColor = strokeMap[node.category];
+  const fillColor = fillMap[node.category];
+  const shape = CATEGORY_STYLE[node.category].shape;
+  // While dragging, lift the elevation. While selected (but not dragging), use the halo glow.
+  const filterId = dragging ? 'pb-elevation-3' : selected ? 'pb-selection-glow' : 'pb-elevation-1';
 
   return (
     <g
       transform={`translate(${node.x}, ${node.y})`}
       onMouseDown={onMouseDown}
       className="cursor-move"
-      filter={selected ? 'url(#pb-elevation-3)' : 'url(#pb-elevation-1)'}
-      style={{ transition: 'filter 250ms ease' }}
+      filter={`url(#${filterId})`}
+      opacity={dragging ? 0.85 : 1}
+      style={{ transition: 'filter 150ms cubic-bezier(0.2,0,0,1), opacity 150ms cubic-bezier(0.2,0,0,1)' }}
     >
       {selected && (
         <rect
-          x={-4}
-          y={-4}
-          width={NODE_SIZE + 8}
-          height={NODE_SIZE + 8}
-          rx={12}
+          x={-3}
+          y={-3}
+          width={NODE_SIZE + 6}
+          height={NODE_SIZE + 6}
+          rx={shape === 'square' ? 18 : 14}
           fill="none"
           stroke="var(--mw-yellow-400)"
-          strokeWidth={2}
-          strokeDasharray="4 2"
+          strokeWidth={1.5}
         />
       )}
 
       {/* Node shape background */}
-      {CATEGORY_STYLE[node.category].shape === 'circle' ? (
-        <circle cx={half} cy={half} r={half - 1} fill={fillColorMap[node.category]} stroke={borderColor} strokeWidth={2} />
-      ) : CATEGORY_STYLE[node.category].shape === 'diamond' ? (
+      {shape === 'circle' ? (
+        <circle cx={half} cy={half} r={half - 1} fill={fillColor} stroke={strokeColor} strokeWidth={2} />
+      ) : shape === 'diamond' ? (
         <polygon
           points={`${half},1 ${NODE_SIZE - 1},${half} ${half},${NODE_SIZE - 1} 1,${half}`}
-          fill={fillColorMap[node.category]}
-          stroke={borderColor}
+          fill={fillColor}
+          stroke={strokeColor}
           strokeWidth={2}
         />
       ) : (
@@ -339,27 +354,31 @@ function CanvasNode({
           y={1}
           width={NODE_SIZE - 2}
           height={NODE_SIZE - 2}
-          rx={8}
-          fill={fillColorMap[node.category]}
-          stroke={borderColor}
+          rx={14}
+          fill={fillColor}
+          stroke={strokeColor}
           strokeWidth={2}
         />
       )}
 
       {/* Icon */}
-      <foreignObject x={half - 12} y={12} width={24} height={24}>
-        <Icon className="w-6 h-6 text-foreground" />
+      <foreignObject x={half - 12} y={14} width={24} height={24}>
+        <Icon className="w-6 h-6 text-[var(--mw-mirage-700)]" />
       </foreignObject>
 
       {/* Label */}
       <text
         x={half}
-        y={NODE_SIZE - 10}
+        y={NODE_SIZE - 12}
         textAnchor="middle"
-        className="fill-foreground text-[10px] font-medium select-none pointer-events-none"
-        style={{ fontSize: '10px' }}
+        className="fill-[var(--mw-mirage-700)] select-none pointer-events-none"
+        style={{
+          fontSize: 'var(--font-label-medium)',
+          letterSpacing: 'var(--tracking-label-medium)',
+          fontWeight: 500,
+        }}
       >
-        {node.label.length > 10 ? node.label.slice(0, 10) + '...' : node.label}
+        {node.label.length > 11 ? node.label.slice(0, 11) + '…' : node.label}
       </text>
 
       {/* Ports */}
@@ -372,7 +391,7 @@ function CanvasNode({
             cy={pos.y}
             r={PORT_RADIUS}
             fill="var(--background, #fff)"
-            stroke={borderColor}
+            stroke={strokeColor}
             strokeWidth={1.5}
             className="cursor-crosshair hover:fill-[var(--mw-yellow-400)] transition-colors"
             onMouseDown={(e) => {
@@ -589,13 +608,13 @@ function AILeanPanel({
       </div>
 
       <AnimatePresence>
-        {suggestions.map((s) => (
+        {suggestions.map((s, idx) => (
           <motion.div
             key={s.id}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.2, delay: idx * 0.03, ease: [0.2, 0, 0, 1] }}
             className="space-y-2"
           >
             <MirrorWorksAgentCard
@@ -676,6 +695,8 @@ export function ControlProcessBuilder() {
   const drawingConnRef = useRef<{ fromId: string; fromPort: 'top' | 'right' | 'bottom' | 'left'; mouseX: number; mouseY: number } | null>(null);
   const panningRef = useRef<{ startX: number; startY: number; startPanX: number; startPanY: number } | null>(null);
   const [drawingLine, setDrawingLine] = useState<{ fromX: number; fromY: number; toX: number; toY: number } | null>(null);
+  // Mirror of draggingRef.nodeId so CanvasNode can re-render with elevation/opacity feedback.
+  const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
 
   const selectedNode = useMemo(() => nodes.find(n => n.id === selectedNodeId) ?? null, [nodes, selectedNodeId]);
 
@@ -703,6 +724,7 @@ export function ControlProcessBuilder() {
       offsetX: canvas.x - node.x,
       offsetY: canvas.y - node.y,
     };
+    setDraggingNodeId(nodeId);
     setSelectedNodeId(nodeId);
     setSelectedConnId(null);
   }, [nodes, screenToCanvas]);
@@ -808,6 +830,7 @@ export function ControlProcessBuilder() {
 
     draggingRef.current = null;
     panningRef.current = null;
+    setDraggingNodeId(null);
   }, [nodes, screenToCanvas]);
 
   // ─── Drop handler (from library) ────────────────────────────────────────
@@ -1014,8 +1037,17 @@ export function ControlProcessBuilder() {
         {/* ── Left Sidebar: Element Library ───────────────────────────── */}
         <ResizablePanel defaultSize={18} minSize={14} maxSize={28}>
           <div className="h-full flex flex-col bg-card overflow-hidden">
-            <div className="p-3 border-b border-[var(--border)] flex-shrink-0">
-              <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2">Element library</p>
+            <div className="px-4 py-3 border-b border-[var(--pb-hairline)] flex-shrink-0">
+              <p
+                className="text-[var(--mw-mirage-500)] uppercase mb-2"
+                style={{
+                  fontSize: 'var(--font-label-small)',
+                  letterSpacing: 'var(--tracking-label-small)',
+                  fontWeight: 500,
+                }}
+              >
+                Element library
+              </p>
               <ToggleGroup
                 type="single"
                 value={activeTab}
@@ -1024,49 +1056,81 @@ export function ControlProcessBuilder() {
                 variant="outline"
               >
                 {Object.keys(ELEMENT_LIBRARY).map(tab => (
-                  <ToggleGroupItem key={tab} value={tab} className="flex-1 text-[10px] px-1 h-7 data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-primary-foreground">
+                  <ToggleGroupItem
+                    key={tab}
+                    value={tab}
+                    className="flex-1 px-1 h-7 data-[state=on]:bg-[var(--mw-yellow-400)] data-[state=on]:text-[var(--mw-yellow-900)]"
+                    style={{
+                      fontSize: 'var(--font-label-small)',
+                      letterSpacing: 'var(--tracking-label-small)',
+                      fontWeight: 500,
+                    }}
+                  >
                     {tab.slice(0, 4)}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
               {ELEMENT_LIBRARY[activeTab]?.map((item) => (
                 <LibraryItem key={item.label} item={item} onDragStart={() => {}} />
               ))}
             </div>
 
             {/* Legend */}
-            <div className="border-t border-[var(--border)] p-3 flex-shrink-0 space-y-1.5">
-              <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-1">Flow legend</p>
+            <div className="border-t border-[var(--pb-hairline)] px-4 py-3 flex-shrink-0 space-y-2">
+              <p
+                className="text-[var(--mw-mirage-500)] uppercase mb-1"
+                style={{
+                  fontSize: 'var(--font-label-small)',
+                  letterSpacing: 'var(--tracking-label-small)',
+                  fontWeight: 500,
+                }}
+              >
+                Flow legend
+              </p>
               {(Object.keys(FLOW_COLORS) as FlowType[]).map(ft => (
                 <div key={ft} className="flex items-center gap-2">
                   <span className="w-6 h-0.5 rounded-full" style={{ backgroundColor: FLOW_COLORS[ft] }} />
-                  <span className="text-xs text-[var(--neutral-500)] capitalize">{ft}</span>
+                  <span
+                    className="text-[var(--mw-mirage-500)] capitalize"
+                    style={{ fontSize: 'var(--font-label-small)' }}
+                  >
+                    {ft}
+                  </span>
                 </div>
               ))}
-              <div className="mt-2 space-y-1">
-                <p className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider">Shapes</p>
+              <div className="mt-2 space-y-1.5">
+                <p
+                  className="text-[var(--mw-mirage-500)] uppercase"
+                  style={{
+                    fontSize: 'var(--font-label-small)',
+                    letterSpacing: 'var(--tracking-label-small)',
+                    fontWeight: 500,
+                  }}
+                >
+                  Shapes
+                </p>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-100)]" />
-                  <span className="text-xs text-[var(--neutral-500)]">Process</span>
+                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-process-stroke)] bg-[var(--pb-process-fill)]" />
+                  <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Process</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full border border-[var(--mw-blue)] bg-[var(--mw-blue-100)]" />
-                  <span className="text-xs text-[var(--neutral-500)]">People</span>
+                  <span className="w-4 h-4 rounded-full border border-[var(--pb-people-stroke)] bg-[var(--pb-people-fill)]" />
+                  <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>People</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rotate-45 border border-[var(--neutral-400)] bg-[var(--neutral-100)]" style={{ borderRadius: 2 }} />
-                  <span className="text-xs text-[var(--neutral-500)]">Resource</span>
+                  <span className="w-4 h-4 rotate-45 border border-[var(--pb-resource-stroke)] bg-[var(--pb-resource-fill)]" style={{ borderRadius: 2 }} />
+                  <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Resource</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded border border-[var(--mw-purple)] bg-[var(--mw-purple-100)]" />
-                  <span className="text-xs text-[var(--neutral-500)]">Custom</span>
+                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-custom-stroke)] bg-[var(--pb-custom-fill)]" />
+                  <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Custom</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded border border-[var(--neutral-300)] bg-[var(--neutral-50)]" />
-                  <span className="text-xs text-[var(--neutral-500)]">Text</span>
+                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-text-shapes-stroke)] bg-[var(--pb-text-shapes-fill)]" />
+                  <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Text</span>
                 </div>
               </div>
             </div>
@@ -1105,7 +1169,8 @@ export function ControlProcessBuilder() {
               {/* Grid background */}
               <defs>
                 <pattern id="pb-grid" width={GRID_SIZE} height={GRID_SIZE} patternUnits="userSpaceOnUse" patternTransform={`translate(${pan.x % (GRID_SIZE * zoom)}, ${pan.y % (GRID_SIZE * zoom)}) scale(${zoom})`}>
-                  <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r={0.8} fill="var(--neutral-300)" />
+                  <rect width={GRID_SIZE} height={GRID_SIZE} fill="var(--pb-canvas-bg)" />
+                  <circle cx={GRID_SIZE / 2} cy={GRID_SIZE / 2} r={0.8} fill="var(--pb-grid-dot)" />
                 </pattern>
 
                 {/* Arrow markers per flow type */}
@@ -1123,9 +1188,9 @@ export function ControlProcessBuilder() {
                   </marker>
                 ))}
 
-                {/* Generic drawing arrow */}
+                {/* Generic drawing arrow — yellow to match in-progress drawing line */}
                 <marker id="arrow-drawing" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                  <path d="M 0 0.5 L 6 3 L 0 5.5 Z" fill="var(--neutral-400)" />
+                  <path d="M 0 0.5 L 6 3 L 0 5.5 Z" fill="var(--mw-yellow-400)" fillOpacity="0.6" />
                 </marker>
 
                 {/* MD3 Elevation filters */}
@@ -1137,6 +1202,12 @@ export function ControlProcessBuilder() {
                 </filter>
                 <filter id="pb-elevation-3" x="-15%" y="-15%" width="140%" height="150%">
                   <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000" floodOpacity="0.15" />
+                </filter>
+
+                {/* Selection halo — yellow glow + soft drop shadow, used in place of dashed selection rect */}
+                <filter id="pb-selection-glow" x="-25%" y="-25%" width="150%" height="150%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="var(--mw-yellow-400)" floodOpacity="0.6" />
+                  <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.12" />
                 </filter>
               </defs>
 
@@ -1166,13 +1237,13 @@ export function ControlProcessBuilder() {
                       if (el.category === 'machines') {
                         return (
                           <g key={el.id}>
-                            <rect x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--neutral-200)" fillOpacity={0.4} stroke="var(--neutral-400)" strokeWidth={0.5} rx={4} />
-                            <text x={el.x + el.width / 2} y={el.y + el.height / 2 + 3} textAnchor="middle" fontSize={8} fill="var(--neutral-500)" fontWeight={500}>{el.name}</text>
+                            <rect x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--mw-mirage-100)" fillOpacity={0.4} stroke="var(--mw-mirage-300)" strokeWidth={0.5} rx={4} />
+                            <text x={el.x + el.width / 2} y={el.y + el.height / 2 + 3} textAnchor="middle" fontSize={8} fill="var(--mw-mirage-500)" fontWeight={500}>{el.name}</text>
                           </g>
                         );
                       }
                       return (
-                        <rect key={el.id} x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--neutral-300)" fillOpacity={0.2} stroke="var(--neutral-400)" strokeWidth={0.5} rx={2} />
+                        <rect key={el.id} x={el.x} y={el.y} width={el.width} height={el.height} fill="var(--mw-mirage-200)" fillOpacity={0.2} stroke="var(--mw-mirage-300)" strokeWidth={0.5} rx={2} />
                       );
                     })}
                   </g>
@@ -1193,16 +1264,17 @@ export function ControlProcessBuilder() {
                   />
                 ))}
 
-                {/* Drawing line (in progress) */}
+                {/* Drawing line (in progress) — distinct from settled edges via opacity + dash */}
                 {drawingLine && (
                   <line
                     x1={drawingLine.fromX}
                     y1={drawingLine.fromY}
                     x2={drawingLine.toX}
                     y2={drawingLine.toY}
-                    stroke="var(--neutral-400)"
+                    stroke="var(--mw-yellow-400)"
+                    strokeOpacity={0.6}
                     strokeWidth={2}
-                    strokeDasharray="6 3"
+                    strokeDasharray="4 3"
                     markerEnd="url(#arrow-drawing)"
                   />
                 )}
@@ -1213,6 +1285,7 @@ export function ControlProcessBuilder() {
                     key={node.id}
                     node={node}
                     selected={selectedNodeId === node.id}
+                    dragging={draggingNodeId === node.id}
                     onMouseDown={(e) => handleNodeMouseDown(node.id, e)}
                     onPortMouseDown={(port, e) => handlePortMouseDown(node.id, port, e)}
                   />
