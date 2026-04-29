@@ -17,14 +17,8 @@ import { StatusBadge } from "@/components/shared/data/StatusBadge";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
+
 function fmtAud(v: number): string {
   return v.toLocaleString("en-AU", {
     style: "currency",
@@ -33,6 +27,93 @@ function fmtAud(v: number): string {
     maximumFractionDigits: 0,
   });
 }
+
+const scheduledColumns: MwColumnDef<MaintenanceRecord>[] = [
+  { key: "machine", header: "Machine", className: "font-medium", cell: (r) => r.machineName },
+  {
+    key: "type",
+    header: "Type",
+    cell: (r) => (
+      <Badge variant="outline" className="capitalize">
+        {r.type}
+      </Badge>
+    ),
+  },
+  {
+    key: "description",
+    header: "Description",
+    className: "max-w-[260px] truncate text-sm text-[var(--neutral-500)]",
+    cell: (r) => r.description,
+  },
+  {
+    key: "scheduled",
+    header: "Scheduled",
+    className: "font-mono text-sm",
+    cell: (r) => r.scheduledDate,
+  },
+  { key: "assignee", header: "Assigned To", className: "text-sm", cell: (r) => r.assignedTo },
+  {
+    key: "cost",
+    header: "Est. Cost",
+    headerClassName: "text-right",
+    className: "text-right font-mono text-sm",
+    cell: (r) => (r.cost ? fmtAud(r.cost) : "—"),
+  },
+  {
+    key: "status",
+    header: "Status",
+    cell: (r) => (
+      <StatusBadge
+        status={r.status as "scheduled" | "in_progress" | "overdue"}
+        withDot
+      />
+    ),
+  },
+];
+
+const historyColumns: MwColumnDef<MaintenanceRecord>[] = [
+  { key: "machine", header: "Machine", className: "font-medium", cell: (r) => r.machineName },
+  {
+    key: "type",
+    header: "Type",
+    cell: (r) => (
+      <Badge variant="outline" className="capitalize">
+        {r.type}
+      </Badge>
+    ),
+  },
+  {
+    key: "description",
+    header: "Description",
+    className: "max-w-[260px] truncate text-sm text-[var(--neutral-500)]",
+    cell: (r) => r.description,
+  },
+  {
+    key: "completed",
+    header: "Completed",
+    className: "font-mono text-sm",
+    cell: (r) => r.completedDate ?? "—",
+  },
+  {
+    key: "duration",
+    header: "Duration",
+    headerClassName: "text-right",
+    className: "text-right font-mono text-sm",
+    cell: (r) => (r.durationMinutes ? `${r.durationMinutes} min` : "—"),
+  },
+  {
+    key: "cost",
+    header: "Cost",
+    headerClassName: "text-right",
+    className: "text-right font-mono text-sm",
+    cell: (r) => (r.cost ? fmtAud(r.cost) : "—"),
+  },
+  {
+    key: "status",
+    header: "Status",
+    cell: () => <StatusBadge status="completed" withDot />,
+  },
+];
 
 export function ControlMaintenance() {
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
@@ -148,122 +229,29 @@ export function ControlMaintenance() {
           </TabsList>
 
           <TabsContent value="schedule">
-            <Card variant="flat" className="p-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Machine</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Scheduled</TableHead>
-                    <TableHead>Assigned To</TableHead>
-                    <TableHead className="text-right">Est. Cost</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {scheduled.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">
-                        {r.machineName}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {r.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-[260px] truncate text-sm text-[var(--neutral-500)]">
-                        {r.description}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {r.scheduledDate}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {r.assignedTo}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {r.cost ? fmtAud(r.cost) : "—"}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge
-                          status={r.status as "scheduled" | "in_progress" | "overdue"}
-                          withDot
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {scheduled.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={7}
-                        className="py-8 text-center text-sm text-[var(--neutral-400)]"
-                      >
-                        No upcoming maintenance scheduled
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Card>
+            <MwDataTable<MaintenanceRecord>
+              columns={scheduledColumns}
+              data={scheduled}
+              keyExtractor={(r) => r.id}
+              emptyState={
+                <div className="py-8 text-center text-sm text-[var(--neutral-400)]">
+                  No upcoming maintenance scheduled
+                </div>
+              }
+            />
           </TabsContent>
 
           <TabsContent value="history">
-            <Card variant="flat" className="p-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Machine</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Completed</TableHead>
-                    <TableHead className="text-right">Duration</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {history.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">
-                        {r.machineName}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {r.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-[260px] truncate text-sm text-[var(--neutral-500)]">
-                        {r.description}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {r.completedDate ?? "—"}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {r.durationMinutes
-                          ? `${r.durationMinutes} min`
-                          : "—"}
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {r.cost ? fmtAud(r.cost) : "—"}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status="completed" withDot />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {history.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={7}
-                        className="py-8 text-center text-sm text-[var(--neutral-400)]"
-                      >
-                        No maintenance history recorded
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Card>
+            <MwDataTable<MaintenanceRecord>
+              columns={historyColumns}
+              data={history}
+              keyExtractor={(r) => r.id}
+              emptyState={
+                <div className="py-8 text-center text-sm text-[var(--neutral-400)]">
+                  No maintenance history recorded
+                </div>
+              }
+            />
           </TabsContent>
         </Tabs>
       </motion.div>
