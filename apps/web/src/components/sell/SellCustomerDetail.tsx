@@ -662,9 +662,9 @@ export function SellCustomerDetail() {
               </Card>
 
               {/* Agent insights */}
-              <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+              <Card className="p-4">
                 <AIFeed module="sell" initialCount={2} />
-              </div>
+              </Card>
             </div>
           </div>
         )}

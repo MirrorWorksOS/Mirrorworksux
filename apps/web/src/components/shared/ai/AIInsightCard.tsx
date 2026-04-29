@@ -12,6 +12,7 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
+import { Card } from '@/components/ui/card';
 import { cn } from '../../ui/utils';
 import { MirrorWorksAgentCard } from './MirrorWorksAgentCard';
 
@@ -87,7 +88,7 @@ export function AIInsightMessage({
   actions,
 }: AIInsightMessageProps) {
   return (
-    <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-3">
+    <Card className="p-3">
       <div className="flex items-center gap-2 mb-1.5">
         <div className="w-5 h-5 bg-[var(--mw-mirage)] rounded-full flex items-center justify-center flex-shrink-0">
           <AgentLogomark size={18} />
@@ -105,6 +106,6 @@ export function AIInsightMessage({
         {children}
       </p>
       {actions && <div className="flex gap-2 mt-2 pl-7">{actions}</div>}
-    </div>
+    </Card>
   );
 }

@@ -18,6 +18,7 @@ import {
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Button } from './ui/button';
+import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { cn } from './ui/utils';
 import { toast } from 'sonner';
@@ -394,7 +395,7 @@ export function Notifications() {
 
         {/* Empty state */}
         {filtered.length === 0 && (
-          <div className="py-16 flex flex-col items-center justify-center text-center rounded-xl border border-border bg-card">
+          <Card className="py-16 items-center justify-center text-center">
             <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center mb-4">
               <Bell className="w-5 h-5 text-[var(--neutral-400)]" />
             </div>
@@ -423,7 +424,7 @@ export function Notifications() {
                 Clear all filters
               </button>
             )}
-          </div>
+          </Card>
         )}
       </div>
     </PageShell>
