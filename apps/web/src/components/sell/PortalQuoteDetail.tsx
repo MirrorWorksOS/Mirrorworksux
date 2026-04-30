@@ -19,7 +19,7 @@ import { PortalQuoteChat } from '@/components/sell/PortalQuoteChat';
 import { PortalRevisionTracker } from '@/components/sell/PortalRevisionTracker';
 import { PortalMarkupViewer } from '@/components/sell/PortalMarkupViewer';
 import { usePortalPreferences } from '@/components/sell/portalPreferences';
-import { getEnabledPaymentMethods } from '@/components/sell/paymentMethods';
+import { getEnabledPaymentMethods, type PaymentMethodId } from '@/components/sell/paymentMethods';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import type { Quote } from '@/types/entities';
@@ -27,7 +27,7 @@ import type { Quote } from '@/types/entities';
 interface PortalQuoteDetailProps {
   quote: Quote;
   onBack: () => void;
-  onAccept: (id: string) => void;
+  onAccept: (id: string, paymentMethodId?: PaymentMethodId) => void;
   onDecline: (id: string) => void;
 }
 
@@ -98,6 +98,7 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
   const [revisionDialogOpen, setRevisionDialogOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
   const [lineItemsOpen, setLineItemsOpen] = useState(false);
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const { viewingCustomerId } = useAuth();
   const [prefs] = usePortalPreferences(viewingCustomerId);
 
@@ -304,7 +305,14 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
               <h4 className="text-sm font-medium text-foreground">Actions</h4>
               <Button
                 className="w-full bg-[var(--mw-green)] hover:bg-[var(--mw-green)]/90 text-white"
-                onClick={() => onAccept(quote.id)}
+                onClick={() => {
+                  const enabled = getEnabledPaymentMethods(prefs.acceptedPaymentMethods);
+                  if (enabled.length <= 1) {
+                    onAccept(quote.id, enabled[0]?.id);
+                  } else {
+                    setAcceptDialogOpen(true);
+                  }
+                }}
               >
                 <Check className="w-4 h-4 mr-1.5" /> Accept Quote
               </Button>
@@ -367,6 +375,47 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
           <PortalRevisionTracker revisions={quote.revisions} />
         </div>
       </div>
+
+      {/* Accept — payment method picker */}
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Accept quote — choose how you'll pay</DialogTitle>
+            <DialogDescription>
+              We'll record this against the order so the invoice routes to the right rail.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-1">
+            {getEnabledPaymentMethods(prefs.acceptedPaymentMethods).map((m) => {
+              const Icon = m.icon;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setAcceptDialogOpen(false);
+                    onAccept(quote.id, m.id);
+                  }}
+                  className="flex w-full items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-green)] hover:bg-[var(--mw-green)]/5"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                    <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">{m.label}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{m.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setAcceptDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Revision Request Dialog */}
       <Dialog open={revisionDialogOpen} onOpenChange={setRevisionDialogOpen}>

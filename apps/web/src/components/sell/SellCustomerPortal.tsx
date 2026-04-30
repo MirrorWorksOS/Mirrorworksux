@@ -1048,8 +1048,15 @@ export function SellCustomerPortal() {
         <PortalQuoteDetail
           quote={selectedQuote}
           onBack={() => setSelectedQuote(null)}
-          onAccept={() => {
-            toast.success('Quote accepted');
+          onAccept={(_id, methodId) => {
+            const method = methodId
+              ? getEnabledPaymentMethods([methodId])[0]
+              : undefined;
+            toast.success('Quote accepted', {
+              description: method
+                ? `Paying by ${method.shortLabel}. Invoice will route to ${method.handoff}.`
+                : 'No payment method selected — your account manager will follow up.',
+            });
             setSelectedQuote(null);
           }}
           onDecline={() => {
