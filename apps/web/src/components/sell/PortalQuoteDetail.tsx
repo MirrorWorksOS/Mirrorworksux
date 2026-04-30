@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Check, X, MessageSquare, Download, Calendar, FileText } from 'lucide-react';
+import { ArrowLeft, Check, X, MessageSquare, Download, Calendar, FileText, ChevronDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,7 @@ import { PortalQuoteChat } from '@/components/sell/PortalQuoteChat';
 import { PortalRevisionTracker } from '@/components/sell/PortalRevisionTracker';
 import { PortalMarkupViewer } from '@/components/sell/PortalMarkupViewer';
 import { usePortalPreferences } from '@/components/sell/portalPreferences';
+import { getEnabledPaymentMethods } from '@/components/sell/paymentMethods';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import type { Quote } from '@/types/entities';
@@ -96,6 +97,7 @@ function StatusTimeline({ quote }: { quote: Quote }) {
 export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: PortalQuoteDetailProps) {
   const [revisionDialogOpen, setRevisionDialogOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
+  const [lineItemsOpen, setLineItemsOpen] = useState(false);
   const { viewingCustomerId } = useAuth();
   const [prefs] = usePortalPreferences(viewingCustomerId);
 
@@ -156,9 +158,10 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left — Main content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Line items */}
+          {/* Line items — compact summary, expand on demand */}
           {(() => {
             type QuoteLineItem = (typeof quote.lineItems)[number];
+            const itemCount = quote.lineItems.length;
             const columns: MwColumnDef<QuoteLineItem>[] = [
               {
                 key: 'description',
@@ -188,35 +191,66 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
               },
             ];
             return (
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-foreground">Line Items</h4>
-                <MwDataTable<QuoteLineItem>
-                  columns={columns}
-                  data={quote.lineItems}
-                  keyExtractor={(_, i) => i}
-                  striped
-                />
-                <div className="flex justify-end">
-                  <div className="space-y-1 text-right">
-                    <div className="flex justify-between gap-8 text-sm">
-                      <span className="text-[var(--neutral-500)]">Subtotal</span>
-                      <span className="tabular-nums font-medium">{fmtCurrency(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between gap-8 text-sm">
-                      <span className="text-[var(--neutral-500)]">GST (10%)</span>
-                      <span className="tabular-nums">{fmtCurrency(subtotal * 0.1)}</span>
-                    </div>
-                    <div className="flex justify-between gap-8 text-base font-medium pt-1 border-t border-[var(--border)]">
-                      <span>Total (inc. GST)</span>
-                      <span className="tabular-nums">{fmtCurrency(subtotal * 1.1)}</span>
+              <Card className="overflow-hidden p-0">
+                <button
+                  type="button"
+                  onClick={() => setLineItemsOpen((v) => !v)}
+                  aria-expanded={lineItemsOpen}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-[var(--neutral-50)]"
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-sm font-medium text-foreground">
+                      {itemCount} line item{itemCount === 1 ? '' : 's'}
+                    </span>
+                    <span className="text-xs text-[var(--neutral-500)]">
+                      {lineItemsOpen ? 'Hide breakdown' : 'View breakdown'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-base font-medium tabular-nums text-foreground">
+                      {fmtCurrency(subtotal * 1.1)}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wide text-[var(--neutral-500)]">
+                      inc. GST
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-[var(--neutral-500)] transition-transform ${
+                        lineItemsOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </div>
+                </button>
+                {lineItemsOpen && (
+                  <div className="space-y-4 border-t border-[var(--border)] px-5 py-4">
+                    <MwDataTable<QuoteLineItem>
+                      columns={columns}
+                      data={quote.lineItems}
+                      keyExtractor={(_, i) => i}
+                      striped
+                    />
+                    <div className="flex justify-end">
+                      <div className="space-y-1 text-right">
+                        <div className="flex justify-between gap-8 text-sm">
+                          <span className="text-[var(--neutral-500)]">Subtotal</span>
+                          <span className="tabular-nums font-medium">{fmtCurrency(subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between gap-8 text-sm">
+                          <span className="text-[var(--neutral-500)]">GST (10%)</span>
+                          <span className="tabular-nums">{fmtCurrency(subtotal * 0.1)}</span>
+                        </div>
+                        <div className="flex justify-between gap-8 text-base font-medium pt-1 border-t border-[var(--border)]">
+                          <span>Total (inc. GST)</span>
+                          <span className="tabular-nums">{fmtCurrency(subtotal * 1.1)}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </Card>
             );
           })()}
 
-          {/* 3D model review — gated on per-customer pref + presence of a model */}
+          {/* 3D model review — primary content, takes the wide column */}
           {showMarkup && modelSrc && (
             <PortalMarkupViewer
               entityKind="quote"
@@ -293,6 +327,41 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
 
           {/* Status Timeline */}
           <StatusTimeline quote={quote} />
+
+          {/* Accepted payment methods — hint for the customer pre-acceptance */}
+          {(() => {
+            const enabled = getEnabledPaymentMethods(prefs.acceptedPaymentMethods);
+            if (enabled.length === 0) return null;
+            return (
+              <Card className="p-5 space-y-3">
+                <div>
+                  <h4 className="text-sm font-medium text-foreground">We accept</h4>
+                  <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                    Choose any of these when paying the invoice.
+                  </p>
+                </div>
+                <ul className="space-y-2">
+                  {enabled.map((m) => {
+                    const Icon = m.icon;
+                    return (
+                      <li
+                        key={m.id}
+                        className="flex items-center gap-2.5 text-xs text-foreground"
+                      >
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                          <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        </div>
+                        <span className="font-medium">{m.shortLabel}</span>
+                        <span className="text-[var(--neutral-500)] truncate">
+                          · {m.description}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Card>
+            );
+          })()}
 
           {/* Revision History */}
           <PortalRevisionTracker revisions={quote.revisions} />

@@ -293,7 +293,13 @@ export function PortalMarkupViewer({
         <div className="space-y-3">
           <Card variant="flat" className="overflow-hidden p-0">
             <div className="aspect-[4/3] w-full">
-              <GlbViewer src={modelSrc} className="h-full w-full" />
+              <GlbViewer
+                src={modelSrc}
+                className="h-full w-full"
+                background="#ffffff"
+                gridColor={[0xd4d4d8, 0xe4e4e7]}
+                gridOpacity={0.5}
+              />
             </div>
             <div className="border-t border-[var(--border)] bg-[var(--neutral-50)] px-3 py-2 text-[11px] text-[var(--neutral-500)]">
               Drag to orbit · scroll to zoom · right-click to pan

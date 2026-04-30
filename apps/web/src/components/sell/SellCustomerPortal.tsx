@@ -88,6 +88,18 @@ import {
 import { PortalQuoteDetail } from '@/components/sell/PortalQuoteDetail';
 import type { Quote } from '@/types/entities';
 import { usePortalPreferences } from '@/components/sell/portalPreferences';
+import {
+  getEnabledPaymentMethods,
+  type PaymentMethodDef,
+} from '@/components/sell/paymentMethods';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { PortalSubscriptionSection } from './PortalSubscriptionSection';
 import { PortalProfileDrawer } from './PortalProfileDrawer';
@@ -593,16 +605,27 @@ function InvoicesSection({
   customerCompany,
   allowDownload,
   allowOnlinePayment,
+  acceptedPaymentMethods,
 }: {
   customerId: string;
   customerCompany: string;
   allowDownload: boolean;
   allowOnlinePayment: boolean;
+  acceptedPaymentMethods: string[];
 }) {
   const customerInvoices = useMemo(
     () => sellInvoices.filter((i) => i.customerId === customerId),
     [customerId],
   );
+
+  const enabledMethods = useMemo(
+    () => getEnabledPaymentMethods(acceptedPaymentMethods),
+    [acceptedPaymentMethods],
+  );
+
+  const [payInvoice, setPayInvoice] = useState<
+    (typeof customerInvoices)[number] | null
+  >(null);
 
   const handleView = (inv: (typeof customerInvoices)[number]) => {
     const pdf = getInvoicePdf({
@@ -632,16 +655,32 @@ function InvoicesSection({
   };
 
   const handlePayOnline = (inv: (typeof customerInvoices)[number]) => {
-    // In production this would redirect to a Stripe Checkout / PayID handoff.
-    // For now we open a mock payment page in a new tab and toast success so
-    // the internal reviewer can see the flow.
-    const mockUrl = `about:blank#pay/${encodeURIComponent(inv.invoiceNumber)}`;
+    // If only one method is enabled, skip the picker and hand off directly.
+    if (enabledMethods.length <= 1) {
+      handlePayWithMethod(inv, enabledMethods[0]);
+      return;
+    }
+    setPayInvoice(inv);
+  };
+
+  const handlePayWithMethod = (
+    inv: (typeof customerInvoices)[number],
+    method: PaymentMethodDef | undefined,
+  ) => {
+    if (!method) {
+      toast.error('No payment methods enabled — contact your account manager.');
+      return;
+    }
+    // In production each handoff routes to its own provider (Stripe Checkout,
+    // BPAY voucher PDF, EFT details panel, etc.). Mocked here.
+    const mockUrl = `about:blank#pay/${method.id}/${encodeURIComponent(inv.invoiceNumber)}`;
     if (typeof window !== 'undefined') {
       window.open(mockUrl, '_blank', 'noopener,noreferrer');
     }
-    toast.success(`Payment session opened for ${inv.invoiceNumber}`, {
-      description: `${formatCurrency(inv.amount)} · mock handoff`,
+    toast.success(`${method.shortLabel} session opened for ${inv.invoiceNumber}`, {
+      description: `${formatCurrency(inv.amount)} · ${method.handoff} handoff`,
     });
+    setPayInvoice(null);
   };
 
   return (
@@ -741,6 +780,43 @@ function InvoicesSection({
           </div>
         }
       />
+
+      <Dialog open={!!payInvoice} onOpenChange={(o) => !o && setPayInvoice(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pay {payInvoice?.invoiceNumber}</DialogTitle>
+            <DialogDescription>
+              {payInvoice ? `${formatCurrency(payInvoice.amount)} due — pick a payment method.` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-1">
+            {enabledMethods.map((m) => {
+              const Icon = m.icon;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => payInvoice && handlePayWithMethod(payInvoice, m)}
+                  className="flex w-full items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-yellow-500)] hover:bg-[var(--mw-yellow-50)]"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                    <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">{m.label}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{m.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setPayInvoice(null)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
@@ -1044,6 +1120,7 @@ export function SellCustomerPortal() {
         customerCompany={customerName}
         allowDownload={prefs.allowInvoiceDownload}
         allowOnlinePayment={prefs.allowOnlinePayment}
+        acceptedPaymentMethods={prefs.acceptedPaymentMethods}
       />
 
       {canViewSubscription && (

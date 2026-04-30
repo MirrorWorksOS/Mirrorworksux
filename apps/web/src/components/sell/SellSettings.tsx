@@ -11,6 +11,7 @@ import {
   defaultPortalPreferences,
   type PortalPreferences,
 } from './portalPreferences';
+import { PAYMENT_METHODS, type PaymentMethodId } from './paymentMethods';
 import { customers } from '@/services';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -317,6 +318,20 @@ function QuotingPanel() {
 
 // ── Payments Panel ──
 function PaymentsPanel() {
+  const { tenant, updateTenant } = usePortalPreferencesAdmin();
+  const accepted = new Set<PaymentMethodId>(tenant.acceptedPaymentMethods ?? []);
+  const togglePaymentMethod = (id: PaymentMethodId) => {
+    const next = new Set(accepted);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    updateTenant({ acceptedPaymentMethods: Array.from(next) });
+    toast.success(
+      accepted.has(id)
+        ? `${id.toUpperCase()} disabled on customer portal`
+        : `${id.toUpperCase()} enabled on customer portal`,
+    );
+  };
+
   const integrations = [
     { name: 'Stripe', description: 'Online card payments and direct debit', bgColor: '#635BFF', connected: true, accountId: 'acct_1N3xVb2eZvKYlo2C' },
     { name: 'PayPal', description: 'PayPal and pay later options', bgColor: '#003087', connected: false, accountId: '' },
@@ -378,6 +393,41 @@ function PaymentsPanel() {
         </div>
         <div className="mt-4 flex justify-end">
           <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={() => toast.success('Bank details saved')}>Save bank details</Button>
+        </div>
+      </Card>
+
+      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+        <div>
+          <h4 className="text-sm font-medium text-foreground">Accepted on customer portal</h4>
+          <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+            Choose which payment methods customers see on quotes and invoices.
+          </p>
+        </div>
+        <div className="space-y-2">
+          {PAYMENT_METHODS.map((m) => {
+            const Icon = m.icon;
+            const isOn = accepted.has(m.id);
+            return (
+              <div
+                key={m.id}
+                className="flex items-start justify-between gap-4 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3"
+              >
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                    <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground">{m.label}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{m.description}</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={isOn}
+                  onCheckedChange={() => togglePaymentMethod(m.id)}
+                />
+              </div>
+            );
+          })}
         </div>
       </Card>
     </div>

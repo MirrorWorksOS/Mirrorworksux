@@ -17,6 +17,10 @@
  * their end users to see usage numbers.
  */
 import { useEffect, useState, useCallback } from 'react';
+import {
+  DEFAULT_ACCEPTED_PAYMENT_METHODS,
+  type PaymentMethodId,
+} from './paymentMethods';
 
 const STORAGE_KEY = 'mw.sell.portal.prefs.v2';
 const LEGACY_STORAGE_KEY = 'mw.sell.portal.prefs.v1';
@@ -41,6 +45,8 @@ export interface PortalPreferences {
   allowDeliveryNoteDownload: boolean;
   /** Whether the portal surfaces an "Pay online" link on invoices. */
   allowOnlinePayment: boolean;
+  /** Which payment methods to surface on quotes + invoices. */
+  acceptedPaymentMethods: PaymentMethodId[];
 }
 
 export const defaultPortalPreferences: PortalPreferences = {
@@ -53,6 +59,7 @@ export const defaultPortalPreferences: PortalPreferences = {
   allowProfileEdit: true,
   allowDeliveryNoteDownload: true,
   allowOnlinePayment: true,
+  acceptedPaymentMethods: DEFAULT_ACCEPTED_PAYMENT_METHODS,
 };
 
 type StoreShape = {
