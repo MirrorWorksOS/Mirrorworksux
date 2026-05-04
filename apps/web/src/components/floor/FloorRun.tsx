@@ -143,13 +143,31 @@ export function FloorRun() {
   );
 }
 
+// Demo-mode normalizer: while this flag is true every shop-floor entry point
+// presents the canonical Differential Housing run regardless of the WO id in
+// the URL or in the kanban card.
+const USE_CANONICAL = true;
+const CANONICAL = {
+  woNumber: 'WO-2026-0005',
+  moNumber: 'MO-2026-0002',
+  productName: 'Differential Housing',
+  customerName: 'Drivetrain Dynamics Pty Ltd',
+  operation: 'Laser cut differential blanks',
+  machineName: 'Laser Cutter #1',
+  totalUnits: 5, // small demo batch — full close-out reachable in 5 clicks
+  estimatedMinutes: 240,
+  actualMinutes: 0,
+  status: 'in_progress' as const,
+  revision: 'Rev C',
+};
+
 function buildSnapshot(
   wo: WorkOrder,
   mo: ManufacturingOrder | undefined,
   machine: Machine | undefined,
   session: FloorSessionState
 ) {
-  const operatorName = session.operatorName ?? wo.operatorName ?? 'Operator';
+  const operatorName = session.operatorName ?? (USE_CANONICAL ? 'Sarah Chen' : wo.operatorName ?? 'Operator');
   const operatorRole = session.operatorRole ?? 'Shop floor operator';
   const operatorInitials = operatorName
     .split(' ')
@@ -162,29 +180,40 @@ function buildSnapshot(
     ? Math.max(0, Math.floor((Date.now() - session.jobStartedAt) / 1000))
     : wo.actualMinutes * 60;
 
-  return buildExecutionSnapshot(
-    {
-      id: wo.id,
-      woNumber: wo.woNumber,
-      moNumber: mo?.moNumber ?? wo.manufacturingOrderId,
-      jobNumber: mo?.jobNumber,
-      productName: mo?.productName ?? wo.operation,
-      customerName: mo?.customerName ?? 'Customer',
-      machineId: wo.machineId,
-      machineName: machine?.name ?? wo.machineName ?? 'Workstation',
-      stationName: session.stationName ?? machine?.name ?? wo.machineName,
-      operatorName,
-      operatorRole,
-      operatorInitials,
-      operation: wo.operation,
-      status: wo.status,
-      estimatedMinutes: wo.estimatedMinutes,
-      actualMinutes: wo.actualMinutes,
-      totalUnits: 100,
-    },
-    {
-      elapsedSeconds,
-      stationName: session.stationName ?? machine?.name ?? wo.machineName,
-    }
-  );
+  const baseSeed = {
+    id: wo.id,
+    woNumber: wo.woNumber,
+    moNumber: mo?.moNumber ?? wo.manufacturingOrderId,
+    jobNumber: mo?.jobNumber,
+    productName: mo?.productName ?? wo.operation,
+    customerName: mo?.customerName ?? 'Customer',
+    machineId: wo.machineId,
+    machineName: machine?.name ?? wo.machineName ?? 'Workstation',
+    stationName: session.stationName ?? machine?.name ?? wo.machineName,
+    operatorName,
+    operatorRole,
+    operatorInitials,
+    operation: wo.operation,
+    status: wo.status,
+    estimatedMinutes: wo.estimatedMinutes,
+    actualMinutes: wo.actualMinutes,
+    totalUnits: USE_CANONICAL ? CANONICAL.totalUnits : 100,
+  };
+
+  const seed = USE_CANONICAL
+    ? {
+        ...baseSeed,
+        ...CANONICAL,
+        machineId: wo.machineId,
+        operatorName,
+        operatorRole,
+        operatorInitials,
+        stationName: session.stationName ?? CANONICAL.machineName,
+      }
+    : baseSeed;
+
+  return buildExecutionSnapshot(seed, {
+    elapsedSeconds,
+    stationName: session.stationName ?? machine?.name ?? wo.machineName,
+  });
 }

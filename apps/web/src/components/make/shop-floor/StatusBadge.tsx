@@ -22,8 +22,8 @@ const STATUS_STYLES: Record<
   running: {
     label: 'Running',
     className:
-      'border-[var(--neutral-200)] bg-card text-[var(--neutral-800)]',
-    dotClassName: 'bg-[var(--neutral-700)]',
+      'border-[var(--mw-success)]/25 bg-[var(--mw-success)]/10 text-[var(--neutral-900)]',
+    dotClassName: 'bg-[var(--mw-success)]',
   },
   blocked: {
     label: 'Blocked',

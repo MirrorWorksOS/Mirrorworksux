@@ -1,29 +1,32 @@
-import { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, LifeBuoy, Lock, Printer } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Card } from '@/components/ui/card';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
-import { ExecutionHeader } from './ExecutionHeader';
-import { ReferenceWorkspace } from './ReferenceWorkspace';
-import { ActionConsole } from './ActionConsole';
-import { ExceptionSheet } from './ExceptionSheet';
-import { InspectionSheet } from './InspectionSheet';
-import { HandoverSheet } from './HandoverSheet';
+import { Button } from '@/components/ui/button';
+
 import { useFloorExecutionStore } from '@/store/floorExecutionStore';
+
+import { AndonTopBar } from './AndonTopBar';
+import { OperationHeaderCard } from './OperationHeaderCard';
+import { ReferencePanel } from './ReferencePanel';
+import { MaterialsPickListCard } from './MaterialsPickListCard';
+import { QualityActionsRow } from './QualityActionsRow';
+import { PrimaryActionCard } from './PrimaryActionCard';
+import { RoutingStrip } from './RoutingStrip';
+import { TimeSummaryGrid } from './TimeSummaryGrid';
+import { QuickActionsFooter } from './QuickActionsFooter';
+import { ScrapDialog } from './dialogs/ScrapDialog';
+import { NCRDialog } from './dialogs/NCRDialog';
+import { HoldDialog } from './dialogs/HoldDialog';
+import { PrintLabelDialog } from './dialogs/PrintLabelDialog';
+import { CloseWODialog } from './dialogs/CloseWODialog';
+import { RoutingStepDrawer } from './RoutingStepDrawer';
 import type {
+  AndonStatus,
   ExecutionMutation,
-  ExecutionState,
   ExecutionWorkflowStep,
-  InspectionGate,
-  IssueType,
+  PickListRow,
   ReferenceView,
-  SyncState,
   WorkOrderExecutionSnapshot,
 } from './types';
 
@@ -34,847 +37,807 @@ interface FloorExecutionScreenProps {
   onSwitchOperator?: (handoverNote: string) => void;
 }
 
+const IDLE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes of no input → start lock countdown
+const LOCK_COUNTDOWN_MS = 30 * 1000; // 30 seconds warning before lock
+const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'wheel'] as const;
+
+type DerivedState =
+  | 'awaiting_first_off'
+  | 'pick_required'
+  | 'running'
+  | 'on_hold'
+  | 'failed_pending_ncr'
+  | 'complete';
+
+type ReferenceSegment = Exclude<ReferenceView, 'checklist'>;
+
 export function FloorExecutionScreen({
   mode,
   snapshot,
   onClose,
-  onSwitchOperator,
 }: FloorExecutionScreenProps) {
   const {
     referenceViews,
-    inspectionChecklistByGate,
-    requiredReferenceChecklistByView,
-    referenceChecklistSignoffByView,
-    handoverDrafts,
-    handoverNotes,
     queuedMutations,
-    syncedMutationIds,
-    lastSyncedAtByWorkOrder,
     setReferenceView,
-    setInspectionChecklist,
-    setRequiredReferenceChecklist,
-    setReferenceChecklistSignoff,
-    setHandoverDraft,
-    saveHandoverNote,
-    acknowledgeHandoverNote,
     queueMutation,
-    markMutationsSynced,
-    markSynced,
   } = useFloorExecutionStore();
 
-  const [inspectionGate, setInspectionGate] =
-    useState<InspectionGate>('first_off');
-
   const workOrderId = snapshot.workOrderId;
-  const referenceView =
-    referenceViews[workOrderId] ?? snapshot.referenceViewDefault;
-  const checkedInspectionChecklistIds =
-    inspectionChecklistByGate[workOrderId]?.[inspectionGate] ?? [];
-  const checkedRequiredReferenceChecklistIds =
-    requiredReferenceChecklistByView[workOrderId]?.[referenceView] ?? [];
-  const requiredChecklistSignoff =
-    referenceChecklistSignoffByView[workOrderId]?.[referenceView] ?? null;
-  const handoverDraft = handoverDrafts[workOrderId] ?? '';
-  const handoverNote = handoverNotes[workOrderId];
-  const lastSyncedAt = lastSyncedAtByWorkOrder[workOrderId] ?? Date.now();
+  const persistedView =
+    (referenceViews[workOrderId] as ReferenceSegment | undefined) ?? null;
+  const referenceDefault: ReferenceSegment =
+    snapshot.referenceViewDefault === 'checklist'
+      ? 'drawing'
+      : (snapshot.referenceViewDefault as ReferenceSegment);
+  const referenceView: ReferenceSegment = persistedView ?? referenceDefault;
 
-  const [elapsedSeconds, setElapsedSeconds] = useState(snapshot.elapsedSeconds);
-  const [issueSheetType, setIssueSheetType] = useState<IssueType>('tooling');
-  const [issueSheetOpen, setIssueSheetOpen] = useState(false);
-  const [inspectionSheetOpen, setInspectionSheetOpen] = useState(false);
-  const [handoverSheetOpen, setHandoverSheetOpen] = useState(false);
-  const [handoverSummaryDraft, setHandoverSummaryDraft] = useState('');
-  const [routingSheetOpen, setRoutingSheetOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(
-    typeof navigator !== 'undefined' ? navigator.onLine : true
-  );
+  const [scrapOpen, setScrapOpen] = useState(false);
+  const [ncrOpen, setNcrOpen] = useState(false);
+  const [holdOpen, setHoldOpen] = useState(false);
+  const [printOpen, setPrintOpen] = useState(false);
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [routingStep, setRoutingStep] = useState<ExecutionWorkflowStep | null>(null);
+  const [overrideState, setOverrideState] = useState<DerivedState | null>(null);
+  const [stepCheckIds, setStepCheckIds] = useState<string[]>([]);
+  const [now, setNow] = useState(Date.now());
+  const [helpRequestedAt, setHelpRequestedAt] = useState<number | null>(null);
+  const [scanningRowId, setScanningRowId] = useState<string | null>(null);
+  const [cycleSeconds, setCycleSeconds] = useState(0);
+  const [advancedSteps, setAdvancedSteps] = useState<number[]>([]);
+  const [closedConfirmation, setClosedConfirmation] = useState<{
+    qty: number;
+    printer?: string;
+  } | null>(null);
+  const [lockCountdownSec, setLockCountdownSec] = useState<number | null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
 
   const workOrderMutations = useMemo(
-    () =>
-      queuedMutations.filter((mutation) => mutation.workOrderId === workOrderId),
-    [queuedMutations, workOrderId]
-  );
-
-  const pendingMutations = useMemo(
-    () =>
-      workOrderMutations.filter(
-        (mutation) => !syncedMutationIds.includes(mutation.id)
-      ),
-    [syncedMutationIds, workOrderMutations]
+    () => queuedMutations.filter((mutation) => mutation.workOrderId === workOrderId),
+    [queuedMutations, workOrderId],
   );
 
   const derived = useMemo(
-    () => applyExecutionMutations(snapshot, workOrderMutations),
-    [snapshot, workOrderMutations]
+    () => applyMutations(snapshot, workOrderMutations),
+    [snapshot, workOrderMutations],
   );
 
-  const syncState: SyncState = !isOnline
-    ? 'offline'
-    : pendingMutations.length > 0
-      ? 'degraded'
-      : 'online';
-  const syncLabel = getSyncLabel(syncState, lastSyncedAt);
+  const workOrderState: DerivedState = useMemo(() => {
+    if (overrideState) return overrideState;
+    if (derived.unitsCompleted >= derived.unitsTarget) return 'complete';
+    if (derived.unitsCompleted === 0) return 'awaiting_first_off';
+    if (derived.pickList.some((row) => !row.picked)) return 'pick_required';
+    return 'running';
+  }, [derived, overrideState]);
 
-  const primaryAction = useMemo(
-    () => derivePrimaryAction(snapshot, derived),
-    [derived, snapshot]
-  );
-  const requiredChecks = snapshot.references[referenceView].items ?? [];
-  const requiredChecksComplete =
-    requiredChecks.length === 0 ||
-    requiredChecks.every((_item, index) =>
-      checkedRequiredReferenceChecklistIds.includes(
-        `${referenceView}-check-${index + 1}`
-      )
-    );
-  const completionPercent = Math.min(
-    100,
-    Math.round((derived.quantity.good / Math.max(1, derived.quantity.target)) * 100)
-  );
+  const andonStatus: AndonStatus = useMemo(() => {
+    if (workOrderState === 'on_hold' || workOrderState === 'failed_pending_ncr') return 'blocked';
+    if (workOrderState === 'awaiting_first_off' || workOrderState === 'pick_required') return 'setup';
+    if (workOrderState === 'complete') return 'idle';
+    return 'running';
+  }, [workOrderState]);
 
   useEffect(() => {
-    if (!referenceViews[workOrderId]) {
-      setReferenceView(workOrderId, snapshot.referenceViewDefault);
-    }
-  }, [
-    referenceViews,
-    setReferenceView,
-    snapshot.referenceViewDefault,
-    workOrderId,
-  ]);
+    setReferenceView(workOrderId, referenceView);
+  }, [referenceView, setReferenceView, workOrderId]);
 
   useEffect(() => {
-    setElapsedSeconds(snapshot.elapsedSeconds);
-  }, [snapshot.elapsedSeconds, snapshot.workOrderId]);
-
-  useEffect(() => {
-    if (derived.executionState === 'blocked' || derived.executionState === 'complete') {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      setElapsedSeconds((value) => value + 1);
-    }, 1000);
-
+    const interval = window.setInterval(() => setNow(Date.now()), 30000);
     return () => window.clearInterval(interval);
-  }, [derived.executionState]);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
   }, []);
 
   useEffect(() => {
-    if (lastSyncedAtByWorkOrder[workOrderId]) return;
-    markSynced(workOrderId, Date.now());
-  }, [lastSyncedAtByWorkOrder, markSynced, workOrderId]);
+    if (workOrderState === 'on_hold' || workOrderState === 'complete' || workOrderState === 'failed_pending_ncr') {
+      return;
+    }
+    const t = window.setInterval(() => setCycleSeconds((s) => s + 1), 1000);
+    return () => window.clearInterval(t);
+  }, [workOrderState]);
 
   useEffect(() => {
-    if (!isOnline || pendingMutations.length === 0) return;
+    setCycleSeconds(0);
+  }, [derived.unitsCompleted]);
 
-    const timeout = window.setTimeout(() => {
-      markMutationsSynced(
-        workOrderId,
-        pendingMutations.map((mutation) => mutation.id)
+  // Idle lock — only in kiosk (route) mode. Resets the 5 min idle timer on any
+  // user activity. Once idle threshold is hit we start a 30 s countdown banner;
+  // if the operator doesn't tap during the countdown, the WO is queued for
+  // resume and we navigate back to the clock-in screen.
+  useEffect(() => {
+    if (mode !== 'route') return;
+    if (closedConfirmation) return;
+
+    const onActivity = () => {
+      lastActivityRef.current = Date.now();
+      setLockCountdownSec(null);
+    };
+    ACTIVITY_EVENTS.forEach((evt) =>
+      window.addEventListener(evt, onActivity, { passive: true } as AddEventListenerOptions),
+    );
+
+    const tick = window.setInterval(() => {
+      const idleMs = Date.now() - lastActivityRef.current;
+      if (idleMs < IDLE_THRESHOLD_MS) {
+        return;
+      }
+      const elapsedSinceWarning = idleMs - IDLE_THRESHOLD_MS;
+      const remaining = Math.max(0, Math.ceil((LOCK_COUNTDOWN_MS - elapsedSinceWarning) / 1000));
+      setLockCountdownSec(remaining);
+      if (remaining === 0) {
+        useFloorExecutionStore.getState().setPendingResumeWorkOrder(workOrderId);
+        toast.message('Kiosk locked', { description: 'Tap your photo to resume the work order.' });
+        onClose();
+      }
+    }, 1000);
+
+    return () => {
+      window.clearInterval(tick);
+      ACTIVITY_EVENTS.forEach((evt) =>
+        window.removeEventListener(evt, onActivity),
       );
-      markSynced(workOrderId, Date.now());
-    }, 900);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, workOrderId, closedConfirmation]);
 
-    return () => window.clearTimeout(timeout);
-  }, [
-    isOnline,
-    markMutationsSynced,
-    markSynced,
-    pendingMutations,
-    workOrderId,
-  ]);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.code !== 'Space') return;
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (workOrderState !== 'running') return;
+      event.preventDefault();
+      handleIncrement();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workOrderState]);
 
-  const handlePrimaryAction = () => {
-    switch (primaryAction.type) {
-      case 'ack-revision':
-        queueMutation({
-          id: createMutationId('ack-revision'),
-          workOrderId,
-          type: 'ack-revision',
-          createdAt: Date.now(),
-        });
-        break;
-      case 'set-state':
-        queueMutation({
-          id: createMutationId('set-state'),
-          workOrderId,
-          type: 'set-state',
-          nextState: primaryAction.nextState,
-          createdAt: Date.now(),
-        });
-        break;
-      case 'inspection':
-        setInspectionGate(primaryAction.gate);
-        setInspectionSheetOpen(true);
-        break;
-      case 'quantity':
-        handleAdjustQuantity(primaryAction.bucket);
-        break;
-      case 'none':
-      default:
-        break;
-    }
+  const handleIncrement = () => {
+    queueMutation(makeMutation({ workOrderId, type: 'quantity', bucket: 'good', delta: 1 }));
   };
 
-  const handleAdjustQuantity = (bucket: 'good' | 'scrap' | 'undo') => {
-    if (bucket === 'undo') {
-      const lastQuantityMutation = [...workOrderMutations]
-        .reverse()
-        .find((mutation) => mutation.type === 'quantity');
+  const handleDecrement = () => {
+    if (derived.unitsCompleted <= 0) return;
+    queueMutation(makeMutation({ workOrderId, type: 'quantity', bucket: 'good', delta: -1 }));
+  };
 
-      if (!lastQuantityMutation) return;
+  const handlePick = (rowId: string) => {
+    const row = derived.pickList.find((entry) => entry.id === rowId);
+    if (!row) return;
+    setScanningRowId(rowId);
+    window.setTimeout(() => {
+      setScanningRowId(null);
+      queueMutation(makeMutation({ workOrderId, type: 'pick', pickListRowId: rowId, qty: row.requiredQty }));
+      toast.success(`Scanned ${row.binLocation} · ${row.requiredQty} ${row.unit} issued`);
+    }, 900);
+  };
 
-      queueMutation({
-        id: createMutationId('quantity-undo'),
-        workOrderId,
-        type: 'quantity',
-        bucket: lastQuantityMutation.bucket,
-        delta: lastQuantityMutation.delta * -1,
-        createdAt: Date.now(),
-      });
+  const handleIssueAll = () => {
+    queueMutation(makeMutation({ workOrderId, type: 'pick-all' }));
+    toast.success('All remaining materials issued');
+  };
+
+  const effectiveRouting = useMemo(() => {
+    const baseCurrentIdx = snapshot.routing.findIndex((step) => step.status === 'current');
+    const advanced = new Set(advancedSteps);
+    let newCurrentIdx = baseCurrentIdx;
+    while (newCurrentIdx >= 0 && advanced.has(snapshot.routing[newCurrentIdx]?.stepNumber)) {
+      newCurrentIdx += 1;
+    }
+    return snapshot.routing.map((step, idx) => ({
+      ...step,
+      status: (
+        advanced.has(step.stepNumber) || idx < baseCurrentIdx
+          ? 'previous'
+          : idx === newCurrentIdx
+            ? 'current'
+            : 'next'
+      ) as ExecutionWorkflowStep['status'],
+      checklist: step.checklist.map((item) => ({
+        ...item,
+        completed: item.completed || advanced.has(step.stepNumber),
+      })),
+    }));
+  }, [snapshot.routing, advancedSteps]);
+
+  const currentOp = effectiveRouting.find((step) => step.status === 'current');
+  const currentStepItems = currentOp?.checklist ?? [];
+  const stepChecksComplete =
+    currentStepItems.length === 0 ||
+    currentStepItems.every((item) => item.completed || stepCheckIds.includes(item.id));
+
+  useEffect(() => {
+    if (!currentOp || currentStepItems.length === 0) return;
+    if (!stepChecksComplete) return;
+    if (advancedSteps.includes(currentOp.stepNumber)) return;
+    const t = window.setTimeout(() => {
+      setAdvancedSteps((prev) => [...prev, currentOp.stepNumber]);
+      setStepCheckIds([]);
+      toast.success(`Step ${currentOp.stepNumber} complete · advancing to next`);
+    }, 350);
+    return () => window.clearTimeout(t);
+  }, [advancedSteps, currentOp, currentStepItems.length, stepChecksComplete]);
+
+  const handlePass = () => {
+    // First-off recording is itself the quality gate — don't require sub-step
+    // checks. Recording the first-off also counts the first good unit so the
+    // state machine flips to `running` and the CTA advances.
+    if (workOrderState === 'awaiting_first_off') {
+      queueMutation(
+        makeMutation({
+          workOrderId,
+          type: 'inspection',
+          gate: 'first_off',
+          result: 'pass',
+          inspectorName: snapshot.operatorName,
+        }),
+      );
+      handleIncrement();
+      toast.success('First-off recorded. Batch can run.');
       return;
     }
 
-    queueMutation({
-      id: createMutationId(`quantity-${bucket}`),
-      workOrderId,
-      type: 'quantity',
-      bucket,
-      delta: 1,
-      createdAt: Date.now(),
-    });
+    if (!stepChecksComplete) {
+      toast.error('Complete current-step checks first', {
+        description: 'Tick every check on the current routing step before PASS.',
+      });
+      return;
+    }
+    handleIncrement();
   };
 
-  const handleInspectionSubmit = ({
-    gate,
-    result,
-    note,
-  }: {
-    gate: InspectionGate;
-    result: 'pass' | 'fail';
-    note: string;
-  }) => {
-    queueMutation({
-      id: createMutationId(`inspection-${gate}`),
-      workOrderId,
-      type: 'inspection',
-      gate,
-      result,
-      inspectorName: snapshot.operatorName,
-      createdAt: Date.now(),
-    });
+  const handleFail = () => {
+    setNcrOpen(true);
+  };
 
-    if (note.trim()) {
-      queueMutation({
-        id: createMutationId('handover-from-inspection'),
+  const handleHold = () => {
+    setHoldOpen(true);
+  };
+
+  const handleScrapSubmit = (payload: { qty: number; reason: string; notes: string }) => {
+    queueMutation(
+      makeMutation({
         workOrderId,
-        type: 'handover',
-        note: note.trim(),
-        createdAt: Date.now(),
-      });
+        type: 'scrap',
+        qty: payload.qty,
+        reason: payload.reason,
+        notes: payload.notes,
+      }),
+    );
+    toast.success(`Scrap recorded: ${payload.qty} unit · ${payload.reason}. Inventory adjusted.`);
+  };
+
+  const handleNcrSubmit = (payload: {
+    defectType: string;
+    affectedQty: number;
+    measurement: string;
+    notes: string;
+  }) => {
+    const ncrId = `NCR-2026-${String(14 + snapshot.ncrs.length).padStart(4, '0')}`;
+    queueMutation(
+      makeMutation({
+        workOrderId,
+        type: 'ncr',
+        defectType: payload.defectType,
+        affectedQty: payload.affectedQty,
+        measurement: payload.measurement,
+        notes: payload.notes,
+      }),
+    );
+    setOverrideState('failed_pending_ncr');
+    toast.error(`${ncrId} raised. Supervisor notified.`);
+  };
+
+  const handleHoldSubmit = (payload: { reason: string; notes: string }) => {
+    setOverrideState('on_hold');
+    toast.message('Job placed on hold', { description: payload.reason });
+  };
+
+  const handleResume = () => {
+    setOverrideState(null);
+    toast.success('Job resumed');
+  };
+
+  const handlePrintSubmit = (payload: { template: string; qty: number; printer: string }) => {
+    queueMutation(
+      makeMutation({
+        workOrderId,
+        type: 'print-label',
+        template: payload.template,
+        qty: payload.qty,
+        printer: payload.printer,
+      }),
+    );
+    toast.success(`${payload.qty} label${payload.qty === 1 ? '' : 's'} sent to ${payload.printer}`);
+  };
+
+  const handleRequestHelp = () => {
+    setHelpRequestedAt(Date.now());
+    toast.message('Help requested', { description: 'Andon alert raised to floor lead.' });
+  };
+
+  const handleCancelHelp = () => {
+    setHelpRequestedAt(null);
+    toast.success('Help request cancelled');
+  };
+
+  const handleResetDemo = () => {
+    setOverrideState(null);
+    setHelpRequestedAt(null);
+    setScanningRowId(null);
+    setStepCheckIds([]);
+    setCycleSeconds(0);
+    setAdvancedSteps([]);
+    useFloorExecutionStore.getState().clearWorkOrderState(workOrderId);
+    toast.success('Demo state reset');
+  };
+
+  const handlePrimaryAction = () => {
+    switch (workOrderState) {
+      case 'awaiting_first_off':
+        handlePass();
+        break;
+      case 'pick_required':
+        toast.message('Pick list focus', { description: 'Pick the highlighted rows below the reference.' });
+        document.getElementById('mw-pick-list')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      case 'running':
+        handleIncrement();
+        break;
+      case 'on_hold':
+        handleResume();
+        break;
+      case 'failed_pending_ncr':
+        toast.message('NCR pending review', { description: 'Supervisor follow-up needed before resuming.' });
+        break;
+      case 'complete':
+        setCloseOpen(true);
+        break;
     }
   };
 
-  const handleIssueSubmit = ({
-    type,
-    title,
-    note,
-  }: {
-    type: IssueType;
-    title: string;
-    note: string;
-  }) => {
-    queueMutation({
-      id: createMutationId(`issue-${type}`),
-      workOrderId,
-      type: 'issue',
-      issueType: type,
-      title,
-      note,
-      createdAt: Date.now(),
-    });
+  const handleCloseWOOnly = () => {
+    setClosedConfirmation({ qty: derived.unitsCompleted });
   };
 
-  const handleSaveHandover = () => {
-    saveHandoverNote(workOrderId, handoverDraft);
-    queueMutation({
-      id: createMutationId('handover'),
-      workOrderId,
-      type: 'handover',
-      note: handoverDraft,
-      createdAt: Date.now(),
-    });
-    setHandoverSheetOpen(false);
+  const handleCloseWOPrint = (payload: { qty: number; printer: string }) => {
+    queueMutation(
+      makeMutation({
+        workOrderId,
+        type: 'print-label',
+        template: 'WIP to Finished Goods',
+        qty: payload.qty,
+        printer: payload.printer,
+      }),
+    );
+    setClosedConfirmation({ qty: payload.qty, printer: payload.printer });
   };
+
+  const cycleTargetSeconds = parseClock(snapshot.targetCycleTimeLabel ?? '0:00');
+  const cycleActualLabel = formatClock(cycleSeconds);
+  const cycleVariancePct = cycleTargetSeconds
+    ? Math.round(((cycleSeconds - cycleTargetSeconds) / cycleTargetSeconds) * 100)
+    : 0;
+
+  const totalActualMin =
+    snapshot.timeSummary.setupActualMin +
+    snapshot.timeSummary.runActualMin +
+    snapshot.timeSummary.firstOffActualMin;
+
+  const primary = derivePrimaryActionView(workOrderState);
+
+  const liveSnapshot = useMemo(
+    () => ({ ...snapshot, routing: effectiveRouting, currentStep: currentOp ?? snapshot.currentStep }),
+    [snapshot, effectiveRouting, currentOp],
+  );
 
   return (
     <div className="absolute inset-0 flex min-h-0 flex-col bg-[var(--neutral-100)] font-sans">
-      <ExecutionHeader
+      <AndonTopBar
         mode={mode}
-        snapshot={{
-          ...snapshot,
-          executionState: derived.executionState,
-        }}
-        syncState={syncState}
-        syncLabel={syncLabel}
-        pendingActions={pendingMutations.length}
+        snapshot={liveSnapshot}
+        status={andonStatus}
+        cycleActualLabel={cycleActualLabel}
+        cycleTargetLabel={snapshot.targetCycleTimeLabel ?? '—'}
+        cycleVariancePct={cycleVariancePct}
+        cycleSeconds={cycleSeconds}
+        syncLabel={`Synced ${formatRelative(now)}`}
         onClose={onClose}
-        onSwitchOperator={
-          onSwitchOperator
-            ? () => {
-                setHandoverSheetOpen(true);
-              }
-            : undefined
-        }
+        onResetDemo={handleResetDemo}
       />
 
-      <div className="flex min-h-0 flex-1 gap-6 p-6">
-        <ReferenceWorkspace
-          snapshot={snapshot}
-          referenceView={referenceView}
-          checkedRequiredItemIds={checkedRequiredReferenceChecklistIds}
-          requiredChecklistSignoff={requiredChecklistSignoff}
-          onReferenceViewChange={(view) => setReferenceView(workOrderId, view)}
-          onRequiredChecklistChange={(view, checkedItemIds) => {
-            setRequiredReferenceChecklist(workOrderId, view, checkedItemIds);
-            const viewRequiredChecks = snapshot.references[view].items ?? [];
-            const isComplete =
-              viewRequiredChecks.length > 0 &&
-              viewRequiredChecks.every((_item, index) =>
-                checkedItemIds.includes(`${view}-check-${index + 1}`)
-              );
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 lg:grid-cols-[1fr_420px] lg:overflow-hidden">
+        <main className="space-y-6 lg:overflow-y-auto lg:pr-1">
+          {lockCountdownSec !== null ? (
+            <IdleLockBanner
+              secondsRemaining={lockCountdownSec}
+              onStayActive={() => {
+                lastActivityRef.current = Date.now();
+                setLockCountdownSec(null);
+              }}
+            />
+          ) : null}
+          {helpRequestedAt ? (
+            <HelpBanner
+              since={now - helpRequestedAt}
+              onCancel={handleCancelHelp}
+            />
+          ) : null}
+          <OperationHeaderCard
+            snapshot={liveSnapshot}
+            unitsCompleted={derived.unitsCompleted}
+            unitsTarget={derived.unitsTarget}
+            cycleEstimateLabel={snapshot.targetCycleTimeLabel ?? '—'}
+            cycleActualLabel={cycleActualLabel}
+            cycleVariancePct={cycleVariancePct}
+            totalActualMin={totalActualMin}
+            totalEstimateMin={
+              snapshot.timeSummary.setupEstMin +
+              snapshot.timeSummary.runEstMin +
+              snapshot.timeSummary.firstOffEstMin
+            }
+            onIncrement={handleIncrement}
+            onDecrement={handleDecrement}
+          />
 
-            setReferenceChecklistSignoff(
-              workOrderId,
-              view,
-              isComplete
-                ? {
-                    signedBy: snapshot.operatorName,
-                    signedAt: Date.now(),
-                  }
-                : null
-            );
-          }}
-        />
+          <ReferencePanel
+            snapshot={snapshot}
+            activeView={referenceView}
+            onViewChange={(view) => setReferenceView(workOrderId, view)}
+          />
 
-        <ActionConsole
-          snapshot={{
-            ...snapshot,
-            executionState: derived.executionState,
-            currentStep: derived.currentStep,
-            previousStep: derived.previousStep,
-            nextStep: derived.nextStep,
-            routing: derived.routing,
-            stepsSummary: derived.stepsSummary,
-            inspection: derived.inspection,
-          }}
-          executionState={derived.executionState}
-          revisionAcknowledged={derived.revisionAcknowledged}
-          quantity={derived.quantity}
-          completionPercent={completionPercent}
-          elapsedLabel={formatElapsed(elapsedSeconds)}
-          primaryActionLabel={primaryAction.label}
-          primaryActionDescription={primaryAction.description}
-          primaryActionDisabled={primaryAction.disabled}
-          handoverNote={handoverNote}
-          exceptions={derived.exceptions}
-          onAcknowledgeHandoverNote={() => acknowledgeHandoverNote(workOrderId)}
-          onPrimaryAction={handlePrimaryAction}
-          onAdjustQuantity={handleAdjustQuantity}
-          onOpenException={(type) => {
-            setIssueSheetType(type);
-            setIssueSheetOpen(true);
-          }}
-          onOpenHandover={() => setHandoverSheetOpen(true)}
-          onViewRouting={() => setRoutingSheetOpen(true)}
-        />
+          <div id="mw-pick-list">
+            <MaterialsPickListCard
+              rows={derived.pickList}
+              scanningRowId={scanningRowId}
+              onPick={handlePick}
+              onIssueAll={handleIssueAll}
+            />
+          </div>
+
+          <QualityActionsRow
+            onPass={handlePass}
+            onFail={handleFail}
+            onHold={handleHold}
+            onReportScrap={() => setScrapOpen(true)}
+            disabled={workOrderState === 'complete' || workOrderState === 'failed_pending_ncr' || workOrderState === 'on_hold'}
+            passGateMessage={!stepChecksComplete ? 'Complete current-step checks to enable PASS' : undefined}
+          />
+        </main>
+
+        <aside className="space-y-6 lg:overflow-y-auto lg:pr-1">
+          <PrimaryActionCard
+            eyebrow={primary.eyebrow}
+            title={primary.title}
+            supportingText={primary.supportingText}
+            actionLabel={primary.actionLabel}
+            actionIcon={primary.actionIcon}
+            onAction={handlePrimaryAction}
+          />
+
+          <RoutingStrip
+            snapshot={liveSnapshot}
+            checkedStepItemIds={stepCheckIds}
+            onToggleStepItem={(itemId) =>
+              setStepCheckIds((current) =>
+                current.includes(itemId)
+                  ? current.filter((id) => id !== itemId)
+                  : [...current, itemId],
+              )
+            }
+            onSelectStep={setRoutingStep}
+            ncrWatchCount={snapshot.ncrs.length}
+          />
+
+          <TimeSummaryGrid summary={snapshot.timeSummary} totalActualMin={totalActualMin} />
+
+          <QuickActionsFooter
+            onPrintLabel={() => setPrintOpen(true)}
+            onReportScrap={() => setScrapOpen(true)}
+            onRequestHelp={handleRequestHelp}
+          />
+        </aside>
       </div>
 
-      <ExceptionSheet
-        open={issueSheetOpen}
-        defaultType={issueSheetType}
-        onOpenChange={setIssueSheetOpen}
-        onSubmit={handleIssueSubmit}
+      <ScrapDialog
+        open={scrapOpen}
+        reasons={snapshot.scrapReasons}
+        onOpenChange={setScrapOpen}
+        onSubmit={handleScrapSubmit}
       />
 
-      <InspectionSheet
-        open={inspectionSheetOpen}
-        gate={inspectionGate}
+      <NCRDialog
+        open={ncrOpen}
+        onOpenChange={setNcrOpen}
+        onSubmit={handleNcrSubmit}
+      />
+
+      <HoldDialog
+        open={holdOpen}
+        onOpenChange={setHoldOpen}
+        onSubmit={handleHoldSubmit}
+      />
+
+      <PrintLabelDialog
+        open={printOpen}
         snapshot={snapshot}
-        checkedChecklistItemIds={checkedInspectionChecklistIds}
-        onOpenChange={setInspectionSheetOpen}
-        onChecklistChange={(checkedItemIds) =>
-          setInspectionChecklist(workOrderId, inspectionGate, checkedItemIds)
-        }
-        onSubmit={handleInspectionSubmit}
+        defaultQty={Math.max(1, derived.unitsCompleted) || 1}
+        onOpenChange={setPrintOpen}
+        onSubmit={handlePrintSubmit}
       />
 
-      <HandoverSheet
-        open={handoverSheetOpen}
-        note={handoverDraft}
-        suggestedSummary={handoverSummaryDraft}
-        onNoteChange={(value) => setHandoverDraft(workOrderId, value)}
-        onOpenChange={setHandoverSheetOpen}
-        onGenerateSummary={() =>
-          setHandoverSummaryDraft(
-            buildAiHandoverSummary({
-              snapshot,
-              derived,
-              elapsedLabel: formatElapsed(elapsedSeconds),
-              primaryActionLabel: primaryAction.label,
-              completionPercent,
-              requiredChecksComplete,
-              requiredChecklistSignoff,
-            })
-          )
-        }
-        onInsertSummary={() => {
-          setHandoverDraft(workOrderId, handoverSummaryDraft);
-        }}
-        onSave={handleSaveHandover}
-        onSwitchOperator={
-          onSwitchOperator
-            ? () => {
-                handleSaveHandover();
-                onSwitchOperator(handoverDraft);
-              }
-            : undefined
-        }
+      <CloseWODialog
+        open={closeOpen}
+        snapshot={snapshot}
+        unitsCompleted={derived.unitsCompleted}
+        unitsTarget={derived.unitsTarget}
+        onOpenChange={setCloseOpen}
+        onPrintAndClose={handleCloseWOPrint}
+        onCloseOnly={handleCloseWOOnly}
       />
 
-      <Sheet open={routingSheetOpen} onOpenChange={setRoutingSheetOpen}>
-        <SheetContent
-          side="right"
-          className="w-full border-l border-[var(--neutral-200)] bg-card sm:max-w-[520px]"
-        >
-          <SheetHeader>
-            <SheetTitle className="text-[var(--neutral-900)]">
-              Full routing
-            </SheetTitle>
-            <SheetDescription className="text-[var(--neutral-500)]">
-              Only the current step stays expanded on the main screen. Use this when you need the full route.
-            </SheetDescription>
-          </SheetHeader>
+      <RoutingStepDrawer
+        open={routingStep !== null}
+        step={routingStep}
+        snapshot={liveSnapshot}
+        onOpenChange={(open) => !open && setRoutingStep(null)}
+      />
 
-          <div className="mt-6 space-y-3">
-            {derived.routing.map((step) => (
-              <Card
-                key={step.id}
-                className={`rounded-[var(--shape-md)] border p-4 shadow-none ${
-                  step.status === 'current'
-                    ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)]'
-                    : 'border-[var(--neutral-200)] bg-[var(--neutral-100)]'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-sm font-medium text-[var(--neutral-900)]">
-                    {step.stepNumber}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="text-base font-medium text-[var(--neutral-900)]">
-                        {step.title}
-                      </div>
-                      {step.status === 'previous' ? (
-                        <CheckCircle2 className="h-4 w-4 text-[var(--mw-success)]" />
-                      ) : null}
-                    </div>
-                    <div className="mt-1 text-sm text-[var(--neutral-600)]">
-                      {step.description}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
+      {closedConfirmation ? (
+        <ClosedConfirmation
+          woNumber={snapshot.woNumber}
+          productName={snapshot.productName}
+          qty={closedConfirmation.qty}
+          printer={closedConfirmation.printer}
+          onDismiss={onClose}
+        />
+      ) : null}
     </div>
   );
 }
 
-function applyExecutionMutations(
-  snapshot: WorkOrderExecutionSnapshot,
-  mutations: ExecutionMutation[]
-) {
-  let executionState = snapshot.executionState;
-  let good = snapshot.quantity.good;
-  let scrap = snapshot.quantity.scrap;
-  let revisionAcknowledged = !snapshot.revisionRequiresAck;
-  let firstOffPassed = !snapshot.inspection.firstOffDue;
-  let inProcessPassed = false;
-  let finalPassed = false;
-  let handoverNote = '';
-  let lastInspectionLabel = snapshot.inspection.lastRecordedLabel;
-  const exceptions = [...snapshot.exceptions];
-
-  const orderedMutations = [...mutations].sort(
-    (left, right) => left.createdAt - right.createdAt
+function ClosedConfirmation({
+  woNumber,
+  productName,
+  qty,
+  printer,
+  onDismiss,
+}: {
+  woNumber: string;
+  productName: string;
+  qty: number;
+  printer?: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-[var(--mw-mirage)]/72 backdrop-blur-sm">
+      <div className="flex w-[440px] max-w-[90%] flex-col items-center rounded-[var(--shape-lg)] border border-[var(--mw-success)]/40 bg-card p-8 text-center shadow-md">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mw-success)]/12 text-[var(--mw-success)]">
+          <Check className="h-7 w-7" />
+        </span>
+        <div className="mt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+          Work order closed
+        </div>
+        <h3 className="mt-1 text-2xl font-medium text-[var(--neutral-900)]">{woNumber}</h3>
+        <p className="mt-1 text-sm text-[var(--neutral-600)]">
+          {productName} · {qty} unit{qty === 1 ? '' : 's'} good
+        </p>
+        {printer ? (
+          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--mw-yellow-50)] px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--mw-mirage)]">
+            <Printer className="h-3.5 w-3.5" />
+            {qty} label{qty === 1 ? '' : 's'} sent to {printer}
+          </p>
+        ) : (
+          <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            Closed without printing
+          </p>
+        )}
+        <Button
+          type="button"
+          size="lg"
+          className="mt-6 h-12 w-full bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+          onClick={onDismiss}
+        >
+          Return to queue
+        </Button>
+      </div>
+    </div>
   );
+}
 
-  for (const mutation of orderedMutations) {
+function IdleLockBanner({
+  secondsRemaining,
+  onStayActive,
+}: {
+  secondsRemaining: number;
+  onStayActive: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-[var(--shape-md)] border border-[var(--mw-error)] bg-[var(--mw-error)]/8 p-4">
+      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--mw-error)] text-white">
+        <Lock className="h-5 w-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-[var(--mw-error)]">
+          Kiosk locking in {secondsRemaining}s
+        </div>
+        <div className="text-sm text-[var(--neutral-700)]">
+          We&apos;ve seen no activity for 5 minutes. Tap to keep the work order open, or the screen will return to clock-in and your operator session will be paused.
+        </div>
+      </div>
+      <Button
+        type="button"
+        size="lg"
+        className="h-11 bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+        onClick={onStayActive}
+      >
+        I&apos;m here
+      </Button>
+    </div>
+  );
+}
+
+function HelpBanner({ since, onCancel }: { since: number; onCancel: () => void }) {
+  const seconds = Math.max(0, Math.floor(since / 1000));
+  const label = seconds < 60 ? `${seconds}s ago` : `${Math.floor(seconds / 60)}m ago`;
+  return (
+    <div className="flex items-center gap-3 rounded-[var(--shape-md)] border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] p-4">
+      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]">
+        <LifeBuoy className="h-5 w-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-[var(--mw-mirage)]">
+          Floor lead notified · {label}
+        </div>
+        <div className="text-sm text-[var(--neutral-700)]">
+          A lead is on their way to your station. Continue safely until they arrive.
+        </div>
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-10 border-[var(--mw-mirage)]/20 bg-card text-[var(--neutral-800)]"
+        onClick={onCancel}
+      >
+        Cancel
+      </Button>
+    </div>
+  );
+}
+
+function derivePrimaryActionView(state: DerivedState) {
+  switch (state) {
+    case 'awaiting_first_off':
+      return {
+        eyebrow: 'Next action',
+        title: 'Record first-off',
+        supportingText: 'A first-off check is required before the batch can run.',
+        actionLabel: 'Record first-off',
+        actionIcon: 'check' as const,
+      };
+    case 'pick_required':
+      return {
+        eyebrow: 'Next action',
+        title: 'Open pick list',
+        supportingText: 'Issue the remaining BOM lines before the run continues.',
+        actionLabel: 'Open pick list',
+        actionIcon: 'list' as const,
+      };
+    case 'running':
+      return {
+        eyebrow: 'Next action',
+        title: 'Mark unit complete',
+        supportingText: 'Tap or press space as each good part leaves the machine.',
+        actionLabel: 'Mark unit complete',
+        actionIcon: 'plus' as const,
+      };
+    case 'on_hold':
+      return {
+        eyebrow: 'On hold',
+        title: 'Resume job',
+        supportingText: 'The cycle timer is paused. Resume when the line is clear.',
+        actionLabel: 'Resume job',
+        actionIcon: 'play' as const,
+      };
+    case 'failed_pending_ncr':
+      return {
+        eyebrow: 'Quality hold',
+        title: 'Open NCR',
+        supportingText: 'Supervisor review is required before the job can continue.',
+        actionLabel: 'Open NCR',
+        actionIcon: 'alert' as const,
+      };
+    case 'complete':
+      return {
+        eyebrow: 'Ready to close',
+        title: 'Close work order',
+        supportingText: 'Target quantity reached. Choose to print labels during close-out, or close without printing.',
+        actionLabel: 'Close work order',
+        actionIcon: 'check' as const,
+      };
+  }
+}
+
+function applyMutations(
+  snapshot: WorkOrderExecutionSnapshot,
+  mutations: ExecutionMutation[],
+) {
+  let unitsCompleted = snapshot.quantity.good;
+  const unitsTarget = snapshot.quantity.target;
+  const pickList: PickListRow[] = snapshot.pickList.map((row) => ({ ...row }));
+
+  const ordered = [...mutations].sort((a, b) => a.createdAt - b.createdAt);
+  for (const mutation of ordered) {
     switch (mutation.type) {
-      case 'set-state':
-        executionState = mutation.nextState;
-        break;
       case 'quantity':
         if (mutation.bucket === 'good') {
-          good = Math.max(0, good + mutation.delta);
-        } else {
-          scrap = Math.max(0, scrap + mutation.delta);
+          unitsCompleted = Math.max(0, Math.min(unitsTarget, unitsCompleted + mutation.delta));
         }
         break;
-      case 'ack-revision':
-        revisionAcknowledged = true;
+      case 'pick': {
+        const row = pickList.find((entry) => entry.id === mutation.pickListRowId);
+        if (row) {
+          row.picked = true;
+          row.pickedAtLabel = `Picked ${formatTimeShort(mutation.createdAt)}`;
+        }
+        break;
+      }
+      case 'pick-all':
+        for (const row of pickList) {
+          if (!row.picked) {
+            row.picked = true;
+            row.pickedAtLabel = `Picked ${formatTimeShort(mutation.createdAt)}`;
+          }
+        }
         break;
       case 'inspection':
-        if (mutation.result === 'pass') {
-          const inspector = mutation.inspectorName ?? snapshot.operatorName;
-          lastInspectionLabel = `${capitalizeWords(mutation.gate.replace('_', ' '))} signed by ${inspector} at ${formatTimestamp(mutation.createdAt)}`;
-          if (mutation.gate === 'first_off') {
-            firstOffPassed = true;
-            executionState = 'run';
-          }
-          if (mutation.gate === 'in_process') {
-            inProcessPassed = true;
-            executionState = 'run';
-          }
-          if (mutation.gate === 'final') {
-            finalPassed = true;
-            executionState = 'complete';
-          }
-        } else {
-          executionState = 'blocked';
-          lastInspectionLabel = `${capitalizeWords(mutation.gate.replace('_', ' '))} failed at ${formatTimestamp(mutation.createdAt)}`;
-          exceptions.unshift({
-            id: mutation.id,
-            type: 'quality',
-            title: `${capitalizeWords(mutation.gate.replace('_', ' '))} failed`,
-            status: 'open',
-            createdAtLabel: 'Just now',
-          });
-        }
-        break;
-      case 'issue':
-        executionState = 'blocked';
-        exceptions.unshift({
-          id: mutation.id,
-          type: mutation.issueType,
-          title: mutation.title,
-          note: mutation.note,
-          status: 'open',
-          createdAtLabel: 'Just now',
-        });
-        break;
-      case 'handover':
-        handoverNote = mutation.note;
+        // first-off pass is treated as approval for batch run; no quantity change here
         break;
       default:
         break;
     }
   }
 
-  const firstOffDue =
-    !firstOffPassed &&
-    executionState !== 'complete' &&
-    executionState !== 'blocked' &&
-    good === 0;
-  const inProcessDue =
-    !inProcessPassed &&
-    executionState === 'run' &&
-    good > 0 &&
-    good % 25 === 0 &&
-    good < snapshot.quantity.target;
-  const finalInspectionDue =
-    !finalPassed &&
-    executionState !== 'complete' &&
-    good + scrap >= snapshot.quantity.target;
-
-  const currentIndex = getCurrentStepIndex({
-    executionState,
-    firstOffDue,
-    finalInspectionDue,
-    good,
-  });
-
-  const routing = snapshot.routing.map((step) => ({
-    ...step,
-    status: (
-      step.stepNumber < currentIndex
-        ? 'previous'
-        : step.stepNumber === currentIndex
-          ? 'current'
-          : 'next'
-    ) as ExecutionWorkflowStep['status'],
-  }));
+  // Keep currentStep in routing aware of unit count for future ops
+  const routing: ExecutionWorkflowStep[] = snapshot.routing;
 
   return {
-    executionState,
-    revisionAcknowledged,
-    quantity: {
-      good,
-      scrap,
-      target: snapshot.quantity.target,
-    },
-    inspection: {
-      ...snapshot.inspection,
-      firstOffDue,
-      inProcessDue,
-      finalInspectionDue,
-      lastRecordedLabel:
-        firstOffPassed || inProcessPassed || finalPassed
-          ? lastInspectionLabel
-          : snapshot.inspection.lastRecordedLabel,
-    },
-    exceptions,
-    handoverNote,
+    unitsCompleted,
+    unitsTarget,
+    pickList,
     routing,
-    currentStep:
-      routing.find((step) => step.stepNumber === currentIndex) ??
-      snapshot.currentStep,
-    previousStep: routing.find(
-      (step) => step.stepNumber === currentIndex - 1
-    ),
-    nextStep: routing.find((step) => step.stepNumber === currentIndex + 1),
-    stepsSummary: {
-      completed: routing.filter((step) => step.status === 'previous').length,
-      total: routing.length,
-    },
   };
 }
 
-function derivePrimaryAction(
-  snapshot: WorkOrderExecutionSnapshot,
-  derived: ReturnType<typeof applyExecutionMutations>
-) {
-  if (!derived.revisionAcknowledged && snapshot.revisionRequiresAck) {
-    return {
-      label: 'Acknowledge revision',
-      description: 'Review the current revision before you continue the job.',
-      type: 'ack-revision' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.executionState === 'blocked') {
-    return {
-      label: 'Resume after unblock',
-      description:
-        'Clear the issue with tooling, material, or quality before the job continues.',
-      type: 'set-state' as const,
-      nextState:
-        derived.quantity.good > 0 || derived.quantity.scrap > 0
-          ? ('run' as const)
-          : ('inspect' as const),
-      disabled: false,
-    };
-  }
-
-  if (derived.executionState === 'setup') {
-    return {
-      label: 'Start setup',
-      description:
-        'Confirm the workstation setup and move straight into the first-off check.',
-      type: 'set-state' as const,
-      nextState: 'inspect' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.inspection.firstOffDue) {
-    return {
-      label: 'Record first-off',
-      description:
-        'A first-off check is required before the batch can run.',
-      type: 'inspection' as const,
-      gate: 'first_off' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.executionState === 'run' && derived.quantity.good + derived.quantity.scrap >= derived.quantity.target) {
-    return {
-      label: 'Record batch complete',
-      description:
-        'The target quantity is reached. Move to final confirmation and handover.',
-      type: 'set-state' as const,
-      nextState: 'inspect' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.inspection.finalInspectionDue) {
-    return {
-      label: 'Complete job',
-      description:
-        'Final confirmation is due before the work order can be marked complete.',
-      type: 'inspection' as const,
-      gate: 'final' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.inspection.inProcessDue) {
-    return {
-      label: 'Record in-process inspection',
-      description:
-        'The inspection interval has been reached. Record the in-process result now.',
-      type: 'inspection' as const,
-      gate: 'in_process' as const,
-      disabled: false,
-    };
-  }
-
-  if (derived.executionState === 'complete') {
-    return {
-      label: 'Job complete',
-      description:
-        'This operation is complete. Review the handover note or return to the queue.',
-      type: 'none' as const,
-      disabled: true,
-    };
-  }
-
+function makeMutation<T extends { type: string }>(input: T): ExecutionMutation {
   return {
-    label: 'Record completed part',
-    description:
-      'Tap for each good part as it leaves the machine. Use Scrap +1 for rejected parts.',
-    type: 'quantity' as const,
-    bucket: 'good' as const,
-    disabled: false,
-  };
+    ...input,
+    id: `${input.type}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    createdAt: Date.now(),
+  } as unknown as ExecutionMutation;
 }
 
-function getCurrentStepIndex({
-  executionState,
-  firstOffDue,
-  finalInspectionDue,
-  good,
-}: {
-  executionState: ExecutionState;
-  firstOffDue: boolean;
-  finalInspectionDue: boolean;
-  good: number;
-}) {
-  if (executionState === 'setup') return 1;
-  if (executionState === 'complete') return 5;
-  if (executionState === 'blocked') return good > 0 ? 4 : 2;
-  if (finalInspectionDue) return 5;
-  if (firstOffDue || executionState === 'inspect') return 3;
-  return good > 0 ? 4 : 2;
+function formatTimeShort(ts: number) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatElapsed(totalSeconds: number) {
-  const hours = Math.floor(totalSeconds / 3600)
-    .toString()
-    .padStart(2, '0');
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-    .toString()
-    .padStart(2, '0');
-  const seconds = Math.floor(totalSeconds % 60)
-    .toString()
-    .padStart(2, '0');
-
-  return `${hours}:${minutes}:${seconds}`;
+function formatRelative(now: number) {
+  const diff = Math.max(0, Math.round((now - now) / 1000));
+  if (diff < 60) return 'just now';
+  return `${Math.round(diff / 60)}m ago`;
 }
 
-function getSyncLabel(syncState: SyncState, lastSyncedAt: number) {
-  if (syncState === 'offline') return 'Offline';
-  if (syncState === 'degraded') return 'Syncing';
-  return `Synced ${formatRelativeTimestamp(lastSyncedAt)}`;
+function parseClock(label: string): number {
+  const [m, s] = label.split(':').map((n) => Number.parseInt(n, 10));
+  if (Number.isNaN(m)) return 0;
+  return m * 60 + (Number.isNaN(s) ? 0 : s);
 }
 
-function formatRelativeTimestamp(timestamp: number) {
-  const diffSeconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
-  if (diffSeconds < 5) return 'just now';
-  if (diffSeconds < 60) return `${diffSeconds}s ago`;
-  const minutes = Math.round(diffSeconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.round(minutes / 60);
-  return `${hours}h ago`;
-}
-
-function createMutationId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function capitalizeWords(value: string) {
-  return value.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function formatTimestamp(timestamp: number) {
-  return new Date(timestamp).toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-function buildAiHandoverSummary({
-  snapshot,
-  derived,
-  elapsedLabel,
-  primaryActionLabel,
-  completionPercent,
-  requiredChecksComplete,
-  requiredChecklistSignoff,
-}: {
-  snapshot: WorkOrderExecutionSnapshot;
-  derived: ReturnType<typeof applyExecutionMutations>;
-  elapsedLabel: string;
-  primaryActionLabel: string;
-  completionPercent: number;
-  requiredChecksComplete: boolean;
-  requiredChecklistSignoff: { signedBy: string; signedAt: number } | null;
-}) {
-  const openIssues = derived.exceptions.filter((issue) => issue.status === 'open');
-  const currentState =
-    derived.executionState === 'blocked'
-      ? 'Blocked'
-      : derived.executionState === 'complete'
-        ? 'Complete'
-        : derived.executionState === 'inspect'
-          ? 'Inspection stage'
-          : derived.executionState === 'setup'
-            ? 'Setup'
-            : 'Running';
-
-  const signoffLine = requiredChecklistSignoff
-    ? `Required checks signed off by ${requiredChecklistSignoff.signedBy} at ${new Date(
-        requiredChecklistSignoff.signedAt
-      ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`
-    : requiredChecksComplete
-      ? 'Required checks completed this shift.'
-      : 'Required checks are still incomplete.';
-
-  const issueLine =
-    openIssues.length > 0
-      ? `Open issues: ${openIssues.length} (${openIssues
-          .slice(0, 2)
-          .map((issue) => issue.title)
-          .join('; ')}).`
-      : 'No open exceptions currently logged.';
-
-  const inspectionLine = derived.inspection.lastRecordedLabel
-    ? `Inspection status: ${derived.inspection.lastRecordedLabel}.`
-    : '';
-
-  return [
-    `Current state: ${currentState}. ${snapshot.woNumber} (${snapshot.productName}) on ${snapshot.machineName}.`,
-    `Achieved this shift: ${derived.quantity.good}/${derived.quantity.target} good (${completionPercent}%), ${derived.quantity.scrap} scrap, elapsed ${elapsedLabel}.`,
-    `Last good part/checkpoint: ${signoffLine} ${inspectionLine}`.trim(),
-    `Next action: ${primaryActionLabel}. ${issueLine}`,
-  ].join('\n\n');
+function formatClock(totalSeconds: number) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.floor(totalSeconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }

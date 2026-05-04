@@ -16,16 +16,19 @@ interface MachineCardProps {
 
 export function MachineCard({ machine, onSelect }: MachineCardProps) {
   const primaryActionLabel = getPrimaryActionLabel(machine.status);
+  const isActive = machine.status === 'running' || machine.status === 'setup';
 
   return (
     <button
       type="button"
       onClick={() => onSelect(machine.id)}
       className={cn(
-        'flex h-full min-h-[296px] w-full flex-col rounded-[16px] border border-[var(--neutral-200)] bg-card p-6 text-left',
+        'flex h-full min-h-[296px] w-full flex-col rounded-[16px] border bg-card p-6 text-left',
         'transition-colors duration-[var(--duration-short3)] ease-[var(--ease-standard)]',
-        'hover:border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2'
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2',
+        isActive
+          ? 'border-[var(--neutral-200)] border-l-[3px] border-l-[var(--mw-yellow-400)] shadow-sm hover:border-[var(--neutral-300)] hover:border-l-[var(--mw-yellow-400)] hover:bg-[var(--neutral-50)]'
+          : 'border-[var(--neutral-200)] hover:border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]'
       )}
     >
       <div className="flex items-start justify-between gap-4">
@@ -51,7 +54,12 @@ export function MachineCard({ machine, onSelect }: MachineCardProps) {
       </div>
 
       <div className="mt-6 space-y-3">
-        <JobPanel label="Current job" job={machine.currentJob} emptyLabel="No job running" />
+        <JobPanel
+          label="Current job"
+          job={machine.currentJob}
+          emptyLabel="No job running"
+          active={isActive && Boolean(machine.currentJob)}
+        />
         <JobPanel label="Next job" job={machine.nextJob} emptyLabel="No next job queued" />
       </div>
 
@@ -87,18 +95,42 @@ interface JobPanelProps {
   label: string;
   job?: WorkOrder;
   emptyLabel: string;
+  active?: boolean;
 }
 
-function JobPanel({ label, job, emptyLabel }: JobPanelProps) {
+function JobPanel({ label, job, emptyLabel, active = false }: JobPanelProps) {
   return (
-    <div className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)] p-4">
-      <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
-        {label}
+    <div
+      className={cn(
+        'rounded-[var(--shape-md)] border p-4',
+        active
+          ? 'border-[var(--mw-yellow-300)] bg-[var(--mw-yellow-50)]'
+          : 'border-[var(--neutral-200)] bg-[var(--neutral-100)]'
+      )}
+    >
+      <div
+        className={cn(
+          'flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em]',
+          active ? 'text-[var(--neutral-900)]' : 'text-[var(--neutral-500)]'
+        )}
+      >
+        {active ? (
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--mw-success)] opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--mw-success)]" />
+          </span>
+        ) : null}
+        <span>{active ? `${label} · Active` : label}</span>
       </div>
 
       {job ? (
         <div className="mt-3 space-y-2">
-          <div className="text-base font-medium text-[var(--neutral-900)]">
+          <div
+            className={cn(
+              'text-base font-medium text-[var(--neutral-900)]',
+              active && 'font-semibold'
+            )}
+          >
             {job.operation}
           </div>
           <div className="text-sm text-[var(--neutral-700)]">

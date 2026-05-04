@@ -84,6 +84,56 @@ export interface ExecutionSyncSummary {
   cachedLocally: boolean;
 }
 
+export interface PickListRow {
+  id: string;
+  partNumber: string;
+  description: string;
+  requiredQty: number;
+  unit: string;
+  binLocation: string;
+  picked: boolean;
+  pickedAtLabel?: string;
+}
+
+export interface TimeSummary {
+  setupEstMin: number;
+  setupActualMin: number;
+  runEstMin: number;
+  runActualMin: number;
+  firstOffEstMin: number;
+  firstOffActualMin: number;
+}
+
+export interface ScrapReportRow {
+  id: string;
+  workOrderId: string;
+  qty: number;
+  reason: string;
+  notes?: string;
+  createdAtLabel: string;
+}
+
+export interface NcrRecord {
+  id: string;
+  workOrderId: string;
+  defectType: string;
+  affectedQty: number;
+  measurement?: string;
+  notes?: string;
+  createdAtLabel: string;
+}
+
+export interface LabelPrintEvent {
+  id: string;
+  workOrderId: string;
+  template: string;
+  qty: number;
+  printer: string;
+  createdAtLabel: string;
+}
+
+export type AndonStatus = 'running' | 'setup' | 'blocked' | 'idle';
+
 export interface WorkOrderExecutionSnapshot {
   workOrderId: string;
   woNumber: string;
@@ -117,9 +167,60 @@ export interface WorkOrderExecutionSnapshot {
   estimatedCompletionLabel: string;
   cycleTimeLabel?: string;
   targetCycleTimeLabel?: string;
+  pickList: PickListRow[];
+  timeSummary: TimeSummary;
+  scrapReasons: string[];
+  scrapReports: ScrapReportRow[];
+  ncrs: NcrRecord[];
+  labelPrints: LabelPrintEvent[];
+  customerInitial: string;
+  woCreatedAtLabel: string;
+  modelSrc: string;
 }
 
 export type ExecutionMutation =
+  | {
+      id: string;
+      workOrderId: string;
+      type: 'pick';
+      pickListRowId: string;
+      qty: number;
+      createdAt: number;
+    }
+  | {
+      id: string;
+      workOrderId: string;
+      type: 'pick-all';
+      createdAt: number;
+    }
+  | {
+      id: string;
+      workOrderId: string;
+      type: 'scrap';
+      qty: number;
+      reason: string;
+      notes?: string;
+      createdAt: number;
+    }
+  | {
+      id: string;
+      workOrderId: string;
+      type: 'ncr';
+      defectType: string;
+      affectedQty: number;
+      measurement?: string;
+      notes?: string;
+      createdAt: number;
+    }
+  | {
+      id: string;
+      workOrderId: string;
+      type: 'print-label';
+      template: string;
+      qty: number;
+      printer: string;
+      createdAt: number;
+    }
   | {
       id: string;
       workOrderId: string;

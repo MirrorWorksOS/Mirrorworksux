@@ -367,6 +367,27 @@ Used on overlays, sheets, dialogs, tooltips:
 - Content: `bg-white/95 backdrop-blur-xl shadow-xl`
 - Tooltip: `bg-white/90 backdrop-blur-md border border-white/30 shadow-lg`
 
+### AI / smart components (mandatory)
+
+Any component that surfaces an **AI suggestion, AI-generated proposal, agentic action, or "smart" recommendation** must use the canonical AI surface and the AI accent colour — **never MW Yellow as a card background, never an ad-hoc gradient/glow**.
+
+**Components to reuse:**
+
+- **`MirrorWorksAgentCard`** ([`shared/ai/MirrorWorksAgentCard.tsx`](src/components/shared/ai/MirrorWorksAgentCard.tsx)) — the canonical AI card. Provides the Agent logomark, status chip, evidence/expandable detail, and primary/secondary actions. Use it whenever the AI is making a suggestion or staging a change for review.
+- **`AISuggestion`** / **`AIInsightCard`** — pre-wrapped variants of the agent card for actionable suggestions and read-only insights.
+- **`.ai-card-glow`** + **`.ai-card-glow--animating`** ([`globals.css`](src/styles/globals.css)) — the shape-agnostic teal halo. Apply to any AI surface that isn't already a `MirrorWorksAgentCard` (e.g. a status panel, a "PROPOSAL" pill, a CTA wrapper while an AI run is in flight). The animating variant pulses for `loading` / `streaming` states.
+
+**AI accent colour:** **`hsl(172 68% 58%)`** (teal). This is the only AI accent. Do **not** use MW Yellow, the deprecated `--mw-ai-purple`, or any blue from the chart scale to signal "AI". MW Yellow is reserved for primary CTAs (which may include an AI-driven action like *Auto-Schedule* — but the surface around the action stays light, the glow conveys "AI").
+
+**Rules:**
+
+1. AI status (`'idle' | 'loading' | 'streaming' | 'suggested' | 'applied' | 'needs_review' | 'error'`) flows through the `state` prop on `MirrorWorksAgentCard`. Do not invent custom AI surfaces with bespoke status copy.
+2. Loading sequences for AI runs use teal pulse / shimmer (e.g. `linear-gradient(90deg, transparent, hsla(172 68% 58% / 0.18), transparent)`) — never a yellow shimmer.
+3. AI proposals that move/edit data must always be staged behind an explicit Apply / Discard. The card is `state="needs_review"` until the user commits.
+4. Use the **success / warning / error** status colours inside an AI card via the `tone` prop only — they remain dot/chip indicators, not card fills.
+5. Respect `prefers-reduced-motion`: the `.ai-card-glow--animating` class already disables its animation under that media query — do not re-introduce ambient motion via a custom keyframe.
+6. Keep AI surfaces sparse. One primary AI card per view. AI noise (banners, tips, sparkles everywhere) defeats the signal — same restraint as the yellow thread rule.
+
 ---
 
 ## 8. Interaction States

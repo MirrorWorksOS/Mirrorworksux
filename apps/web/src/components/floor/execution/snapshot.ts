@@ -5,9 +5,85 @@ import instructionImage from 'figma:asset/752bff3fda929cfb03de2d177a91f0aef5f147
 import type {
   ExecutionState,
   ExecutionWorkflowStep,
+  PickListRow,
   ReferenceView,
+  TimeSummary,
   WorkOrderExecutionSnapshot,
 } from './types';
+
+const DEFAULT_SCRAP_REASONS = [
+  'Human error',
+  'Incorrect drawings',
+  'Issue with equipment',
+  'Material defect',
+  'Wrong material picked',
+  'Wrong program',
+  'Wrong tooling',
+];
+
+function buildDefaultPickList(woId: string): PickListRow[] {
+  return [
+    {
+      id: `${woId}-pick-1`,
+      partNumber: 'MAT-CRS-1.6',
+      description: '1.6 mm cold rolled steel sheet, 1200 × 2400',
+      requiredQty: 5,
+      unit: 'EA',
+      binLocation: 'Bin 1001',
+      picked: true,
+      pickedAtLabel: 'Picked 09:42',
+    },
+    {
+      id: `${woId}-pick-2`,
+      partNumber: 'FAS-M6-ZN',
+      description: 'M6 zinc-plated fasteners, 16 mm',
+      requiredQty: 200,
+      unit: 'EA',
+      binLocation: 'Bin 2014',
+      picked: true,
+      pickedAtLabel: 'Picked 09:48',
+    },
+    {
+      id: `${woId}-pick-3`,
+      partNumber: 'INS-T-M6',
+      description: 'Threaded inserts M6, brass',
+      requiredQty: 50,
+      unit: 'EA',
+      binLocation: 'Bin 2017',
+      picked: true,
+      pickedAtLabel: 'Picked 09:51',
+    },
+    {
+      id: `${woId}-pick-4`,
+      partNumber: 'EDG-PRT-3M',
+      description: 'Edge protector strip, 3 m roll',
+      requiredQty: 3,
+      unit: 'M',
+      binLocation: 'Bin 4002',
+      picked: false,
+    },
+    {
+      id: `${woId}-pick-5`,
+      partNumber: 'DEC-SHIP',
+      description: 'Shipping decal, MirrorWorks compliant',
+      requiredQty: 2,
+      unit: 'EA',
+      binLocation: 'Bin 5001',
+      picked: false,
+    },
+  ];
+}
+
+function buildDefaultTimeSummary(): TimeSummary {
+  return {
+    setupEstMin: 12,
+    setupActualMin: 14,
+    runEstMin: 45,
+    runActualMin: 38,
+    firstOffEstMin: 5,
+    firstOffActualMin: 0,
+  };
+}
 
 interface SnapshotSeed {
   id?: string;
@@ -383,6 +459,25 @@ export function buildExecutionSnapshot(
     estimatedCompletionLabel: inferEstimatedCompletionLabel(executionState),
     cycleTimeLabel: recipe.cycleTimeLabel,
     targetCycleTimeLabel: recipe.targetCycleTimeLabel,
+    pickList: buildDefaultPickList(raw.id ?? 'wo-demo'),
+    timeSummary: buildDefaultTimeSummary(),
+    scrapReasons: DEFAULT_SCRAP_REASONS,
+    scrapReports: [],
+    ncrs: [
+      {
+        id: 'NCR-2026-0013',
+        workOrderId: 'WO-2026-0004',
+        defectType: 'Dimensional',
+        affectedQty: 2,
+        measurement: 'Hole pitch 78.4 vs 80.0',
+        notes: 'Found during in-process check, isolated batch',
+        createdAtLabel: 'Yesterday 16:12',
+      },
+    ],
+    labelPrints: [],
+    customerInitial: (raw.customerName ?? 'TechCorp Industries').slice(0, 1).toUpperCase(),
+    woCreatedAtLabel: 'Today 08:30',
+    modelSrc: '/models/diff.glb',
   };
 }
 
