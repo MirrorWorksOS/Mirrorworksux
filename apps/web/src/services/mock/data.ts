@@ -68,6 +68,7 @@ import type {
   ControlDocument,
   QuoteHeuristics,
   UploadAnalysisResult,
+  ScheduleSnapshot,
 } from '@/types/entities';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -500,7 +501,7 @@ export const machines: Machine[] = [
 
 export const manufacturingOrders: ManufacturingOrder[] = [
   { id: 'mo-001', moNumber: 'MO-2026-0015', productId: 'prod-001', productName: 'Differential Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0015', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'high', dueDate: '2026-04-18', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray' },
-  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Server Rack Chassis', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-002', customerName: 'Pacific Fabrication', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
+  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Differential Housing', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
   { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson' },
   { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson' },
   { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen' },
@@ -511,7 +512,7 @@ export const workOrders: WorkOrder[] = [
   { id: 'wo-002', woNumber: 'WO-2026-0002', manufacturingOrderId: 'mo-001', machineId: 'mach-004', machineName: 'Gear Hobber', operation: 'Gear hobbing Ring Gear', sequence: 2, estimatedMinutes: 180, actualMinutes: 95, status: 'in_progress', operatorId: 'emp-004', operatorName: 'David Lee' },
   { id: 'wo-003', woNumber: 'WO-2026-0003', manufacturingOrderId: 'mo-001', machineId: 'mach-004', machineName: 'CNC Lathe', operation: 'Turn pinion profile', sequence: 3, estimatedMinutes: 75, actualMinutes: 0, status: 'pending', operatorId: 'emp-006', operatorName: 'James Murray' },
   { id: 'wo-004', woNumber: 'WO-2026-0004', manufacturingOrderId: 'mo-001', machineId: 'mach-004', machineName: 'Gear Hobber', operation: 'Bevel cut spider gears', sequence: 4, estimatedMinutes: 120, actualMinutes: 0, status: 'pending' },
-  { id: 'wo-005', woNumber: 'WO-2026-0005', manufacturingOrderId: 'mo-002', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser Cut chassis panels', sequence: 1, estimatedMinutes: 240, actualMinutes: 120, status: 'in_progress', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'wo-005', woNumber: 'WO-2026-0005', manufacturingOrderId: 'mo-002', machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Laser cut differential blanks', sequence: 1, estimatedMinutes: 240, actualMinutes: 120, status: 'in_progress', operatorId: 'emp-001', operatorName: 'Sarah Chen' },
   { id: 'wo-006', woNumber: 'WO-2026-0006', manufacturingOrderId: 'mo-002', machineId: 'mach-004', machineName: 'CNC Mill #3', operation: 'CNC machine mounting holes', sequence: 2, estimatedMinutes: 150, actualMinutes: 0, status: 'pending', operatorId: 'emp-004', operatorName: 'David Lee' },
 ];
 
@@ -877,6 +878,296 @@ export const operations: Operation[] = [
   { id: 'op-004', sequence: 4, name: 'Powder Coat', workCenterId: 'wc-005', workCenterName: 'Finishing', setupMinutes: 30, runMinutes: 60, queueMinutes: 60, moveMinutes: 10, isSubcontracted: true, subcontractorId: 'sup-003', subcontractorName: 'Sydney Welding Supply', subcontractCost: 850 },
   { id: 'op-005', sequence: 5, name: 'Final Inspection', workCenterId: 'wc-003', workCenterName: 'Welding', setupMinutes: 0, runMinutes: 30, queueMinutes: 0, moveMinutes: 5 },
 ];
+
+// ─── Schedule Engine snapshots ──────────────────────────────────────
+// Two complete snapshots that drive the AI Schedule Engine demo:
+//  - currentScheduleSnapshot: bottlenecked, score 58, 2 late risks
+//  - proposedScheduleSnapshot: rebalanced, score 87, 0 risks
+// The engine swaps between these to show the "before / after" reflow.
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const isoAt = (h: number, m = 0) => {
+  const d = new Date(today);
+  d.setHours(h, m, 0, 0);
+  return d.toISOString();
+};
+const isoOffsetDays = (days: number, h = 8) => {
+  const d = new Date(today);
+  d.setDate(d.getDate() + days);
+  d.setHours(h, 0, 0, 0);
+  return d.toISOString();
+};
+
+const utilisationHistoryCurrent = [
+  { date: isoOffsetDays(-6), percent: 58 },
+  { date: isoOffsetDays(-5), percent: 61 },
+  { date: isoOffsetDays(-4), percent: 55 },
+  { date: isoOffsetDays(-3), percent: 64 },
+  { date: isoOffsetDays(-2), percent: 67 },
+  { date: isoOffsetDays(-1), percent: 60 },
+  { date: isoOffsetDays(0), percent: 63 },
+];
+
+const utilisationHistoryProposed = [
+  ...utilisationHistoryCurrent.slice(0, 6),
+  { date: isoOffsetDays(0), percent: 70 },
+];
+
+const currentWorkCentres: WorkCentre[] = [
+  {
+    id: 'wc-001', name: 'Cutting', type: 'Laser / Plasma', capacityHoursPerDay: 16,
+    utilizationPercent: 85, activeJobs: 3, liveStatus: 'running',
+    hourlyLoad: [70, 80, 85, 90, 88, 80, 60, 60, 75, 85, 80, 70, 70, 65, 60, 50],
+    shift: { start: '07:00', end: '17:00', lunchStart: '12:00', lunchEnd: '12:30' },
+  },
+  {
+    id: 'wc-002', name: 'Forming', type: 'Press Brake', capacityHoursPerDay: 8,
+    utilizationPercent: 42, activeJobs: 1, liveStatus: 'idle',
+    hourlyLoad: [30, 40, 50, 50, 45, 40, 30, 20, 30, 40, 45, 45, 40, 30, 25, 20],
+    shift: { start: '07:00', end: '17:00', lunchStart: '12:00', lunchEnd: '12:30' },
+  },
+  {
+    id: 'wc-003', name: 'Welding', type: 'MIG / TIG', capacityHoursPerDay: 16,
+    utilizationPercent: 92, activeJobs: 2, liveStatus: 'running',
+    // Overloaded 09:00–14:00 (>100%)
+    hourlyLoad: [85, 95, 110, 114, 112, 108, 102, 95, 90, 85, 80, 80, 75, 70, 65, 60],
+    shift: { start: '07:00', end: '17:00', lunchStart: '12:00', lunchEnd: '12:30' },
+  },
+  {
+    id: 'wc-004', name: 'Machining', type: 'CNC Mill / Lathe', capacityHoursPerDay: 8,
+    utilizationPercent: 67, activeJobs: 1, liveStatus: 'setup',
+    hourlyLoad: [50, 60, 70, 75, 70, 65, 60, 60, 65, 70, 70, 65, 60, 55, 50, 40],
+    shift: { start: '07:00', end: '17:00', lunchStart: '12:00', lunchEnd: '12:30' },
+  },
+  {
+    id: 'wc-005', name: 'Finishing', type: 'Powder Coat / Paint', capacityHoursPerDay: 8,
+    utilizationPercent: 28, activeJobs: 0, liveStatus: 'idle',
+    hourlyLoad: [20, 25, 30, 35, 30, 25, 20, 20, 25, 30, 30, 30, 25, 20, 15, 10],
+    shift: { start: '07:00', end: '17:00', lunchStart: '12:00', lunchEnd: '12:30' },
+  },
+];
+
+const proposedWorkCentres: WorkCentre[] = [
+  {
+    ...currentWorkCentres[0],
+    utilizationPercent: 82, liveStatus: 'running',
+    hourlyLoad: [70, 75, 78, 82, 80, 75, 70, 70, 78, 82, 80, 75, 70, 65, 60, 55],
+  },
+  {
+    ...currentWorkCentres[1],
+    utilizationPercent: 65, activeJobs: 2, liveStatus: 'running',
+    hourlyLoad: [55, 60, 65, 68, 65, 62, 60, 60, 65, 68, 65, 62, 58, 55, 50, 45],
+  },
+  {
+    ...currentWorkCentres[2],
+    utilizationPercent: 78, liveStatus: 'running',
+    hourlyLoad: [70, 75, 78, 80, 78, 76, 74, 72, 70, 70, 72, 75, 70, 68, 65, 60],
+  },
+  {
+    ...currentWorkCentres[3],
+    utilizationPercent: 70, liveStatus: 'running',
+    hourlyLoad: [60, 65, 70, 72, 70, 68, 65, 65, 70, 72, 70, 68, 65, 60, 55, 50],
+  },
+  {
+    ...currentWorkCentres[4],
+    utilizationPercent: 55, activeJobs: 1, liveStatus: 'setup',
+    hourlyLoad: [40, 45, 50, 55, 55, 52, 50, 50, 55, 58, 55, 52, 48, 42, 38, 30],
+  },
+];
+
+const currentBlocks: ScheduleBlock[] = [
+  {
+    id: 'sb-001', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationId: 'op-001',
+    operationName: 'Laser cut blanks', workCenterId: 'wc-001', workCenterName: 'Cutting',
+    startTime: isoAt(7), endTime: isoAt(11), durationMinutes: 240,
+    color: 'var(--chart-scale-high)',
+    customerName: 'Pacific Fabrication', qty: 50, dueDate: isoOffsetDays(2),
+    status: 'running',
+  },
+  {
+    id: 'sb-002', jobId: 'job-002', jobNumber: 'JOB-2026-0011', operationId: 'op-001',
+    operationName: 'Laser cut brackets', workCenterId: 'wc-001', workCenterName: 'Cutting',
+    startTime: isoAt(11, 30), endTime: isoAt(15), durationMinutes: 210,
+    color: 'var(--chart-scale-mid)',
+    customerName: 'Hunter Steel Co', qty: 12, dueDate: isoOffsetDays(0, 17),
+    status: 'queued', isRush: true,
+  },
+  {
+    id: 'sb-003', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationId: 'op-002',
+    operationName: 'Press brake bending', workCenterId: 'wc-002', workCenterName: 'Forming',
+    startTime: isoAt(8), endTime: isoAt(11, 30), durationMinutes: 210,
+    color: 'var(--chart-scale-high)',
+    customerName: 'Pacific Fabrication', qty: 50, dueDate: isoOffsetDays(2),
+    status: 'queued',
+  },
+  {
+    id: 'sb-004', jobId: 'job-002', jobNumber: 'JOB-2026-0011', operationId: 'op-003',
+    operationName: 'MIG weld assembly', workCenterId: 'wc-003', workCenterName: 'Welding',
+    startTime: isoAt(9), endTime: isoAt(15), durationMinutes: 360,
+    color: 'var(--chart-scale-high)',
+    customerName: 'Hunter Steel Co', qty: 12, dueDate: isoOffsetDays(0, 17),
+    status: 'at_risk', isRush: true,
+  },
+  {
+    id: 'sb-005', jobId: 'job-003', jobNumber: 'JOB-2026-0013', operationId: 'op-001',
+    operationName: 'Laser cut supports', workCenterId: 'wc-001', workCenterName: 'Cutting',
+    startTime: isoAt(15, 30), endTime: isoAt(19), durationMinutes: 210,
+    color: 'var(--chart-scale-low)',
+    customerName: 'TechCorp Industries', qty: 8, dueDate: isoOffsetDays(4),
+    status: 'queued',
+  },
+  {
+    id: 'sb-006', jobId: 'job-002', jobNumber: 'JOB-2026-0011', operationId: 'op-005',
+    operationName: 'Weld brackets', workCenterId: 'wc-003', workCenterName: 'Welding',
+    startTime: isoAt(7), endTime: isoAt(9), durationMinutes: 120,
+    color: 'var(--chart-scale-mid)',
+    customerName: 'Hunter Steel Co', qty: 12, dueDate: isoOffsetDays(0, 17),
+    status: 'running', isRush: true,
+  },
+  {
+    id: 'sb-007', jobId: 'job-001', jobNumber: 'JOB-2026-0012', operationId: 'op-004',
+    operationName: 'Powder coat', workCenterId: 'wc-005', workCenterName: 'Finishing',
+    startTime: isoAt(8), endTime: isoAt(10), durationMinutes: 120,
+    color: 'var(--chart-scale-high)',
+    customerName: 'Pacific Fabrication', qty: 50, dueDate: isoOffsetDays(2),
+    status: 'queued',
+  },
+  {
+    id: 'sb-008', jobId: 'job-005', jobNumber: 'JOB-2026-0015', operationId: 'op-001',
+    operationName: 'CNC machine panels', workCenterId: 'wc-004', workCenterName: 'Machining',
+    startTime: isoAt(7), endTime: isoAt(15), durationMinutes: 480,
+    color: 'var(--neutral-400)',
+    customerName: 'Sydney Rail Corp', qty: 4, dueDate: isoOffsetDays(3),
+    status: 'queued',
+  },
+];
+
+// Proposed reflow: split JOB-2026-0011 weld across two windows, shift JOB-2026-0013 earlier,
+// pull JOB-2026-0016 (previously unscheduled) into the Forming gap.
+const proposedBlocks: ScheduleBlock[] = [
+  // Cutting — same baseline as current, slightly tighter.
+  { ...currentBlocks[0] },
+  {
+    ...currentBlocks[1],
+    startTime: isoAt(11), endTime: isoAt(14), durationMinutes: 180,
+    status: 'queued',
+  },
+  // Forming — JOB-2026-0012 keeps its slot; new block JOB-2026-0016 added.
+  { ...currentBlocks[2] },
+  {
+    id: 'sb-009', jobId: 'job-006', jobNumber: 'JOB-2026-0016', operationId: 'op-002',
+    operationName: 'Press brake bending', workCenterId: 'wc-002', workCenterName: 'Forming',
+    startTime: isoAt(13), endTime: isoAt(16), durationMinutes: 180,
+    color: 'var(--chart-scale-mid)',
+    customerName: 'Hunter Steel Co', qty: 20, dueDate: isoOffsetDays(5),
+    status: 'queued',
+  },
+  // Welding — JOB-2026-0011 weld split across two windows, no longer at risk.
+  {
+    ...currentBlocks[3],
+    id: 'sb-004a',
+    startTime: isoAt(9), endTime: isoAt(12), durationMinutes: 180,
+    status: 'queued', isRush: true,
+  },
+  {
+    ...currentBlocks[3],
+    id: 'sb-004b',
+    startTime: isoAt(13), endTime: isoAt(16), durationMinutes: 180,
+    status: 'queued', isRush: true,
+  },
+  // Cutting — JOB-2026-0013 sequenced earlier.
+  {
+    ...currentBlocks[4],
+    startTime: isoAt(11), endTime: isoAt(14, 30), durationMinutes: 210,
+    status: 'queued',
+  },
+  // Welding — early small block stays put.
+  { ...currentBlocks[5] },
+  // Finishing.
+  { ...currentBlocks[6] },
+  // Machining.
+  { ...currentBlocks[7] },
+];
+
+export const currentScheduleSnapshot: ScheduleSnapshot = {
+  id: 'snap-current',
+  generatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+  source: { kind: 'manual', byName: 'Alex Morgan' },
+  workCentres: currentWorkCentres,
+  blocks: currentBlocks,
+  kpis: {
+    avgUtilisationPercent: 63,
+    avgUtilisationDelta: 8,
+    utilisationHistory: utilisationHistoryCurrent,
+    activeJobs: { running: 2, queued: 1, blocked: 0, late: 0, dueToday: 2, atRisk: 1 },
+    healthScore: 58,
+    healthReason: 'Welding overloaded by 14%, 2 jobs at risk of slipping.',
+    bottleneck: {
+      workCentreId: 'wc-003',
+      workCentreName: 'Welding',
+      queueDepth: 6,
+      backlogHours: 14,
+      overloadPercent: 14,
+      queue: [
+        { jobId: 'job-002', jobNumber: 'JOB-2026-0011', customerName: 'Hunter Steel Co', status: 'at_risk' },
+        { jobId: 'job-002', jobNumber: 'JOB-2026-0011', customerName: 'Hunter Steel Co', status: 'queued' },
+        { jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerName: 'Pacific Fabrication', status: 'queued' },
+        { jobId: 'job-006', jobNumber: 'JOB-2026-0016', customerName: 'Hunter Steel Co', status: 'queued' },
+        { jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerName: 'TechCorp Industries', status: 'queued' },
+        { jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerName: 'Sydney Rail Corp', status: 'queued' },
+      ],
+    },
+    lateRisk: {
+      jobsAtRisk: 2,
+      valueAtRiskAud: 48400,
+      jobs: [
+        { jobId: 'job-002', jobNumber: 'JOB-2026-0011', customerName: 'Hunter Steel Co', hoursToDeadline: -14, valueAud: 32400 },
+        { jobId: 'job-006', jobNumber: 'JOB-2026-0016', customerName: 'Hunter Steel Co', hoursToDeadline: 6, valueAud: 16000 },
+      ],
+    },
+  },
+  issues: [
+    {
+      id: 'iss-001', severity: 'high',
+      title: 'Welding overloaded by 14%',
+      detail: 'Welding work centre is loaded 114% between 09:00 and 14:00.',
+    },
+    {
+      id: 'iss-002', severity: 'high',
+      title: 'JOB-2026-0011 at risk',
+      detail: 'Forecast to miss promise date by 14 hours unless welding is rebalanced.',
+    },
+    {
+      id: 'iss-003', severity: 'medium',
+      title: 'JOB-2026-0016 unscheduled',
+      detail: 'Hunter Steel rush order, due in 5 days, has no operations sequenced yet.',
+    },
+  ],
+};
+
+export const proposedScheduleSnapshot: ScheduleSnapshot = {
+  id: 'snap-proposed',
+  generatedAt: new Date().toISOString(),
+  source: {
+    kind: 'ai',
+    movedJobIds: ['job-002', 'job-003', 'job-006'],
+    eliminatedRisks: 2,
+  },
+  workCentres: proposedWorkCentres,
+  blocks: proposedBlocks,
+  kpis: {
+    avgUtilisationPercent: 70,
+    avgUtilisationDelta: 7,
+    utilisationHistory: utilisationHistoryProposed,
+    activeJobs: { running: 2, queued: 3, blocked: 0, late: 0, dueToday: 2, atRisk: 0 },
+    healthScore: 87,
+    healthReason: 'Load balanced across 5 work centres. No jobs at risk.',
+    bottleneck: null,
+    lateRisk: { jobsAtRisk: 0, valueAtRiskAud: 0, jobs: [] },
+  },
+  issues: [],
+};
 
 export const mrpTree: MrpNode[] = [
   {

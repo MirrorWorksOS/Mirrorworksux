@@ -63,7 +63,7 @@ const BuyReorderRules = lazyWithRetry(() => import('./components/buy/BuyReorderR
 const PlanDashboard = lazyWithRetry(() => import('./components/plan/PlanDashboard').then(m => ({ default: m.PlanDashboard })));
 const PlanJobs = lazyWithRetry(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
 const PlanJobDetail = lazyWithRetry(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
-const PlanSchedule = lazyWithRetry(() => import('./components/plan/PlanSchedule').then(m => ({ default: m.PlanSchedule })));
+const PlanScheduleEngine = lazyWithRetry(() => import('./components/plan/PlanScheduleEngine').then(m => ({ default: m.PlanScheduleEngine })));
 const PlanPurchase = lazyWithRetry(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
 const PlanQCPlanning = lazyWithRetry(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
 const PlanProducts = lazyWithRetry(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
@@ -329,9 +329,10 @@ export const router = createBrowserRouter([
           { path: 'jobs', element: <L><PlanJobs /></L> },
           { path: 'jobs/new', element: <L><PlanJobDetail /></L> },
           { path: 'jobs/:id', element: <L><PlanJobDetail /></L> },
-          // Activities folded into Schedule's calendar view
-          { path: 'activities', element: <Navigate to="/plan/schedule?view=calendar" replace /> },
-          { path: 'schedule', element: <L><PlanSchedule /></L> },
+          // Schedule Engine is the only schedule view. Old paths redirect.
+          { path: 'activities', element: <Navigate to="/plan/schedule-engine" replace /> },
+          { path: 'schedule', element: <Navigate to="/plan/schedule-engine" replace /> },
+          { path: 'schedule-engine', element: <L><PlanScheduleEngine /></L> },
           // CAD import + NC Connect unified under /plan/machine-io
           { path: 'machine-io', element: <L><PlanMachineIO /></L> },
           { path: 'nc-connect', element: <Navigate to="/plan/machine-io?tab=nc-connect" replace /> },

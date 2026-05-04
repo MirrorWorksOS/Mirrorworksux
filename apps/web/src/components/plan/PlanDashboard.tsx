@@ -255,7 +255,7 @@ export function PlanDashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start border-[var(--border)] h-10"
-                onClick={() => navigate('/plan/schedule')}
+                onClick={() => navigate('/plan/schedule-engine')}
               >
                 <CalendarDays className="w-4 h-4 mr-2" />
                 Schedule

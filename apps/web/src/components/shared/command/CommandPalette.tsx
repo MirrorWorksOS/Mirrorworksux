@@ -143,7 +143,7 @@ const PAGES: PageItem[] = [
   { label: 'Dashboard', path: '/plan', section: 'Plan', icon: LayoutDashboard },
   { label: 'Product Studio', path: '/plan/product-studio', section: 'Plan', icon: Boxes, keywords: ['configurator', 'cpq', 'variants', 'rules', 'product builder'] },
   { label: 'Jobs', path: '/plan/jobs', section: 'Plan', icon: Briefcase, keywords: ['work orders'] },
-  { label: 'Schedule', path: '/plan/schedule', section: 'Plan', icon: CalendarDays, keywords: ['gantt', 'timeline'] },
+  { label: 'Schedule', path: '/plan/schedule-engine', section: 'Plan', icon: CalendarDays, keywords: ['gantt', 'timeline', 'auto-schedule', 'ai'] },
   { label: 'NC Connect', path: '/plan/nc-connect', section: 'Plan', icon: Cpu, keywords: ['nesting', 'cnc'] },
   { label: 'What-If', path: '/plan/what-if', section: 'Plan', icon: FlaskConical, keywords: ['scenario', 'simulation'] },
   { label: 'Nesting', path: '/plan/nesting', section: 'Plan', icon: Layers, keywords: ['sheet', 'parts'] },

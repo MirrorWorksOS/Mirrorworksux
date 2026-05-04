@@ -33,6 +33,7 @@ import type {
   CapaSeverity,
   BatchStatus,
   MrpNodeStatus,
+  JobScheduleStatus,
 } from './common';
 
 // ═════════════════════════════════════════════════��═════════════════════
@@ -518,13 +519,20 @@ export interface ScheduleBlock {
   id: string;
   jobId: string;
   jobNumber: string;
+  operationId?: string;
   operationName: string;
   workCenterId: string;
   workCenterName: string;
   startTime: string;
   endTime: string;
   durationMinutes: number;
+  /** Legacy: per-job tint. New Schedule Engine UI prefers `status`. */
   color: string;
+  customerName?: string;
+  qty?: number;
+  dueDate?: string;
+  status?: JobScheduleStatus;
+  isRush?: boolean;
 }
 
 /** Work centre with capacity info for scheduling */
@@ -535,6 +543,114 @@ export interface WorkCentre {
   capacityHoursPerDay: number;
   utilizationPercent: number;
   activeJobs: number;
+  /** Live machine status dot in Schedule Engine row labels. */
+  liveStatus?: 'running' | 'setup' | 'blocked' | 'idle';
+  /** Hourly load curve (0–120%) over the visible day; index 0 = DAY_START_HOUR. */
+  hourlyLoad?: number[];
+  /** Single-shift bounds in 24h, e.g. ['07:00','17:00']. Lunch defaults to 12:00–12:30. */
+  shift?: { start: string; end: string; lunchStart?: string; lunchEnd?: string };
+}
+
+// ─── Schedule Engine snapshot ───────────────────────────────────────
+
+/** A single point on the 7-day utilisation sparkline. */
+export interface UtilisationPoint {
+  date: string; // ISO date
+  percent: number;
+}
+
+/** Late-risk preview row inside LateRiskCard. */
+export interface LateRiskJob {
+  jobId: string;
+  jobNumber: string;
+  customerName: string;
+  hoursToDeadline: number; // negative = already late
+  valueAud: number;
+}
+
+/** Bottleneck queue entry inside BottleneckCard. */
+export interface BottleneckQueueEntry {
+  jobId: string;
+  jobNumber: string;
+  customerName: string;
+  status: JobScheduleStatus;
+}
+
+/** Aggregated KPIs displayed in the 5-card row. */
+export interface ScheduleSnapshotKpis {
+  /** Average utilisation across all work centres (0–100). */
+  avgUtilisationPercent: number;
+  /** Last-week delta in percentage points (+/-). */
+  avgUtilisationDelta: number;
+  /** 7-day sparkline. */
+  utilisationHistory: UtilisationPoint[];
+  /** Active job counts by status (sums to total). */
+  activeJobs: {
+    running: number;
+    queued: number;
+    blocked: number;
+    late: number;
+    dueToday: number;
+    atRisk: number;
+  };
+  /** 0–100 schedule health score. */
+  healthScore: number;
+  /** Short reason text for the dark anchor card. */
+  healthReason: string;
+  /** null = no current bottleneck (all centres healthy). */
+  bottleneck:
+    | null
+    | {
+        workCentreId: string;
+        workCentreName: string;
+        queueDepth: number;
+        backlogHours: number;
+        overloadPercent: number;
+        queue: BottleneckQueueEntry[];
+      };
+  lateRisk: {
+    jobsAtRisk: number;
+    valueAtRiskAud: number;
+    jobs: LateRiskJob[];
+  };
+}
+
+/** A schedule issue surfaced by the engine (drives IssuesSheet). */
+export interface ScheduleIssue {
+  id: string;
+  severity: 'high' | 'medium' | 'low';
+  title: string;
+  detail: string;
+}
+
+/** A complete schedule snapshot — current or proposed. */
+export interface ScheduleSnapshot {
+  id: string;
+  /** ISO timestamp of when this snapshot was generated. */
+  generatedAt: string;
+  /** Display name for the header state line. */
+  source:
+    | { kind: 'manual'; byName: string }
+    | { kind: 'ai'; movedJobIds: string[]; eliminatedRisks: number };
+  workCentres: WorkCentre[];
+  blocks: ScheduleBlock[];
+  kpis: ScheduleSnapshotKpis;
+  issues: ScheduleIssue[];
+}
+
+/** Auto-Schedule modal payload. */
+export interface AutoScheduleRequest {
+  priority: 'balanced' | 'throughput' | 'on_time' | 'setup_minimisation';
+  horizon: 'today' | 'next_24h' | 'next_7d' | 'next_14d';
+  lockSetupAndRunning: boolean;
+  lockRushJobs: boolean;
+}
+
+/** Result of a (mocked) AI auto-schedule run. */
+export interface AutoScheduleResult {
+  proposed: ScheduleSnapshot;
+  summary: string;
+  movedJobIds: string[];
 }
 
 /** MRP demand tree node */

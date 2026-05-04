@@ -55,6 +55,16 @@ export type JobStatus = 'draft' | 'planned' | 'in_progress' | 'on_hold' | 'compl
 
 export type TaskType = 'review' | 'schedule' | 'qc' | 'purchase' | 'external' | 'production';
 
+/** Per-block scheduling state on the Schedule Engine Gantt. Distinct from {@link JobStatus} which describes the job overall. */
+export type JobScheduleStatus =
+  | 'queued'
+  | 'setup'
+  | 'running'
+  | 'done'
+  | 'blocked'
+  | 'late'
+  | 'at_risk';
+
 // ─── Make Statuses ──────────────────────────────────────────────────
 
 export type ManufacturingOrderStatus = 'draft' | 'confirmed' | 'in_progress' | 'done';

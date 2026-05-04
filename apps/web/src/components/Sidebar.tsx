@@ -194,7 +194,7 @@ export const menuConfig: MenuItem[] = [
         heading: 'Execution',
         items: [
           { label: 'Jobs', path: '/plan/jobs' },
-          { label: 'Schedule', path: '/plan/schedule' },
+          { label: 'Schedule', path: '/plan/schedule-engine' },
           { label: 'What-if', path: '/plan/what-if' },
         ],
       },

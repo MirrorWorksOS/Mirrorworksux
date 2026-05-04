@@ -16,9 +16,16 @@ import type {
   ShiftAssignment,
   NestingSheet,
   BomGeneratorLine,
+  ScheduleSnapshot,
+  AutoScheduleRequest,
+  AutoScheduleResult,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
+
+// In-memory swap: applying the proposed snapshot promotes it to current.
+let _currentSnapshot: ScheduleSnapshot = mock.currentScheduleSnapshot;
+let _proposedTemplate: ScheduleSnapshot = mock.proposedScheduleSnapshot;
 
 export const planService = {
   // ── Jobs ────────────────────────────────────────────────────────
@@ -75,6 +82,40 @@ export const planService = {
   async getWorkCentres(): Promise<WorkCentre[]> {
     await delay();
     return mock.workCentres;
+  },
+
+  // TODO: CONVEX — fetch the live schedule snapshot from the engine query.
+  async getScheduleSnapshot(): Promise<ScheduleSnapshot> {
+    await delay();
+    return _currentSnapshot;
+  },
+
+  // TODO: CONVEX — kick off the AI auto-schedule action.
+  // The 4-second loading sequence is driven client-side by useAutoScheduleRunner;
+  // this only models the network call returning the proposed snapshot.
+  async runAutoSchedule(_req: AutoScheduleRequest): Promise<AutoScheduleResult> {
+    await delay(3500);
+    return {
+      proposed: _proposedTemplate,
+      summary:
+        'Moved 3 jobs, balanced load across 5 work centres, eliminated 2 late risks. Welding now 78% (was 92%). Forming now 65% (was 42%).',
+      movedJobIds: _proposedTemplate.source.kind === 'ai' ? _proposedTemplate.source.movedJobIds : [],
+    };
+  },
+
+  // TODO: CONVEX — promote the proposed snapshot to current.
+  async applySchedule(_snapshotId: string): Promise<void> {
+    await delay();
+    _currentSnapshot = {
+      ..._proposedTemplate,
+      id: 'snap-current',
+      generatedAt: new Date().toISOString(),
+    };
+  },
+
+  // TODO: CONVEX — discard the proposed snapshot (no-op for the mock).
+  async discardProposal(): Promise<void> {
+    await delay();
   },
 
   // ── Operations / Routing ───────────────────────────────────────

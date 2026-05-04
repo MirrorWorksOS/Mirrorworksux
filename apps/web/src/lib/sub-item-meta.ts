@@ -131,7 +131,7 @@ export const SUB_ITEM_META: Record<string, SubItemMeta> = {
   // ─── Plan ───
   '/plan': { icon: LayoutDashboard, description: 'Schedule adherence & capacity KPIs' },
   '/plan/jobs': { icon: Briefcase, description: 'Manufacturing jobs with routings' },
-  '/plan/schedule': { icon: GanttChart, description: 'Cross-job Gantt + calendar view' },
+  '/plan/schedule-engine': { icon: GanttChart, description: 'AI-sequenced work-centre Gantt' },
   '/plan/what-if': { icon: Lightbulb, description: 'Scenario analysis on schedule' },
   '/plan/product-studio': { icon: Blocks, description: 'Visual product configurator (Blockly)' },
   '/plan/machine-io': { icon: Cable, description: 'CAD import & NC machine I/O' },

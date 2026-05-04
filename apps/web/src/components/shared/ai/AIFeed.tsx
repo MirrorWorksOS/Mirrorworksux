@@ -115,7 +115,7 @@ const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
       tag: "Capacity",
       timestamp: "20 min ago",
       actionLabel: "Open schedule",
-      actionPath: "/plan/schedule",
+      actionPath: "/plan/schedule-engine",
     },
     {
       id: "plan-2",
@@ -263,7 +263,7 @@ const FEED_DATA: Record<AIFeedModule, FeedItem[]> = {
         "bg-[var(--mw-warning)]/15 text-[var(--mw-yellow-800)] dark:text-[var(--mw-yellow-400)]",
       timestamp: "1h ago",
       actionLabel: "Update schedule",
-      actionPath: "/plan/schedule",
+      actionPath: "/plan/schedule-engine",
     },
     {
       id: "buy-3",

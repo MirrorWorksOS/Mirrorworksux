@@ -88,7 +88,7 @@ const menuConfig: MobileMenuItem[] = [
     subItems: [
       { label: 'Dashboard', path: '/plan' },
       { label: 'Jobs', path: '/plan/jobs' },
-      { label: 'Schedule', path: '/plan/schedule' },
+      { label: 'Schedule', path: '/plan/schedule-engine' },
       { label: 'What-if', path: '/plan/what-if' },
       { label: 'Nesting', path: '/plan/nesting' },
       { label: 'MRP', path: '/plan/mrp' },
