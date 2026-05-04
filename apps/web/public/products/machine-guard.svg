@@ -1,17 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <title>Machine Guard Assembly — CNC</title>
-  <!-- depth back -->
-  <path d="M 35 25 L 50 12 L 180 12 L 165 25"/>
-  <path d="M 180 12 L 180 122 L 165 135"/>
-  <!-- outer frame -->
-  <rect x="35" y="25" width="130" height="110" rx="3"/>
-  <!-- polycarbonate window -->
-  <rect x="50" y="40" width="100" height="75" rx="2" fill="#FFCF4B" fill-opacity="0.25"/>
-  <!-- bottom kickplate -->
-  <line x1="35" y1="120" x2="165" y2="120"/>
+  <defs>
+    <linearGradient id="gfr" x1="35" y1="25" x2="35" y2="135" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#9EA8B0"/>
+      <stop offset="100%" stop-color="#727A80"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#1A2732" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <!-- top face -->
+    <path d="M35 25L50 12L180 12L165 25Z" fill="#C4CCD4"/>
+    <!-- right face -->
+    <path d="M165 25L180 12L180 122L165 135Z" fill="#565E66"/>
+    <!-- front frame face -->
+    <rect x="35" y="25" width="130" height="110" rx="3" fill="url(#gfr)"/>
+    <!-- polycarbonate window (clear panel with subtle blue tint) -->
+    <rect x="50" y="40" width="100" height="75" rx="2" fill="#C0D8EC" fill-opacity="0.28"/>
+    <!-- window inner reflection highlight (top-left) -->
+    <path d="M52 42L80 42L52 68Z" fill="#E8F4FC" fill-opacity="0.35"/>
+    <!-- bottom kickplate (darker steel section) -->
+    <rect x="35" y="118" width="130" height="17" rx="0" fill="#7A8288" opacity="0.45"/>
+  </g>
+  <!-- outline strokes -->
+  <rect x="35" y="25" width="130" height="110" rx="3" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M35 25L50 12L180 12L165 25" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M180 12L180 122L165 135" stroke="#1A2732" stroke-width="1.5"/>
+  <!-- window frame outline -->
+  <rect x="50" y="40" width="100" height="75" rx="2" stroke="#1A2732" stroke-width="1"/>
+  <!-- kickplate line -->
+  <line x1="35" y1="120" x2="165" y2="120" stroke="#1A2732" stroke-width="1"/>
+  <!-- highlight: top-left frame edge -->
+  <path d="M35 25L35 135" stroke="#BDC5CC" stroke-width="1.5"/>
+  <path d="M50 12L180 12" stroke="#DDE3E8" stroke-width="2"/>
   <!-- corner bolts -->
-  <circle cx="42" cy="32" r="3" fill="#FFCF4B"/>
-  <circle cx="158" cy="32" r="3" fill="#FFCF4B"/>
-  <circle cx="42" cy="128" r="3" fill="#FFCF4B"/>
-  <circle cx="158" cy="128" r="3" fill="#FFCF4B"/>
+  <circle cx="42" cy="32" r="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="158" cy="32" r="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="42" cy="128" r="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="158" cy="128" r="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
 </svg>

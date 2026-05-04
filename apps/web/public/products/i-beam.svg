@@ -1,18 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <title>Structural Steel — I-Beam Assembly</title>
-  <!-- I-beam end face -->
-  <path d="M 30 30 L 80 30 L 80 45 L 65 45 L 65 105 L 80 105 L 80 120 L 30 120 L 30 105 L 45 105 L 45 45 L 30 45 Z"/>
-  <!-- isometric depth (back face) -->
-  <path d="M 30 30 L 50 15 L 100 15 L 80 30"/>
-  <path d="M 100 15 L 100 105 L 80 120"/>
-  <path d="M 80 45 L 100 30"/>
-  <path d="M 65 45 L 85 30"/>
-  <path d="M 65 105 L 85 90"/>
-  <path d="M 80 105 L 100 90"/>
-  <!-- continuation lines suggesting length -->
-  <line x1="105" y1="22" x2="180" y2="22" stroke-dasharray="5 4"/>
-  <line x1="105" y1="60" x2="180" y2="60" stroke-dasharray="5 4"/>
-  <line x1="105" y1="98" x2="180" y2="98" stroke-dasharray="5 4"/>
-  <!-- accent rivet -->
-  <circle cx="55" cy="75" r="4" fill="#FFCF4B"/>
+  <defs>
+    <linearGradient id="gfr" x1="30" y1="30" x2="30" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#757F8A"/>
+      <stop offset="100%" stop-color="#525C66"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#1A2732" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <!-- right face of top flange -->
+    <path d="M80 30L100 15L100 30L80 45Z" fill="#3E4850"/>
+    <!-- right face of web -->
+    <path d="M65 45L85 30L85 90L65 105Z" fill="#404A52"/>
+    <!-- right face of bottom flange -->
+    <path d="M80 105L100 90L100 105L80 120Z" fill="#3E4850"/>
+    <!-- top face of top flange -->
+    <path d="M30 30L50 15L100 15L80 30Z" fill="#A8B2BA"/>
+    <!-- front I-face -->
+    <path d="M30 30L80 30L80 45L65 45L65 105L80 105L80 120L30 120L30 105L45 105L45 45L30 45Z" fill="url(#gfr)"/>
+  </g>
+  <!-- outline strokes -->
+  <path d="M30 30L80 30L80 45L65 45L65 105L80 105L80 120L30 120L30 105L45 105L45 45L30 45Z" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M30 30L50 15L100 15L80 30" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M100 15L100 105L80 120" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M80 45L100 30" stroke="#1A2732" stroke-width="1"/>
+  <path d="M65 45L85 30" stroke="#1A2732" stroke-width="1"/>
+  <path d="M65 105L85 90" stroke="#1A2732" stroke-width="1"/>
+  <path d="M80 105L100 90" stroke="#1A2732" stroke-width="1"/>
+  <!-- highlight: left edge of front face, top of top flange -->
+  <path d="M30 30L30 120" stroke="#A8B4BC" stroke-width="2"/>
+  <path d="M50 15L100 15" stroke="#C0CAD2" stroke-width="2"/>
+  <path d="M30 30L50 15" stroke="#B8C2CA" stroke-width="1.5"/>
+  <!-- continuation dashes suggesting beam length -->
+  <line x1="105" y1="22" x2="180" y2="22" stroke="#1A2732" stroke-width="1" stroke-dasharray="5 4" opacity="0.5"/>
+  <line x1="105" y1="60" x2="180" y2="60" stroke="#1A2732" stroke-width="1" stroke-dasharray="5 4" opacity="0.5"/>
+  <line x1="105" y1="98" x2="180" y2="98" stroke="#1A2732" stroke-width="1" stroke-dasharray="5 4" opacity="0.5"/>
+  <!-- accent rivet / grade marking -->
+  <circle cx="55" cy="75" r="4" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="55" cy="75" r="1.5" fill="#1A2732" opacity="0.5"/>
 </svg>
