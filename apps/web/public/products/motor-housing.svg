@@ -1,20 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <title>Motor Housing Assembly</title>
-  <!-- top cap of cylinder -->
-  <ellipse cx="100" cy="32" rx="40" ry="10"/>
-  <!-- cylinder body -->
-  <line x1="60" y1="32" x2="60" y2="100"/>
-  <line x1="140" y1="32" x2="140" y2="100"/>
-  <path d="M 60 100 A 40 10 0 0 0 140 100"/>
-  <!-- mounting flange -->
-  <ellipse cx="100" cy="112" rx="55" ry="12"/>
-  <line x1="45" y1="112" x2="45" y2="128"/>
-  <line x1="155" y1="112" x2="155" y2="128"/>
-  <path d="M 45 128 A 55 12 0 0 0 155 128"/>
-  <!-- shaft accent (top) -->
-  <ellipse cx="100" cy="32" rx="9" ry="3" fill="#FFCF4B"/>
+  <defs>
+    <!-- horizontal gradient simulates cylinder curvature (lit from left) -->
+    <linearGradient id="gcyl" x1="60" y1="0" x2="140" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C4C0B4"/>
+      <stop offset="28%" stop-color="#D8D4C8"/>
+      <stop offset="65%" stop-color="#9E9A90"/>
+      <stop offset="100%" stop-color="#6A6860"/>
+    </linearGradient>
+    <linearGradient id="gfl" x1="45" y1="0" x2="155" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B8B4A8"/>
+      <stop offset="30%" stop-color="#CAC6BA"/>
+      <stop offset="100%" stop-color="#606058"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#1A2732" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <!-- flange underside (dark arc) -->
+    <path d="M45 128A55 12 0 0 0 155 128L155 120L45 120Z" fill="#505048"/>
+    <!-- flange body rect -->
+    <rect x="45" y="112" width="110" height="16" fill="url(#gfl)"/>
+    <!-- flange top ring face -->
+    <ellipse cx="100" cy="112" rx="55" ry="12" fill="#CAC6BA"/>
+    <!-- cylinder underside shadow band -->
+    <path d="M60 100A40 10 0 0 0 140 100L140 94L60 94Z" fill="#58544C"/>
+    <!-- cylinder body rect -->
+    <rect x="60" y="32" width="80" height="68" fill="url(#gcyl)"/>
+    <!-- top cap -->
+    <ellipse cx="100" cy="32" rx="40" ry="10" fill="#D0CCBE"/>
+  </g>
+  <!-- strokes -->
+  <ellipse cx="100" cy="32" rx="40" ry="10" stroke="#1A2732" stroke-width="1.5"/>
+  <line x1="60" y1="32" x2="60" y2="100" stroke="#1A2732" stroke-width="1.5"/>
+  <line x1="140" y1="32" x2="140" y2="100" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M60 100A40 10 0 0 0 140 100" stroke="#1A2732" stroke-width="1.5"/>
+  <ellipse cx="100" cy="112" rx="55" ry="12" stroke="#1A2732" stroke-width="1.5"/>
+  <line x1="45" y1="112" x2="45" y2="128" stroke="#1A2732" stroke-width="1.5"/>
+  <line x1="155" y1="112" x2="155" y2="128" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M45 128A55 12 0 0 0 155 128" stroke="#1A2732" stroke-width="1.5"/>
+  <!-- highlight: lit left edge of cylinder -->
+  <line x1="60" y1="32" x2="60" y2="100" stroke="#E0DCD0" stroke-width="2.5"/>
+  <!-- cylinder highlight ridge (~1/3 from left) -->
+  <line x1="72" y1="34" x2="72" y2="98" stroke="#DDD9CC" stroke-width="1" opacity="0.7"/>
+  <!-- shaft accent -->
+  <ellipse cx="100" cy="32" rx="9" ry="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="1"/>
   <!-- bolt heads on flange -->
-  <circle cx="62" cy="122" r="3.5" fill="#FFCF4B"/>
-  <circle cx="100" cy="126" r="3.5" fill="#FFCF4B"/>
-  <circle cx="138" cy="122" r="3.5" fill="#FFCF4B"/>
+  <circle cx="62" cy="122" r="3.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="100" cy="126" r="3.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="138" cy="122" r="3.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
 </svg>
