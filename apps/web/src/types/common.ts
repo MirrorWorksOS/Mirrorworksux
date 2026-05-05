@@ -109,6 +109,8 @@ export type CapaStatus = 'identified' | 'root_cause' | 'containment' | 'correcti
 
 export type CapaSeverity = 'low' | 'medium' | 'high' | 'critical';
 
+export type NcrStatus = 'open' | 'under_review' | 'contained' | 'closed';
+
 export type BatchStatus = 'active' | 'quarantine' | 'released' | 'consumed';
 
 // ─── Plan Statuses (extended) ──────────────────────────────────────

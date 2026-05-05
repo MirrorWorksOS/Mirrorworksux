@@ -55,6 +55,7 @@ import type {
   NestingSheet,
   BomGeneratorLine,
   CapaRecord,
+  NcrRecord,
   BatchLot,
   MaterialConsumptionLine,
   OperatorMessage,
@@ -1599,6 +1600,19 @@ export const capaRecords: CapaRecord[] = [
   { id: 'capa-004', title: 'Paint adhesion failure', description: 'Powder coat peeling on machine guards after 48-hour salt spray test', severity: 'critical', status: 'identified', assignedTo: 'emp-007', assignedToName: 'Anh Nguyen', jobId: 'job-004', jobNumber: 'JOB-2026-0010', identifiedDate: '2026-04-04', dueDate: '2026-04-18' },
   { id: 'capa-005', title: 'Incorrect cut program loaded', description: 'Wrong DXF loaded on laser — 5 sheets scrapped before detection', severity: 'medium', status: 'verification', assignedTo: 'emp-003', assignedToName: 'Emma Wilson', identifiedDate: '2026-03-15', dueDate: '2026-04-05', rootCause: 'File naming convention not followed', correctiveAction: 'Implement file naming SOP and machine-side verification step' },
   { id: 'capa-006', title: 'Near-miss forklift incident', description: 'Forklift near-miss in dispatch area — poor visibility at corner', severity: 'critical', status: 'closed', assignedTo: 'emp-008', assignedToName: 'Tom Bradshaw', identifiedDate: '2026-02-20', dueDate: '2026-03-05', rootCause: 'Blind corner at warehouse exit', correctiveAction: 'Installed convex mirror and floor markings' },
+];
+
+export const ncrRecords: NcrRecord[] = [
+  { id: 'ncr-001', ncrNumber: 'NCR-2026-041', title: 'Dimensional variance on laser cut brackets', defectType: 'Dimensional', severity: 'high', status: 'open', workOrderId: 'wo-001', workOrderNumber: 'WO-001', reportedBy: 'Sarah Chen', reportedDate: '2026-05-02', capaId: 'capa-002' },
+  { id: 'ncr-002', ncrNumber: 'NCR-2026-042', title: 'Surface finish below spec on chassis panels', defectType: 'Surface Finish', severity: 'medium', status: 'under_review', workOrderId: 'wo-003', workOrderNumber: 'WO-003', reportedBy: 'James Murray', reportedDate: '2026-05-03' },
+  { id: 'ncr-003', ncrNumber: 'NCR-2026-040', title: 'Weld porosity on bracket batch', defectType: 'Weld Defect', severity: 'high', status: 'contained', workOrderId: 'wo-006', workOrderNumber: 'WO-006', reportedBy: 'Emma Wilson', reportedDate: '2026-04-30', capaId: 'capa-001' },
+  { id: 'ncr-004', ncrNumber: 'NCR-2026-039', title: 'Material cert missing for stainless 304', defectType: 'Material Defect', severity: 'critical', status: 'open', reportedBy: 'Priya Sharma', reportedDate: '2026-04-29', capaId: 'capa-003' },
+  { id: 'ncr-005', ncrNumber: 'NCR-2026-038', title: 'Incorrect hole pattern on enclosure frames', defectType: 'Dimensional', severity: 'medium', status: 'open', workOrderId: 'wo-002', workOrderNumber: 'WO-002', reportedBy: 'David Lee', reportedDate: '2026-04-28' },
+  { id: 'ncr-006', ncrNumber: 'NCR-2026-037', title: 'Powder coat adhesion failure on machine guards', defectType: 'Surface Finish', severity: 'critical', status: 'under_review', reportedBy: 'Anh Nguyen', reportedDate: '2026-04-27', capaId: 'capa-004' },
+  { id: 'ncr-007', ncrNumber: 'NCR-2026-036', title: 'Wrong DXF loaded — 5 sheets scrapped', defectType: 'Equipment Error', severity: 'medium', status: 'contained', workOrderId: 'wo-001', workOrderNumber: 'WO-001', reportedBy: 'Emma Wilson', reportedDate: '2026-04-25', capaId: 'capa-005' },
+  { id: 'ncr-008', ncrNumber: 'NCR-2026-035', title: 'Thread tap wear — OOT threads on base plates', defectType: 'Dimensional', severity: 'low', status: 'closed', workOrderId: 'wo-002', workOrderNumber: 'WO-002', reportedBy: 'David Lee', reportedDate: '2026-04-22' },
+  { id: 'ncr-009', ncrNumber: 'NCR-2026-034', title: 'Scratch marks on anodised aluminium panels', defectType: 'Surface Finish', severity: 'low', status: 'closed', workOrderId: 'wo-007', workOrderNumber: 'WO-007', reportedBy: 'Tom Bradshaw', reportedDate: '2026-04-20' },
+  { id: 'ncr-010', ncrNumber: 'NCR-2026-033', title: 'Weld spatter on bus bar connectors', defectType: 'Weld Defect', severity: 'medium', status: 'closed', workOrderId: 'wo-006', workOrderNumber: 'WO-006', reportedBy: 'James Murray', reportedDate: '2026-04-18' },
 ];
 
 export const batchLots: BatchLot[] = [
