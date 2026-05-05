@@ -63,7 +63,7 @@ export function ShipDashboard() {
 
   return (
     <ModuleDashboard
-      title="Shipments"
+      title="Ship"
       tabs={shipTabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}

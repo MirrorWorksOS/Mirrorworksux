@@ -52,6 +52,9 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/plan/libraries': 'Libraries',
   '/plan/what-if': 'What-If',
   '/plan/nesting': 'Nesting',
+  '/plan/nesting-studio': 'Nesting Studio',
+  '/plan/nesting-queue': 'Ready to Nest',
+  '/plan/nests': 'Nests',
   '/plan/mrp': 'MRP',
   '/plan/sheet-calculator': 'Sheet Calculator',
   '/plan/purchase': 'Purchase',
@@ -97,6 +100,8 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/book/stock-valuation': 'Stock Valuation',
   '/book/reports': 'Reports',
   '/book/settings': 'Settings',
+  '/book/settings/xero': 'Xero Integration',
+  '/book/settings/xero/mapping': 'Configure mapping',
 
   // Control
   '/control': 'Control',

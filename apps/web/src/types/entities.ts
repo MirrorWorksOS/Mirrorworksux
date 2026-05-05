@@ -20,6 +20,11 @@ import type {
   ManufacturingOrderStatus,
   MachineStatus,
   WorkOrderStatus,
+  NestStatus,
+  NestingQueueStatus,
+  SheetStockStatus,
+  GrainDirection,
+  ControlSystem,
   ShipmentStage,
   ShippingExceptionType,
   ExpenseStatus,
@@ -98,6 +103,23 @@ export interface Product {
   isActive: boolean;
   /** Product image — optional placeholder path */
   imageUrl?: string;
+  /** Cuttable geometry, populated for parts that flow through nesting. */
+  geometry?: ProductGeometry;
+}
+
+/** Geometry attached to a Product for nesting / cut-routing flows. */
+export interface ProductGeometry {
+  /** Bounding box of the flat pattern. */
+  bboxMm: { widthMm: number; heightMm: number };
+  thicknessMm: number;
+  grade: string;
+  /** Reference to the canonical DXF for this part. */
+  dxfAssetId?: string;
+  allowRotation: boolean;
+  /** Allowed nesting rotations in degrees. */
+  rotationStepsDeg: number[];
+  /** True when grain direction must be preserved relative to the sheet. */
+  grainSensitive: boolean;
 }
 
 export interface Supplier {
@@ -722,6 +744,192 @@ export interface NestingPart {
   qty: number;
 }
 
+// ─── Nesting v2 ─────────────────────────────────────────────────────
+// Replaces the legacy single-part Sheet Calculator. Supports multi-part
+// nests sourced from WO/MO demand, sheet-stock inventory, irregular DXF
+// geometry, and round-trip with the schedule engine + shop floor.
+
+/**
+ * A reusable parsed-once geometry record. One DxfAsset can be referenced by
+ * a Product (canonical geometry), a Quote (during estimating), or a Nest
+ * part row (ad-hoc upload).
+ */
+export interface DxfAsset {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  parsedAt: string;
+  bboxMm: { widthMm: number; heightMm: number };
+  /** Sum of perimeter cut length, used for cut-time estimates. */
+  perimeterMm: number;
+  /** Internal cut length (holes / inner contours). */
+  innerCutMm: number;
+  holeCount: number;
+  /** Net part area in mm² (excluding holes). */
+  areaMm2: number;
+  /** Layer names found in the DXF. */
+  layers: string[];
+  /** Where this DXF originated. */
+  source: 'product_library' | 'quote_upload' | 'nest_upload' | 'cad_import';
+  sourceUploadId?: string;
+}
+
+/** A physical sheet of raw stock available to be cut. */
+export interface SheetStock {
+  id: string;
+  sku: string;
+  material: string;
+  grade: string;
+  thicknessMm: number;
+  widthMm: number;
+  heightMm: number;
+  qtyOnHand: number;
+  qtyReserved: number;
+  location: string;
+  supplierId?: string;
+  supplierName?: string;
+  costPerSheetAud: number;
+  /** Mass per sheet — drives material cost rollup when sold by weight. */
+  weightKg?: number;
+  grainDirection: GrainDirection;
+  /** True when this row is an offcut from a previously cut sheet. */
+  isRemnant: boolean;
+  parentSheetStockId?: string;
+  status: SheetStockStatus;
+}
+
+/**
+ * Per-machine, per-material, per-thickness nesting config. Programmers and
+ * shop leads tune these; the Nesting Studio reads them as defaults.
+ */
+export interface MachineNestingConfig {
+  id: string;
+  machineId: string;
+  material: string;
+  thicknessMm: number;
+  kerfMm: number;
+  /** Gap between adjacent parts on the sheet. */
+  partGapMm: number;
+  /** Gap from sheet edge. */
+  edgeGapMm: number;
+  allowRotation: boolean;
+  /** Allowed rotations in degrees, e.g. [0, 90] or [0, 90, 180, 270]. */
+  rotationStepsDeg: number[];
+  allowCommonCut: boolean;
+  leadInRule: 'auto' | 'corner' | 'midpoint' | 'pierce_only';
+  /** Plasma/laser process gas — empty for non-gas processes. */
+  gasType?: string;
+  /** Pierce time in seconds, used for runtime estimates. */
+  pierceTimeSec: number;
+  /** Cut speed in mm/min for this material × thickness. */
+  cutSpeedMmPerMin: number;
+}
+
+/**
+ * A part demand row that has reached a "cut" workcentre and is waiting to be
+ * placed onto a Nest. Created when a WO operation hits a cut workcentre.
+ */
+export interface NestingQueueItem {
+  id: string;
+  workOrderId: string;
+  woNumber: string;
+  manufacturingOrderId: string;
+  moNumber: string;
+  jobId: string;
+  jobNumber: string;
+  customerId: string;
+  customerName: string;
+  productId: string;
+  partNumber: string;
+  description: string;
+  qtyRequired: number;
+  material: string;
+  grade: string;
+  thicknessMm: number;
+  /** Bounding box driving sheet-stock matching. */
+  bboxMm: { widthMm: number; heightMm: number };
+  dxfAssetId?: string;
+  dueDate: string;
+  enteredQueueAt: string;
+  status: NestingQueueStatus;
+  /** Set when status === 'placed'. */
+  placedOnNestId?: string;
+}
+
+/**
+ * A single placed instance of a part on a sheet. Many can come from the
+ * same source WO if `qtyToCut` < required.
+ */
+export interface NestPlacement {
+  id: string;
+  productId?: string;
+  partNumber: string;
+  /** When the part is an ad-hoc upload (no library product), points at the DXF directly. */
+  dxfAssetId?: string;
+  qtyOnSheet: number;
+  /** Source WOs satisfied by this placement, with qty allocated to each. */
+  sources: { workOrderId: string; woNumber: string; qty: number }[];
+  /** Top-left corner of bbox on the sheet, in mm. */
+  xMm: number;
+  yMm: number;
+  rotationDeg: number;
+  bboxMm: { widthMm: number; heightMm: number };
+}
+
+/** A single sheet within a Nest — one stock sheet's worth of placements. */
+export interface NestSheet {
+  id: string;
+  sheetStockId: string;
+  sheetIndex: number;
+  placements: NestPlacement[];
+  yieldPercent: number;
+  scrapAreaMm2: number;
+  estimatedRuntimeMin: number;
+}
+
+/** Cost rollup for a Nest, in AUD. */
+export interface NestCostRollup {
+  materialCostAud: number;
+  machineCostAud: number;
+  labourCostAud: number;
+  totalCostAud: number;
+}
+
+/**
+ * The Nest job entity. One Nest fulfils demand from many WOs across many
+ * MOs (back-linked via NestPlacement.sources). Lives in the Plan / Make
+ * boundary — created in Nesting Studio, consumed by Schedule Engine and
+ * the shop floor.
+ */
+export interface Nest {
+  id: string;
+  nestNumber: string;
+  status: NestStatus;
+  machineId: string;
+  machineName: string;
+  material: string;
+  grade: string;
+  thicknessMm: number;
+  sheets: NestSheet[];
+  cost: NestCostRollup;
+  /** Aggregate yield across all sheets in the nest. */
+  totalYieldPercent: number;
+  /** Sum of estimated cut + pierce time across sheets. */
+  totalRuntimeMin: number;
+  createdBy: string;
+  createdAt: string;
+  scheduledAt?: string;
+  startedAt?: string;
+  completedAt?: string;
+  /** Schedule block id if scheduled onto the engine. */
+  scheduleBlockId?: string;
+  /** WO ids back-linked from sources (denormalised for fast filtering). */
+  sourceWorkOrderIds: string[];
+  /** MO ids back-linked from sources (denormalised). */
+  sourceManufacturingOrderIds: string[];
+  notes?: string;
+}
+
 /** AI-generated BOM line item */
 export interface BomGeneratorLine {
   id: string;
@@ -747,6 +955,31 @@ export interface Machine {
   operatorId?: string;
   operatorName?: string;
   utilizationToday: number;
+  /** Structured capabilities used by Nesting Studio + Schedule Engine. */
+  capabilities?: MachineCapabilities;
+}
+
+/**
+ * Structured machine capability fields. Typed where every control needs the
+ * same shape (sheet bounds, rates, materials). Open `extras` map for
+ * control-specific settings we don't want to model yet.
+ */
+export interface MachineCapabilities {
+  /** Identifies any future native post-processor target. */
+  controlSystem?: ControlSystem;
+  maxSheetWidthMm: number;
+  maxSheetHeightMm: number;
+  supportedMaterials: string[];
+  thicknessRangeByMaterial: Record<string, { minMm: number; maxMm: number }>;
+  hourlyRateAud: number;
+  /** Per-material default kerf — refined further in MachineNestingConfig. */
+  defaultKerfByMaterial?: Record<string, number>;
+  /** Pierce time in seconds keyed by thickness bucket label, e.g. "3mm". */
+  pierceTimeSecByThickness?: Record<string, number>;
+  /** Cut speed mm/min keyed by `${material}|${thicknessMm}`. */
+  cutSpeedMmPerMinByMaterialThickness?: Record<string, number>;
+  /** Escape hatch for control-specific knobs (lens map, turret stations, etc.). */
+  extras?: Record<string, unknown>;
 }
 
 export interface ManufacturingOrder {
@@ -780,6 +1013,8 @@ export interface WorkOrder {
   status: WorkOrderStatus;
   operatorId?: string;
   operatorName?: string;
+  /** Set when this WO's cut step is being fulfilled by a Nest job. */
+  nestId?: string;
 }
 
 /** CAPA (Corrective and Preventive Action) record */

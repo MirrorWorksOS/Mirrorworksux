@@ -203,14 +203,15 @@ export const menuConfig: MenuItem[] = [
         items: [
           { label: 'Product Studio', path: '/plan/product-studio' },
           { label: 'Machine I/O', path: '/plan/machine-io' },
-          { label: 'Nesting', path: '/plan/nesting' },
+          { label: 'Nesting Studio', path: '/plan/nesting-studio' },
+          { label: 'Ready to Nest', path: '/plan/nesting-queue' },
+          { label: 'Nests', path: '/plan/nests' },
         ],
       },
       {
         heading: 'Planning tools',
         items: [
           { label: 'MRP', path: '/plan/mrp' },
-          { label: 'Sheet calculator', path: '/plan/sheet-calculator' },
           { label: 'Purchase', path: '/plan/purchase' },
         ],
       },

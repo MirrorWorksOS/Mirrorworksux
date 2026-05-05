@@ -8,6 +8,7 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { ModuleDashboard } from '@/components/shared/dashboard/ModuleDashboard';
 import { ModuleQuickNav } from '@/components/shared/dashboard/ModuleQuickNav';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { bookKpis as kpiData, bookApprovalQueue as approvalQueue, bookOverdueItems as overdueActions } from '@/services';
 
 const bookTabs = [{ key: 'overview', label: 'Overview' }];
@@ -27,6 +28,11 @@ export function BookDashboard() {
       aiScope="book"
     >
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      {/* AI Insight Feed */}
+      <motion.div variants={staggerItem}>
+        <AIFeed module="book" />
+      </motion.div>
+
       {/* Quick navigation bento — jump to any sub-page without using sidebar */}
       <motion.div variants={staggerItem}>
         <ModuleQuickNav moduleKey="book" />

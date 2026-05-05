@@ -6,6 +6,7 @@ import {
   Settings, FileText, Link, BarChart3, Calendar, RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -260,6 +261,7 @@ function InvoicingPanel() {
 
 // ── Xero Integration Panel ──
 function XeroPanel() {
+  const navigate = useNavigate();
   const syncEntities = [
     { name: 'Invoices', push: true, pull: true, lastSync: '2 min ago', ok: true },
     { name: 'Expenses (as Bills)', push: true, pull: false, lastSync: '5 min ago', ok: true },
@@ -338,10 +340,7 @@ function XeroPanel() {
           <Button
             variant="outline"
             className="border-[var(--border)] rounded-full text-sm"
-            onClick={() => {
-              // TODO(backend): integrations.xero.configureMapping()
-              toast.success('Xero mapping opened');
-            }}
+            onClick={() => navigate('/book/settings/xero/mapping')}
           >
             Configure mapping
           </Button>

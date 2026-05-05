@@ -79,6 +79,10 @@ const PlanWhatIf = lazyWithRetry(() => import('./components/plan/PlanWhatIf').th
 const PlanNesting = lazyWithRetry(() => import('./components/plan/PlanNesting').then(m => ({ default: m.PlanNesting })));
 const PlanMrp = lazyWithRetry(() => import('./components/plan/PlanMrp').then(m => ({ default: m.PlanMrp })));
 const PlanSheetCalculator = lazyWithRetry(() => import('./components/plan/PlanSheetCalculator').then(m => ({ default: m.PlanSheetCalculator })));
+const PlanNestingStudio = lazyWithRetry(() => import('./components/plan/nesting-studio/PlanNestingStudio').then(m => ({ default: m.PlanNestingStudio })));
+const PlanNestingQueue = lazyWithRetry(() => import('./components/plan/nesting-studio/PlanNestingQueue').then(m => ({ default: m.PlanNestingQueue })));
+const PlanNestsList = lazyWithRetry(() => import('./components/plan/nesting-studio/PlanNestsList').then(m => ({ default: m.PlanNestsList })));
+const PlanNestDetail = lazyWithRetry(() => import('./components/plan/nesting-studio/PlanNestDetail').then(m => ({ default: m.PlanNestDetail })));
 
 // Make Module
 const MakeDashboard = lazyWithRetry(() => import('./components/make/MakeDashboard').then(m => ({ default: m.MakeDashboard })));
@@ -167,6 +171,7 @@ const JobProfitability = lazyWithRetry(() => import('./components/book/JobProfit
 const StockValuation = lazyWithRetry(() => import('./components/book/StockValuation').then(m => ({ default: m.StockValuation })));
 const ReportsGallery = lazyWithRetry(() => import('./components/book/ReportsGallery').then(m => ({ default: m.ReportsGallery })));
 const BookSettings = lazyWithRetry(() => import('./components/book/BookSettings').then(m => ({ default: m.BookSettings })));
+const XeroMappingPage = lazyWithRetry(() => import('./components/book/xero-mapping/XeroMappingPage').then(m => ({ default: m.XeroMappingPage })));
 const InvoiceDetail = lazyWithRetry(() => import('./components/book/InvoiceDetail').then(m => ({ default: m.InvoiceDetail })));
 const JobCostDetail = lazyWithRetry(() => import('./components/book/JobCostDetail').then(m => ({ default: m.JobCostDetail })));
 const BookWipValuation = lazyWithRetry(() => import('./components/book/BookWipValuation').then(m => ({ default: m.BookWipValuation })));
@@ -354,9 +359,16 @@ export const router = createBrowserRouter([
           { path: 'material-library', element: <Navigate to="/plan/libraries?tab=materials" replace /> },
           { path: 'finish-library', element: <Navigate to="/plan/libraries?tab=finishes" replace /> },
           { path: 'what-if', element: <L><PlanWhatIf /></L> },
-          { path: 'nesting', element: <L><PlanNesting /></L> },
+          // Nesting Studio replaces the legacy single-part Sheet Calculator.
+          // The old route redirects so existing bookmarks survive.
+          { path: 'nesting', element: <Navigate to="/plan/nesting-studio" replace /> },
+          { path: 'nesting-studio', element: <L><PlanNestingStudio /></L> },
+          { path: 'nesting-queue', element: <L><PlanNestingQueue /></L> },
+          { path: 'nests', element: <L><PlanNestsList /></L> },
+          { path: 'nests/:id', element: <L><PlanNestDetail /></L> },
           { path: 'mrp', element: <L><PlanMrp /></L> },
-          { path: 'sheet-calculator', element: <L><PlanSheetCalculator /></L> },
+          { path: 'sheet-calculator', element: <Navigate to="/plan/nesting-studio" replace /> },
+          { path: 'sheet-calculator-legacy', element: <L><PlanSheetCalculator /></L> },
           { path: 'products', element: <L><PlanProducts /></L> },
           { path: 'products/:id', element: <L><PlanProductDetail /></L> },
           { path: 'settings', element: <L><PlanSettings /></L> },
@@ -498,6 +510,7 @@ export const router = createBrowserRouter([
           { path: 'stock-valuation', element: <L><StockValuation /></L> },
           { path: 'reports', element: <L><ReportsGallery /></L> },
           { path: 'settings', element: <L><BookSettings /></L> },
+          { path: 'settings/xero/mapping', element: <L><XeroMappingPage /></L> },
         ],
       },
 

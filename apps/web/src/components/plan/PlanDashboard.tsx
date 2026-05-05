@@ -83,7 +83,7 @@ export function PlanDashboard() {
 
   return (
     <ModuleDashboard
-      title="Production Planning"
+      title="Plan"
       tabs={planTabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}

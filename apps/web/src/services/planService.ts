@@ -19,6 +19,13 @@ import type {
   ScheduleSnapshot,
   AutoScheduleRequest,
   AutoScheduleResult,
+  Nest,
+  NestingQueueItem,
+  SheetStock,
+  Machine,
+  MachineNestingConfig,
+  Product,
+  DxfAsset,
 } from '@/types/entities';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
@@ -26,6 +33,12 @@ const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
 // In-memory swap: applying the proposed snapshot promotes it to current.
 let _currentSnapshot: ScheduleSnapshot = mock.currentScheduleSnapshot;
 let _proposedTemplate: ScheduleSnapshot = mock.proposedScheduleSnapshot;
+
+// Nesting v2 — mutable session state. Cloned from mocks on module init so
+// the original mock arrays stay pristine across hot-reloads.
+const _nests: Nest[] = mock.nests.map((n) => ({ ...n }));
+const _queue: NestingQueueItem[] = mock.nestingQueueItems.map((q) => ({ ...q }));
+const _sheetStocks: SheetStock[] = mock.sheetStocks.map((s) => ({ ...s }));
 
 export const planService = {
   // ── Jobs ────────────────────────────────────────────────────────
@@ -140,6 +153,279 @@ export const planService = {
   async getNestingSheets(): Promise<NestingSheet[]> {
     await delay();
     return mock.nestingSheets;
+  },
+
+  // ── Nesting v2 ─────────────────────────────────────────────────
+  // In-memory mutable copies so the Studio + queue + schedule round-trip
+  // can mutate state across navigations without a backend. Replace with
+  // Convex queries/mutations when the backend lands.
+
+  async getNests(): Promise<Nest[]> {
+    await delay();
+    return _nests;
+  },
+
+  async getNestById(id: string): Promise<Nest | undefined> {
+    await delay();
+    return _nests.find((n) => n.id === id);
+  },
+
+  async saveNest(nest: Nest): Promise<Nest> {
+    await delay();
+    const idx = _nests.findIndex((n) => n.id === nest.id);
+    if (idx >= 0) _nests[idx] = nest;
+    else _nests.unshift(nest);
+    // Hydrate WorkOrder.nestId so MOs can show "this WO is on nest X".
+    for (const wo of mock.workOrders) {
+      if (nest.sourceWorkOrderIds.includes(wo.id)) {
+        wo.nestId = nest.id;
+      }
+    }
+    return nest;
+  },
+
+  /** All Nests that supply at least one WO under the given MO. */
+  async getNestsForManufacturingOrder(moId: string): Promise<Nest[]> {
+    await delay();
+    return _nests.filter((n) => n.sourceManufacturingOrderIds.includes(moId));
+  },
+
+  /**
+   * Aggregate cost contribution from nests onto a given MO. Sums material +
+   * machine + labour from sheets that supply this MO, weighted by qty.
+   */
+  async getNestCostContributionForMo(moId: string): Promise<{
+    materialCostAud: number;
+    machineCostAud: number;
+    labourCostAud: number;
+    totalCostAud: number;
+    nestCount: number;
+  }> {
+    await delay();
+    const linked = _nests.filter((n) => n.sourceManufacturingOrderIds.includes(moId));
+    let material = 0;
+    let machine = 0;
+    let labour = 0;
+    for (const n of linked) {
+      const totalPlacements = n.sheets.reduce(
+        (s, sh) => s + sh.placements.reduce((p, pl) => p + pl.qtyOnSheet, 0),
+        0,
+      );
+      const moPlacements = n.sheets.reduce(
+        (s, sh) =>
+          s +
+          sh.placements.reduce((p, pl) => {
+            const qty = pl.sources
+              .filter((src) => mock.workOrders.find((wo) => wo.id === src.workOrderId)?.manufacturingOrderId === moId)
+              .reduce((acc, src) => acc + src.qty, 0);
+            return p + qty;
+          }, 0),
+        0,
+      );
+      const ratio = totalPlacements > 0 ? moPlacements / totalPlacements : 0;
+      material += n.cost.materialCostAud * ratio;
+      machine += n.cost.machineCostAud * ratio;
+      labour += n.cost.labourCostAud * ratio;
+    }
+    return {
+      materialCostAud: Math.round(material * 100) / 100,
+      machineCostAud: Math.round(machine * 100) / 100,
+      labourCostAud: Math.round(labour * 100) / 100,
+      totalCostAud: Math.round((material + machine + labour) * 100) / 100,
+      nestCount: linked.length,
+    };
+  },
+
+  async getNestingQueue(): Promise<NestingQueueItem[]> {
+    await delay();
+    return _queue;
+  },
+
+  /** Mark queue items as placed onto a nest (called when a nest is saved). */
+  async markQueueItemsPlaced(itemIds: string[], nestId: string): Promise<void> {
+    await delay();
+    for (const item of _queue) {
+      if (itemIds.includes(item.id)) {
+        item.status = 'placed';
+        item.placedOnNestId = nestId;
+      }
+    }
+  },
+
+  async releaseQueueItems(itemIds: string[]): Promise<void> {
+    await delay();
+    for (const item of _queue) {
+      if (itemIds.includes(item.id)) {
+        item.status = 'pending';
+        item.placedOnNestId = undefined;
+      }
+    }
+  },
+
+  async getSheetStocks(): Promise<SheetStock[]> {
+    await delay();
+    return _sheetStocks;
+  },
+
+  async reserveSheetStock(sheetStockId: string, qty: number): Promise<SheetStock | undefined> {
+    await delay();
+    const stock = _sheetStocks.find((s) => s.id === sheetStockId);
+    if (!stock) return undefined;
+    stock.qtyOnHand = Math.max(0, stock.qtyOnHand - qty);
+    stock.qtyReserved += qty;
+    return stock;
+  },
+
+  async releaseSheetStock(sheetStockId: string, qty: number): Promise<SheetStock | undefined> {
+    await delay();
+    const stock = _sheetStocks.find((s) => s.id === sheetStockId);
+    if (!stock) return undefined;
+    stock.qtyReserved = Math.max(0, stock.qtyReserved - qty);
+    stock.qtyOnHand += qty;
+    return stock;
+  },
+
+  async getMachines(): Promise<Machine[]> {
+    await delay();
+    return mock.machines;
+  },
+
+  async getMachineNestingConfigs(): Promise<MachineNestingConfig[]> {
+    await delay();
+    return mock.machineNestingConfigs;
+  },
+
+  async getProductsWithGeometry(): Promise<Product[]> {
+    await delay();
+    return mock.products.filter((p) => p.geometry !== undefined);
+  },
+
+  async getDxfAssets(): Promise<DxfAsset[]> {
+    await delay();
+    return mock.dxfAssets;
+  },
+
+  /**
+   * Persist a parsed DXF asset. In production this is the service that wraps
+   * the DXF parser; for now we accept user-confirmed dims and stash the
+   * record so the placement can carry a stable reference downstream to CAM.
+   */
+  async createDxfAsset(input: {
+    fileName: string;
+    bboxMm: { widthMm: number; heightMm: number };
+    /** Approximate perimeter — defaults to bbox perimeter if not provided. */
+    perimeterMm?: number;
+    /** Internal cut length (holes / inner contours). */
+    innerCutMm?: number;
+    holeCount?: number;
+  }): Promise<DxfAsset> {
+    await delay();
+    const id = `dxf-${Math.random().toString(36).slice(2, 9)}`;
+    const perim =
+      input.perimeterMm ?? (input.bboxMm.widthMm + input.bboxMm.heightMm) * 2;
+    const asset: DxfAsset = {
+      id,
+      fileName: input.fileName,
+      fileUrl: `/dxf/${input.fileName}`,
+      parsedAt: new Date().toISOString(),
+      bboxMm: input.bboxMm,
+      perimeterMm: perim,
+      innerCutMm: input.innerCutMm ?? 0,
+      holeCount: input.holeCount ?? 0,
+      areaMm2: input.bboxMm.widthMm * input.bboxMm.heightMm,
+      layers: ['CUT'],
+      source: 'nest_upload',
+    };
+    mock.dxfAssets.unshift(asset);
+    return asset;
+  },
+
+  /**
+   * Promote a confirmed nest onto the schedule engine. Reserves the sheet
+   * stock, sets the nest's status to `scheduled`, and stamps a placeholder
+   * scheduleBlockId. Returns the updated nest.
+   *
+   * In production this would be one Convex transaction:
+   *   reserve(stock) → upsert(scheduleBlock) → setStatus(nest, scheduled).
+   */
+  async scheduleNest(nestId: string, opts?: { startTime?: string }): Promise<Nest | undefined> {
+    await delay();
+    const nest = _nests.find((n) => n.id === nestId);
+    if (!nest) return undefined;
+    if (nest.status !== 'ready_to_schedule' && nest.status !== 'draft') return nest;
+
+    // Reserve one sheet of stock per NestSheet on the nest.
+    const sheetCounts = new Map<string, number>();
+    for (const ns of nest.sheets) {
+      sheetCounts.set(ns.sheetStockId, (sheetCounts.get(ns.sheetStockId) ?? 0) + 1);
+    }
+    for (const [stockId, qty] of sheetCounts) {
+      const stock = _sheetStocks.find((s) => s.id === stockId);
+      if (stock) {
+        const actualQty = Math.min(qty, stock.qtyOnHand);
+        stock.qtyOnHand = Math.max(0, stock.qtyOnHand - actualQty);
+        stock.qtyReserved += actualQty;
+      }
+    }
+
+    nest.status = 'scheduled';
+    nest.scheduledAt = new Date().toISOString();
+    nest.scheduleBlockId = `sb-${nest.id}`;
+    nest.notes = opts?.startTime
+      ? `${nest.notes ?? ''}\nScheduled to start ${opts.startTime}`.trim()
+      : nest.notes;
+    return nest;
+  },
+
+  /** Rollback a schedule. Returns reserved stock and clears the block id. */
+  async unscheduleNest(nestId: string): Promise<Nest | undefined> {
+    await delay();
+    const nest = _nests.find((n) => n.id === nestId);
+    if (!nest || nest.status !== 'scheduled') return nest;
+
+    const sheetCounts = new Map<string, number>();
+    for (const ns of nest.sheets) {
+      sheetCounts.set(ns.sheetStockId, (sheetCounts.get(ns.sheetStockId) ?? 0) + 1);
+    }
+    for (const [stockId, qty] of sheetCounts) {
+      const stock = _sheetStocks.find((s) => s.id === stockId);
+      if (stock) {
+        const released = Math.min(qty, stock.qtyReserved);
+        stock.qtyReserved = Math.max(0, stock.qtyReserved - released);
+        stock.qtyOnHand += released;
+      }
+    }
+    nest.status = 'ready_to_schedule';
+    nest.scheduledAt = undefined;
+    nest.scheduleBlockId = undefined;
+    return nest;
+  },
+
+  /** Mark a scheduled nest as cutting / done. */
+  async setNestStatus(
+    nestId: string,
+    status: 'cutting' | 'done' | 'cancelled',
+  ): Promise<Nest | undefined> {
+    await delay();
+    const nest = _nests.find((n) => n.id === nestId);
+    if (!nest) return undefined;
+    nest.status = status;
+    if (status === 'cutting') nest.startedAt = new Date().toISOString();
+    if (status === 'done') {
+      nest.completedAt = new Date().toISOString();
+      // Consume the reserved stock for real.
+      const sheetCounts = new Map<string, number>();
+      for (const ns of nest.sheets) {
+        sheetCounts.set(ns.sheetStockId, (sheetCounts.get(ns.sheetStockId) ?? 0) + 1);
+      }
+      for (const [stockId, qty] of sheetCounts) {
+        const stock = _sheetStocks.find((s) => s.id === stockId);
+        if (stock) {
+          stock.qtyReserved = Math.max(0, stock.qtyReserved - qty);
+        }
+      }
+    }
+    return nest;
   },
 
   // ── BOM Generator ──────────────────────────────────────────────

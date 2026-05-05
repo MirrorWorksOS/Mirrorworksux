@@ -115,6 +115,42 @@ export type BatchStatus = 'active' | 'quarantine' | 'released' | 'consumed';
 
 export type MrpNodeStatus = 'fulfilled' | 'partial' | 'pending' | 'shortage';
 
+// ─── Nesting v2 ────────────────────────────────────────────────────
+
+/** Lifecycle of a Nest job from programmer draft through cut completion. */
+export type NestStatus =
+  | 'draft'
+  | 'ready_to_schedule'
+  | 'scheduled'
+  | 'cutting'
+  | 'done'
+  | 'cancelled';
+
+/** State of a part demand row waiting to be placed onto a Nest. */
+export type NestingQueueStatus = 'pending' | 'placed' | 'cancelled';
+
+/** Inventory state for a sheet of stock material. */
+export type SheetStockStatus = 'available' | 'reserved' | 'consumed' | 'on_order';
+
+/** Grain orientation of a sheet (or grain-sensitivity flag on a part). */
+export type GrainDirection = 'none' | 'with_length' | 'with_width';
+
+/**
+ * Machine control system tag. Drives any future native post-processor work.
+ * Open-ended on purpose — unknown controls fall through `string` and details
+ * live in `Machine.capabilities.extras`.
+ */
+export type ControlSystem =
+  | 'trutops'      // Trumpf
+  | 'amnc'         // Amada
+  | 'byvision'     // Bystronic
+  | 'pronest'      // Hypertherm / generic plasma CAM
+  | 'fagor'
+  | 'fanuc'
+  | 'siemens'
+  | 'generic'
+  | (string & {});
+
 // ─── Approval Types ─────────────────────────────────────────────────
 
 export type ApprovalItemType = 'quote' | 'order' | 'requisition' | 'po' | 'expense' | 'bill';

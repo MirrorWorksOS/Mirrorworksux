@@ -15,7 +15,7 @@ Production planners, estimators, engineers, and operations managers.
 - [Plan Dashboard](./dashboard.md) — `/plan`
 - [Jobs](./jobs.md) — `/plan/jobs`
 - [Job Detail](./job-detail.md) — `/plan/jobs/:id`
-- [Schedule](./schedule.md) — `/plan/schedule`
+- [Schedule Engine](./schedule-engine.md) — `/plan/schedule-engine` (replaces the old `/plan/schedule` and `/plan/activities`, both now redirect)
 - [Machine I/O](./machine-io.md) — `/plan/machine-io`
 - [Purchase Planning](./purchase.md) — `/plan/purchase`
 - [QC Planning](./qc-planning.md) — `/plan/qc-planning`
@@ -40,7 +40,7 @@ Production planners, estimators, engineers, and operations managers.
 - `apps/web/src/components/plan/PlanDashboard.tsx`
 - `apps/web/src/components/plan/PlanJobs.tsx`
 - `apps/web/src/components/plan/PlanJobDetail.tsx`
-- `apps/web/src/components/plan/PlanSchedule.tsx`
+- `apps/web/src/components/plan/PlanScheduleEngine.tsx`
 - `apps/web/src/components/plan/PlanMachineIO.tsx`
 - `apps/web/src/components/plan/PlanPurchase.tsx`
 - `apps/web/src/components/plan/PlanQCPlanning.tsx`
@@ -59,7 +59,6 @@ Production planners, estimators, engineers, and operations managers.
 - /plan/jobs: placeholder/legacy language present.
 - /plan/jobs: mock/seed data usage visible in component.
 - /plan/jobs: action feedback often toast-driven.
-- /plan/schedule: placeholder/legacy language present.
 - /plan/purchase: placeholder/legacy language present.
 - /plan/purchase: mock/seed data usage visible in component.
 - /plan/purchase: action feedback often toast-driven.

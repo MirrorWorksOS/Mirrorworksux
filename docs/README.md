@@ -58,7 +58,7 @@ Internal implementation documentation for the current codebase. Organized module
   - [Plan Dashboard](./modules/plan/dashboard.md)
   - [Jobs](./modules/plan/jobs.md)
   - [Job Detail](./modules/plan/job-detail.md)
-  - [Schedule](./modules/plan/schedule.md)
+  - [Schedule Engine](./modules/plan/schedule-engine.md)
   - [Machine I/O](./modules/plan/machine-io.md)
   - [Purchase Planning](./modules/plan/purchase.md)
   - [QC Planning](./modules/plan/qc-planning.md)

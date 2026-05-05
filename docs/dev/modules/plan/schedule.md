@@ -1,36 +1,11 @@
-# Schedule — developer stub
+# Schedule — redirect stub
 
-<!-- TODO: extract dev sections from docs/user/modules/plan/schedule.md -->
+`/plan/schedule` is now a `<Navigate to="/plan/schedule-engine" replace />` (commit `07d6a040`, 2026-05-04). The legacy `PlanSchedule.tsx` file has been removed.
 
-Developer-focused sections to extract:
+See [Schedule Engine](schedule-engine.md) for the canonical doc covering the Gantt + KPI cards + Auto-Schedule flow at `/plan/schedule-engine`.
 
-- Components Used (`PlanScheduleEngine`, `GanttChart`, `ScheduleCalendar`)
-- Logic / Behaviour
-- Dependencies
-- View modes (calendar, gantt)
+## Migration notes
 
-## Components Used
-- `@/components/plan/PlanScheduleEngine`
-- `@/components/shared/datetime/ScheduleCalendar`
-- `@/components/shared/layout/IconViewToggle`
-- `@/components/shared/layout/PageHeader`
-- `@/components/shared/layout/PageShell`
-- `@/components/shared/layout/PageToolbar`
-- `@/components/shared/layout/ToolbarFilterButton`
-- `@/components/shared/schedule/GanttChart`
-- `apps/web/src/components/ui/utils.tsx`
-
-## Logic / Behaviour
-- Local state drives search/filter and derived visible lists.
-- Behavior is largely client-side React state and memoized derivations.
-- Mode/tab switching is implemented through local state and/or query params.
-
-## Dependencies
-- No explicit store/service/hook dependency imported in this component.
-
-## Known Gaps / Questions
-- Code includes explicit placeholder/legacy markers; some interactions are transitional.
-
-## Related Files
-- `apps/web/src/components/plan/PlanSchedule.tsx`
-- `apps/web/src/components/ui/utils.tsx`
+- `/plan/activities` also redirects into the engine.
+- Sidebar, command palette, mobile menu, and breadcrumb lookups all point at `/plan/schedule-engine` now — search-and-replace any remaining `/plan/schedule` references in new code.
+- The old `GanttChart` and `ScheduleCalendar` shared components are no longer imported by Plan; they remain in the codebase for now and may be removed once nothing else uses them.
