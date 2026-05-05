@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { machines as centralMachines } from '@/services';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { LiveFloorView } from './LiveFloorView';
+import { MakeQualityDashboard } from './MakeQualityDashboard';
 import {
   HoverCard,
   HoverCardTrigger,
@@ -222,16 +223,7 @@ export function MakeDashboard() {
       aiScope="make"
     >
       {activeTab === 'live-floor' && <LiveFloorView />}
-      {activeTab === 'quality' && (
-        <div className="py-12 text-center space-y-3">
-          <p className="text-sm text-[var(--neutral-400)]">
-            Detailed quality analytics live in the dedicated Quality screen.
-          </p>
-          <Button variant="outline" onClick={() => navigate('/make/quality')}>
-            Open Quality
-          </Button>
-        </div>
-      )}
+      {activeTab === 'quality' && <MakeQualityDashboard />}
       {activeTab === 'overview' && (
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
 

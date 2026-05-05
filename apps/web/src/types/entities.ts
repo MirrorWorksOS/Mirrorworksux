@@ -36,6 +36,7 @@ import type {
   ToolStatus,
   CapaStatus,
   CapaSeverity,
+  NcrStatus,
   BatchStatus,
   MrpNodeStatus,
   JobScheduleStatus,
@@ -1032,6 +1033,22 @@ export interface CapaRecord {
   dueDate: string;
   rootCause?: string;
   correctiveAction?: string;
+}
+
+/** Non-conformance report (NCR) — raised when a part or batch fails inspection */
+export interface NcrRecord {
+  id: string;
+  ncrNumber: string;
+  title: string;
+  defectType: string;
+  severity: CapaSeverity;
+  status: NcrStatus;
+  workOrderId?: string;
+  workOrderNumber?: string;
+  reportedBy: string;
+  reportedDate: string;
+  /** Linked CAPA if root-cause action was raised */
+  capaId?: string;
 }
 
 /** Batch/lot traceability node */
