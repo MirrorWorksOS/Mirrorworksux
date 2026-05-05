@@ -1598,7 +1598,7 @@ export function buildStudioV2Toolbox(opts: ToolboxBuildOpts): ToolboxJson {
         // business-function sub-drawers (Sell/Plan/Production/Buy/Stock/People/Integrate).
         colour: '#9B4DFF',
         cssConfig: { row: 'mw-cat-actions-group' },
-        contents: [actionsCategory],
+        contents: actionsCategory.contents,
       },
       {
         kind: 'category',
