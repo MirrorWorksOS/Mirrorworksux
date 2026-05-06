@@ -78,10 +78,10 @@ export function AutoScheduleDialog({ open, onOpenChange, onConfirm }: AutoSchedu
               <SelectContent>
                 {PRIORITY_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    <div>
-                      <p className="text-sm font-medium">{opt.label}</p>
-                      <p className="text-xs text-[var(--neutral-500)]">{opt.hint}</p>
-                    </div>
+                    <span className="flex flex-col items-start gap-0.5">
+                      <span className="text-sm font-medium">{opt.label}</span>
+                      <span className="text-xs text-[var(--neutral-500)]">{opt.hint}</span>
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
