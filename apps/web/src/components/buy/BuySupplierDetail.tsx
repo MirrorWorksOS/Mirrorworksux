@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { MirrorWorksAgentCard, type AgentCardTone } from '@/components/shared/ai/MirrorWorksAgentCard';
 import { cn } from '@/components/ui/utils';
 import { toast } from 'sonner';
 import { suppliers, purchaseOrders, bills } from '@/services';
@@ -89,6 +90,115 @@ export function BuySupplierDetail() {
 
   const totalSpend = supplierPOs.reduce((s, po) => s + po.total, 0);
 
+  /* ---------------------------------------------------------------- */
+  /*  AI Agent suggestion — driven by supplier metrics                */
+  /* ---------------------------------------------------------------- */
+  const agentSuggestion = useMemo(() => {
+    if (!supplier || isNew) return null;
+
+    const overdueBills = supplierBills.filter((b) => b.status === 'overdue');
+    const partialPOs = supplierPOs.filter((po) => po.status === 'partial');
+    const openPOs = supplierPOs.filter((po) => po.status !== 'received');
+
+    // Risk path — poor on-time / low rating / overdue bills
+    if (supplier.onTimePercent < 80 || supplier.rating <= 3) {
+      return {
+        tone: 'risk' as AgentCardTone,
+        title: 'Performance risk — consider a backup supplier',
+        suggestion: (
+          <>
+            <strong>{supplier.company}</strong> is trending below your reliability threshold
+            ({supplier.onTimePercent}% on-time, rating {supplier.rating}/5). Sourcing the next
+            order from a backup in <em>{supplier.category}</em> could reduce schedule slippage.
+          </>
+        ),
+        primary: { label: 'Compare alternatives', onClick: () => navigate('/buy/vendor-comparison') },
+        secondary: { label: 'Dismiss', onClick: () => toast('Suggestion dismissed') },
+        statusText: 'Updated just now',
+        detail: (
+          <div className="space-y-1.5">
+            <p>• On-time delivery has trailed peer suppliers in <em>{supplier.category}</em> for 3 consecutive months.</p>
+            <p>• {partialPOs.length} active PO{partialPOs.length === 1 ? '' : 's'} currently partial-received.</p>
+            <p>• {overdueBills.length} bill{overdueBills.length === 1 ? '' : 's'} overdue — possible disputes.</p>
+            <p className="pt-1 text-[var(--neutral-500)]">Run a vendor comparison to evaluate Pacific Metals or Hunter Steel for next order.</p>
+          </div>
+        ),
+      };
+    }
+
+    // Opportunity — overdue bills with otherwise good supplier
+    if (overdueBills.length > 0) {
+      const overdueAmount = overdueBills.reduce((s, b) => s + (b.amount - b.paidAmount), 0);
+      return {
+        tone: 'opportunity' as AgentCardTone,
+        title: 'Pay overdue bills to protect supplier terms',
+        suggestion: (
+          <>
+            <strong>{overdueBills.length} bill{overdueBills.length === 1 ? '' : 's'}</strong>{' '}
+            ({fmtCurrency(overdueAmount)}) overdue with {supplier.company}. Clearing now keeps
+            your {supplier.paymentTerms} terms intact and protects priority on next pour.
+          </>
+        ),
+        primary: { label: 'Open AP queue', onClick: () => setActiveTab('bills') },
+        secondary: { label: 'Snooze', onClick: () => toast('Snoozed for 7 days') },
+        statusText: 'Updated 1 hour ago',
+      };
+    }
+
+    // Opportunity — top performer, room to consolidate or renegotiate
+    if (supplier.onTimePercent >= 95 && supplier.rating >= 4 && totalSpend > 10000) {
+      return {
+        tone: 'opportunity' as AgentCardTone,
+        title: 'Negotiate volume discount or extended terms',
+        suggestion: (
+          <>
+            <strong>{supplier.company}</strong> ranks in your top tier ({supplier.onTimePercent}%
+            on-time, rating {supplier.rating}/5) with {fmtCurrency(totalSpend)} of spend.
+            You have leverage to push for a 3-5% volume discount or extend terms from {supplier.paymentTerms} → Net 60.
+          </>
+        ),
+        primary: { label: 'Draft renegotiation email', onClick: () => toast.success('Draft created — open Outbox') },
+        secondary: { label: 'Not now', onClick: () => toast('Saved for later') },
+        statusText: 'Based on last 6 months of spend',
+        detail: (
+          <div className="space-y-1.5">
+            <p>• Spend trajectory: {fmtCurrency(totalSpend)} across {supplierPOs.length} POs in the period.</p>
+            <p>• On-time {supplier.onTimePercent}% beats your category average by ~6 pts.</p>
+            <p>• Comparable suppliers in <em>{supplier.category}</em> typically offer Net 45-60 at this volume.</p>
+          </div>
+        ),
+      };
+    }
+
+    // Default — informational nudge for active POs
+    if (openPOs.length > 0) {
+      return {
+        tone: 'neutral' as AgentCardTone,
+        title: `${openPOs.length} open PO${openPOs.length === 1 ? '' : 's'} with this supplier`,
+        suggestion: (
+          <>
+            You have <strong>{openPOs.length} open PO{openPOs.length === 1 ? '' : 's'}</strong> ({fmtCurrency(openPOs.reduce((s, po) => s + (po.total - po.received), 0))} outstanding).
+            Bundle next requisition with the existing batch to save freight on this lane.
+          </>
+        ),
+        primary: { label: 'View open POs', onClick: () => setActiveTab('purchase-orders') },
+        statusText: 'Updated this morning',
+      };
+    }
+
+    return {
+      tone: 'success' as AgentCardTone,
+      title: 'No actions required',
+      suggestion: (
+        <>
+          {supplier.company} is healthy — no overdue bills, no open POs, performance on track.
+          MirrorWorks Agent will alert you if anything changes.
+        </>
+      ),
+      statusText: 'Last review just now',
+    };
+  }, [supplier, isNew, supplierPOs, supplierBills, totalSpend, navigate]);
+
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
       if (t.id === 'purchase-orders') return { ...t, count: supplierPOs.length };
@@ -118,6 +228,21 @@ export function BuySupplierDetail() {
       case 'overview':
         return (
           <div className="space-y-6">
+            {/* AI agent suggestion */}
+            {agentSuggestion && (
+              <MirrorWorksAgentCard
+                title={agentSuggestion.title}
+                suggestion={agentSuggestion.suggestion}
+                tone={agentSuggestion.tone}
+                primaryAction={agentSuggestion.primary}
+                secondaryAction={agentSuggestion.secondary}
+                statusText={agentSuggestion.statusText}
+                detailContent={agentSuggestion.detail}
+                evidenceLevel={agentSuggestion.detail ? 'expandable' : 'hidden'}
+                detailLabel="Evidence"
+              />
+            )}
+
             {/* KPI row */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <KpiStatCard label="Total Spend" value={fmtCurrency(totalSpend)} icon={TrendingUp} />
