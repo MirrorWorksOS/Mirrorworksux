@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { Calendar, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -38,7 +39,7 @@ const marginData = [
 ];
 
 const scatterData = [
-  { x: 18500, y: 23.1, z: 5, name: 'Con-form' },
+  { x: 18500, y: 23.1, z: 5, name: 'Meridian' },
   { x: 45000, y: 15.1, z: 8, name: 'Pacific Fab' },
   { x: 12400, y: 6.5, z: 3, name: 'Acme Steel' },
   { x: 3200, y: -7.8, z: 2, name: 'Hunter Steel' },
@@ -52,7 +53,7 @@ interface JobRow {
 }
 
 const JOBS: JobRow[] = [
-  { id: 'JOB-2026-0012', customer: 'Con-form Group', product: 'Custom Handrail', quoted: 18500, actual: 14230, margin: 23.1, marginDollar: 4270, status: 'Complete',
+  { id: 'JOB-2026-0012', customer: 'Meridian Fabrication', product: 'Custom Handrail', quoted: 18500, actual: 14230, margin: 23.1, marginDollar: 4270, status: 'Complete',
     breakdown: [
       { type: 'Materials', quoted: 8200, actual: 7450, variance: -750 },
       { type: 'Labour', quoted: 6100, actual: 4890, variance: -1210 },
@@ -83,6 +84,14 @@ const jobTableColumns: FinancialColumn<JobRow>[] = [
 ];
 
 export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) => void }) {
+  const navigate = useNavigate();
+  const handleRowClick = (row: JobRow) => {
+    if (onSelectJob) {
+      onSelectJob(row.id);
+      return;
+    }
+    navigate(`/book/job-costs/${row.id}`);
+  };
 
   return (
     <PageShell className="p-6 space-y-6">
@@ -165,6 +174,7 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         columns={jobTableColumns}
         data={JOBS}
         keyExtractor={(r) => r.id}
+        onRowClick={handleRowClick}
       />
     </PageShell>
   );

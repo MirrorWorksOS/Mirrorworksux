@@ -336,7 +336,7 @@ export function WelcomeDashboard() {
                     frontTitle="SLA exceptions"
                     frontMetric="3"
                     frontHint="Ship delays and QC holds in your scope."
-                    backInsight="SP270226001 (Con-form) missed carrier pickup. JOB-2026-0012 is short Hunter Steel plate — requisition REQ-2026-0089 clears it."
+                    backInsight="SP270226001 (Meridian) missed carrier pickup. JOB-2026-0012 is short Hunter Steel plate — requisition REQ-2026-0089 clears it."
                     backActionLabel="View Ship"
                     backTo="/ship"
                   />
@@ -564,7 +564,7 @@ export function WelcomeDashboard() {
                           SP270226001
                         </p>
                         <p className="mt-1 text-sm font-light text-muted-foreground">
-                          Con-form Group · carrier delay
+                          Meridian Fabrication · carrier delay
                         </p>
                       </div>
                       <div className="rounded-[var(--shape-xl)] border border-border bg-[var(--neutral-50)] p-4 dark:bg-white/[0.04]">

@@ -83,7 +83,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           <div className="grid grid-cols-2 gap-8 py-5">
             <div>
               <div className="text-xs text-[var(--neutral-500)] mb-1 font-medium">Bill To</div>
-              <div className="text-foreground font-medium">Con-form Group</div>
+              <div className="text-foreground font-medium">Meridian Fabrication</div>
               <div className="text-xs text-[var(--neutral-600)]">45 Industrial Drive<br />Silverwater NSW 2128</div>
             </div>
             <div className="space-y-2 text-right">
@@ -157,7 +157,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
               <div>
                 <div className="flex items-center gap-2">
                   <Send className="w-4 h-4 text-foreground" />
-                  <span className="text-sm text-foreground">Invoice sent to accounts@conform.com.au</span>
+                  <span className="text-sm text-foreground">Invoice sent to accounts@meridianfab.com.au</span>
                 </div>
                 <span className="text-xs text-[var(--neutral-500)] ml-6">24 Feb 2026, 10:32 AM</span>
               </div>

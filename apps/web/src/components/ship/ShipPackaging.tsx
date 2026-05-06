@@ -76,7 +76,7 @@ export function ShipPackaging() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-medium tracking-tight text-foreground">SH-001</h1>
-              <p className="mt-1 text-sm text-[var(--neutral-500)]">Con-form Group</p>
+              <p className="mt-1 text-sm text-[var(--neutral-500)]">Meridian Fabrication</p>
             </div>
             <span className="text-xs tabular-nums text-[var(--neutral-500)]">
               {checked.size}/{ITEMS.length}

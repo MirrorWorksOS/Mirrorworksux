@@ -31,7 +31,7 @@ interface Shipment {
 }
 
 const SHIPMENTS: Shipment[] = [
-  { tracking: 'SP-001', customer: 'Con-form Group', carrier: 'StarTrack', status: 'transit',    eta: '03 Mar',  updated: '1h ago' },
+  { tracking: 'SP-001', customer: 'Meridian Fabrication', carrier: 'StarTrack', status: 'transit',    eta: '03 Mar',  updated: '1h ago' },
   { tracking: 'SP-002', customer: 'Acme Steel',     carrier: 'Toll',      status: 'delivering', eta: 'Today',   updated: '25m ago' },
   { tracking: 'SP-003', customer: 'Pacific Fab',    carrier: 'Aus Post',  status: 'delivered',  eta: '—',       updated: '28 Feb' },
   { tracking: 'SP-004', customer: 'Hunter Steel',   carrier: 'TNT',       status: 'exception',  eta: 'Delayed', updated: '5h ago' },
@@ -185,10 +185,26 @@ export function ShipTracking() {
                   </div>
 
                   <div className="space-y-2">
-                    <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2">
+                    <button
+                      onClick={() =>
+                        // TODO(backend): shipments.notifyCustomer(selected.tracking)
+                        toast.success(
+                          `Tracking update sent to ${selected.customer}`,
+                          {
+                            description: `${selected.tracking} · ${cfg?.label ?? selected.status} · ETA ${selected.eta}`,
+                          },
+                        )
+                      }
+                      className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2"
+                    >
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
-                    <button className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2">
+                    <button
+                      onClick={() =>
+                        toast(`Opening ${selected.carrier} carrier portal…`)
+                      }
+                      className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium flex items-center justify-center gap-2"
+                    >
                       <ExternalLink className="w-4 h-4" /> Carrier portal
                     </button>
                   </div>

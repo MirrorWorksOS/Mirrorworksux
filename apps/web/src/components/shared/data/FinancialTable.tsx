@@ -24,6 +24,7 @@ export interface FinancialTableProps<T> {
   keyExtractor: (row: T, index: number) => string | number;
   totals?: Record<string, number>;
   className?: string;
+  onRowClick?: (row: T, index: number) => void;
 }
 
 function formatFinancialValue(
@@ -60,6 +61,7 @@ export function FinancialTable<T>({
   keyExtractor,
   totals,
   className,
+  onRowClick,
 }: FinancialTableProps<T>) {
   const mwColumns: MwColumnDef<T>[] = columns.map((col) => {
     const alignRight =
@@ -89,6 +91,7 @@ export function FinancialTable<T>({
         columns={mwColumns}
         data={data}
         keyExtractor={keyExtractor}
+        onRowClick={onRowClick}
         className={totals ? "rounded-b-none border-b-0" : undefined}
       />
       {totals ? (

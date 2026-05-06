@@ -620,7 +620,7 @@ export const shipments: Shipment[] = [
 ];
 
 export const shippingExceptions: ShippingException[] = [
-  { id: 'exc-001', shipmentId: 'shp-ext-001', shipmentNumber: 'SP270226001', customerId: 'cust-ext-001', customerName: 'Con-form Group', type: 'delay', description: 'Carrier delay — regional depot backlog', createdAt: '2026-04-03T06:00:00Z', resolved: false },
+  { id: 'exc-001', shipmentId: 'shp-ext-001', shipmentNumber: 'SP270226001', customerId: 'cust-ext-001', customerName: 'Meridian Fabrication', type: 'delay', description: 'Carrier delay — regional depot backlog', createdAt: '2026-04-03T06:00:00Z', resolved: false },
   { id: 'exc-002', shipmentId: 'shp-ext-002', shipmentNumber: 'SP260226003', customerId: 'cust-ext-002', customerName: 'Acme Steel', type: 'damage', description: 'Packaging damaged in transit — 1 of 3 boxes', createdAt: '2026-04-02T23:00:00Z', resolved: false },
   { id: 'exc-003', shipmentId: 'shp-ext-003', shipmentNumber: 'SP250226008', customerId: 'cust-003', customerName: 'Hunter Steel Co', type: 'refused', description: 'Customer refused delivery — incorrect PO reference', createdAt: '2026-04-02T09:00:00Z', resolved: false },
 ];

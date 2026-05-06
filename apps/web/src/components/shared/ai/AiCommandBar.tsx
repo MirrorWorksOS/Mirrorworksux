@@ -70,7 +70,7 @@ const MOCK_REPLY: Record<AiCommandScope, { title: string; body: string; actions:
   ship: {
     title: "Fulfilment",
     body:
-      "Three exceptions are carrier delays on StarTrack. Customers with SLA under 24h: Con-form Group, Acme Steel.",
+      "Three exceptions are carrier delays on StarTrack. Customers with SLA under 24h: Meridian Fabrication, Acme Steel.",
     actions: ["View exceptions", "Notify customers", "Switch carrier rule"],
   },
   book: {

@@ -42,7 +42,7 @@ interface ReviewLineItem extends LineItem {
 
 const CUSTOMERS = [
   'TechCorp Industries', 'BHP Contractors', 'Pacific Fab', 'Sydney Rail Corp',
-  'Kemppi Australia', 'Hunter Steel Co', 'Con-form Group', 'Oberon Engineering',
+  'Kemppi Australia', 'Hunter Steel Co', 'Meridian Fabrication', 'Oberon Engineering',
 ];
 
 const PRODUCTS = [

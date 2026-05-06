@@ -24,7 +24,7 @@ interface Invoice {
 }
 
 const INVOICES: Invoice[] = [
-  { id: 'INV-2026-0045', customer: 'Con-form Group', issueDate: '24 Feb 2026', dueDate: '26 Mar 2026', status: 'Sent', total: 18450, balanceDue: 18450 },
+  { id: 'INV-2026-0045', customer: 'Meridian Fabrication', issueDate: '24 Feb 2026', dueDate: '26 Mar 2026', status: 'Sent', total: 18450, balanceDue: 18450 },
   { id: 'INV-2026-0044', customer: 'Acme Steel Works', issueDate: '22 Feb 2026', dueDate: '24 Mar 2026', status: 'Paid', total: 7230, balanceDue: 0 },
   { id: 'INV-2026-0043', customer: 'Pacific Fabrication', issueDate: '20 Feb 2026', dueDate: '22 Mar 2026', status: 'Overdue', total: 12680, balanceDue: 12680 },
   { id: 'INV-2026-0042', customer: 'Hunter Steel', issueDate: '18 Feb 2026', dueDate: '20 Mar 2026', status: 'Partially Paid', total: 5400, balanceDue: 2700 },

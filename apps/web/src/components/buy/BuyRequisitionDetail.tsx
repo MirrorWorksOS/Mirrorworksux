@@ -3,9 +3,9 @@
  * Route: /buy/requisitions/:id
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, CheckCircle2, XCircle, Send, Printer } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Send, Printer, Plus, Trash2 } from 'lucide-react';
 import {
   JobWorkspaceLayout,
   type JobWorkspaceTabConfig,
@@ -14,9 +14,18 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { toast } from 'sonner';
-import { requisitions, employees, purchaseOrders } from '@/services';
+import { requisitions, employees, purchaseOrders, products } from '@/services';
+import type { RequisitionItem } from '@/types/entities';
 
 /* ------------------------------------------------------------------ */
 /*  Build lookup from centralised data                                */
@@ -63,9 +72,19 @@ const createBlankRequisition = () => ({
   requestorName: '',
   date: new Date().toISOString().slice(0, 10),
   status: 'draft' as const,
-  items: [] as any[],
+  items: [] as RequisitionItem[],
   total: 0,
 });
+
+const newLineItem = (): RequisitionItem => {
+  const first = products[0];
+  return {
+    productId: first?.partNumber ?? '',
+    description: first?.description ?? '',
+    qty: 1,
+    estimatedCost: first?.unitPrice ?? 0,
+  };
+};
 
 export function BuyRequisitionDetail() {
   const { id } = useParams<{ id: string }>();
@@ -73,11 +92,36 @@ export function BuyRequisitionDetail() {
   const [activeTab, setActiveTab] = useState('overview');
 
   const isNew = !id || id === 'new';
-  const req = isNew ? createBlankRequisition() : (id ? REQ_BY_ID[id] : undefined);
+  const baseReq = isNew ? createBlankRequisition() : (id ? REQ_BY_ID[id] : undefined);
+
+  const [items, setItems] = useState<RequisitionItem[]>(() => baseReq?.items ?? []);
+
+  // Re-sync local items when navigating between requisitions.
+  useEffect(() => {
+    setItems(baseReq?.items ?? []);
+  }, [id]);
+
+  const total = items.reduce((s, it) => s + it.qty * it.estimatedCost, 0);
+
+  const req = baseReq
+    ? { ...baseReq, items, total }
+    : undefined;
+
+  const addLine = () => setItems((prev) => [...prev, newLineItem()]);
+  const removeLine = (idx: number) =>
+    setItems((prev) => prev.filter((_, i) => i !== idx));
+  const updateLine = (idx: number, patch: Partial<RequisitionItem>) =>
+    setItems((prev) =>
+      prev.map((it, i) => (i === idx ? { ...it, ...patch } : it)),
+    );
 
   const handleSave = () => {
     // TODO(backend): isNew ? requisitions.create(req) : requisitions.update(req.id, req)
     if (isNew && req) {
+      if (items.length === 0) {
+        toast.error('Add at least one line item before saving.');
+        return;
+      }
       toast.success('Requisition created');
       navigate(`/buy/requisitions/${req.id}`, { replace: true });
     } else {
@@ -183,57 +227,173 @@ export function BuyRequisitionDetail() {
         );
 
       case 'line-items': {
-        type ReqItem = (typeof req.items)[number];
-        const columns: MwColumnDef<ReqItem>[] = [
-          {
-            key: 'productId',
-            header: 'Item',
-            tooltip: 'Product SKU',
-            cell: (item) => <span className="font-medium tabular-nums">{item.productId}</span>,
-          },
-          {
-            key: 'description',
-            header: 'Description',
-            cell: (item) => <span className="text-foreground">{item.description}</span>,
-          },
-          {
-            key: 'qty',
-            header: 'Qty',
-            headerClassName: 'text-right',
-            cell: (item) => <span className="tabular-nums">{item.qty}</span>,
-            className: 'text-right',
-          },
-          {
-            key: 'estimatedCost',
-            header: 'Est. Cost',
-            headerClassName: 'text-right',
-            cell: (item) => <span className="tabular-nums">{fmtCurrency(item.estimatedCost)}</span>,
-            className: 'text-right',
-          },
-          {
-            key: 'total',
-            header: 'Total',
-            headerClassName: 'text-right',
-            cell: (item) => (
-              <span className="font-medium tabular-nums">
-                {fmtCurrency(item.qty * item.estimatedCost)}
-              </span>
-            ),
-            className: 'text-right',
-          },
-        ];
+        const editable = isNew || req.status === 'draft';
 
+        if (!editable) {
+          type ReqItem = (typeof req.items)[number];
+          const columns: MwColumnDef<ReqItem>[] = [
+            {
+              key: 'productId',
+              header: 'Item',
+              tooltip: 'Product SKU',
+              cell: (item) => <span className="font-medium tabular-nums">{item.productId}</span>,
+            },
+            {
+              key: 'description',
+              header: 'Description',
+              cell: (item) => <span className="text-foreground">{item.description}</span>,
+            },
+            {
+              key: 'qty',
+              header: 'Qty',
+              headerClassName: 'text-right',
+              cell: (item) => <span className="tabular-nums">{item.qty}</span>,
+              className: 'text-right',
+            },
+            {
+              key: 'estimatedCost',
+              header: 'Est. Cost',
+              headerClassName: 'text-right',
+              cell: (item) => <span className="tabular-nums">{fmtCurrency(item.estimatedCost)}</span>,
+              className: 'text-right',
+            },
+            {
+              key: 'total',
+              header: 'Total',
+              headerClassName: 'text-right',
+              cell: (item) => (
+                <span className="font-medium tabular-nums">
+                  {fmtCurrency(item.qty * item.estimatedCost)}
+                </span>
+              ),
+              className: 'text-right',
+            },
+          ];
+
+          return (
+            <div className="space-y-4">
+              <MwDataTable<ReqItem>
+                columns={columns}
+                data={req.items}
+                keyExtractor={(_, i) => i}
+                striped
+              />
+              <div className="flex justify-end px-2">
+                <div className="text-sm font-medium text-foreground tabular-nums">
+                  Total: {fmtCurrency(req.total)}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Editable mode — inline product/qty/cost inputs with add + remove.
         return (
-          <div className="space-y-4">
-            <MwDataTable<ReqItem>
-              columns={columns}
-              data={req.items}
-              keyExtractor={(_, i) => i}
-              striped
-            />
-            <div className="flex justify-end px-2">
+          <div className="space-y-3">
+            <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.6fr)_90px_120px_110px_36px] gap-3 px-2 text-xs font-medium uppercase tracking-wide text-[var(--neutral-500)]">
+              <span>Item</span>
+              <span>Description</span>
+              <span className="text-right">Qty</span>
+              <span className="text-right">Est. Cost</span>
+              <span className="text-right">Total</span>
+              <span className="sr-only">Remove</span>
+            </div>
+
+            {items.length === 0 && (
+              <Card className="p-6">
+                <p className="text-sm text-[var(--neutral-500)]">
+                  No line items yet. Click <strong>Add line item</strong> below to get started.
+                </p>
+              </Card>
+            )}
+
+            {items.map((item, i) => (
+              <div
+                key={i}
+                className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.6fr)_90px_120px_110px_36px] items-center gap-3 rounded-lg border border-[var(--border)] p-2"
+              >
+                <Select
+                  value={item.productId}
+                  onValueChange={(value) => {
+                    const p = products.find((pp) => pp.partNumber === value);
+                    updateLine(i, {
+                      productId: value,
+                      description: p?.description ?? item.description,
+                      estimatedCost: p?.unitPrice ?? item.estimatedCost,
+                    });
+                  }}
+                >
+                  <SelectTrigger className="h-9 w-full">
+                    <SelectValue placeholder="Select product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((p) => (
+                      <SelectItem key={p.id} value={p.partNumber}>
+                        <span className="font-medium">{p.partNumber}</span>
+                        <span className="text-[var(--neutral-500)]"> — {p.category}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  value={item.description}
+                  onChange={(e) => updateLine(i, { description: e.target.value })}
+                  className="h-9"
+                  placeholder="Description"
+                />
+
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={item.qty}
+                  onChange={(e) =>
+                    updateLine(i, { qty: Math.max(1, Number(e.target.value) || 1) })
+                  }
+                  className="h-9 text-right tabular-nums"
+                />
+
+                <Input
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={item.estimatedCost}
+                  onChange={(e) =>
+                    updateLine(i, {
+                      estimatedCost: Math.max(0, Number(e.target.value) || 0),
+                    })
+                  }
+                  className="h-9 text-right tabular-nums"
+                />
+
+                <span className="text-right text-sm font-medium tabular-nums">
+                  {fmtCurrency(item.qty * item.estimatedCost)}
+                </span>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-[var(--neutral-500)]"
+                  onClick={() => removeLine(i)}
+                  aria-label="Remove line"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+
+            <div className="flex items-center justify-between pt-2">
+              <Button
+                variant="outline"
+                className="border-[var(--border)]"
+                onClick={addLine}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add line item
+              </Button>
               <div className="text-sm font-medium text-foreground tabular-nums">
-                Total: {fmtCurrency(req.total)}
+                Total: {fmtCurrency(total)}
               </div>
             </div>
           </div>

@@ -47,7 +47,7 @@ const RMAS: RMA[] = [
   { id: 'RMA-002', order: 'SH-035', customer: 'Hunter Steel',   items: 1, reason: 'Wrong Item',    status: 'approved',   date: '28 Feb' },
   { id: 'RMA-003', order: 'SH-030', customer: 'Pacific Fab',    items: 3, reason: 'Damaged',       status: 'in_transit', date: '25 Feb' },
   { id: 'RMA-004', order: 'SH-028', customer: 'Acme Steel',     items: 1, reason: 'Change of Mind',status: 'received',   date: '22 Feb' },
-  { id: 'RMA-005', order: 'SH-025', customer: 'Con-form Group', items: 2, reason: 'Defective',     status: 'refunded',   date: '20 Feb' },
+  { id: 'RMA-005', order: 'SH-025', customer: 'Meridian Fabrication', items: 2, reason: 'Defective',     status: 'refunded',   date: '20 Feb' },
   { id: 'RMA-006', order: 'SH-020', customer: 'Sydney Rail',    items: 4, reason: 'Damaged',       status: 'closed',     date: '15 Feb' },
 ];
 

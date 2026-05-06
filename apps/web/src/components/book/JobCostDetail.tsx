@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { AIInsightCard } from '../shared/ai/AIInsightCard';
@@ -22,6 +23,76 @@ const costBreakdown = [
 ];
 
 const donutData = costBreakdown.filter(c => c.actual > 0).map(c => ({ name: c.type, value: c.actual, color: c.color }));
+
+/** Hero profit-margin donut with sweep-in stroke + count-up label. */
+function ProfitMarginDonut({ percent }: { percent: number }) {
+  const RADIUS = 52;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  const target = Math.max(0, Math.min(100, percent)) / 100;
+
+  const progress = useMotionValue(0);
+  const dashOffset = useTransform(progress, (p) => CIRCUMFERENCE * (1 - p));
+  const display = useMotionValue(0);
+  const [shown, setShown] = useState(0);
+
+  useEffect(() => {
+    const sweep = animate(progress, target, {
+      duration: 1.4,
+      ease: [0.16, 1, 0.3, 1],
+    });
+    const count = animate(display, percent, {
+      duration: 1.4,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setShown(v),
+    });
+    return () => {
+      sweep.stop();
+      count.stop();
+    };
+  }, [percent, target, progress, display]);
+
+  return (
+    <motion.div
+      className="relative w-[120px] h-[120px] mx-auto mb-2"
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+        <defs>
+          <linearGradient id="profit-margin-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--mw-yellow-400)" />
+            <stop offset="100%" stopColor="var(--mw-yellow-600, var(--chart-scale-high))" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx="60"
+          cy="60"
+          r={RADIUS}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="8"
+        />
+        <motion.circle
+          cx="60"
+          cy="60"
+          r={RADIUS}
+          fill="none"
+          stroke="url(#profit-margin-gradient)"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={CIRCUMFERENCE}
+          style={{ strokeDashoffset: dashOffset }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-xl tabular-nums font-medium">
+          {shown.toFixed(1)}%
+        </span>
+      </div>
+    </motion.div>
+  );
+}
 
 const costOverTime = [
   { week: 'Wk 1', budget: 3700, actual: 2800 },
@@ -105,7 +176,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
         title="JOB-2026-0012"
         subtitle={
           <>
-            <span>Con-form Group</span>
+            <span>Meridian Fabrication</span>
             <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white">Custom Handrail Assembly</span>
             <span>Level 4</span>
           </>
@@ -128,15 +199,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
             <div className="text-4xl tracking-tight text-foreground tabular-nums">$18,500</div>
           </div>
           <div className="text-center">
-            <div className="relative w-[120px] h-[120px] mx-auto mb-2">
-              <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" strokeWidth="8" />
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--chart-scale-high)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52 * 0.231} ${2 * Math.PI * 52}`} strokeLinecap="round" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl tabular-nums font-medium">23.1%</span>
-              </div>
-            </div>
+            <ProfitMarginDonut percent={23.1} />
             <div className="text-xs text-[var(--neutral-500)] font-medium">Profit Margin</div>
             <div className="text-sm text-foreground mt-1">Under budget by $4,270</div>
           </div>
