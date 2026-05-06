@@ -1,30 +1,12 @@
-# Nesting
+# Nesting — moved
 
-## Summary
-Nesting screen. Behavior is documented from current component implementation.
+The Nesting page has been replaced by the new [Nesting Studio](./nesting-studio.md). Both `/plan/nesting` and `/plan/sheet-calculator` redirect to the studio automatically — your bookmarks still work.
 
-## Route
-`/plan/nesting`
+The studio is a multi-part workspace: pick a machine and sheet stock, add parts (from the cut queue, the product library, a DXF, or by typing W × H), and see live multi-sheet packing with yield, runtime, and cost.
 
-## User Intent
-Complete nesting work and move records to the next stage.
+See:
 
-## Primary Actions
-- Use modal/sheet interactions for edits and quick actions.
-
-## Key UI Sections
-- Page header with title, subtitle, and action buttons.
-- KPI/summary card strip.
-- Charts and trend cards.
-
-## Data Shown
-- Planning calculations, schedule allocations, and what-if outputs.
-
-## States
-- default
-- populated
-
-## Design / UX Notes
-- No explicit mock marker in this file; verify real-data behavior in integration testing.
-- No explicit placeholder text found in current component.
-- Action persistence paths are not fully visible in this component alone.
+- [Nesting Studio](./nesting-studio.md) — the workspace.
+- [Ready to Nest](./nesting-queue.md) — pending cut demand.
+- [Nests](./nests.md) — every nest across the lifecycle.
+- [Nest detail](./nest-detail.md) — operator's read-only view of one nest.

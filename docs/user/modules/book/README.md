@@ -25,6 +25,7 @@ Finance users, operations finance leads, and business owners.
 - [Stock Valuation](./stock-valuation.md) — `/book/stock-valuation`
 - [Reports Gallery](./reports.md) — `/book/reports`
 - [Book Settings](./settings.md) — `/book/settings`
+- [Configure Xero Mapping](./xero-mapping.md) — `/book/settings/xero/mapping`
 
 ## Core Entities Used
 - Entity shapes are defined by routed pages and shared mocks/services/stores in this module.

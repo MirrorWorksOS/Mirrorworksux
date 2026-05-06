@@ -30,6 +30,7 @@ User-facing documentation lives at [`docs/user/modules/book/`](../../../user/mod
 | `/book/stock-valuation`      | `StockValuation.tsx`                                    | Local mock data; no service. Overlaps with Plan stock concepts. |
 | `/book/reports`              | `ReportsGallery.tsx`                                    | Static Xero + MW report cards; toast-only actions. |
 | `/book/settings`             | `BookSettings.tsx`                                      | Implements ARCH 00 §4.7 group-permission model (5 panels). |
+| `/book/settings/xero/mapping`| `book/xero-mapping/XeroMappingPage.tsx`                 | Configure mapping page — six sections (Sales, Purchases, Bank & system, Tax codes, Tracking, Branding). See [`xero-mapping.md`](./xero-mapping.md). |
 
 ## Unused components
 

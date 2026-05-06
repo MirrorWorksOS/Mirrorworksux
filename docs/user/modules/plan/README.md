@@ -25,9 +25,12 @@ Production planners, estimators, engineers, and operations managers.
 - [Product Studio Legacy (Product)](./product-studio-legacy-product.md) — `/plan/product-studio/legacy/:productId`
 - [Libraries](./libraries.md) — `/plan/libraries`
 - [What-if](./what-if.md) — `/plan/what-if`
-- [Nesting](./nesting.md) — `/plan/nesting`
+- [Nesting Studio](./nesting-studio.md) — `/plan/nesting-studio` (replaces the old `/plan/nesting` and `/plan/sheet-calculator`, both now redirect)
+- [Ready to Nest](./nesting-queue.md) — `/plan/nesting-queue`
+- [Nests](./nests.md) — `/plan/nests`
+- [Nest Detail](./nest-detail.md) — `/plan/nests/:id`
 - [MRP](./mrp.md) — `/plan/mrp`
-- [Sheet Calculator](./sheet-calculator.md) — `/plan/sheet-calculator`
+- [Sheet Calculator (legacy)](./sheet-calculator.md) — `/plan/sheet-calculator-legacy` (kept for the rare single-part lookup)
 - [Products](./products.md) — `/plan/products`
 - [Product Detail](./product-detail.md) — `/plan/products/:id`
 - [Plan Settings](./settings.md) — `/plan/settings`

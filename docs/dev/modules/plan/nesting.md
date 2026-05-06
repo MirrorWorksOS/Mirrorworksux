@@ -1,30 +1,18 @@
-# Nesting — developer stub
+# Nesting — redirect note
 
-<!-- TODO: extract dev sections from docs/user/modules/plan/nesting.md -->
+The legacy `/plan/nesting` route now redirects to `/plan/nesting-studio` (see [`apps/web/src/routes.tsx:364`](../../../../apps/web/src/routes.tsx)). The single-part Sheet Calculator was retired in commit `6d0b485c` (2026-05-05) in favour of the multi-part Nesting Studio.
 
-Developer-focused sections to extract:
+For the canonical dev doc, see [Nesting Studio](./nesting-studio.md).
 
-- Components Used (SVG nest renderer)
-- Logic / Behaviour
-- Dependencies (`planService`, `NestingSheet`/`NestingPart` types)
-- States
+## Routes that landed here
 
-## Components Used
-- `@/components/shared/cards/KpiStatCard`
-- `@/components/shared/layout/PageHeader`
-- `@/components/shared/layout/PageShell`
-- `@/components/shared/motion/motion-variants`
-- `@/components/ui/badge`
-- `@/components/ui/card`
+| Old path | New path | Status |
+|---|---|---|
+| `/plan/nesting` | `/plan/nesting-studio` | `<Navigate replace />` |
+| `/plan/sheet-calculator` | `/plan/nesting-studio` | `<Navigate replace />` |
+| `/plan/sheet-calculator-legacy` | (kept as-is) | `PlanSheetCalculator` retained for the rare single-part lookup |
 
-## Logic / Behaviour
-- Behavior is largely client-side React state and memoized derivations.
+## Related files
 
-## Dependencies
-- No explicit store/service/hook dependency imported in this component.
-
-## Known Gaps / Questions
-- No explicit incomplete marker found; validate with integrated runtime and backend contracts.
-
-## Related Files
-- `apps/web/src/components/plan/PlanNesting.tsx`
+- `apps/web/src/components/plan/PlanNesting.tsx` — original placeholder, no longer routed.
+- `apps/web/src/components/plan/PlanSheetCalculator.tsx` — kept at `/plan/sheet-calculator-legacy`.

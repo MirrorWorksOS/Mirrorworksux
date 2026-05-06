@@ -68,9 +68,12 @@ Internal implementation documentation for the current codebase. Organized module
   - [Product Studio Legacy (Product)](./modules/plan/product-studio-legacy-product.md)
   - [Libraries](./modules/plan/libraries.md)
   - [What-if](./modules/plan/what-if.md)
-  - [Nesting](./modules/plan/nesting.md)
+  - [Nesting Studio](./modules/plan/nesting-studio.md)
+  - [Ready to Nest](./modules/plan/nesting-queue.md)
+  - [Nests](./modules/plan/nests.md)
+  - [Nest Detail](./modules/plan/nest-detail.md)
   - [MRP](./modules/plan/mrp.md)
-  - [Sheet Calculator](./modules/plan/sheet-calculator.md)
+  - [Sheet Calculator (legacy)](./modules/plan/sheet-calculator.md)
   - [Products](./modules/plan/products.md)
   - [Product Detail](./modules/plan/product-detail.md)
   - [Plan Settings](./modules/plan/settings.md)
@@ -132,6 +135,7 @@ Internal implementation documentation for the current codebase. Organized module
   - [Stock Valuation](./modules/book/stock-valuation.md)
   - [Reports Gallery](./modules/book/reports.md)
   - [Book Settings](./modules/book/settings.md)
+  - [Configure Xero Mapping](./modules/book/xero-mapping.md)
 
 ## Existing Root Docs
 - Existing docs such as `docs/ai-feature-audit.md`, `docs/sidebar-audit.md`, `docs/product-studio-spec.md`, and `docs/backend-handover.md` are preserved.
