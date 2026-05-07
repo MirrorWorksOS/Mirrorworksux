@@ -94,6 +94,7 @@ const createBlankCustomer = (): any => ({
   recentOrders: [],
   activity: [],
   invoices: [],
+  documents: [],
 });
 
 customers.forEach((c, idx) => {
