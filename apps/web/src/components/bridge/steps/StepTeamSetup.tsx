@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { useBridge } from '@/hooks/useBridge';
 import { bridgeService } from '@/services';
 import { Button } from '@/components/ui/button';
@@ -188,7 +189,14 @@ export function StepTeamSetup() {
                       >
                         Accept
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-xs h-12">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-12"
+                        onClick={() =>
+                          toast('You can change module group assignments later in Control · People.')
+                        }
+                      >
                         Edit
                       </Button>
                     </>
