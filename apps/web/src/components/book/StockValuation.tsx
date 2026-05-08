@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Package, Wrench, CheckCircle, Calendar } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -85,10 +86,18 @@ export function StockValuation() {
                 <SelectItem value="actual">Actual Cost</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast('Select an as-at date')}
+            >
               <Calendar className="h-4 w-4" /> As at
             </Button>
-            <Button className="h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
+            <Button
+              className="h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => toast.success('Stock valuation report generated')}
+            >
               Generate report
             </Button>
           </div>

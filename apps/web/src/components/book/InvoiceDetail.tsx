@@ -52,8 +52,18 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
         actions={
           <div className="flex items-center gap-3">
             <StatusBadge status="sent">Sent</StatusBadge>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast.success('Invoice sent')}
+            ><Send className="w-4 h-4" /> Send</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast('Generating PDF…')}
+            ><Download className="w-4 h-4" /> Download PDF</Button>
             <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground" onClick={() => {
               // TODO(backend): book.invoices.recordPayment(invoice.id, { amount, method, date })
               toast.success('Payment recorded');
@@ -198,7 +208,11 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
 
           {/* Xero */}
           <Card className="bg-card shadow-xs border border-[var(--border)] p-6">
-            <Button variant="ghost" className="text-foreground p-0 h-auto gap-1 text-sm">
+            <Button
+              variant="ghost"
+              className="text-foreground p-0 h-auto gap-1 text-sm"
+              onClick={() => toast('Opening invoice in Xero…')}
+            >
               View in Xero <ExternalLink className="w-4 h-4" />
             </Button>
             <div className="flex items-center gap-2 mt-2">

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { Calendar, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -100,13 +101,28 @@ export function JobProfitability({ onSelectJob }: { onSelectJob?: (id: string) =
         subtitle="Actual costs vs quoted amounts across all jobs"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast('Select a date range')}
+            >
               <Calendar className="h-4 w-4" /> Date range
             </Button>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast.success('Exporting job profitability…')}
+            >
               Export <ChevronDown className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 border-[var(--border)]"
+              onClick={() => toast('Filters opened')}
+            >
               <Filter className="h-4 w-4" />
             </Button>
           </div>

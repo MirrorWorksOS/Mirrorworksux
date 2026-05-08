@@ -292,7 +292,10 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               <AnimatedDownload className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium">
+            <Button
+              className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground font-medium"
+              onClick={() => toast.success('New invoice draft created')}
+            >
               <AnimatedPlus className="w-4 h-4 mr-2" />
               New Invoice
             </Button>
@@ -369,10 +372,10 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               Showing {filteredInvoices.length} of {MOCK_INVOICES.length} invoices
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="border-[var(--border)]">
+              <Button variant="outline" size="sm" className="border-[var(--border)]" disabled>
                 Previous
               </Button>
-              <Button variant="outline" size="sm" className="border-[var(--border)]">
+              <Button variant="outline" size="sm" className="border-[var(--border)]" disabled>
                 Next
               </Button>
             </div>

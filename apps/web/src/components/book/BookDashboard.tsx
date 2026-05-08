@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -18,6 +20,7 @@ const badgeNeutral =
 
 export function BookDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate();
 
   return (
     <ModuleDashboard
@@ -185,7 +188,11 @@ export function BookDashboard() {
               ))}
             </div>
             
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
+            <Button
+              variant="outline"
+              className="w-full mt-4 border-[var(--border)]"
+              onClick={() => navigate('/book/expenses')}
+            >
               <FileText className="w-4 h-4 mr-2" strokeWidth={1.5} />
               View All Approvals
             </Button>
@@ -229,11 +236,14 @@ export function BookDashboard() {
               </div>
             </div>
             
-            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground group">
+            <Button
+              className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground group"
+              onClick={() => toast.success('Xero sync started')}
+            >
               <motion.div
                 animate={{ rotate: [0, 360] }}
-                transition={{ 
-                  duration: 2, 
+                transition={{
+                  duration: 2,
                   repeat: Infinity,
                   ease: "linear",
                   repeatDelay: 3
@@ -282,7 +292,11 @@ export function BookDashboard() {
               ))}
             </div>
             
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]">
+            <Button
+              variant="outline"
+              className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]"
+              onClick={() => toast.success(`Follow-up emails queued for ${overdueActions.length} overdue items`)}
+            >
               <AlertTriangle className="w-4 h-4 mr-2" strokeWidth={1.5} />
               Follow Up All
             </Button>
