@@ -2,6 +2,7 @@
  * Ship Packaging — pack station touch interface
  */
 import React, { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
@@ -180,6 +181,7 @@ export function ShipPackaging() {
           <Button
             type="button"
             variant="outline"
+            onClick={() => toast('Job parked')}
             className="h-12 min-h-[48px] border-[var(--border)] px-6 font-medium text-foreground"
           >
             Park
@@ -187,6 +189,7 @@ export function ShipPackaging() {
           <Button
             type="button"
             disabled={!allPacked}
+            onClick={() => toast.success('Label printed')}
             className={cn(
               'h-12 min-h-[48px] px-8 font-medium',
               allPacked

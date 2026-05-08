@@ -192,6 +192,8 @@ export function ShipShipping() {
                 </div>
                 <span className="text-xl text-foreground font-medium tabular-nums">${r.cost.toFixed(2)}</span>
                 <button
+                  type="button"
+                  onClick={() => toast.success(`Selected ${r.carrier} ${r.service}`)}
                   className={cn(
                     'h-14 px-5 rounded-full text-sm transition-colors font-medium',
                     i === 0 || r.ai
