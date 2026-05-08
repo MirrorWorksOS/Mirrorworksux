@@ -107,8 +107,9 @@ export function MakeWorkOrderDetail() {
   const handleSave = () => {
     // TODO(backend): isNew ? workOrders.create(draft) : workOrders.update(draft.id, draft)
     if (isNew) {
+      // Stub IDs don't exist in WO_BY_ID — return to list instead of a not-found detail.
       toast.success('Work order created');
-      navigate(`/make/work-orders/${draft.id}`, { replace: true });
+      navigate('/make/work-orders', { replace: true });
     } else {
       toast.success('Work order saved');
     }

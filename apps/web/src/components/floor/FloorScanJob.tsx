@@ -62,8 +62,9 @@ export function FloorScanJob() {
   };
 
   const handleScan = (value: string) => {
+    const normalized = value.trim().toUpperCase();
     // First try: direct WO number match against the live queue.
-    const woHit = queue.find((w) => w.woNumber.toUpperCase() === value);
+    const woHit = queue.find((w) => w.woNumber.toUpperCase() === normalized);
     if (woHit) {
       runWorkOrder(woHit);
       return;
@@ -72,7 +73,7 @@ export function FloorScanJob() {
     // Fallback: MO number → pick the first pending WO for this station on
     // that MO. This lets operators scan the bigger MO traveler barcode at
     // the top of the paper packet.
-    const moHit = mos.find((m) => m.moNumber.toUpperCase() === value);
+    const moHit = mos.find((m) => m.moNumber.toUpperCase() === normalized);
     if (moHit) {
       const woForMo = queue.find((w) => w.manufacturingOrderId === moHit.id);
       if (woForMo) {
