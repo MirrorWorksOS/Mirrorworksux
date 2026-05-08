@@ -84,10 +84,18 @@ export function ReportsGallery() {
         subtitle="Financial reports and manufacturing analytics"
         actions={
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast('Schedule a report')}
+            >
               <Calendar className="h-4 w-4" /> Schedule report
             </Button>
-            <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
+            <Button
+              className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => toast.success('Custom report builder opened')}
+            >
               <Sparkles className="h-4 w-4" /> Custom report
             </Button>
           </div>

@@ -277,7 +277,11 @@ function XeroPanel() {
       <Card className="bg-[var(--mw-error)]/10 border border-[var(--mw-error)]/30 rounded-[var(--shape-lg)] p-4 flex items-center gap-3">
         <AlertTriangle className="w-5 h-5 text-[var(--mw-error)] shrink-0" />
         <span className="text-sm text-[var(--mw-error)]">3 items failed to sync</span>
-        <Button variant="ghost" className="ml-auto text-[var(--mw-error)] text-sm underline h-auto p-0">View errors</Button>
+        <Button
+          variant="ghost"
+          className="ml-auto text-[var(--mw-error)] text-sm underline h-auto p-0"
+          onClick={() => toast('Showing 3 sync errors')}
+        >View errors</Button>
       </Card>
 
       {/* Connection Card */}
@@ -300,7 +304,7 @@ function XeroPanel() {
             title="Disconnect Xero?"
             description="Syncing will stop immediately. Historical data will be preserved but no new transactions will flow between systems."
             confirmLabel="Disconnect"
-            onConfirm={() => {}}
+            onConfirm={() => toast.success('Xero disconnected')}
           />
         </div>
       </Card>
@@ -322,10 +326,17 @@ function XeroPanel() {
           ))}
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-full">
+          <Button
+            className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2 rounded-full"
+            onClick={() => toast.success('Xero sync started')}
+          >
             <RefreshCw className="w-4 h-4" /> Sync now
           </Button>
-          <Button variant="outline" className="border-[var(--border)] gap-2 rounded-full">Full re-sync</Button>
+          <Button
+            variant="outline"
+            className="border-[var(--border)] gap-2 rounded-full"
+            onClick={() => toast.success('Full Xero re-sync started')}
+          >Full re-sync</Button>
           <span className="text-xs text-[var(--neutral-500)] ml-auto">Last full sync: 20 Feb 2026, 09:00 AM</span>
         </div>
       </Card>

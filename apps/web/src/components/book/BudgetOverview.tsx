@@ -397,12 +397,20 @@ export function BudgetOverview() {
         subtitle={`Showing ${statusFilter} budgets`}
         actions={
           <>
-            <Button variant="outline" size="sm" className="group h-10 gap-2 border-[var(--border)]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="group h-10 gap-2 border-[var(--border)]"
+              onClick={() => toast('Filters opened')}
+            >
               <AnimatedFilter className="h-4 w-4" />
               Type: All
               <ChevronDown className="h-4 w-4" />
             </Button>
-            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
+            <Button
+              className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]"
+              onClick={() => toast.success('New budget draft created')}
+            >
               <AnimatedPlus className="mr-2 h-4 w-4" />
               New Budget
             </Button>

@@ -181,10 +181,10 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                     <p className="text-xs">Receipt image preview</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-[var(--mw-mirage)]/80 backdrop-blur-sm flex items-center justify-center gap-4 py-2">
-                    <button className="p-2 hover:bg-white/10 rounded"><ZoomIn className="w-4 h-4 text-white" /></button>
-                    <button className="p-2 hover:bg-white/10 rounded"><ZoomOut className="w-4 h-4 text-white" /></button>
-                    <button className="p-2 hover:bg-white/10 rounded"><RotateCw className="w-4 h-4 text-white" /></button>
-                    <button className="p-2 hover:bg-white/10 rounded"><Trash2 className="w-4 h-4 text-[var(--mw-error)]" /></button>
+                    <button type="button" aria-label="Zoom in" className="p-2 hover:bg-white/10 rounded" onClick={() => toast('Zoomed in')}><ZoomIn className="w-4 h-4 text-white" /></button>
+                    <button type="button" aria-label="Zoom out" className="p-2 hover:bg-white/10 rounded" onClick={() => toast('Zoomed out')}><ZoomOut className="w-4 h-4 text-white" /></button>
+                    <button type="button" aria-label="Rotate" className="p-2 hover:bg-white/10 rounded" onClick={() => toast('Rotated')}><RotateCw className="w-4 h-4 text-white" /></button>
+                    <button type="button" aria-label="Remove receipt" className="p-2 hover:bg-white/10 rounded" onClick={() => { setUploaded(false); toast('Receipt removed'); }}><Trash2 className="w-4 h-4 text-[var(--mw-error)]" /></button>
                   </div>
                 </div>
 
@@ -208,7 +208,10 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
                       </div>
                     </div>
                   ))}
-                  <Button className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground mt-3 rounded-full">Apply to Form</Button>
+                  <Button
+                    className="w-full h-12 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground mt-3 rounded-full"
+                    onClick={() => toast.success('Extracted data applied to form')}
+                  >Apply to Form</Button>
                 </div>
               </>
             )}
@@ -223,7 +226,11 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
               description={
                 <>
                   <p>$2,450.00 from Blackwoods on 23 Feb 2026</p>
-                  <Button variant="ghost" className="mt-2 h-auto p-0 text-sm font-medium text-foreground underline">
+                  <Button
+                    variant="ghost"
+                    className="mt-2 h-auto p-0 text-sm font-medium text-foreground underline"
+                    onClick={() => toast('Opening existing expense…')}
+                  >
                     View existing
                   </Button>
                 </>

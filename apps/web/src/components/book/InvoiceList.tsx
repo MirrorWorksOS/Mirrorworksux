@@ -170,7 +170,7 @@ export function InvoiceList({ onSelectInvoice }: { onSelectInvoice?: (id: string
         >
           <Download className="w-4 h-4" /> Export
         </Button>
-        <ToolbarPrimaryButton icon={Plus}>
+        <ToolbarPrimaryButton icon={Plus} onClick={() => toast.success('New invoice draft created')}>
           New Invoice
         </ToolbarPrimaryButton>
       </PageToolbar>
