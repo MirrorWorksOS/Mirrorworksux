@@ -277,7 +277,7 @@ export function SellOrderDetail() {
     // TODO(backend): salesOrders.addLineItem(order.id, blank)
     setLineItems((prev) => [
       ...prev,
-      { id: `li-${Date.now()}`, product: '', description: '', qty: 1, unitPrice: 0, total: 0, status: 'Pending' },
+      { id: `li-${Date.now()}-${prev.length}`, product: '', description: '', qty: 1, unitPrice: 0, total: 0, status: 'Pending' },
     ]);
   };
 
@@ -287,7 +287,7 @@ export function SellOrderDetail() {
     setDocuments((prev) => [
       ...prev,
       {
-        id: `doc-${Date.now()}`,
+        id: `doc-${Date.now()}-${prev.length}`,
         name: file.name,
         size: sizeKb < 1024 ? `${sizeKb} KB` : `${(sizeKb / 1024).toFixed(1)} MB`,
         date: new Date().toISOString().slice(0, 10),

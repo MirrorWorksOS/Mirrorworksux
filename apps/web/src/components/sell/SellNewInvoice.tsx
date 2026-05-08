@@ -42,9 +42,11 @@ interface LineRow {
   unitPrice: number;
 }
 
+let lineRowSeq = 0;
 function newRow(): LineRow {
+  lineRowSeq += 1;
   return {
-    id: `li-${Date.now()}`,
+    id: `li-${Date.now()}-${lineRowSeq}`,
     item: "",
     description: "",
     qty: 1,

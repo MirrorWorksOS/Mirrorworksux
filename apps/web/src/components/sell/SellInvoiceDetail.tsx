@@ -293,7 +293,7 @@ export function SellInvoiceDetail() {
     // TODO(backend): invoices.addLineItem(invoice.id, blank)
     setLineItems((prev) => [
       ...prev,
-      { id: `il-${Date.now()}`, item: '', description: '', qty: 1, unitPrice: 0, tax: 'GST', total: 0 },
+      { id: `il-${Date.now()}-${prev.length}`, item: '', description: '', qty: 1, unitPrice: 0, tax: 'GST', total: 0 },
     ]);
   };
 
@@ -307,7 +307,7 @@ export function SellInvoiceDetail() {
     setPaymentHistory((prev) => [
       ...prev,
       {
-        id: `pe-${Date.now()}`,
+        id: `pe-${Date.now()}-${prev.length}`,
         icon: 'payment',
         title: `Payment received — $${paymentAmount.toFixed(2)}`,
         description: `${paymentMethod} · ${paymentDate}`,
