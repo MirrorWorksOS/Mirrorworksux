@@ -243,7 +243,7 @@ export function MakeManufacturingOrderDetail() {
                   </div>
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">Job</Label>
-                    <Link to={`/plan/jobs/${mo.jobNumber.replace('JOB-', '')}`} className="mt-1 h-12 border border-[var(--border)] rounded-md px-3 flex items-center text-sm text-[var(--mw-blue)] hover:underline tabular-nums">
+                    <Link to={`/plan/jobs/${mo.jobNumber}`} className="mt-1 h-12 border border-[var(--border)] rounded-md px-3 flex items-center text-sm text-[var(--mw-blue)] hover:underline tabular-nums">
                       {mo.jobNumber}
                     </Link>
                   </div>
@@ -752,7 +752,7 @@ export function MakeManufacturingOrderDetail() {
           <>
             <StatusBadge status={mo.status === 'In Progress' ? 'progress' : mo.status === 'Done' ? 'completed' : mo.status === 'Confirmed' ? 'confirmed' : 'draft'} />
             <Badge variant="outline" className="rounded-full border-[var(--border)] text-xs tabular-nums" asChild>
-              <Link to={`/plan/jobs/${mo.jobNumber.replace('JOB-', '')}`}>{mo.jobNumber}</Link>
+              <Link to={`/plan/jobs/${mo.jobNumber}`}>{mo.jobNumber}</Link>
             </Badge>
           </>
         }
@@ -827,9 +827,10 @@ function ManufacturingOrderCreateForm() {
 
   const handleSave = () => {
     // TODO(backend): manufacturingOrders.create({ moNumber, productName, jobNumber, customer, dueDate, quantity })
-    const stubId = `mo-new-${Date.now()}`;
+    // Until persistence is wired, return to the list rather than navigating to a stub
+    // detail route that would render "not found" against the static MO_BY_ID lookup.
     toast.success('Manufacturing order created');
-    navigate(`/make/manufacturing-orders/${stubId}`, { replace: true });
+    navigate('/make/manufacturing-orders', { replace: true });
   };
 
   return (
