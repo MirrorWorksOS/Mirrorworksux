@@ -222,7 +222,7 @@ export function ControlBilling() {
 
       <Card className="p-6 text-sm text-muted-foreground">
         Tier changes take effect immediately. Downgrades prorate against your next invoice; upgrades charge the difference today.
-        See the <a className="underline" href="/pricing" onClick={e => e.preventDefault()}>full pricing page</a> for feature-by-feature comparison.
+        See the full pricing page for feature-by-feature comparison.
       </Card>
 
       <Dialog open={pendingTier !== null} onOpenChange={(open) => { if (!open) setPendingTier(null); }}>
