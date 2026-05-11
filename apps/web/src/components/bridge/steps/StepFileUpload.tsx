@@ -14,13 +14,22 @@ import { CheckCircle, X, FileSpreadsheet, AlertCircle } from 'lucide-react';
 import type { BridgeFile } from '@/types/bridge';
 
 export function StepFileUpload() {
-  const { files, addFile, removeFile, updateFileAnalysis, setMappings, goToNextStep, goToPreviousStep, sessionId } =
-    useBridge();
+  const {
+    files,
+    addFile,
+    removeFile,
+    updateFileAnalysis,
+    setMappings,
+    goToNextStep,
+    goToPreviousStep,
+    sessionId,
+    sourceSystems,
+  } = useBridge();
   const [analysing, setAnalysing] = useState<Set<string>>(new Set());
 
   const processOneFile = useCallback(
     async (file: File) => {
-      const bridgeFile = await bridgeService.uploadFile(sessionId || '', file);
+      const bridgeFile = await bridgeService.uploadFile(sessionId || '', file, sourceSystems);
       addFile(bridgeFile);
       setAnalysing((prev) => new Set(prev).add(bridgeFile.id));
       updateFileAnalysis(bridgeFile.id, { analysisStatus: 'analysing' });
@@ -46,7 +55,7 @@ export function StepFileUpload() {
         return next;
       });
     },
-    [sessionId, addFile, updateFileAnalysis, setMappings]
+    [sessionId, sourceSystems, addFile, updateFileAnalysis, setMappings]
   );
 
   const handleFilesSelected = useCallback(

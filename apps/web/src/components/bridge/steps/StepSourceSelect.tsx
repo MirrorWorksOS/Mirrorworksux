@@ -63,6 +63,12 @@ const SOURCE_OPTIONS: SourceOption[] = [
     icon: <Calculator className="w-5 h-5" />,
   },
   {
+    id: 'myob',
+    label: 'MYOB',
+    description: 'Export from MYOB AccountRight or Essentials',
+    icon: <Calculator className="w-5 h-5" />,
+  },
+  {
     id: 'other_erp',
     label: 'Other ERP',
     description: 'Export from another system not listed',

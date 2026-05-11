@@ -8,6 +8,7 @@ export type SourceSystem =
   | 'acumatica'
   | 'odoo'
   | 'xero'
+  | 'myob'
   | 'other_erp'
   | 'pen_paper';
 
