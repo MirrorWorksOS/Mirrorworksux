@@ -2,8 +2,9 @@
  * Ship Tracking — token-aligned
  * Status dots now use proper semantic colours (green=delivered, red=exception, blue=transit)
  */
-import React, { useState, useMemo } from 'react';
-import { Search, AlertTriangle, ExternalLink, Send, Truck } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { Search, AlertTriangle, ExternalLink, Send, Truck, PackageCheck } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -14,6 +15,7 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
+import { useDraftInvoiceStore } from '@/store/draftInvoiceStore';
 
 type Status = 'shipped' | 'transit' | 'delivering' | 'delivered' | 'exception';
 
@@ -28,17 +30,19 @@ const statusConfig: Record<Status, { label: string; dot: string; badge: string; 
 interface Shipment {
   tracking: string; customer: string; carrier: string;
   status: Status; eta: string; updated: string;
+  /** Inferred invoice amount (AUD) used when auto-drafting on delivery. */
+  amount: number;
 }
 
-const SHIPMENTS: Shipment[] = [
-  { tracking: 'SP-001', customer: 'Meridian Fabrication', carrier: 'StarTrack', status: 'transit',    eta: '03 Mar',  updated: '1h ago' },
-  { tracking: 'SP-002', customer: 'Acme Steel',     carrier: 'Toll',      status: 'delivering', eta: 'Today',   updated: '25m ago' },
-  { tracking: 'SP-003', customer: 'Pacific Fab',    carrier: 'Aus Post',  status: 'delivered',  eta: '—',       updated: '28 Feb' },
-  { tracking: 'SP-004', customer: 'Hunter Steel',   carrier: 'TNT',       status: 'exception',  eta: 'Delayed', updated: '5h ago' },
-  { tracking: 'SP-005', customer: 'BHP Contractors',carrier: 'DHL',       status: 'delivered',  eta: '—',       updated: '27 Feb' },
-  { tracking: 'SP-006', customer: 'Sydney Rail',    carrier: 'StarTrack', status: 'transit',    eta: '04 Mar',  updated: '3h ago' },
-  { tracking: 'SP-007', customer: 'Kemppi Welding', carrier: 'Sendle',    status: 'shipped',    eta: '06 Mar',  updated: '1d ago' },
-  { tracking: 'SP-008', customer: 'Oberon Eng',     carrier: 'Aramex',    status: 'exception',  eta: 'Unknown', updated: '2d ago' },
+const INITIAL_SHIPMENTS: Shipment[] = [
+  { tracking: 'SP-001', customer: 'Meridian Fabrication', carrier: 'StarTrack', status: 'transit',    eta: '03 Mar',  updated: '1h ago',  amount: 18450 },
+  { tracking: 'SP-002', customer: 'Acme Steel',     carrier: 'Toll',      status: 'delivering', eta: 'Today',   updated: '25m ago', amount: 9200  },
+  { tracking: 'SP-003', customer: 'Pacific Fab',    carrier: 'Aus Post',  status: 'delivered',  eta: '—',       updated: '28 Feb',  amount: 4750  },
+  { tracking: 'SP-004', customer: 'Hunter Steel',   carrier: 'TNT',       status: 'exception',  eta: 'Delayed', updated: '5h ago',  amount: 12300 },
+  { tracking: 'SP-005', customer: 'BHP Contractors',carrier: 'DHL',       status: 'delivered',  eta: '—',       updated: '27 Feb',  amount: 28900 },
+  { tracking: 'SP-006', customer: 'Sydney Rail',    carrier: 'StarTrack', status: 'transit',    eta: '04 Mar',  updated: '3h ago',  amount: 15600 },
+  { tracking: 'SP-007', customer: 'Kemppi Welding', carrier: 'Sendle',    status: 'shipped',    eta: '06 Mar',  updated: '1d ago',  amount: 6800  },
+  { tracking: 'SP-008', customer: 'Oberon Eng',     carrier: 'Aramex',    status: 'exception',  eta: 'Unknown', updated: '2d ago',  amount: 3400  },
 ];
 
 const TIMELINE = [
@@ -86,14 +90,49 @@ const trackingColumns: MwColumnDef<Shipment>[] = [
 ];
 
 export function ShipTracking() {
+  const navigate = useNavigate();
+  const addDraftInvoice = useDraftInvoiceStore((s) => s.addFromShipment);
+  const [shipments, setShipments] = useState<Shipment[]>(INITIAL_SHIPMENTS);
   const [selected, setSelected]               = useState<Shipment | null>(null);
   const [exceptionsOnly, setExceptionsOnly]   = useState(false);
-  const filtered = exceptionsOnly ? SHIPMENTS.filter(s => s.status === 'exception') : SHIPMENTS;
+  const filtered = exceptionsOnly ? shipments.filter(s => s.status === 'exception') : shipments;
 
-  const inTransitCount = SHIPMENTS.filter(s => s.status === 'transit').length;
-  const deliveredCount = SHIPMENTS.filter(s => s.status === 'delivered').length;
-  const deliveringCount = SHIPMENTS.filter(s => s.status === 'delivering').length;
-  const exceptionCount = SHIPMENTS.filter(s => s.status === 'exception').length;
+  const inTransitCount = shipments.filter(s => s.status === 'transit').length;
+  const deliveredCount = shipments.filter(s => s.status === 'delivered').length;
+  const deliveringCount = shipments.filter(s => s.status === 'delivering').length;
+  const exceptionCount = shipments.filter(s => s.status === 'exception').length;
+
+  const markDelivered = (shipment: Shipment) => {
+    // Update local state — flip the shipment row to delivered.
+    setShipments((prev) =>
+      prev.map((s) =>
+        s.tracking === shipment.tracking
+          ? { ...s, status: 'delivered' as Status, eta: '—', updated: 'just now' }
+          : s,
+      ),
+    );
+    setSelected((cur) =>
+      cur && cur.tracking === shipment.tracking
+        ? { ...cur, status: 'delivered', eta: '—', updated: 'just now' }
+        : cur,
+    );
+
+    // Push a draft invoice into the shared store and notify the user.
+    const draft = addDraftInvoice({
+      shipment: shipment.tracking,
+      customer: shipment.customer,
+      amount: shipment.amount,
+    });
+
+    // TODO(backend): book.invoices.draftFromShipment(shipment.tracking)
+    toast.success(`Invoice ${draft.id} drafted`, {
+      description: `Auto-drafted from delivered shipment ${shipment.tracking}`,
+      action: {
+        label: 'View in Book',
+        onClick: () => navigate(`/book/invoices/${draft.id}`),
+      },
+    });
+  };
 
   return (
     <PageShell className="overflow-y-auto">
@@ -118,7 +157,7 @@ export function ShipTracking() {
         {[
           { label: 'In Transit', value: inTransitCount, sub: 'On the way', bg: 'bg-[var(--mw-blue-100)]', text: 'text-[var(--mw-blue)]' },
           { label: 'Delivering', value: deliveringCount, sub: 'Out for delivery', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
-          { label: 'Delivered', value: deliveredCount, sub: `${SHIPMENTS.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Delivered', value: deliveredCount, sub: `${shipments.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Exceptions', value: exceptionCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
           <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
@@ -185,6 +224,14 @@ export function ShipTracking() {
                   </div>
 
                   <div className="space-y-2">
+                    {selected.status !== 'delivered' && (
+                      <button
+                        onClick={() => markDelivered(selected)}
+                        className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2"
+                      >
+                        <PackageCheck className="w-4 h-4" /> Mark delivered
+                      </button>
+                    )}
                     <button
                       onClick={() =>
                         // TODO(backend): shipments.notifyCustomer(selected.tracking)
@@ -195,7 +242,12 @@ export function ShipTracking() {
                           },
                         )
                       }
-                      className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium flex items-center justify-center gap-2"
+                      className={cn(
+                        'w-full h-14 rounded-full text-sm transition-colors font-medium flex items-center justify-center gap-2',
+                        selected.status === 'delivered'
+                          ? 'bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground'
+                          : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]',
+                      )}
                     >
                       <Send className="w-4 h-4" /> Notify customer
                     </button>
