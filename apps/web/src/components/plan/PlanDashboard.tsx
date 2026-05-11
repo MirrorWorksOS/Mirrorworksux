@@ -177,7 +177,7 @@ export function PlanDashboard() {
                 variant="ghost"
                 size="sm"
                 className="h-7 text-xs text-[var(--neutral-500)]"
-                onClick={() => navigate('/plan/activities')}
+                onClick={() => navigate('/plan/schedule-engine')}
               >
                 View all
                 <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -247,7 +247,7 @@ export function PlanDashboard() {
             <div className="space-y-2">
               <Button
                 className="w-full justify-start bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground h-10"
-                onClick={() => navigate('/plan/jobs')}
+                onClick={() => navigate('/plan/jobs/new')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 New Job
@@ -263,7 +263,7 @@ export function PlanDashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start border-[var(--border)] h-10"
-                onClick={() => navigate('/plan/activities')}
+                onClick={() => navigate('/plan/schedule-engine')}
               >
                 <ClipboardList className="w-4 h-4 mr-2" />
                 View Tasks
@@ -279,7 +279,7 @@ export function PlanDashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start border-[var(--border)] h-10"
-                onClick={() => navigate('/plan/nc-connect')}
+                onClick={() => navigate('/plan/machine-io?tab=nc-connect')}
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 NC Connect

@@ -5,7 +5,7 @@
 
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info, Shield, DollarSign, Users, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, AlertTriangle, Shield, DollarSign, Users, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/ui/utils';

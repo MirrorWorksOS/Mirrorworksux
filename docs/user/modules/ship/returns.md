@@ -13,6 +13,15 @@ Complete returns work and move records to the next stage.
 - Create or add records/items.
 - Use modal/sheet interactions for edits and quick actions.
 
+### Side-sheet actions (per return)
+
+- **Approve return** — visible while the return is `pending`. Toasts confirmation today; will move the return to *received*.
+- **Process refund** — visible while the return is `received`. Toasts a refund-issued confirmation.
+- **Contact customer** — visible at every status. Surfaces the customer name in the toast as a stand-in for opening a real reach-out.
+- **Create RMA** (page header) — opens the RMA flow (currently a "coming soon" toast).
+
+> *2026-05-08 fix:* all four buttons above were silently dead before this date. They now respond — three with action toasts, one with a placeholder. The actual server-side approve / refund / messaging wiring is the next step.
+
 ## Key UI Sections
 - Page header with title, subtitle, and action buttons.
 - Primary table/list region for records.

@@ -34,6 +34,10 @@
 ## Known Gaps / Questions
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 
+## Notes — Inventory Export wired (2026-05-08)
+
+Per `206b09cc`, the Inventory tab's **Export** action (top-right of the inventory list) now toasts: `toast.success('Inventory exported')`. Replace with `shipService.warehouse.exportInventory()` when added.
+
 ## Related Files
 - `apps/web/src/components/ship/ShipWarehouse.tsx`
 - `apps/web/src/components/ui/input.tsx`

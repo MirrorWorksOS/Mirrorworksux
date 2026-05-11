@@ -17,14 +17,12 @@ import {
   FileType,
   HardDrive,
   Ruler,
-  RotateCcw,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { cn } from '../ui/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';

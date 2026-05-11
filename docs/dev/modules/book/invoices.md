@@ -34,6 +34,14 @@ User doc: [`docs/user/modules/book/invoices.md`](../../../user/modules/book/invo
 - Page appears mock/seed-backed; production API integration path is unclear from this file alone.
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 
+## Notes — wired CTA + paging (2026-05-08)
+
+Per `65dbf388`:
+
+- The **New Invoice** CTA (yellow, top-right) now `toast.success('New invoice draft created')`. Replace with `bookService.invoices.createDraft()` when wired.
+- Pagination Prev/Next are now `disabled` because the underlying `MOCK_INVOICES` array is the only data source — there is no real pagination behind them. Re-enable both when a paged service lands.
+- `InvoiceList` (the toolbar variant of the same surface) gains the same `New Invoice` toast on its `ToolbarPrimaryButton`.
+
 ## Related Files
 - `apps/web/src/components/book/BookInvoices.tsx`
 - `apps/web/src/components/ui/button.tsx`

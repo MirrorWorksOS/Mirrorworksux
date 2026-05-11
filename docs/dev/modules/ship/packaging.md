@@ -32,6 +32,17 @@
 ## Known Gaps / Questions
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 
+## Notes — pack-station footer buttons wired (2026-05-08)
+
+Per `206b09cc`, the two pack-station footer actions now toast:
+
+| Button | Toast |
+|---|---|
+| **Park** | `toast('Job parked')` |
+| **Complete & print label** (yellow CTA, gated by `allPacked`) | `toast.success('Label printed')` |
+
+Each becomes a real call once `shipService.packaging.{park,complete}` exists.
+
 ## Related Files
 - `apps/web/src/components/ship/ShipPackaging.tsx`
 - `apps/web/src/components/ui/button.tsx`

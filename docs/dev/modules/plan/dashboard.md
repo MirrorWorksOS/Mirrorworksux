@@ -37,6 +37,19 @@ Developer-focused sections to extract:
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — quick-action navigation (2026-05-08)
+
+Per `d4f831f0` four `navigate()` targets were corrected:
+
+| Button | Was | Now |
+|---|---|---|
+| **New Job** (yellow CTA) | `/plan/jobs` | `/plan/jobs/new` |
+| Backlog **View all** | `/plan/activities` *(legacy redirect)* | `/plan/schedule-engine` |
+| **View Tasks** | `/plan/activities` *(legacy redirect)* | `/plan/schedule-engine` |
+| **NC Connect** | `/plan/nc-connect` *(legacy)* | `/plan/machine-io?tab=nc-connect` |
+
+Keep this aligned with `routes.tsx` — `/plan/activities` and `/plan/nc-connect` redirect to the live targets at the route layer, but the dashboard now skips that redirect hop.
+
 ## Related Files
 - `apps/web/src/components/plan/PlanDashboard.tsx`
 - `apps/web/src/components/ui/badge.tsx`

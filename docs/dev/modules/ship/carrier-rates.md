@@ -31,5 +31,9 @@
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — Request Quote wired (2026-05-08)
+
+Per `206b09cc`, the page-header **Request Quote** button now toasts: `toast('Quote request — coming soon')`. Replace with `shipService.carrierRates.requestQuote()` when added.
+
 ## Related Files
 - `apps/web/src/components/ship/ShipCarrierRates.tsx`

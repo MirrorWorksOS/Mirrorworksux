@@ -8,7 +8,6 @@ import {
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
-import { Avatar, AvatarFallback } from '../ui/avatar';
 
 // --- Types & Mock Data ---
 

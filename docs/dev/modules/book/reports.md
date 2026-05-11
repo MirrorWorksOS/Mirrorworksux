@@ -28,6 +28,15 @@ User doc: [`../../user/modules/book/reports.md`](../../../user/modules/book/repo
 ## Known Gaps / Questions
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 
+## Notes — header CTAs wired (2026-05-08)
+
+Per `65dbf388`, both header buttons that previously had no handler now toast:
+
+| Button | Toast |
+|---|---|
+| **Schedule report** | `toast('Schedule a report')` |
+| **Custom report** (yellow) | `toast.success('Custom report builder opened')` |
+
 ## Related Files
 - `apps/web/src/components/book/ReportsGallery.tsx`
 - `apps/web/src/components/ui/button.tsx`

@@ -2,8 +2,7 @@
  * Ship Settings — Implements ARCH 00 group-based permissions model
  * Panels: General, Carriers, Reports, Access & Permissions
  */
-import React, { useState } from 'react';
-import { Settings, Truck, BarChart3, Plus, Trash2 } from 'lucide-react';
+import { Settings, Truck, BarChart3 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -11,7 +10,6 @@ import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Separator } from '../ui/separator';
 import { cn } from '../ui/utils';
 import {
   ModuleSettingsLayout,
