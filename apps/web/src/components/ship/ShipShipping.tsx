@@ -3,7 +3,7 @@
  * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  */
 import React, { useState } from 'react';
-import { Truck, Download, Printer, Sparkles } from 'lucide-react';
+import { Truck, Download, Printer, Sparkles, GitCompare } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Card } from '../ui/card';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { carriers as centralCarriers } from '@/services';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
+import { CarrierComparisonCard } from './CarrierComparisonCard';
 
 const SHIP_COUNTS = [12, 8, 5, 6, 3, 4];
 const CARRIERS = [
@@ -29,12 +31,14 @@ const CARRIERS = [
 ];
 
 const RATES = [
-  { carrier: 'Sendle',     service: 'Standard',     cost: 8.50,  days: 4, ai: false },
-  { carrier: 'Aus Post',   service: 'Parcel Post',  cost: 11.20, days: 5, ai: false },
-  { carrier: 'StarTrack',  service: 'Premium',      cost: 14.80, days: 2, ai: true },
-  { carrier: 'TNT',        service: 'Road Express', cost: 16.50, days: 2, ai: false },
-  { carrier: 'DHL',        service: 'Domestic',     cost: 22.00, days: 1, ai: false },
+  { carrier: 'Sendle',     service: 'Standard',     cost: 8.50,  days: 4, ai: false, rationale: 'Lowest cost on this lane for non-urgent freight under 15 kg.' },
+  { carrier: 'Aus Post',   service: 'Parcel Post',  cost: 11.20, days: 5, ai: false, rationale: 'Reliable nationwide coverage with tracking on every parcel.' },
+  { carrier: 'StarTrack',  service: 'Premium',      cost: 14.80, days: 2, ai: true,  rationale: 'Best $/day on +1-day routes for this lane and weight.' },
+  { carrier: 'TNT',        service: 'Road Express', cost: 16.50, days: 2, ai: false, rationale: 'Road express with B2B dock-to-dock SLA.' },
+  { carrier: 'DHL',        service: 'Domestic',     cost: 22.00, days: 1, ai: false, rationale: 'Fastest guaranteed delivery by 5pm next business day.' },
 ];
+
+const PREFERRED_CARRIER = 'Aus Post';
 
 const MANIFESTS = [
   { date: '02 Mar', carrier: 'StarTrack', count: 8,  weight: '124.5 kg', open: true },
@@ -82,6 +86,7 @@ const manifestColumns: MwColumnDef<Manifest>[] = [
 
 export function ShipShipping() {
   const [tab, setTab] = useState('carriers');
+  const [compareOpen, setCompareOpen] = useState(false);
   const tabs = [
     { key: 'carriers', label: 'Carriers' },
     { key: 'rates', label: 'Rates' },
@@ -95,7 +100,19 @@ export function ShipShipping() {
 
   return (
     <PageShell className="overflow-y-auto">
-      <PageHeader title="Shipping" />
+      <PageHeader
+        title="Shipping"
+        actions={
+          <button
+            type="button"
+            onClick={() => setCompareOpen(true)}
+            className="h-12 min-h-[48px] px-5 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium inline-flex items-center gap-2"
+          >
+            <GitCompare className="w-4 h-4" strokeWidth={1.5} />
+            Compare carriers
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-2 items-stretch gap-4 lg:grid-cols-4">
         {[
@@ -206,6 +223,26 @@ export function ShipShipping() {
           </div>
         </div>
       )}
+
+      {/* Compare carriers sheet */}
+      <Sheet open={compareOpen} onOpenChange={setCompareOpen}>
+        <SheetContent
+          className="w-[560px] sm:max-w-[560px] p-0 overflow-y-auto border-l border-[var(--border)]"
+          aria-describedby={undefined}
+        >
+          <SheetHeader className="p-6 pb-4 border-b border-[var(--border)]">
+            <SheetTitle className="text-xl font-medium text-foreground inline-flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[var(--mw-yellow-500)]" /> Quote a shipment
+            </SheetTitle>
+            <SheetDescription className="text-[var(--neutral-500)]">
+              2787 → 2128 · 12.4 kg · 45×35×25 cm
+            </SheetDescription>
+          </SheetHeader>
+          <div className="px-6 py-6">
+            <CarrierComparisonCard rates={RATES} preferredCarrier={PREFERRED_CARRIER} />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Manifests */}
       {tab === 'manifests' && (
