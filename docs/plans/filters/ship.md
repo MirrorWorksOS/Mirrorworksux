@@ -145,7 +145,7 @@ const ordersFilterSchema: FilterSchema = {
 
 | Name | Icon | Tone | State |
 |---|---|---|---|
-| Today's dispatch board | `Truck` | `yellow` | `stage: ['ship']`, `dueAt: quickRange('today')`, view `kanban` |
+| Today's dispatch board | `Truck` | `yellow` | `stage: ['ship']`, `dueAt: quickRange('today')`, view `kanban` — group-shared; `groupId` maps to `control_groups.id` |
 | Overdue picks | `AlertTriangle` | `error` | `stage: ['pick']`, `dueAt: { to: today-1 }`, view `list` |
 | Urgent — any stage | `Zap` | `warning` | `urgent: true`, view `kanban` |
 | Pallet freight only | `Package` | `info` | `weightBand: ['pallet']`, view `list` |
@@ -157,6 +157,8 @@ const ordersFilterSchema: FilterSchema = {
 - "Loads to consolidate" — same carrier + same day + same region, below pallet threshold.
 - "Risky destinations" — destinations with rising exceptions in last 7 days (cross-screen with Tracking).
 - "Carrier mismatch" — orders flagged hazmat going to a non-hazmat-capable carrier.
+
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Behavioural rewires
 
@@ -318,6 +320,8 @@ const manifestsFilterSchema: FilterSchema = {
 - "Underfilled loads to consolidate" (Manifests).
 - "Carrier dropping below SLA" — performance band trending down week over week (Carriers).
 
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 - Replacing the Carriers / Rates / Manifests tab control with three top-level routes (deferred).
@@ -402,6 +406,8 @@ const trackingFilterSchema: FilterSchema = {
 - "Predicted late" — carrier history + traffic-aware ETA delta > X hours.
 - "Customer impact stack" — concentrate exceptions by customer for account-manager triage.
 
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Behavioural rewires
 
 - Remove the dead search input (`ShipTracking.tsx:171-174`); the new bar's search owns it.
@@ -470,6 +476,8 @@ const carrierRatesFilterSchema: FilterSchema = {
 
 - "Best for this parcel" — model pick using shape/weight/destination (shares the agent already at `ShipShipping.tsx:34`).
 - "Carrier you usually pick for this lane" — personal history-based.
+
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Out of scope
 
@@ -559,6 +567,8 @@ const returnsFilterSchema: FilterSchema = {
 - "Likely-fraud RMAs" — repeat-return customers, high refund amounts (cross-module with Sell).
 - "Proactive returns" — customers with recent damage RMAs shipping same SKU again.
 
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 - RMA approval workflow itself; this plan only addresses the filter/search/view layer.
@@ -635,7 +645,7 @@ const warehouseInventoryFilterSchema: FilterSchema = {
 };
 ```
 
-**Presets:** "Low + empty (all zones)" (`AlertTriangle`, `error`); "Dispatch zone today" (`Truck`, `yellow`); "Slow movers in pick face" (`Snail`, `neutral`).
+**Presets:** "Low + empty (all zones)" (`AlertTriangle`, `error`); "Dispatch zone today" (`Truck`, `yellow`) — group-shared; `groupId` maps to `control_groups.id`; "Slow movers in pick face" (`Snail`, `neutral`).
 
 ### 6b. Cycle count tab
 
@@ -720,6 +730,8 @@ const reportsFilterSchema: FilterSchema = {
 - "Carrier mix drift" — week-over-week share change > 10 pts.
 - "Region anomaly" — destination state with exception rate 2σ above trend.
 
+**Endpoint:** `POST /api/smart-filters/ship` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 - Drill-through into Tracking / Orders from a chart segment (cross-screen wiring; later PR).
@@ -748,7 +760,7 @@ Each migration PR:
 ## Cross-cutting out-of-scope
 
 - Operator-mode collapse (covered by Shop-floor plan; Ship module retains desktop layout for now).
-- `SavedView` server persistence — uses in-memory store via `registerSystemPresets` plus the personal-preset hook from the pilot.
+- Saved views stored in the server `saved_views` Postgres table with RLS. `scope: "group"` → ControlGroups members; Lead/Admin write. `groupId` = `control_groups.id`.
 - Real carrier-API integration for rates / tracking events.
 - Route polyline rendering on the Tracking and Orders Map views (waits on `routeId` + a routing service).
 - Smart-filter implementations — schema slot is reserved (`smart?: SmartFilterConfig`) but model wiring lands behind the global flag in `FILTERS-REDESIGN.md` §11 step 7.

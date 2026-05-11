@@ -27,8 +27,14 @@ Book is the finance / accounting / costing module. Compared to Sell it leans har
 ## Out of scope (deferred follow-ups)
 
 - **Comparison mode** (this-month vs last-month, this-FY vs prior FY side-by-side) — large enough to warrant its own design pass. Surfaces affected: every Book screen. Tracked separately.
-- **Multi-currency filter** — depends on multi-currency data model landing (`XeroMappingPage.tsx:422` only surfaces base currency today).
-- **Saved-view server backend** — uses localStorage from the pilot for now.
+
+## Resolved decisions
+
+**Saved views:** Saved views stored in server `saved_views` table (RLS). `scope: "group"` → ControlGroups members; Lead/Admin write enforced server-side.
+
+**Multi-currency: in scope.** Add a `currency` facet (multi-select) to the schemas for `book.invoices`, `book.purchaseOrders`, `book.wipValuation`, `book.stockValuation`, and `book.jobProfitability`. Exchange-rate prereq: `GET /api/fx-rates?base={orgCurrency}&quote={displayCurrency}` sourced from Xero FX API or an internal table. All monetary range facets include `currencyCode` field; display amounts are converted to the user's `displayCurrency` (from user profile) at point-in-time rate.
+
+**Smart-filter endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint (not shared with other AI surfaces).
 
 ---
 
@@ -84,6 +90,20 @@ export const bookInvoicesFilterSchema: FilterSchema = {
     { id: 'dueDate', label: 'Due', kind: 'date', icon: CalendarDays,
       placeholder: 'Any due date',
       quickRanges: ['thisWeek', 'thisMonth', 'lastMonth', 'thisQuarter', 'ytd'] },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',     label: 'List',          icon: ListIcon },
@@ -109,6 +129,7 @@ export const bookInvoicesFilterSchema: FilterSchema = {
 **Required data work**
 - Compute `agingBucket(invoice)` helper (port from `SellInvoices.tsx:89-97`).
 - Surface `reminderCount`, `hasDispute`, `xeroSyncState`, `jobRef` on the invoice mock (`sellInvoices` service currently only exposes status/amount/dates).
+- Exchange-rate lookup: `GET /api/fx-rates?base={orgBaseCurrency}&quote=AUD,USD,GBP,EUR,NZD,SGD` (or from Xero FX API via `XeroMappingPage.tsx:422`). Monetary range facets filter on `displayAmount` (converted) rather than raw `amount`.
 
 **Smart-filter ideas**
 - "Invoices likely to be paid late" — customer DSO × current aging.
@@ -116,6 +137,8 @@ export const bookInvoicesFilterSchema: FilterSchema = {
 - "Anomalously large invoice for this customer" — z-score vs prior 6 months.
 - "Disputed > 30 days" — dispute aging.
 - "Likely-write-off candidates" — aging × customer payment history.
+
+**Endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint.
 
 ---
 
@@ -166,6 +189,20 @@ export const purchaseOrdersFilterSchema: FilterSchema = {
     { id: 'expectedDelivery', label: 'Expected delivery', kind: 'date',
       icon: CalendarDays,
       quickRanges: ['thisWeek', 'next7days', 'thisMonth', 'thisQuarter'] },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',     label: 'List',     icon: ListIcon },
@@ -191,12 +228,15 @@ export const purchaseOrdersFilterSchema: FilterSchema = {
 - Expose computed `match` (`PurchaseOrders.tsx:46`) as a filterable facet value on the row.
 - Add `approvalState`, `receiptState`, `billMatched` to the PO mock.
 - Persist `expectedDelivery` as ISO date (Ship audit flags this pattern repo-wide).
+- Exchange-rate lookup: `GET /api/fx-rates?base={orgBaseCurrency}&quote=AUD,USD,GBP,EUR,NZD,SGD` (or from Xero FX API via `XeroMappingPage.tsx:422`). Monetary range facets filter on `displayAmount` (converted) rather than raw `amount`.
 
 **Smart-filter ideas**
 - "POs likely to ship late given supplier OTD".
 - "Items where MRP says reorder but no PO exists" (cross-module to Plan).
 - "Suspicious 3-way mismatches" — variance × supplier history.
 - "POs above approver threshold" — surfaces auto-flagged risk.
+
+**Endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint.
 
 ---
 
@@ -275,6 +315,8 @@ export const costVarianceFilterSchema: FilterSchema = {
 - "Categories with rising variance vs prior quarter".
 - "Jobs whose variance moved >10% week-on-week".
 
+**Endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint.
+
 ---
 
 ### 4. BookWipValuation
@@ -316,6 +358,20 @@ export const wipValuationFilterSchema: FilterSchema = {
     { id: 'department', label: 'Department', kind: 'select' },
     { id: 'pm',         label: 'Project manager', kind: 'user' },
     { id: 'wipBalance', label: 'WIP balance', kind: 'range', icon: DollarSign },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',  label: 'List',      icon: ListIcon },
@@ -341,11 +397,14 @@ export const wipValuationFilterSchema: FilterSchema = {
 - "As at" date is mandatory for a balance-sheet item — currently not present at all.
 - Compute `wipAgingDays` (days since first cost posted) per job.
 - Add `pctComplete` band binning.
+- Exchange-rate lookup: `GET /api/fx-rates?base={orgBaseCurrency}&quote=AUD,USD,GBP,EUR,NZD,SGD` (or from Xero FX API via `XeroMappingPage.tsx:422`). Monetary range facets filter on `displayAmount` (converted) rather than raw `amount`.
 
 **Smart-filter ideas**
 - "WIP at risk of write-down" — aging × inactivity.
 - "Jobs likely to close this period (clear WIP)".
 - "Over-aged WIP by department" suggested chip.
+
+**Endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint.
 
 ---
 
@@ -401,6 +460,20 @@ export const stockValuationFilterSchema: FilterSchema = {
     { id: 'totalValue',   label: 'Total value',  kind: 'range', icon: DollarSign },
     { id: 'lastMovement', label: 'Last moved',   kind: 'date',
       quickRanges: ['lastMonth', 'thisQuarter', 'thisYear', 'lastYear'] },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',  label: 'List',                 icon: ListIcon },
@@ -426,11 +499,14 @@ export const stockValuationFilterSchema: FilterSchema = {
 - Persist `age` classification per row (already shown as text, but not stored).
 - Compute `lastMovementDate` per SKU.
 - Add `reorderStatus` derived from min/max thresholds.
+- Exchange-rate lookup: `GET /api/fx-rates?base={orgBaseCurrency}&quote=AUD,USD,GBP,EUR,NZD,SGD` (or from Xero FX API via `XeroMappingPage.tsx:422`). Monetary range facets filter on `displayAmount` (converted) rather than raw `amount`.
 
 **Smart-filter ideas**
 - "Stock at risk of write-down" — slow movers × age × forecasted demand.
 - "Stock-outs imminent" — below-min × usage trend.
 - "Unmoved this year" — proactive cleanup chip.
+
+**Endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint.
 
 ---
 
@@ -475,6 +551,20 @@ export const jobProfitabilityFilterSchema: FilterSchema = {
       { value: 'xl', label: '> $100k'  },
     ]},
     { id: 'overrun', label: 'Cost overrun', kind: 'range', icon: DollarSign },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',  label: 'List',         icon: ListIcon },

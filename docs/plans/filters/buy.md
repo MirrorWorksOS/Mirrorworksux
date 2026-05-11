@@ -125,6 +125,8 @@ registerSystemPresets(MODULE_ID, [
 - "Consolidatable POs" — same supplier, same delivery window, both <$1k — surface "merge into one PO".
 - "Repeat lateness from this supplier" — supplier-level rollup, ranks rows by historical late count.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope (this pass)
 - `Acknowledged` status pill collapse (audit §2) — keep underlying status, just drop it from the default-visible options. Cleanup later when status taxonomy is reviewed module-wide.
 - Multi-site dock/site facet — wait for Receipts work below to land first.
@@ -248,6 +250,8 @@ registerSystemPresets(MODULE_ID, [
 - "Suppliers concentrated in one category" — flags single-source risk where >70% of category spend lands on one vendor.
 - "New suppliers without OTD baseline" — `activePOs > 0` but lifetime delivery count <3.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - The map view is shape-only here — actual map widget can land in a follow-up. Schema declares it so view-mode UI is consistent across screens.
 
@@ -365,6 +369,8 @@ registerSystemPresets(MODULE_ID, [
 - "Closed but not awarded after 7 days" — stuck state, often forgotten.
 - "Repeated RFQs for same SKU" — same `sku` issued >2× in 90 days, hint to convert to BPA.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - The `Vendor Comparison` screen (`BuyVendorComparison.tsx:91`) is a tool not a list — leave its `Select` + checkbox UX as-is until we decide if it folds into the RFQ detail.
 
@@ -477,6 +483,8 @@ registerSystemPresets(MODULE_ID, [
 - "Reqs from departments overspending vs budget" — needs department budget series.
 - "Repeat reqs for same SKU last 30d" — consolidation opportunity into single PO.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - Approver-routing rules — out of scope for filter work; surface only the boolean `awaitingMe` for now.
 
@@ -557,6 +565,8 @@ registerSystemPresets(MODULE_ID, [
 - "Receipts likely to arrive late vs ETA" — supplier OTD trend × current `expectedDate`.
 - "Partial receipts likely to never complete" — partial >14d with no movement, recommend close-short.
 - "Receiving load this week vs dock capacity" — surfaces overloaded days for planners.
+
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Out of scope
 - Multi-site dock scheduling — schema includes `site` facet but the underlying dock-capacity work belongs in a separate plan.
@@ -677,6 +687,8 @@ registerSystemPresets(MODULE_ID, [
 - "Bills matching a PO already closed-short" — recovery candidate, frequent SME leak.
 - "Recurring bills missing this period" — subscription/utility bills that didn't arrive on cadence.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - Currency conversion math — schema declares the facet but the AP plan should own FX rate handling.
 
@@ -790,6 +802,8 @@ registerSystemPresets(MODULE_ID, [
 - "BPAs underused — consider switching supplier" — `<30%` utilisation past midpoint of term.
 - "Auto-renewal cliff in next 60 days" — needs an `autoRenew` flag on the model.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - BPA renewal workflow — only surfacing "renewal candidates" preset here. The renewal flow itself is its own track.
 
@@ -876,6 +890,8 @@ registerSystemPresets(MODULE_ID, [
 - "Items where MRP says reorder but no open PO covers it" — basic version is the `Items needing action` preset above; smart version adds confidence score from demand forecast.
 - "Items frequently triggering MRP — switch to BPA" — recurring weekly trigger → renewal candidate for Agreements.
 
+**Endpoint:** `POST /api/smart-filters/buy` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 - Products / Reorder Rules screens (`BuyProducts.tsx:86`, `BuyReorderRules.tsx:107`) — recommend deferring; the MRP screen exposes the same domain via the actionable surface and most users live here, not there.
 
@@ -888,7 +904,7 @@ These were flagged in the audit but are out of scope for this migration pass:
 - **Planning Grid** (`BuyPlanningGrid.tsx:97`) — fixed 6-week heatmap, no list to migrate. Horizon selector + by-supplier swap are view-mode work, not filter work; track separately.
 - **Vendor Comparison** (`BuyVendorComparison.tsx:91`) — analytical tool, not a list. Leave as-is until RFQ detail integration is decided.
 - **Products** and **Reorder Rules** — covered by MRP-screen prereqs; revisit only if users ask for direct list filtering there.
-- **Saved-view sharing UX** (Lead → team scope) — uses the shared `SavedView` model from `schema.ts`; the per-screen schemas are agnostic to scope so the share-with-group control lands once in `ModuleFilterBar` and applies to all eight screens above.
+- **Saved-view sharing UX** (Lead → team scope) — Saved views are stored in the `saved_views` Postgres table. RLS enforces visibility: `scope: "personal"` → owner only; `scope: "group"` → ControlGroups members (Lead/Admin write, `group_id` references `control_groups.id`); `scope: "org"` → all authenticated. The per-screen schemas are agnostic to scope so the share-with-group control lands once in `ModuleFilterBar` and applies to all eight screens above.
 - **Multi-currency rendering** — facets declared on POs/Bills, but FX display layer is its own track in Book.
 
 ---

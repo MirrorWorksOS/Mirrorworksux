@@ -17,6 +17,7 @@ Before screen-by-screen migration:
 2. **Unify `FilterPill` and `ToolbarFilterPills`** — `apps/web/src/components/control/people/UsersTab.tsx:227` defines a bespoke multi-select pill; `ToolbarFilterPills` is single-value. Once `ModuleFilterBar` is in place neither is needed, but during migration the bespoke `FilterPill` should be removed in the People PR.
 3. **Drop the dead `ToolbarFilterButton` from Control screens** — many Control screens still import it (Operations, Inventory, Audit). Remove on the screen's migration PR.
 4. **Three-role vocab sweep** — touch any Control mock data still referencing manager/supervisor/operator role values (notably `UsersTab.tsx`, `ControlGroups.tsx`, `ControlShiftManager.tsx`) and normalise to `admin | lead | team`. This is on the People + Shift Manager PRs.
+5. **Wire `SavedView` server backend** — Control module ships after the `saved_views` table is live. The `ControlGroups.tsx` People → Groups screen also gains a "Shared views" sub-tab listing all group-scoped `SavedView` records for that group (Lead/Admin only). This replaces the localStorage stub.
 
 ---
 
@@ -114,6 +115,8 @@ Personal preset seeded on first load for leads: **My team** (`lead = currentUser
 - **Permission anomalies** — admin in one module but team in adjacent modules where peers are lead (cross-references Audit log).
 - **Users with no group** — admin housekeeping for access reviews.
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Bulk role-change UX (separate spec).
@@ -172,11 +175,15 @@ const groupsFilterSchema: FilterSchema = {
 - Rename `type: default | custom` → `origin: system | custom` in the group model (`ControlGroups.tsx:50`-ish). Audit explicitly calls out "default/custom reads as jargon to admins".
 - Add `memberCount` and `hasAdmin` derived fields (computable from existing members + perms).
 
+Note: `ControlGroups` is the authoritative group registry for `SavedView.groupId` across all modules. When a Lead shares a view `scope: "group"`, the group picker lists all `ControlGroups` the user belongs to with Lead or Admin role.
+
 ### Smart-filter ideas
 
 - Groups with overlapping members across modules (potential consolidation).
 - Groups not used by any saved view / preset / module setting in 12 months (stale).
 - Groups whose effective permissions diverge from their stated role label.
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -256,6 +263,8 @@ const machinesFilterSchema: FilterSchema = {
 - Machines whose calibration window overlaps next 14 days.
 - Underutilised machines (running < 30% of shift hours past 30 days).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - FactoryDesigner authoring inside this screen.
@@ -324,6 +333,8 @@ const locationsFilterSchema: FilterSchema = {
 - Bins assigned to obsolete products (housekeeping).
 - Bays with mixed-temperature contents (compliance — only if temperature data exists).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Bin barcode generation.
@@ -374,6 +385,8 @@ const operationsFilterSchema: FilterSchema = {
 - Operations contributing most to scheduling slack (cross-reference Plan).
 - Operations whose subcontract supplier is on OTD watchlist (cross-reference Buy).
 - Operations not used in any active Route (stale master data).
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -438,6 +451,8 @@ const productsFilterSchema: FilterSchema = {
 - Discontinued products still on open Sell orders (audit §6).
 - Products with no transactions in 12 months (housekeeping).
 - Products whose cost has drifted >X% vs last revision baseline.
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -512,6 +527,8 @@ const bomsFilterSchema: FilterSchema = {
 - BOMs missing items vs latest revision (cross-references Plan / MRP).
 - BOMs not used by any active Product or WO (stale).
 - BOMs with components flagged out-of-stock right now (cross-reference Inventory).
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -593,6 +610,8 @@ const inventoryFilterSchema: FilterSchema = {
 - Lots expiring within 30 days (compliance).
 - Cost-band outliers vs historical baseline (theft / mispricing).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Stocktake reconciliation (separate flow).
@@ -666,6 +685,8 @@ const toolingFilterSchema: FilterSchema = {
 - Tools whose use pattern predicts calibration drift before next scheduled date.
 - Tools assigned to inactive operators.
 - Tooling not used in any Operation (stale).
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -756,6 +777,8 @@ const maintenanceFilterSchema: FilterSchema = {
 - Recurring maintenance items skipped >2 cycles (audit gap).
 - Maintenance load per assignee for the next 7 days (capacity).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Work order creation (separate Make flow).
@@ -817,6 +840,8 @@ const routesFilterSchema: FilterSchema = {
 - Routes referencing obsolete operations.
 - Routes with no active product (stale).
 - Routes whose total lead-time has drifted vs baseline.
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 
@@ -897,6 +922,8 @@ const documentsFilterSchema: FilterSchema = {
 - Certificates expiring within the next 30 days where the owner has no replacement queued.
 - Documents not opened in 12 months (housekeeping).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Document viewer / revision editor.
@@ -970,6 +997,8 @@ const auditFilterSchema: FilterSchema = {
 - Bursts of error-severity events from a single actor (intrusion / runaway script).
 - Off-hours admin actions.
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Export/SIEM forwarding.
@@ -1040,6 +1069,8 @@ const shiftManagerFilterSchema: FilterSchema = {
 - Departments under shift-coverage threshold for the next 7 days.
 - Operators on consecutive overtime weeks (welfare).
 
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
+
 ### Out of scope
 
 - Shift assignment editor (separate flow).
@@ -1102,6 +1133,8 @@ const gamificationFilterSchema: FilterSchema = {
 ### Smart-filter ideas
 
 - Challenges with declining participation week-over-week.
+
+**Endpoint:** `POST /api/smart-filters/control` — dedicated per-module endpoint.
 
 ### Out of scope
 

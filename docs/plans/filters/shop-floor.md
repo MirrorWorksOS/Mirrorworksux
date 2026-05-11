@@ -124,6 +124,8 @@ Natural-language queries that belong here (operator-spoken, no chip):
 - "anything blocked on my queue?"
 - "skip the one waiting on material"
 
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "scan-job", context: { stationId, operatorId, queue } }`. Response: `{ heroCard: { title, subtitle, workOrderId, estimatedMinutes, cta } }`. Dedicated endpoint — not shared with desktop AI surfaces.
+
 Implementation: re-use the existing AI service surface; render once per queue load, refresh on scan or queue update.
 
 **Required wiring**
@@ -186,6 +188,8 @@ No `ScanInput` on this screen — operators pick by sight (kiosk distance, recog
 - "Resume your last station: CNC-04" — a single restore-card if the operator clocked in within the last 4 h.
 - NL queries: "where was I working yesterday?", "any open job on my last station?"
 
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "station-picker", context: {...} }`.
+
 **Required wiring**
 - Add chip bar above the work-centre group headings.
 - Add a **template row** (per audit §6) above the stations: 2–4 lead-curated shift templates (e.g. "Day-shift CNC cell setup", "Welder station view"). Tap = picks station + applies role-template defaults in one tap.
@@ -245,6 +249,8 @@ const floorIsoSchema: FilterSchema = {
 **AI hero**
 - Bottom-sheet style summary card on tap: "CNC-04 — Running WO-2026-0012, on cycle. Operator: J. Lee. Tap to open station."
 - NL queries: "show me everything blocked", "which cell is behind today?"
+
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "isometric", context: {...} }`.
 
 **Required wiring**
 - Replace toast at `:280` with navigation to `FloorScanJob` for the clicked machine's station (admin/lead only — operators don't roam).
@@ -322,6 +328,8 @@ Replace `Input` search at `:289-292` with `ScanInput` (size `medium`, ≈ 56 px)
 - Single supervisor card: "3 work orders trending late this shift. Tap to expedite."
 - NL queries: "what's slipping?", "anything blocked > 30 min?", "where do I need a tow operator?"
 
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "overview", context: {...} }`.
+
 **Required wiring**
 - Remove the Status / Priority / Machine buttons (`:294-303`).
 - Swap `Input` (`:289`) → `ScanInput`.
@@ -385,6 +393,8 @@ Replace search with `ScanInput` (when an operator/lead scans a WO, the accordion
 
 **AI hero**
 - "MO-26-401 is 38 min behind plan. Tap to see why." Single card above the accordion.
+
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "work", context: {...} }`.
 
 **Required wiring**
 - Remove `h-10` Filter + View stub buttons (`:122-127`).
@@ -455,6 +465,8 @@ For Inspections sub-tab, collapse the 5-pill type row (`:559`) into a single **`
 **AI hero**
 - "AI-suggested NCR on WO-2026-0011 — visual defect at op 30. Tap to triage." (Already present at `:147` — promote into hero slot on the run screen too, per audit §7.5.)
 
+**Endpoint:** `POST /api/smart-filters/shop-floor` with `{ screen: "quality-active-issues", context: {...} }`.
+
 **Required wiring**
 - Swap `Input` (`:475`) → `ScanInput`. Scanning a serial or WO jumps to its issue (or pre-fills "Log new issue").
 - Drop `h-10` Status / Priority buttons (`:477-478`); replace with the 3-chip bar above.
@@ -489,6 +501,8 @@ Mapping onto the existing `SavedView` type (`schema.ts:150`):
 | `icon: LucideIcon` + `iconTone` | Lead picks (no emoji on operator-facing presets — Lucide only) |
 | `state.values` | Pre-applied chip values; `state.view` ignored (operator surfaces have one view) |
 | `state.search` | Ignored (scan only) |
+
+`groupId` confirmed as `control_groups.id`. No narrower scope. Leads can share shift defaults with any ControlGroup they belong to.
 
 **Audit §6 templates → concrete presets:**
 
@@ -541,7 +555,7 @@ Per `FILTERS-REDESIGN.md` §11, shop-floor lands in phase 6 (after Sell pilot, B
 4. **PR 4 — Shop-floor tabs (Overview, Work, Quality).** Bulk swap of desktop chrome.
 5. **PR 5 — `FloorModeLayout` persistent chrome (shift / station / my-only / voice).**
 6. **PR 6 — `/floor/board` big-board route.**
-7. **PR 7 — Shift-default preset wiring** (`SavedView` with `scope: "group"`, lead UI to push). Depends on SavedView storage being server-backed (open question in §12 of cross-doc).
+7. **PR 7 — Shift-default preset wiring** (`SavedView` with `scope: "group"`, lead UI to push). Depends on SavedView storage being server-backed (resolved — `saved_views` server table with RLS is now in scope; `groupId` = `control_groups.id`).
 
 ---
 

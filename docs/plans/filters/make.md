@@ -93,6 +93,8 @@ registerSystemPresets(MODULE_ID, [
 - "Cluster: same customer due same week" — consolidation hint.
 - "Has at-risk WOs" — joins WO-level lateness flag.
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Customer board view gated behind tier flag (service-shop only). Calendar drag-to-reschedule writes — read-only v1.
@@ -153,6 +155,8 @@ registerSystemPresets(MODULE_ID, [
 - "Mine, ready to start" — operator landing.
 - "Setup-heavy steps batched for same machine" — operator dispatch hint.
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Dependency editing UI — read-only v1.
@@ -212,6 +216,7 @@ registerSystemPresets(MODULE_ID, [
   { name: 'My queue today', icon: User, iconTone: 'yellow',
     state: { values: { operator: '__me__', promised: todayRange() }, search: '', view: 'list' } },
   { name: 'CNC cell — open WOs', icon: Cpu, iconTone: 'info',
+    // groupId: control_groups.id for the CNC production cell team
     state: { values: { workCentre: ['cnc'], status: ['pending', 'in_progress'] }, search: '', view: 'board' } },
   { name: 'On hold > 4 h', icon: PauseCircle, iconTone: 'warning',
     state: { values: { status: ['on_hold'] }, search: '', view: 'kanban' } },
@@ -236,6 +241,8 @@ registerSystemPresets(MODULE_ID, [
 - "Bottleneck cell of the day" — auto-detect tightest queue vs takt.
 - "Setup-heavy near identical parts" — batching candidates.
 - "Recurring on-hold reason" — same reason >N times last 7 d.
+
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Out of scope
 
@@ -311,6 +318,8 @@ registerSystemPresets(MODULE_ID, [
 - "Slow movers (no demand 90 d)".
 - "Recurring nesting waste > 10%".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Tree view of family hierarchy — `board` grouping covers v1.
@@ -364,12 +373,15 @@ const scheduleFilterSchema: FilterSchema = {
 ```ts
 registerSystemPresets(MODULE_ID, [
   { name: 'Day-shift production board', icon: Sun, iconTone: 'yellow',
+    // groupId: control_groups.id for the day-shift production team
     state: { values: { shift: 'day', horizon: todayRange() }, search: '', view: 'board' } },
   { name: 'This week — at-risk WOs', icon: AlertTriangle, iconTone: 'error',
     state: { values: { lateRisk: true, horizon: thisWeekRange() }, search: '', view: 'gantt' } },
   { name: 'CNC cell schedule', icon: Cpu, iconTone: 'info',
+    // groupId: control_groups.id for the CNC production cell team
     state: { values: { workCentre: ['cnc'], horizon: thisWeekRange() }, search: '', view: 'board' } },
   { name: 'Welding bay — next 10 days', icon: Flame, iconTone: 'warning',
+    // groupId: control_groups.id for the welding bay team
     state: { values: { workCentre: ['weld'], horizon: next7DaysRange() }, search: '', view: 'gantt' } },
   { name: 'My planner queue', icon: User, iconTone: 'yellow',
     state: { values: { planner: '__me__' }, search: '', view: 'list' } },
@@ -389,6 +401,8 @@ registerSystemPresets(MODULE_ID, [
 - "Capacity-conflict band" — rows where load > 100% capacity.
 - "Free capacity at end of week" — fillable slots.
 - "Customer X — full week-by-week load" — for sales conversations.
+
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Out of scope
 
@@ -460,6 +474,8 @@ registerSystemPresets(MODULE_ID, [
 - "Cells likely to miss shift target".
 - "Best operator for this WO now".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 `IsometricFloorView` navigation (`:280` toast) — addressed in floor audit follow-up.
@@ -506,6 +522,7 @@ registerSystemPresets(MODULE_ID, [
   { name: 'Urgent only', icon: Zap, iconTone: 'error',
     state: { values: { priority: ['urgent'] }, search: '', view: 'kanban' } },
   { name: 'Late shift', icon: Moon, iconTone: 'info',
+    // groupId: control_groups.id for the night-shift production team
     state: { values: { shift: 'night' }, search: '', view: 'board' } },
 ]);
 ```
@@ -520,6 +537,8 @@ registerSystemPresets(MODULE_ID, [
 - "Best next job to dispatch" — score by priority × age × material-ready.
 - "Material-blocked but workable elsewhere" — swap suggestion.
 - "Hot job — pull forward" — surfaced from sales escalations.
+
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
 
 ### Out of scope
 
@@ -642,6 +661,8 @@ registerSystemPresets(MODULE_ID_INSPECTIONS, [
 - "FAI overdue" — released MO of a new part with no FAI logged.
 - "Pareto by defect type for this work centre".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Pareto chart-first analytics — covered in Scrap (§10). Reports tab unchanged.
@@ -710,6 +731,8 @@ registerSystemPresets(MODULE_ID, [
 - "CAPAs without verification step despite stage = closed".
 - "CAPAs tied to recurring defect families".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Advanced list-export tooling.
@@ -776,6 +799,8 @@ registerSystemPresets(MODULE_ID, [
 - "Worst shift × machine combo".
 - "Scrap correlated with setup change".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Chart component swap inside view-mode slots — separate PR.
@@ -840,6 +865,8 @@ registerSystemPresets(MODULE_ID, [
 - "Customers affected by lot X" — recall comms.
 - "Suppliers correlated with quarantined lots".
 
+**Endpoint:** `POST /api/smart-filters/make` — dedicated per-module endpoint; not shared with other AI surfaces.
+
 ### Out of scope
 
 Recall-action workflow remains separate.
@@ -848,6 +875,8 @@ Recall-action workflow remains separate.
 
 ## 12. Cross-cutting deferrals
 
+- **Saved-view storage** — Saved views stored in the server `saved_views` Postgres table. RLS: `scope: "personal"` → owner only; `scope: "group"` → ControlGroups members (Lead/Admin write); `scope: "org"` → authenticated. `groupId` maps to `control_groups.id`.
+- **Group identity** — ControlGroups (`control_groups` table) confirmed as the group-sharing primitive. `groupId` on a saved view is the `control_groups.id` of the relevant production cell / team.
 - **LiveFloorView cell selector** (`LiveFloorView.tsx:421-448`) — TV display tunables, not a list/board; separate ticket.
 - **WorkOrderSequencing, MaterialConsumption, MakeJobTraveler, MakeScanStation** — detail / single-entity views. `MaterialConsumption` would benefit from a small status filter (shortage / over-consumed / on-target); follow-up.
 - **Group-By chip** — schema supports it (`viewModes[].groupBy`); a first-class control lands cross-module after Make + Plan.

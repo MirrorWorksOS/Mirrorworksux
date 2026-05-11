@@ -84,6 +84,8 @@ Standardise `assignedToInitials` to match Sell's owner facet shape.
 
 **Smart-filter ideas.** *Likely to miss promise* (WC loading × route × material × supplier OTD) · *Ready to release* (material ready + routed + capacity) · *Sequence by margin* (smart sort: value × on-time probability) · *Blocked > 5d on PO* · *Customer concentration this month*.
 
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
+
 **Out of scope.** Editing kanban columns from the bar; drag-to-Gantt rescheduling.
 
 ---
@@ -141,6 +143,8 @@ const productsFilterSchema: FilterSchema = {
 
 **Smart-filter ideas.** *Recurring nesting waste > 10%* · *BOMs missing items vs latest engineering revision* · *Cost drift > 15%* (BOM vs latest quote) · *Retirement candidates* (no production 12m + no open demand).
 
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
+
 **Out of scope.** Inline BOM editing from the tree.
 
 ---
@@ -196,6 +200,8 @@ port the projection).
 
 **Smart-filter ideas.** *Re-sequence candidates* (slot vs due > N days; pre-fills Engine scope) · *Operator-gap weeks* (WC × routing × roster) · *Slip clusters* (3+ jobs sliding into same week) · *Hot subcontract dates* (same supplier crowded).
 
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
+
 **Out of scope.** In-Gantt drag-to-reschedule; capacity heat-map overlay.
 
 ---
@@ -231,6 +237,8 @@ const engineFilterSchema: FilterSchema = {
 **Required data work.** Each gantt block needs `workCentreId`, `lockedByPlannerId?`, `tags?`. Engine call accepts the schema's `state.values` as scope.
 
 **Smart-filter ideas.** *Minimum-disruption reflow* (preset) · *Promise-first reflow* (preset) · *Material-aware reflow* (feeds readiness into constraints).
+
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
 
 **Out of scope.** The solver itself.
 
@@ -311,6 +319,8 @@ const mrpFilterSchema: FilterSchema = {
 
 **Smart-filter ideas.** *Material at short-supply risk* (on-hand + on-order + demand; rank by days-of-cover) · *PO suggestion now* (MRP says reorder, no PO exists) · *Demand spikes* (weekly req > 2× rolling-4-week avg) · *Substitutable shortages* (alternate SKU has stock).
 
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
+
 **Out of scope.** Pegging editor; forecast input UI.
 
 ---
@@ -357,6 +367,8 @@ const purchaseFilterSchema: FilterSchema = {
 **Required data work.** Replace the hand-rolled job pill row (`PlanPurchase.tsx:301-316`) with the schema's `job` multi facet (today: single). `alternateSupplier` needs `hasAlternates: boolean` per material. `shortfallValue` derived from `shortfallQty × unitCost`.
 
 **Smart-filter ideas.** *Supplier OTD declining* · *Consolidation candidates* (same supplier + `requiredBy` within 5 days) · *Currency risk* · *Reorder now or pay later* (1-week delay pushes a downstream job late).
+
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
 
 **Out of scope.** PO creation flow.
 
@@ -406,6 +418,8 @@ const nestingFilterSchema: FilterSchema = {
 **Required data work.** Sheets need `material, gauge, sheetSize, yieldPercent, machineId, cutDate, status`. Yield bands derived from `yieldPercent`. Sheet-layout view reuses the existing SVG geometry at full size.
 
 **Smart-filter ideas.** *Re-nest for yield* (alternate part-mix lifts yield) · *Combine adjacent cut dates* (same material + machine within 2 days) · *Off-cut reusable* (off-cut fits pending small parts).
+
+**Endpoint:** `POST /api/smart-filters/plan` — dedicated per-module endpoint.
 
 **Out of scope.** Interactive nest editing.
 
@@ -631,7 +645,7 @@ Pure calculator — filter/view N/A.
 2. **`workCentreId` everywhere it is implied** — Schedule blocks, Routing steps, Activities, QC, Nesting sheets.
 3. **`materialReadiness` + `promiseRisk` derivers on Jobs** — used by Jobs, Schedule, Engine, MRP.
 4. **Assignee shape standardisation** — Jobs / Activities / QC adopt the same `initials` shape Sell uses for `ownerOptions`.
-5. **Group-scoped preset sharing** — Plan leans on this more than Sell did (production huddle, buyer's list); confirm `groupId` matches `ControlGroups.tsx` (open question in `FILTERS-REDESIGN.md` §12).
+5. **Group-scoped preset sharing** — Plan leans on this more than Sell did (production huddle, buyer's list); confirm `groupId` matches `ControlGroups.tsx` (confirmed — `groupId` = `control_groups.id`).
 
 ## Rollout order
 
@@ -645,6 +659,6 @@ Pure calculator — filter/view N/A.
 
 ## Out of scope (module-wide)
 
-- Server-backed `SavedView` storage (still localStorage per pilot).
-- Smart-filter v1 wiring (foundation in place; per-screen suggestions land flag-gated in a follow-up).
+- Server-backed `SavedView` storage is now in scope — `saved_views` Postgres table with RLS. `scope: 'group'` uses `ControlGroups` as the registry.
+- Smart-filter v1 wiring: dedicated `POST /api/smart-filters/plan` endpoint (not shared with other AI surfaces). Per-screen suggestions land flag-gated in a follow-up.
 - Plan.Libraries sub-schemas (own audit pass).
