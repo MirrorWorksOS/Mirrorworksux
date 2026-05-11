@@ -36,6 +36,7 @@ import {
 } from 'recharts';
 import { cn } from '@/components/ui/utils';
 import { MachineFormDialog } from './MachineFormDialog';
+import { PredictiveMaintenanceCard } from './PredictiveMaintenanceCard';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -820,6 +821,8 @@ export function ControlMachines() {
         ]}
         formatValue={(v) => String(v)}
       />
+
+      <PredictiveMaintenanceCard />
 
       <PageToolbar>
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search machines..." />
