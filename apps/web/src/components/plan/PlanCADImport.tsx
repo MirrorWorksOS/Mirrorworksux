@@ -18,16 +18,27 @@ import {
   HardDrive,
   Ruler,
   RotateCcw,
+  X,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
+import { Badge } from '../ui/badge';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetClose,
+} from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { staggerContainer, staggerItem } from '@/components/shared/motion/motion-variants';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
+import { ExecutionModelViewer } from '@/components/floor/execution/ExecutionModelViewer';
 import { toast } from 'sonner';
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -84,6 +95,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
   const [scale, setScale] = useState<ScaleOption>('1:1');
   const [customScale, setCustomScale] = useState('1');
   const [showSettings, setShowSettings] = useState(true);
+  const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
 
   // Simulate file import with progress
   const simulateImport = useCallback((fileId: string) => {
@@ -394,7 +406,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                               variant="outline"
                               size="sm"
                               className="h-8 border-[var(--border)] gap-1.5 text-xs"
-                              onClick={() => toast('Opening 3D preview...')}
+                              onClick={() => setPreviewFile(file)}
                             >
                               <Eye className="w-3.5 h-3.5" />
                               Preview
@@ -568,6 +580,52 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
           </Card>
         </div>
       </div>
+
+      <Sheet open={previewFile !== null} onOpenChange={(open) => !open && setPreviewFile(null)}>
+        <SheetContent
+          side="right"
+          showCloseButton={false}
+          className="!w-full sm:!max-w-2xl lg:!max-w-3xl !p-0 overflow-hidden bg-card"
+        >
+          <SheetHeader className="px-6 py-4 border-b border-[var(--border)] flex-row items-start justify-between gap-4 space-y-0">
+            <div className="min-w-0">
+              <SheetTitle className="text-base font-medium text-foreground truncate">
+                {previewFile
+                  ? `${getFileFormat(previewFile.extension)} file: ${previewFile.name}`
+                  : '3D Preview'}
+              </SheetTitle>
+              <SheetDescription className="text-xs text-[var(--neutral-500)] mt-1">
+                Drag to rotate. The preview uses an illustrative sample model.
+              </SheetDescription>
+            </div>
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 shrink-0"
+                aria-label="Close preview"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </SheetClose>
+          </SheetHeader>
+          <div className="relative flex-1 bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] overflow-hidden">
+            {previewFile && (
+              <ExecutionModelViewer
+                src="/models/diff.glb"
+                className="absolute inset-0 w-full h-full"
+              />
+            )}
+            <Badge
+              variant="outline"
+              className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm border-[var(--border)] text-foreground text-xs gap-1.5 py-1.5 px-2.5 shadow-sm"
+            >
+              <Loader2 className="w-3 h-3 animate-spin text-[var(--mw-yellow-400)]" />
+              STEP processing — preview shown is illustrative.
+            </Badge>
+          </div>
+        </SheetContent>
+      </Sheet>
     </PageShell>
   );
 }
