@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { ChevronDown, Crown, Plus } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -12,7 +13,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/ui/utils';
 import { PermissionGrid } from './PermissionGrid';
-import { moduleColors, moduleLabels, type PeopleGroupView, type PeopleModuleAssignmentView, type PeopleUserView } from './people-data';
+import {
+  controlPeopleAuthState,
+  moduleColors,
+  moduleLabels,
+  peopleUsers,
+  type PeopleGroupView,
+  type PeopleModuleAssignmentView,
+  type PeopleUserView,
+} from './people-data';
 import { mergePermissionSets } from '@/lib/contracts/mappers/permissions';
 import type { ModuleKey, PermissionSet } from '@mirrorworks/contracts';
 
@@ -55,6 +64,25 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
   const { resolved, grantedBy } = useMemo(() => resolvePermissions(groupRecords), [groupRecords]);
   const available = groups.filter(group => group.module === moduleKey && !assignment.groupIds.includes(group.id));
   const isLeadForModule = assignment.isLead;
+  const currentModuleLead = useMemo(
+    () => peopleUsers.find(u => u.id !== user.id && u.modules.some(a => a.module === moduleKey && a.isLead)),
+    [moduleKey, user.id],
+  );
+  const isSuperAdmin = controlPeopleAuthState.activeMembership?.orgRole === 'super_admin';
+
+  const handleMakeLead = () => {
+    if (currentModuleLead) {
+      toast.success(
+        `${user.name} is now Lead of ${moduleLabels[moduleKey]}. ${currentModuleLead.name} stepped down to Team.`,
+      );
+    } else {
+      toast.success(`${user.name} is now Lead of ${moduleLabels[moduleKey]}.`);
+    }
+  };
+
+  const handleStepDown = () => {
+    toast.success(`${user.name} stepped down as ${moduleLabels[moduleKey]} Lead.`);
+  };
 
   return (
     <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-6">
@@ -104,6 +132,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
+                  disabled={isLeadForModule}
                   className="h-10 border-[var(--border)] bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
                 >
                   <Plus className="h-4 w-4" />
@@ -120,6 +149,45 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            {isLeadForModule ? (
+              <ConfirmDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    disabled={!isSuperAdmin}
+                    className="h-10 border-[var(--mw-yellow-400)]/40 bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                  >
+                    <Crown className="h-4 w-4 text-[var(--mw-yellow-500)]" />
+                    Step down as Lead
+                  </Button>
+                }
+                title={`Remove ${user.name} as ${moduleLabels[moduleKey]} Lead?`}
+                description={`They will revert to Team and ${moduleLabels[moduleKey]} will have no Lead until one is assigned.`}
+                confirmLabel="Step down"
+                onConfirm={handleStepDown}
+              />
+            ) : (
+              <ConfirmDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    disabled={!isSuperAdmin}
+                    className="h-10 border-[var(--mw-yellow-400)]/40 bg-card px-4 text-[var(--neutral-800)] hover:bg-[var(--mw-yellow-50,theme(colors.yellow.50))]"
+                  >
+                    <Crown className="h-4 w-4 text-[var(--mw-yellow-500)]" />
+                    Make Lead of {moduleLabels[moduleKey]}
+                  </Button>
+                }
+                title={`Make ${user.name} Lead of ${moduleLabels[moduleKey]}?`}
+                description={
+                  currentModuleLead
+                    ? `${currentModuleLead.name} is currently Lead and will step down to Team. ${moduleLabels[moduleKey]} can only have one Lead at a time.`
+                    : `They will have full access to ${moduleLabels[moduleKey]} regardless of group membership.`
+                }
+                confirmLabel="Make Lead"
+                onConfirm={handleMakeLead}
+              />
+            )}
             <ConfirmDialog
               trigger={
                 <Button

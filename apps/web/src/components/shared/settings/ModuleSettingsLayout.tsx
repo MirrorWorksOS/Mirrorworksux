@@ -23,7 +23,9 @@ import { motion } from 'motion/react';
 import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { PlanUsageCard } from './PlanUsageCard';
+import { ModuleLeadRow } from './ModuleLeadRow';
 import { CURRENT_SUBSCRIPTION, type TierName } from '@/lib/subscription';
+import type { ModuleKey } from '@mirrorworks/contracts';
 
 
 // ---------------------------------------------------------------------------
@@ -63,6 +65,8 @@ export interface SettingsPanel {
 interface ModuleSettingsLayoutProps {
   title: string;
   moduleName: string;
+  /** Module key — required for Lead assignment surface. Falls back to lowercased moduleName. */
+  moduleKey?: ModuleKey;
   panels: SettingsPanel[];
   permissionKeys: PermissionKey[];
   defaultGroups: PermissionGroup[];
@@ -121,10 +125,12 @@ function MemberAvatarStack({ members, max = 4 }: { members: GroupMember[]; max?:
 
 function AccessPermissionsPanel({
   moduleName,
+  moduleKey,
   permissionKeys,
   defaultGroups,
 }: {
   moduleName: string;
+  moduleKey: ModuleKey;
   permissionKeys: PermissionKey[];
   defaultGroups: PermissionGroup[];
 }) {
@@ -162,6 +168,9 @@ function AccessPermissionsPanel({
           </>
         }
       />
+
+      {/* Module Lead — singleton, per ARCH 00 §2 */}
+      <ModuleLeadRow moduleKey={moduleKey} moduleName={moduleName} />
 
       {/* Groups list */}
       <div className="space-y-3">
@@ -338,11 +347,13 @@ function AccessPermissionsPanel({
 export function ModuleSettingsLayout({
   title,
   moduleName,
+  moduleKey,
   panels,
   permissionKeys,
   defaultGroups,
   tierName = 'Run',
 }: ModuleSettingsLayoutProps) {
+  const resolvedModuleKey = (moduleKey ?? (moduleName.toLowerCase() as ModuleKey));
   const allPanels: SettingsPanel[] = [
     ...panels,
     {
@@ -352,6 +363,7 @@ export function ModuleSettingsLayout({
       component: () => (
         <AccessPermissionsPanel
           moduleName={moduleName}
+          moduleKey={resolvedModuleKey}
           permissionKeys={permissionKeys}
           defaultGroups={defaultGroups}
         />
