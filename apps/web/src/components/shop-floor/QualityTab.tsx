@@ -338,7 +338,7 @@ export function QualityTab() {
                  </div>
                  <div className="flex justify-between mt-2 text-[10px] text-[var(--neutral-500)]">
                     <span>Material</span>
-                    <span>Operator</span>
+                    <span>Team</span>
                     <span>Machine</span>
                  </div>
                </Card>
