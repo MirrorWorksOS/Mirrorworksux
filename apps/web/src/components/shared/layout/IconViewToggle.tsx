@@ -17,24 +17,31 @@ export interface IconViewToggleProps {
   value: string;
   onChange: (key: string) => void;
   className?: string;
+  /**
+   * `md` (default) — 48px buttons, primary toolbar use.
+   * `sm` — 40px buttons, aligns with facet chips inside `ModuleFilterBar`.
+   */
+  size?: "sm" | "md";
 }
 
 /**
  * Icon-only segmented control (Sell CRM toolbar pattern).
- * Bordered pill track + MW yellow active segment; min 48px touch targets.
+ * Bordered pill track + MW yellow active segment.
  */
 export function IconViewToggle({
   options,
   value,
   onChange,
   className,
+  size = "md",
 }: IconViewToggleProps) {
   return (
     <div
       role="tablist"
       aria-label="View"
       className={cn(
-        "inline-flex rounded-full border border-[var(--border)] bg-[var(--neutral-100)] p-1",
+        "inline-flex rounded-full border border-[var(--border)] bg-[var(--neutral-100)]",
+        size === "sm" ? "p-0.5" : "p-1",
         className,
       )}
     >
@@ -51,7 +58,8 @@ export function IconViewToggle({
             aria-label={opt.label}
             onClick={() => onChange(opt.key)}
             className={cn(
-              "flex h-12 min-h-[48px] w-12 shrink-0 items-center justify-center rounded-full transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
+              "flex shrink-0 items-center justify-center rounded-full transition-colors duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
+              size === "sm" ? "h-9 w-9" : "h-12 min-h-[48px] w-12",
               active
                 ? "bg-[var(--mw-yellow-400)] text-primary-foreground"
                 : "text-muted-foreground hover:bg-[var(--neutral-50)] hover:text-foreground",

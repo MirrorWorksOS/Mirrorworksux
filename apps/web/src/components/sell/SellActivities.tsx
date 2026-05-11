@@ -6,18 +6,21 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  List,
-  Calendar,
-  Plus,
-  X,
+  AlertTriangle,
+  CalendarRange,
+  Check,
   ChevronLeft,
   ChevronRight,
-  Phone,
-  Mail,
-  Users,
   ClipboardList,
+  Calendar,
+  List,
+  Mail,
+  Phone,
+  Plus,
   StickyNote,
-  Check,
+  Target,
+  Users,
+  X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { EventDetailSheet, type CalendarEventDetail } from '@/components/shared/calendar/EventDetailSheet';
@@ -38,10 +41,15 @@ import {
 } from 'date-fns';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer, ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
-import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
+import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
-import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
+import {
+  ModuleFilterBar,
+  applyFilters,
+  registerSystemPresets,
+  useModuleFilters,
+  type FilterSchema,
+} from '@/components/shared/filters';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -67,6 +75,7 @@ import { cn } from '../ui/utils';
 import {
   type ActivityType,
   TEAM_MEMBERS,
+  MOCK_CURRENT_USER_NAME,
 } from '@/components/sell/sell-activity-shared';
 
 type CalendarGranularity = 'month' | 'week' | 'day';
@@ -258,6 +267,105 @@ const STATUS_BADGE: Record<ActivityStatus, { label: string; className: string }>
     className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-warning)] dark:bg-yellow-900/20 dark:text-yellow-300',
   },
 };
+
+/* ------------------------------------------------------------------ */
+/*  Filter schema                                                      */
+/* ------------------------------------------------------------------ */
+
+const MODULE_ID = 'sell.activities';
+
+const activitiesFilterSchema: FilterSchema = {
+  module: MODULE_ID,
+  label: 'Activities',
+  facets: [
+    {
+      id: 'type',
+      label: 'Type',
+      kind: 'multi',
+      pinned: true,
+      icon: ClipboardList,
+      options: [
+        { value: 'call', label: 'Call', color: 'var(--mw-success)' },
+        { value: 'email', label: 'Email', color: 'var(--mw-info)' },
+        { value: 'meeting', label: 'Meeting', color: 'var(--mw-warning)' },
+        { value: 'task', label: 'Task', color: 'var(--neutral-500)' },
+        { value: 'note', label: 'Note', color: 'var(--mw-purple, #7C3AED)' },
+      ],
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      kind: 'multi',
+      pinned: true,
+      options: [
+        { value: 'scheduled', label: 'Scheduled', color: 'var(--mw-info)' },
+        { value: 'in_progress', label: 'In Progress', color: 'var(--mw-warning)' },
+        { value: 'overdue', label: 'Overdue', color: 'var(--mw-error)' },
+        { value: 'completed', label: 'Completed', color: 'var(--neutral-400)' },
+      ],
+    },
+    {
+      id: 'assignedTo',
+      label: 'Assignee',
+      kind: 'select',
+      icon: Users,
+      options: TEAM_MEMBERS.map((m) => ({ value: m, label: m })),
+    },
+    {
+      id: 'dueDate',
+      label: 'Due',
+      kind: 'date',
+      icon: Calendar,
+      placeholder: 'Any date',
+    },
+  ],
+  viewModes: [
+    { id: 'list', label: 'List', icon: List },
+    { id: 'calendar', label: 'Calendar', icon: Calendar },
+  ],
+  defaultView: 'list',
+  dateFacetId: 'dueDate',
+};
+
+registerSystemPresets(MODULE_ID, [
+  {
+    name: 'My tasks today',
+    icon: Target,
+    iconTone: 'yellow',
+    state: {
+      values: { assignedTo: MOCK_CURRENT_USER_NAME, dueDate: todayRange() },
+      search: '',
+      view: 'list',
+    },
+  },
+  {
+    name: 'Overdue — anyone',
+    icon: AlertTriangle,
+    iconTone: 'error',
+    state: { values: { status: ['overdue'] }, search: '', view: 'list' },
+  },
+  {
+    name: 'Next 7 days — my team',
+    icon: CalendarRange,
+    iconTone: 'info',
+    state: {
+      values: { status: ['scheduled', 'in_progress'], dueDate: nextSevenDays() },
+      search: '',
+      view: 'list',
+    },
+  },
+]);
+
+function todayRange(): { from: string; to: string } {
+  const t = new Date().toISOString().slice(0, 10);
+  return { from: t, to: t };
+}
+function nextSevenDays(): { from: string; to: string } {
+  const now = new Date();
+  const end = new Date(now);
+  end.setDate(now.getDate() + 7);
+  return { from: now.toISOString().slice(0, 10), to: end.toISOString().slice(0, 10) };
+}
 
 const OPPORTUNITIES = [
   { id: 'OPP-0138', label: 'OPP-0138 - Sydney Rail Corp' },
@@ -533,8 +641,9 @@ function ActivityCard({
 /* ------------------------------------------------------------------ */
 export function SellActivities() {
   const [activities, setActivities] = useState<Activity[]>(initialActivities);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const filters = useModuleFilters(activitiesFilterSchema);
+  const { state: filterStateValue } = filters;
+  const viewMode = filterStateValue.view as 'list' | 'calendar';
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 3, 1)); // April 2026
   const [calendarGranularity, setCalendarGranularity] = useState<CalendarGranularity>('month');
   const [weekAnchor, setWeekAnchor] = useState(() => new Date(2026, 3, 1));
@@ -543,10 +652,6 @@ export function SellActivities() {
   const [showNewActivity, setShowNewActivity] = useState(false);
   const [form, setForm] = useState<NewActivityForm>(emptyForm);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
-
-  // Filters
-  const [filterType, setFilterType] = useState<ActivityType | 'all'>('all');
-  const [filterStatus, setFilterStatus] = useState<ActivityStatus | 'all'>('all');
 
   // Toggle complete/incomplete
   const handleToggleComplete = (id: string) => {
@@ -560,19 +665,25 @@ export function SellActivities() {
   };
 
   // Filtered activities
-  const filtered = useMemo(() => {
-    return activities.filter((a) => {
-      const matchesSearch =
-        !searchQuery ||
-        a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.opportunity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.contactName.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = filterType === 'all' || a.type === filterType;
-      const matchesStatus = filterStatus === 'all' || a.status === filterStatus;
-      return matchesSearch && matchesType && matchesStatus;
-    });
-  }, [activities, searchQuery, filterType, filterStatus]);
+  const filtered = useMemo(
+    () =>
+      applyFilters({
+        schema: activitiesFilterSchema,
+        state: filterStateValue,
+        rows: activities,
+        getSearchText: (a) => `${a.description} ${a.opportunity} ${a.assignedTo} ${a.contactName}`,
+        getFacetValue: (a, id) => {
+          switch (id) {
+            case 'type': return a.type;
+            case 'status': return a.status;
+            case 'assignedTo': return a.assignedTo;
+            case 'dueDate': return a.dueDate;
+            default: return undefined;
+          }
+        },
+      }),
+    [activities, filterStateValue],
+  );
 
   // Group filtered activities by date
   const groupedActivities = useMemo(() => {
@@ -660,65 +771,16 @@ export function SellActivities() {
         formatValue={(v) => String(v)}
       />
 
-      <PageToolbar>
-        <ToolbarSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search activities..." />
-        <ToolbarSpacer />
-        <ToolbarFilterButton />
-        <IconViewToggle
-          value={viewMode}
-          onChange={(k) => setViewMode(k as 'list' | 'calendar')}
-          options={[
-            { key: 'list', icon: List, label: 'List view' },
-            { key: 'calendar', icon: Calendar, label: 'Calendar view' },
-          ]}
-        />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => setShowNewActivity(true)}>
-          New Activity
-        </ToolbarPrimaryButton>
-      </PageToolbar>
-
-      {/* ---- FILTER BAR ---- */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)] mr-1">
-          Type
-        </span>
-        {(['all', 'call', 'email', 'meeting', 'task', 'note'] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setFilterType(t)}
-            className={cn(
-              'rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors',
-              filterType === t
-                ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
-                : 'border-[var(--border)] bg-card text-[var(--neutral-600)] dark:text-neutral-400 hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800',
-            )}
-          >
-            {t === 'all' ? 'All Types' : TYPE_CONFIG[t].label}
-          </button>
-        ))}
-
-        <div className="mx-2 h-4 w-px bg-[var(--border)]" />
-
-        <span className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)] mr-1">
-          Status
-        </span>
-        {(['all', 'scheduled', 'in_progress', 'overdue', 'completed'] as const).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setFilterStatus(s)}
-            className={cn(
-              'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-              filterStatus === s
-                ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground'
-                : 'border-[var(--border)] bg-card text-[var(--neutral-600)] dark:text-neutral-400 hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-800',
-            )}
-          >
-            {s === 'all' ? 'All Statuses' : STATUS_BADGE[s].label}
-          </button>
-        ))}
-      </div>
+      <ModuleFilterBar
+        schema={activitiesFilterSchema}
+        filters={filters}
+        searchPlaceholder="Search activities…"
+        actions={
+          <ToolbarPrimaryButton icon={Plus} onClick={() => setShowNewActivity(true)}>
+            New Activity
+          </ToolbarPrimaryButton>
+        }
+      />
 
       {/* ---- LIST VIEW ---- */}
       {viewMode === 'list' && (
