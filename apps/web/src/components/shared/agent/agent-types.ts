@@ -17,7 +17,23 @@ export type AgentModule =
 
 export type MessageRole = 'user' | 'agent';
 
-export type MessageContentType = 'text' | 'table' | 'list' | 'suggestion';
+export type MessageContentType = 'text' | 'table' | 'list' | 'suggestion' | 'email-draft';
+
+/** A single email draft attached to an agent message */
+export interface AgentEmailDraft {
+  /** Recipient email address */
+  to: string;
+  /** Email subject line */
+  subject: string;
+  /** Multi-paragraph email body (mock content) */
+  body: string;
+  /** PO number this email is following up on */
+  relatedPo: string;
+  /** Vendor display name for toast + UI */
+  vendor: string;
+  /** How many days the PO is late, for the chip */
+  lateByDays: number;
+}
 
 export interface AgentMessage {
   id: string;
@@ -28,6 +44,8 @@ export interface AgentMessage {
   contentType?: MessageContentType;
   /** Module context at the time the message was sent */
   module?: AgentModule;
+  /** Email drafts when contentType === 'email-draft' */
+  emailDrafts?: AgentEmailDraft[];
 }
 
 export interface AgentConversation {
