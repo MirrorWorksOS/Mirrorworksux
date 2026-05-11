@@ -6,14 +6,16 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Plus, Clock, TrendingUp, Copy, Calendar, WandSparkles, PackageSearch, Truck, Percent } from 'lucide-react';
+import { Send, Plus, Clock, TrendingUp, Copy, Calendar, WandSparkles, PackageSearch, Truck, Percent, Sparkles, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/components/ui/utils';
 import { AgentLogomark } from '@/components/shared/agent/AgentLogomark';
 import { BorderGlow } from '@/components/shared/surfaces/BorderGlow';
 import { toast } from 'sonner';
 import { MirrorWorksAgentCard } from '@/components/shared/ai/MirrorWorksAgentCard';
+import { quotes } from '@/services/mock/data';
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -25,6 +27,14 @@ interface LineItemInput {
   unitCost: number;
   margin: number;
   unitPrice: number;
+  /** When the line was recalled from a past quote, the source quote ref (e.g. "Q-2025-0089"). */
+  sourceQuote?: string;
+  /** ISO or display date of the source quote — used in the source badge tooltip. */
+  sourceDate?: string;
+  /** Customer on the source quote (typically same, but surface differences when present). */
+  sourceCustomer?: string;
+  /** The unit price on the historical line — shown alongside today's unit price in the tooltip. */
+  sourceUnitPrice?: number;
 }
 
 interface QuoteAssistantBarProps {
@@ -68,7 +78,9 @@ const MODE_CONFIG: Record<AssistantMode, {
     icon: PackageSearch,
     placeholder: 'Ask about past pricing, similar jobs, or previous accepted quotes…',
     suggestions: [
+      'Fill from history',
       'Show pricing history for this customer',
+      'What did we charge last time?',
       'Compare to similar quotes',
     ],
   },
@@ -230,8 +242,70 @@ function mockFabricationLabourLine(lower: string, qty: number): LineItemInput {
   };
 }
 
+/**
+ * Pull historical accepted line items for the current customer (or a sensible fallback)
+ * and return draft lines tagged with the source quote each came from.
+ *
+ * Returns null when no historical quotes are available — callers fall back to the
+ * generic pricing-history message in that case.
+ */
+function recallFromHistory(customer: string): { items: LineItemInput[]; primarySource: string } | null {
+  const lowerCustomer = customer.trim().toLowerCase();
+  const accepted = quotes.filter(q => q.status === 'accepted');
+  // Prefer same-customer accepted quotes; otherwise fall back to all accepted quotes
+  // so the demo surface always has something to show.
+  const sameCustomer = accepted.filter(q => q.customerName.toLowerCase() === lowerCustomer);
+  const pool = sameCustomer.length > 0 ? sameCustomer : accepted;
+  if (pool.length === 0) return null;
+
+  // Drain candidate lines, newest-quote-first, deduped by description so the recall
+  // looks curated rather than just a flattened list.
+  const sorted = [...pool].sort((a, b) => (a.date < b.date ? 1 : -1));
+  const seen = new Set<string>();
+  const recalled: LineItemInput[] = [];
+  for (const quote of sorted) {
+    for (const line of quote.lineItems) {
+      const key = line.description.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      recalled.push({
+        description: line.description,
+        sku: line.productId,
+        qty: line.qty,
+        unit: 'each',
+        unitCost: Math.round(line.unitPrice * 0.75 * 100) / 100,
+        margin: 25,
+        unitPrice: line.unitPrice,
+        sourceQuote: quote.ref,
+        sourceDate: quote.date,
+        sourceCustomer: quote.customerName,
+        sourceUnitPrice: line.unitPrice,
+      });
+      if (recalled.length >= 6) break;
+    }
+    if (recalled.length >= 6) break;
+  }
+
+  if (recalled.length === 0) return null;
+  return { items: recalled, primarySource: sorted[0].ref };
+}
+
+const HISTORY_RECALL_REGEX = /\b(fill from history|recall pricing|recall (?:from )?history|use past pricing|historical pricing|what did we charge last time|fill from past|past pricing)\b/i;
+
 function detectIntent(input: string, customer: string, mode: AssistantMode): AssistantResponse {
   const lower = input.toLowerCase();
+
+  if (HISTORY_RECALL_REGEX.test(input)) {
+    const recall = recallFromHistory(customer);
+    if (recall) {
+      return {
+        type: 'line-items',
+        title: `AI populated ${recall.items.length} lines from ${recall.primarySource} history`,
+        body: `Pulled from accepted quotes for ${customer || 'this customer'}. Each line shows the source quote it was recalled from — open the badge to see the original date and price.`,
+        items: recall.items,
+      };
+    }
+  }
 
   if (mode === 'margins' || (lower.includes('margin') && /\d+/.test(lower))) {
     const match = lower.match(/(\d+)/);
@@ -494,6 +568,16 @@ export function QuoteAssistantBar({ customer, lines, onQueueLinesForReview, onUp
                     : undefined
               }
               secondaryAction={{ label: 'Dismiss', onClick: handleDismiss }}
+              headerAction={
+                response.type === 'line-items' && response.items?.some(i => i.sourceQuote)
+                  ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--mw-yellow-100)] px-2 py-0.5 text-[10px] font-semibold text-[var(--mw-yellow-700)]">
+                      <Sparkles className="h-3 w-3" />
+                      AI recalled
+                    </span>
+                  )
+                  : undefined
+              }
               detailContent={
                 response.type === 'line-items' && response.items
                   ? (
@@ -503,8 +587,39 @@ export function QuoteAssistantBar({ customer, lines, onQueueLinesForReview, onUp
                         return (
                           <div key={`${item.description}-${index}`} className="flex items-start gap-2">
                             <Icon className="mt-0.5 h-3.5 w-3.5 text-[var(--mw-yellow-600)]" />
-                            <div>
-                              <p className="text-xs font-medium text-foreground">{item.description}</p>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <p className="text-xs font-medium text-foreground">{item.description}</p>
+                                {item.sourceQuote && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button
+                                        type="button"
+                                        className="inline-flex items-center gap-1 rounded-full bg-[var(--mw-yellow-100)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--mw-yellow-700)] hover:bg-[var(--mw-yellow-200)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]"
+                                      >
+                                        <Receipt className="h-2.5 w-2.5" />
+                                        Source: {item.sourceQuote}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-[240px] text-left">
+                                      <div className="space-y-0.5">
+                                        <p className="font-medium text-foreground">{item.sourceQuote}</p>
+                                        {item.sourceDate && (
+                                          <p className="text-[11px] text-[var(--neutral-500)]">Quoted {item.sourceDate}</p>
+                                        )}
+                                        {item.sourceCustomer && (
+                                          <p className="text-[11px] text-[var(--neutral-500)]">{item.sourceCustomer}</p>
+                                        )}
+                                        {typeof item.sourceUnitPrice === 'number' && (
+                                          <p className="text-[11px] text-[var(--neutral-600)]">
+                                            Unit price at time: ${item.sourceUnitPrice.toFixed(2)}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
                               <p className="text-[11px] text-[var(--neutral-500)]">
                                 {item.qty} {item.unit} · ${item.unitPrice.toFixed(2)} each
                               </p>

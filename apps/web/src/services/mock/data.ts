@@ -407,6 +407,43 @@ export const quotes: Quote[] = [
       { id: 've-003', quoteId: 'qt-007', viewedBy: "Rebecca O'Brien", viewedAt: '2026-04-09T10:00:00Z', source: 'email_link', duration: 30, deviceType: 'mobile' },
     ],
   },
+  // ── Historical accepted quotes — used as the source for the "fill from history" recall surface
+  {
+    id: 'qt-hist-001', ref: 'Q-2025-0089', opportunityId: 'opp-010', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    date: '2025-11-04', expiryDate: '2025-12-04', value: 31200, status: 'accepted',
+    lineItems: [
+      { productId: 'prod-010', description: 'Control Panel Enclosure 600×800', qty: 24, unitPrice: 412, total: 9888 },
+      { productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 48, unitPrice: 139, total: 6672 },
+      { productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 180, unitPrice: 23.80, total: 4284 },
+      { productId: 'LABOUR-FAB', description: 'Fabrication Labour', qty: 96, unitPrice: 92, total: 8832 },
+      { productId: 'CUSTOM', description: 'Powder Coat — RAL 7035 Light Grey', qty: 60, unitPrice: 34, total: 2040 },
+    ],
+    acceptedAt: '2025-11-18T10:14:00Z',
+    acceptedBy: 'James Hartley',
+  },
+  {
+    id: 'qt-hist-002', ref: 'Q-2025-0117', opportunityId: 'opp-010', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    date: '2025-08-21', expiryDate: '2025-09-21', value: 18450, status: 'accepted',
+    lineItems: [
+      { productId: 'prod-004', description: 'Server Rack Chassis 42U', qty: 4, unitPrice: 1225, total: 4900 },
+      { productId: 'prod-002', description: 'Base Plate 200×200 — Mild Steel 6mm', qty: 80, unitPrice: 64, total: 5120 },
+      { productId: 'LABOUR-WLD', description: 'Welding Labour', qty: 42, unitPrice: 102, total: 4284 },
+      { productId: 'CUSTOM', description: 'Powder Coat — RAL 9005 Jet Black', qty: 120, unitPrice: 33, total: 3960 },
+    ],
+    acceptedAt: '2025-09-02T13:40:00Z',
+    acceptedBy: 'James Hartley',
+  },
+  {
+    id: 'qt-hist-003', ref: 'Q-2025-0142', opportunityId: 'opp-010', customerId: 'cust-001', customerName: 'TechCorp Industries',
+    date: '2025-06-12', expiryDate: '2025-07-12', value: 22600, status: 'accepted',
+    lineItems: [
+      { productId: 'prod-010', description: 'Control Panel Enclosure 600×800', qty: 16, unitPrice: 405, total: 6480 },
+      { productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 240, unitPrice: 23.20, total: 5568 },
+      { productId: 'LABOUR-FAB', description: 'Fabrication Labour', qty: 72, unitPrice: 90, total: 6480 },
+    ],
+    acceptedAt: '2025-06-24T09:05:00Z',
+    acceptedBy: 'James Hartley',
+  },
 ];
 
 export const salesOrders: SalesOrder[] = [
