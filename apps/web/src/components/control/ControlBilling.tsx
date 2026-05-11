@@ -25,6 +25,7 @@ import {
 } from '@/lib/subscription';
 import { useCurrentUser } from '@/lib/auth';
 import { AICreditsCard } from './AICreditsCard';
+import { AIUsageMeter } from '@/components/shared/cards/AIUsageMeter';
 
 const MODULES_WITH_LIMITS = ['Sell', 'Plan', 'Make', 'Org'];
 const TIER_ORDER: TierName[] = ['Trial', 'Make', 'Run', 'Operate', 'Enterprise'];
@@ -115,7 +116,7 @@ export function ControlBilling() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <DarkAccentCard
           icon={CreditCard}
           label="Current plan"
@@ -134,6 +135,7 @@ export function ControlBilling() {
           value={CURRENT_SUBSCRIPTION.renewalDate}
           subtext={cycle === 'annual' ? 'Annual billing' : 'Monthly billing'}
         />
+        <AIUsageMeter />
       </div>
 
       <Card className="p-6">
