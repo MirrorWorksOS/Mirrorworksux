@@ -26,6 +26,7 @@ import {
   Plus,
   Sparkles,
   TrendingUp,
+  User as UserIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
@@ -42,6 +43,7 @@ import { staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   ModuleFilterBar,
   applyFilters,
+  getViewer,
   registerSystemPresets,
   useModuleFilters,
   type FilterSchema,
@@ -50,7 +52,7 @@ import {
 import { Card } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 
-import { customers } from '@/services';
+import { customers, employees as centralEmployees } from '@/services';
 import type { Customer } from '@/types/entities';
 
 const MODULE_ID = 'sell.crm';
@@ -59,6 +61,7 @@ const stateOptions = Array.from(new Set(customers.map((c) => c.state).filter(Boo
   value: s,
   label: s,
 }));
+const accountManagerOptions = centralEmployees.map((e) => ({ value: e.id, label: e.name }));
 
 const customersFilterSchema: FilterSchema = {
   module: MODULE_ID,
@@ -94,6 +97,14 @@ const customersFilterSchema: FilterSchema = {
       kind: 'boolean',
       icon: TrendingUp,
     },
+    {
+      id: 'accountManager',
+      label: 'Account manager',
+      kind: 'user',
+      icon: UserIcon,
+      pinned: true,
+      options: accountManagerOptions,
+    },
   ],
   viewModes: [
     { id: 'card', label: 'Card view', icon: Grid3x3 },
@@ -103,6 +114,12 @@ const customersFilterSchema: FilterSchema = {
 };
 
 registerSystemPresets(MODULE_ID, [
+  {
+    name: 'My accounts',
+    icon: UserIcon,
+    iconTone: 'yellow',
+    state: { values: { accountManager: '__me__' }, search: '', view: 'card' },
+  },
   {
     name: 'Active accounts',
     icon: CheckCircle2,
@@ -170,6 +187,7 @@ export function SellCRM() {
         schema: customersFilterSchema,
         state,
         rows: customers,
+        resolveMe: getViewer().userId,
         getSearchText: (c) => `${c.company} ${c.contact} ${c.email}`,
         getFacetValue: (c, id) => {
           switch (id) {
@@ -177,6 +195,7 @@ export function SellCRM() {
             case 'state': return c.state;
             case 'revenue': return c.totalRevenue;
             case 'hasOpenOpportunities': return c.activeOpportunities > 0;
+            case 'accountManager': return c.accountManagerId ?? '';
             default: return undefined;
           }
         },

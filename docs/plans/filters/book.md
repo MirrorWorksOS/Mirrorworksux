@@ -120,11 +120,20 @@ export const bookInvoicesFilterSchema: FilterSchema = {
 
 | Name | Icon | Tone | State |
 |---|---|---|---|
+| My AR invoices | `UserCircle` | `yellow` | `accountManager: '__me__'`, view `board` |
 | Aged debtors > 60 days | `AlertTriangle` | `error`   | `aging: ['61-90','90+']`, `view: 'board'` |
 | Month-end close — unposted | `FileWarning` | `warning` | `status: ['draft']`, `dueDate: thisMonth` |
 | Top 20 by balance due | `DollarSign`  | `warning` | `balanceDue: { from: 5000 }`, sort by balance desc |
 | Disputed invoices | `AlertTriangle` | `error`   | `hasDispute: true` |
 | Xero sync errors | `Zap` | `error`   | `xeroSync: 'error'` |
+
+Add `accountManager` facet to `bookInvoicesFilterSchema`:
+
+```ts
+{ id: 'accountManager', label: 'Account manager', kind: 'user', icon: UserCircle, pinned: true, options: accountManagerOptions },
+```
+
+Seed `accountManagerId` on invoice mock rows (mirrors `Customer.accountManagerId` already added). Resolve `'__me__'` via `resolveMe: getViewer().userId` in `applyFilters`.
 
 **Required data work**
 - Compute `agingBucket(invoice)` helper (port from `SellInvoices.tsx:89-97`).

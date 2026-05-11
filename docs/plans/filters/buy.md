@@ -668,6 +668,12 @@ registerSystemPresets(MODULE_ID, [
     state: { values: { hasDispute: true }, search: '', view: 'list' },
   },
   {
+    name: 'My bills to approve',
+    icon: User,
+    iconTone: 'yellow',
+    state: { values: { approverId: '__me__', approval: 'awaiting' }, search: '', view: 'list' },
+  },
+  {
     name: 'Drafts > 7 days',
     icon: FileWarning,
     iconTone: 'neutral',
@@ -676,10 +682,17 @@ registerSystemPresets(MODULE_ID, [
 ]);
 ```
 
+Add `approverId` facet to `billsFilterSchema` alongside existing facets:
+
+```ts
+{ id: 'approverId', label: 'Approver', kind: 'user', icon: User, options: approverOptions },
+```
+
 ### Required data work
 - `Bill` (`BuyBills.tsx:19`) has `invoiceDate`/`dueDate` as display strings ('Mar 18'). Convert to ISO before this lands.
 - Derive `aging` bucket from `dueDate` vs today (helper already implied by `SellInvoices.tsx:95` `bucket()` pattern — copy that approach).
 - Add `currency`, `approverId`, `hasDispute`, and (for smart filter) historical amounts series per supplier.
+- Seed `approverId` on bill mock rows; resolve `'__me__'` via `resolveMe: getViewer().userId` in `applyFilters`.
 
 ### Smart-filter ideas
 - "Bills with amounts trending up vs prior 6 from same supplier" — price-creep detection; uses supplier+sku invoice history.

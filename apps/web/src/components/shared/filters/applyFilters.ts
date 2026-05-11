@@ -19,10 +19,19 @@ export interface ApplyFiltersOptions<T> {
   getFacetValue: RowFacetExtractor<T>;
   /** Returns the full searchable string for a row. */
   getSearchText: RowSearchExtractor<T>;
+  /**
+   * When provided, the magic token `'__me__'` in any select/user/multi facet
+   * value is replaced with this string before comparison. Typically the
+   * current user's employee id (e.g. `'emp-001'`).
+   */
+  resolveMe?: string;
 }
 
 export function applyFilters<T>(opts: ApplyFiltersOptions<T>): T[] {
-  const { schema, state, rows, getFacetValue, getSearchText } = opts;
+  const { schema, state, rows, getFacetValue, getSearchText, resolveMe } = opts;
+
+  /** Replace the '__me__' sentinel with the current user's id where provided. */
+  const me = (v: string) => (v === '__me__' && resolveMe ? resolveMe : v);
   const search = state.search.trim().toLowerCase();
 
   return rows.filter((row) => {
@@ -40,12 +49,12 @@ export function applyFilters<T>(opts: ApplyFiltersOptions<T>): T[] {
       switch (facet.kind) {
         case "select":
         case "user": {
-          if (rowValue !== value) return false;
+          if (rowValue !== me(String(value))) return false;
           break;
         }
         case "multi":
         case "tag": {
-          const wanted = value as string[];
+          const wanted = (value as string[]).map(me);
           if (Array.isArray(rowValue)) {
             // Row has multiple values (e.g. tags) → keep if intersection non-empty.
             const rowArr = rowValue as string[];

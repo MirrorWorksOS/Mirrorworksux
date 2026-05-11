@@ -413,7 +413,15 @@ const nestingFilterSchema: FilterSchema = {
 };
 ```
 
-**System presets** — `Low yield (< 70%)` (Percent, error) · `Today's cut queue` (Scissors, yellow; `cutDate=today, status=[ready-to-cut]`) · `Off-cuts available` (Layers, info) · `Awaiting material` (Package, warning; `status=[planned]`).
+**System presets** — `My nesting sessions` (User, yellow; `operator: '__me__', status=[planned,ready-to-cut]`) · `Low yield (< 70%)` (Percent, error) · `Today's cut queue` (Scissors, yellow; `cutDate=today, status=[ready-to-cut]`) · `Off-cuts available` (Layers, info) · `Awaiting material` (Package, warning; `status=[planned]`).
+
+Add `operator` facet to `nestingFilterSchema`:
+
+```ts
+{ id: 'operator', label: 'Operator', kind: 'user', icon: User, pinned: true, options: operatorOptions },
+```
+
+Seed `operatorId` on nesting sheet mock rows. Resolve `'__me__'` via `resolveMe: getViewer().userId` in `applyFilters`.
 
 **Required data work.** Sheets need `material, gauge, sheetSize, yieldPercent, machineId, cutDate, status`. Yield bands derived from `yieldPercent`. Sheet-layout view reuses the existing SVG geometry at full size.
 

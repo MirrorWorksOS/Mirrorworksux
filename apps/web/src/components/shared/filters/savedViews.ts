@@ -30,8 +30,8 @@ export interface ViewerIdentity {
 }
 
 const MOCK_VIEWER: ViewerIdentity = {
-  userId: "u-001",
-  userName: "Matt",
+  userId: "emp-001",   // Sarah Chen — matches AuthContext defaultInternalIdentity() fallback
+  userName: "Sarah Chen",
   role: "lead",
   groupId: "g-sales",
   groupName: "Sales Team",

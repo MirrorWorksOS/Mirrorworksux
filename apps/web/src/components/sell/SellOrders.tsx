@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
-import { salesOrders, customers as centralCustomers } from '@/services';
+import { salesOrders, customers as centralCustomers, employees as centralEmployees } from '@/services';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -47,6 +47,7 @@ import { staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   ModuleFilterBar,
   applyFilters,
+  getViewer,
   registerSystemPresets,
   useModuleFilters,
   type FilterSchema,
@@ -66,6 +67,7 @@ interface Order {
   deliveryDate: string;
   status: OrderStatus;
   total: number;
+  repId?: string;
   jobReference?: string;
 }
 
@@ -77,6 +79,7 @@ const mockOrders: Order[] = salesOrders.map((so) => ({
   deliveryDate: so.deliveryDate,
   status: so.status as OrderStatus,
   total: so.total,
+  repId: so.repId,
   jobReference: so.jobId,
 }));
 
@@ -91,6 +94,7 @@ const ORDER_STATUS_LABEL: Record<OrderStatus, { status: StatusKey; label: string
 
 const MODULE_ID = 'sell.orders';
 const customerOptions = centralCustomers.map((c) => ({ value: c.company, label: c.company }));
+const repOptions = centralEmployees.map((e) => ({ value: e.id, label: e.name }));
 
 const ordersFilterSchema: FilterSchema = {
   module: MODULE_ID,
@@ -107,6 +111,7 @@ const ordersFilterSchema: FilterSchema = {
         color: ORDER_STATUS_LABEL[s].color,
       })),
     },
+    { id: 'rep', label: 'Rep', kind: 'user', icon: UserIcon, pinned: true, options: repOptions },
     { id: 'customer', label: 'Customer', kind: 'select', icon: UserIcon, options: customerOptions },
     { id: 'value', label: 'Value', kind: 'range', icon: DollarSign },
     { id: 'hasJob', label: 'Linked to job', kind: 'boolean', icon: LinkIcon },
@@ -121,6 +126,12 @@ const ordersFilterSchema: FilterSchema = {
 };
 
 registerSystemPresets(MODULE_ID, [
+  {
+    name: 'My orders',
+    icon: UserIcon,
+    iconTone: 'yellow',
+    state: { values: { rep: '__me__' }, search: '', view: 'list' },
+  },
   {
     name: 'Awaiting confirmation',
     icon: Clock,
@@ -240,10 +251,12 @@ export function SellOrders() {
         schema: ordersFilterSchema,
         state,
         rows: mockOrders,
+        resolveMe: getViewer().userId,
         getSearchText: (o) => `${o.orderNumber} ${o.customer}`,
         getFacetValue: (o, id) => {
           switch (id) {
             case 'status': return o.status;
+            case 'rep': return o.repId ?? '';
             case 'customer': return o.customer;
             case 'value': return o.total;
             case 'hasJob': return Boolean(o.jobReference);

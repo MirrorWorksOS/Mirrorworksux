@@ -40,6 +40,7 @@ import { staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   ModuleFilterBar,
   applyFilters,
+  getViewer,
   registerSystemPresets,
   useModuleFilters,
   type FilterSchema,
@@ -65,6 +66,7 @@ const mockOpportunities: Opportunity[] = centralOpportunities.map((o) => ({
   value: o.value,
   expectedClose: o.expectedClose,
   assignedTo: o.assignedToInitials,
+  ownerId: o.assignedTo,
   priority: o.priority,
   stage: o.stage,
   probabilityPercent: o.probabilityPercent,
@@ -95,7 +97,7 @@ const getPriorityBadge = (priority: Priority) => {
 
 const MODULE_ID = 'sell.opportunities';
 
-const ownerOptions = centralEmployees.map((e) => ({ value: e.initials, label: e.name }));
+const ownerOptions = centralEmployees.map((e) => ({ value: e.id, label: e.name }));
 const customerOptions = centralCustomers.map((c) => ({ value: c.company, label: c.company }));
 const tagOptions = Array.from(
   new Set(centralOpportunities.flatMap((o) => o.tags ?? [])),
@@ -179,6 +181,16 @@ const opportunitiesFilterSchema: FilterSchema = {
 // Seed system presets once at module load (idempotent).
 registerSystemPresets(MODULE_ID, [
   {
+    name: 'My pipeline',
+    icon: User,
+    iconTone: 'yellow',
+    state: {
+      values: { owner: '__me__', stage: ['new', 'qualified', 'proposal', 'negotiation'] },
+      search: '',
+      view: 'kanban',
+    },
+  },
+  {
     name: 'Closing this month',
     icon: Target,
     iconTone: 'yellow',
@@ -242,12 +254,13 @@ export function SellOpportunities() {
         schema: opportunitiesFilterSchema,
         state,
         rows: opportunities,
+        resolveMe: getViewer().userId,
         getSearchText: (o) => `${o.title} ${o.customer}`,
         getFacetValue: (o, id) => {
           switch (id) {
             case 'stage': return o.stage;
             case 'priority': return o.priority;
-            case 'owner': return o.assignedTo;
+            case 'owner': return o.ownerId;
             case 'customer': return o.customer;
             case 'tags': return o.tags;
             case 'value': return o.value;

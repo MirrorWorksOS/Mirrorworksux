@@ -38,6 +38,7 @@ import { staggerItem } from '@/components/shared/motion/motion-variants';
 import {
   ModuleFilterBar,
   applyFilters,
+  getViewer,
   registerSystemPresets,
   useModuleFilters,
   type FilterSchema,
@@ -45,7 +46,7 @@ import {
 
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { quotes as centralQuotes, customers as centralCustomers } from '@/services';
+import { quotes as centralQuotes, customers as centralCustomers, employees as centralEmployees } from '@/services';
 import { QuoteViewBadge } from '@/components/sell/QuoteViewActivity';
 import type { QuoteViewEvent } from '@/types/entities';
 
@@ -60,6 +61,7 @@ interface Quote {
   status: QuoteStatus;
   created: string;
   validUntil: string;
+  repId?: string;
   viewEvents?: QuoteViewEvent[];
 }
 
@@ -72,6 +74,7 @@ const mockQuotes: Quote[] = centralQuotes.map((q) => ({
   status: q.status as QuoteStatus,
   created: q.date,
   validUntil: q.expiryDate,
+  repId: q.repId,
   viewEvents: q.viewEvents,
 }));
 
@@ -87,6 +90,7 @@ const STATUS_VARIANT: Record<QuoteStatus, { variant: 'neutral' | 'info' | 'succe
 const MODULE_ID = 'sell.quotes';
 
 const customerOptions = centralCustomers.map((c) => ({ value: c.company, label: c.company }));
+const repOptions = centralEmployees.map((e) => ({ value: e.id, label: e.name }));
 
 const quotesFilterSchema: FilterSchema = {
   module: MODULE_ID,
@@ -103,6 +107,7 @@ const quotesFilterSchema: FilterSchema = {
         color: STATUS_VARIANT[s].color,
       })),
     },
+    { id: 'rep', label: 'Rep', kind: 'user', icon: UserIcon, pinned: true, options: repOptions },
     { id: 'customer', label: 'Customer', kind: 'select', icon: UserIcon, options: customerOptions },
     { id: 'value', label: 'Value', kind: 'range', icon: DollarSign },
     { id: 'opened', label: 'Viewed by customer', kind: 'boolean', icon: Eye },
@@ -123,6 +128,12 @@ const quotesFilterSchema: FilterSchema = {
 };
 
 registerSystemPresets(MODULE_ID, [
+  {
+    name: 'My quotes',
+    icon: UserIcon,
+    iconTone: 'yellow',
+    state: { values: { rep: '__me__' }, search: '', view: 'list' },
+  },
   {
     name: 'Expiring this week',
     icon: AlarmClock,
@@ -229,10 +240,12 @@ export function SellQuotes() {
         schema: quotesFilterSchema,
         state,
         rows: mockQuotes,
+        resolveMe: getViewer().userId,
         getSearchText: (q) => `${q.quoteNumber} ${q.customer} ${q.opportunity}`,
         getFacetValue: (q, id) => {
           switch (id) {
             case 'status': return q.status;
+            case 'rep': return q.repId ?? '';
             case 'customer': return q.customer;
             case 'value': return q.value;
             case 'opened': return (q.viewEvents?.length ?? 0) > 0;
