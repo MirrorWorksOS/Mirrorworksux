@@ -105,8 +105,8 @@ export function AgentChat({ currentModule }: AgentChatProps) {
     const delay = 800 + Math.random() * 1200; // 0.8-2s delay
 
     setTimeout(() => {
-      const { content, contentType } = getAgentResponse(trimmed, currentModule);
-      addAgentMessage(content, contentType);
+      const { content, contentType, emailDrafts } = getAgentResponse(trimmed, currentModule);
+      addAgentMessage(content, contentType, emailDrafts);
     }, delay);
   }, [inputValue, isTyping, currentModule, addUserMessage, addAgentMessage, setIsTyping, setHasProactiveInsight]);
 
@@ -127,8 +127,8 @@ export function AgentChat({ currentModule }: AgentChatProps) {
     setIsTyping(true);
     const delay = 800 + Math.random() * 1200;
     setTimeout(() => {
-      const { content, contentType } = getAgentResponse(prompt, currentModule);
-      addAgentMessage(content, contentType);
+      const { content, contentType, emailDrafts } = getAgentResponse(prompt, currentModule);
+      addAgentMessage(content, contentType, emailDrafts);
     }, delay);
   };
 

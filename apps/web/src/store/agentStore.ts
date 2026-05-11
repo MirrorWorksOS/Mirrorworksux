@@ -75,7 +75,11 @@ interface AgentStoreState extends PersistedState {
 
   // Message actions
   addUserMessage: (content: string, module: AgentModule) => void;
-  addAgentMessage: (content: string, contentType?: AgentMessage['contentType']) => void;
+  addAgentMessage: (
+    content: string,
+    contentType?: AgentMessage['contentType'],
+    emailDrafts?: AgentMessage['emailDrafts'],
+  ) => void;
   setIsTyping: (typing: boolean) => void;
   setHasProactiveInsight: (has: boolean) => void;
 
@@ -224,7 +228,7 @@ export const useAgentStore = create<AgentStoreState>((set, get) => ({
     });
   },
 
-  addAgentMessage: (content, contentType = 'text') => {
+  addAgentMessage: (content, contentType = 'text', emailDrafts) => {
     const s = get();
     const convId = s.currentConversationId;
     if (!convId) return;
@@ -235,6 +239,7 @@ export const useAgentStore = create<AgentStoreState>((set, get) => ({
       content,
       timestamp: Date.now(),
       contentType,
+      ...(emailDrafts ? { emailDrafts } : {}),
     };
 
     set((state) => {

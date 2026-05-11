@@ -12,6 +12,7 @@ import { AgentLogomarkAnimated } from './AgentLogomarkAnimated';
 import { motion } from 'motion/react';
 import { cn } from '@/components/ui/utils';
 import type { AgentMessage as AgentMessageType } from './agent-types';
+import { AgentEmailDraftCard } from './AgentEmailDraftCard';
 
 // ---------------------------------------------------------------------------
 // Simple Markdown Renderer
@@ -278,6 +279,9 @@ export function AgentMessageBubble({ message, index = 0 }: AgentMessageProps) {
           {isAgent ? (
             <div className="agent-markdown-content">
               {renderMarkdown(message.content)}
+              {message.contentType === 'email-draft' && message.emailDrafts && message.emailDrafts.length > 0 && (
+                <AgentEmailDraftCard drafts={message.emailDrafts} />
+              )}
             </div>
           ) : (
             <p className="text-[13px] leading-relaxed whitespace-pre-wrap">

@@ -5,7 +5,7 @@
  * for the prototype. Designed for SMB metal fabrication context.
  */
 
-import type { AgentModule, ModuleContext, QuickAction } from './agent-types';
+import type { AgentEmailDraft, AgentModule, ModuleContext, QuickAction } from './agent-types';
 
 // ---------------------------------------------------------------------------
 // Module Contexts — quick actions and descriptions per module
@@ -38,6 +38,7 @@ export const MODULE_CONTEXTS: Record<AgentModule, ModuleContext> = {
     description: 'Purchase orders and suppliers',
     quickActions: [
       { label: 'Pending POs', prompt: 'Show me pending purchase orders' },
+      { label: 'Chase late POs', prompt: 'Chase late purchase orders' },
       { label: 'Low stock alerts', prompt: 'Are any materials running low?' },
       { label: 'Supplier performance', prompt: 'How are our suppliers performing on delivery times?' },
     ],
@@ -292,15 +293,76 @@ const FALLBACK_RESPONSES = [
 ];
 
 // ---------------------------------------------------------------------------
+// Email Draft Scenario — "Chase late POs"
+// ---------------------------------------------------------------------------
+
+const CHASE_LATE_PO_TRIGGERS = [
+  'chase late po',
+  'chase late purchase order',
+  'chase suppliers',
+  'chase supplier',
+  'follow up po',
+  'follow up purchase order',
+  'follow-up po',
+];
+
+const CHASE_LATE_PO_DRAFTS: AgentEmailDraft[] = [
+  {
+    to: 'orders@acmesteel.com',
+    vendor: 'Acme Steel Supplies',
+    relatedPo: 'PO-2031',
+    lateByDays: 5,
+    subject: 'PO-2031 — 5 days overdue, please confirm dispatch',
+    body: "Hi Acme Steel team,\n\nI'm following up on PO-2031 (12mm MS plate, 18 sheets) which was scheduled for delivery on 06 May. We have not yet received the goods and it is now 5 days overdue, holding up two jobs scheduled to start cutting on Monday.\n\nCould you please confirm the current status, a firm dispatch date, and tracking details as soon as possible? If there is a supply issue we should know about, we'd appreciate a heads-up so we can plan around it.\n\nThanks in advance,\nProcurement, MirrorWorks",
+  },
+  {
+    to: 'dispatch@meridianhardware.com',
+    vendor: 'Meridian Hardware',
+    relatedPo: 'PO-2034',
+    lateByDays: 7,
+    subject: 'PO-2034 — promised 04 May, still outstanding',
+    body: "Hi Meridian dispatch team,\n\nPO-2034 (M16 stainless fasteners and structural washers) was confirmed for delivery on 04 May. As of today it remains outstanding with no update on our end.\n\nPlease confirm whether this order has shipped, and if not, when we can expect it. We have an assembly job waiting on these fasteners and will need to look at alternate sourcing if dispatch is more than 2 working days away.\n\nAppreciate a quick reply,\nProcurement, MirrorWorks",
+  },
+  {
+    to: 'hello@summit-coatings.com',
+    vendor: 'Summit Coatings',
+    relatedPo: 'PO-2027',
+    lateByDays: 3,
+    subject: 'PO-2027 — partial received, balance outstanding',
+    body: "Hi Summit Coatings team,\n\nThank you for the partial delivery on PO-2027 last week. We received 60% of the powder-coated brackets, but the balance (240 pieces in Dulux Monument) remains outstanding and is now 3 days past the agreed completion date.\n\nCould you confirm the schedule for the remaining items? Our downstream finishing operations are paused on this job until we receive the balance.\n\nLet me know if there's anything we can do from our side to unblock it.\n\nThanks,\nProcurement, MirrorWorks",
+  },
+];
+
+function isChaseLatePoIntent(lowerMessage: string): boolean {
+  return CHASE_LATE_PO_TRIGGERS.some((t) => lowerMessage.includes(t));
+}
+
+// ---------------------------------------------------------------------------
 // Response Engine
 // ---------------------------------------------------------------------------
+
+export interface AgentResponsePayload {
+  content: string;
+  contentType?: 'text' | 'table' | 'list' | 'email-draft';
+  emailDrafts?: AgentEmailDraft[];
+}
 
 /** Find the best mock response for a given user message and module context. */
 export function getAgentResponse(
   userMessage: string,
   module: AgentModule,
-): { content: string; contentType?: 'text' | 'table' | 'list' } {
+): AgentResponsePayload {
   const lower = userMessage.toLowerCase();
+
+  // 0. Special-case: "Chase late POs" produces structured email drafts (Buy module)
+  if (module === 'buy' && isChaseLatePoIntent(lower)) {
+    return {
+      content:
+        "I've identified 3 purchase orders that are overdue and drafted follow-up emails for each. Review the drafts below, edit if needed, then send individually or all at once.",
+      contentType: 'email-draft',
+      emailDrafts: CHASE_LATE_PO_DRAFTS,
+    };
+  }
 
   // 1. Check module-specific responses first
   const moduleResponses = MODULE_RESPONSES[module] ?? [];
