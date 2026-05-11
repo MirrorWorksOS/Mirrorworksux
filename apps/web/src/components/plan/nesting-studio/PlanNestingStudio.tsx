@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { motion } from 'motion/react';
 import {
   Calculator,
@@ -111,6 +111,7 @@ function partRowFromQueueItem(q: NestingQueueItem): StudioPartRow {
     heightMm: q.bboxMm.heightMm,
     qty: q.qtyRequired,
     allowRotation: true,
+    allowMirror: false,
     dxfAssetId: q.dxfAssetId,
   };
 }
@@ -126,6 +127,8 @@ function partRowFromProduct(p: Product): StudioPartRow {
     heightMm: p.geometry?.bboxMm.heightMm ?? 0,
     qty: 1,
     allowRotation: p.geometry?.allowRotation ?? true,
+    // Honour the canonical per-product flag — falls back to off.
+    allowMirror: p.geometry?.allowMirror ?? false,
     dxfAssetId: p.geometry?.dxfAssetId,
   };
 }
@@ -133,6 +136,7 @@ function partRowFromProduct(p: Product): StudioPartRow {
 /* ── component ───────────────────────────────────────────────────── */
 
 export function PlanNestingStudio() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const queueItemIdParam = searchParams.get('queueItem');
 
@@ -151,6 +155,7 @@ export function PlanNestingStudio() {
   const [partGapMm, setPartGapMm] = useState<number>(6);
   const [edgeGapMm, setEdgeGapMm] = useState<number>(10);
   const [allowRotationGlobal, setAllowRotationGlobal] = useState<boolean>(true);
+  const [allowMirrorGlobal, setAllowMirrorGlobal] = useState<boolean>(false);
   const [strategy, setStrategy] = useState<NestStrategy>('fast');
 
   const [isSaving, setIsSaving] = useState(false);
@@ -263,15 +268,24 @@ export function PlanNestingStudio() {
       setPartGapMm(config.partGapMm);
       setEdgeGapMm(config.edgeGapMm);
       setAllowRotationGlobal(config.allowRotation);
+      setAllowMirrorGlobal(config.allowMirror);
     }
   }, [config]);
 
   const sheetStock = stocks.find((s) => s.id === sheetStockId);
 
-  // Apply global rotation toggle on top of per-row.
+  // Grain-sensitive sheet stock blocks mirroring regardless of per-part flags.
+  const grainBlocksMirror = Boolean(sheetStock && sheetStock.grainDirection !== 'none');
+
+  // Apply global rotation + mirror toggles on top of per-row.
   const partsForPacker = useMemo<StudioPartRow[]>(
-    () => parts.map((p) => ({ ...p, allowRotation: allowRotationGlobal && p.allowRotation })),
-    [parts, allowRotationGlobal],
+    () =>
+      parts.map((p) => ({
+        ...p,
+        allowRotation: allowRotationGlobal && p.allowRotation,
+        allowMirror: !grainBlocksMirror && allowMirrorGlobal && p.allowMirror,
+      })),
+    [parts, allowRotationGlobal, allowMirrorGlobal, grainBlocksMirror],
   );
 
   const packed = useAsyncPackedNest({
@@ -313,6 +327,7 @@ export function PlanNestingStudio() {
         heightMm: 150,
         qty: 1,
         allowRotation: true,
+        allowMirror: false,
       },
     ]);
   }
@@ -323,6 +338,7 @@ export function PlanNestingStudio() {
     description: string;
     qty: number;
     allowRotation: boolean;
+    allowMirror: boolean;
   }) {
     setParts((prev) => [
       ...prev,
@@ -335,7 +351,9 @@ export function PlanNestingStudio() {
         heightMm: args.asset.bboxMm.heightMm,
         qty: args.qty,
         allowRotation: args.allowRotation,
+        allowMirror: args.allowMirror,
         dxfAssetId: args.asset.id,
+        outerPolygon: args.asset.outerPolygon,
       },
     ]);
   }
@@ -346,6 +364,48 @@ export function PlanNestingStudio() {
 
   function removePart(id: string) {
     setParts((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  /* ── Canvas context-menu actions (operate on the part row) ───────── */
+
+  function rotatePartRow(id: string) {
+    setParts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        // Swap W/H and mirror the polygon so the visual matches.
+        const rotatedPolygon = p.outerPolygon?.map<[number, number]>(
+          ([x, y]) => [p.heightMm - y, x],
+        );
+        return {
+          ...p,
+          widthMm: p.heightMm,
+          heightMm: p.widthMm,
+          outerPolygon: rotatedPolygon,
+        };
+      }),
+    );
+  }
+
+  function duplicatePartRow(id: string) {
+    setParts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, qty: p.qty + 1 } : p)),
+    );
+  }
+
+  function toggleMirrorPartRow(id: string) {
+    setParts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, allowMirror: !p.allowMirror } : p)),
+    );
+  }
+
+  function viewPartRow(id: string) {
+    const part = parts.find((p) => p.id === id);
+    if (!part) return;
+    if (part.productId) {
+      void navigate(`/plan/products/${part.productId}`);
+    } else {
+      toast.info('No product link — this part was added manually or from upload.');
+    }
   }
 
   // ── Save / Confirm ──────────────────────────────────────────────
@@ -678,7 +738,31 @@ export function PlanNestingStudio() {
                   </span>
                 </div>
               </div>
+              <div className="flex flex-col justify-end space-y-1.5">
+                <Label htmlFor="mir">Allow mirror</Label>
+                <div className="flex items-center gap-2 pt-1">
+                  <Switch
+                    id="mir"
+                    checked={allowMirrorGlobal && !grainBlocksMirror}
+                    onCheckedChange={setAllowMirrorGlobal}
+                    disabled={grainBlocksMirror}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {grainBlocksMirror
+                      ? 'Off · grain'
+                      : allowMirrorGlobal
+                        ? 'Per-part'
+                        : 'Off'}
+                  </span>
+                </div>
+              </div>
             </div>
+            {grainBlocksMirror && (
+              <p className="text-xs text-muted-foreground">
+                Sheet stock has a grain direction — mirroring is disabled to
+                preserve finish orientation.
+              </p>
+            )}
 
             <div className="space-y-1.5">
               <Label>Pack strategy</Label>
@@ -697,7 +781,10 @@ export function PlanNestingStudio() {
                 {strategy === 'tight' && 'Best of 8 sort × shelf strategies. Slower but tighter.'}
                 {strategy === 'polygon' && (
                   <>
-                    True polygon nesting (NFP / SVGnest) is the next step — runs as <span className="font-medium">Tight</span> today and falls back transparently. The DXF&apos;s polygon already rides through to CAM.
+                    Bottom-Left Fill against the true polygon. Honours{' '}
+                    <span className="font-medium">Allow rotation</span> and{' '}
+                    <span className="font-medium">Allow mirror</span> to interlock
+                    slanted parts. Slower than Tight but recovers wasted bbox area.
                   </>
                 )}
               </p>
@@ -715,13 +802,13 @@ export function PlanNestingStudio() {
 
           {/* Parts table */}
           <Card variant="flat" className="mt-6 space-y-4 p-6">
-            <header className="flex items-center justify-between">
+            <header className="space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-[var(--chart-scale-mid)]" strokeWidth={1.5} />
                 <h3 className="text-base font-medium text-foreground">Parts</h3>
                 <Badge variant="secondary">{parts.length} rows</Badge>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-nowrap items-center gap-2 overflow-x-auto">
                 <AddFromQueueDialog items={queueItems} onAdd={addQueueItem} alreadyIds={parts.map((p) => p.queueItemId).filter((x): x is string => Boolean(x))} />
                 <AddFromLibraryDialog products={products} onAdd={addProduct} />
                 <UploadDxfDialog onAdd={addDxfPart} />
@@ -745,6 +832,7 @@ export function PlanNestingStudio() {
                     <TableHead className="text-right">H</TableHead>
                     <TableHead className="text-right">Qty</TableHead>
                     <TableHead className="text-center">Rot</TableHead>
+                    <TableHead className="text-center">Mir</TableHead>
                     <TableHead>Source</TableHead>
                     <TableHead className="w-8" />
                   </TableRow>
@@ -817,6 +905,14 @@ export function PlanNestingStudio() {
                           onCheckedChange={(v) => updatePart(p.id, { allowRotation: v })}
                         />
                       </TableCell>
+                      <TableCell className="text-center">
+                        <Switch
+                          checked={p.allowMirror && !grainBlocksMirror}
+                          onCheckedChange={(v) => updatePart(p.id, { allowMirror: v })}
+                          disabled={grainBlocksMirror}
+                          aria-label="Allow mirror"
+                        />
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           {p.sourceKind === 'queue' && p.woNumber ? p.woNumber : null}
@@ -872,6 +968,27 @@ export function PlanNestingStudio() {
                 sheet={selectedSheet}
                 sheetStock={sheetStock}
                 parts={partsForPacker}
+                mirrorBlockedByGrain={grainBlocksMirror}
+                onRotatePart={(partIdx) => {
+                  const row = partsForPacker[partIdx];
+                  if (row) rotatePartRow(row.id);
+                }}
+                onMirrorPart={(partIdx) => {
+                  const row = partsForPacker[partIdx];
+                  if (row) toggleMirrorPartRow(row.id);
+                }}
+                onRemovePart={(partIdx) => {
+                  const row = partsForPacker[partIdx];
+                  if (row) removePart(row.id);
+                }}
+                onDuplicatePart={(partIdx) => {
+                  const row = partsForPacker[partIdx];
+                  if (row) duplicatePartRow(row.id);
+                }}
+                onViewPart={(partIdx) => {
+                  const row = partsForPacker[partIdx];
+                  if (row) viewPartRow(row.id);
+                }}
               />
             ) : (
               <div className="rounded-md border border-dashed border-[var(--neutral-300)] p-12 text-center text-sm text-muted-foreground">

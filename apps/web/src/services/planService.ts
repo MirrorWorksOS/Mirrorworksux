@@ -318,6 +318,8 @@ export const planService = {
     /** Internal cut length (holes / inner contours). */
     innerCutMm?: number;
     holeCount?: number;
+    /** Outer contour in bbox-local coordinates [0..W] × [0..H]. */
+    outerPolygon?: [number, number][];
   }): Promise<DxfAsset> {
     await delay();
     const id = `dxf-${Math.random().toString(36).slice(2, 9)}`;
@@ -334,6 +336,7 @@ export const planService = {
       holeCount: input.holeCount ?? 0,
       areaMm2: input.bboxMm.widthMm * input.bboxMm.heightMm,
       layers: ['CUT'],
+      outerPolygon: input.outerPolygon,
       source: 'nest_upload',
     };
     mock.dxfAssets.unshift(asset);

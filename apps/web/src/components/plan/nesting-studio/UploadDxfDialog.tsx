@@ -38,6 +38,7 @@ export interface UploadDxfDialogProps {
     description: string;
     qty: number;
     allowRotation: boolean;
+    allowMirror: boolean;
   }) => void;
 }
 
@@ -57,11 +58,17 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
   const [heightMm, setHeightMm] = useState<number>(150);
   const [qty, setQty] = useState<number>(1);
   const [allowRotation, setAllowRotation] = useState(true);
+  const [allowMirror, setAllowMirror] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [overrideDims, setOverrideDims] = useState(false);
   const [parsed, setParsed] = useState<{
     perimeterMm: number;
     holeCount: number;
     autoFilled: boolean;
+    /** Outer contour in bbox-local coords [0..parsedW] × [0..parsedH]. */
+    outerPolygon: [number, number][];
+    parsedWidthMm: number;
+    parsedHeightMm: number;
   } | null>(null);
 
   function reset() {
@@ -72,7 +79,9 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
     setHeightMm(150);
     setQty(1);
     setAllowRotation(true);
+    setAllowMirror(false);
     setBusy(false);
+    setOverrideDims(false);
     setParsed(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
@@ -94,17 +103,39 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
       if (result.bboxMm.widthMm > 0 && result.bboxMm.heightMm > 0) {
         setWidthMm(Math.round(result.bboxMm.widthMm));
         setHeightMm(Math.round(result.bboxMm.heightMm));
+        // Normalize polygon to bbox-local coords so it lives in [0..W] × [0..H].
+        const { minX, minY } = result.bboxMm;
+        const normalized: [number, number][] = result.outerPolygon.map(
+          ([x, y]) => [x - minX, y - minY],
+        );
         setParsed({
           perimeterMm: result.totalCutLengthMm,
           holeCount: result.holeCount,
           autoFilled: true,
+          outerPolygon: normalized,
+          parsedWidthMm: result.bboxMm.widthMm,
+          parsedHeightMm: result.bboxMm.heightMm,
         });
       } else {
-        setParsed({ perimeterMm: 0, holeCount: 0, autoFilled: false });
+        setParsed({
+          perimeterMm: 0,
+          holeCount: 0,
+          autoFilled: false,
+          outerPolygon: [],
+          parsedWidthMm: 0,
+          parsedHeightMm: 0,
+        });
       }
     } catch {
       // Parser threw — keep manual defaults, surface the failure subtly.
-      setParsed({ perimeterMm: 0, holeCount: 0, autoFilled: false });
+      setParsed({
+        perimeterMm: 0,
+        holeCount: 0,
+        autoFilled: false,
+        outerPolygon: [],
+        parsedWidthMm: 0,
+        parsedHeightMm: 0,
+      });
     }
   }
 
@@ -119,11 +150,19 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
     }
     setBusy(true);
     try {
+      // If the user edited the dims, scale the polygon so it still fits.
+      let polygon: [number, number][] | undefined;
+      if (parsed && parsed.outerPolygon.length > 0 && parsed.parsedWidthMm > 0 && parsed.parsedHeightMm > 0) {
+        const sx = widthMm / parsed.parsedWidthMm;
+        const sy = heightMm / parsed.parsedHeightMm;
+        polygon = parsed.outerPolygon.map(([x, y]) => [x * sx, y * sy]);
+      }
       const asset = await planService.createDxfAsset({
         fileName,
         bboxMm: { widthMm, heightMm },
         perimeterMm: parsed?.perimeterMm,
         holeCount: parsed?.holeCount,
+        outerPolygon: polygon,
       });
       onAdd({
         asset,
@@ -131,6 +170,7 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
         description,
         qty,
         allowRotation,
+        allowMirror,
       });
       toast.success(`Added ${asset.fileName} to nest`);
       setOpen(false);
@@ -152,8 +192,8 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
         <DialogHeader>
           <DialogTitle>Upload DXF</DialogTitle>
           <DialogDescription>
-            The DXF rides through to the operator&apos;s CAM. For nesting we
-            use the bbox you confirm below.
+            The DXF rides through to the operator&apos;s CAM. Dimensions are
+            read from the file — override only if the parse looks wrong.
           </DialogDescription>
         </DialogHeader>
 
@@ -199,64 +239,106 @@ export function UploadDxfDialog({ onAdd }: UploadDxfDialogProps) {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="upd-w">Width (mm)</Label>
-                  <Input
-                    id="upd-w"
-                    type="number"
-                    min={1}
-                    value={widthMm}
-                    onChange={(e) => setWidthMm(Number(e.target.value))}
-                    className="font-mono"
-                  />
+              {parsed?.autoFilled && !overrideDims ? (
+                <div className="rounded-md bg-[var(--neutral-50)] p-3 text-sm">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <div>
+                      <span className="font-mono font-medium text-foreground">
+                        {widthMm}×{heightMm} mm
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {parsed.perimeterMm > 0 ? (
+                          <> · cut length <span className="font-mono">{Math.round(parsed.perimeterMm)} mm</span></>
+                        ) : null}
+                        {parsed.holeCount > 0 ? (
+                          <> · {parsed.holeCount} hole{parsed.holeCount === 1 ? '' : 's'}</>
+                        ) : null}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground underline hover:text-foreground"
+                      onClick={() => setOverrideDims(true)}
+                    >
+                      Override
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    <Label htmlFor="upd-qty" className="text-xs">Qty</Label>
+                    <Input
+                      id="upd-qty"
+                      type="number"
+                      min={1}
+                      value={qty}
+                      onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+                      className="mt-1 w-24 font-mono"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="upd-h">Height (mm)</Label>
-                  <Input
-                    id="upd-h"
-                    type="number"
-                    min={1}
-                    value={heightMm}
-                    onChange={(e) => setHeightMm(Number(e.target.value))}
-                    className="font-mono"
-                  />
+              ) : (
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="upd-w">Width (mm)</Label>
+                    <Input
+                      id="upd-w"
+                      type="number"
+                      min={1}
+                      value={widthMm}
+                      onChange={(e) => setWidthMm(Number(e.target.value))}
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="upd-h">Height (mm)</Label>
+                    <Input
+                      id="upd-h"
+                      type="number"
+                      min={1}
+                      value={heightMm}
+                      onChange={(e) => setHeightMm(Number(e.target.value))}
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="upd-qty">Qty</Label>
+                    <Input
+                      id="upd-qty"
+                      type="number"
+                      min={1}
+                      value={qty}
+                      onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+                      className="font-mono"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="upd-qty">Qty</Label>
-                  <Input
-                    id="upd-qty"
-                    type="number"
-                    min={1}
-                    value={qty}
-                    onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-                    className="font-mono"
+              )}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="upd-rot"
+                    checked={allowRotation}
+                    onCheckedChange={setAllowRotation}
                   />
+                  <Label htmlFor="upd-rot" className="text-sm">
+                    Allow rotation (0° / 90°)
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="upd-mir"
+                    checked={allowMirror}
+                    onCheckedChange={setAllowMirror}
+                  />
+                  <Label htmlFor="upd-mir" className="text-sm">
+                    Allow mirror
+                  </Label>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="upd-rot"
-                  checked={allowRotation}
-                  onCheckedChange={setAllowRotation}
-                />
-                <Label htmlFor="upd-rot" className="text-sm">
-                  Allow rotation (0° / 90°)
-                </Label>
-              </div>
-              <p className="rounded-md bg-[var(--neutral-50)] p-2 text-xs text-muted-foreground">
-                {parsed?.autoFilled ? (
-                  <>
-                    Parsed bbox <span className="font-mono">{widthMm}×{heightMm} mm</span>
-                    {parsed.perimeterMm > 0 ? <> · cut length <span className="font-mono">{Math.round(parsed.perimeterMm)} mm</span></> : null}
-                    {parsed.holeCount > 0 ? <> · {parsed.holeCount} hole{parsed.holeCount === 1 ? '' : 's'}</> : null}
-                  </>
-                ) : parsed ? (
-                  <>Couldn&apos;t parse DXF entities — confirm or override the dims manually.</>
-                ) : (
-                  <>The DXF asset is saved with its bbox and rides through to CAM.</>
-                )}
-              </p>
+              {parsed && !parsed.autoFilled && (
+                <p className="rounded-md bg-[var(--neutral-50)] p-2 text-xs text-muted-foreground">
+                  Couldn&apos;t parse DXF entities — confirm or override the dims manually.
+                </p>
+              )}
             </>
           )}
         </div>

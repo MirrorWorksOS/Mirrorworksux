@@ -32,7 +32,20 @@ export interface StudioPartRow {
   heightMm: number;
   qty: number;
   allowRotation: boolean;
+  /**
+   * When true, the part may be mirrored by the polygon nester to interlock
+   * with neighbouring parts. Today's rectangle packer ignores this; it's
+   * carried through so polygon nesting can honour it when it lands.
+   * Defaults off — opt-in, forced off on grain-sensitive sheet stock.
+   */
+  allowMirror: boolean;
   dxfAssetId?: string;
+  /**
+   * Outer contour in part-local coords [0..widthMm] × [0..heightMm]. When
+   * present the canvas renders the true shape; otherwise it falls back to
+   * the bounding-box rectangle. Packing always uses the bbox.
+   */
+  outerPolygon?: [number, number][];
 }
 
 export interface PackedStudioState {
@@ -89,6 +102,7 @@ export function usePackedNest(args: UsePackedNestArgs): PackedStudioState {
       heightMm: p.heightMm,
       qty: p.qty,
       allowRotation: p.allowRotation,
+      allowMirror: p.allowMirror,
     }));
 
     const partGapMm = config?.partGapMm ?? 6;

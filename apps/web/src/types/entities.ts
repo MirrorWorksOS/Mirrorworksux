@@ -118,6 +118,13 @@ export interface ProductGeometry {
   allowRotation: boolean;
   /** Allowed nesting rotations in degrees. */
   rotationStepsDeg: number[];
+  /**
+   * True when the part may be mirrored (flipped) by the nester to improve
+   * yield. Default false — opt-in. Ignored on grain-sensitive sheets, and
+   * by part-specific asymmetric features (bend lines, etches) that the
+   * programmer flags off.
+   */
+  allowMirror: boolean;
   /** True when grain direction must be preserved relative to the sheet. */
   grainSensitive: boolean;
 }
@@ -769,6 +776,12 @@ export interface DxfAsset {
   areaMm2: number;
   /** Layer names found in the DXF. */
   layers: string[];
+  /**
+   * Outer contour of the part in bbox-local coordinates (origin at top-left
+   * of bboxMm, range [0..widthMm] × [0..heightMm]). Used by the Studio
+   * preview to render the true shape. Not used by the rectangle packer.
+   */
+  outerPolygon?: [number, number][];
   /** Where this DXF originated. */
   source: 'product_library' | 'quote_upload' | 'nest_upload' | 'cad_import';
   sourceUploadId?: string;
@@ -815,6 +828,12 @@ export interface MachineNestingConfig {
   allowRotation: boolean;
   /** Allowed rotations in degrees, e.g. [0, 90] or [0, 90, 180, 270]. */
   rotationStepsDeg: number[];
+  /**
+   * Default mirror policy for parts cut on this machine + material combo.
+   * Used to seed the per-part `allowMirror` flag; users can override per
+   * part in the Studio. Forced off when sheet stock has a grain direction.
+   */
+  allowMirror: boolean;
   allowCommonCut: boolean;
   leadInRule: 'auto' | 'corner' | 'midpoint' | 'pierce_only';
   /** Plasma/laser process gas — empty for non-gas processes. */

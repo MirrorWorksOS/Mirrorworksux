@@ -109,6 +109,7 @@ export function PlanNestDetail() {
       heightMm: p.bboxMm.heightMm,
       qty: p.qtyOnSheet,
       allowRotation: true,
+      allowMirror: false,
       productId: p.productId,
       _idx: idx,
     })),

@@ -78,6 +78,10 @@ export function useAsyncPackedNest(args: UseAsyncPackedNestArgs): AsyncPackedNes
         h: p.heightMm,
         q: p.qty,
         r: p.allowRotation,
+        m: p.allowMirror,
+        // Polygon shape affects packing on 'polygon' strategy — include a
+        // cheap fingerprint so the worker re-runs when geometry changes.
+        pg: p.outerPolygon?.length ?? 0,
       })),
       sheetW: sheetStock?.widthMm,
       sheetH: sheetStock?.heightMm,
@@ -106,6 +110,8 @@ export function useAsyncPackedNest(args: UseAsyncPackedNestArgs): AsyncPackedNes
       heightMm: p.heightMm,
       qty: p.qty,
       allowRotation: p.allowRotation,
+      allowMirror: p.allowMirror,
+      outerPolygon: p.outerPolygon,
     }));
 
     const handler = (e: MessageEvent) => {

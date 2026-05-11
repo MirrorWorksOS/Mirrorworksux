@@ -11,6 +11,7 @@ import {
   type PackPart,
   type PackResult,
 } from './rectanglePacker';
+import { packPolygons } from './polygonPacker';
 
 export interface NestRequest {
   reqId: number;
@@ -38,11 +39,11 @@ self.onmessage = (event: MessageEvent<NestRequest>) => {
   } else if (req.strategy === 'tight') {
     result = packTight(req.parts, req.opts);
   } else {
-    // 'polygon' — true polygon nesting (SVGnest / NFP) lands here. Until
-    // then we transparently fall back to tight-nest and report the swap so
-    // the UI can label the result honestly.
-    result = packTight(req.parts, req.opts);
-    fellBackTo = 'tight';
+    // 'polygon' — BLF polygon packer with corner-point candidates and
+    // true-shape collision tests. Consumes outerPolygon, allowRotation,
+    // and allowMirror on each part. Falls back to a rectangle of the part
+    // bbox when no polygon is present.
+    result = packPolygons(req.parts, req.opts);
   }
   const durationMs = Math.round(performance.now() - start);
   const res: NestResponse = { reqId: req.reqId, result, durationMs, fellBackTo };

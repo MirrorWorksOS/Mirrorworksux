@@ -19,6 +19,18 @@ export interface PackPart {
   qty: number;
   /** When false, only the supplied W×H orientation is considered. */
   allowRotation: boolean;
+  /**
+   * When true, the polygon nester may mirror the part (X-flip) to improve
+   * yield. The rectangle packer ignores this — bbox is identical mirrored
+   * or not — but it's plumbed through so polygon nesting can use it.
+   */
+  allowMirror?: boolean;
+  /**
+   * Outer contour in part-local coords [0..widthMm] × [0..heightMm]. Used
+   * only by the polygon packer for true-shape collision tests. The
+   * rectangle packers ignore it.
+   */
+  outerPolygon?: [number, number][];
 }
 
 export interface PackPlacement {
@@ -29,7 +41,12 @@ export interface PackPlacement {
   yMm: number;
   widthMm: number;
   heightMm: number;
-  rotationDeg: 0 | 90;
+  rotationDeg: 0 | 90 | 180 | 270;
+  /**
+   * True when the polygon packer flipped the part along its X axis to fit.
+   * Always false for rectangle packers.
+   */
+  mirror?: boolean;
 }
 
 export interface PackedSheet {

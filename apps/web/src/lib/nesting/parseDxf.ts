@@ -1,10 +1,12 @@
 // ─── Minimal in-house DXF reader for the Nesting Studio ──────────────
-// Parses DXF (R12 ASCII) entities into points and computes a bounding box
-// + cut-length proxy. Not a complete DXF reader — handles LINE, LWPOLYLINE
-// vertices, POLYLINE vertices, ARC (sampled), CIRCLE (sampled), and skips
-// everything else cleanly. Good enough for fab DXFs to extract the bbox
-// the studio needs; for full polygon support a third-party parser would
-// be wired in here without changing the call sites.
+// Parses DXF (R12 ASCII and modern AC1009+) entities into points and
+// computes a bounding box + cut-length proxy. Not a full DXF reader —
+// handles LINE, LWPOLYLINE, POLYLINE/VERTEX/SEQEND, ARC (sampled bbox),
+// and CIRCLE (sampled bbox). Tracks the current SECTION so it only reads
+// geometry out of ENTITIES (BLOCKS / OBJECTS / TABLES are ignored). Falls
+// back to $EXTMIN/$EXTMAX from the HEADER section when no entities are
+// found. Good enough for typical fab DXFs to extract the bbox the
+// studio needs.
 
 export interface ParsedDxf {
   /** Bounding box of all parsed entities, in DXF units (typically mm). */
@@ -28,17 +30,26 @@ interface DxfPair {
   value: string;
 }
 
-/** Parse the raw DXF text into [code, value] pairs. */
+/**
+ * Tokenise raw DXF text into (code, value) pairs.
+ *
+ * DXF is strictly line-paired: every group code line is followed by its
+ * value line, including when the value is an empty string. We must NOT
+ * filter blank lines — doing so misaligns every pair after the first
+ * empty value, which is a common occurrence in CAD-exported DXFs.
+ */
 function tokenize(text: string): DxfPair[] {
+  const lines = text.split(/\r?\n/);
+  // Strip a trailing empty line if the file ends with a newline.
+  if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
   const pairs: DxfPair[] = [];
-  // DXF lines come as alternating "code\nvalue\n" pairs. We split on \r?\n
-  // and zip them. Whitespace-only lines are skipped to be lenient with
-  // hand-edited files.
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
   for (let i = 0; i + 1 < lines.length; i += 2) {
-    const code = Number(lines[i]);
-    const value = lines[i + 1];
-    if (Number.isFinite(code)) pairs.push({ code, value });
+    const codeStr = lines[i].trim();
+    if (codeStr === '') continue;
+    const code = Number(codeStr);
+    if (!Number.isFinite(code)) continue;
+    // Preserve the raw value — string values may be intentionally empty.
+    pairs.push({ code, value: lines[i + 1] ?? '' });
   }
   return pairs;
 }
@@ -51,7 +62,6 @@ interface ParserState {
   cutLength: number;
   circles: number;
   layers: Set<string>;
-  contour: [number, number][];
   bestContour: [number, number][];
 }
 
@@ -62,16 +72,12 @@ function trackPoint(state: ParserState, x: number, y: number) {
   if (y > state.maxY) state.maxY = y;
 }
 
-function pushContour(state: ParserState) {
-  if (state.contour.length > state.bestContour.length) {
-    state.bestContour = state.contour;
-  }
-  state.contour = [];
-}
+const NUMERIC_CODES = new Set([10, 20, 11, 21, 40, 41, 42, 50, 51, 70, 90]);
 
 /**
  * Parse a DXF source string. Tolerant of unknown sections — we only consume
- * entities we recognise and silently skip the rest.
+ * entities we recognise inside the ENTITIES section and silently skip the
+ * rest. Falls back to header $EXTMIN/$EXTMAX when no geometry is found.
  */
 export function parseDxf(source: string): ParsedDxf {
   const pairs = tokenize(source);
@@ -83,45 +89,55 @@ export function parseDxf(source: string): ParsedDxf {
     cutLength: 0,
     circles: 0,
     layers: new Set<string>(),
-    contour: [],
     bestContour: [],
   };
 
-  let i = 0;
-  // Buffer the current entity's interesting fields. We only emit on entity
-  // boundaries (code 0).
-  let currentEntity: string | null = null;
-  let buf: Record<string, number | string | undefined> = {};
+  // Header bbox (collected from $EXTMIN / $EXTMAX) — used as a fallback
+  // when the ENTITIES section is empty or unreadable.
+  const headerExtMin: { x?: number; y?: number } = {};
+  const headerExtMax: { x?: number; y?: number } = {};
+  let lastHeaderVar: string | null = null;
+
+  let section: string | null = null;
+  let entity: string | null = null;
+  let buf: Map<number, string> = new Map();
   let polyVertices: [number, number][] = [];
 
-  function flushEntity() {
-    if (!currentEntity) return;
-    const xRaw = buf[10];
-    const yRaw = buf[20];
-    const x = typeof xRaw === 'number' ? xRaw : NaN;
-    const y = typeof yRaw === 'number' ? yRaw : NaN;
-    const layer = typeof buf[8] === 'string' ? (buf[8] as string) : 'CUT';
-    state.layers.add(layer);
+  function commitContour(verts: [number, number][]) {
+    if (verts.length < 2) return;
+    for (const [x, y] of verts) trackPoint(state, x, y);
+    for (let v = 1; v < verts.length; v++) {
+      const [px, py] = verts[v - 1];
+      const [qx, qy] = verts[v];
+      state.cutLength += Math.hypot(qx - px, qy - py);
+    }
+    if (verts.length > state.bestContour.length) {
+      state.bestContour = verts.slice();
+    }
+  }
 
-    switch (currentEntity) {
+  function flushEntity() {
+    if (!entity) return;
+    const layer = buf.get(8);
+    if (typeof layer === 'string' && layer.length > 0) state.layers.add(layer);
+
+    const num = (code: number): number => {
+      const raw = buf.get(code);
+      return raw === undefined ? NaN : Number(raw);
+    };
+
+    switch (entity) {
       case 'LINE': {
-        const xRaw11 = buf[11];
-        const yRaw21 = buf[21];
-        const x2 = typeof xRaw11 === 'number' ? xRaw11 : NaN;
-        const y2 = typeof yRaw21 === 'number' ? yRaw21 : NaN;
+        const x = num(10), y = num(20), x2 = num(11), y2 = num(21);
         if ([x, y, x2, y2].every(Number.isFinite)) {
           trackPoint(state, x, y);
           trackPoint(state, x2, y2);
           state.cutLength += Math.hypot(x2 - x, y2 - y);
-          // Lines aren't grouped into a contour automatically — we'd need
-          // to walk an adjacency graph. Track them as point candidates.
-          state.contour.push([x, y]);
-          state.contour.push([x2, y2]);
         }
         break;
       }
       case 'CIRCLE': {
-        const r = typeof buf[40] === 'number' ? (buf[40] as number) : NaN;
+        const x = num(10), y = num(20), r = num(40);
         if ([x, y, r].every(Number.isFinite)) {
           trackPoint(state, x - r, y - r);
           trackPoint(state, x + r, y + r);
@@ -131,11 +147,11 @@ export function parseDxf(source: string): ParsedDxf {
         break;
       }
       case 'ARC': {
-        const r = typeof buf[40] === 'number' ? (buf[40] as number) : NaN;
-        const a1 = typeof buf[50] === 'number' ? (buf[50] as number) : 0;
-        const a2 = typeof buf[51] === 'number' ? (buf[51] as number) : 0;
+        const x = num(10), y = num(20), r = num(40);
+        const a1 = Number.isFinite(num(50)) ? num(50) : 0;
+        const a2 = Number.isFinite(num(51)) ? num(51) : 0;
         if ([x, y, r].every(Number.isFinite)) {
-          // Track the arc bbox conservatively as the full circle bbox.
+          // Conservative — track the full circle bbox.
           trackPoint(state, x - r, y - r);
           trackPoint(state, x + r, y + r);
           let sweep = a2 - a1;
@@ -146,106 +162,152 @@ export function parseDxf(source: string): ParsedDxf {
       }
       case 'LWPOLYLINE':
       case 'POLYLINE': {
-        if (polyVertices.length >= 2) {
-          for (let v = 0; v < polyVertices.length; v++) {
-            trackPoint(state, polyVertices[v][0], polyVertices[v][1]);
-          }
-          for (let v = 1; v < polyVertices.length; v++) {
-            const [px, py] = polyVertices[v - 1];
-            const [qx, qy] = polyVertices[v];
-            state.cutLength += Math.hypot(qx - px, qy - py);
-          }
-          // Treat each polyline as a candidate contour; keep the longest.
-          state.contour = polyVertices.slice();
-          pushContour(state);
-        }
-        polyVertices = [];
+        commitContour(polyVertices);
         break;
       }
-      // VERTEX entities are children of POLYLINE; tracked above.
       default:
         break;
     }
 
-    currentEntity = null;
-    buf = {};
+    entity = null;
+    buf = new Map();
+    polyVertices = [];
   }
 
-  while (i < pairs.length) {
+  for (let i = 0; i < pairs.length; i++) {
     const { code, value } = pairs[i];
+
     if (code === 0) {
-      flushEntity();
-      currentEntity = value;
-      buf = {};
-      polyVertices = [];
-      // Special handling for VERTEX which lives inside POLYLINE.
-      if (value === 'VERTEX') {
-        // The next pairs until the next code-0 belong to this vertex.
-        i++;
-        let vx = NaN;
-        let vy = NaN;
-        while (i < pairs.length && pairs[i].code !== 0) {
-          if (pairs[i].code === 10) vx = Number(pairs[i].value);
-          if (pairs[i].code === 20) vy = Number(pairs[i].value);
-          i++;
+      const v = value.trim();
+
+      if (v === 'SECTION') {
+        flushEntity();
+        section = null;
+        // The next pair should be code 2 with the section name.
+        if (i + 1 < pairs.length && pairs[i + 1].code === 2) {
+          section = pairs[i + 1].value.trim();
+          i += 1;
+        }
+        continue;
+      }
+      if (v === 'ENDSEC') {
+        flushEntity();
+        section = null;
+        continue;
+      }
+      if (v === 'EOF') {
+        flushEntity();
+        break;
+      }
+
+      if (section !== 'ENTITIES') {
+        // Outside the ENTITIES section we don't open entities, but we still
+        // need to walk past code-0 markers so the section state machine
+        // stays correct.
+        continue;
+      }
+
+      if (v === 'SEQEND') {
+        // Closes the open POLYLINE — flush with the accumulated vertices.
+        flushEntity();
+        continue;
+      }
+      if (v === 'VERTEX') {
+        // Child of POLYLINE — collect x/y by reading ahead to the next
+        // code-0, then continue (don't flush, the POLYLINE stays open).
+        let vx = NaN, vy = NaN;
+        let layer: string | null = null;
+        let j = i + 1;
+        while (j < pairs.length && pairs[j].code !== 0) {
+          if (pairs[j].code === 10) vx = Number(pairs[j].value);
+          else if (pairs[j].code === 20) vy = Number(pairs[j].value);
+          else if (pairs[j].code === 8) layer = pairs[j].value.trim();
+          j++;
         }
         if (Number.isFinite(vx) && Number.isFinite(vy)) {
           polyVertices.push([vx, vy]);
         }
-        // Reset currentEntity since VERTEX is a child — the next code-0
-        // will be either another VERTEX, SEQEND, or a new entity.
-        currentEntity = null;
+        if (layer) state.layers.add(layer);
+        i = j - 1; // outer loop will increment
         continue;
       }
-      i++;
+
+      // Any other entity start — flush the previous, open a new one.
+      flushEntity();
+      entity = v;
+      buf = new Map();
+      polyVertices = [];
       continue;
     }
 
-    // Numeric codes used for coordinates / radii / angles.
-    if (
-      code === 10 || code === 20 || code === 11 || code === 21 ||
-      code === 40 || code === 50 || code === 51
-    ) {
-      buf[code] = Number(value);
-    } else if (code === 8) {
-      // Layer name.
-      buf[8] = value;
-    } else if (code === 90) {
-      // LWPOLYLINE vertex count — informational only.
-      buf[90] = Number(value);
-    } else if (code === 70) {
-      // LWPOLYLINE flag (1 = closed).
-      buf[70] = Number(value);
+    // Non-code-0 pairs — data for the current section / entity.
+    if (section === 'HEADER') {
+      if (code === 9) {
+        lastHeaderVar = value.trim();
+      } else if (lastHeaderVar === '$EXTMIN') {
+        if (code === 10) headerExtMin.x = Number(value);
+        if (code === 20) headerExtMin.y = Number(value);
+      } else if (lastHeaderVar === '$EXTMAX') {
+        if (code === 10) headerExtMax.x = Number(value);
+        if (code === 20) headerExtMax.y = Number(value);
+      }
+      continue;
     }
 
-    // For LWPOLYLINE the vertices come as a stream of (10, 20) pairs.
-    if (currentEntity === 'LWPOLYLINE' && code === 10) {
-      // Look ahead for the matching 20 code and record the vertex.
-      const x = Number(value);
-      let y = NaN;
-      let j = i + 1;
-      while (j < pairs.length && pairs[j].code !== 20 && pairs[j].code !== 0) j++;
-      if (j < pairs.length && pairs[j].code === 20) {
-        y = Number(pairs[j].value);
+    if (section !== 'ENTITIES' || !entity) continue;
+
+    // LWPOLYLINE: inline (x, y) pairs streamed as (10, 20).
+    if (entity === 'LWPOLYLINE') {
+      if (code === 10) {
+        const x = Number(value);
+        // Look ahead for the next 20 within this entity.
+        let j = i + 1;
+        while (j < pairs.length && pairs[j].code !== 20 && pairs[j].code !== 0) j++;
+        if (j < pairs.length && pairs[j].code === 20) {
+          const y = Number(pairs[j].value);
+          if (Number.isFinite(x) && Number.isFinite(y)) {
+            polyVertices.push([x, y]);
+          }
+        }
+        continue;
       }
-      if (Number.isFinite(x) && Number.isFinite(y)) {
-        polyVertices.push([x, y]);
-      }
+      if (code === 20) continue; // already consumed by the matching 10
+      if (code === 8) buf.set(8, value);
+      continue;
     }
 
-    i++;
+    // For LINE / CIRCLE / ARC, buffer the codes we care about.
+    if (code === 8) {
+      buf.set(8, value);
+    } else if (NUMERIC_CODES.has(code)) {
+      buf.set(code, value);
+    }
   }
   flushEntity();
-  pushContour(state);
 
-  if (!Number.isFinite(state.minX) || !Number.isFinite(state.minY)) {
-    return {
-      bboxMm: { widthMm: 0, heightMm: 0, minX: 0, minY: 0 },
-      totalCutLengthMm: 0,
-      holeCount: 0,
-      layers: [],
-      outerPolygon: [],
-    };
+  // Did we get a bbox from entities?
+  const haveEntityBbox = Number.isFinite(state.minX) && Number.isFinite(state.minY);
+
+  if (!haveEntityBbox) {
+    // Fall back to $EXTMIN / $EXTMAX from the HEADER section.
+    if (
+      typeof headerExtMin.x === 'number' && typeof headerExtMin.y === 'number' &&
+      typeof headerExtMax.x === 'number' && typeof headerExtMax.y === 'number' &&
+      headerExtMax.x > headerExtMin.x && headerExtMax.y > headerExtMin.y
+    ) {
+      state.minX = headerExtMin.x;
+      state.minY = headerExtMin.y;
+      state.maxX = headerExtMax.x;
+      state.maxY = headerExtMax.y;
+    } else {
+      return {
+        bboxMm: { widthMm: 0, heightMm: 0, minX: 0, minY: 0 },
+        totalCutLengthMm: 0,
+        holeCount: 0,
+        layers: [],
+        outerPolygon: [],
+      };
+    }
   }
 
   const widthMm = state.maxX - state.minX;
