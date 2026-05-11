@@ -1,141 +1,72 @@
 # MirrorWorks Documentation
 
-Internal implementation documentation for the current codebase. Organized module-by-module and page-by-page for product/design/engineering onboarding and future AI-assisted work.
+Internal documentation for the MirrorWorks frontend (`apps/web`). Every doc lives under one of five top-level folders. If you can't decide where something goes, that's a sign it doesn't belong yet — write it as a note in the relevant PR first.
 
-## Scope and Method
-- Route inventory from `apps/web/src/routes.tsx` and navigation components.
-- Page docs grounded in routed components under `apps/web/src/components`.
-- Inferred/unclear behavior is called out explicitly when code is mock-heavy or placeholders exist.
+```
+docs/
+├── user/        How to use a feature           (end-user audience)
+├── dev/         How a feature is built         (engineer audience)
+├── audits/      Snapshots + decisions          (CHANGELOG, ADRs, per-module audits)
+├── reference/   Evergreen specs                (architecture docs that rarely change)
+└── plans/       In-flight initiatives          (proposals, owner, target date)
+```
 
-## Modules Index
-- [Platform](./modules/platform/README.md)
-  - [Welcome Dashboard](./modules/platform/welcome-dashboard.md)
-  - [Welcome Dashboard (Alias)](./modules/platform/dashboard-alias.md)
-  - [Notifications](./modules/platform/notifications.md)
-  - [Bridge Wizard](./modules/platform/bridge-wizard.md)
-  - [Floor Home](./modules/platform/floor-home.md)
-  - [Floor Run](./modules/platform/floor-run.md)
-- [Sell](./modules/sell/README.md)
-  - [Sell Dashboard](./modules/sell/dashboard.md)
-  - [CRM](./modules/sell/crm.md)
-  - [Customer Detail](./modules/sell/customer-detail.md)
-  - [Opportunities](./modules/sell/opportunities.md)
-  - [Opportunity Detail](./modules/sell/opportunity-detail.md)
-  - [Sales Orders](./modules/sell/orders.md)
-  - [Sales Order Detail](./modules/sell/order-detail.md)
-  - [Activities](./modules/sell/activities.md)
-  - [Invoices](./modules/sell/invoices.md)
-  - [New Invoice](./modules/sell/new-invoice.md)
-  - [Invoice Detail](./modules/sell/invoice-detail.md)
-  - [Products](./modules/sell/products.md)
-  - [Product Detail](./modules/sell/product-detail.md)
-  - [Quotes](./modules/sell/quotes.md)
-  - [New Quote](./modules/sell/new-quote.md)
-  - [Quote Detail](./modules/sell/quote-detail.md)
-  - [Customer Portal](./modules/sell/customer-portal.md)
-  - [Sell Settings](./modules/sell/settings.md)
-- [Buy](./modules/buy/README.md)
-  - [Buy Dashboard](./modules/buy/dashboard.md)
-  - [Purchase Orders](./modules/buy/orders.md)
-  - [Purchase Order Detail](./modules/buy/order-detail.md)
-  - [Requisitions](./modules/buy/requisitions.md)
-  - [Requisition Detail](./modules/buy/requisition-detail.md)
-  - [Receipts](./modules/buy/receipts.md)
-  - [Suppliers](./modules/buy/suppliers.md)
-  - [Supplier Detail](./modules/buy/supplier-detail.md)
-  - [RFQs](./modules/buy/rfqs.md)
-  - [Bills](./modules/buy/bills.md)
-  - [Products](./modules/buy/products.md)
-  - [Product Detail](./modules/buy/product-detail.md)
-  - [Agreements](./modules/buy/agreements.md)
-  - [MRP Suggestions](./modules/buy/mrp-suggestions.md)
-  - [Planning Grid](./modules/buy/planning-grid.md)
-  - [Vendor Comparison](./modules/buy/vendor-comparison.md)
-  - [Reorder Rules](./modules/buy/reorder-rules.md)
-  - [Reports](./modules/buy/reports.md)
-  - [Buy Settings](./modules/buy/settings.md)
-- [Plan](./modules/plan/README.md)
-  - [Plan Dashboard](./modules/plan/dashboard.md)
-  - [Jobs](./modules/plan/jobs.md)
-  - [Job Detail](./modules/plan/job-detail.md)
-  - [Schedule Engine](./modules/plan/schedule-engine.md)
-  - [Machine I/O](./modules/plan/machine-io.md)
-  - [Purchase Planning](./modules/plan/purchase.md)
-  - [QC Planning](./modules/plan/qc-planning.md)
-  - [Product Studio v2](./modules/plan/product-studio.md)
-  - [Product Studio v2 (Product)](./modules/plan/product-studio-product.md)
-  - [Product Studio Legacy](./modules/plan/product-studio-legacy.md)
-  - [Product Studio Legacy (Product)](./modules/plan/product-studio-legacy-product.md)
-  - [Libraries](./modules/plan/libraries.md)
-  - [What-if](./modules/plan/what-if.md)
-  - [Nesting Studio](./modules/plan/nesting-studio.md)
-  - [Ready to Nest](./modules/plan/nesting-queue.md)
-  - [Nests](./modules/plan/nests.md)
-  - [Nest Detail](./modules/plan/nest-detail.md)
-  - [MRP](./modules/plan/mrp.md)
-  - [Sheet Calculator (legacy)](./modules/plan/sheet-calculator.md)
-  - [Products](./modules/plan/products.md)
-  - [Product Detail](./modules/plan/product-detail.md)
-  - [Plan Settings](./modules/plan/settings.md)
-- [Make](./modules/make/README.md)
-  - [Make Dashboard](./modules/make/dashboard.md)
-  - [Schedule](./modules/make/schedule.md)
-  - [Shop Floor](./modules/make/shop-floor.md)
-  - [Manufacturing Orders](./modules/make/manufacturing-orders.md)
-  - [Manufacturing Order Detail](./modules/make/manufacturing-order-detail.md)
-  - [Quality](./modules/make/quality.md)
-  - [Scrap Analysis](./modules/make/scrap-analysis.md)
-  - [Job Traveler](./modules/make/job-traveler.md)
-  - [CAPA](./modules/make/capa.md)
-  - [Products](./modules/make/products.md)
-  - [Product Detail](./modules/make/product-detail.md)
-  - [Make Settings](./modules/make/settings.md)
-- [Ship](./modules/ship/README.md)
-  - [Ship Dashboard](./modules/ship/dashboard.md)
-  - [Orders](./modules/ship/orders.md)
-  - [Packaging](./modules/ship/packaging.md)
-  - [Shipping](./modules/ship/shipping.md)
-  - [Tracking](./modules/ship/tracking.md)
-  - [Carrier Rates](./modules/ship/carrier-rates.md)
-  - [Scan to Ship](./modules/ship/scan-to-ship.md)
-  - [Returns](./modules/ship/returns.md)
-  - [Warehouse](./modules/ship/warehouse.md)
-  - [Reports](./modules/ship/reports.md)
-  - [Ship Settings](./modules/ship/settings.md)
-- [Control](./modules/control/README.md)
-  - [Control Dashboard](./modules/control/dashboard.md)
-  - [MirrorWorks Bridge](./modules/control/mirrorworks-bridge.md)
-  - [Factory Layout](./modules/control/factory-layout.md)
-  - [Process Builder](./modules/control/process-builder.md)
-  - [Locations](./modules/control/locations.md)
-  - [Machines](./modules/control/machines.md)
-  - [Inventory](./modules/control/inventory.md)
-  - [Purchase Control](./modules/control/purchase.md)
-  - [People](./modules/control/people.md)
-  - [Products](./modules/control/products.md)
-  - [BOMs](./modules/control/boms.md)
-  - [Workflow Designer](./modules/control/workflow-designer.md)
-  - [Shift Manager](./modules/control/shifts.md)
-  - [Maintenance](./modules/control/maintenance.md)
-  - [Tooling](./modules/control/tooling.md)
-  - [Documents](./modules/control/documents.md)
-  - [Gamification](./modules/control/gamification.md)
-  - [Empty States Showcase](./modules/control/empty-states.md)
-- [Book](./modules/book/README.md)
-  - [Book Dashboard](./modules/book/dashboard.md)
-  - [Budget Overview](./modules/book/budget.md)
-  - [Invoices](./modules/book/invoices.md)
-  - [Invoice Detail](./modules/book/invoice-detail.md)
-  - [Expenses](./modules/book/expenses.md)
-  - [Purchase Orders](./modules/book/purchases.md)
-  - [Job Profitability](./modules/book/job-costs.md)
-  - [Job Cost Detail](./modules/book/job-cost-detail.md)
-  - [WIP Valuation](./modules/book/wip.md)
-  - [Cost Variance](./modules/book/cost-variance.md)
-  - [Stock Valuation](./modules/book/stock-valuation.md)
-  - [Reports Gallery](./modules/book/reports.md)
-  - [Book Settings](./modules/book/settings.md)
-  - [Configure Xero Mapping](./modules/book/xero-mapping.md)
+## User docs
 
-## Existing Root Docs
-- Existing docs such as `docs/ai-feature-audit.md`, `docs/sidebar-audit.md`, `docs/product-studio-spec.md`, and `docs/backend-handover.md` are preserved.
+Per-module, per-page. Plain language.
+
+- [Platform](./user/modules/platform/README.md)
+- [Sell](./user/modules/sell/README.md)
+- [Buy](./user/modules/buy/README.md)
+- [Plan](./user/modules/plan/README.md)
+- [Make](./user/modules/make/README.md) *(missing — P0)*
+- [Ship](./user/modules/ship/README.md)
+- [Control](./user/modules/control/README.md)
+- [Book](./user/modules/book/README.md)
+- Bridge *(missing — P0)*
+- Shop Floor *(missing — P0)*
+
+## Developer docs
+
+Per-module, per-page, mirroring user docs. Plus cross-cutting components.
+
+- [Shared components](./dev/shared/) — pill-nav, 3D viewers, audit-timeline, EntityFormDialog, operation category colors
+- Modules: [sell](./dev/modules/sell/) · [buy](./dev/modules/buy/) · [plan](./dev/modules/plan/) · [make](./dev/modules/make/) · [ship](./dev/modules/ship/) · [control](./dev/modules/control/) · [book](./dev/modules/book/) · [bridge](./dev/modules/bridge/) · [shop-floor](./dev/modules/shop-floor/) · [platform](./dev/modules/platform/)
+
+## Audits
+
+- [CHANGELOG.md](./audits/CHANGELOG.md) — rolling log of what shipped to `main`
+- [adr/](./audits/adr/) — Architecture Decision Records
+- [user/](./audits/user/) — per-module user-doc audits
+- [dev/](./audits/dev/) — per-module dev-doc audits
+- [screenshots/](./audits/screenshots/) — UI snapshots per module
+- [_archive/](./audits/_archive/) — superseded snapshots (recoverable history)
+
+## Reference
+
+Evergreen architectural docs. Update in place when reality changes.
+
+- [ai-feature-audit.md](./reference/ai-feature-audit.md) — AI surfaces map (mock vs real)
+- [backend-handover.md](./reference/backend-handover.md) — service boundary + `VITE_DATA_SOURCE` switch
+- [product-studio-spec.md](./reference/product-studio-spec.md) — Blockly v2 specification
+- [sidebar-audit.md](./reference/sidebar-audit.md) — full route inventory
+- [SAL 02 — Pricing Tiers and Strategy.xlsx](./reference/) — pricing model source of truth
+
+## Plans
+
+In-flight initiatives. Each must have an owner and a target date or it's a note, not a plan.
+
+- [TIER-BADGE-PLAN.md](./plans/TIER-BADGE-PLAN.md) *(no owner — needs commitment or removal)*
+- [framer/](./plans/framer/) — Framer landing-page experimentation
+
+## How to add a doc
+
+| Adding... | Goes in... |
+|---|---|
+| New user-facing page | `user/modules/<module>/<page>.md` |
+| Developer reference for that page | `dev/modules/<module>/<page>.md` |
+| Shared component | `dev/shared/<component>.md` |
+| Architecture decision | `audits/adr/ADR-NNN-title.md` |
+| Daily ship summary | append to `audits/CHANGELOG.md` (don't create dated files) |
+| Spec that rarely changes | `reference/<topic>.md` |
+| Proposal with an owner | `plans/<initiative>.md` |
