@@ -28,9 +28,13 @@ Book is the finance / accounting / costing module. Compared to Sell it leans har
 
 - **Comparison mode** (this-month vs last-month, this-FY vs prior FY side-by-side) — large enough to warrant its own design pass. Surfaces affected: every Book screen. Tracked separately.
 
-Saved views are stored in the server `saved_views` table with RLS. `scope: "group"` uses `ControlGroups` as the group registry.
+## Resolved decisions
+
+**Saved views:** Saved views stored in server `saved_views` table (RLS). `scope: "group"` → ControlGroups members; Lead/Admin write enforced server-side.
 
 **Multi-currency: in scope.** Add a `currency` facet (multi-select) to the schemas for `book.invoices`, `book.purchaseOrders`, `book.wipValuation`, `book.stockValuation`, and `book.jobProfitability`. Exchange-rate prereq: `GET /api/fx-rates?base={orgCurrency}&quote={displayCurrency}` sourced from Xero FX API or an internal table. All monetary range facets include `currencyCode` field; display amounts are converted to the user's `displayCurrency` (from user profile) at point-in-time rate.
+
+**Smart-filter endpoint:** `POST /api/smart-filters/book` — dedicated per-module endpoint (not shared with other AI surfaces).
 
 ---
 
@@ -547,6 +551,20 @@ export const jobProfitabilityFilterSchema: FilterSchema = {
       { value: 'xl', label: '> $100k'  },
     ]},
     { id: 'overrun', label: 'Cost overrun', kind: 'range', icon: DollarSign },
+    {
+      id: 'currency',
+      label: 'Currency',
+      kind: 'multi',
+      icon: DollarSign,
+      options: [
+        { value: 'AUD', label: 'AUD — Australian Dollar' },
+        { value: 'USD', label: 'USD — US Dollar' },
+        { value: 'GBP', label: 'GBP — British Pound' },
+        { value: 'EUR', label: 'EUR — Euro' },
+        { value: 'NZD', label: 'NZD — New Zealand Dollar' },
+        { value: 'SGD', label: 'SGD — Singapore Dollar' },
+      ],
+    },
   ],
   viewModes: [
     { id: 'list',  label: 'List',         icon: ListIcon },
