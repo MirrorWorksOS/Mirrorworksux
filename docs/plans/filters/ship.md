@@ -555,12 +555,21 @@ const returnsFilterSchema: FilterSchema = {
 
 ### Presets
 
-| Name | Icon | Tone |
-|---|---|---|
-| Pending approval — needs review | `AlertTriangle` | `warning` |
-| Received but not refunded | `DollarSign` | `error` |
-| Under investigation | `Search` | `info` |
-| Ageing > 14 days | `Clock` | `error` |
+| Name | Icon | Tone | State |
+|---|---|---|---|
+| My returns | `User` | `yellow` | `coordinator: '__me__'`, view `list` |
+| Pending approval — needs review | `AlertTriangle` | `warning` | `status: ['pending']`, view `list` |
+| Received but not refunded | `DollarSign` | `error` | `status: ['received']`, view `list` |
+| Under investigation | `Search` | `info` | `status: ['approved']`, view `kanban` |
+| Ageing > 14 days | `Clock` | `error` | `ageBand: ['gt14']`, view `list` |
+
+Add `coordinator` facet to `returnsFilterSchema`:
+
+```ts
+{ id: 'coordinator', label: 'Coordinator', kind: 'user', icon: User, pinned: true, options: coordinatorOptions },
+```
+
+Seed `coordinatorId` on return mock rows; resolve `'__me__'` via `resolveMe: getViewer().userId` in `applyFilters`.
 
 ### Smart-filter ideas
 

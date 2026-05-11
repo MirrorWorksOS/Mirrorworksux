@@ -61,6 +61,8 @@ export interface Customer {
   status: CustomerStatus;
   notes: string;
   createdAt: string;
+  /** Employee id of the account manager responsible for this customer. */
+  accountManagerId?: string;
   /** Customer-portal contacts (multi-user). Falls back to legacy `contact`+`email` if empty. */
   contacts?: CustomerContact[];
 }
@@ -188,6 +190,8 @@ export interface Quote {
   expiryDate: string;
   value: number;
   status: QuoteStatus;
+  /** Employee id of the sales rep who owns this quote. */
+  repId?: string;
   lineItems: QuoteLineItem[];
   /** E-signature acceptance timestamp */
   acceptedAt?: string;
@@ -224,6 +228,8 @@ export interface SalesOrder {
   status: SalesOrderStatus;
   total: number;
   jobId?: string;
+  /** Employee id of the sales rep who owns this order. */
+  repId?: string;
 }
 
 export interface SellInvoice {

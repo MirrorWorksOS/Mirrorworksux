@@ -96,6 +96,7 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Key account — server rack & mounting bracket work. 60-day terms.',
     createdAt: '2024-06-15',
+    accountManagerId: 'emp-001',
     contacts: [
       {
         id: 'cust-001-c1',
@@ -163,6 +164,7 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Sub-assembly partner — repeat bracket & chassis orders.',
     createdAt: '2024-09-01',
+    accountManagerId: 'emp-002',
     contacts: [
       {
         id: 'cust-002-c1',
@@ -195,6 +197,7 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Local supplier who also buys custom enclosures from us.',
     createdAt: '2023-02-10',
+    accountManagerId: 'emp-002',
   },
   {
     id: 'cust-004',
@@ -211,6 +214,7 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Large structural steel packages. Extended procurement cycle.',
     createdAt: '2025-01-20',
+    accountManagerId: 'emp-002',
   },
   {
     id: 'cust-005',
@@ -227,6 +231,7 @@ export const customers: Customer[] = [
     status: 'prospect',
     notes: 'Government contract prospect — rail platform components.',
     createdAt: '2025-11-05',
+    accountManagerId: 'emp-004',
   },
   {
     id: 'cust-006',
@@ -243,6 +248,7 @@ export const customers: Customer[] = [
     status: 'active',
     notes: 'Welding equipment supplier who orders custom machine guards.',
     createdAt: '2024-04-12',
+    accountManagerId: 'emp-001',
   },
 ];
 
@@ -316,7 +322,7 @@ export const opportunities: Opportunity[] = [
 export const quotes: Quote[] = [
   {
     id: 'qt-001', ref: 'Q-2026-0055', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
-    date: '2026-03-12', expiryDate: '2026-04-12', value: 42000, status: 'sent',
+    date: '2026-03-12', expiryDate: '2026-04-12', value: 42000, status: 'sent', repId: 'emp-001',
     lineItems: [
       { productId: 'prod-004', description: 'Server Rack Chassis 42U', qty: 8, unitPrice: 1250, total: 10000 },
       { productId: 'prod-001', description: 'Mounting Bracket 90°', qty: 200, unitPrice: 24.50, total: 4900 },
@@ -328,7 +334,7 @@ export const quotes: Quote[] = [
   },
   {
     id: 'qt-002', ref: 'Q-2026-0048', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
-    date: '2026-02-28', expiryDate: '2026-03-28', value: 12500, status: 'draft',
+    date: '2026-02-28', expiryDate: '2026-03-28', value: 12500, status: 'draft', repId: 'emp-001',
     lineItems: [
       { productId: 'prod-001', description: 'Mounting Bracket 90°', qty: 100, unitPrice: 24.50, total: 2450 },
       { productId: 'prod-003', description: 'Motor Housing Assembly', qty: 20, unitPrice: 185, total: 3700 },
@@ -336,21 +342,21 @@ export const quotes: Quote[] = [
   },
   {
     id: 'qt-003', ref: 'QT-2026-0142', opportunityId: 'opp-002', customerId: 'cust-004', customerName: 'BHP Contractors',
-    date: '2026-03-18', expiryDate: '2026-04-18', value: 12500, status: 'sent',
+    date: '2026-03-18', expiryDate: '2026-04-18', value: 12500, status: 'sent', repId: 'emp-002',
     lineItems: [
       { productId: 'prod-008', description: 'Structural Steel Package — I-Beam', qty: 2, unitPrice: 4500, total: 9000 },
     ],
   },
   {
     id: 'qt-004', ref: 'QT-2026-0143', opportunityId: 'opp-003', customerId: 'cust-003', customerName: 'Hunter Steel Co',
-    date: '2026-03-19', expiryDate: '2026-04-19', value: 3500, status: 'sent',
+    date: '2026-03-19', expiryDate: '2026-04-19', value: 3500, status: 'sent', repId: 'emp-003',
     lineItems: [
       { productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 20, unitPrice: 145, total: 2900 },
     ],
   },
   {
     id: 'qt-005', ref: 'QT-2026-0144', opportunityId: 'opp-010', customerId: 'cust-001', customerName: 'TechCorp Industries',
-    date: '2026-02-01', expiryDate: '2026-03-01', value: 28000, status: 'accepted',
+    date: '2026-02-01', expiryDate: '2026-03-01', value: 28000, status: 'accepted', repId: 'emp-002',
     lineItems: [
       { productId: 'prod-010', description: 'Control Panel Enclosure 600×800', qty: 20, unitPrice: 420, total: 8400 },
       { productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 40, unitPrice: 145, total: 5800 },
@@ -361,7 +367,7 @@ export const quotes: Quote[] = [
   },
   {
     id: 'qt-006', ref: 'Q-2026-0062', opportunityId: 'opp-001', customerId: 'cust-001', customerName: 'TechCorp Industries',
-    date: '2026-04-08', expiryDate: '2026-05-08', value: 38500, status: 'draft',
+    date: '2026-04-08', expiryDate: '2026-05-08', value: 38500, status: 'draft', repId: 'emp-001',
     lineItems: [
       { productId: 'prod-004', description: 'Server Rack Chassis 42U', qty: 6, unitPrice: 1250, total: 7500 },
       { productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 120, unitPrice: 24.50, total: 2940 },
@@ -382,7 +388,7 @@ export const quotes: Quote[] = [
   },
   {
     id: 'qt-007', ref: 'Q-2026-0058', opportunityId: 'opp-004', customerId: 'cust-005', customerName: 'Sydney Rail Corp',
-    date: '2026-03-25', expiryDate: '2026-04-25', value: 67000, status: 'sent',
+    date: '2026-03-25', expiryDate: '2026-04-25', value: 67000, status: 'sent', repId: 'emp-004',
     lineItems: [
       { productId: 'prod-009', description: 'Rail Platform Component — Handrail Section', qty: 40, unitPrice: 890, total: 35600 },
       { productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 80, unitPrice: 67, total: 5360 },
@@ -447,11 +453,11 @@ export const quotes: Quote[] = [
 ];
 
 export const salesOrders: SalesOrder[] = [
-  { id: 'so-001', orderNumber: 'SO-2026-0085', customerId: 'cust-001', customerName: 'TechCorp Industries', quoteId: 'qt-001', date: '2026-03-01', deliveryDate: '2026-04-15', status: 'in_production', total: 24500, jobId: 'job-001' },
-  { id: 'so-002', orderNumber: 'SO-2026-0086', customerId: 'cust-002', customerName: 'Pacific Fabrication', date: '2026-03-05', deliveryDate: '2026-04-01', status: 'in_production', total: 8500, jobId: 'job-002' },
-  { id: 'so-003', orderNumber: 'SO-2026-0087', customerId: 'cust-005', customerName: 'Sydney Rail Corp', date: '2026-03-08', deliveryDate: '2026-04-28', status: 'confirmed', total: 35600, jobId: 'job-003' },
-  { id: 'so-004', orderNumber: 'SO-2026-0088', customerId: 'cust-006', customerName: 'Kemppi Australia', date: '2026-02-20', deliveryDate: '2026-03-20', status: 'shipped', total: 12000, jobId: 'job-004' },
-  { id: 'so-005', orderNumber: 'SO-2026-0089', customerId: 'cust-002', customerName: 'Pacific Fabrication', date: '2026-03-15', deliveryDate: '2026-04-20', status: 'confirmed', total: 8900 },
+  { id: 'so-001', orderNumber: 'SO-2026-0085', customerId: 'cust-001', customerName: 'TechCorp Industries', quoteId: 'qt-001', date: '2026-03-01', deliveryDate: '2026-04-15', status: 'in_production', total: 24500, jobId: 'job-001', repId: 'emp-001' },
+  { id: 'so-002', orderNumber: 'SO-2026-0086', customerId: 'cust-002', customerName: 'Pacific Fabrication', date: '2026-03-05', deliveryDate: '2026-04-01', status: 'in_production', total: 8500, jobId: 'job-002', repId: 'emp-002' },
+  { id: 'so-003', orderNumber: 'SO-2026-0087', customerId: 'cust-005', customerName: 'Sydney Rail Corp', date: '2026-03-08', deliveryDate: '2026-04-28', status: 'confirmed', total: 35600, jobId: 'job-003', repId: 'emp-004' },
+  { id: 'so-004', orderNumber: 'SO-2026-0088', customerId: 'cust-006', customerName: 'Kemppi Australia', date: '2026-02-20', deliveryDate: '2026-03-20', status: 'shipped', total: 12000, jobId: 'job-004', repId: 'emp-001' },
+  { id: 'so-005', orderNumber: 'SO-2026-0089', customerId: 'cust-002', customerName: 'Pacific Fabrication', date: '2026-03-15', deliveryDate: '2026-04-20', status: 'confirmed', total: 8900, repId: 'emp-002' },
 ];
 
 export const sellInvoices: SellInvoice[] = [
