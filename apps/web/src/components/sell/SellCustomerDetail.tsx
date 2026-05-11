@@ -10,6 +10,9 @@ import { useNavigate, useParams } from 'react-router';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
@@ -261,11 +264,30 @@ export function SellCustomerDetail() {
   const [archiveOpen, setArchiveOpen] = useState(false);
 
   const isNew = !id || id === 'new';
-  const customer = isNew ? createBlankCustomer() : (mockCustomers[id] ?? null);
+  const [draft, setDraft] = useState<any>(() => (isNew ? createBlankCustomer() : null));
+  const customer = isNew ? draft : (mockCustomers[id] ?? null);
+
+  const updateDraft = (path: string, value: any) => {
+    setDraft((prev: any) => {
+      const next = { ...prev };
+      const keys = path.split('.');
+      let target = next;
+      for (let i = 0; i < keys.length - 1; i++) {
+        target[keys[i]] = { ...target[keys[i]] };
+        target = target[keys[i]];
+      }
+      target[keys[keys.length - 1]] = value;
+      return next;
+    });
+  };
 
   const handleSave = () => {
     // TODO(backend): isNew ? customers.create(customer) : customers.update(customer.id, customer)
     if (isNew) {
+      if (!customer.company.trim()) {
+        toast.error('Company name is required');
+        return;
+      }
       toast.success('Customer created');
       navigate(`/sell/crm/${customer.id}`, { replace: true });
     } else {
@@ -349,8 +371,8 @@ export function SellCustomerDetail() {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
           <Avatar className="w-10 h-10">
-            <AvatarFallback className="bg-[var(--mw-mirage)] text-white text-sm font-medium">
-              {customer.company.substring(0, 2).toUpperCase()}
+            <AvatarFallback className={cn('text-sm font-medium', customer.company ? 'bg-[var(--mw-mirage)] text-white' : 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
+              {customer.company ? customer.company.substring(0, 2).toUpperCase() : '?'}
             </AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 flex-wrap">
@@ -456,14 +478,47 @@ export function SellCustomerDetail() {
               <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  <Field label="Company name" value={customer.company} />
-                  <Field label="ABN" value={customer.abn} mono />
-                  <Field label="Industry" value={customer.industry} />
-                  <Field label="Website" value={customer.website} link />
-                  <Field label="Annual revenue" value={fmt(customer.annualRevenue)} mono />
-                  <Field label="Employees" value={String(customer.employeeCount)} />
-                  <Field label="Account owner" value={customer.accountOwner} />
-                  <Field label="Source" value={customer.source} />
+                  {isNew ? (
+                    <>
+                      <EditField label="Company name" required value={customer.company} onChange={v => updateDraft('company', v)} placeholder="e.g. Alliance Metal Fabrication" />
+                      <EditField label="ABN" mono value={customer.abn} onChange={v => updateDraft('abn', v)} placeholder="11 222 333 444" />
+                      <EditSelect
+                        label="Industry"
+                        value={customer.industry}
+                        onChange={v => updateDraft('industry', v)}
+                        placeholder="Select industry"
+                        options={['Construction', 'Mining & Resources', 'Defence', 'Infrastructure', 'Energy', 'Manufacturing', 'Other']}
+                      />
+                      <EditField label="Website" value={customer.website} onChange={v => updateDraft('website', v)} placeholder="https://" type="url" />
+                      <EditField label="Annual revenue" mono value={customer.annualRevenue === 0 ? '' : String(customer.annualRevenue)} onChange={v => updateDraft('annualRevenue', Number(v) || 0)} placeholder="0" type="number" prefix="$" />
+                      <EditField label="Employees" value={customer.employeeCount === 0 ? '' : String(customer.employeeCount)} onChange={v => updateDraft('employeeCount', Number(v) || 0)} placeholder="0" type="number" />
+                      <EditSelect
+                        label="Account owner"
+                        value={customer.accountOwner}
+                        onChange={v => updateDraft('accountOwner', v)}
+                        placeholder="Select owner"
+                        options={employees.map(e => e.name)}
+                      />
+                      <EditSelect
+                        label="Source"
+                        value={customer.source}
+                        onChange={v => updateDraft('source', v)}
+                        placeholder="Select source"
+                        options={['Inbound enquiry', 'Referral', 'Trade show', 'Cold outreach', 'Existing relationship', 'Other']}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Field label="Company name" value={customer.company} />
+                      <Field label="ABN" value={customer.abn} mono />
+                      <Field label="Industry" value={customer.industry} />
+                      <Field label="Website" value={customer.website} link />
+                      <Field label="Annual revenue" value={fmt(customer.annualRevenue)} mono />
+                      <Field label="Employees" value={String(customer.employeeCount)} />
+                      <Field label="Account owner" value={customer.accountOwner} />
+                      <Field label="Source" value={customer.source} />
+                    </>
+                  )}
                 </div>
               </Card>
 
@@ -471,27 +526,45 @@ export function SellCustomerDetail() {
               <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Primary contact</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  <Field label="Name" value={customer.primaryContact.name} />
-                  <Field label="Job title" value={customer.primaryContact.title} />
-                  <div>
-                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
-                    <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                      <Mail className="w-4 h-4" /> {customer.primaryContact.email}
-                    </a>
-                  </div>
-                  <div>
-                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
-                    <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                      <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
-                    </a>
-                  </div>
-                  <div>
-                    <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
-                    <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                      <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
-                    </a>
-                  </div>
-                  <Field label="Preferred contact" value={customer.primaryContact.preferred} />
+                  {isNew ? (
+                    <>
+                      <EditField label="Name" value={customer.primaryContact.name} onChange={v => updateDraft('primaryContact.name', v)} placeholder="Full name" />
+                      <EditField label="Job title" value={customer.primaryContact.title} onChange={v => updateDraft('primaryContact.title', v)} placeholder="e.g. Procurement Manager" />
+                      <EditField label="Email" value={customer.primaryContact.email} onChange={v => updateDraft('primaryContact.email', v)} placeholder="name@company.com" type="email" icon={<Mail className="w-4 h-4" />} />
+                      <EditField label="Phone" value={customer.primaryContact.phone} onChange={v => updateDraft('primaryContact.phone', v)} placeholder="02 9000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
+                      <EditField label="Mobile" value={customer.primaryContact.mobile} onChange={v => updateDraft('primaryContact.mobile', v)} placeholder="04 0000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
+                      <EditSelect
+                        label="Preferred contact"
+                        value={customer.primaryContact.preferred}
+                        onChange={v => updateDraft('primaryContact.preferred', v)}
+                        options={['email', 'phone', 'mobile']}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Field label="Name" value={customer.primaryContact.name} />
+                      <Field label="Job title" value={customer.primaryContact.title} />
+                      <div>
+                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
+                        <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                          <Mail className="w-4 h-4" /> {customer.primaryContact.email}
+                        </a>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
+                        <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                          <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
+                        </a>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
+                        <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                          <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
+                        </a>
+                      </div>
+                      <Field label="Preferred contact" value={customer.primaryContact.preferred} />
+                    </>
+                  )}
                 </div>
               </Card>
 
@@ -499,23 +572,44 @@ export function SellCustomerDetail() {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-medium text-foreground">Address</h2>
-                  <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-foreground hover:underline flex items-center gap-1"
-                  >
-                    <MapPin className="w-4 h-4" /> Open in maps
-                  </a>
+                  {!isNew && (
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-foreground hover:underline flex items-center gap-1"
+                    >
+                      <MapPin className="w-4 h-4" /> Open in maps
+                    </a>
+                  )}
                 </div>
-                <div className="text-sm text-foreground leading-relaxed">
-                  <p>{customer.address.street}</p>
-                  <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
-                  <p>{customer.address.country}</p>
-                </div>
+                {isNew ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="md:col-span-2">
+                      <EditField label="Street" value={customer.address.street} onChange={v => updateDraft('address.street', v)} placeholder="123 Industrial Drive" />
+                    </div>
+                    <EditField label="City" value={customer.address.city} onChange={v => updateDraft('address.city', v)} placeholder="Sydney" />
+                    <EditSelect
+                      label="State"
+                      value={customer.address.state}
+                      onChange={v => updateDraft('address.state', v)}
+                      placeholder="Select state"
+                      options={['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']}
+                    />
+                    <EditField label="Postcode" value={customer.address.postcode} onChange={v => updateDraft('address.postcode', v)} placeholder="2000" />
+                    <EditField label="Country" value={customer.address.country} onChange={v => updateDraft('address.country', v)} placeholder="Australia" />
+                  </div>
+                ) : (
+                  <div className="text-sm text-foreground leading-relaxed">
+                    <p>{customer.address.street}</p>
+                    <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
+                    <p>{customer.address.country}</p>
+                  </div>
+                )}
               </Card>
 
               {/* Additional Contacts */}
+              {!isNew && (
               <Card className="p-6">
                 <button
                   onClick={() => setAdditionalContactsOpen(!additionalContactsOpen)}
@@ -549,8 +643,10 @@ export function SellCustomerDetail() {
                   </div>
                 )}
               </Card>
+              )}
 
               {/* Financial Summary */}
+              {!isNew && (
               <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-6">Financial summary</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -572,28 +668,52 @@ export function SellCustomerDetail() {
                   </div>
                 </div>
               </Card>
+              )}
 
               {/* Tags & Notes */}
               <Card className="p-6">
-                <h2 className="text-lg font-medium text-foreground mb-4">Tags & notes</h2>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {customer.tags.map((tag: string) => (
-                    <Badge key={tag} variant="softAccent" className="rounded text-xs px-2 py-0.5">{tag}</Badge>
-                  ))}
-                  <button className="text-xs text-foreground hover:underline flex items-center gap-1">
-                    <Plus className="w-4 h-4" /> Add tag
-                  </button>
-                </div>
-                <div className="bg-[var(--neutral-100)] rounded-lg p-4">
-                  <p className="text-sm text-foreground leading-relaxed">{customer.notes}</p>
-                  <p className="text-xs text-[var(--neutral-500)] mt-2">Last updated 2 days ago by Jill Wright</p>
-                </div>
+                <h2 className="text-lg font-medium text-foreground mb-4">{isNew ? 'Notes' : 'Tags & notes'}</h2>
+                {!isNew && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {customer.tags.map((tag: string) => (
+                      <Badge key={tag} variant="softAccent" className="rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    ))}
+                    <button className="text-xs text-foreground hover:underline flex items-center gap-1">
+                      <Plus className="w-4 h-4" /> Add tag
+                    </button>
+                  </div>
+                )}
+                {isNew ? (
+                  <Textarea
+                    value={customer.notes}
+                    onChange={e => updateDraft('notes', e.target.value)}
+                    placeholder="Any context about this account — onboarding notes, key relationships, decision-makers, etc."
+                    className="min-h-[100px]"
+                  />
+                ) : (
+                  <div className="bg-[var(--neutral-100)] rounded-lg p-4">
+                    <p className="text-sm text-foreground leading-relaxed">{customer.notes}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-2">Last updated 2 days ago by Jill Wright</p>
+                  </div>
+                )}
               </Card>
             </div>
 
             {/* Right Column - 1/3 */}
             <div className="space-y-6">
+              {isNew && (
+                <Card className="p-6 border-[var(--mw-yellow-400)]/40 bg-[var(--mw-yellow-50,theme(colors.yellow.50))]">
+                  <h3 className="text-base font-medium text-foreground mb-2">Create this customer</h3>
+                  <p className="text-sm text-[var(--neutral-600)] leading-relaxed">
+                    Fill in the company details on the left. Only <strong>Company name</strong> is required —
+                    everything else can be added later. Activity, opportunities, and quotes will appear here
+                    once you save and start working the account.
+                  </p>
+                </Card>
+              )}
+
               {/* Activity Timeline */}
+              {!isNew && (
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-foreground">Recent activity</h3>
@@ -616,8 +736,10 @@ export function SellCustomerDetail() {
                   <Plus className="w-4 h-4 mr-1.5" /> Log activity
                 </Button>
               </Card>
+              )}
 
               {/* Active Opportunities */}
+              {!isNew && (
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-foreground">Active opportunities</h3>
@@ -641,8 +763,10 @@ export function SellCustomerDetail() {
                   ))}
                 </div>
               </Card>
+              )}
 
               {/* Recent Quotes & Orders */}
+              {!isNew && (
               <Card className="p-6">
                 <h3 className="text-base font-medium text-foreground mb-4">Recent quotes & orders</h3>
                 <div className="space-y-2">
@@ -661,11 +785,14 @@ export function SellCustomerDetail() {
                 </div>
                 <button className="text-xs text-foreground hover:underline mt-3">View all →</button>
               </Card>
+              )}
 
               {/* Agent insights */}
+              {!isNew && (
               <Card className="p-4">
                 <AIFeed module="sell" initialCount={2} />
               </Card>
+              )}
             </div>
           </div>
         )}
@@ -845,6 +972,79 @@ function Field({ label, value, mono, link }: { label: string; value: string; mon
       ) : (
         <p className={cn('text-sm text-foreground', mono && 'tabular-nums')}>{value}</p>
       )}
+    </div>
+  );
+}
+
+interface EditFieldProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  mono?: boolean;
+  required?: boolean;
+  icon?: React.ReactNode;
+  prefix?: string;
+}
+
+function EditField({ label, value, onChange, placeholder, type, mono, required, icon, prefix }: EditFieldProps) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-[var(--neutral-500)] mb-1">
+        {label}
+        {required && <span className="ml-0.5 text-[var(--mw-error)]">*</span>}
+      </label>
+      <div className="relative">
+        {icon && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--neutral-500)]">
+            {icon}
+          </span>
+        )}
+        {prefix && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[var(--neutral-500)]">
+            {prefix}
+          </span>
+        )}
+        <Input
+          type={type ?? 'text'}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={cn(
+            (icon || prefix) && 'pl-9',
+            mono && 'tabular-nums',
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+interface EditSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  placeholder?: string;
+}
+
+function EditSelect({ label, value, onChange, options, placeholder }: EditSelectProps) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-[var(--neutral-500)] mb-1">{label}</label>
+      <Select value={value || undefined} onValueChange={onChange}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={placeholder ?? 'Select…'} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(opt => (
+            <SelectItem key={opt} value={opt}>
+              {opt.charAt(0).toUpperCase() + opt.slice(1)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
