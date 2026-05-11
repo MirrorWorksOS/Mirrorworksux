@@ -15,6 +15,7 @@ export type AIFeedInsightType =
   | 'capacity'
   | 'quality'
   | 'machine'
+  | 'maintenance'
   | 'supplier'
   | 'price';
 

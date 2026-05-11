@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { machines as centralMachines } from '@/services';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { LiveFloorView } from './LiveFloorView';
+import { PredictiveMaintenanceSummary } from '@/components/control/PredictiveMaintenanceCard';
 import {
   HoverCard,
   HoverCardTrigger,
@@ -409,37 +410,43 @@ export function MakeDashboard() {
         </motion.div>
       </div>
 
-      {/* Quality Alerts */}
-      <motion.div variants={staggerItem}>
-        <Card className="p-6" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-medium text-foreground">Quality Alerts</h3>
-            <Badge className="bg-[var(--mw-warning)]/10 text-[var(--mw-warning)] border-0">3 Active</Badge>
-          </div>
-          <div className="space-y-3">
-            {[
-              { desc: 'Material thickness variance on WO-002', time: '12 min ago' },
-              { desc: 'Tooling wear detected on CNC-01', time: '34 min ago' },
-              { desc: 'Surface finish defect on batch 3', time: '1 hr ago' },
-            ].map((alert, i) => (
-              <div key={i} className="flex items-start gap-3 py-2 border-b border-[var(--border)] last:border-0">
-                <AlertTriangle className="w-5 h-5 text-[var(--mw-warning)] mt-0.5 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground">{alert.desc}</p>
-                  <p className="text-xs text-[var(--neutral-500)] mt-0.5">{alert.time}</p>
+      {/* Quality Alerts + Predicted maintenance */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 h-full" style={{ borderLeft: '4px solid var(--mw-warning)' }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-medium text-foreground">Quality Alerts</h3>
+              <Badge className="bg-[var(--mw-warning)]/10 text-[var(--mw-warning)] border-0">3 Active</Badge>
+            </div>
+            <div className="space-y-3">
+              {[
+                { desc: 'Material thickness variance on WO-002', time: '12 min ago' },
+                { desc: 'Tooling wear detected on CNC-01', time: '34 min ago' },
+                { desc: 'Surface finish defect on batch 3', time: '1 hr ago' },
+              ].map((alert, i) => (
+                <div key={i} className="flex items-start gap-3 py-2 border-b border-[var(--border)] last:border-0">
+                  <AlertTriangle className="w-5 h-5 text-[var(--mw-warning)] mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-foreground">{alert.desc}</p>
+                    <p className="text-xs text-[var(--neutral-500)] mt-0.5">{alert.time}</p>
+                  </div>
+                  <button className="text-xs font-medium text-foreground hover:underline shrink-0">View</button>
                 </div>
-                <button className="text-xs font-medium text-foreground hover:underline shrink-0">View</button>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-3 border-t border-[var(--border)]">
-            <Button variant="outline" size="sm" className="w-full h-14">
-              <ShieldAlert className="w-4 h-4" />
-              Report Issue
-            </Button>
-          </div>
-        </Card>
-      </motion.div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t border-[var(--border)]">
+              <Button variant="outline" size="sm" className="w-full h-14">
+                <ShieldAlert className="w-4 h-4" />
+                Report Issue
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={staggerItem}>
+          <PredictiveMaintenanceSummary onViewAll={() => navigate('/control/machines')} />
+        </motion.div>
+      </div>
 
       {/* TASK 2 — Today's Schedule Gantt Strip with rich hover tooltips */}
       <motion.div variants={staggerItem}>

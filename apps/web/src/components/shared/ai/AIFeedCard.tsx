@@ -34,6 +34,7 @@ const INSIGHT_ICONS: Record<AIFeedInsightType, React.ElementType> = {
   capacity: AlertTriangle,
   quality: AlertTriangle,
   machine: Wrench,
+  maintenance: Wrench,
   supplier: Package,
   price: TrendingUp,
 };
