@@ -45,12 +45,13 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
-function IconComponent({ size, ...props }: ChartSplineProps) {
+const IconComponent = React.forwardRef<SVGSVGElement, ChartSplineProps>(({ size, ...props }, ref) => {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
   return (
     <motion.svg
+      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
@@ -76,7 +77,8 @@ function IconComponent({ size, ...props }: ChartSplineProps) {
       />
     </motion.svg>
   );
-}
+});
+IconComponent.displayName = 'ChartSplineIcon';
 
 function ChartSpline(props: ChartSplineProps) {
   return <IconWrapper icon={IconComponent} {...props} />;

@@ -44,12 +44,13 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
-function IconComponent({ size, ...props }: KanbanProps) {
+const IconComponent = React.forwardRef<SVGSVGElement, KanbanProps>(({ size, ...props }, ref) => {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
   return (
     <motion.svg
+      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
@@ -90,7 +91,8 @@ function IconComponent({ size, ...props }: KanbanProps) {
       />
     </motion.svg>
   );
-}
+});
+IconComponent.displayName = 'KanbanIcon';
 
 function Kanban(props: KanbanProps) {
   return <IconWrapper icon={IconComponent} {...props} />;
