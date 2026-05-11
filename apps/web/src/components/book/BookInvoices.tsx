@@ -20,6 +20,7 @@ import {
   AnimatedSend,
 } from '../ui/animated-icons';
 import { sellInvoices, salesOrders, jobs } from '@/services';
+import { useDraftInvoiceStore } from '@/store/draftInvoiceStore';
 
 
 type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'partiallyPaid' | 'paid' | 'overdue' | 'cancelled';
@@ -35,7 +36,7 @@ interface Invoice {
   jobReference?: string;
 }
 
-const MOCK_INVOICES: Invoice[] = [
+const BASE_INVOICES: Invoice[] = [
   ...sellInvoices.map((inv) => {
     const so = inv.salesOrderId ? salesOrders.find((s) => s.id === inv.salesOrderId) : undefined;
     const job = so?.jobId ? jobs.find((j) => j.id === so.jobId) : undefined;
@@ -92,7 +93,24 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | InvoiceStatus>('all');
 
-  const filteredInvoices = MOCK_INVOICES.filter(invoice => {
+  // Pull drafts that were auto-created from delivered shipments and prepend
+  // them so they appear at the top of the list as fresh draft rows.
+  const drafts = useDraftInvoiceStore((s) => s.drafts);
+  const invoices: Invoice[] = [
+    ...drafts.map((d) => ({
+      id: d.id,
+      customer: d.customer,
+      issueDate: d.issueDate,
+      dueDate: d.dueDate,
+      status: 'draft' as InvoiceStatus,
+      total: d.total,
+      balanceDue: d.balanceDue,
+      jobReference: d.sourceShipment,
+    })),
+    ...BASE_INVOICES,
+  ];
+
+  const filteredInvoices = invoices.filter(invoice => {
     if (activeTab !== 'all' && invoice.status !== activeTab) return false;
     if (searchQuery) {
       return (
@@ -103,15 +121,15 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
     return true;
   });
 
-  const statusCounts = MOCK_INVOICES.reduce((acc, invoice) => {
+  const statusCounts = invoices.reduce((acc, invoice) => {
     acc[invoice.status] = (acc[invoice.status] || 0) + 1;
     return acc;
   }, {} as Record<InvoiceStatus, number>);
 
   // Compute summary totals by status
-  const paidTotal = MOCK_INVOICES.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0);
-  const pendingTotal = MOCK_INVOICES.filter(i => ['sent', 'viewed', 'partiallyPaid', 'draft'].includes(i.status)).reduce((s, i) => s + i.total, 0);
-  const overdueTotal = MOCK_INVOICES.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0);
+  const paidTotal = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0);
+  const pendingTotal = invoices.filter(i => ['sent', 'viewed', 'partiallyPaid', 'draft'].includes(i.status)).reduce((s, i) => s + i.total, 0);
+  const overdueTotal = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.total, 0);
 
   const columns: MwColumnDef<Invoice>[] = [
     {
@@ -310,7 +328,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
                 : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)]'
             )}
           >
-            All <span className="ml-1">({MOCK_INVOICES.length})</span>
+            All <span className="ml-1">({invoices.length})</span>
           </button>
           {(['draft', 'sent', 'viewed', 'paid', 'overdue'] as InvoiceStatus[]).map((status) => (
             <button
@@ -366,7 +384,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
         {filteredInvoices.length > 0 && (
           <div className="flex items-center justify-between mt-4">
             <p className="font-normal text-xs text-[var(--neutral-500)]">
-              Showing {filteredInvoices.length} of {MOCK_INVOICES.length} invoices
+              Showing {filteredInvoices.length} of {invoices.length} invoices
             </p>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="border-[var(--border)]">
