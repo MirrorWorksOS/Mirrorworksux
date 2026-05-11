@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
-import { 
-  CheckCircle2, 
-  AlertCircle, 
-  AlertTriangle, 
-  FileText, 
-  ClipboardCheck, 
-  BarChart3, 
-  Search, 
-  Filter, 
-  Plus, 
-  X, 
-  ChevronRight, 
-  Camera, 
-  Barcode, 
-  ArrowUpRight, 
+import { toast } from 'sonner';
+import {
+  CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
+  FileText,
+  ClipboardCheck,
+  BarChart3,
+  Search,
+  Filter,
+  Plus,
+  X,
+  ChevronRight,
+  Camera,
+  Barcode,
+  ArrowUpRight,
   ArrowDownRight,
   Clock,
-  MoreHorizontal
+  MoreHorizontal,
+  Sparkles,
+  ImageIcon,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -27,6 +30,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { cn } from '../ui/utils';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PillNav } from '@/components/shared/navigation/PillNav';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 // --- Types & Mock Data ---
 
@@ -98,21 +109,53 @@ const RECENT_INSPECTIONS = [
   }
 ];
 
-const ACTIVE_ISSUES = [
+type AiFlag = {
+  rationale: string;
+  confidence: number;
+  imageUrl: string;
+  signal: string;
+  similar: { id: string; part: string; outcome: string }[];
+};
+
+type ActiveIssue = {
+  id: string;
+  title: string;
+  priority: string;
+  time: string;
+  wo: string;
+  part: string;
+  machine: string;
+  reporter: string;
+  status: string;
+  assignee: string;
+  ai?: AiFlag;
+};
+
+const ACTIVE_ISSUES: ActiveIssue[] = [
   {
-    id: 'QI-2024-047',
+    id: 'NCR-2024-047',
     title: 'Dimensional tolerance exceeded on laser cut parts',
     priority: 'critical',
     time: '2h ago',
     wo: 'MO-26-401',
     part: 'Chassis Side Panel L',
     machine: 'Amada Ensis Laser',
-    reporter: 'David Miller',
+    reporter: 'MW Agent (vision)',
     status: 'Under Investigation',
-    assignee: 'Elena Rodriguez'
+    assignee: 'Elena Rodriguez',
+    ai: {
+      rationale: 'Tolerance excursion at op 30 — measured 12.4 mm vs spec 12.0 ± 0.2',
+      confidence: 0.92,
+      imageUrl: 'mock://vision/cam-amada-01/2024-05-11-1042.jpg',
+      signal: 'In-line CMM probe — op 30',
+      similar: [
+        { id: 'NCR-2024-031', part: 'Chassis Side Panel L', outcome: 'Accepted — rework' },
+        { id: 'NCR-2024-018', part: 'Chassis Side Panel R', outcome: 'Scrap' },
+      ],
+    },
   },
   {
-    id: 'QI-2024-046',
+    id: 'NCR-2024-046',
     title: 'Powder coat adhesion failure on batch #405',
     priority: 'high',
     time: '4h ago',
@@ -121,10 +164,53 @@ const ACTIVE_ISSUES = [
     machine: 'Powder Coat Line 1',
     reporter: 'Carlos Gomez',
     status: 'Analysis Pending',
-    assignee: 'Tom Wilson'
+    assignee: 'Tom Wilson',
   },
   {
-    id: 'QI-2024-045',
+    id: 'NCR-2024-048',
+    title: 'Vision-detected weld porosity on frame rail',
+    priority: 'high',
+    time: '3h ago',
+    wo: 'MO-26-402',
+    part: 'Frame Rail Top',
+    machine: 'Miller Tig Weld 3',
+    reporter: 'MW Agent (vision)',
+    status: 'Awaiting Review',
+    assignee: 'Carlos Gomez',
+    ai: {
+      rationale: 'Vision-detected weld porosity — confidence 87%',
+      confidence: 0.87,
+      imageUrl: 'mock://vision/cam-weld-03/2024-05-11-0915.jpg',
+      signal: 'Weld camera + thermal overlay',
+      similar: [
+        { id: 'NCR-2024-022', part: 'Frame Rail Top', outcome: 'Rework — TIG repass' },
+        { id: 'NCR-2024-009', part: 'Frame Rail Bottom', outcome: 'Scrap' },
+      ],
+    },
+  },
+  {
+    id: 'NCR-2024-049',
+    title: 'Surface finish drifting below spec on bezel run',
+    priority: 'medium',
+    time: '5h ago',
+    wo: 'MO-26-404',
+    part: 'Display Bezel',
+    machine: 'Mitsubishi 3015',
+    reporter: 'MW Agent (SPC)',
+    status: 'Monitoring',
+    assignee: 'Lisa Ray',
+    ai: {
+      rationale: 'Surface finish trending below spec for last 6 parts — Ra 2.4 vs 1.6 target',
+      confidence: 0.81,
+      imageUrl: 'mock://vision/cam-finish-02/2024-05-11-0738.jpg',
+      signal: 'SPC trend — Ra moving average',
+      similar: [
+        { id: 'NCR-2024-014', part: 'Display Bezel', outcome: 'Pad replacement — resolved' },
+      ],
+    },
+  },
+  {
+    id: 'NCR-2024-045',
     title: 'Minor scratch on finished surface',
     priority: 'minor',
     time: '6h ago',
@@ -133,8 +219,8 @@ const ACTIVE_ISSUES = [
     machine: 'Assembly Station 4',
     reporter: 'Lisa Ray',
     status: 'Monitoring',
-    assignee: 'Unassigned'
-  }
+    assignee: 'Unassigned',
+  },
 ];
 
 const INSPECTION_TEMPLATES = [
@@ -178,6 +264,20 @@ const PriorityBadge = ({ priority }: { priority: string }) => {
 export function QualityTab() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [showLogModal, setShowLogModal] = useState(false);
+  const [aiSheetIssue, setAiSheetIssue] = useState<ActiveIssue | null>(null);
+
+  const handleAcceptAi = (issue: ActiveIssue) => {
+    toast.success(`Accepted AI suggestion for ${issue.id}`, {
+      description: 'NCR opened and routed to assignee for action.',
+    });
+    setAiSheetIssue(null);
+  };
+  const handleDismissAi = (issue: ActiveIssue) => {
+    toast(`Dismissed AI suggestion for ${issue.id}`, {
+      description: 'Flag will be used to retrain the vision model.',
+    });
+    setAiSheetIssue(null);
+  };
 
   return (
     <div className="flex flex-col h-full bg-[var(--app-canvas)] p-4 md:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
@@ -387,9 +487,23 @@ export function QualityTab() {
                 "bg-card rounded-[var(--shape-lg)] shadow-sm border border-[var(--neutral-200)] p-6",
               )}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                   <div className="flex items-center gap-3">
+                   <div className="flex items-center gap-3 flex-wrap">
                       <span className="font-medium text-sm text-[var(--neutral-800)]">{issue.id}</span>
                       <PriorityBadge priority={issue.priority} />
+                      {issue.ai && (
+                        <button
+                          type="button"
+                          data-testid={`ai-badge-${issue.id}`}
+                          onClick={() => setAiSheetIssue(issue)}
+                          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-mirage)]/40"
+                          aria-label={`Open AI suggestion details for ${issue.id}`}
+                        >
+                          <Badge variant="softAi" className="gap-1 cursor-pointer">
+                            <Sparkles className="w-3 h-3" />
+                            AI Suggested
+                          </Badge>
+                        </button>
+                      )}
                       <span className="text-xs text-[var(--neutral-500)] flex items-center gap-1"><Clock className="w-4 h-4"/> {issue.time}</span>
                    </div>
                    <div className="flex items-center gap-2">
@@ -398,9 +512,23 @@ export function QualityTab() {
                       </Badge>
                    </div>
                 </div>
-                
+
                 <h3 className="text-lg font-medium text-[var(--neutral-800)] mb-3">{issue.title}</h3>
-                
+
+                {issue.ai && (
+                  <button
+                    type="button"
+                    onClick={() => setAiSheetIssue(issue)}
+                    className="mb-4 -mt-1 w-full text-left rounded-[var(--shape-md)] border border-[var(--mw-mirage)]/15 bg-[var(--mw-mirage)]/5 px-3 py-2 hover:bg-[var(--mw-mirage)]/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 text-xs text-[var(--mw-mirage)]">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span className="font-medium">{issue.ai.rationale}</span>
+                      <span className="ml-auto text-[var(--neutral-500)]">Review</span>
+                    </div>
+                  </button>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-[var(--neutral-500)] mb-6">
                    <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Work Order</span>{issue.wo}</div>
                    <div><span className="text-[var(--neutral-400)] text-xs uppercase tracking-wider block mb-1">Part</span>{issue.part}</div>
@@ -474,6 +602,93 @@ export function QualityTab() {
            ))}
         </div>
       )}
+
+      {/* AI Suggested NCR detail sheet */}
+      <Sheet open={!!aiSheetIssue} onOpenChange={(open) => !open && setAiSheetIssue(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-[480px] overflow-y-auto">
+          {aiSheetIssue?.ai && (
+            <>
+              <SheetHeader className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="softAi" className="gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    AI Suggested NCR
+                  </Badge>
+                  <span className="text-xs text-[var(--neutral-500)] tabular-nums">
+                    {Math.round(aiSheetIssue.ai.confidence * 100)}% confidence
+                  </span>
+                </div>
+                <SheetTitle className="text-lg">{aiSheetIssue.title}</SheetTitle>
+                <SheetDescription className="text-sm">
+                  {aiSheetIssue.ai.rationale}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="px-4 space-y-5">
+                <div className="space-y-2">
+                  <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)]">Triggering image</div>
+                  <div className="aspect-video w-full rounded-[var(--shape-lg)] bg-[var(--neutral-100)] border border-dashed border-[var(--neutral-200)] flex flex-col items-center justify-center gap-2 text-[var(--neutral-500)]">
+                    <ImageIcon className="w-8 h-8" />
+                    <span className="text-xs font-mono break-all px-4 text-center">{aiSheetIssue.ai.imageUrl}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Signal source</div>
+                    <div className="text-[var(--neutral-800)]">{aiSheetIssue.ai.signal}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Work order</div>
+                    <div className="text-[var(--neutral-800)]">{aiSheetIssue.wo}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Part</div>
+                    <div className="text-[var(--neutral-800)]">{aiSheetIssue.part}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Machine</div>
+                    <div className="text-[var(--neutral-800)]">{aiSheetIssue.machine}</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)]">Similar past NCRs</div>
+                  <div className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] divide-y divide-[var(--neutral-200)]">
+                    {aiSheetIssue.ai.similar.map((s) => (
+                      <div key={s.id} className="flex items-center justify-between px-3 py-2 text-sm">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-[var(--neutral-800)]">{s.id}</span>
+                          <span className="text-xs text-[var(--neutral-500)]">{s.part}</span>
+                        </div>
+                        <span className="text-xs text-[var(--neutral-700)]">{s.outcome}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <SheetFooter className="flex-row gap-3">
+                <Button
+                  variant="outline"
+                  data-testid="ai-dismiss-btn"
+                  className="flex-1 h-11 border-[var(--neutral-200)]"
+                  onClick={() => handleDismissAi(aiSheetIssue)}
+                >
+                  Dismiss
+                </Button>
+                <Button
+                  data-testid="ai-accept-btn"
+                  className="flex-1 h-11 bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white"
+                  onClick={() => handleAcceptAi(aiSheetIssue)}
+                >
+                  Accept &amp; open NCR
+                </Button>
+              </SheetFooter>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Log Issue Modal Overlay */}
       {showLogModal && (
