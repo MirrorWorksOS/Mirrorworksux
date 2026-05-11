@@ -22,6 +22,7 @@ import type {
   ImportProgress,
   ImportSummary,
   ModuleGroup,
+  SourceSystem,
   TeamSuggestion,
   PreviewRecord,
 } from '@/types/bridge';
@@ -86,6 +87,82 @@ const ENTITY_SAMPLE_DATA: Record<string, Record<string, string>[]> = {
   ],
 };
 
+/**
+ * Source-specific column presets. When the user selects an accounting source on Step 1 we
+ * pre-fill these headers + sample rows so the field-mapping step on Step 2/3 shows
+ * vendor-appropriate columns. The target schema is the same — only the source-side names
+ * change — so mappings auto-suggest into the standard MirrorWorks fields.
+ */
+const SOURCE_PRESETS: Partial<
+  Record<
+    SourceSystem,
+    Record<string, { headers: string[]; sample: Record<string, string>[] }>
+  >
+> = {
+  xero: {
+    invoices: {
+      headers: [
+        'Invoice Number',
+        'Contact Name',
+        'Invoice Date',
+        'Due Date',
+        'Description',
+        'Quantity',
+        'Unit Amount',
+        'Account Code',
+        'Tax Type',
+        'Tracking Name 1',
+      ],
+      sample: [
+        { 'Invoice Number': 'INV-1042', 'Contact Name': 'Ace Fabrication', 'Invoice Date': '2026-04-02', 'Due Date': '2026-05-02', 'Description': 'Mounting brackets — job J-2041', 'Quantity': '120', 'Unit Amount': '24.50', 'Account Code': '200', 'Tax Type': 'OUTPUT', 'Tracking Name 1': 'Job J-2041' },
+        { 'Invoice Number': 'INV-1043', 'Contact Name': 'BuildRight Steel', 'Invoice Date': '2026-04-05', 'Due Date': '2026-05-05', 'Description': 'Base plates 200x200', 'Quantity': '40', 'Unit Amount': '67.00', 'Account Code': '200', 'Tax Type': 'OUTPUT', 'Tracking Name 1': 'Job J-2052' },
+      ],
+    },
+    customers: {
+      headers: ['Contact Name', 'First Name', 'Last Name', 'Email Address', 'Phone', 'Street Address', 'City', 'Region', 'Postal Code', 'Account Number'],
+      sample: [
+        { 'Contact Name': 'Ace Fabrication', 'First Name': 'Sarah', 'Last Name': 'Chen', 'Email Address': 'sarah@acefab.com', 'Phone': '(03) 9555 1234', 'Street Address': '42 Industrial Dr', 'City': 'Melbourne', 'Region': 'VIC', 'Postal Code': '3000', 'Account Number': 'ACE-001' },
+      ],
+    },
+  },
+  myob: {
+    invoices: {
+      headers: [
+        'Account Code',
+        'Account Name',
+        'Description',
+        'Amount',
+        'Tax Code',
+        'Job Number',
+        'Customer Name',
+        'Invoice #',
+        'Invoice Date',
+        'Due Date',
+      ],
+      sample: [
+        { 'Account Code': '4-1000', 'Account Name': 'Sales Income', 'Description': 'Mounting brackets — job J-2041', 'Amount': '2940.00', 'Tax Code': 'GST', 'Job Number': 'J-2041', 'Customer Name': 'Ace Fabrication', 'Invoice #': '00001042', 'Invoice Date': '02/04/2026', 'Due Date': '02/05/2026' },
+        { 'Account Code': '4-1000', 'Account Name': 'Sales Income', 'Description': 'Base plates 200x200', 'Amount': '2680.00', 'Tax Code': 'GST', 'Job Number': 'J-2052', 'Customer Name': 'BuildRight Steel', 'Invoice #': '00001043', 'Invoice Date': '05/04/2026', 'Due Date': '05/05/2026' },
+        { 'Account Code': '4-1000', 'Account Name': 'Sales Income', 'Description': 'Motor housing assembly', 'Amount': '1850.00', 'Tax Code': 'GST', 'Job Number': 'J-2060', 'Customer Name': 'CNC Solutions', 'Invoice #': '00001044', 'Invoice Date': '08/04/2026', 'Due Date': '08/05/2026' },
+      ],
+    },
+    customers: {
+      headers: ['Card ID', 'Co./Last Name', 'First Name', 'Email', 'Phone #1', 'Addr 1 - Line 1', 'Addr 1 - City', 'Addr 1 - State', 'Addr 1 - Postcode', 'Notes'],
+      sample: [
+        { 'Card ID': '*None', 'Co./Last Name': 'Ace Fabrication', 'First Name': 'Sarah', 'Email': 'sarah@acefab.com', 'Phone #1': '(03) 9555 1234', 'Addr 1 - Line 1': '42 Industrial Dr', 'Addr 1 - City': 'Melbourne', 'Addr 1 - State': 'VIC', 'Addr 1 - Postcode': '3000', 'Notes': 'Key account' },
+        { 'Card ID': '*None', 'Co./Last Name': 'BuildRight Steel', 'First Name': 'Mike', 'Email': 'mike@buildright.com.au', 'Phone #1': '(02) 8765 4321', 'Addr 1 - Line 1': '18 Factory Ln', 'Addr 1 - City': 'Sydney', 'Addr 1 - State': 'NSW', 'Addr 1 - Postcode': '2000', 'Notes': '' },
+      ],
+    },
+  },
+};
+
+/** Pick the most specific accounting source from the selected systems, if any. */
+function pickAccountingSource(sources: SourceSystem[] | undefined): SourceSystem | null {
+  if (!sources) return null;
+  if (sources.includes('myob')) return 'myob';
+  if (sources.includes('xero')) return 'xero';
+  return null;
+}
+
 const TARGET_FIELDS: Record<string, { column: string; label: string; description: string; required: boolean }[]> = {
   customers: [
     { column: 'name', label: 'Company name', description: 'Legal or trading name', required: true },
@@ -115,6 +192,17 @@ const TARGET_FIELDS: Record<string, { column: string; label: string; description
     { column: 'department', label: 'Department', description: 'Department or team', required: false },
     { column: 'start_date', label: 'Start date', description: 'Employment start', required: false },
     { column: 'hourly_rate', label: 'Hourly rate', description: 'Hourly pay rate', required: false },
+  ],
+  invoices: [
+    { column: 'invoice_number', label: 'Invoice number', description: 'Invoice identifier', required: true },
+    { column: 'customer_name', label: 'Customer', description: 'Bill-to customer', required: true },
+    { column: 'invoice_date', label: 'Invoice date', description: 'Issue date', required: false },
+    { column: 'due_date', label: 'Due date', description: 'Payment due date', required: false },
+    { column: 'description', label: 'Description', description: 'Line description', required: false },
+    { column: 'amount', label: 'Amount', description: 'Line or invoice total', required: false },
+    { column: 'tax_code', label: 'Tax code', description: 'Tax classification', required: false },
+    { column: 'job_number', label: 'Job number', description: 'Linked job reference', required: false },
+    { column: 'account_code', label: 'Account code', description: 'GL account code', required: false },
   ],
 };
 
@@ -165,12 +253,35 @@ export const bridgeService = {
     throw new Error('Not implemented');
   },
 
-  async uploadFile(_sessionId: string, file: File): Promise<BridgeFile> {
+  async uploadFile(
+    _sessionId: string,
+    file: File,
+    sourceHint?: SourceSystem[]
+  ): Promise<BridgeFile> {
     if (USE_MOCK) {
       await delay(600);
-      const entity = detectEntity(file.name);
-      const headers = ENTITY_HEADERS[entity] || ENTITY_HEADERS.unknown;
-      const samples = ENTITY_SAMPLE_DATA[entity] || ENTITY_SAMPLE_DATA.unknown;
+
+      // If filename hints at an accounting export (e.g. "MYOB invoices.csv"), prefer the
+      // accounting source even if the user didn't tick it.
+      const nameLower = file.name.toLowerCase();
+      const filenameSource: SourceSystem | null = nameLower.includes('myob')
+        ? 'myob'
+        : nameLower.includes('xero')
+          ? 'xero'
+          : null;
+      const accountingSource = filenameSource ?? pickAccountingSource(sourceHint);
+
+      let entity = detectEntity(file.name);
+      // Accounting exports default to invoices when the filename isn't otherwise descriptive.
+      if (accountingSource && entity === 'unknown') entity = 'invoices';
+
+      const preset = accountingSource
+        ? SOURCE_PRESETS[accountingSource]?.[entity]
+        : undefined;
+
+      const headers = preset?.headers ?? ENTITY_HEADERS[entity] ?? ENTITY_HEADERS.unknown;
+      const samples = preset?.sample ?? ENTITY_SAMPLE_DATA[entity] ?? ENTITY_SAMPLE_DATA.unknown;
+
       return {
         id: uid(),
         fileName: file.name,
@@ -319,9 +430,10 @@ export const bridgeService = {
  */
 export async function runBridgeFileIngestPipeline(
   sessionId: string,
-  file: File
+  file: File,
+  sourceHint?: SourceSystem[]
 ): Promise<{ bridgeFile: BridgeFile; analysed: BridgeFile; mappings: FieldMapping[] }> {
-  const bridgeFile = await bridgeService.uploadFile(sessionId, file);
+  const bridgeFile = await bridgeService.uploadFile(sessionId, file, sourceHint);
   const analysed = await bridgeService.analyseFile(sessionId, bridgeFile);
   const merged: BridgeFile = {
     ...bridgeFile,
