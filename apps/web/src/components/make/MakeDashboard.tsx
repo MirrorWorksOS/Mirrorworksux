@@ -15,6 +15,10 @@ import {
   ShieldAlert, TrendingUp, Play, ClipboardCheck,
   ScanBarcode, Printer, TimerOff, BarChart3, Activity,
 } from 'lucide-react';
+import {
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -201,6 +205,36 @@ const makeTabs = [
   { key: 'overview', label: 'Overview' },
   { key: 'live-floor', label: 'Live floor' },
   { key: 'quality', label: 'Quality' },
+];
+
+/** OEE composition — Availability x Performance x Quality */
+const OEE_COMPONENTS: { name: string; value: number }[] = [
+  { name: 'Availability', value: 88 },
+  { name: 'Performance', value: 92 },
+  { name: 'Quality', value: 96 },
+];
+
+/** OEE = product of the three components (88 * 92 * 96 / 10000 ≈ 78%) */
+const OEE_PCT = Math.round(
+  OEE_COMPONENTS.reduce((acc, c) => (acc * c.value) / 100, 100),
+);
+
+/** Colour-code an OEE component value: green >= 85, amber 70-85, red < 70 */
+function oeeColour(value: number): string {
+  if (value >= 85) return 'var(--mw-success)';
+  if (value >= 70) return 'var(--mw-warning)';
+  return 'var(--mw-error)';
+}
+
+/** Cycle-time vs standard for top machines/workcells (minutes) */
+const CYCLE_TIMES = [
+  { machine: 'Laser-01', standard: 4.2, actual: 4.6 },
+  { machine: 'Laser-02', standard: 4.5, actual: 4.3 },
+  { machine: 'Press-01', standard: 6.0, actual: 6.8 },
+  { machine: 'CNC-01', standard: 8.5, actual: 8.2 },
+  { machine: 'CNC-02', standard: 7.8, actual: 9.1 },
+  { machine: 'Weld-01', standard: 12.0, actual: 11.6 },
+  { machine: 'Pack-01', standard: 3.5, actual: 3.9 },
 ];
 
 export function MakeDashboard() {
@@ -599,6 +633,111 @@ export function MakeDashboard() {
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: 'var(--mw-warning)' }} />
                 <span className="text-xs text-[var(--neutral-500)]">Below target</span>
               </div>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* OEE Composition donut + Cycle-time vs standard */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* OEE Composition Donut */}
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-medium text-foreground">OEE Composition</h3>
+              <Badge variant="softAccent" className="text-xs">Today</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center">
+              <div className="relative h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={OEE_COMPONENTS}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={2}
+                      stroke="var(--card)"
+                      strokeWidth={2}
+                    >
+                      {OEE_COMPONENTS.map((c) => (
+                        <Cell key={c.name} fill={oeeColour(c.value)} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(v: number, n: string) => [`${v}%`, n]}
+                      contentStyle={{
+                        background: 'var(--card)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 6,
+                        fontSize: 12,
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-medium text-foreground tabular-nums">{OEE_PCT}%</span>
+                  <span className="text-[10px] uppercase tracking-wide text-[var(--neutral-500)]">OEE</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {OEE_COMPONENTS.map((c) => (
+                  <div key={c.name} className="flex items-center gap-2 text-xs">
+                    <span
+                      className="w-3 h-3 rounded"
+                      style={{ backgroundColor: oeeColour(c.value) }}
+                    />
+                    <span className="text-foreground font-medium">{c.name}</span>
+                    <span className="text-[var(--neutral-500)] tabular-nums">{c.value}%</span>
+                  </div>
+                ))}
+                <div className="pt-2 mt-2 border-t border-[var(--border)] text-[10px] text-[var(--neutral-500)] leading-snug">
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--mw-success)' }} />&ge; 85%</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--mw-warning)' }} />70 - 85%</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--mw-error)' }} />&lt; 70%</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Cycle Time vs Standard */}
+        <motion.div variants={staggerItem}>
+          <Card className="p-6 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-medium text-foreground">Cycle Time vs Standard</h3>
+              <span className="text-xs text-[var(--neutral-500)]">minutes</span>
+            </div>
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={CYCLE_TIMES} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis
+                    dataKey="machine"
+                    tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                    tickLine={false}
+                    axisLine={{ stroke: 'var(--border)' }}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: 'var(--neutral-500)' }}
+                    tickLine={false}
+                    axisLine={{ stroke: 'var(--border)' }}
+                  />
+                  <Tooltip
+                    formatter={(v: number) => [`${v} min`]}
+                    contentStyle={{
+                      background: 'var(--card)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 6,
+                      fontSize: 12,
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 11 }} iconSize={10} />
+                  <Bar dataKey="standard" name="Standard cycle" fill="var(--mw-mirage)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="actual" name="Actual avg cycle" fill="var(--mw-yellow-400)" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </Card>
         </motion.div>
