@@ -386,7 +386,7 @@ function BomRoutingTreeInner({
                     <p className="font-medium text-foreground">{selectedOp.op.workCentre}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-[var(--neutral-500)]">Operator</p>
+                    <p className="text-xs text-[var(--neutral-500)]">Team</p>
                     <p className="font-medium text-foreground">{selectedOp.op.operator ?? '—'}</p>
                   </div>
                   <div>

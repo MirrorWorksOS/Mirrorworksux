@@ -140,13 +140,13 @@ const ActiveAlertRow = ({ alert }: { alert: Alert }) => {
 };
 
 export function IssuesTab() {
-  const [isSupervisorCalled, setIsSupervisorCalled] = useState(false);
+  const [isLeadCalled, setIsLeadCalled] = useState(false);
   const [activeModal, setActiveModal] = useState<IssueType | null>(null);
   const [isRecording, setIsRecording] = useState(false);
 
-  const handleCallSupervisor = () => {
-    setIsSupervisorCalled(true);
-    setTimeout(() => setIsSupervisorCalled(false), 3000);
+  const handleCallLead = () => {
+    setIsLeadCalled(true);
+    setTimeout(() => setIsLeadCalled(false), 3000);
   };
 
   return (
@@ -154,13 +154,13 @@ export function IssuesTab() {
       
       {/* Hero Action Section */}
       <div className="shrink-0 py-4 flex justify-start items-center gap-6">
-        {/* Call Supervisor Button */}
+        {/* Call Lead Button */}
         <button
-          onClick={handleCallSupervisor}
+          onClick={handleCallLead}
           className={cn(
             "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-[250ms] shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
-            isSupervisorCalled 
-              ? "bg-[var(--mw-error-600)]" 
+            isLeadCalled
+              ? "bg-[var(--mw-error-600)]"
               : "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]"
           )}
         >
@@ -172,7 +172,7 @@ export function IssuesTab() {
                <Siren className="w-7 h-7 text-white animate-bounce" />
             </div>
             <div className="text-left text-white">
-               <div className="text-xl font-bold tracking-tight">CALL SUPERVISOR</div>
+               <div className="text-xl font-bold tracking-tight">CALL LEAD</div>
                <div className="text-[var(--mw-error-light)] text-sm font-medium opacity-90">Emergency Assistance</div>
             </div>
           </div>

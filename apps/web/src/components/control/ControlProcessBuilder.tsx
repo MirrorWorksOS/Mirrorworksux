@@ -87,8 +87,8 @@ const ELEMENT_LIBRARY: Record<string, DragItem[]> = {
     { category: 'process', label: 'Packaging', icon: Package },
   ],
   People: [
-    { category: 'people', label: 'Operator', icon: User },
-    { category: 'people', label: 'Supervisor', icon: ShieldCheck },
+    { category: 'people', label: 'Team', icon: User },
+    { category: 'people', label: 'Lead', icon: ShieldCheck },
     { category: 'people', label: 'Quality Inspector', icon: SearchIcon },
     { category: 'people', label: 'Maintenance Tech', icon: Wrench },
   ],
@@ -184,8 +184,8 @@ const DEMO_NODES: ProcessNode[] = [
   { id: 'n4', category: 'process',  label: 'Painting',   icon: Paintbrush,  x: 720, y: 200, duration: '20 min', cost: '$15', assignedTo: 'Lisa', inputMaterials: 'Welded assembly', outputMaterials: 'Painted assembly' },
   { id: 'n5', category: 'process',  label: 'Inspection', icon: CheckSquare, x: 520, y: 400, duration: '8 min',  cost: '$6',  assignedTo: 'QC Team' },
   { id: 'n6', category: 'process',  label: 'Assembly',   icon: Settings2,   x: 720, y: 400, duration: '30 min', cost: '$28', assignedTo: 'Assembly Team' },
-  { id: 'n7', category: 'people',   label: 'Operator',   icon: User,        x: 120, y: 80,  assignedTo: 'Station 1' },
-  { id: 'n8', category: 'people',   label: 'Supervisor', icon: ShieldCheck, x: 320, y: 80,  assignedTo: 'Floor Lead' },
+  { id: 'n7', category: 'people',   label: 'Team',       icon: User,        x: 120, y: 80,  assignedTo: 'Station 1' },
+  { id: 'n8', category: 'people',   label: 'Lead',       icon: ShieldCheck, x: 320, y: 80,  assignedTo: 'Floor Lead' },
   { id: 'n9', category: 'resource', label: 'CNC Machine', icon: Cog,        x: 120, y: 400, cost: '$2,500/mo' },
   { id: 'n10', category: 'resource', label: 'Weld Station', icon: Cog,      x: 320, y: 400, cost: '$1,800/mo' },
 ];

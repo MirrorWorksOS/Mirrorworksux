@@ -56,7 +56,7 @@ export function ShopFloorPage() {
       <PageShell className="space-y-6 p-6">
         <PageHeader
           title="Shop Floor"
-          subtitle="Operators consume released travellers only. Tap a machine to run work."
+          subtitle="The team consumes released travellers only. Tap a machine to run work."
         />
 
         <MachineGrid machines={machines} onSelectMachine={handleSelectMachine} />
