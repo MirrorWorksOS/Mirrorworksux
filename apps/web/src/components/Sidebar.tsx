@@ -47,6 +47,7 @@ import {
 import mirrorworksLogomark from '@/art/empty-states/logo/mirrorworks_logomark.svg';
 import { NotificationBell } from './shared/notifications/NotificationBell';
 import { DockNav, type DockItemData } from './shared/layout/DockNav';
+import { SiteSwitcher } from './shared/layout/SiteSwitcher';
 import {
   seedNotificationsIfEmpty,
   startNotificationSimulator,
@@ -1090,7 +1091,7 @@ export function Sidebar({
     return (
       <div className="bg-[var(--neutral-50)] flex flex-col h-screen w-14 border-r border-[var(--neutral-200)] items-center py-3 gap-1 shrink-0">
         {/* Logo */}
-        <Link to="/" className="flex items-center justify-center w-11 h-11 mb-2">
+        <Link to="/" className="flex items-center justify-center w-11 h-11 mb-1">
           <img
             src={mirrorworksLogomark}
             alt=""
@@ -1098,6 +1099,11 @@ export function Sidebar({
             aria-hidden
           />
         </Link>
+
+        {/* Site switcher — compact (rail mode) */}
+        <div className="mb-1">
+          <SiteSwitcher compact />
+        </div>
 
         {/* Manual collapse toggle — desktop only (canToggleCollapse=true) */}
         {canToggleCollapse && (
@@ -1217,7 +1223,7 @@ export function Sidebar({
             className="h-9 w-9 shrink-0 object-contain"
             aria-hidden
           />
-          <p className="flex-1 text-lg font-bold tracking-tight text-foreground truncate">
+          <p className="flex-1 min-w-0 text-lg font-bold tracking-tight text-foreground truncate">
             Alliance Metal
           </p>
           {canToggleCollapse && (
@@ -1231,6 +1237,9 @@ export function Sidebar({
               <PanelLeftClose className="w-4 h-4" strokeWidth={1.5} />
             </button>
           )}
+        </div>
+        <div className="px-2 pt-1.5">
+          <SiteSwitcher />
         </div>
       </div>
 
