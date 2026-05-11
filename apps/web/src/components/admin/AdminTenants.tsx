@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { type TierName } from '@/lib/subscription';
+import { AIUsageMeter } from '@/components/shared/cards/AIUsageMeter';
 
 interface MockTenant {
   id: string;
@@ -59,6 +60,8 @@ export function AdminTenants() {
         <h1 className="text-2xl font-semibold text-white">Tenants</h1>
         <p className="mt-1 text-sm text-slate-400">All MirrorWorks workspaces. Force-change a tier to unblock a customer or downgrade after cancellation.</p>
       </div>
+
+      <AIUsageMeter variant="dark" />
 
       <Card className="bg-slate-900 p-6 text-slate-100">
         <div className="mb-4 flex flex-wrap items-center gap-3">
