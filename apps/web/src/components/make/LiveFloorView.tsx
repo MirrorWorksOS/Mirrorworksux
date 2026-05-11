@@ -36,6 +36,7 @@ import {
 } from '@/services';
 import type { Machine } from '@/types/entities';
 import type { MachineStatus } from '@/types/common';
+import { IsometricFloorView } from '@/components/floor/IsometricFloorView';
 
 // ─── Shift configuration ──────────────────────────────────────────────
 // In real data this comes from the shift schedule. Hardcoded for the prototype.
@@ -375,9 +376,12 @@ function useForceDarkMode() {
 
 // ─── Main view ───────────────────────────────────────────────────────
 
+type FloorMode = 'andon' | '3d';
+
 export function LiveFloorView() {
   const [now, setNow] = useState(() => Date.now());
   const [isExpanded, setIsExpanded] = useState(false);
+  const [mode, setMode] = useState<FloorMode>('andon');
 
   useForceDarkMode();
 
@@ -414,14 +418,59 @@ export function LiveFloorView() {
   }).length;
   const activeCount = activeOperators.filter((op) => op.status === 'active').length;
 
+  const modeOptions: { value: FloorMode; label: string }[] = [
+    { value: 'andon', label: 'Andon' },
+    { value: '3d', label: '3D View' },
+  ];
+  const modeToggle = (
+    <div
+      role="tablist"
+      aria-label="Floor view mode"
+      className="inline-flex h-12 items-center gap-1 rounded-[var(--shape-md)] border border-white/15 bg-white/5 p-1 text-sm font-medium"
+    >
+      {modeOptions.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          role="tab"
+          aria-selected={mode === opt.value}
+          onClick={() => setMode(opt.value)}
+          className={cn(
+            'rounded-[var(--shape-sm)] px-4 py-1.5 transition-colors',
+            mode === opt.value
+              ? 'bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
+              : 'text-white/70 hover:text-white',
+          )}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+
   const body = (
     <div className="mx-auto flex max-w-[1800px] flex-col gap-8">
       <ShiftHeader now={now} onTrackCount={onTrack} totalOperators={activeCount} />
+
+      <div className="flex items-center justify-between">{modeToggle}</div>
 
       <section aria-label="Machine status summary">
         <SummaryRibbon machines={centralMachines} />
       </section>
 
+      {mode === '3d' ? (
+        <section aria-label="Shop floor 3D view">
+          <h2 className="mb-4 text-2xl font-medium uppercase tracking-widest text-white/60">
+            Shop floor
+          </h2>
+          <div className="rounded-[var(--shape-lg)] border border-white/10 bg-[var(--neutral-900,_#171717)] p-4">
+            <IsometricFloorView
+              machines={centralMachines}
+              className="h-[520px] w-full"
+            />
+          </div>
+        </section>
+      ) : (
       <section aria-label="Machines">
         <h2 className="mb-4 text-2xl font-medium uppercase tracking-widest text-white/60">
           Machines
@@ -432,6 +481,7 @@ export function LiveFloorView() {
           ))}
         </div>
       </section>
+      )}
 
       <section aria-label="Operators">
         <div className="mb-4 flex items-baseline gap-4">
