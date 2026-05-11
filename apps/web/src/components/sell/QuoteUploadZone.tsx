@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Upload, FileSpreadsheet, Image, FileText, Cog, X, Check, Sparkles, ChevronDown, ChevronUp,
+  Upload, FileSpreadsheet, Image, FileText, Cog, X, Sparkles, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

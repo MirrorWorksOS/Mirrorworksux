@@ -43,6 +43,15 @@ Product-level tiles on `ProductDetail.tsx` mirror these options and display per-
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — header actions wired (2026-05-08)
+
+Per `65dbf388`:
+
+| Button | Toast |
+|---|---|
+| **As at** (date) | `toast('Select an as-at date')` |
+| **Generate report** (yellow) | `toast.success('Stock valuation report generated')` |
+
 ## Related Files
 - `apps/web/src/components/book/StockValuation.tsx`
 - `apps/web/src/components/ui/button.tsx`

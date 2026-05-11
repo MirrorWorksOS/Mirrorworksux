@@ -33,5 +33,16 @@ Sections to move from the user doc into this dev doc:
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 - Dynamic route exists but robust data loading/error recovery is not obvious in this component.
 
+## Notes — list-row id collisions
+
+`handleAddLineItem` and `handleRecordPayment` previously used `id: \`il-${Date.now()}\`` / `\`pe-${Date.now()}\``. Two clicks within the same millisecond produced duplicate React keys ("Encountered two children with the same key"). Since `d5b9e766` (2026-05-08) the ids are suffixed with `prev.length`:
+
+```ts
+{ id: `il-${Date.now()}-${prev.length}`, … }
+{ id: `pe-${Date.now()}-${prev.length}`, … }
+```
+
+Apply the same pattern when adding new push-to-array list editors on this page.
+
 ## Related Files
 - `apps/web/src/components/sell/SellInvoiceDetail.tsx`

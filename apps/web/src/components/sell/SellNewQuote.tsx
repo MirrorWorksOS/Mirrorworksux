@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Trash2, ChevronDown, FileText, X, Sparkles, ArrowLeft, Check, PencilLine } from 'lucide-react';
+import { Plus, Trash2, FileText, ArrowLeft, Check, PencilLine } from 'lucide-react';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { Button } from '../ui/button';

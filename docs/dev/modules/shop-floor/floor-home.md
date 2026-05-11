@@ -30,6 +30,10 @@ This stub exists so developers browsing `docs/dev/modules/shop-floor/` can find 
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — `FloorScanJob` barcode normalisation (2026-05-08)
+
+`FloorScanJob.handleScan(value)` now `value.trim().toUpperCase()`s the input before comparing against `woNumber` / `moNumber` (commit `11b00661`). Operators who type a lower-case fallback when a scanner isn't to hand now match. Real scanners feed already-upper-cased text, so production behaviour is unchanged.
+
 ## Related Files
 - `apps/web/src/components/floor/FloorHome.tsx`
 - `apps/web/src/components/floor/FloorClockIn.tsx`

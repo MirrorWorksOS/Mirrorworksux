@@ -67,6 +67,13 @@ See [BomRoutingTree dev doc](../plan/bom-routing-tree.md).
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 - Page appears mock/seed-backed; production API integration path is unclear from this file alone.
 
+## Notes — Job link + create-stub redirect (2026-05-08)
+
+`11b00661` fixes two link defects that turn out to be related — both come from "the demo Job route doesn't yet do what the live route will."
+
+1. **Job link.** Previously `<Link to={\`/plan/jobs/${mo.jobNumber.replace('JOB-', '')}\`}>` (two call sites — the Job field in the metadata grid and the meta-row badge). Plan's job route resolves on the **prefixed** id (`JOB-2026-0012`), so stripping the prefix produced dead URLs. Now the prefix is preserved.
+2. **Create flow.** `ManufacturingOrderCreateForm.handleSave()` previously did `navigate(\`/make/manufacturing-orders/mo-new-${Date.now()}\`, { replace: true })`. The static `MO_BY_ID` lookup can't resolve those stub ids, so the page rendered "not found" the moment the user landed. The create flow now toasts success and `navigate('/make/manufacturing-orders', { replace: true })` — back to the list — until persistence is wired. `MakeWorkOrderDetail` got the same treatment for new WOs.
+
 ## Related Files
 - `apps/web/src/components/make/MakeManufacturingOrderDetail.tsx`
 - `apps/web/src/components/shop-floor/WorkOrderFullScreen.tsx`

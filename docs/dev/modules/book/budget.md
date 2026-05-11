@@ -37,6 +37,17 @@ User doc: [`docs/user/modules/book/budget.md`](../../../user/modules/book/budget
 ## Known Gaps / Questions
 - Page appears mock/seed-backed; production API integration path is unclear from this file alone.
 
+## Notes — header CTAs wired (2026-05-08)
+
+Per `65dbf388`, two header buttons that were previously dead now toast:
+
+| Button | Toast |
+|---|---|
+| **Type: All** filter | `toast('Filters opened')` |
+| **New Budget** (yellow CTA) | `toast.success('New budget draft created')` |
+
+Replace with the real filter sheet / draft mutation when those exist.
+
 ## Related Files
 - `apps/web/src/components/book/BudgetOverview.tsx`
 - `apps/web/src/components/ui/button.tsx`

@@ -29,6 +29,18 @@ User doc: [`docs/user/modules/book/job-costs.md`](../../../user/modules/book/job
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — header actions wired (2026-05-08)
+
+Per `65dbf388`, three header buttons that were previously dead now toast:
+
+| Button | Toast |
+|---|---|
+| **Date range** | `toast('Select a date range')` |
+| **Export** | `toast.success('Exporting job profitability…')` |
+| **Filter** (icon) | `toast('Filters opened')` |
+
+Replace with `bookService.jobCosts.export(...)` and a real date-range picker when those exist.
+
 ## Related Files
 - `apps/web/src/components/book/JobProfitability.tsx`
 - `apps/web/src/components/ui/button.tsx`

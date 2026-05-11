@@ -34,6 +34,10 @@
 ## Known Gaps / Questions
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 
+## Notes — rate Select wired (2026-05-08)
+
+Per `206b09cc`, the **Select** button on each carrier-rate row (yellow when AI-recommended or first row, outline otherwise) now toasts: `toast.success('Selected ${r.carrier} ${r.service}')`. Add `type="button"` so the row click never accidentally submits an enclosing form. Replace with the real selection mutation when wired.
+
 ## Related Files
 - `apps/web/src/components/ship/ShipShipping.tsx`
 - `apps/web/src/components/ui/input.tsx`

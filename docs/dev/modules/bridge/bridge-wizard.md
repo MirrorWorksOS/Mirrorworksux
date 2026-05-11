@@ -68,6 +68,16 @@ Complete guided setup with clear progression, live validation, and confidence in
 - Sandbox preview is sample-only (first 5 records). Real cross-module browsing (nav to Sell with imported customers pre-loaded) is still a future feature — see Global Shop gap analysis.
 - No per-entity icon or metadata beyond the tab label.
 
+## Notes — `StepTeamSetup` Edit toast (2026-05-08)
+
+Each AI-suggested team-member row in `StepTeamSetup` renders an **Accept** / **Edit** pair. **Accept** has always been wired; **Edit** previously had no `onClick`. Per `390d50e7` it now toasts:
+
+```ts
+toast('You can change module group assignments later in Control · People.')
+```
+
+This is the same "mock-only" toast pattern used elsewhere in the admin pages — keep it until module-group editing is wired into the wizard itself.
+
 ## Related Files
 - `apps/web/src/components/bridge/BridgeWizard.tsx`
 - `apps/web/src/components/bridge/steps/StepReviewConfirm.tsx`

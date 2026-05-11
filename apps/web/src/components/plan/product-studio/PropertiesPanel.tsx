@@ -12,7 +12,6 @@ import {
   Hash,
   Sliders,
   FileText,
-  Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +34,6 @@ import type {
 import {
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,
-  NODE_TYPE_TEXT,
 } from './product-studio-types';
 
 function SectionHeading({ icon: Icon, label }: { icon: React.ElementType; label: string }) {

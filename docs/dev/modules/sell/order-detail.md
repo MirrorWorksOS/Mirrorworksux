@@ -33,5 +33,9 @@ Sections to move from the user doc into this dev doc:
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 - Dynamic route exists but robust data loading/error recovery is not obvious in this component.
 
+## Notes — list-row id collisions
+
+`handleAddLineItem` and `handleUploadDocument` (file upload onto the documents tab) used `id: \`li-${Date.now()}\`` / `\`doc-${Date.now()}\`` and would collide on rapid clicks / drops. Since `d5b9e766` (2026-05-08) the ids are suffixed with `prev.length`. Use the same pattern when adding new push-to-array editors here.
+
 ## Related Files
 - `apps/web/src/components/sell/SellOrderDetail.tsx`

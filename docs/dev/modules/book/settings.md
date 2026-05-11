@@ -32,6 +32,19 @@ User doc: [`docs/user/modules/book/settings.md`](../../../user/modules/book/sett
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 
+## Notes — Xero panel button wiring (2026-05-08)
+
+Per `65dbf388`, the Xero integration panel had four dead buttons that now toast (or, in one case, no longer no-op silently):
+
+| Surface | Button | Was | Now |
+|---|---|---|---|
+| Sync error banner | **View errors** | bare `<Button>` | `toast('Showing 3 sync errors')` |
+| Sync card | **Sync now** | bare `<Button>` | `toast.success('Xero sync started')` |
+| Sync card | **Full re-sync** | bare `<Button>` | `toast.success('Full Xero re-sync started')` |
+| Connection card | Disconnect confirm | `onConfirm={() => {}}` | `onConfirm={() => toast.success('Xero disconnected')}` |
+
+The disconnect confirm is the most important of the four — `ConfirmDialog` requires an `onConfirm`; the empty body silently swallowed the user's intent.
+
 ## Related Files
 - `apps/web/src/components/book/BookSettings.tsx`
 - `apps/web/src/components/ui/card.tsx`

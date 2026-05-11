@@ -51,6 +51,18 @@
 ## Known Gaps / Questions
 - No explicit incomplete marker found; validate with integrated runtime and backend contracts.
 
+## Notes — CTA navigation (2026-05-08)
+
+`BuyDashboard` imports `useNavigate()` and uses it to wire three CTA buttons that previously had no `onClick`:
+
+| Card | Button | Target |
+|---|---|---|
+| Approval Queue | **View All Approvals** | `/buy/requisitions` |
+| Goods Awaiting Receipt | **Go to Receipts** | `/buy/receipts` |
+| Bills Needing Matching | **Go to Bills** | `/buy/bills` |
+
+These targets read straight off the surrounding card copy — keep them in sync if either side moves.
+
 ## Related Files
 - `apps/web/src/components/buy/BuyDashboard.tsx`
 - `apps/web/src/components/ui/badge.tsx`

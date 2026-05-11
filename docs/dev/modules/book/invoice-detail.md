@@ -32,6 +32,18 @@ User doc: [`docs/user/modules/book/invoice-detail.md`](../../../user/modules/boo
 - Multiple actions resolve to toast feedback, which may indicate incomplete mutation wiring.
 - Dynamic route exists but robust data loading/error recovery is not obvious in this component.
 
+## Notes — header actions wired (2026-05-08)
+
+Per `65dbf388` three header buttons that were previously dead now toast:
+
+| Button | Toast |
+|---|---|
+| **Send** | `toast.success('Invoice sent')` |
+| **Download PDF** | `toast('Generating PDF…')` |
+| **View in Xero** (sidebar card) | `toast('Opening invoice in Xero…')` |
+
+Each becomes a real call once `bookService.invoices.send`, `bookService.invoices.exportPdf`, and `bookService.xero.openInvoice` exist.
+
 ## Related Files
 - `apps/web/src/components/book/InvoiceDetail.tsx`
 - `apps/web/src/components/ui/button.tsx`

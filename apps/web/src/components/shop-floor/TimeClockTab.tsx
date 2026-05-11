@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, History, Calendar, CheckCircle2, AlertCircle, Coffee } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Clock, Coffee } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../ui/dialog";
 import {
   InputOTP,
   InputOTPGroup,

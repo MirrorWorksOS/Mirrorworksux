@@ -35,6 +35,19 @@ User doc: [`docs/user/modules/book/expenses.md`](../../../user/modules/book/expe
 ## Known Gaps / Questions
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 
+## Notes — `NewExpense` receipt actions (2026-05-08)
+
+Per `65dbf388` six dead controls in the `NewExpense` sheet are now wired:
+
+| Control | Behaviour |
+|---|---|
+| **Zoom in / Zoom out / Rotate** (icons) | each toasts the action; controls also gain `type="button"` and `aria-label` |
+| **Remove** (trash icon) | clears local `uploaded` state and toasts |
+| **Apply to Form** (yellow CTA below the extracted-data list) | `toast.success('Extracted data applied to form')` |
+| **View existing** (in the duplicate-warning callout) | `toast('Opening existing expense…')` |
+
+All toasts are stubs — once OCR + dedupe services land, replace each with the real call.
+
 ## Related Files
 - `apps/web/src/components/book/ExpenseKanban.tsx`
 - `apps/web/src/components/ui/badge.tsx`

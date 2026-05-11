@@ -28,6 +28,18 @@ User doc: [`docs/user/modules/book/dashboard.md`](../../../user/modules/book/das
 ## Known Gaps / Questions
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 
+## Notes — Wired CTAs (2026-05-08)
+
+Per `65dbf388`, three buttons that previously had no handler now respond:
+
+| Button | Behaviour |
+|---|---|
+| **View All Approvals** | `navigate('/book/expenses')` — uses freshly imported `useNavigate()` |
+| **Sync Now** (Xero card) | `toast.success('Xero sync started')` — backend mutation TBC |
+| **Follow Up All** (Overdue card) | `toast.success('Follow-up emails queued for ${overdueActions.length} overdue items')` |
+
+All three are toast-stubs for the Xero / overdue follow-up flows; each becomes a real call once the corresponding service method lands.
+
 ## Related Files
 - `apps/web/src/components/book/BookDashboard.tsx`
 - `apps/web/src/components/ui/badge.tsx`

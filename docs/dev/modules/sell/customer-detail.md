@@ -38,6 +38,12 @@ Sections to move from the user doc into this dev doc:
 - Code includes explicit placeholder/legacy markers; some interactions are transitional.
 - Page appears mock/seed-backed; production API integration path is unclear from this file alone.
 
+## Notes — `/sell/crm/new` create flow
+
+`createBlankCustomer()` in `SellCustomerDetail.tsx` **must include `documents: []`** in the seeded record. The Documents tab badge reads `customer.documents.length` directly; before `f622b52a` (2026-05-08) the field was missing and `/sell/crm/new` threw into the React Router error boundary on first render.
+
+If new collection-shaped fields (invoices, activity, recentOrders, documents, …) are added to the customer entity, every read site must also be added to `createBlankCustomer()`'s seed object.
+
 ## Related Files
 - `apps/web/src/components/sell/SellCustomerDetail.tsx`
 - `apps/web/src/components/ui/button.tsx`

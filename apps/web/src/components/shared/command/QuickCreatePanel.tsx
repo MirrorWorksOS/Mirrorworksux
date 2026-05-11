@@ -19,15 +19,10 @@ import {
   ClipboardList,
   ShoppingCart,
   Truck,
-  Package,
   Shield,
   Upload,
   Workflow,
-  Factory,
   BarChart3,
-  Settings,
-  ChevronRight,
-  Plus,
   type LucideIcon,
 } from 'lucide-react';
 
