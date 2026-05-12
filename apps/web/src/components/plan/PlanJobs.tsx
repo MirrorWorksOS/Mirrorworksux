@@ -45,6 +45,8 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
+import { GanttChart as GanttChartViz, type GanttTask } from '@/components/shared/schedule/GanttChart';
+import { addDays, parseISO } from 'date-fns';
 import {
   ModuleFilterBar,
   applyFilters,
@@ -689,21 +691,74 @@ export function PlanJobs() {
         </div>
       )}
 
-      {/* Gantt (placeholder) */}
+      {/* Gantt */}
       {state.view === 'gantt' && (
-        // TODO(filters): Gantt view — needs per-job schedule blocks wired through schedule engine.
-        <div className="flex-1 overflow-auto p-6">
-          <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-12 text-center">
-            <GanttChart className="mx-auto h-10 w-10 text-[var(--neutral-400)]" />
-            <h3 className="mt-3 text-sm font-medium text-foreground">Gantt view</h3>
-            <p className="mt-1 text-xs text-[var(--neutral-500)]">
-              Gantt rendering ships with the Schedule horizon refactor — {filtered.length} jobs in scope.
-            </p>
-            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--neutral-500)]">
-              <Briefcase className="h-3.5 w-3.5" />
-              <span>{filtered.length} jobs · {countInProduction} in production</span>
+        <div className="flex-1 overflow-auto p-6 space-y-4">
+          <ToolbarSummaryBar
+            segments={[
+              { key: 'inProduction', label: 'In Production', value: countInProduction, color: 'var(--mw-yellow-400)' },
+              { key: 'scheduled', label: 'Scheduled', value: countScheduled, color: 'var(--mw-mirage)' },
+              { key: 'draft', label: 'Draft', value: countDraft, color: 'var(--neutral-400)' },
+              { key: 'other', label: 'Other', value: countOther, color: 'var(--neutral-200)' },
+            ]}
+            formatValue={(v) => String(v)}
+          />
+          {filtered.length === 0 ? (
+            <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-12 text-center">
+              <GanttChart className="mx-auto h-10 w-10 text-[var(--neutral-400)]" />
+              <p className="mt-3 text-sm text-foreground">No jobs to plot</p>
+              <p className="mt-1 text-xs text-[var(--neutral-500)]">Adjust filters to see jobs on the Gantt.</p>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+              {(() => {
+                // Build Gantt tasks from filtered jobs. Duration is anchored to the
+                // due date, walking back a stage-derived working span; this gives
+                // each job a visible block without requiring schedule wiring yet.
+                const STAGE_DAYS: Record<string, number> = {
+                  draft: 3, planning: 5, scheduled: 7, 'in-progress': 10, 'on-hold': 4, complete: 2,
+                };
+                const STAGE_COLOR: Record<string, string> = {
+                  draft: 'var(--neutral-400)',
+                  planning: 'var(--mw-mirage)',
+                  scheduled: 'var(--mw-info)',
+                  'in-progress': 'var(--mw-yellow-400)',
+                  'on-hold': 'var(--mw-warning)',
+                  complete: 'var(--mw-success)',
+                };
+                const today = new Date();
+                let minStart = today;
+                let maxEnd = today;
+                const tasks: GanttTask[] = filtered.map((j) => {
+                  const due = j.dueDate ? parseISO(j.dueDate) : addDays(today, 14);
+                  const span = STAGE_DAYS[j._stageId] ?? 5;
+                  const start = addDays(due, -span);
+                  if (start < minStart) minStart = start;
+                  if (due > maxEnd) maxEnd = due;
+                  return {
+                    id: j.id,
+                    label: `${j.id} · ${j.name}`,
+                    start,
+                    end: due,
+                    progress: j.progress ?? 0,
+                    color: STAGE_COLOR[j._stageId] ?? 'var(--mw-mirage)',
+                    meta: { customer: j.customer, stage: j._stageId, value: j.value },
+                  };
+                });
+                const startDate = addDays(minStart, -1);
+                const endDate = addDays(maxEnd, 2);
+                return (
+                  <GanttChartViz
+                    tasks={tasks}
+                    startDate={startDate}
+                    endDate={endDate}
+                    today={today}
+                    onTaskClick={(t) => navigate(`/plan/jobs/${t.id}`)}
+                  />
+                );
+              })()}
+            </div>
+          )}
         </div>
       )}
     </PageShell>

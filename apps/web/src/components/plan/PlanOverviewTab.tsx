@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink, Pencil, Search, Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -14,6 +14,78 @@ import { StatusBadge, type StatusKey } from '../shared/data/StatusBadge';
 import { ProgressBar } from '../shared/data/ProgressBar';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { customers as centralCustomers } from '@/services';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
+
+interface PlanOverviewTabProps {
+  isEditing?: boolean;
+  onEditToggle?: () => void;
+}
+
+/** Customer combobox — searches the central customer DB instead of a free-text input. */
+function CustomerSearch({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (company: string) => void;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const options = useMemo(() => centralCustomers.map((c) => ({
+    id: c.id, company: c.company, contact: c.contact,
+  })), []);
+  if (disabled) {
+    return (
+      <Input
+        value={value}
+        readOnly
+        placeholder="Select customer..."
+        className="bg-[var(--neutral-100)] border-transparent"
+      />
+    );
+  }
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex h-10 w-full items-center justify-between rounded-[var(--shape-md)] border border-[var(--border)] px-3 text-left text-sm hover:bg-[var(--accent)]"
+        >
+          <span className={value ? 'text-foreground' : 'text-[var(--neutral-400)]'}>
+            {value || 'Search customers…'}
+          </span>
+          <Search className="h-3.5 w-3.5 text-[var(--neutral-400)]" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[320px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search customer database…" />
+          <CommandList>
+            <CommandEmpty>No customer found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((c) => (
+                <CommandItem
+                  key={c.id}
+                  value={c.company}
+                  onSelect={(v) => { onChange(v); setOpen(false); }}
+                >
+                  <Check className={cn('mr-2 h-4 w-4', value === c.company ? 'opacity-100' : 'opacity-0')} />
+                  <div className="flex flex-col">
+                    <span className="text-sm">{c.company}</span>
+                    <span className="text-xs text-[var(--neutral-500)]">{c.contact}</span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 type ProductRow = {
   id: string;
@@ -63,11 +135,25 @@ const PRODUCT_DATA: ProductRow[] = [
   },
 ];
 
-export function PlanOverviewTab() {
+export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: PlanOverviewTabProps = {}) {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
+  // Local edit toggle for the Job Details card. The parent JobWorkspaceLayout
+  // exposes a header-level toggle (isEditingProp) which mirrors this — both
+  // drive the same view/edit affordance so the card and header stay in sync.
+  const [localEditing, setLocalEditing] = useState(false);
+  const isEditing = isEditingProp ?? localEditing;
+  const toggleEditing = () => {
+    if (onEditToggle) {
+      onEditToggle();
+    } else {
+      setLocalEditing((v) => !v);
+    }
+    if (isEditing) toast.success('Job details saved');
+  };
+  const [customer, setCustomer] = useState('');
 
   const handleChatSubmit = () => {
     const msg = chatInput.trim();
@@ -200,9 +286,16 @@ export function PlanOverviewTab() {
             <h2 className=" text-lg font-medium text-foreground">
               Job Details
             </h2>
-            <Button variant="outline" className="border-[var(--border)]">
-              <Save className="w-4 h-4 mr-2" />
-              Save
+            <Button variant="outline" className="border-[var(--border)]" onClick={toggleEditing}>
+              {isEditing ? (
+                <>
+                  <Save className="w-4 h-4 mr-2" /> Save
+                </>
+              ) : (
+                <>
+                  <Pencil className="w-4 h-4 mr-2" /> Edit
+                </>
+              )}
             </Button>
           </div>
 
@@ -223,7 +316,7 @@ export function PlanOverviewTab() {
                 <label className="block  text-xs font-medium text-foreground mb-2">
                   Stage
                 </label>
-                <Select defaultValue="planning">
+                <Select defaultValue="planning" disabled={!isEditing}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -245,13 +338,13 @@ export function PlanOverviewTab() {
                 <label className="block  text-xs font-medium text-foreground mb-2">
                   Customer
                 </label>
-                <Input placeholder="Select customer..." />
+                <CustomerSearch value={customer} onChange={setCustomer} disabled={!isEditing} />
               </div>
               <div>
                 <label className="block  text-xs font-medium text-foreground mb-2">
                   Customer Contact
                 </label>
-                <Input placeholder="Primary contact name" />
+                <Input placeholder="Primary contact name" readOnly={!isEditing} className={!isEditing ? 'bg-[var(--neutral-100)] border-transparent' : ''} />
               </div>
             </div>
 

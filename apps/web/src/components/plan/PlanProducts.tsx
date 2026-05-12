@@ -14,18 +14,52 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
 import { toast } from 'sonner';
 import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
+import { products as centralProducts } from '@/services';
 
+// Plan-flavoured view onto the canonical product catalogue (Sell > Products,
+// Control > Products). Production fields (leadTime/cycleHrs/routing/BOM) are
+// derived locally — backend wires them in when the engineering tables land.
+interface PlanProduct {
+  id: string;
+  name: string;
+  sku: string;
+  category: string;
+  leadTime: number;
+  routingSteps: number;
+  hasBOM: boolean;
+  workCenters: string[];
+  cycleHrs: number;
+  lastProduced: string;
+}
 
-const PRODUCTS = [
-  { id: '1', name: 'Server Rack Chassis',            sku: 'PROD-SR-001', category: 'Finished Goods',  leadTime: 12, routingSteps: 6, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Welding', 'Finishing'],  cycleHrs: 12,  lastProduced: 'Mar 18' },
-  { id: '2', name: 'Structural Bracket Type A',       sku: 'PROD-BP-002', category: 'Finished Goods',  leadTime: 5,  routingSteps: 4, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Finishing'],             cycleHrs: 2.25,lastProduced: 'Mar 12' },
-  { id: '3', name: 'Aluminium Enclosure 600x400',     sku: 'PROD-AE-003', category: 'Finished Goods',  leadTime: 8,  routingSteps: 8, hasBOM: true,  workCenters: ['Machining', 'Forming', 'Assembly'],            cycleHrs: 8,   lastProduced: 'Mar 10' },
-  { id: '4', name: 'Rail Platform Guard',             sku: 'PROD-RPG-004',category: 'Finished Goods',  leadTime: 18, routingSteps: 5, hasBOM: true,  workCenters: ['Cutting', 'Welding', 'Finishing'],             cycleHrs: 16,  lastProduced: 'Feb 28' },
-  { id: '5', name: 'Machine Guard Panel',             sku: 'PROD-MG-005', category: 'Finished Goods',  leadTime: 7,  routingSteps: 4, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Finishing'],             cycleHrs: 3.5, lastProduced: 'Feb 20' },
-  { id: '6', name: 'Custom Electrical Cabinet',       sku: 'PROD-EC-006', category: 'Finished Goods',  leadTime: 25, routingSteps: 9, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Welding', 'Assembly'],   cycleHrs: 22,  lastProduced: '—' },
-];
+const PRODUCTION_OVERRIDES: Record<string, Partial<PlanProduct>> = {
+  'prod-001': { leadTime: 5,  routingSteps: 4, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Finishing'],            cycleHrs: 2.25, lastProduced: 'Mar 12' },
+  'prod-002': { leadTime: 6,  routingSteps: 3, hasBOM: true,  workCenters: ['Cutting', 'Finishing'],                       cycleHrs: 1.50, lastProduced: 'Mar 14' },
+  'prod-003': { leadTime: 8,  routingSteps: 8, hasBOM: true,  workCenters: ['Machining', 'Forming', 'Assembly'],           cycleHrs: 8.00, lastProduced: 'Mar 10' },
+  'prod-004': { leadTime: 12, routingSteps: 6, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Welding', 'Finishing'], cycleHrs: 12.0, lastProduced: 'Mar 18' },
+  'prod-005': { leadTime: 7,  routingSteps: 4, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Finishing'],             cycleHrs: 3.50, lastProduced: 'Feb 28' },
+  'prod-006': { leadTime: 14, routingSteps: 5, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Finishing'],             cycleHrs: 6.00, lastProduced: 'Feb 20' },
+  'prod-007': { leadTime: 9,  routingSteps: 5, hasBOM: true,  workCenters: ['Cutting', 'Forming', 'Welding'],               cycleHrs: 4.00, lastProduced: 'Feb 25' },
+  'prod-008': { leadTime: 28, routingSteps: 9, hasBOM: true,  workCenters: ['Cutting', 'Welding', 'Finishing'],             cycleHrs: 32.0, lastProduced: 'Feb 14' },
+  'prod-009': { leadTime: 18, routingSteps: 5, hasBOM: true,  workCenters: ['Cutting', 'Welding', 'Finishing'],             cycleHrs: 16.0, lastProduced: 'Feb 18' },
+  'prod-010': { leadTime: 25, routingSteps: 9, hasBOM: false, workCenters: ['Cutting', 'Forming', 'Welding', 'Assembly'],   cycleHrs: 22.0, lastProduced: '—' },
+};
 
-type PlanProduct = (typeof PRODUCTS)[number];
+const DEFAULT_PRODUCTION: Pick<PlanProduct, 'leadTime' | 'routingSteps' | 'hasBOM' | 'workCenters' | 'cycleHrs' | 'lastProduced'> = {
+  leadTime: 0, routingSteps: 0, hasBOM: false, workCenters: [], cycleHrs: 0, lastProduced: '—',
+};
+
+function toPlanProduct(p: typeof centralProducts[number]): PlanProduct {
+  const overrides = PRODUCTION_OVERRIDES[p.id] ?? {};
+  return {
+    id: p.id,
+    name: p.description,
+    sku: p.partNumber,
+    category: p.category,
+    ...DEFAULT_PRODUCTION,
+    ...overrides,
+  } as PlanProduct;
+}
 
 function buildPlanProductColumns(
   navigate: ReturnType<typeof useNavigate>,
@@ -109,7 +143,11 @@ export function PlanProducts() {
 
   const columns = useMemo(() => buildPlanProductColumns(navigate), [navigate]);
 
-  const filtered = PRODUCTS.filter(p =>
+  // Source of truth is the central product catalogue — any change made in
+  // Sell > Products (or Control > Products) flows through here automatically.
+  const products = useMemo(() => centralProducts.map(toPlanProduct), []);
+
+  const filtered = products.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.sku.toLowerCase().includes(search.toLowerCase())
   );
@@ -118,7 +156,7 @@ export function PlanProducts() {
     <PageShell>
       <PageHeader
         title="Products"
-        subtitle={`${PRODUCTS.length} products · ${PRODUCTS.filter(p => p.hasBOM).length} with BOMs${PRODUCTS.filter(p => !p.hasBOM).length > 0 ? ` · ${PRODUCTS.filter(p => !p.hasBOM).length} missing BOM` : ''}`}
+        subtitle={`${products.length} products · ${products.filter(p => p.hasBOM).length} with BOMs${products.filter(p => !p.hasBOM).length > 0 ? ` · ${products.filter(p => !p.hasBOM).length} missing BOM` : ''}`}
         actions={
           <div className="flex flex-wrap items-center gap-2 justify-end">
             <Button
@@ -146,8 +184,8 @@ export function PlanProducts() {
 
       <ToolbarSummaryBar
         segments={[
-          { key: 'withBom', label: 'With BOM', value: PRODUCTS.filter(p => p.hasBOM).length, color: 'var(--mw-yellow-400)' },
-          { key: 'missingBom', label: 'Missing BOM', value: PRODUCTS.filter(p => !p.hasBOM).length, color: 'var(--mw-mirage)' },
+          { key: 'withBom', label: 'With BOM', value: products.filter(p => p.hasBOM).length, color: 'var(--mw-yellow-400)' },
+          { key: 'missingBom', label: 'Missing BOM', value: products.filter(p => !p.hasBOM).length, color: 'var(--mw-mirage)' },
         ]}
         formatValue={(v) => String(v)}
       />

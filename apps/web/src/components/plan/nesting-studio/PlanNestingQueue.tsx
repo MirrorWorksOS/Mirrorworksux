@@ -6,7 +6,7 @@
  * Nest from the Studio, which transitions them to `placed`.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
 import { Inbox, Clock, AlertTriangle, FileText } from 'lucide-react';
@@ -40,7 +40,7 @@ function groupKey(q: NestingQueueItem): string {
   return `${q.material} ${q.thicknessMm}mm`;
 }
 
-export function PlanNestingQueue() {
+export function PlanNestingQueue({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const [items, setItems] = useState<NestingQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -91,6 +91,7 @@ export function PlanNestingQueue() {
           </Button>
         }
       />
+      {headerExtras}
 
       <motion.div
         className="grid grid-cols-2 gap-4 sm:grid-cols-4"

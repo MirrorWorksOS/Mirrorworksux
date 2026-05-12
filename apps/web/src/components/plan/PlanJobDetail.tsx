@@ -1,10 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Plus, Save, ChevronRight, SendToBack, ShieldAlert } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { PageShell } from '@/components/shared/layout/PageShell';
+import { ArrowLeft, Plus, Save, Pencil, ChevronRight, SendToBack, ShieldAlert } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
@@ -16,6 +12,7 @@ import {
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PlanOverviewTab } from './PlanOverviewTab';
 import { PlanProductionTab } from './PlanProductionTab';
+import { PlanMirrorViewTab } from './PlanMirrorViewTab';
 import { PlanScheduleTab } from './PlanScheduleTab';
 import { PlanIntelligenceHubTab } from './PlanIntelligenceHubTab';
 import { PlanBudgetTab } from './PlanBudgetTab';
@@ -52,14 +49,19 @@ function stageProgress(stage: StageId): number {
 }
 
 /** Document flow lineage for the current job — labels are IDs; docType is the full document name for tooltips */
-const DOCUMENT_FLOW = [
-  { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', docType: 'Opportunity' as const },
-  { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', docType: 'Quote' as const },
-  { label: 'SO-2026-0085', href: '/sell/orders/so-001', docType: 'Sales order' as const },
-  { label: 'JOB-2026-0012', href: '/plan/jobs/JOB-2026-0012', docType: 'Job' as const },
-  { label: 'WO-2026-0001', href: '#', docType: 'Work order' as const },
-  { label: 'MO-2026-0001', href: '#', docType: 'Manufacturing order' as const },
-];
+/** Build the document-flow lineage for the current job. The JOB chip always
+ *  uses the active jobId so the yellow "current position" highlight lights up
+ *  correctly for deep links (e.g. /plan/jobs/JOB-2026-0015 vs /JOB-2026-0012). */
+function buildDocumentFlow(jobId: string) {
+  return [
+    { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', docType: 'Opportunity' as const },
+    { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', docType: 'Quote' as const },
+    { label: 'SO-2026-0085', href: '/sell/orders/so-001', docType: 'Sales order' as const },
+    { label: jobId, href: `/plan/jobs/${jobId}`, docType: 'Job' as const },
+    { label: 'WO-2026-0001', href: '#', docType: 'Work order' as const },
+    { label: 'MO-2026-0001', href: '#', docType: 'Manufacturing order' as const },
+  ];
+}
 
 export function PlanJobDetail() {
   const navigate = useNavigate();
@@ -70,6 +72,9 @@ export function PlanJobDetail() {
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
   const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>('traveller-001');
+  // Header-level Edit ↔ Save toggle. Starts in view mode for existing jobs,
+  // edit mode for new jobs so the form is immediately writable.
+  const [isEditing, setIsEditing] = useState<boolean>(isNew);
 
   // Use the route id when present so deep links resolve correctly; fall back
   // to the legacy hard-coded job for any other entry (preserves behaviour for
@@ -117,6 +122,7 @@ export function PlanJobDetail() {
     const base: JobWorkspaceTabConfig[] = [
       { id: 'overview', label: 'Overview' },
       { id: 'production', label: 'Production', count: 4 },
+      { id: 'mirrorview', label: 'MirrorView' },
       { id: 'travellers', label: 'Travellers', count: travellers.length },
     ];
     if (canViewBudget) {
@@ -132,11 +138,13 @@ export function PlanJobDetail() {
   const renderTabPanel = (tab: string) => {
     switch (tab) {
       case 'overview':
-        return <PlanOverviewTab />;
+        return <PlanOverviewTab isEditing={isEditing} onEditToggle={() => setIsEditing((v) => !v)} />;
       case 'production':
         return <PlanProductionTab />;
+      case 'mirrorview':
+        return <PlanMirrorViewTab />;
       case 'schedule':
-        return <PlanScheduleTab />;
+        return <PlanScheduleTab editable />;
       case 'intelligence':
         return <PlanIntelligenceHubTab onOpenBudget={() => setActiveTab('budget')} />;
       case 'budget':
@@ -189,11 +197,11 @@ export function PlanJobDetail() {
       ]
     : [];
 
-  // Brand-new job: render a focused create form. We branch here (after all
-  // hooks) so existing callers and deep links keep working unchanged.
-  if (isNew) {
-    return <PlanJobCreateForm onCancel={() => navigate('/plan/jobs')} />;
-  }
+  // Brand-new job uses the same workspace shell so users land in the same
+  // context they will work in — no separate "blank form" page.
+  const titleText = isNew ? 'New Job' : 'Differential Assembly';
+  const subtitleCustomer = isNew ? 'Pick a customer to attach this job to' : 'Drivetrain Dynamics Pty Ltd';
+  const subtitleValue = isNew ? '$0' : '$185,000';
 
   return (
     <Dialog open={isReleaseDialogOpen} onOpenChange={setIsReleaseDialogOpen}>
@@ -201,14 +209,16 @@ export function PlanJobDetail() {
         breadcrumbs={[
           { label: 'Plan', href: '/plan' },
           { label: 'Jobs', href: '/plan/jobs' },
-          { label: 'Differential Assembly' },
+          { label: titleText },
         ]}
-        title="Differential Assembly"
+        title={titleText}
         subtitle={
           <>
-            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{jobId}</span>
-            <span>Drivetrain Dynamics Pty Ltd</span>
-            <span className="tabular-nums">$185,000</span>
+            <span className="inline-flex items-center rounded-full bg-[var(--mw-yellow-400)] px-3 py-0.5 text-xs font-medium text-[var(--mw-mirage)] tabular-nums">
+              {isNew ? 'JOB-NEW' : jobId}
+            </span>
+            <span>{subtitleCustomer}</span>
+            <span className="tabular-nums">{subtitleValue}</span>
           </>
         }
         metaRow={
@@ -233,7 +243,7 @@ export function PlanJobDetail() {
             </div>
 
             <nav aria-label="Document flow" className="flex flex-wrap items-center gap-1">
-              {DOCUMENT_FLOW.map((doc, idx) => (
+              {buildDocumentFlow(isNew ? 'JOB-NEW' : jobId).map((doc, idx) => (
                 <React.Fragment key={doc.label}>
                   {idx > 0 && (
                     <ChevronRight className="h-3 w-3 shrink-0 text-[var(--neutral-400)]" aria-hidden />
@@ -243,7 +253,7 @@ export function PlanJobDetail() {
                     title={doc.docType}
                     className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
                       doc.label === jobId
-                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 text-foreground'
+                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
                         : 'border-[var(--border)] text-foreground hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-800)]'
                     }`}
                   >
@@ -282,13 +292,26 @@ export function PlanJobDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
-            <Button variant="outline" className="h-12 border-[var(--border)]">
-              <Save className="mr-2 h-4 w-4" />
-              Save
+            <Button
+              variant="outline"
+              className="h-12 border-[var(--border)]"
+              onClick={() => {
+                if (isEditing) {
+                  toast.success(isNew ? 'Job created' : 'Job saved');
+                  if (isNew) {
+                    const stubId = `JOB-NEW-${Date.now()}`;
+                    navigate(`/plan/jobs/${stubId}`, { replace: true });
+                  }
+                }
+                setIsEditing((v) => !v);
+              }}
+            >
+              {isEditing ? <Save className="mr-2 h-4 w-4" /> : <Pencil className="mr-2 h-4 w-4" />}
+              {isEditing ? 'Save' : 'Edit'}
             </Button>
-            {canReleaseTraveller ? (
+            {canReleaseTraveller && !isNew ? (
               <Button
-                className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                className="h-12 bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
                 onClick={() => setIsReleaseDialogOpen(true)}
                 disabled={!selectedTraveller || selectedTravellerReleased}
               >
@@ -296,13 +319,15 @@ export function PlanJobDetail() {
                 Release to floor
               </Button>
             ) : null}
-            <Button
-              className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-              onClick={() => navigate(`/make/manufacturing-orders/new?jobId=${jobId}`)}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create manufacturing order
-            </Button>
+            {!isNew ? (
+              <Button
+                className="h-12 bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+                onClick={() => navigate(`/make/manufacturing-orders/new?jobId=${jobId}`)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create manufacturing order
+              </Button>
+            ) : null}
           </>
         }
         tabs={tabs}
@@ -382,102 +407,3 @@ export function PlanJobDetail() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// PlanJobCreateForm — minimal create form for /plan/jobs/new
-// ---------------------------------------------------------------------------
-
-function PlanJobCreateForm({ onCancel }: { onCancel: () => void }) {
-  const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [customer, setCustomer] = useState('');
-  const [value, setValue] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [notes, setNotes] = useState('');
-
-  const handleSave = () => {
-    // TODO(backend): jobs.create({ title, customer, value, dueDate, notes })
-    const stubId = `JOB-NEW-${Date.now()}`;
-    toast.success('Job created');
-    navigate(`/plan/jobs/${stubId}`, { replace: true });
-  };
-
-  return (
-    <PageShell>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs text-[var(--neutral-500)] mb-1">
-            <Link to="/plan/jobs" className="hover:underline">Plan / Jobs</Link>
-            <span className="mx-1">/</span>
-            <span>New</span>
-          </p>
-          <h1 className="text-2xl font-medium text-foreground">New Job</h1>
-          <p className="text-sm text-[var(--neutral-500)] mt-1">
-            Capture the customer brief; production fields populate after release.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="h-10 border-[var(--border)]" onClick={onCancel}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Cancel
-          </Button>
-          <Button
-            className="h-10 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-            onClick={handleSave}
-          >
-            <Save className="mr-2 h-4 w-4" /> Save
-          </Button>
-        </div>
-      </div>
-
-      <Card className="p-6 space-y-5 max-w-3xl">
-        <h2 className="text-sm font-medium text-foreground">Job details</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs text-[var(--neutral-500)]">Title</Label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Differential Assembly"
-              className="mt-1 h-10 border-[var(--border)]"
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-[var(--neutral-500)]">Customer</Label>
-            <Input
-              value={customer}
-              onChange={(e) => setCustomer(e.target.value)}
-              placeholder="Drivetrain Dynamics Pty Ltd"
-              className="mt-1 h-10 border-[var(--border)]"
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-[var(--neutral-500)]">Value</Label>
-            <Input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="$0"
-              className="mt-1 h-10 border-[var(--border)] tabular-nums"
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-[var(--neutral-500)]">Due date</Label>
-            <Input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1 h-10 border-[var(--border)]"
-            />
-          </div>
-        </div>
-        <div>
-          <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Brief, scope, special requirements…"
-            className="mt-1 min-h-24 border-[var(--border)]"
-          />
-        </div>
-      </Card>
-    </PageShell>
-  );
-}

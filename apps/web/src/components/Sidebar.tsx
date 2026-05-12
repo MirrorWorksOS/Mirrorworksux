@@ -203,17 +203,16 @@ export const menuConfig: MenuItem[] = [
         heading: 'Engineering',
         items: [
           { label: 'Product Studio', path: '/plan/product-studio' },
+          // Machine I/O now hosts CAD Import, NC Connect, Nesting Studio,
+          // Ready to Nest, and Nests as tabs in a single screen.
           { label: 'Machine I/O', path: '/plan/machine-io' },
-          { label: 'Nesting Studio', path: '/plan/nesting-studio' },
-          { label: 'Ready to Nest', path: '/plan/nesting-queue' },
-          { label: 'Nests', path: '/plan/nests' },
         ],
       },
       {
         heading: 'Planning tools',
         items: [
+          // MRP and Purchase consolidated into a single tabbed page.
           { label: 'MRP', path: '/plan/mrp' },
-          { label: 'Purchase', path: '/plan/purchase' },
         ],
       },
       {

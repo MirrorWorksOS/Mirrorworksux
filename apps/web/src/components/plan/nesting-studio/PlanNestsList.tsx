@@ -7,7 +7,7 @@
  * which reserves stock and stamps a schedule block.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
 import { LayoutGrid, CalendarCheck, ClipboardList, Cpu, CheckCircle2 } from 'lucide-react';
@@ -65,7 +65,7 @@ function statusVariant(s: NestStatus): 'default' | 'secondary' | 'outline' | 'de
   }
 }
 
-export function PlanNestsList() {
+export function PlanNestsList({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const [nests, setNests] = useState<Nest[]>([]);
   const [activeTab, setActiveTab] = useState<NestStatus>('ready_to_schedule');
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -149,6 +149,7 @@ export function PlanNestsList() {
           </div>
         }
       />
+      {headerExtras}
 
       <motion.div
         className="grid grid-cols-2 gap-4 sm:grid-cols-5"

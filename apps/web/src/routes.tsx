@@ -342,11 +342,14 @@ export const router = createBrowserRouter([
           { path: 'activities', element: <Navigate to="/plan/schedule-engine" replace /> },
           { path: 'schedule', element: <Navigate to="/plan/schedule-engine" replace /> },
           { path: 'schedule-engine', element: <L><PlanScheduleEngine /></L> },
-          // CAD import + NC Connect unified under /plan/machine-io
+          // CAD import + NC Connect + Nesting Studio + Ready to Nest + Nests
+          // are unified under /plan/machine-io as a single tabbed module.
           { path: 'machine-io', element: <L><PlanMachineIO /></L> },
           { path: 'nc-connect', element: <Navigate to="/plan/machine-io?tab=nc-connect" replace /> },
           { path: 'cad-import', element: <Navigate to="/plan/machine-io?tab=cad-import" replace /> },
-          { path: 'purchase', element: <L><PlanPurchase /></L> },
+          // Purchase planning lives as a tab under /plan/mrp now; redirect
+          // direct links so existing bookmarks survive.
+          { path: 'purchase', element: <Navigate to="/plan/mrp?tab=purchase" replace /> },
           { path: 'qc-planning', element: <L><PlanQCPlanning /></L> },
           // Product Studio is now exclusively the Blockly-based v2 editor.
           // Legacy v1 + spike routes are kept as redirects so any saved
@@ -363,12 +366,12 @@ export const router = createBrowserRouter([
           { path: 'material-library', element: <Navigate to="/plan/libraries?tab=materials" replace /> },
           { path: 'finish-library', element: <Navigate to="/plan/libraries?tab=finishes" replace /> },
           { path: 'what-if', element: <L><PlanWhatIf /></L> },
-          // Nesting Studio replaces the legacy single-part Sheet Calculator.
-          // The old route redirects so existing bookmarks survive.
-          { path: 'nesting', element: <Navigate to="/plan/nesting-studio" replace /> },
-          { path: 'nesting-studio', element: <L><PlanNestingStudio /></L> },
-          { path: 'nesting-queue', element: <L><PlanNestingQueue /></L> },
-          { path: 'nests', element: <L><PlanNestsList /></L> },
+          // Nesting Studio / Ready to Nest / Nests now live as tabs inside
+          // /plan/machine-io. Direct links redirect to the right tab.
+          { path: 'nesting', element: <Navigate to="/plan/machine-io?tab=nesting-studio" replace /> },
+          { path: 'nesting-studio', element: <Navigate to="/plan/machine-io?tab=nesting-studio" replace /> },
+          { path: 'nesting-queue', element: <Navigate to="/plan/machine-io?tab=nesting-queue" replace /> },
+          { path: 'nests', element: <Navigate to="/plan/machine-io?tab=nests" replace /> },
           { path: 'nests/:id', element: <L><PlanNestDetail /></L> },
           { path: 'mrp', element: <L><PlanMrp /></L> },
           { path: 'sheet-calculator', element: <Navigate to="/plan/nesting-studio" replace /> },

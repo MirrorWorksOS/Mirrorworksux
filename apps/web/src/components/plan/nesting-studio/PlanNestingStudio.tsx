@@ -135,7 +135,7 @@ function partRowFromProduct(p: Product): StudioPartRow {
 
 /* ── component ───────────────────────────────────────────────────── */
 
-export function PlanNestingStudio() {
+export function PlanNestingStudio({ headerExtras }: { headerExtras?: React.ReactNode } = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const queueItemIdParam = searchParams.get('queueItem');
@@ -551,6 +551,7 @@ export function PlanNestingStudio() {
           </div>
         }
       />
+      {headerExtras}
 
       {/* KPIs */}
       <motion.div
