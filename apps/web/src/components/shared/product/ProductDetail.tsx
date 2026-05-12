@@ -200,14 +200,6 @@ const TOP_CUSTOMERS = [
 const TABS = ['Overview', 'Manufacturing', 'MirrorView', 'Inventory', 'Planning', 'Accounting', 'Documents'] as const;
 type Tab = (typeof TABS)[number];
 
-const TAB_BADGES: Partial<Record<Tab, number | string>> = {
-  Manufacturing: 6,
-  MirrorView: 3,
-  Inventory: 4,
-  Planning: 'MRP',
-  Documents: 3,
-};
-
 // ── Section heading helper ──────────────────────────────
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return <h2 className="text-lg font-medium text-foreground">{children}</h2>;
@@ -1285,9 +1277,13 @@ function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function MirrorViewTab() {
-  const [files, setFiles] = useState<CadFile[]>(MOCK_CAD_FILES);
-  const [selectedFileId, setSelectedFileId] = useState<string>(MOCK_CAD_FILES[0]?.id ?? '');
+interface MirrorViewTabProps {
+  files: CadFile[];
+  setFiles: React.Dispatch<React.SetStateAction<CadFile[]>>;
+}
+
+function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
+  const [selectedFileId, setSelectedFileId] = useState<string>(files[0]?.id ?? '');
   const [dragOver, setDragOver] = useState(false);
 
   const activeRevision = MOCK_REVISIONS[0];
@@ -2456,16 +2452,16 @@ function PlanningTab() {
   );
 }
 
-// ── Tab component map ───────────────────────────────────
-const TAB_COMPONENTS: Record<Tab, () => JSX.Element> = {
-  Overview: OverviewTab,
-  Manufacturing: ManufacturingTab,
-  MirrorView: MirrorViewTab,
-  Inventory: InventoryTab,
-  Planning: PlanningTab,
-  Accounting: AccountingTab,
-  Documents: DocumentsTab,
-};
+/**
+ * Total stock-location rows across all warehouses — used both by the
+ * Inventory tab and the Inventory tab badge.
+ */
+function totalStockLocations(): number {
+  return Object.values(STOCK_BY_LOCATION).reduce(
+    (sum, wh) => sum + wh.rows.length,
+    0,
+  );
+}
 
 // ═══════════════════════════════════════════════════════════
 // ROOT COMPONENT
@@ -2511,7 +2507,37 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
   };
 
   const [tab, setTab] = useState<Tab>('Overview');
-  const TabContent = TAB_COMPONENTS[tab];
+
+  // CAD files lifted up so the MirrorView tab badge reflects live state.
+  const [cadFiles, setCadFiles] = useState<CadFile[]>(MOCK_CAD_FILES);
+
+  /**
+   * Tab badges derived from real data. Adding a CAD file or removing a BOM
+   * line will bump the matching badge automatically. `Planning` stays the
+   * "MRP" label since that's a category marker, not a count.
+   */
+  const tabBadges: Partial<Record<Tab, number | string>> = useMemo(
+    () => ({
+      Manufacturing: BOM_LINES.length,
+      MirrorView: cadFiles.length,
+      Inventory: totalStockLocations(),
+      Planning: 'MRP',
+      Documents: DOCUMENTS.length,
+    }),
+    [cadFiles.length],
+  );
+
+  const renderTabContent = (): JSX.Element => {
+    switch (tab) {
+      case 'Overview':      return <OverviewTab />;
+      case 'Manufacturing': return <ManufacturingTab />;
+      case 'MirrorView':    return <MirrorViewTab files={cadFiles} setFiles={setCadFiles} />;
+      case 'Inventory':     return <InventoryTab />;
+      case 'Planning':      return <PlanningTab />;
+      case 'Accounting':    return <AccountingTab />;
+      case 'Documents':     return <DocumentsTab />;
+    }
+  };
 
   const capabilityColors: Record<string, string> = {
     'Can be Sold': 'bg-[var(--mw-yellow-400)] text-primary-foreground',
@@ -2577,7 +2603,7 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       {/* ── Tab bar ─────────────────────────────────── */}
       <div className="flex border-b border-[var(--border)] -mx-6 px-6">
         {TABS.map((t) => {
-          const badge = TAB_BADGES[t];
+          const badge = tabBadges[t];
           return (
             <button
               key={t}
@@ -2606,7 +2632,7 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       </div>
 
       {/* ── Tab content ─────────────────────────────── */}
-      <TabContent />
+      {renderTabContent()}
     </PageShell>
   );
 }
