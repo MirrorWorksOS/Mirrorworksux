@@ -4,7 +4,6 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { toast } from 'sonner';
 import {
   AlertTriangle,
   CalendarRange,
@@ -13,6 +12,7 @@ import {
   ChevronRight,
   ClipboardList,
   Calendar,
+  GanttChart as GanttIcon,
   List,
   Mail,
   Phone,
@@ -39,6 +39,8 @@ import {
   differenceInDays,
   startOfDay,
 } from 'date-fns';
+import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
+import { LogActivityModal, type ActivityDraft } from '@/components/shared/activities/LogActivityModal';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
@@ -54,23 +56,6 @@ import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/dateti
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '../ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
 import { cn } from '../ui/utils';
 import {
   type ActivityType,
@@ -82,6 +67,8 @@ type CalendarGranularity = 'month' | 'week' | 'day';
 
 type ActivityStatus = 'completed' | 'scheduled' | 'overdue' | 'in_progress';
 
+type ActivityPriority = 'low' | 'med' | 'high';
+
 interface Activity {
   id: string;
   type: ActivityType;
@@ -92,8 +79,30 @@ interface Activity {
   contactName: string;
   dueDate: string;
   status: ActivityStatus;
+  priority?: ActivityPriority;
   notes?: string;
 }
+
+const PRIORITY_BADGE: Record<ActivityPriority, { label: string; className: string }> = {
+  low: {
+    label: 'Low',
+    className: 'border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] dark:bg-neutral-800 dark:text-neutral-300',
+  },
+  med: {
+    label: 'Medium',
+    className: 'border-0 bg-[var(--mw-warning-light)] text-[var(--mw-yellow-800)] dark:bg-yellow-900/20 dark:text-yellow-300',
+  },
+  high: {
+    label: 'High',
+    className: 'border-0 bg-[var(--mw-error-light)] text-[var(--mw-error)] dark:bg-red-900/20 dark:text-red-300',
+  },
+};
+
+const PRIORITY_COLOR: Record<ActivityPriority, string> = {
+  low: 'var(--neutral-500)',
+  med: 'var(--mw-warning)',
+  high: 'var(--mw-error)',
+};
 
 const initialActivities: Activity[] = [
   {
@@ -106,6 +115,7 @@ const initialActivities: Activity[] = [
     contactName: 'Tom Williams',
     dueDate: '2026-04-02',
     status: 'scheduled',
+    priority: 'high',
     notes: 'Include updated lead times and shipping terms.',
   },
   {
@@ -118,6 +128,7 @@ const initialActivities: Activity[] = [
     contactName: 'Karen Rhodes',
     dueDate: '2026-03-31',
     status: 'overdue',
+    priority: 'high',
     notes: 'Key points: bulk discount threshold, payment terms.',
   },
   {
@@ -130,6 +141,7 @@ const initialActivities: Activity[] = [
     contactName: 'Michael Torres',
     dueDate: '2026-04-05',
     status: 'scheduled',
+    priority: 'med',
     notes: 'Bring sample materials and updated drawings.',
   },
   {
@@ -142,6 +154,7 @@ const initialActivities: Activity[] = [
     contactName: 'Lisa Park',
     dueDate: '2026-04-01',
     status: 'in_progress',
+    priority: 'med',
     notes: 'Need pricing from three suppliers.',
   },
   {
@@ -154,6 +167,7 @@ const initialActivities: Activity[] = [
     contactName: 'Mark Hunter',
     dueDate: '2026-03-28',
     status: 'completed',
+    priority: 'low',
     notes: 'Amendment signed and filed.',
   },
   {
@@ -166,6 +180,7 @@ const initialActivities: Activity[] = [
     contactName: 'James Bennett',
     dueDate: '2026-04-03',
     status: 'scheduled',
+    priority: 'med',
   },
   {
     id: '7',
@@ -177,6 +192,7 @@ const initialActivities: Activity[] = [
     contactName: 'Janet Liu',
     dueDate: '2026-04-07',
     status: 'scheduled',
+    priority: 'high',
     notes: 'Prepare slides with KPI dashboard.',
   },
   {
@@ -189,6 +205,7 @@ const initialActivities: Activity[] = [
     contactName: 'Steve Adams',
     dueDate: '2026-03-30',
     status: 'completed',
+    priority: 'low',
   },
   {
     id: '9',
@@ -200,6 +217,7 @@ const initialActivities: Activity[] = [
     contactName: 'Tom Williams',
     dueDate: '2026-04-04',
     status: 'completed',
+    priority: 'low',
     notes: 'Captured competitor base rates for steel fabrication. Prices 8-12% above ours.',
   },
 ];
@@ -322,6 +340,7 @@ const activitiesFilterSchema: FilterSchema = {
   viewModes: [
     { id: 'list', label: 'List', icon: List },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
+    { id: 'gantt', label: 'Gantt', icon: GanttIcon },
   ],
   defaultView: 'list',
   dateFacetId: 'dueDate',
@@ -377,27 +396,6 @@ const OPPORTUNITIES = [
   { id: 'OPP-0162', label: 'OPP-0162 - Spec Review' },
   { id: 'OPP-0165', label: 'OPP-0165 - Trade Show Lead' },
 ];
-
-/* ------------------------------------------------------------------ */
-/*  New Activity form state                                            */
-/* ------------------------------------------------------------------ */
-interface NewActivityForm {
-  title: string;
-  type: ActivityType | '';
-  assignedTo: string;
-  dueDate: string;
-  opportunity: string;
-  description: string;
-}
-
-const emptyForm: NewActivityForm = {
-  title: '',
-  type: '',
-  assignedTo: '',
-  dueDate: '',
-  opportunity: '',
-  description: '',
-};
 
 /* ------------------------------------------------------------------ */
 /*  Mock attendees for event detail sheet                              */
@@ -478,6 +476,13 @@ function activitiesOnDate(activities: Activity[], day: Date): Activity[] {
   return activities.filter((a) => a.dueDate === dateStr);
 }
 
+/** True when the activity is past due based on calendar day (and not completed). */
+function isActivityOverdue(activity: Activity, today: Date = new Date()): boolean {
+  if (activity.status === 'completed') return false;
+  const due = parseISO(activity.dueDate);
+  return startOfDay(due) < startOfDay(today);
+}
+
 /* ------------------------------------------------------------------ */
 /*  Helper: group activities by date label                             */
 /* ------------------------------------------------------------------ */
@@ -553,8 +558,9 @@ function ActivityCard({
 }) {
   const typeConfig = TYPE_CONFIG[activity.type];
   const TypeIcon = typeConfig.icon;
-  const isOverdue = activity.status === 'overdue';
+  const isOverdue = activity.status === 'overdue' || isActivityOverdue(activity);
   const isCompleted = activity.status === 'completed';
+  const priorityBadge = activity.priority ? PRIORITY_BADGE[activity.priority] : null;
 
   return (
     <motion.div
@@ -599,9 +605,21 @@ function ActivityCard({
                   {activity.description}
                 </span>
               </div>
-              <Badge className={cn('shrink-0 text-[10px]', STATUS_BADGE[activity.status].className)}>
-                {STATUS_BADGE[activity.status].label}
-              </Badge>
+              <div className="flex shrink-0 items-center gap-1.5">
+                {priorityBadge && (
+                  <Badge className={cn('text-[10px]', priorityBadge.className)} aria-label={`Priority: ${priorityBadge.label}`}>
+                    {priorityBadge.label}
+                  </Badge>
+                )}
+                {isOverdue && !isCompleted && (
+                  <Badge className="border-0 bg-[var(--mw-error-light)] text-[var(--mw-error)] dark:bg-red-900/20 dark:text-red-300 text-[10px]">
+                    Overdue
+                  </Badge>
+                )}
+                <Badge className={cn('text-[10px]', STATUS_BADGE[activity.status].className)}>
+                  {STATUS_BADGE[activity.status].label}
+                </Badge>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-[var(--neutral-500)]">
@@ -643,14 +661,13 @@ export function SellActivities() {
   const [activities, setActivities] = useState<Activity[]>(initialActivities);
   const filters = useModuleFilters(activitiesFilterSchema);
   const { state: filterStateValue } = filters;
-  const viewMode = filterStateValue.view as 'list' | 'calendar';
+  const viewMode = filterStateValue.view as 'list' | 'calendar' | 'gantt';
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 3, 1)); // April 2026
   const [calendarGranularity, setCalendarGranularity] = useState<CalendarGranularity>('month');
   const [weekAnchor, setWeekAnchor] = useState(() => new Date(2026, 3, 1));
   const [dayViewDate, setDayViewDate] = useState(() => new Date(2026, 3, 1));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showNewActivity, setShowNewActivity] = useState(false);
-  const [form, setForm] = useState<NewActivityForm>(emptyForm);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEventDetail | null>(null);
 
   // Toggle complete/incomplete
@@ -726,33 +743,57 @@ export function SellActivities() {
     setSelectedDate(date);
   };
 
-  /* Handle new activity save */
-  const handleSave = () => {
-    if (!form.title || !form.type || !form.dueDate) return;
-
+  /* Handle activity logged from the shared LogActivityModal */
+  const handleActivitySaved = (draft: ActivityDraft) => {
+    const dueIso = draft.dueAt.slice(0, 10);
+    const isOppEntity = draft.entityKind === 'opportunity' && draft.entityId !== 'global';
     const newActivity: Activity = {
-      id: String(Date.now()),
-      type: form.type as ActivityType,
-      description: form.title,
-      opportunity: form.opportunity || '',
-      opportunityPath: form.opportunity ? `/sell/opportunities/${form.opportunity}` : '',
-      assignedTo: form.assignedTo || '',
+      id: `act-${Date.now()}`,
+      type: draft.type,
+      description: draft.title,
+      opportunity: isOppEntity ? draft.entityId : '',
+      opportunityPath: isOppEntity ? `/sell/opportunities/${draft.entityId}` : '',
+      assignedTo: draft.assignedTo,
       contactName: '',
-      dueDate: form.dueDate,
+      dueDate: dueIso,
       status: 'scheduled',
-      notes: form.description || undefined,
+      priority: draft.priority,
+      notes: draft.description || undefined,
     };
 
     setActivities((prev) => [newActivity, ...prev]);
-    setForm(emptyForm);
-    setShowNewActivity(false);
-    toast.success('Activity created');
   };
 
-  const handleCancel = () => {
-    setForm(emptyForm);
-    setShowNewActivity(false);
-  };
+  /* Build gantt tasks + window from the filtered set */
+  const ganttTasks: GanttTask[] = useMemo(
+    () =>
+      filtered.map((a) => {
+        const start = parseISO(`${a.dueDate}T00:00:00`);
+        return {
+          id: a.id,
+          label: a.description,
+          start,
+          end: addDays(start, 1),
+          progress: a.status === 'completed' ? 100 : 0,
+          color: a.priority ? PRIORITY_COLOR[a.priority] : TYPE_CALENDAR_COLOR[a.type],
+          meta: { activityId: a.id },
+        };
+      }),
+    [filtered],
+  );
+
+  const ganttWindow = useMemo(() => {
+    if (ganttTasks.length === 0) {
+      const base = new Date(2026, 3, 1);
+      return { start: base, end: addDays(base, 14) };
+    }
+    const starts = ganttTasks.map((t) => t.start.getTime());
+    const ends = ganttTasks.map((t) => t.end.getTime());
+    return {
+      start: new Date(Math.min(...starts)),
+      end: new Date(Math.max(...ends)),
+    };
+  }, [ganttTasks]);
 
   return (
     <PageShell className="p-6 space-y-6">
@@ -1049,6 +1090,29 @@ export function SellActivities() {
         </div>
       )}
 
+      {/* ---- GANTT VIEW ---- */}
+      {viewMode === 'gantt' && (
+        <div className="space-y-3">
+          {ganttTasks.length === 0 ? (
+            <div className="py-12 text-center text-sm text-[var(--neutral-500)]">
+              No activities match your filters.
+            </div>
+          ) : (
+            <Card className="overflow-hidden border border-[var(--border)] p-3">
+              <GanttChart
+                tasks={ganttTasks}
+                startDate={ganttWindow.start}
+                endDate={ganttWindow.end}
+                onTaskClick={(t) => {
+                  const a = activities.find((x) => x.id === t.id);
+                  if (a) setSelectedEvent(activityToEventDetail(a));
+                }}
+              />
+            </Card>
+          )}
+        </div>
+      )}
+
       {/* ---- EVENT DETAIL SHEET ---- */}
       <EventDetailSheet
         event={selectedEvent}
@@ -1056,129 +1120,13 @@ export function SellActivities() {
         onOpenChange={(open) => !open && setSelectedEvent(null)}
       />
 
-      {/* ---- NEW ACTIVITY DIALOG ---- */}
-      <Dialog open={showNewActivity} onOpenChange={setShowNewActivity}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>New Activity</DialogTitle>
-            <DialogDescription>
-              Create a new sales activity and assign it to a team member.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-2">
-            {/* Title */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
-                Title <span className="text-[var(--mw-error)]">*</span>
-              </label>
-              <Input
-                placeholder="Activity title"
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              />
-            </div>
-
-            {/* Type */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
-                Type <span className="text-[var(--mw-error)]">*</span>
-              </label>
-              <Select
-                value={form.type}
-                onValueChange={(val) => setForm((f) => ({ ...f, type: val as ActivityType }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="call">Call</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="meeting">Meeting</SelectItem>
-                  <SelectItem value="task">Task</SelectItem>
-                  <SelectItem value="note">Note</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Assigned To */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Assigned To</label>
-              <Select
-                value={form.assignedTo}
-                onValueChange={(val) => setForm((f) => ({ ...f, assignedTo: val }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select team member" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TEAM_MEMBERS.map((name) => (
-                    <SelectItem key={name} value={name}>
-                      {name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Due Date */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">
-                Due Date <span className="text-[var(--mw-error)]">*</span>
-              </label>
-              <Input
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
-              />
-            </div>
-
-            {/* Related Opportunity */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Related Opportunity</label>
-              <Select
-                value={form.opportunity}
-                onValueChange={(val) => setForm((f) => ({ ...f, opportunity: val }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select opportunity" />
-                </SelectTrigger>
-                <SelectContent>
-                  {OPPORTUNITIES.map((opp) => (
-                    <SelectItem key={opp.id} value={opp.id}>
-                      {opp.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Description */}
-            <div className="grid gap-1.5">
-              <label className="text-sm font-medium text-[var(--neutral-700)] dark:text-neutral-300">Description</label>
-              <Textarea
-                placeholder="Add details about this activity..."
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
-              onClick={handleSave}
-              disabled={!form.title || !form.type || !form.dueDate}
-            >
-              Save Activity
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ---- NEW ACTIVITY MODAL ---- */}
+      <LogActivityModal
+        open={showNewActivity}
+        onOpenChange={setShowNewActivity}
+        entity={{ kind: 'opportunity', id: 'global', label: 'All activities' }}
+        onSaved={handleActivitySaved}
+      />
     </PageShell>
   );
 }

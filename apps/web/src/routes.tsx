@@ -152,6 +152,10 @@ const ControlDocuments = lazyWithRetry(() => import('./components/control/Contro
 const ControlBilling = lazyWithRetry(() => import('./components/control/ControlBilling').then(m => ({ default: m.ControlBilling })));
 const ControlAudit = lazyWithRetry(() => import('./components/control/ControlAudit').then(m => ({ default: m.ControlAudit })));
 const ControlGroups = lazyWithRetry(() => import('./components/control/ControlGroups').then(m => ({ default: m.ControlGroups })));
+const ControlPaymentTerms = lazyWithRetry(() => import('./components/control/ControlPaymentTerms').then(m => ({ default: m.ControlPaymentTerms })));
+const ControlNotificationTemplates = lazyWithRetry(() => import('./components/control/ControlNotificationTemplates').then(m => ({ default: m.ControlNotificationTemplates })));
+const ControlLegalTemplates = lazyWithRetry(() => import('./components/control/ControlLegalTemplates').then(m => ({ default: m.ControlLegalTemplates })));
+const ControlCustomerPortal = lazyWithRetry(() => import('./components/control/ControlCustomerPortal').then(m => ({ default: m.ControlCustomerPortal })));
 const MirrorWorksBridge = lazyWithRetry(() => import('./components/control/MirrorWorksBridge').then(m => ({ default: m.MirrorWorksBridge })));
 
 // Platform Admin (super_admin only) — separate chrome, not in tenant Layout
@@ -471,6 +475,11 @@ export const router = createBrowserRouter([
           { path: 'billing', element: <L><ControlBilling /></L> },
           { path: 'audit', element: <L><ControlAudit /></L> },
           { path: 'empty-states', element: <L><ControlEmptyStates /></L> },
+          // Sell-module overhaul Phase 2 — template & portal settings
+          { path: 'payment-terms', element: <L><ControlPaymentTerms /></L> },
+          { path: 'notifications', element: <L><ControlNotificationTemplates /></L> },
+          { path: 'legal', element: <L><ControlLegalTemplates /></L> },
+          { path: 'customer-portal', element: <L><ControlCustomerPortal /></L> },
         ],
       },
 

@@ -74,6 +74,9 @@ import type {
   MachineNestingConfig,
   NestingQueueItem,
   Nest,
+  PaymentTerm,
+  NotificationTemplate,
+  LegalTemplate,
 } from '@/types/entities';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -97,6 +100,20 @@ export const customers: Customer[] = [
     notes: 'Key account — server rack & mounting bracket work. 60-day terms.',
     createdAt: '2024-06-15',
     accountManagerId: 'emp-001',
+    tags: [
+      { id: 'tag-strategic', label: 'Strategic', tone: 'accent' },
+      { id: 'tag-repeat', label: 'Repeat customer', tone: 'success' },
+    ],
+    paymentTermsId: 'pt-net60',
+    portalAccess: true,
+    notificationPrefs: {
+      quoteSent: true,
+      quoteAccepted: true,
+      orderConfirmed: true,
+      orderShipped: true,
+      invoiceIssued: true,
+      statementSent: false,
+    },
     contacts: [
       {
         id: 'cust-001-c1',
@@ -165,6 +182,10 @@ export const customers: Customer[] = [
     notes: 'Sub-assembly partner — repeat bracket & chassis orders.',
     createdAt: '2024-09-01',
     accountManagerId: 'emp-002',
+    tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
+    paymentTermsId: 'pt-net30',
+    portalAccess: true,
+    notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
     contacts: [
       {
         id: 'cust-002-c1',
@@ -198,6 +219,10 @@ export const customers: Customer[] = [
     notes: 'Local supplier who also buys custom enclosures from us.',
     createdAt: '2023-02-10',
     accountManagerId: 'emp-002',
+    tags: [{ id: 'tag-design-assist', label: 'Design assist', tone: 'info' }],
+    paymentTermsId: 'pt-net30',
+    portalAccess: false,
+    notificationPrefs: { quoteSent: true, invoiceIssued: true },
   },
   {
     id: 'cust-004',
@@ -215,6 +240,10 @@ export const customers: Customer[] = [
     notes: 'Large structural steel packages. Extended procurement cycle.',
     createdAt: '2025-01-20',
     accountManagerId: 'emp-002',
+    tags: [{ id: 'tag-export', label: 'Export', tone: 'warning' }],
+    paymentTermsId: 'pt-net45',
+    portalAccess: true,
+    notificationPrefs: { quoteSent: true, orderConfirmed: true, orderShipped: true, invoiceIssued: true },
   },
   {
     id: 'cust-005',
@@ -232,6 +261,13 @@ export const customers: Customer[] = [
     notes: 'Government contract prospect — rail platform components.',
     createdAt: '2025-11-05',
     accountManagerId: 'emp-004',
+    tags: [
+      { id: 'tag-prospect', label: 'Prospect', tone: 'info' },
+      { id: 'tag-strategic', label: 'Strategic', tone: 'accent' },
+    ],
+    paymentTermsId: 'pt-net30',
+    portalAccess: false,
+    notificationPrefs: { quoteSent: true, quoteAccepted: true },
   },
   {
     id: 'cust-006',
@@ -249,6 +285,10 @@ export const customers: Customer[] = [
     notes: 'Welding equipment supplier who orders custom machine guards.',
     createdAt: '2024-04-12',
     accountManagerId: 'emp-001',
+    tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
+    paymentTermsId: 'pt-net14',
+    portalAccess: true,
+    notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
   },
 ];
 
@@ -1955,4 +1995,110 @@ export const shopFloorLeaderboardItems = [
   { label: 'David Lee', meta: '128 units \u00b7 94% on-time \u00b7 98.8% quality' },
   { label: 'James Murray', meta: '115 units \u00b7 91% on-time \u00b7 99.5% quality' },
   { label: 'Emma Wilson', meta: '98 units \u00b7 96% on-time \u00b7 97.1% quality' },
+];
+
+// ===============================================================
+// CONTROL > SETTINGS - Templates: payment terms, notifications, legal
+// (Sell module overhaul, 2026-05)
+// ===============================================================
+
+export const paymentTerms: PaymentTerm[] = [
+  { id: 'pt-net7',  label: 'Net 7',  days: 7,  notes: 'Used for rush jobs or new accounts.' },
+  { id: 'pt-net14', label: 'Net 14', days: 14, notes: 'Trade default for established suppliers.' },
+  { id: 'pt-net30', label: 'Net 30', days: 30, isDefault: true, notes: 'Default for new customers.' },
+  { id: 'pt-net45', label: 'Net 45', days: 45 },
+  { id: 'pt-net60', label: 'Net 60', days: 60, notes: 'Reserved for strategic accounts.' },
+  { id: 'pt-50-balance', label: '50% deposit, balance on delivery', days: 0, depositPct: 50, notes: 'Required for first-time orders > $20k.' },
+];
+
+export const notificationTemplates: NotificationTemplate[] = [
+  {
+    id: 'nt-quote-sent',
+    kind: 'quote_sent',
+    name: 'Quote sent',
+    subject: 'Your quote {{ref}} from Alliance Metal',
+    bodyMd: 'Hi {{customer}},\n\nThanks for the opportunity. Quote **{{ref}}** is attached for your review - total **{{total}}**.\n\nLet us know if you need any changes.\n\nKind regards,\nAlliance Metal Fabrication',
+    enabled: true,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'nt-quote-accepted',
+    kind: 'quote_accepted',
+    name: 'Quote accepted',
+    subject: 'Confirming acceptance of quote {{ref}}',
+    bodyMd: "Hi {{customer}},\n\nWe've received your acceptance of quote **{{ref}}**. The job will be scheduled and you'll receive a confirmation once it enters production.\n\nKind regards,\nAlliance Metal Fabrication",
+    enabled: true,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'nt-order-confirmed',
+    kind: 'order_confirmed',
+    name: 'Order confirmed',
+    subject: 'Order {{ref}} confirmed',
+    bodyMd: 'Hi {{customer}},\n\nOrder **{{ref}}** is confirmed and entering production. Estimated delivery: {{deliveryDate}}.\n\nKind regards,\nAlliance Metal Fabrication',
+    enabled: true,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'nt-order-shipped',
+    kind: 'order_shipped',
+    name: 'Order shipped',
+    subject: 'Order {{ref}} shipped',
+    bodyMd: 'Hi {{customer}},\n\nOrder **{{ref}}** has shipped via {{carrier}}. Tracking: {{tracking}}.\n\nKind regards,\nAlliance Metal Fabrication',
+    enabled: true,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'nt-invoice-issued',
+    kind: 'invoice_issued',
+    name: 'Invoice issued',
+    subject: 'Invoice {{ref}} - due {{dueDate}}',
+    bodyMd: 'Hi {{customer}},\n\nPlease find invoice **{{ref}}** attached, total **{{total}}**. Payment is due by {{dueDate}}.\n\nKind regards,\nAlliance Metal Fabrication',
+    enabled: true,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'nt-statement-sent',
+    kind: 'statement_sent',
+    name: 'Monthly statement',
+    subject: 'Monthly statement - {{month}}',
+    bodyMd: 'Hi {{customer}},\n\nAttached is your statement for {{month}}. Total outstanding: **{{outstanding}}**.\n\nKind regards,\nAlliance Metal Fabrication',
+    enabled: false,
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+];
+
+export const legalTemplates: LegalTemplate[] = [
+  {
+    id: 'lt-tnc-default',
+    kind: 'terms_and_conditions',
+    name: 'Standard T&Cs',
+    isDefault: true,
+    body: '1. Prices are valid for 30 days from the quote date.\n2. All works conform to AS/NZS standards relevant to the deliverable.\n3. Variations to scope are charged at $95/hr unless otherwise agreed in writing.\n4. Title to goods passes on full payment.\n5. Late payments accrue interest at 1.5% per month.',
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'lt-payment-default',
+    kind: 'payment_details',
+    name: 'Bank payment details',
+    isDefault: true,
+    body: 'Bank: Commonwealth Bank of Australia\nAccount name: Alliance Metal Fabrication Pty Ltd\nBSB: 062-000\nAccount: 1234 5678\nReference: invoice number',
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'lt-quote-notes-default',
+    kind: 'quote_notes',
+    name: 'Standard quote notes',
+    isDefault: true,
+    body: 'Lead time is from order confirmation. Delivery to Newcastle metro is included; freight to other locations quoted separately. Galvanising and powder coat finish quoted per AS 1627.',
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
+  {
+    id: 'lt-order-notes-default',
+    kind: 'order_notes',
+    name: 'Standard order notes',
+    isDefault: true,
+    body: 'Confirmation of receipt of materials is required within 48 hours. Defects must be reported in writing within 7 days of delivery.',
+    updatedAt: '2026-04-12T10:00:00Z',
+  },
 ];

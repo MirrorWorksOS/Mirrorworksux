@@ -9,8 +9,8 @@ import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
   CheckCircle2,
+  ChevronDown,
   FileText,
   Mail,
   MessageSquare,
@@ -26,16 +26,21 @@ import {
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { AIInsightCard } from "@/components/shared/ai/AIInsightCard";
 import { TimelineView, type TimelineEvent } from "@/components/shared/schedule/TimelineView";
+import { GanttChart, type GanttTask } from "@/components/shared/schedule/GanttChart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
 import { getChartScaleColour } from "@/components/shared/charts/chart-theme";
+import { DatePicker } from "@/components/shared/datetime/DatePicker";
+import { LogActivityModal } from "@/components/shared/activities/LogActivityModal";
+import { EditableCard } from "@/components/shared/forms/EditableCard";
+import { EditField, Field } from "@/components/shared/forms/EditField";
 import type { Opportunity } from "./sell-opportunity-types";
 import { opportunities as mockOpportunities, customers as mockCustomersData, quotes as mockQuotesData, sellActivities } from '@/services';
 import { SellOpportunityRecommendedActions } from "@/components/sell/SellOpportunityRecommendedActions";
@@ -90,8 +95,8 @@ const createBlankOpportunity = (defaults?: Partial<Opportunity>): Opportunity =>
 
 const STAGES: { key: Stage; label: string; color: string }[] = [
   { key: "new", label: "New", color: "var(--neutral-500)" },
-  { key: "qualified", label: "Qualified", color: "var(--mw-info)" },
-  { key: "proposal", label: "Proposal", color: "var(--mw-info)" },
+  { key: "qualified", label: "Qualified", color: "var(--mw-amber)" },
+  { key: "proposal", label: "Proposal", color: "var(--mw-amber)" },
   { key: "negotiation", label: "Negotiation", color: "var(--mw-warning)" },
   { key: "won", label: "Won", color: "var(--mw-success)" },
   { key: "lost", label: "Lost", color: "var(--mw-error)" },
@@ -114,12 +119,13 @@ const MOCK_CUSTOMER: Record<
 );
 
 // Build timeline events from centralized activities
-const MOCK_ACTIVITIES: TimelineEvent[] = sellActivities.slice(0, 4).map((a, i) => ({
+const MOCK_ACTIVITIES: (TimelineEvent & { dueDate: string })[] = sellActivities.slice(0, 4).map((a, i) => ({
   id: a.id,
   title: a.type.charAt(0).toUpperCase() + a.type.slice(1),
   description: a.description,
   timestamp: i === 0 ? '2h ago' : i === 1 ? '1d ago' : i === 2 ? '3d ago' : 'Tomorrow',
   status: a.status === 'completed' ? ('completed' as const) : ('upcoming' as const),
+  dueDate: a.dueDate,
 }));
 
 // Build quotes list from centralized data
@@ -157,7 +163,7 @@ const DEFAULT_SELL_OPPORTUNITY_TABS: JobWorkspaceTabConfig[] = [
   { id: "overview", label: "Overview" },
   { id: "quotes", label: "Quotes" },
   { id: "activities", label: "Activities" },
-  { id: "intelligence", label: "Intelligence Hub" },
+  { id: "intelligence", label: "MirrorWorks Agent" },
 ];
 
 const PRIORITY_BADGE: Record<
@@ -188,6 +194,7 @@ export function SellOpportunityPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [logActivityOpen, setLogActivityOpen] = useState(false);
 
   const isNew = !id || id === 'new';
   const stageParam = searchParams.get('stage') as Stage | null;
@@ -195,14 +202,27 @@ export function SellOpportunityPage() {
     ? createBlankOpportunity(stageParam ? { stage: stageParam } : undefined)
     : (id ? MOCK_BY_ID[id] : undefined);
   const [opp, setOpp] = useState<Opportunity | null>(base ?? null);
+  const [draft, setDraft] = useState<Opportunity | null>(base ?? null);
+  const [description, setDescription] = useState<string>(
+    base ? `Fabrication scope aligned with ${base.customer} technical pack. Dimensional tolerances per drawing Rev C.` : '',
+  );
+  const [descriptionDraft, setDescriptionDraft] = useState<string>(description);
 
   React.useEffect(() => {
+    let next: Opportunity | null;
     if (isNew) {
-      setOpp(createBlankOpportunity(stageParam ? { stage: stageParam } : undefined));
+      next = createBlankOpportunity(stageParam ? { stage: stageParam } : undefined);
     } else if (id && MOCK_BY_ID[id]) {
-      setOpp(MOCK_BY_ID[id]);
+      next = MOCK_BY_ID[id];
     } else {
-      setOpp(null);
+      next = null;
+    }
+    setOpp(next);
+    setDraft(next);
+    if (next) {
+      const desc = `Fabrication scope aligned with ${next.customer} technical pack. Dimensional tolerances per drawing Rev C.`;
+      setDescription(desc);
+      setDescriptionDraft(desc);
     }
   }, [id, isNew, stageParam]);
 
@@ -276,180 +296,210 @@ export function SellOpportunityPage() {
         return (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
             <div className="space-y-6">
-              <Card className="p-6">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-base font-medium text-foreground">
-                      Opportunity details
-                    </h2>
-                    <p className="text-xs text-[var(--neutral-500)]">
-                      Stage, revenue, and customer context
-                    </p>
-                  </div>
+              <EditableCard
+                title="Opportunity details"
+                subtitle="Stage, revenue, and customer context"
+                headerExtra={
                   <Avatar className="h-10 w-10 shrink-0">
                     <AvatarFallback className="bg-[var(--mw-mirage)] text-xs text-white">
                       {opp.assignedTo}
                     </AvatarFallback>
                   </Avatar>
-                </div>
-
-                <div className="mb-6 flex gap-1">
-                  {STAGES.filter((s) => s.key !== "lost").map((s, i) => {
-                    const active = s.key === opp.stage;
-                    const past =
-                      STAGES.findIndex((st) => st.key === opp.stage) > i &&
-                      opp.stage !== "lost";
-                    return (
-                      <button
-                        key={s.key}
-                        type="button"
-                        title={s.label}
-                        onClick={() => setStage(s.key)}
-                        className="group relative flex-1"
-                      >
-                        <div
-                          className={cn(
-                            "h-1.5 rounded-full transition-colors duration-[var(--duration-medium1)]",
-                            active || past ? "opacity-100" : "bg-[var(--border)]",
-                          )}
-                          style={{
-                            backgroundColor:
-                              active || past ? s.color : undefined,
-                          }}
-                        />
-                        {active ? (
-                          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground">
-                            {s.label}
-                          </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="mb-6 h-5" />
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Expected revenue
-                    </Label>
-                    <Input
-                      readOnly
-                      className="mt-1 h-12 border-[var(--border)] tabular-nums"
-                      value={`$${opp.value.toLocaleString()}`}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Probability (%)
-                    </Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      className="mt-1 h-12 border-[var(--border)] tabular-nums"
-                      value={opp.probabilityPercent ?? ""}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setOpp((o) =>
-                          o
-                            ? {
-                                ...o,
-                                probabilityPercent:
-                                  v === "" ? undefined : Math.min(100, Math.max(0, Number(v))),
-                              }
-                            : o,
+                }
+                onSave={() => {
+                  if (draft) setOpp(draft);
+                  setDescription(descriptionDraft);
+                }}
+                onCancel={() => {
+                  setDraft(opp);
+                  setDescriptionDraft(description);
+                }}
+                successMessage="Opportunity details saved"
+              >
+                {({ mode }) => (
+                  <>
+                    <div className="mb-6 flex gap-1">
+                      {STAGES.filter((s) => s.key !== "lost").map((s, i) => {
+                        const active = s.key === opp.stage;
+                        const past =
+                          STAGES.findIndex((st) => st.key === opp.stage) > i &&
+                          opp.stage !== "lost";
+                        return (
+                          <button
+                            key={s.key}
+                            type="button"
+                            title={s.label}
+                            onClick={() => setStage(s.key)}
+                            className="group relative flex-1"
+                          >
+                            <div
+                              className={cn(
+                                "h-1.5 rounded-full transition-colors duration-[var(--duration-medium1)]",
+                                active || past ? "opacity-100" : "bg-[var(--border)]",
+                              )}
+                              style={{
+                                backgroundColor:
+                                  active || past ? s.color : undefined,
+                              }}
+                            />
+                            {active ? (
+                              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground">
+                                {s.label}
+                              </span>
+                            ) : null}
+                          </button>
                         );
-                      }}
-                      placeholder="0–100"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Customer
-                    </Label>
-                    <Input
-                      readOnly
-                      className="mt-1 h-12 border-[var(--border)]"
-                      value={opp.customer}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Expected close
-                    </Label>
-                    <Input
-                      type="date"
-                      className="mt-1 h-12 border-[var(--border)] tabular-nums"
-                      value={opp.expectedClose}
-                      onChange={(e) =>
-                        setOpp((o) =>
-                          o ? { ...o, expectedClose: e.target.value } : o,
-                        )
-                      }
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Email
-                    </Label>
-                    <Input
-                      readOnly
-                      className="mt-1 h-12 border-[var(--border)]"
-                      value={customer.email}
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-[var(--neutral-500)]">
-                      Address
-                    </Label>
-                    <Input
-                      readOnly
-                      className="mt-1 h-12 border-[var(--border)]"
-                      value={customer.address}
-                    />
-                  </div>
-                </div>
+                      })}
+                    </div>
+                    <div className="mb-6 h-5" />
 
-                <div className="mt-6">
-                  <Label className="text-xs text-[var(--neutral-500)] mb-2 block">
-                    Tags
-                  </Label>
-                  <p className="text-xs text-[var(--neutral-500)] mb-3">
-                    Multi-select — used for filtering and reporting.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {TAG_OPTIONS.map((tag) => {
-                      const on = (opp.tags ?? []).includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => toggleTag(tag)}
-                          className={cn(
-                            "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-                            on
-                              ? "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground"
-                              : "border-[var(--border)] bg-card text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]",
-                          )}
-                        >
-                          {tag}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                    {mode === 'read' ? (
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <Field label="Expected revenue" value={`$${opp.value.toLocaleString()}`} mono />
+                        <Field
+                          label="Probability (%)"
+                          value={opp.probabilityPercent != null ? `${opp.probabilityPercent}%` : '—'}
+                          mono
+                        />
+                        <Field label="Customer" value={opp.customer} />
+                        <Field
+                          label="Expected close"
+                          value={
+                            opp.expectedClose
+                              ? new Date(opp.expectedClose).toLocaleDateString('en-AU', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })
+                              : '—'
+                          }
+                        />
+                        <Field className="sm:col-span-2" label="Email" value={customer.email} />
+                        <Field className="sm:col-span-2" label="Address" value={customer.address} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <EditField
+                          label="Expected revenue"
+                          value={String(draft?.value ?? 0)}
+                          onChange={(v) =>
+                            setDraft((d) => (d ? { ...d, value: Number(v) || 0 } : d))
+                          }
+                          type="number"
+                          mono
+                          prefix="$"
+                        />
+                        <EditField
+                          label="Probability (%)"
+                          value={
+                            draft?.probabilityPercent != null
+                              ? String(draft.probabilityPercent)
+                              : ''
+                          }
+                          onChange={(v) =>
+                            setDraft((d) =>
+                              d
+                                ? {
+                                    ...d,
+                                    probabilityPercent:
+                                      v === '' ? undefined : Math.min(100, Math.max(0, Number(v))),
+                                  }
+                                : d,
+                            )
+                          }
+                          type="number"
+                          mono
+                          placeholder="0–100"
+                        />
+                        <EditField
+                          label="Customer"
+                          value={draft?.customer ?? ''}
+                          onChange={(v) => setDraft((d) => (d ? { ...d, customer: v } : d))}
+                        />
+                        <div>
+                          <label className="mb-1 block text-xs font-medium text-[var(--neutral-500)]">
+                            Expected close
+                          </label>
+                          <DatePicker
+                            value={draft?.expectedClose ? new Date(draft.expectedClose) : undefined}
+                            onChange={(d) =>
+                              setDraft((cur) =>
+                                cur
+                                  ? {
+                                      ...cur,
+                                      expectedClose: d ? d.toISOString().slice(0, 10) : '',
+                                    }
+                                  : cur,
+                              )
+                            }
+                            placeholder="Select close date"
+                          />
+                        </div>
+                        <EditField
+                          className="sm:col-span-2"
+                          label="Email"
+                          value={customer.email}
+                          onChange={() => {}}
+                          disabled
+                        />
+                        <EditField
+                          className="sm:col-span-2"
+                          label="Address"
+                          value={customer.address}
+                          onChange={() => {}}
+                          disabled
+                        />
+                      </div>
+                    )}
 
-                <div className="mt-6">
-                  <Label className="text-xs text-[var(--neutral-500)]">
-                    Description
-                  </Label>
-                  <Textarea
-                    className="mt-1 min-h-[120px] border-[var(--border)] text-sm"
-                    defaultValue={`Fabrication scope aligned with ${opp.customer} technical pack. Dimensional tolerances per drawing Rev C.`}
-                  />
-                </div>
-              </Card>
+                    <div className="mt-6">
+                      <Label className="text-xs text-[var(--neutral-500)] mb-2 block">
+                        Tags
+                      </Label>
+                      <p className="text-xs text-[var(--neutral-500)] mb-3">
+                        Multi-select — used for filtering and reporting.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {TAG_OPTIONS.map((tag) => {
+                          const on = (opp.tags ?? []).includes(tag);
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => toggleTag(tag)}
+                              className={cn(
+                                "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                                on
+                                  ? "border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/15 text-foreground"
+                                  : "border-[var(--border)] bg-card text-[var(--neutral-600)] hover:bg-[var(--neutral-50)]",
+                              )}
+                            >
+                              {tag}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <Label className="text-xs text-[var(--neutral-500)]">
+                        Description
+                      </Label>
+                      {mode === 'read' ? (
+                        <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">
+                          {description || '—'}
+                        </p>
+                      ) : (
+                        <Textarea
+                          className="mt-1 min-h-[120px] border-[var(--border)] text-sm"
+                          value={descriptionDraft}
+                          onChange={(e) => setDescriptionDraft(e.target.value)}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </EditableCard>
 
               <Card className="p-6">
                 <div className="mb-4 flex items-center justify-between">
@@ -542,7 +592,7 @@ export function SellOpportunityPage() {
                 </ul>
                 <Button
                   className="mt-4 w-full bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
-                  onClick={() => setActiveTab("activities")}
+                  onClick={() => setLogActivityOpen(true)}
                 >
                   Log activity
                 </Button>
@@ -551,7 +601,7 @@ export function SellOpportunityPage() {
               <Card className="p-6">
                 <div className="mb-3 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">
-                    Intelligence Hub
+                    MirrorWorks Agent
                   </h2>
                   <Button
                     variant="ghost"
@@ -638,7 +688,10 @@ export function SellOpportunityPage() {
                 Assign activities to a team member or a group (e.g. Sales,
                 Estimating). Prototype data is static.
               </p>
-              <Button className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12">
+              <Button
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)] h-12"
+                onClick={() => setLogActivityOpen(true)}
+              >
                 New activity
               </Button>
             </div>
@@ -679,6 +732,40 @@ export function SellOpportunityPage() {
               </h3>
               <TimelineView events={MOCK_ACTIVITIES} />
             </Card>
+
+            <Card className="p-6">
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-foreground">Activity timeline</h3>
+                <p className="text-xs text-[var(--neutral-500)]">
+                  Mini gantt of scheduled activities — click a bar to log against this opportunity
+                </p>
+              </div>
+              {(() => {
+                const ganttTasks: GanttTask[] = MOCK_ACTIVITIES.map((a) => {
+                  const due = new Date(a.dueDate);
+                  return {
+                    id: a.id,
+                    label: `${a.title} — ${a.description}`,
+                    start: due,
+                    end: due,
+                    progress: a.status === 'completed' ? 100 : 0,
+                  };
+                });
+                const dates = ganttTasks.map((t) => t.start.getTime());
+                const minTime = Math.min(...dates);
+                const maxTime = Math.max(...dates);
+                const start = new Date(minTime - 1000 * 60 * 60 * 24);
+                const end = new Date(maxTime + 1000 * 60 * 60 * 24);
+                return (
+                  <GanttChart
+                    tasks={ganttTasks}
+                    startDate={start}
+                    endDate={end}
+                    onTaskClick={() => setLogActivityOpen(true)}
+                  />
+                );
+              })()}
+            </Card>
           </div>
         );
 
@@ -688,7 +775,7 @@ export function SellOpportunityPage() {
             <AIFeed module="sell" initialCount={3} items={agentFeedItems ?? undefined} />
 
             {/* AI top-line signal */}
-            <AIInsightCard title="Intelligence Hub">
+            <AIInsightCard title="MirrorWorks Agent">
               Win probability is <strong className="text-foreground">68%</strong> based on 142 similar fabrication opportunities. Next best action: call {customer.contact.split(" ")[0]} — quote engagement is high.
             </AIInsightCard>
 
@@ -932,14 +1019,54 @@ export function SellOpportunityPage() {
       }
       metaRow={
         <>
-          <Badge
-            className={cn(
-              "rounded-full px-2 py-0.5 text-xs capitalize",
-              priorityCfg.className,
-            )}
-          >
-            {priorityCfg.label}
-          </Badge>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium capitalize transition-colors hover:opacity-90",
+                  priorityCfg.className,
+                )}
+                aria-label="Change priority"
+              >
+                {priorityCfg.label}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-44 p-1.5">
+              <div className="flex flex-col gap-0.5">
+                {(['urgent', 'high', 'medium', 'low'] as Opportunity['priority'][]).map((p) => {
+                  const cfg = PRIORITY_BADGE[p];
+                  const active = p === opp.priority;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => {
+                        setOpp((o) => (o ? { ...o, priority: p } : o));
+                        setDraft((d) => (d ? { ...d, priority: p } : d));
+                        toast.success('Priority updated');
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-[var(--shape-sm)] px-2 py-1.5 text-left text-xs hover:bg-[var(--neutral-50)]",
+                        active && "bg-[var(--neutral-50)]",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize",
+                          cfg.className,
+                        )}
+                      >
+                        {cfg.label}
+                      </span>
+                      {active && <CheckCircle2 className="h-3.5 w-3.5 text-[var(--mw-green)]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
           <Badge
             variant="outline"
             className="rounded-full border-[var(--border)] capitalize"
@@ -988,7 +1115,20 @@ export function SellOpportunityPage() {
       tabs={tabConfig}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      renderTabPanel={renderTabPanel}
+      renderTabPanel={(tab) => (
+        <>
+          {renderTabPanel(tab)}
+          <LogActivityModal
+            open={logActivityOpen}
+            onOpenChange={setLogActivityOpen}
+            entity={{
+              kind: "opportunity",
+              id: opp.id,
+              label: `${opp.customer} — ${opp.title}`,
+            }}
+          />
+        </>
+      )}
     />
   );
 }

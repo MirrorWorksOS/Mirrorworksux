@@ -406,6 +406,15 @@ export const menuConfig: MenuItem[] = [
           { label: 'MirrorWorks Bridge', path: '/control/mirrorworks-bridge' },
         ],
       },
+      {
+        heading: 'Settings',
+        items: [
+          { label: 'Payment terms', path: '/control/payment-terms' },
+          { label: 'Notification templates', path: '/control/notifications' },
+          { label: 'Legal templates', path: '/control/legal' },
+          { label: 'Customer portal', path: '/control/customer-portal' },
+        ],
+      },
     ],
   },
 ];

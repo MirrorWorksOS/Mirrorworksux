@@ -10,9 +10,11 @@ import {
   ArrowLeft,
   Download,
   FileText,
+  Info,
   Mail,
   Package,
   Printer,
+  Trash2,
   Truck,
 } from "lucide-react";
 import {
@@ -26,6 +28,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
+import { EditableCard } from "@/components/shared/forms/EditableCard";
+import { EditField, EditSelect, EditTextarea, Field } from "@/components/shared/forms/EditField";
+import { EntityPickerModal } from "@/components/shared/pickers/EntityPickerModal";
+import { products, quotes, salesOrders, sellInvoices } from "@/services";
+import { lineage, parseRef, type DocumentPrefix } from "@/services/numbering";
 import { cn } from "@/components/ui/utils";
 
 /* ------------------------------------------------------------------ */
@@ -55,6 +62,10 @@ interface SellOrder {
   trackingNumber?: string;
   itemsShipped: number;
   itemsTotal: number;
+  // ── Fulfilment (mirror of SalesOrder fields) ─────────────────────
+  carrier?: string;
+  fulfilmentNotes?: string;
+  fulfilmentLabels?: string[];
 }
 
 interface LineItem {
@@ -100,10 +111,16 @@ const createBlankOrder = (defaults?: Partial<SellOrder>): SellOrder => ({
   ...defaults,
 });
 
+// Note: soNumber aligned with central salesOrders mock (SO-2026-####) so the
+// lineage strip can resolve real Quote/Invoice/WO refs by suffix.
+// TODO(backend): Backend should call `share(quote.ref, 'SO')` when converting
+// a quote to a sales order so the SO inherits the numeric suffix from the quote
+// — e.g. Q-2026-0085 → SO-2026-0085. Pre-existing seed data (so-001/qt-001)
+// doesn't share suffixes; that's fine for the mock and is rectified server-side.
 const MOCK_ORDERS: Record<string, SellOrder> = {
   "so-001": {
     id: "so-001",
-    soNumber: "SO-0001",
+    soNumber: "SO-2026-0085",
     title: "Server Rack Fabrication",
     customer: "TechCorp Industries",
     value: 45000,
@@ -122,10 +139,13 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
     trackingNumber: "TRK-20260310-001",
     itemsShipped: 0,
     itemsTotal: 6,
+    carrier: "DHL",
+    fulfilmentNotes: "Inside delivery requested. Call site 30 mins prior.",
+    fulfilmentLabels: ["Fragile", "Inside delivery"],
   },
   "so-002": {
     id: "so-002",
-    soNumber: "SO-0002",
+    soNumber: "SO-2026-0086",
     title: "Structural Steel Package",
     customer: "BHP Contractors",
     value: 128000,
@@ -147,7 +167,7 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
   },
   "so-003": {
     id: "so-003",
-    soNumber: "SO-0003",
+    soNumber: "SO-2026-0087",
     title: "Custom Brackets (50 units)",
     customer: "Pacific Fab",
     value: 8500,
@@ -169,7 +189,7 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
   },
   "so-004": {
     id: "so-004",
-    soNumber: "SO-0004",
+    soNumber: "SO-2026-0088",
     title: "Rail Platform Components",
     customer: "Sydney Rail Corp",
     value: 67000,
@@ -227,6 +247,65 @@ const STATUS_TIMELINE: OrderStatus[] = [
   "Delivered",
 ];
 
+const CARRIER_OPTIONS = ['DHL', 'StarTrack', 'Toll', 'TNT', 'Pickup'] as const;
+
+const SALES_ORDER_STATUS_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'confirmed', label: 'Confirmed' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped', label: 'Shipped' },
+  { value: 'delivered', label: 'Delivered' },
+];
+
+/**
+ * Map a UI OrderStatus → the SalesOrderStatus enum slug used in
+ * the editable form. Keeps the legacy display strings working while
+ * binding to the contract enum on save.
+ */
+const ORDER_STATUS_TO_SLUG: Record<OrderStatus, string> = {
+  Draft: 'pending',
+  Confirmed: 'confirmed',
+  'In Production': 'in_production',
+  Shipped: 'shipped',
+  Delivered: 'delivered',
+};
+
+const SLUG_TO_ORDER_STATUS: Record<string, OrderStatus> = {
+  pending: 'Draft',
+  confirmed: 'Confirmed',
+  in_production: 'In Production',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+};
+
+/**
+ * Resolve a lineage chip to a navigation target. Looks up the ref against
+ * central mock data; falls back to `null` (caller toasts "not found").
+ */
+function resolveLineageHref(prefix: DocumentPrefix, ref: string): string | null {
+  switch (prefix) {
+    case 'Q': {
+      const q = quotes.find((x) => x.ref === ref);
+      return q ? `/sell/quotes/${q.id}` : null;
+    }
+    case 'SO': {
+      const so = salesOrders.find((x) => x.orderNumber === ref);
+      return so ? `/sell/orders/${so.id}` : null;
+    }
+    case 'INV': {
+      const inv = sellInvoices.find((x) => x.invoiceNumber === ref);
+      return inv ? `/sell/invoices/${inv.id}` : null;
+    }
+    case 'WO':
+      // WO refs are managed in Make; route by number is acceptable.
+      return `/make/work-orders`;
+    case 'DO':
+      return `/ship/orders`;
+    default:
+      return null;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Tab config                                                         */
 /* ------------------------------------------------------------------ */
@@ -272,13 +351,73 @@ export function SellOrderDetail() {
   // Local-state mirrors so Add Line Item / Upload behave like real edits in mock mode.
   const [lineItems, setLineItems] = useState<LineItem[]>(isNew ? [] : MOCK_LINE_ITEMS);
   const [documents, setDocuments] = useState<DocFile[]>(isNew ? [] : MOCK_DOCUMENTS);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  // ── Fulfilment editable state (mirrors SalesOrder fields) ─────────
+  const [carrier, setCarrier] = useState<string>(order?.carrier ?? '');
+  const [trackingNumber, setTrackingNumber] = useState<string>(order?.trackingNumber ?? '');
+  const [fulfilmentStatus, setFulfilmentStatus] = useState<string>(
+    order ? ORDER_STATUS_TO_SLUG[order.status as OrderStatus] ?? 'pending' : 'pending',
+  );
+  const [fulfilmentNotes, setFulfilmentNotes] = useState<string>(order?.fulfilmentNotes ?? '');
+  const [fulfilmentLabels, setFulfilmentLabels] = useState<string[]>(order?.fulfilmentLabels ?? []);
+  // Draft copies — committed on Save, rolled back on Cancel.
+  const [carrierDraft, setCarrierDraft] = useState(carrier);
+  const [trackingDraft, setTrackingDraft] = useState(trackingNumber);
+  const [statusDraft, setStatusDraft] = useState(fulfilmentStatus);
+  const [notesDraft, setNotesDraft] = useState(fulfilmentNotes);
+  const [labelsDraft, setLabelsDraft] = useState(fulfilmentLabels.join(', '));
+
+  const beginFulfilmentEdit = () => {
+    setCarrierDraft(carrier);
+    setTrackingDraft(trackingNumber);
+    setStatusDraft(fulfilmentStatus);
+    setNotesDraft(fulfilmentNotes);
+    setLabelsDraft(fulfilmentLabels.join(', '));
+  };
+
+  const handleSaveFulfilment = () => {
+    // TODO(backend): salesOrders.update(order.id, { carrier, trackingNumber, status, fulfilmentNotes, fulfilmentLabels })
+    setCarrier(carrierDraft);
+    setTrackingNumber(trackingDraft);
+    setFulfilmentStatus(statusDraft);
+    setFulfilmentNotes(notesDraft);
+    setFulfilmentLabels(
+      labelsDraft
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
+    );
+  };
 
   const handleAddLineItem = () => {
-    // TODO(backend): salesOrders.addLineItem(order.id, blank)
+    // Open product picker — replaces the legacy blank-row insert.
+    setPickerOpen(true);
+  };
+
+  const handleProductsSelected = (ids: string[]) => {
+    if (!ids.length) return;
+    const picked = ids
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is (typeof products)[number] => Boolean(p));
+    // TODO(backend): salesOrders.addLineItem(order.id, { productId, qty: 1 })
     setLineItems((prev) => [
       ...prev,
-      { id: `li-${Date.now()}`, product: '', description: '', qty: 1, unitPrice: 0, total: 0, status: 'Pending' },
+      ...picked.map((p) => ({
+        id: `li-${Date.now()}-${p.id}`,
+        product: p.partNumber,
+        description: p.description,
+        qty: 1,
+        unitPrice: p.unitPrice,
+        total: p.unitPrice,
+        status: 'Pending',
+      })),
     ]);
+    toast.success(`${picked.length} item${picked.length === 1 ? '' : 's'} added`);
+  };
+
+  const handleRemoveLineItem = (id: string) => {
+    setLineItems((prev) => prev.filter((li) => li.id !== id));
   };
 
   const handleUploadDocument = (file: File) => {
@@ -578,6 +717,25 @@ export function SellOrderDetail() {
               </Badge>
             ),
           },
+          {
+            key: "actions",
+            header: "",
+            headerClassName: "w-12",
+            className: "w-12 text-right",
+            cell: (li) => (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveLineItem(li.id);
+                }}
+                aria-label="Remove line item"
+                className="rounded p-1 text-[var(--neutral-500)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--mw-error)]"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            ),
+          },
         ];
 
         return (
@@ -608,10 +766,109 @@ export function SellOrderDetail() {
       case "fulfilment":
         return (
           <div className="space-y-6">
-            {/* Shipping details */}
+            {/* Advisory: detailed shipping lives in Ship */}
+            <div className="flex items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--mw-info)]/8 px-4 py-3 text-sm text-[var(--neutral-700)]">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-info)]" />
+              <p>
+                Detailed shipping (label printing, dimensions, route) is managed in{' '}
+                <strong className="text-foreground">Ship</strong> — see{' '}
+                <Link to="/ship/orders" className="text-[var(--mw-info)] underline hover:no-underline">
+                  Ship orders
+                </Link>
+                .
+              </p>
+            </div>
+
+            {/* Fulfilment (carrier, tracking, status, labels, notes) */}
+            <EditableCard
+              title="Fulfilment"
+              subtitle="Carrier, tracking and delivery notes for this order"
+              onSave={handleSaveFulfilment}
+              onCancel={beginFulfilmentEdit}
+            >
+              {({ mode }) => {
+                if (mode === 'edit') {
+                  return (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <EditSelect
+                        label="Carrier"
+                        value={carrierDraft}
+                        onChange={setCarrierDraft}
+                        options={CARRIER_OPTIONS.map((c) => ({ value: c, label: c }))}
+                        placeholder="Select carrier…"
+                      />
+                      <EditField
+                        label="Tracking number"
+                        value={trackingDraft}
+                        onChange={setTrackingDraft}
+                        placeholder="e.g. STR984756123"
+                        mono
+                      />
+                      <EditSelect
+                        label="Status"
+                        value={statusDraft}
+                        onChange={setStatusDraft}
+                        options={SALES_ORDER_STATUS_OPTIONS}
+                      />
+                      <EditField
+                        label="Labels (comma-separated)"
+                        value={labelsDraft}
+                        onChange={setLabelsDraft}
+                        placeholder="Fragile, Inside delivery"
+                      />
+                      <EditTextarea
+                        label="Delivery notes"
+                        value={notesDraft}
+                        onChange={setNotesDraft}
+                        placeholder="Free-form delivery / fulfilment notes"
+                        className="sm:col-span-2"
+                        rows={3}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field label="Carrier" value={carrier || '—'} />
+                    <Field label="Tracking number" value={trackingNumber || 'Not yet assigned'} mono />
+                    <Field
+                      label="Status"
+                      value={SLUG_TO_ORDER_STATUS[fulfilmentStatus] ?? fulfilmentStatus}
+                    />
+                    <div>
+                      <span className="mb-1 block text-xs font-medium text-[var(--neutral-500)]">
+                        Labels
+                      </span>
+                      {fulfilmentLabels.length === 0 ? (
+                        <p className="text-sm text-foreground">—</p>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {fulfilmentLabels.map((l) => (
+                            <Badge
+                              key={l}
+                              variant="outline"
+                              className="rounded-full border-[var(--border)] text-xs"
+                            >
+                              {l}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <Field
+                      label="Delivery notes"
+                      value={fulfilmentNotes || '—'}
+                      className="sm:col-span-2"
+                    />
+                  </div>
+                );
+              }}
+            </EditableCard>
+
+            {/* Shipping address — still read-only here; managed via Customer / Ship. */}
             <Card className="p-6">
               <h2 className="mb-1 text-base font-medium text-foreground">Shipping details</h2>
-              <p className="mb-6 text-xs text-[var(--neutral-500)]">Delivery address and logistics</p>
+              <p className="mb-6 text-xs text-[var(--neutral-500)]">Delivery address and method</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <Label className="text-xs text-[var(--neutral-500)]">Shipping address</Label>
@@ -620,10 +877,6 @@ export function SellOrderDetail() {
                 <div>
                   <Label className="text-xs text-[var(--neutral-500)]">Shipping method</Label>
                   <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={order.shippingMethod} />
-                </div>
-                <div>
-                  <Label className="text-xs text-[var(--neutral-500)]">Tracking number</Label>
-                  <Input readOnly className="mt-1 h-12 border-[var(--border)] tabular-nums" value={order.trackingNumber ?? "Not yet assigned"} />
                 </div>
               </div>
             </Card>
@@ -727,7 +980,53 @@ export function SellOrderDetail() {
     }
   };
 
-  return (
+  // ── D1: Lineage strip — Q → SO → INV → WO → DO chips ───────────────
+  const lineageChips = useMemo(() => {
+    if (isNew || !parseRef(order.soNumber)) return null;
+    const items = lineage(order.soNumber, ['Q', 'SO', 'INV', 'WO', 'DO'] as DocumentPrefix[]);
+    return (
+      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+        {items.map(({ prefix, ref }, i) => {
+          const href = resolveLineageHref(prefix, ref);
+          const isCurrent = ref === order.soNumber;
+          const chip = (
+            <span
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs tabular-nums transition-colors',
+                isCurrent
+                  ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/15 text-foreground'
+                  : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:border-[var(--mw-yellow-400)] hover:text-foreground',
+              )}
+            >
+              <strong className="font-semibold">{prefix}</strong>
+              <span className="text-[var(--neutral-500)]">-</span>
+              <span>{ref.slice(prefix.length + 1)}</span>
+            </span>
+          );
+          return (
+            <React.Fragment key={prefix}>
+              {i > 0 && <span className="text-[var(--neutral-400)]">→</span>}
+              {href ? (
+                <Link to={href} aria-label={`Open ${ref}`}>
+                  {chip}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => toast('Document not found', { description: ref })}
+                  aria-label={`${ref} — not found`}
+                >
+                  {chip}
+                </button>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }, [isNew, order.soNumber]);
+
+  const layout = (
     <JobWorkspaceLayout
       breadcrumbs={[
         { label: "Sell", href: "/sell" },
@@ -739,11 +1038,14 @@ export function SellOrderDetail() {
         isNew ? (
           <span>Fill out the details below and click Save to create.</span>
         ) : (
-          <>
-            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{order.soNumber}</span>
-            <span>{order.customer}</span>
-            <span className="tabular-nums">${order.value.toLocaleString()}</span>
-          </>
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{order.soNumber}</span>
+              <span>{order.customer}</span>
+              <span className="tabular-nums">${order.value.toLocaleString()}</span>
+            </div>
+            {lineageChips}
+          </div>
         )
       }
       metaRow={
@@ -796,5 +1098,26 @@ export function SellOrderDetail() {
       onTabChange={setActiveTab}
       renderTabPanel={renderTabPanel}
     />
+  );
+
+  return (
+    <>
+      {layout}
+      {/* D2: Product picker — opens from Line Items tab "Add item" button. */}
+      <EntityPickerModal
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        kind="product"
+        multiSelect
+        items={products.map((p) => ({
+          id: p.id,
+          label: p.partNumber,
+          sub: p.description,
+          right: `$${p.unitPrice.toFixed(2)}`,
+        }))}
+        onSelect={handleProductsSelected}
+        title="Add products"
+      />
+    </>
   );
 }

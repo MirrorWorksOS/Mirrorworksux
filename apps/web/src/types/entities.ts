@@ -65,6 +65,32 @@ export interface Customer {
   accountManagerId?: string;
   /** Customer-portal contacts (multi-user). Falls back to legacy `contact`+`email` if empty. */
   contacts?: CustomerContact[];
+  /** Tag chips (e.g. "Strategic", "Repeat customer", "Export"). */
+  tags?: CustomerTag[];
+  /** Default payment term id from Control → Settings → Payment terms. */
+  paymentTermsId?: string;
+  /** When true, this customer has access to the customer portal. */
+  portalAccess?: boolean;
+  /** Email-notification opt-ins per template kind. */
+  notificationPrefs?: NotificationPreferences;
+}
+
+/** Tag chip — visual badge on customers/opportunities, also used for filtering. */
+export interface CustomerTag {
+  id: string;
+  label: string;
+  /** Optional badge tone — falls back to neutral. */
+  tone?: 'neutral' | 'accent' | 'success' | 'warning' | 'info' | 'error';
+}
+
+/** Per-customer email notification opt-ins. Templates configured in Control. */
+export interface NotificationPreferences {
+  quoteSent?: boolean;
+  quoteAccepted?: boolean;
+  orderConfirmed?: boolean;
+  orderShipped?: boolean;
+  invoiceIssued?: boolean;
+  statementSent?: boolean;
 }
 
 /** Role governs what a customer contact can do inside the portal. Mirrors internal admin/lead/team. */
@@ -207,6 +233,20 @@ export interface Quote {
   uploadedFiles?: { name: string; type: string; sizeKb: number }[];
   /** Customer view/open events */
   viewEvents?: QuoteViewEvent[];
+  /** Per-quote payment term override (otherwise inherits from customer). */
+  paymentTermsId?: string;
+  /** Terms & conditions template id from Control → Legal templates. */
+  termsAndConditionsId?: string;
+  /** Free-form internal/customer-visible notes. */
+  notes?: string;
+  /** Customer-visible message attached to the emailed quote. */
+  customerMessage?: string;
+  /** Chronological audit log — populated on edit/send/accept/revise. */
+  history?: QuoteHistoryEntry[];
+  /** When the quote was sent and locked. */
+  sentAt?: string;
+  /** Current revision label (e.g. "v2"). */
+  currentRevisionLabel?: string;
 }
 
 export interface QuoteLineItem {
@@ -215,6 +255,23 @@ export interface QuoteLineItem {
   qty: number;
   unitPrice: number;
   total: number;
+  /** Per-unit cost — drives margin calculation. */
+  unitCost?: number;
+  /** Margin percent (0–100). */
+  margin?: number;
+  /** Product thumbnail URL — falls back to Product.imageUrl. */
+  imageUrl?: string;
+}
+
+/** Audit entry written every time the quote changes meaningful state. */
+export interface QuoteHistoryEntry {
+  id: string;
+  at: string;
+  action: string;
+  user: string;
+  fromValue?: string;
+  toValue?: string;
+  note?: string;
 }
 
 export interface SalesOrder {
@@ -230,6 +287,16 @@ export interface SalesOrder {
   jobId?: string;
   /** Employee id of the sales rep who owns this order. */
   repId?: string;
+  /** Carrier (e.g. "DHL", "StarTrack") — duplicated from Ship for at-a-glance. */
+  carrier?: string;
+  /** Tracking number from the carrier. */
+  trackingNumber?: string;
+  /** Free-form delivery / fulfilment notes. */
+  fulfilmentNotes?: string;
+  /** Shipping label tags (e.g. "Fragile", "Pickup", "Inside delivery"). */
+  fulfilmentLabels?: string[];
+  /** When the sales order was confirmed. */
+  confirmedAt?: string;
 }
 
 export interface SellInvoice {
@@ -252,9 +319,15 @@ export interface SellActivity {
   opportunityId?: string;
   opportunityTitle?: string;
   customerId?: string;
+  /** Quote id when the activity attaches to a quote (follow-up, view, etc.). */
+  quoteId?: string;
   assignedTo: string;
   dueDate: string;
   status: ActivityStatus;
+  /** Activity priority — surfaces in lists, gantt, badges. */
+  priority?: 'low' | 'med' | 'high';
+  /** Short subject/title rendered in lists; falls back to `description`. */
+  subject?: string;
 }
 
 /** Capable-to-Promise delivery estimate */
@@ -1298,6 +1371,55 @@ export interface DocumentRevision {
   date: string;
   author: string;
   description: string;
+}
+
+// ─── Control → Settings: templates (Sell overhaul, 2026-05) ────────
+
+/** Reusable payment-term template (e.g. Net 30, 50% deposit + balance on delivery). */
+export interface PaymentTerm {
+  id: string;
+  label: string;
+  /** Days from invoice/order date to payment due. */
+  days: number;
+  /** Optional deposit required up-front (percent of total). */
+  depositPct?: number;
+  /** Marks this row as the global default applied to new customers. */
+  isDefault?: boolean;
+  notes?: string;
+}
+
+/** Email notification template — customer comms (quote sent, order shipped…). */
+export interface NotificationTemplate {
+  id: string;
+  /** Stable kind used by the trigger system. */
+  kind:
+    | 'quote_sent'
+    | 'quote_accepted'
+    | 'order_confirmed'
+    | 'order_shipped'
+    | 'invoice_issued'
+    | 'statement_sent';
+  /** Display name for the Control UI. */
+  name: string;
+  /** Email subject; supports {{customer}}, {{ref}}, {{total}} placeholders. */
+  subject: string;
+  /** Markdown body. */
+  bodyMd: string;
+  /** When false, the template is disabled and won't fire. */
+  enabled: boolean;
+  updatedAt: string;
+}
+
+/** Legal / finance text template — T&Cs, payment details, customer-visible notes. */
+export interface LegalTemplate {
+  id: string;
+  kind: 'terms_and_conditions' | 'payment_details' | 'quote_notes' | 'order_notes';
+  name: string;
+  /** Markdown body inserted into quote/order/invoice PDFs. */
+  body: string;
+  /** Default for new quotes/orders of this kind. */
+  isDefault?: boolean;
+  updatedAt: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════

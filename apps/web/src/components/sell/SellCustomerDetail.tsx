@@ -5,15 +5,15 @@
 
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Globe, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, MessageSquare, PhoneCall, Upload, Trash2, Pencil, Archive } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, MessageSquare, PhoneCall, Upload, Trash2, Archive, Bell, ExternalLink } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Switch } from '../ui/switch';
+import { Checkbox } from '../ui/checkbox';
 import { cn } from '../ui/utils';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
@@ -32,9 +32,14 @@ import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTa
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
-import { customers, opportunities, quotes, salesOrders, sellInvoices, sellActivities, employees } from '@/services';
+import { customers, opportunities, quotes, salesOrders, sellInvoices, sellActivities, employees, paymentTerms } from '@/services';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { PortalContactsPanel } from './PortalContactsPanel';
+import { EditableCard } from '@/components/shared/forms/EditableCard';
+import { Field, EditField, EditSelect } from '@/components/shared/forms/EditField';
+import { LogActivityModal } from '@/components/shared/activities/LogActivityModal';
+import { EntityPickerModal, type PickerItem } from '@/components/shared/pickers/EntityPickerModal';
+import type { CustomerTag, NotificationPreferences } from '@/types/entities';
 
 // ============================================================
 // Mock Data — built from centralised @/services/mock exports
@@ -89,9 +94,12 @@ const createBlankCustomer = (): any => ({
   address: { street: '', city: '', state: '', postcode: '', country: 'Australia' },
   additionalContacts: [],
   financial: { lifetimeRevenue: 0, outstanding: 0, avgPaymentTerms: 'Net 30', creditLimit: 0, paymentRating: 'green' },
-  tags: [],
+  tags: [] as CustomerTag[],
   source: '',
   notes: '',
+  paymentTermsId: paymentTerms.find(p => p.isDefault)?.id ?? paymentTerms[0]?.id,
+  portalAccess: false,
+  notificationPrefs: {} as NotificationPreferences,
   opportunities: [],
   recentQuotes: [],
   recentOrders: [],
@@ -151,9 +159,12 @@ customers.forEach((c, idx) => {
       creditLimit: 50000,
       paymentRating: outstanding > 10000 ? 'amber' : 'green',
     },
-    tags: ['Fabrication'],
+    tags: (c.tags ?? []) as CustomerTag[],
     source: 'Direct',
     notes: c.notes,
+    paymentTermsId: c.paymentTermsId,
+    portalAccess: c.portalAccess ?? false,
+    notificationPrefs: (c.notificationPrefs ?? {}) as NotificationPreferences,
 
     // Related records bridged to the shapes the rendering code expects
     opportunities: custOpps.map(o => ({
@@ -249,6 +260,26 @@ const activityIcon = (type: string) => {
 
 const fmt = (n: number) => `$${n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+// Field list rendered in the Notifications & portal card (read + edit modes).
+const NOTIFICATION_PREF_FIELDS: { key: keyof NotificationPreferences; label: string }[] = [
+  { key: 'quoteSent', label: 'Quote sent' },
+  { key: 'quoteAccepted', label: 'Quote accepted' },
+  { key: 'orderConfirmed', label: 'Order confirmed' },
+  { key: 'orderShipped', label: 'Order shipped' },
+  { key: 'invoiceIssued', label: 'Invoice issued' },
+  { key: 'statementSent', label: 'Monthly statement' },
+];
+
+// Picker suggestions for tags (matches seed-data ids where they exist).
+const TAG_SUGGESTIONS: CustomerTag[] = [
+  { id: 'tag-strategic', label: 'Strategic', tone: 'accent' },
+  { id: 'tag-repeat', label: 'Repeat customer', tone: 'success' },
+  { id: 'tag-export', label: 'Export', tone: 'warning' },
+  { id: 'tag-prospect', label: 'Prospect', tone: 'info' },
+  { id: 'tag-design-assist', label: 'Design assist', tone: 'info' },
+  { id: 'tag-urgent', label: 'Urgent', tone: 'error' },
+];
+
 // ============================================================
 // Main Component
 // ============================================================
@@ -264,8 +295,16 @@ export function SellCustomerDetail() {
   const [archiveOpen, setArchiveOpen] = useState(false);
 
   const isNew = !id || id === 'new';
-  const [draft, setDraft] = useState<any>(() => (isNew ? createBlankCustomer() : null));
-  const customer = isNew ? draft : (mockCustomers[id] ?? null);
+  const [draft, setDraft] = useState<any>(() => {
+    if (isNew) return createBlankCustomer();
+    return id && mockCustomers[id] ? { ...mockCustomers[id] } : null;
+  });
+  const customer = draft;
+
+  // Modal state
+  const [logActivityOpen, setLogActivityOpen] = useState(false);
+  const [tagPickerOpen, setTagPickerOpen] = useState(false);
+  const [contactPickerOpen, setContactPickerOpen] = useState(false);
 
   const updateDraft = (path: string, value: any) => {
     setDraft((prev: any) => {
@@ -280,6 +319,20 @@ export function SellCustomerDetail() {
       return next;
     });
   };
+
+  // Simulated backend write — EditableCard onSave handlers await this.
+  const persist = async () => {
+    await new Promise(r => setTimeout(r, 250));
+    // TODO(backend): customers.update(customer.id, customer)
+  };
+
+  // Resolve current payment-terms label for display
+  const paymentTermsLabel = (() => {
+    const id = customer?.paymentTermsId;
+    if (!id) return customer?.financial?.avgPaymentTerms ?? 'Net 30';
+    const t = paymentTerms.find(p => p.id === id);
+    return t ? `${t.label} (${t.days}d)` : (customer?.financial?.avgPaymentTerms ?? 'Net 30');
+  })();
 
   const handleSave = () => {
     // TODO(backend): isNew ? customers.create(customer) : customers.update(customer.id, customer)
@@ -375,8 +428,8 @@ export function SellCustomerDetail() {
               {customer.company ? customer.company.substring(0, 2).toUpperCase() : '?'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl font-medium text-foreground">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl font-medium text-foreground mr-1">
               {isNew ? 'New Customer' : customer.company}
             </h1>
             {!isNew && customer.types.map((t: string) => (
@@ -386,6 +439,27 @@ export function SellCustomerDetail() {
               <StatusBadge variant={accountStatusVariant(customer.status)}>
                 {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
               </StatusBadge>
+            )}
+            {!isNew && (customer.tags as CustomerTag[]).map((tag: CustomerTag) => (
+              <StatusBadge
+                key={tag.id}
+                variant={(tag.tone ?? 'neutral') as 'success' | 'info' | 'warning' | 'error' | 'accent' | 'neutral'}
+                className="cursor-pointer hover:opacity-80"
+                onClick={() => setTagPickerOpen(true)}
+                role="button"
+                title="Manage tags"
+              >
+                {tag.label}
+              </StatusBadge>
+            ))}
+            {!isNew && (
+              <button
+                type="button"
+                onClick={() => setTagPickerOpen(true)}
+                className="inline-flex items-center gap-1 rounded-full border border-dashed border-[var(--border)] px-2 py-0.5 text-xs text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] transition-colors"
+              >
+                <Plus className="w-3 h-3" /> Add tag
+              </button>
             )}
           </div>
           <div className="ml-auto flex items-center gap-2">
@@ -408,7 +482,6 @@ export function SellCustomerDetail() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem><Pencil className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setArchiveOpen(true)}><Archive className="w-4 h-4 mr-2" /> Archive</DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteOpen(true)}><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
               </DropdownMenuContent>
@@ -475,115 +548,177 @@ export function SellCustomerDetail() {
             {/* Left Column - 2/3 */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Info */}
-              <Card className="p-6">
-                <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  {isNew ? (
-                    <>
-                      <EditField label="Company name" required value={customer.company} onChange={v => updateDraft('company', v)} placeholder="e.g. Alliance Metal Fabrication" />
-                      <EditField label="ABN" mono value={customer.abn} onChange={v => updateDraft('abn', v)} placeholder="11 222 333 444" />
-                      <EditSelect
-                        label="Industry"
-                        value={customer.industry}
-                        onChange={v => updateDraft('industry', v)}
-                        placeholder="Select industry"
-                        options={['Construction', 'Mining & Resources', 'Defence', 'Infrastructure', 'Energy', 'Manufacturing', 'Other']}
-                      />
-                      <EditField label="Website" value={customer.website} onChange={v => updateDraft('website', v)} placeholder="https://" type="url" />
-                      <EditField label="Annual revenue" mono value={customer.annualRevenue === 0 ? '' : String(customer.annualRevenue)} onChange={v => updateDraft('annualRevenue', Number(v) || 0)} placeholder="0" type="number" prefix="$" />
-                      <EditField label="Employees" value={customer.employeeCount === 0 ? '' : String(customer.employeeCount)} onChange={v => updateDraft('employeeCount', Number(v) || 0)} placeholder="0" type="number" />
-                      <EditSelect
-                        label="Account owner"
-                        value={customer.accountOwner}
-                        onChange={v => updateDraft('accountOwner', v)}
-                        placeholder="Select owner"
-                        options={employees.map(e => e.name)}
-                      />
-                      <EditSelect
-                        label="Source"
-                        value={customer.source}
-                        onChange={v => updateDraft('source', v)}
-                        placeholder="Select source"
-                        options={['Inbound enquiry', 'Referral', 'Trade show', 'Cold outreach', 'Existing relationship', 'Other']}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Field label="Company name" value={customer.company} />
-                      <Field label="ABN" value={customer.abn} mono />
-                      <Field label="Industry" value={customer.industry} />
-                      <Field label="Website" value={customer.website} link />
-                      <Field label="Annual revenue" value={fmt(customer.annualRevenue)} mono />
-                      <Field label="Employees" value={String(customer.employeeCount)} />
-                      <Field label="Account owner" value={customer.accountOwner} />
-                      <Field label="Source" value={customer.source} />
-                    </>
+              {isNew ? (
+                <Card className="p-6">
+                  <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <EditField label="Company name" required value={customer.company} onChange={v => updateDraft('company', v)} placeholder="e.g. Alliance Metal Fabrication" />
+                    <EditField label="ABN" mono value={customer.abn} onChange={v => updateDraft('abn', v)} placeholder="11 222 333 444" />
+                    <EditSelect
+                      label="Industry"
+                      value={customer.industry}
+                      onChange={v => updateDraft('industry', v)}
+                      placeholder="Select industry"
+                      options={['Construction', 'Mining & Resources', 'Defence', 'Infrastructure', 'Energy', 'Manufacturing', 'Other']}
+                    />
+                    <EditField label="Website" value={customer.website} onChange={v => updateDraft('website', v)} placeholder="https://" type="url" />
+                    <EditField label="Annual revenue" mono value={customer.annualRevenue === 0 ? '' : String(customer.annualRevenue)} onChange={v => updateDraft('annualRevenue', Number(v) || 0)} placeholder="0" type="number" prefix="$" />
+                    <EditField label="Employees" value={customer.employeeCount === 0 ? '' : String(customer.employeeCount)} onChange={v => updateDraft('employeeCount', Number(v) || 0)} placeholder="0" type="number" />
+                    <EditSelect
+                      label="Account owner"
+                      value={customer.accountOwner}
+                      onChange={v => updateDraft('accountOwner', v)}
+                      placeholder="Select owner"
+                      options={employees.map(e => e.name)}
+                    />
+                    <EditSelect
+                      label="Source"
+                      value={customer.source}
+                      onChange={v => updateDraft('source', v)}
+                      placeholder="Select source"
+                      options={['Inbound enquiry', 'Referral', 'Trade show', 'Cold outreach', 'Existing relationship', 'Other']}
+                    />
+                    <EditSelect
+                      label="Payment terms"
+                      value={customer.paymentTermsId ?? ''}
+                      onChange={v => updateDraft('paymentTermsId', v)}
+                      placeholder="Select terms"
+                      options={paymentTerms.map(p => ({ value: p.id, label: `${p.label} (${p.days}d)` }))}
+                    />
+                  </div>
+                </Card>
+              ) : (
+                <EditableCard
+                  title="Company information"
+                  onSave={persist}
+                  successMessage="Company information saved"
+                >
+                  {({ mode }) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                      {mode === 'edit' ? (
+                        <>
+                          <EditField label="Company name" required value={customer.company} onChange={v => updateDraft('company', v)} />
+                          <EditField label="ABN" mono value={customer.abn} onChange={v => updateDraft('abn', v)} />
+                          <EditSelect
+                            label="Industry"
+                            value={customer.industry}
+                            onChange={v => updateDraft('industry', v)}
+                            options={['Construction', 'Mining & Resources', 'Defence', 'Infrastructure', 'Energy', 'Manufacturing', 'Other']}
+                          />
+                          <EditField label="Website" value={customer.website} onChange={v => updateDraft('website', v)} type="url" />
+                          <EditField label="Annual revenue" mono value={String(customer.annualRevenue)} onChange={v => updateDraft('annualRevenue', Number(v) || 0)} type="number" prefix="$" />
+                          <EditField label="Employees" value={String(customer.employeeCount)} onChange={v => updateDraft('employeeCount', Number(v) || 0)} type="number" />
+                          <EditSelect
+                            label="Account owner"
+                            value={customer.accountOwner}
+                            onChange={v => updateDraft('accountOwner', v)}
+                            options={employees.map(e => e.name)}
+                          />
+                          <EditSelect
+                            label="Source"
+                            value={customer.source}
+                            onChange={v => updateDraft('source', v)}
+                            options={['Inbound enquiry', 'Referral', 'Trade show', 'Cold outreach', 'Existing relationship', 'Other']}
+                          />
+                          <EditSelect
+                            label="Payment terms"
+                            value={customer.paymentTermsId ?? (paymentTerms.find(p => p.isDefault)?.id ?? paymentTerms[0]?.id ?? '')}
+                            onChange={v => updateDraft('paymentTermsId', v)}
+                            options={paymentTerms.map(p => ({ value: p.id, label: `${p.label} (${p.days}d)` }))}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Field label="Company name" value={customer.company} />
+                          <Field label="ABN" value={customer.abn} mono />
+                          <Field label="Industry" value={customer.industry} />
+                          <Field label="Website" value={customer.website} link />
+                          <Field label="Annual revenue" value={fmt(customer.annualRevenue)} mono />
+                          <Field label="Employees" value={String(customer.employeeCount)} />
+                          <Field label="Account owner" value={customer.accountOwner} />
+                          <Field label="Source" value={customer.source} />
+                          <Field label="Payment terms" value={paymentTermsLabel} />
+                        </>
+                      )}
+                    </div>
                   )}
-                </div>
-              </Card>
+                </EditableCard>
+              )}
 
               {/* Primary Contact */}
-              <Card className="p-6">
-                <h2 className="text-lg font-medium text-foreground mb-6">Primary contact</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  {isNew ? (
-                    <>
-                      <EditField label="Name" value={customer.primaryContact.name} onChange={v => updateDraft('primaryContact.name', v)} placeholder="Full name" />
-                      <EditField label="Job title" value={customer.primaryContact.title} onChange={v => updateDraft('primaryContact.title', v)} placeholder="e.g. Procurement Manager" />
-                      <EditField label="Email" value={customer.primaryContact.email} onChange={v => updateDraft('primaryContact.email', v)} placeholder="name@company.com" type="email" icon={<Mail className="w-4 h-4" />} />
-                      <EditField label="Phone" value={customer.primaryContact.phone} onChange={v => updateDraft('primaryContact.phone', v)} placeholder="02 9000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
-                      <EditField label="Mobile" value={customer.primaryContact.mobile} onChange={v => updateDraft('primaryContact.mobile', v)} placeholder="04 0000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
-                      <EditSelect
-                        label="Preferred contact"
-                        value={customer.primaryContact.preferred}
-                        onChange={v => updateDraft('primaryContact.preferred', v)}
-                        options={['email', 'phone', 'mobile']}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Field label="Name" value={customer.primaryContact.name} />
-                      <Field label="Job title" value={customer.primaryContact.title} />
-                      <div>
-                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
-                        <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                          <Mail className="w-4 h-4" /> {customer.primaryContact.email}
-                        </a>
-                      </div>
-                      <div>
-                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
-                        <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                          <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
-                        </a>
-                      </div>
-                      <div>
-                        <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
-                        <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
-                          <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
-                        </a>
-                      </div>
-                      <Field label="Preferred contact" value={customer.primaryContact.preferred} />
-                    </>
+              {isNew ? (
+                <Card className="p-6">
+                  <h2 className="text-lg font-medium text-foreground mb-6">Primary contact</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <EditField label="Name" value={customer.primaryContact.name} onChange={v => updateDraft('primaryContact.name', v)} placeholder="Full name" />
+                    <EditField label="Job title" value={customer.primaryContact.title} onChange={v => updateDraft('primaryContact.title', v)} placeholder="e.g. Procurement Manager" />
+                    <EditField label="Email" value={customer.primaryContact.email} onChange={v => updateDraft('primaryContact.email', v)} placeholder="name@company.com" type="email" icon={<Mail className="w-4 h-4" />} />
+                    <EditField label="Phone" value={customer.primaryContact.phone} onChange={v => updateDraft('primaryContact.phone', v)} placeholder="02 9000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
+                    <EditField label="Mobile" value={customer.primaryContact.mobile} onChange={v => updateDraft('primaryContact.mobile', v)} placeholder="04 0000 0000" type="tel" icon={<Phone className="w-4 h-4" />} />
+                    <EditSelect
+                      label="Preferred contact"
+                      value={customer.primaryContact.preferred}
+                      onChange={v => updateDraft('primaryContact.preferred', v)}
+                      options={['email', 'phone', 'mobile']}
+                    />
+                  </div>
+                </Card>
+              ) : (
+                <EditableCard
+                  title="Primary contact"
+                  onSave={persist}
+                  successMessage="Primary contact saved"
+                >
+                  {({ mode }) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                      {mode === 'edit' ? (
+                        <>
+                          <EditField label="Name" value={customer.primaryContact.name} onChange={v => updateDraft('primaryContact.name', v)} />
+                          <EditField label="Job title" value={customer.primaryContact.title} onChange={v => updateDraft('primaryContact.title', v)} />
+                          <EditField label="Email" value={customer.primaryContact.email} onChange={v => updateDraft('primaryContact.email', v)} type="email" icon={<Mail className="w-4 h-4" />} />
+                          <EditField label="Phone" value={customer.primaryContact.phone} onChange={v => updateDraft('primaryContact.phone', v)} type="tel" icon={<Phone className="w-4 h-4" />} />
+                          <EditField label="Mobile" value={customer.primaryContact.mobile} onChange={v => updateDraft('primaryContact.mobile', v)} type="tel" icon={<Phone className="w-4 h-4" />} />
+                          <EditSelect
+                            label="Preferred contact"
+                            value={customer.primaryContact.preferred}
+                            onChange={v => updateDraft('primaryContact.preferred', v)}
+                            options={['email', 'phone', 'mobile']}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Field label="Name" value={customer.primaryContact.name} />
+                          <Field label="Job title" value={customer.primaryContact.title} />
+                          <div>
+                            <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Email</span>
+                            <a href={`mailto:${customer.primaryContact.email}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                              <Mail className="w-4 h-4" /> {customer.primaryContact.email}
+                            </a>
+                          </div>
+                          <div>
+                            <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Phone</span>
+                            <a href={`tel:${customer.primaryContact.phone}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                              <Phone className="w-4 h-4" /> {customer.primaryContact.phone}
+                            </a>
+                          </div>
+                          <div>
+                            <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Mobile</span>
+                            <a href={`tel:${customer.primaryContact.mobile}`} className="text-sm text-foreground hover:underline flex items-center gap-1.5">
+                              <Phone className="w-4 h-4" /> {customer.primaryContact.mobile}
+                            </a>
+                          </div>
+                          <Field label="Preferred contact" value={customer.primaryContact.preferred} />
+                        </>
+                      )}
+                    </div>
                   )}
-                </div>
-              </Card>
+                </EditableCard>
+              )}
 
               {/* Address */}
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-medium text-foreground">Address</h2>
-                  {!isNew && (
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-foreground hover:underline flex items-center gap-1"
-                    >
-                      <MapPin className="w-4 h-4" /> Open in maps
-                    </a>
-                  )}
-                </div>
-                {isNew ? (
+              {isNew ? (
+                <Card className="p-6">
+                  <h2 className="text-lg font-medium text-foreground mb-6">Address</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                     <div className="md:col-span-2">
                       <EditField label="Street" value={customer.address.street} onChange={v => updateDraft('address.street', v)} placeholder="123 Industrial Drive" />
@@ -599,14 +734,49 @@ export function SellCustomerDetail() {
                     <EditField label="Postcode" value={customer.address.postcode} onChange={v => updateDraft('address.postcode', v)} placeholder="2000" />
                     <EditField label="Country" value={customer.address.country} onChange={v => updateDraft('address.country', v)} placeholder="Australia" />
                   </div>
-                ) : (
-                  <div className="text-sm text-foreground leading-relaxed">
-                    <p>{customer.address.street}</p>
-                    <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
-                    <p>{customer.address.country}</p>
-                  </div>
-                )}
-              </Card>
+                </Card>
+              ) : (
+                <EditableCard
+                  title="Address"
+                  onSave={persist}
+                  successMessage="Address saved"
+                  headerExtra={
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(`${customer.address.street}, ${customer.address.city} ${customer.address.state} ${customer.address.postcode}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-foreground hover:underline flex items-center gap-1"
+                    >
+                      <MapPin className="w-4 h-4" /> Open in maps
+                    </a>
+                  }
+                >
+                  {({ mode }) => (
+                    mode === 'edit' ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <div className="md:col-span-2">
+                          <EditField label="Street" value={customer.address.street} onChange={v => updateDraft('address.street', v)} />
+                        </div>
+                        <EditField label="City" value={customer.address.city} onChange={v => updateDraft('address.city', v)} />
+                        <EditSelect
+                          label="State"
+                          value={customer.address.state}
+                          onChange={v => updateDraft('address.state', v)}
+                          options={['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']}
+                        />
+                        <EditField label="Postcode" value={customer.address.postcode} onChange={v => updateDraft('address.postcode', v)} />
+                        <EditField label="Country" value={customer.address.country} onChange={v => updateDraft('address.country', v)} />
+                      </div>
+                    ) : (
+                      <div className="text-sm text-foreground leading-relaxed">
+                        <p>{customer.address.street}</p>
+                        <p>{customer.address.city}, {customer.address.state} {customer.address.postcode}</p>
+                        <p>{customer.address.country}</p>
+                      </div>
+                    )
+                  )}
+                </EditableCard>
+              )}
 
               {/* Additional Contacts */}
               {!isNew && (
@@ -637,7 +807,11 @@ export function SellCustomerDetail() {
                         <span className="text-xs text-[var(--neutral-500)]">{c.phone}</span>
                       </div>
                     ))}
-                    <button className="text-xs text-foreground hover:underline flex items-center gap-1 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setContactPickerOpen(true)}
+                      className="text-xs text-foreground hover:underline flex items-center gap-1 mt-2"
+                    >
                       <Plus className="w-4 h-4" /> Add contact
                     </button>
                   </div>
@@ -660,7 +834,7 @@ export function SellCustomerDetail() {
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Payment terms</span>
-                    <p className="text-base font-medium text-foreground">{customer.financial.avgPaymentTerms}</p>
+                    <p className="text-base font-medium text-foreground">{paymentTermsLabel}</p>
                   </div>
                   <div>
                     <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">Credit limit</span>
@@ -670,15 +844,124 @@ export function SellCustomerDetail() {
               </Card>
               )}
 
+              {/* Notifications & portal access */}
+              {!isNew && (
+                <EditableCard
+                  title="Notifications & portal access"
+                  onSave={persist}
+                  successMessage="Notification preferences saved"
+                >
+                  {({ mode }) => (
+                    <div className="space-y-5">
+                      {/* Email notifications */}
+                      <div>
+                        <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-[var(--neutral-500)]" /> Email notifications
+                        </h3>
+                        {mode === 'edit' ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {NOTIFICATION_PREF_FIELDS.map(({ key, label }) => (
+                              <label key={key} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                                <Checkbox
+                                  checked={!!customer.notificationPrefs?.[key]}
+                                  onCheckedChange={(v) => updateDraft(`notificationPrefs.${key}`, v === true)}
+                                />
+                                <span>{label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        ) : (
+                          <ul className="space-y-1">
+                            {NOTIFICATION_PREF_FIELDS.map(({ key, label }) => {
+                              const enabled = !!customer.notificationPrefs?.[key];
+                              return (
+                                <li key={key} className="flex items-center gap-2 text-sm">
+                                  <span className={cn(
+                                    'inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold',
+                                    enabled ? 'bg-[var(--mw-success-light)] text-[var(--mw-success)]' : 'bg-[var(--neutral-100)] text-[var(--neutral-500)]',
+                                  )}>
+                                    {enabled ? '✓' : '·'}
+                                  </span>
+                                  <span className={enabled ? 'text-foreground' : 'text-[var(--neutral-500)]'}>{label}</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                        <div className="mt-3 rounded-md border border-[var(--mw-yellow-400)]/40 bg-[var(--mw-yellow-50,theme(colors.yellow.50))] px-3 py-2 text-xs text-[#2C2C2C]">
+                          Templates configured in{' '}
+                          <a href="/control/notifications" className="font-medium underline hover:no-underline">
+                            Control → Notification templates
+                          </a>
+                          .
+                        </div>
+                      </div>
+
+                      {/* Customer portal */}
+                      <div className="border-t border-[var(--border)] pt-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="text-sm font-medium text-foreground">Customer portal</h3>
+                            <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                              When enabled, contacts can sign in to view quotes, orders, and invoices.
+                            </p>
+                          </div>
+                          <Switch
+                            checked={!!customer.portalAccess}
+                            disabled={mode === 'read'}
+                            onCheckedChange={(v) => updateDraft('portalAccess', v)}
+                          />
+                        </div>
+                        {customer.portalAccess && (
+                          <div className="mt-3 space-y-2">
+                            <div className="text-xs text-[var(--neutral-600)]">
+                              Portal URL:{' '}
+                              <a
+                                href={`https://portal.alliancemetal.com.au/c/${customer.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-foreground hover:underline inline-flex items-center gap-1"
+                              >
+                                https://portal.alliancemetal.com.au/c/{customer.id}
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-10 border-[var(--border)]"
+                              onClick={() => toast.info('Resend integration coming soon')}
+                            >
+                              Send invite
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </EditableCard>
+              )}
+
               {/* Tags & Notes */}
               <Card className="p-6">
                 <h2 className="text-lg font-medium text-foreground mb-4">{isNew ? 'Notes' : 'Tags & notes'}</h2>
                 {!isNew && (
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {customer.tags.map((tag: string) => (
-                      <Badge key={tag} variant="softAccent" className="rounded text-xs px-2 py-0.5">{tag}</Badge>
+                    {(customer.tags as CustomerTag[]).map((tag: CustomerTag) => (
+                      <Badge
+                        key={tag.id}
+                        variant="softAccent"
+                        className="rounded text-xs px-2 py-0.5 cursor-pointer hover:opacity-80"
+                        onClick={() => setTagPickerOpen(true)}
+                      >
+                        {tag.label}
+                      </Badge>
                     ))}
-                    <button className="text-xs text-foreground hover:underline flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setTagPickerOpen(true)}
+                      className="text-xs text-foreground hover:underline flex items-center gap-1"
+                    >
                       <Plus className="w-4 h-4" /> Add tag
                     </button>
                   </div>
@@ -732,7 +1015,11 @@ export function SellCustomerDetail() {
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-xs">
+                <Button
+                  variant="outline"
+                  className="w-full mt-4 border-[var(--border)] text-xs"
+                  onClick={() => setLogActivityOpen(true)}
+                >
                   <Plus className="w-4 h-4 mr-1.5" /> Log activity
                 </Button>
               </Card>
@@ -878,7 +1165,13 @@ export function SellCustomerDetail() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-medium text-foreground">CRM contacts at {customer.company}</h2>
-                <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Add contact</Button>
+                <Button
+                  variant="outline"
+                  className="border-[var(--border)]"
+                  onClick={() => setContactPickerOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" /> Add contact
+                </Button>
               </div>
               <MwDataTable<any>
                 columns={contactColumns}
@@ -921,7 +1214,13 @@ export function SellCustomerDetail() {
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-foreground">Activity log</h2>
-              <Button variant="outline" className="border-[var(--border)]"><Plus className="w-4 h-4 mr-2" /> Log activity</Button>
+              <Button
+                variant="outline"
+                className="border-[var(--border)]"
+                onClick={() => setLogActivityOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" /> Log activity
+              </Button>
             </div>
             {/* Filter chips */}
             <div className="flex gap-2">
@@ -953,98 +1252,92 @@ export function SellCustomerDetail() {
           </div>
         )}
       </div>
-    </PageShell>
-  );
-}
 
-// ============================================================
-// Helper Components
-// ============================================================
-
-function Field({ label, value, mono, link }: { label: string; value: string; mono?: boolean; link?: boolean }) {
-  return (
-    <div>
-      <span className="block text-xs font-medium text-[var(--neutral-500)] mb-1">{label}</span>
-      {link ? (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-sm text-foreground hover:underline flex items-center gap-1">
-          <Globe className="w-4 h-4" /> {value.replace('https://', '')}
-        </a>
-      ) : (
-        <p className={cn('text-sm text-foreground', mono && 'tabular-nums')}>{value}</p>
-      )}
-    </div>
-  );
-}
-
-interface EditFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: string;
-  mono?: boolean;
-  required?: boolean;
-  icon?: React.ReactNode;
-  prefix?: string;
-}
-
-function EditField({ label, value, onChange, placeholder, type, mono, required, icon, prefix }: EditFieldProps) {
-  return (
-    <div>
-      <label className="block text-xs font-medium text-[var(--neutral-500)] mb-1">
-        {label}
-        {required && <span className="ml-0.5 text-[var(--mw-error)]">*</span>}
-      </label>
-      <div className="relative">
-        {icon && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--neutral-500)]">
-            {icon}
-          </span>
-        )}
-        {prefix && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[var(--neutral-500)]">
-            {prefix}
-          </span>
-        )}
-        <Input
-          type={type ?? 'text'}
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={cn(
-            (icon || prefix) && 'pl-9',
-            mono && 'tabular-nums',
-          )}
+      {/* Log activity sheet — single shared instance for header & activity tab */}
+      {!isNew && (
+        <LogActivityModal
+          open={logActivityOpen}
+          onOpenChange={setLogActivityOpen}
+          entity={{ kind: 'customer', id: customer.id, label: customer.company }}
         />
-      </div>
-    </div>
-  );
-}
+      )}
 
-interface EditSelectProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-  placeholder?: string;
-}
+      {/* Tag picker — adds/removes tags from customer.tags */}
+      {!isNew && (
+        <EntityPickerModal
+          open={tagPickerOpen}
+          onOpenChange={setTagPickerOpen}
+          kind="tag"
+          multiSelect
+          creatable
+          title="Manage tags"
+          description="Pick from existing tags or create a new one."
+          items={(() => {
+            const existingIds = new Set((customer.tags as CustomerTag[]).map(t => t.id));
+            const merged: PickerItem[] = TAG_SUGGESTIONS.map(t => ({ id: t.id, label: t.label }));
+            (customer.tags as CustomerTag[]).forEach(t => {
+              if (!merged.find(m => m.id === t.id)) merged.push({ id: t.id, label: t.label });
+            });
+            // mark existing selection — handled by selectedIds below
+            void existingIds;
+            return merged;
+          })()}
+          selectedIds={(customer.tags as CustomerTag[]).map(t => t.id)}
+          onSelect={(ids) => {
+            const known = [...TAG_SUGGESTIONS, ...(customer.tags as CustomerTag[])];
+            const next: CustomerTag[] = ids.map(id => {
+              const existing = known.find(t => t.id === id);
+              return existing ?? { id, label: id, tone: 'neutral' as const };
+            });
+            updateDraft('tags', next);
+            toast.success(`${ids.length} tag${ids.length === 1 ? '' : 's'} applied`);
+          }}
+          onCreateNew={(query) => {
+            if (!query) return;
+            const slug = `tag-${query.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString(36)}`;
+            const next: CustomerTag[] = [
+              ...(customer.tags as CustomerTag[]),
+              { id: slug, label: query, tone: 'neutral' },
+            ];
+            updateDraft('tags', next);
+            toast.success(`Tag "${query}" added`);
+            setTagPickerOpen(false);
+          }}
+        />
+      )}
 
-function EditSelect({ label, value, onChange, options, placeholder }: EditSelectProps) {
-  return (
-    <div>
-      <label className="block text-xs font-medium text-[var(--neutral-500)] mb-1">{label}</label>
-      <Select value={value || undefined} onValueChange={onChange}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder ?? 'Select…'} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map(opt => (
-            <SelectItem key={opt} value={opt}>
-              {opt.charAt(0).toUpperCase() + opt.slice(1)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+      {/* Contact picker — creatable to add new contact rows */}
+      {!isNew && (
+        <EntityPickerModal
+          open={contactPickerOpen}
+          onOpenChange={setContactPickerOpen}
+          kind="contact"
+          creatable
+          title="Add contact"
+          description="Search existing contacts or create a new one for this account."
+          items={[]}
+          onSelect={(ids) => {
+            void ids;
+            // No existing list — pick path is a no-op for now.
+            setContactPickerOpen(false);
+          }}
+          onCreateNew={(query) => {
+            const name = query || 'New contact';
+            const next = [
+              ...(customer.additionalContacts ?? []),
+              {
+                name,
+                role: 'Contact',
+                email: `${name.toLowerCase().replace(/\s+/g, '.')}@${(customer.company || 'company').toLowerCase().replace(/\s+/g, '')}.com.au`,
+                phone: '',
+              },
+            ];
+            updateDraft('additionalContacts', next);
+            toast.success('Contact added');
+            setContactPickerOpen(false);
+          }}
+        />
+      )}
+    </PageShell>
   );
 }
