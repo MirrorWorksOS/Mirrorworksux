@@ -122,6 +122,13 @@ export interface CustomerContact {
 
 export interface Product {
   id: string;
+  /**
+   * Internal stock-keeping unit. Owned by us, stable across revisions,
+   * used for inventory and barcode generation. Distinct from
+   * `partNumber` (the manufacturer / customer part number).
+   * Falls back to `partNumber` for legacy seed rows.
+   */
+  sku?: string;
   partNumber: string;
   description: string;
   material: string;
@@ -133,6 +140,23 @@ export interface Product {
   imageUrl?: string;
   /** Cuttable geometry, populated for parts that flow through nesting. */
   geometry?: ProductGeometry;
+  /** Current engineering revision label (Rev A, Rev B…). */
+  revision?: string;
+  /** Date the current revision took effect. */
+  revisionEffectiveAt?: string;
+  /**
+   * Preferred / excluded machines per routing operation, keyed by
+   * operation id. Surfaced on the Manufacturing tab; consumed by
+   * Plan / Make schedulers to enforce capability constraints.
+   */
+  routingMachinePrefs?: Record<string, RoutingMachinePrefs>;
+}
+
+/** Preferred / excluded machines for a single routing step on a product. */
+export interface RoutingMachinePrefs {
+  preferredMachineIds?: string[];
+  excludedMachineIds?: string[];
+  toolingIds?: string[];
 }
 
 /** Geometry attached to a Product for nesting / cut-routing flows. */

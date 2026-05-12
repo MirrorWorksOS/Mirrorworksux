@@ -3,7 +3,7 @@
  * Tabs: Overview | Manufacturing | Inventory | Planning | Accounting | Documents
  * Figma: 484:251921, 519:290499, 519:295628, 519:332160
  */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
@@ -11,8 +11,8 @@ import {
   Barcode, Plus, TrendingUp, Eye, Download, Upload, FileText,
   CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
-  RotateCcw, Star, BarChart3, ChevronRight, Clock, MapPin,
-  RefreshCw, Boxes,
+  RotateCcw, Star, BarChart3, ChevronRight, ChevronDown, Clock, MapPin,
+  RefreshCw, Boxes, ArrowLeft, AlertTriangle, Trash2, Layers3,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -50,6 +50,7 @@ import {
   MW_TOOLTIP_STYLE,
 } from '@/components/shared/charts/chart-theme';
 
+import { machines as allMachines } from '@/services';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -65,7 +66,7 @@ const PRODUCT = {
   productType: 'storable' as string,
   category: 'Manufactured Goods — Metal Fabrication',
   family: 'Structural Components',
-  internalRef: 'INT-REF-001',
+  sku: 'BKT-001',
   mpn: 'MFG-12345',
   barcode: '',
   barcodeType: 'EAN-13',
@@ -93,12 +94,12 @@ const TIERED_PRICING = [
 ];
 
 const ROUTING = [
-  { step: 1, name: 'CNC Laser Cutting', workCenter: 'Cutting', duration: 2, setup: 30, status: 'complete' as const },
-  { step: 2, name: 'Press Brake Forming', workCenter: 'Forming', duration: 1.5, setup: 20, status: 'complete' as const },
-  { step: 3, name: 'MIG Welding', workCenter: 'Welding', duration: 3, setup: 15, status: 'in_progress' as const },
-  { step: 4, name: 'Grind & Deburr', workCenter: 'Finishing', duration: 0.5, setup: 0, status: 'not_started' as const },
-  { step: 5, name: 'Powder Coat', workCenter: 'Finishing', duration: 4, setup: 45, status: 'not_started' as const },
-  { step: 6, name: 'Assembly & QC', workCenter: 'Assembly', duration: 1, setup: 0, status: 'not_started' as const },
+  { step: 1, name: 'CNC Laser Cutting',     workCenter: 'Cutting',  duration: 2,   setup: 30, status: 'complete'    as const, actualHours: 2.2, preferredMachineIds: ['mach-001'], excludedMachineIds: ['mach-006'], material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
+  { step: 2, name: 'Press Brake Forming',   workCenter: 'Forming',  duration: 1.5, setup: 20, status: 'complete'    as const, actualHours: 1.4, preferredMachineIds: ['mach-002'], excludedMachineIds: [],          material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
+  { step: 3, name: 'MIG Welding',           workCenter: 'Welding',  duration: 3,   setup: 15, status: 'in_progress' as const, actualHours: 1.8, preferredMachineIds: ['mach-003'], excludedMachineIds: [],          material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
+  { step: 4, name: 'Grind & Deburr',        workCenter: 'Finishing',duration: 0.5, setup: 0,  status: 'not_started' as const, actualHours: 0,   preferredMachineIds: [],           excludedMachineIds: [],          material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
+  { step: 5, name: 'Powder Coat',           workCenter: 'Finishing',duration: 4,   setup: 45, status: 'not_started' as const, actualHours: 0,   preferredMachineIds: ['mach-005'], excludedMachineIds: [],          material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
+  { step: 6, name: 'Assembly & QC',         workCenter: 'Assembly', duration: 1,   setup: 0,  status: 'not_started' as const, actualHours: 0,   preferredMachineIds: [],           excludedMachineIds: [],          material: 'Mild Steel', thicknessMm: 3, sheetWidthMm: 1830 },
 ];
 
 type RoutingStatus = 'not_started' | 'in_progress' | 'complete';
@@ -196,11 +197,12 @@ const TOP_CUSTOMERS = [
 ];
 
 // ── Tab definitions ─────────────────────────────────────
-const TABS = ['Overview', 'Manufacturing', 'Inventory', 'Planning', 'Accounting', 'Documents'] as const;
+const TABS = ['Overview', 'Manufacturing', 'MirrorView', 'Inventory', 'Planning', 'Accounting', 'Documents'] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_BADGES: Partial<Record<Tab, number | string>> = {
   Manufacturing: 6,
+  MirrorView: 3,
   Inventory: 4,
   Planning: 'MRP',
   Documents: 3,
@@ -287,8 +289,11 @@ function OverviewTab() {
             </Select>
           </div>
           <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Internal Reference</label>
-            <Input defaultValue={PRODUCT.internalRef} className="h-10 bg-card border-[var(--border)]" />
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">SKU</label>
+            <Input
+              defaultValue={PRODUCT.sku}
+              className="h-10 bg-card border-[var(--border)] tabular-nums"
+            />
           </div>
         </div>
 
@@ -317,7 +322,7 @@ function OverviewTab() {
                 onClick={() => {
                   const generated = barcodeType === 'ean13'
                     ? '400638133393'  // 12 digits — check digit auto-computed
-                    : `PRD-${PRODUCT.internalRef}`;
+                    : `PRD-${PRODUCT.sku}`;
                   setBarcodeValue(generated);
                   toast.success('Barcode generated');
                 }}
@@ -416,6 +421,9 @@ function OverviewTab() {
             </tbody>
           </table>
         </Card>
+
+        {/* Last sold + margin trend + quick quote */}
+        <PricingIntelligence />
       </section>
 
       {/* ── Sales Configuration ──────────────────────── */}
@@ -622,6 +630,149 @@ function OverviewTab() {
   );
 }
 
+// ── Pricing intelligence: last-sold, margin trend, quick quote ─────────
+
+/**
+ * Resolve recent sales rows for this product to drive the last-sold strip
+ * and the margin sparkline. Mock-only for now: in real life this comes from
+ * the quotes / sales-orders services scoped to the current product id.
+ */
+function buildLastSoldHistory() {
+  return [
+    { date: '2026-04-12', customer: 'TechCorp Industries', qty: 8,  unitPrice: 1250, margin: 35 },
+    { date: '2026-03-18', customer: 'BHP Contractors',     qty: 12, unitPrice: 1180, margin: 31 },
+    { date: '2026-02-22', customer: 'Pacific Fabrication', qty: 6,  unitPrice: 1300, margin: 38 },
+    { date: '2026-01-10', customer: 'TechCorp Industries', qty: 20, unitPrice: 1100, margin: 28 },
+    { date: '2025-12-05', customer: 'Sydney Rail Corp',    qty: 4,  unitPrice: 1340, margin: 41 },
+    { date: '2025-11-18', customer: 'Hunter Steel Co',     qty: 10, unitPrice: 1200, margin: 33 },
+  ];
+}
+
+function PricingIntelligence() {
+  const history = useMemo(buildLastSoldHistory, []);
+  const lastSold = history[0];
+  const avgMargin = history.reduce((s, r) => s + r.margin, 0) / history.length;
+  const marginDelta = lastSold.margin - avgMargin;
+
+  // Quick-quote state — pure derivation off TIERED_PRICING.
+  const [qtyInput, setQtyInput] = useState<number>(50);
+  const tier = useMemo(() => {
+    return (
+      TIERED_PRICING.find((t) => qtyInput >= t.minQty && qtyInput <= t.maxQty) ??
+      TIERED_PRICING[TIERED_PRICING.length - 1]
+    );
+  }, [qtyInput]);
+  const quotePrice = qtyInput * tier.unitPrice;
+  const quoteMargin = ((tier.unitPrice - PRODUCT.cost) / tier.unitPrice) * 100;
+  // Lead time grows mildly with qty (placeholder heuristic).
+  const leadDays = Math.max(7, Math.round(7 + qtyInput / 25));
+
+  return (
+    <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Last sold + margin trend */}
+      <Card className="p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="text-sm font-medium text-foreground">Last sold &amp; margin trend</h4>
+          <Badge variant="outline" className="border-[var(--border)] text-xs">
+            6-month rollup
+          </Badge>
+        </div>
+        <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="text-2xl font-medium tabular-nums text-foreground">
+            ${lastSold.unitPrice.toLocaleString('en-AU')}
+          </span>
+          <span className="text-sm text-[var(--neutral-500)]">
+            to {lastSold.customer} · {lastSold.qty} units · {fmtDate(lastSold.date)}
+          </span>
+        </div>
+        <div className="mb-3 grid grid-cols-3 gap-3 text-sm">
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">Avg. margin</p>
+            <p className="font-medium tabular-nums text-foreground">{avgMargin.toFixed(1)}%</p>
+          </div>
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">Last sale margin</p>
+            <p className="font-medium tabular-nums text-foreground">{lastSold.margin}%</p>
+          </div>
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">vs avg.</p>
+            <StatusBadge variant={marginDelta >= 0 ? 'success' : 'warning'}>
+              {marginDelta >= 0 ? '+' : ''}
+              {marginDelta.toFixed(1)} pts
+            </StatusBadge>
+          </div>
+        </div>
+
+        {/* Sparkline — margin per sale, oldest → newest */}
+        <div style={{ width: '100%', height: 80 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={[...history].reverse().map((r, i) => ({ i, margin: r.margin }))}
+              margin={{ top: 4, right: 8, bottom: 0, left: 0 }}
+            >
+              <Line
+                type="monotone"
+                dataKey="margin"
+                stroke="var(--mw-yellow-500)"
+                strokeWidth={2}
+                dot={{ r: 3, fill: 'var(--mw-yellow-500)', stroke: 'var(--mw-yellow-500)' }}
+                isAnimationActive={false}
+              />
+              <ReferenceLine y={avgMargin} stroke="var(--neutral-300)" strokeDasharray="3 3" />
+              <YAxis domain={[0, 50]} hide />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Quick-quote calculator */}
+      <Card className="p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="text-sm font-medium text-foreground">Quick quote</h4>
+          <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground text-xs">
+            Live
+          </Badge>
+        </div>
+        <div className="mb-4">
+          <label className="mb-1.5 block text-xs text-[var(--neutral-500)]">Quantity</label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={1}
+              value={qtyInput}
+              onChange={(e) => setQtyInput(Math.max(1, parseInt(e.target.value || '1', 10)))}
+              className="h-10 w-28 tabular-nums"
+            />
+            <span className="text-xs text-[var(--neutral-500)]">
+              tier: {tier.minQty}–{tier.maxQty} units @ ${tier.unitPrice}/ea
+            </span>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 text-sm">
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">Quote price</p>
+            <p className="text-lg font-medium tabular-nums text-foreground">
+              ${quotePrice.toLocaleString('en-AU')}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">Margin</p>
+            <p className="text-lg font-medium tabular-nums text-foreground">
+              {quoteMargin.toFixed(1)}%
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-[var(--neutral-500)]">Lead time</p>
+            <p className="text-lg font-medium tabular-nums text-foreground">
+              {leadDays} days
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 // ── Routing pill helpers ────────────────────────────────
 function routingStatusStyle(status: RoutingStatus) {
   switch (status) {
@@ -656,6 +807,236 @@ function RoutingArrow() {
 // ═══════════════════════════════════════════════════════════
 // MANUFACTURING TAB
 // ═══════════════════════════════════════════════════════════
+
+/**
+ * Capability check for a single routing step against its preferred machines.
+ * Surfaces any machine that can't handle the part's material / thickness /
+ * sheet width. Returns an array of plain warning strings the panel can
+ * render inline.
+ */
+type RoutingStepData = (typeof ROUTING)[number];
+
+function checkRoutingCapabilities(op: RoutingStepData): string[] {
+  const warnings: string[] = [];
+  for (const machineId of op.preferredMachineIds ?? []) {
+    const m = allMachines.find((x) => x.id === machineId);
+    if (!m) {
+      warnings.push(`${machineId}: not found in machine list — was it archived?`);
+      continue;
+    }
+    const caps = m.capabilities;
+    if (!caps) continue; // Older machines without structured capabilities — skip silently.
+    if (caps.maxSheetWidthMm > 0 && op.sheetWidthMm > caps.maxSheetWidthMm) {
+      warnings.push(
+        `${m.name}: max sheet width ${caps.maxSheetWidthMm}mm — this part is ${op.sheetWidthMm}mm wide.`,
+      );
+    }
+    if (
+      caps.supportedMaterials.length > 0 &&
+      !caps.supportedMaterials.some((mat) => op.material.toLowerCase().includes(mat.toLowerCase()))
+    ) {
+      warnings.push(
+        `${m.name}: doesn't support "${op.material}" — supported: ${caps.supportedMaterials.join(', ')}.`,
+      );
+    }
+    const range = caps.thicknessRangeByMaterial?.[op.material];
+    if (range && (op.thicknessMm < range.minMm || op.thicknessMm > range.maxMm)) {
+      warnings.push(
+        `${m.name}: ${op.material} thickness range ${range.minMm}-${range.maxMm}mm — this part is ${op.thicknessMm}mm.`,
+      );
+    }
+  }
+  return warnings;
+}
+
+function RoutingStepPanel({
+  op,
+  totalSteps,
+}: {
+  op: RoutingStepData;
+  totalSteps: number;
+}) {
+  const [preferred, setPreferred] = useState<string[]>(op.preferredMachineIds ?? []);
+  const [excluded, setExcluded] = useState<string[]>(op.excludedMachineIds ?? []);
+  const warnings = useMemo(() => checkRoutingCapabilities({ ...op, preferredMachineIds: preferred }), [op, preferred]);
+
+  // Show only machines that match this work centre — fab shops never assign
+  // a press brake step to a powder coat booth.
+  const wcMachines = allMachines.filter((m) => m.workCenter.toLowerCase() === op.workCenter.toLowerCase());
+
+  const togglePreferred = (id: string) => {
+    setPreferred((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    // Make preferred and excluded mutually exclusive.
+    setExcluded((prev) => prev.filter((x) => x !== id));
+  };
+
+  const toggleExcluded = (id: string) => {
+    setExcluded((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setPreferred((prev) => prev.filter((x) => x !== id));
+  };
+
+  const variance = op.actualHours > 0 ? ((op.actualHours - op.duration) / op.duration) * 100 : null;
+  const varianceTone =
+    variance === null
+      ? 'neutral'
+      : variance > 10
+        ? 'error'
+        : variance > 0
+          ? 'warning'
+          : 'success';
+
+  return (
+    <Card variant="flat" className="p-5">
+      <div className="mb-3 flex items-start justify-between">
+        <div>
+          <h4 className="text-base font-medium text-foreground">{op.name}</h4>
+          <p className="text-xs text-[var(--neutral-500)]">
+            Step {op.step} of {totalSteps}
+          </p>
+        </div>
+        <Badge className={cn('border-0 text-xs', routingStatusStyle(op.status))}>
+          {routingStatusLabel(op.status)}
+        </Badge>
+      </div>
+
+      {/* Top stat strip */}
+      <div className="mb-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+        <div>
+          <p className="mb-0.5 text-xs text-[var(--neutral-500)]">Work centre</p>
+          <p className="flex items-center gap-1.5 font-medium text-foreground">
+            <MapPin className="h-3.5 w-3.5 text-[var(--neutral-400)]" /> {op.workCenter}
+          </p>
+        </div>
+        <div>
+          <p className="mb-0.5 text-xs text-[var(--neutral-500)]">Estimate</p>
+          <p className="flex items-center gap-1.5 font-medium tabular-nums text-foreground">
+            <Clock className="h-3.5 w-3.5 text-[var(--neutral-400)]" /> {op.duration}h
+            {op.setup > 0 && (
+              <span className="text-xs text-[var(--neutral-500)]">+{op.setup}m setup</span>
+            )}
+          </p>
+        </div>
+        <div>
+          <p className="mb-0.5 text-xs text-[var(--neutral-500)]">Actual avg.</p>
+          <p className="flex items-center gap-1.5 font-medium tabular-nums text-foreground">
+            {op.actualHours > 0 ? `${op.actualHours.toFixed(1)}h` : '—'}
+          </p>
+        </div>
+        <div>
+          <p className="mb-0.5 text-xs text-[var(--neutral-500)]">Variance</p>
+          {variance === null ? (
+            <p className="text-sm text-[var(--neutral-400)]">No history yet</p>
+          ) : (
+            <StatusBadge variant={varianceTone}>
+              {variance > 0 ? '+' : ''}
+              {variance.toFixed(0)}%
+            </StatusBadge>
+          )}
+        </div>
+      </div>
+
+      {/* Material constraints summary */}
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-[var(--neutral-500)]">
+        <Badge variant="outline" className="border-[var(--border)] text-xs">
+          {op.material}
+        </Badge>
+        <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">
+          {op.thicknessMm}mm thick
+        </Badge>
+        <Badge variant="outline" className="border-[var(--border)] text-xs tabular-nums">
+          {op.sheetWidthMm}mm wide
+        </Badge>
+      </div>
+
+      {/* Machine assignment */}
+      <div className="space-y-3">
+        <div>
+          <p className="mb-2 text-xs font-medium text-foreground">Preferred machines</p>
+          <p className="mb-2 text-xs text-[var(--neutral-500)]">
+            Scheduler will prefer these when both capacity and capability match.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {wcMachines.length === 0 ? (
+              <p className="text-xs text-[var(--neutral-400)]">
+                No machines configured for {op.workCenter}. Add one in Control → Machines.
+              </p>
+            ) : (
+              wcMachines.map((m) => {
+                const isPreferred = preferred.includes(m.id);
+                const isExcluded = excluded.includes(m.id);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => togglePreferred(m.id)}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors',
+                      isPreferred
+                        ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/20 text-foreground'
+                        : isExcluded
+                          ? 'border-dashed border-[var(--mw-error)]/40 bg-card text-[var(--neutral-400)] line-through opacity-70'
+                          : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:border-[var(--mw-yellow-400)] hover:text-foreground',
+                    )}
+                  >
+                    <Cog className="h-3 w-3 shrink-0" />
+                    {m.name}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Excluded machines — advanced toggle */}
+        <details className="group">
+          <summary className="cursor-pointer text-xs text-[var(--neutral-500)] hover:text-foreground">
+            <span className="inline-flex items-center gap-1">
+              <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" />
+              Excluded machines (advanced)
+            </span>
+          </summary>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {wcMachines.map((m) => {
+              const isExcluded = excluded.includes(m.id);
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => toggleExcluded(m.id)}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors',
+                    isExcluded
+                      ? 'border-[var(--mw-error)] bg-[var(--mw-error-light)] text-[var(--mw-error)]'
+                      : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:border-[var(--mw-error)] hover:text-[var(--mw-error)]',
+                  )}
+                >
+                  <Trash2 className="h-3 w-3" />
+                  {m.name}
+                </button>
+              );
+            })}
+          </div>
+        </details>
+
+        {/* Capability warnings */}
+        {warnings.length > 0 && (
+          <div className="mt-3 rounded-[var(--shape-md)] border border-[var(--mw-warning)] bg-[var(--mw-warning-light)] p-3">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-[var(--neutral-800)]">
+              <AlertTriangle className="h-3.5 w-3.5 text-[var(--mw-warning)]" />
+              Capability check — {warnings.length} issue{warnings.length === 1 ? '' : 's'}
+            </p>
+            <ul className="space-y-0.5 text-xs text-[var(--neutral-700)]">
+              {warnings.map((w, i) => (
+                <li key={i}>• {w}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 function ManufacturingTab() {
   const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
   const totalMaterial = BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0);
@@ -777,39 +1158,7 @@ function ManufacturingTab() {
                 transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
                 className="overflow-hidden"
               >
-                <Card variant="flat" className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="text-base font-medium text-foreground">{op.name}</h4>
-                      <p className="text-xs text-[var(--neutral-500)]">Step {op.step} of {ROUTING.length}</p>
-                    </div>
-                    <Badge className={cn('border-0 text-xs', routingStatusStyle(op.status))}>
-                      {routingStatusLabel(op.status)}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Work Centre</p>
-                      <p className="font-medium text-foreground flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-[var(--neutral-400)]" /> {op.workCenter}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Cycle Time</p>
-                      <p className="font-medium text-foreground tabular-nums flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[var(--neutral-400)]" /> {op.duration}h
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Setup Time</p>
-                      <p className="font-medium text-foreground tabular-nums">{op.setup > 0 ? `${op.setup} min` : 'None'}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-[var(--neutral-500)] mb-0.5">Total Duration</p>
-                      <p className="font-medium text-foreground tabular-nums">{(op.duration + op.setup / 60).toFixed(1)}h</p>
-                    </div>
-                  </div>
-                </Card>
+                <RoutingStepPanel op={op} totalSteps={ROUTING.length} />
               </motion.div>
             );
           })()}
@@ -850,6 +1199,352 @@ function ManufacturingTab() {
             </Card>
           ))}
         </div>
+      </section>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// MIRRORVIEW TAB — CAD files, revisions, 3D preview, where-used
+// ═══════════════════════════════════════════════════════════
+
+interface CadFile {
+  id: string;
+  name: string;
+  kind: '2d' | '3d' | 'drawing';
+  revision: string;
+  sizeKb: number;
+  uploadedBy: string;
+  uploadedAt: string;
+  /** Auto-derived geometry summary; mock-only for now. */
+  bboxMm?: { widthMm: number; heightMm: number };
+  perimeterMm?: number;
+  holeCount?: number;
+  yieldPercent?: number;
+}
+
+const MOCK_CAD_FILES: CadFile[] = [
+  {
+    id: 'cad-1',
+    name: 'BKT-001-RevC.dxf',
+    kind: '2d',
+    revision: 'Rev C',
+    sizeKb: 184,
+    uploadedBy: 'Emma Wilson',
+    uploadedAt: '2026-04-12',
+    bboxMm: { widthMm: 150, heightMm: 100 },
+    perimeterMm: 612,
+    holeCount: 4,
+    yieldPercent: 78,
+  },
+  {
+    id: 'cad-2',
+    name: 'BKT-001-Assembly.step',
+    kind: '3d',
+    revision: 'Rev C',
+    sizeKb: 1240,
+    uploadedBy: 'Emma Wilson',
+    uploadedAt: '2026-04-12',
+  },
+  {
+    id: 'cad-3',
+    name: 'BKT-001-Drawing-RevB.pdf',
+    kind: 'drawing',
+    revision: 'Rev B',
+    sizeKb: 540,
+    uploadedBy: 'Mike Thompson',
+    uploadedAt: '2026-02-18',
+  },
+];
+
+const MOCK_REVISIONS = [
+  { revision: 'Rev C', effectiveAt: '2026-04-12', changes: 'Hole spacing 75mm → 80mm; added countersink on top face.', author: 'Emma Wilson' },
+  { revision: 'Rev B', effectiveAt: '2026-02-18', changes: 'Increased plate thickness 2.5mm → 3mm for load spec compliance.', author: 'Mike Thompson' },
+  { revision: 'Rev A', effectiveAt: '2025-11-04', changes: 'Initial release.', author: 'Sarah Chen' },
+];
+
+const MOCK_WHERE_USED = [
+  { kind: 'quote',     ref: 'Q-2026-0055',  customer: 'TechCorp Industries', value: 42000, status: 'sent' },
+  { kind: 'order',     ref: 'SO-2026-0085', customer: 'TechCorp Industries', value: 45000, status: 'confirmed' },
+  { kind: 'job',       ref: 'JOB-2026-0012',customer: 'TechCorp Industries', value: 24500, status: 'in_production' },
+  { kind: 'mo',        ref: 'MO-2026-0024', customer: 'TechCorp Industries', value: 18000, status: 'planned' },
+];
+
+const FILE_KIND_LABEL: Record<CadFile['kind'], { label: string; tone: 'accent' | 'info' | 'neutral' }> = {
+  '2d': { label: '2D · DXF', tone: 'accent' },
+  '3d': { label: '3D · STEP / GLB', tone: 'info' },
+  drawing: { label: 'Drawing · PDF', tone: 'neutral' },
+};
+
+function fmtKb(kb: number): string {
+  if (kb < 1024) return `${kb} KB`;
+  return `${(kb / 1024).toFixed(1)} MB`;
+}
+
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function MirrorViewTab() {
+  const [files, setFiles] = useState<CadFile[]>(MOCK_CAD_FILES);
+  const [selectedFileId, setSelectedFileId] = useState<string>(MOCK_CAD_FILES[0]?.id ?? '');
+  const [dragOver, setDragOver] = useState(false);
+
+  const activeRevision = MOCK_REVISIONS[0];
+  const selected = files.find((f) => f.id === selectedFileId) ?? files[0];
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length === 0) return;
+    const additions: CadFile[] = dropped.map((f, i) => {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+      const kind: CadFile['kind'] =
+        ext === 'pdf' ? 'drawing'
+          : ['dxf', 'dwg'].includes(ext) ? '2d'
+            : '3d';
+      return {
+        id: `upload-${Date.now()}-${i}`,
+        name: f.name,
+        kind,
+        revision: activeRevision.revision,
+        sizeKb: Math.round(f.size / 1024),
+        uploadedBy: 'You',
+        uploadedAt: new Date().toISOString().slice(0, 10),
+      };
+    });
+    setFiles((prev) => [...additions, ...prev]);
+    toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+  };
+
+  const removeFile = (id: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+    toast.success('File removed');
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* ── Revision header ────────────────────────────── */}
+      <section>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <SectionHeading>Engineering files</SectionHeading>
+            <Badge className="border-0 bg-[var(--mw-yellow-400)]/20 text-foreground tabular-nums">
+              {activeRevision.revision}
+            </Badge>
+            <span className="text-xs text-[var(--neutral-500)]">
+              Effective {fmtDate(activeRevision.effectiveAt)} · {activeRevision.author}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5 border-[var(--border)]"
+            onClick={() => toast.info('Revision designer coming next')}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            New revision
+          </Button>
+        </div>
+      </section>
+
+      {/* ── 2-column main row ─────────────────────────── */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
+        {/* Left: Drop zone + 3D preview */}
+        <div className="space-y-4">
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={cn(
+              'flex aspect-[16/10] items-center justify-center rounded-[var(--shape-xl)] border-2 border-dashed transition-colors',
+              dragOver
+                ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/10'
+                : 'border-[var(--border)] bg-[var(--neutral-50)]',
+            )}
+          >
+            {selected ? (
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--mw-mirage)] text-white">
+                  {selected.kind === '3d' ? (
+                    <Layers3 className="h-10 w-10" strokeWidth={1.5} />
+                  ) : selected.kind === '2d' ? (
+                    <Boxes className="h-10 w-10" strokeWidth={1.5} />
+                  ) : (
+                    <FileText className="h-10 w-10" strokeWidth={1.5} />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{selected.name}</p>
+                  <p className="text-xs text-[var(--neutral-500)]">
+                    {FILE_KIND_LABEL[selected.kind].label} · {fmtKb(selected.sizeKb)}
+                  </p>
+                </div>
+                <p className="max-w-xs text-xs text-[var(--neutral-500)]">
+                  3D preview wires up to the existing GLB viewer in P2. Drop files here to upload — DXF, DWG, STEP, STL, GLB, PDF.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-center">
+                <Upload className="h-8 w-8 text-[var(--neutral-400)]" strokeWidth={1.5} />
+                <p className="text-sm font-medium text-foreground">Drop CAD files to upload</p>
+                <p className="text-xs text-[var(--neutral-500)]">DXF, DWG, STEP, STL, GLB, PDF — up to 50 MB each</p>
+              </div>
+            )}
+          </div>
+
+          {/* Derived metadata strip */}
+          {selected?.bboxMm && (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Card variant="flat" className="p-3">
+                <p className="text-xs text-[var(--neutral-500)]">Bounding box</p>
+                <p className="text-sm font-medium tabular-nums text-foreground">
+                  {selected.bboxMm.widthMm} × {selected.bboxMm.heightMm} mm
+                </p>
+              </Card>
+              <Card variant="flat" className="p-3">
+                <p className="text-xs text-[var(--neutral-500)]">Perimeter</p>
+                <p className="text-sm font-medium tabular-nums text-foreground">{selected.perimeterMm} mm</p>
+              </Card>
+              <Card variant="flat" className="p-3">
+                <p className="text-xs text-[var(--neutral-500)]">Holes</p>
+                <p className="text-sm font-medium tabular-nums text-foreground">{selected.holeCount}</p>
+              </Card>
+              <Card variant="flat" className="p-3">
+                <p className="text-xs text-[var(--neutral-500)]">Sheet yield</p>
+                <p className="text-sm font-medium tabular-nums text-foreground">{selected.yieldPercent}%</p>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* Right: File list */}
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-foreground">
+            Files{' '}
+            <span className="text-xs text-[var(--neutral-500)] tabular-nums">({files.length})</span>
+          </p>
+          <ul className="space-y-1.5">
+            {files.length === 0 ? (
+              <p className="rounded-[var(--shape-md)] bg-[var(--neutral-50)] p-4 text-center text-xs text-[var(--neutral-500)]">
+                No files yet. Drop CAD files on the left to start.
+              </p>
+            ) : (
+              files.map((f) => {
+                const kindCfg = FILE_KIND_LABEL[f.kind];
+                const isSelected = f.id === selectedFileId;
+                return (
+                  <li
+                    key={f.id}
+                    className={cn(
+                      'flex cursor-pointer items-start gap-3 rounded-[var(--shape-md)] border p-3 transition-colors',
+                      isSelected
+                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
+                        : 'border-[var(--border)] bg-card hover:border-[var(--neutral-300)]',
+                    )}
+                    onClick={() => setSelectedFileId(f.id)}
+                  >
+                    <div className="mt-0.5 shrink-0">
+                      {f.kind === '3d' ? (
+                        <Layers3 className="h-4 w-4 text-[var(--neutral-500)]" />
+                      ) : f.kind === '2d' ? (
+                        <Boxes className="h-4 w-4 text-[var(--neutral-500)]" />
+                      ) : (
+                        <FileText className="h-4 w-4 text-[var(--neutral-500)]" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground">{f.name}</p>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-[var(--neutral-500)]">
+                        <StatusBadge variant={kindCfg.tone}>{kindCfg.label}</StatusBadge>
+                        <span className="tabular-nums">{f.revision}</span>
+                        <span>·</span>
+                        <span className="tabular-nums">{fmtKb(f.sizeKb)}</span>
+                        <span>·</span>
+                        <span>{fmtDate(f.uploadedAt)}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="rounded p-1 text-[var(--neutral-400)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-error)]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(f.id);
+                      }}
+                      aria-label="Remove file"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
+      </section>
+
+      {/* ── Revision history ──────────────────────────── */}
+      <section className="space-y-3">
+        <SubHeading>Revision history</SubHeading>
+        <Card className="divide-y divide-[var(--border)] p-0">
+          {MOCK_REVISIONS.map((r, i) => (
+            <div key={r.revision} className="flex items-start gap-4 p-4">
+              <div className="shrink-0">
+                <Badge
+                  className={cn(
+                    'border-0 text-xs tabular-nums',
+                    i === 0
+                      ? 'bg-[var(--mw-yellow-400)]/20 text-foreground'
+                      : 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
+                  )}
+                >
+                  {r.revision}
+                </Badge>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-foreground">{r.changes}</p>
+                <p className="mt-0.5 text-xs text-[var(--neutral-500)]">
+                  {fmtDate(r.effectiveAt)} · {r.author}
+                </p>
+              </div>
+              {i === 0 && (
+                <Badge variant="outline" className="border-[var(--border)] text-xs">
+                  Active
+                </Badge>
+              )}
+            </div>
+          ))}
+        </Card>
+      </section>
+
+      {/* ── Where used ───────────────────────────────── */}
+      <section className="space-y-3">
+        <SubHeading>Where used</SubHeading>
+        <Card className="divide-y divide-[var(--border)] p-0">
+          {MOCK_WHERE_USED.map((row) => (
+            <div key={row.ref} className="flex items-center justify-between gap-4 p-4">
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className="border-[var(--border)] text-xs uppercase tabular-nums">
+                  {row.kind}
+                </Badge>
+                <div>
+                  <p className="text-sm font-medium tabular-nums text-foreground">{row.ref}</p>
+                  <p className="text-xs text-[var(--neutral-500)]">{row.customer}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium tabular-nums text-foreground">
+                  ${row.value.toLocaleString('en-AU')}
+                </span>
+                <StatusBadge status={row.status as never} />
+              </div>
+            </div>
+          ))}
+        </Card>
       </section>
     </div>
   );
@@ -1765,6 +2460,7 @@ function PlanningTab() {
 const TAB_COMPONENTS: Record<Tab, () => JSX.Element> = {
   Overview: OverviewTab,
   Manufacturing: ManufacturingTab,
+  MirrorView: MirrorViewTab,
   Inventory: InventoryTab,
   Planning: PlanningTab,
   Accounting: AccountingTab,
@@ -1839,20 +2535,41 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 border-[var(--border)]"
+            onClick={() => navigate(module === 'plan' ? '/plan/products' : module === 'make' ? '/make/products' : '/sell/products')}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
           {module === 'plan' && !isNew && (
             <Button
               type="button"
               variant="outline"
-              className="h-9 border-[var(--border)] text-sm gap-2"
+              className="h-12 border-[var(--border)] gap-2"
               onClick={openProductStudio}
             >
-              <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <Boxes className="h-4 w-4 shrink-0" strokeWidth={1.5} />
               Product Studio
             </Button>
           )}
-          <Button variant="outline" className="h-9 border-[var(--border)] text-sm" onClick={handleSaveProduct}>Save</Button>
+          <Button
+            variant="outline"
+            className="h-12 border-[var(--border)]"
+            onClick={handleSaveProduct}
+          >
+            Save
+          </Button>
           {!isNew && (
-            <Button className="h-9 bg-[var(--mw-mirage)] text-white hover:bg-[var(--mw-mirage)]/90 text-sm" onClick={handleNewQuoteFromProduct}>New Quote</Button>
+            <Button
+              className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={handleNewQuoteFromProduct}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              New quote
+            </Button>
           )}
         </div>
       </div>
