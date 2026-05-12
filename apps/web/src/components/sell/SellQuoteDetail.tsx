@@ -167,7 +167,13 @@ export function SellQuoteDetail() {
     );
   }
 
-  const isExpired = new Date(quote.expiryDate) < new Date();
+  // Expiry is purely informational once the quote has been sent or progressed:
+  // a sent/accepted/rejected quote should never read "Expired" just because
+  // its expiry date has passed (the date check is for draft quotes only).
+  const isExpired =
+    quote.status === 'draft' &&
+    !quote.sentAt &&
+    new Date(quote.expiryDate) < new Date();
 
   /* --- Helpers --------------------------------------------------- */
   const appendHistory = (action: string, extra?: Partial<QuoteHistoryEntry>) => {
@@ -705,6 +711,26 @@ export function SellQuoteDetail() {
               <div className="font-medium text-foreground tabular-nums">
                 Total (incl. GST): {fmtCurrency(total)}
               </div>
+              {subtotal > 0 && (
+                <div className="mt-1 flex items-center gap-2 tabular-nums">
+                  <span className="text-[var(--neutral-500)]">Total margin</span>
+                  <span
+                    className="rounded-[var(--shape-md)] px-2 py-0.5 text-xs font-medium text-[var(--mw-mirage)]"
+                    style={{
+                      backgroundColor: getChartScaleColour(
+                        marginToScalePercent(marginPct),
+                      ),
+                    }}
+                    title={
+                      totalCost > 0
+                        ? `Unit costs entered on every line.`
+                        : 'No unit cost entered on any line — margin defaults to 100%.'
+                    }
+                  >
+                    {marginPct.toFixed(1)}%
+                  </span>
+                </div>
+              )}
             </div>
 
             <EntityPickerModal

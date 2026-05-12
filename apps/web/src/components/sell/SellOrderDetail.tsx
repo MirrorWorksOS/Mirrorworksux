@@ -86,6 +86,45 @@ interface DocFile {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Parse a single-line Australian shipping address into structured parts.
+ * Tolerant of missing fields. Real implementation will use the Customer
+ * record's structured address (street/city/state/postcode/country) once
+ * the backend exposes it.
+ *
+ *   "12 Tech Park Dr, Macquarie Park NSW 2113"
+ *   → { street: "12 Tech Park Dr", city: "Macquarie Park", state: "NSW", postcode: "2113", country: "Australia" }
+ */
+function parseAddress(raw: string): {
+  street: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string;
+} {
+  const empty = { street: '', city: '', state: '', postcode: '', country: 'Australia' };
+  if (!raw) return empty;
+  const segments = raw.split(',').map((s) => s.trim()).filter(Boolean);
+  const [streetSeg, ...rest] = segments;
+  const tail = rest.join(' ');
+  // Match "{City} {STATE} {postcode}" — STATE is 2–3 uppercase letters, postcode is 4 digits.
+  const m = tail.match(/^(.+?)\s+([A-Z]{2,3})\s+(\d{4})\s*(.*)$/);
+  if (m) {
+    return {
+      street: streetSeg ?? '',
+      city: m[1].trim(),
+      state: m[2],
+      postcode: m[3],
+      country: m[4]?.trim() || 'Australia',
+    };
+  }
+  return { ...empty, street: streetSeg ?? raw };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Mock data                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -865,20 +904,43 @@ export function SellOrderDetail() {
               }}
             </EditableCard>
 
-            {/* Shipping address — still read-only here; managed via Customer / Ship. */}
+            {/* Shipping address — split into structured fields so the carrier
+                manifest can read each component cleanly. Read-only here; the
+                source of truth is the Customer record. */}
             <Card className="p-6">
               <h2 className="mb-1 text-base font-medium text-foreground">Shipping details</h2>
               <p className="mb-6 text-xs text-[var(--neutral-500)]">Delivery address and method</p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <Label className="text-xs text-[var(--neutral-500)]">Shipping address</Label>
-                  <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={order.shippingAddress} />
-                </div>
-                <div>
-                  <Label className="text-xs text-[var(--neutral-500)]">Shipping method</Label>
-                  <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={order.shippingMethod} />
-                </div>
-              </div>
+              {(() => {
+                const parts = parseAddress(order.shippingAddress);
+                return (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
+                    <div className="sm:col-span-6">
+                      <Label className="text-xs text-[var(--neutral-500)]">Street</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={parts.street} />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <Label className="text-xs text-[var(--neutral-500)]">City / suburb</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={parts.city} />
+                    </div>
+                    <div className="sm:col-span-1">
+                      <Label className="text-xs text-[var(--neutral-500)]">State</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={parts.state} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label className="text-xs text-[var(--neutral-500)]">Postcode</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)] tabular-nums" value={parts.postcode} />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <Label className="text-xs text-[var(--neutral-500)]">Country</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={parts.country} />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <Label className="text-xs text-[var(--neutral-500)]">Shipping method</Label>
+                      <Input readOnly className="mt-1 h-12 border-[var(--border)]" value={order.shippingMethod} />
+                    </div>
+                  </div>
+                );
+              })()}
             </Card>
 
             {/* Fulfilment progress */}
@@ -989,13 +1051,22 @@ export function SellOrderDetail() {
         {items.map(({ prefix, ref }, i) => {
           const href = resolveLineageHref(prefix, ref);
           const isCurrent = ref === order.soNumber;
+          const exists = href !== null;
+          const tooltip = isCurrent
+            ? `${ref} — this order`
+            : exists
+              ? `Open ${ref}`
+              : `${ref} — not yet generated`;
           const chip = (
             <span
+              title={tooltip}
               className={cn(
-                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs tabular-nums transition-colors',
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs tabular-nums transition-all',
                 isCurrent
                   ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/15 text-foreground'
-                  : 'border-[var(--border)] bg-card text-[var(--neutral-600)] hover:border-[var(--mw-yellow-400)] hover:text-foreground',
+                  : exists
+                    ? 'cursor-pointer border-[var(--border)] bg-card text-[var(--neutral-600)] hover:-translate-y-0.5 hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-foreground hover:shadow-sm'
+                    : 'cursor-not-allowed border-dashed border-[var(--border)] bg-card text-[var(--neutral-400)] opacity-70',
               )}
             >
               <strong className="font-semibold">{prefix}</strong>
@@ -1006,15 +1077,28 @@ export function SellOrderDetail() {
           return (
             <React.Fragment key={prefix}>
               {i > 0 && <span className="text-[var(--neutral-400)]">→</span>}
-              {href ? (
+              {isCurrent ? (
+                chip
+              ) : exists ? (
                 <Link to={href} aria-label={`Open ${ref}`}>
                   {chip}
                 </Link>
               ) : (
                 <button
                   type="button"
-                  onClick={() => toast('Document not found', { description: ref })}
-                  aria-label={`${ref} — not found`}
+                  onClick={() =>
+                    toast(`${ref} not yet generated`, {
+                      description:
+                        prefix === 'WO'
+                          ? 'Work order will be created when this order enters production.'
+                          : prefix === 'DO'
+                            ? 'Delivery order will be created at dispatch.'
+                            : prefix === 'INV'
+                              ? 'Invoice will be created when items ship.'
+                              : 'Linked document not yet created.',
+                    })
+                  }
+                  aria-label={`${ref} — not yet generated`}
                 >
                   {chip}
                 </button>

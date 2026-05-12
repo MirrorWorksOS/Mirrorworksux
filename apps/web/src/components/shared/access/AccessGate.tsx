@@ -216,6 +216,8 @@ function findFeatureGate(feature: string) {
 }
 
 function minTierFor(tiers: Record<TierName, boolean>): TierName | null {
-  const order: TierName[] = ['Trial', 'Make', 'Run', 'Operate', 'Enterprise'];
+  // Skip Trial — it's a 30-day-everything plan, not a sustainable target.
+  // Recommend the cheapest paid tier that includes the feature.
+  const order: TierName[] = ['Make', 'Run', 'Operate', 'Enterprise'];
   return order.find((t) => tiers[t]) ?? null;
 }
