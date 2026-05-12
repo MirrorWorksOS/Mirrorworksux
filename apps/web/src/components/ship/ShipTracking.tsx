@@ -1,11 +1,24 @@
 /**
- * Ship Tracking — token-aligned
- * Status dots now use proper semantic colours (green=delivered, red=exception, blue=transit)
+ * Ship Tracking — schema-driven filter bar migration.
+ *
+ * Replaces the dead search input + exception toggle with `ModuleFilterBar`.
+ * Wires the facets the existing `Shipment` model supports (status, carrier,
+ * search by tracking#/customer). Most other facets in
+ * `docs/plans/filters/ship.md` need data prerequisites and are TODO'd.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, AlertTriangle, ExternalLink, Send, Truck, PackageCheck } from 'lucide-react';
-import { Input } from '../ui/input';
+import {
+  AlertTriangle,
+  Clock,
+  Columns3,
+  DollarSign,
+  ExternalLink,
+  List as ListIcon,
+  PackageCheck,
+  Send,
+  Truck,
+} from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
@@ -16,6 +29,14 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
 import { useDraftInvoiceStore } from '@/store/draftInvoiceStore';
+
+import {
+  ModuleFilterBar,
+  applyFilters,
+  registerSystemPresets,
+  useModuleFilters,
+  type FilterSchema,
+} from '@/components/shared/filters';
 
 type Status = 'shipped' | 'transit' | 'delivering' | 'delivered' | 'exception';
 
@@ -89,13 +110,138 @@ const trackingColumns: MwColumnDef<Shipment>[] = [
   { key: 'updated', header: 'Updated', cell: (row) => <span className="text-xs text-[var(--neutral-500)]">{row.updated}</span> },
 ];
 
+/* ------------------------------------------------------------------ */
+/*  Filter schema                                                      */
+/* ------------------------------------------------------------------ */
+
+const MODULE_ID = 'ship.tracking';
+
+const carrierOptions = Array.from(new Set(INITIAL_SHIPMENTS.map((s) => s.carrier))).map((c) => ({
+  value: c,
+  label: c,
+}));
+
+const customerOptions = Array.from(new Set(INITIAL_SHIPMENTS.map((s) => s.customer))).map((c) => ({
+  value: c,
+  label: c,
+}));
+
+const trackingFilterSchema: FilterSchema = {
+  module: MODULE_ID,
+  label: 'Tracking',
+  facets: [
+    {
+      id: 'status',
+      label: 'Status',
+      kind: 'multi',
+      pinned: true,
+      options: [
+        { value: 'shipped',    label: 'Shipped',    color: 'var(--neutral-400)' },
+        { value: 'transit',    label: 'In transit', color: 'var(--mw-blue)' },
+        { value: 'delivering', label: 'Delivering', color: 'var(--mw-amber)' },
+        { value: 'delivered',  label: 'Delivered',  color: 'var(--mw-success)' },
+        { value: 'exception',  label: 'Exception',  color: 'var(--mw-error)' },
+      ],
+    },
+    {
+      id: 'carrier',
+      label: 'Carrier',
+      kind: 'multi',
+      icon: Truck,
+      pinned: true,
+      options: carrierOptions,
+    },
+    { id: 'customer', label: 'Customer', kind: 'select', options: customerOptions },
+    { id: 'value', label: 'Value', kind: 'range', icon: DollarSign },
+    // TODO(filters): needs typed `etaAt: ISODate` on Shipment — today's `eta`
+    // is a display string ("Today", "03 Mar", "Delayed") and can't power a
+    // date facet or Calendar view.
+    // TODO(filters): needs typed `lastEventAt: ISODate` on Shipment for the
+    // "Silent > 24h" smart-filter.
+    // TODO(filters): needs `destination: { state, postcode, lat?, lng? }` on
+    // Shipment for the region facet and Map view.
+  ],
+  viewModes: [
+    { id: 'list', label: 'List', icon: ListIcon },
+    // TODO(filters): Map view needs destination + geocoding.
+    // TODO(filters): Calendar view needs typed etaAt.
+  ],
+  defaultView: 'list',
+  // TODO(filters): wire dateFacetId once etaAt is ISO.
+};
+
+registerSystemPresets(MODULE_ID, [
+  {
+    name: 'Exceptions board',
+    icon: AlertTriangle,
+    iconTone: 'error',
+    state: {
+      values: { status: ['exception'] },
+      search: '',
+      view: 'list',
+    },
+  },
+  {
+    name: 'Delivering today',
+    icon: Truck,
+    iconTone: 'yellow',
+    state: {
+      values: { status: ['delivering'] },
+      search: '',
+      view: 'list',
+    },
+  },
+  {
+    name: 'High-value in transit',
+    icon: DollarSign,
+    iconTone: 'info',
+    state: {
+      values: { status: ['transit'], value: { from: 10000 } },
+      search: '',
+      view: 'list',
+    },
+  },
+  // TODO(filters): "Silent > 24h" preset needs typed lastEventAt.
+  {
+    name: 'Stale — needs review',
+    icon: Clock,
+    iconTone: 'warning',
+    state: {
+      values: { status: ['shipped'] },
+      search: '',
+      view: 'list',
+    },
+  },
+]);
+
 export function ShipTracking() {
   const navigate = useNavigate();
   const addDraftInvoice = useDraftInvoiceStore((s) => s.addFromShipment);
   const [shipments, setShipments] = useState<Shipment[]>(INITIAL_SHIPMENTS);
   const [selected, setSelected]               = useState<Shipment | null>(null);
-  const [exceptionsOnly, setExceptionsOnly]   = useState(false);
-  const filtered = exceptionsOnly ? shipments.filter(s => s.status === 'exception') : shipments;
+
+  const filters = useModuleFilters(trackingFilterSchema);
+  const { state } = filters;
+
+  const filtered = useMemo(
+    () =>
+      applyFilters({
+        schema: trackingFilterSchema,
+        state,
+        rows: shipments,
+        getSearchText: (s) => `${s.tracking} ${s.customer} ${s.carrier}`,
+        getFacetValue: (s, id) => {
+          switch (id) {
+            case 'status': return s.status;
+            case 'carrier': return s.carrier;
+            case 'customer': return s.customer;
+            case 'value': return s.amount;
+            default: return undefined;
+          }
+        },
+      }),
+    [shipments, state],
+  );
 
   const inTransitCount = shipments.filter(s => s.status === 'transit').length;
   const deliveredCount = shipments.filter(s => s.status === 'delivered').length;
@@ -136,22 +282,7 @@ export function ShipTracking() {
 
   return (
     <PageShell className="overflow-y-auto">
-      <PageHeader
-        title="Tracking"
-        actions={
-          <button
-            onClick={() => setExceptionsOnly(!exceptionsOnly)}
-            className={cn(
-              'h-14 px-4 rounded-full text-sm flex items-center gap-2 transition-colors font-medium',
-              exceptionsOnly
-                ? 'bg-[var(--mw-error-100)] text-[var(--mw-error)]'
-                : 'border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)]'
-            )}
-          >
-            <AlertTriangle className="w-4 h-4" /> Exceptions
-          </button>
-        }
-      />
+      <PageHeader title="Tracking" />
 
       <div className="grid grid-cols-4 gap-4">
         {[
@@ -168,10 +299,11 @@ export function ShipTracking() {
         ))}
       </div>
 
-      <div className="relative w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" strokeWidth={1.5} />
-        <Input placeholder="Search tracking..." className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
-      </div>
+      <ModuleFilterBar
+        schema={trackingFilterSchema}
+        filters={filters}
+        searchPlaceholder="Search tracking…"
+      />
 
       <MwDataTable
         columns={trackingColumns}

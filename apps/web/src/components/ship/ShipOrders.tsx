@@ -1,9 +1,24 @@
 /**
- * Ship Orders — token-aligned to standard design system
+ * Ship Orders — schema-driven filter bar migration.
+ *
+ * Migrated to `ModuleFilterBar` for visual consistency with the Sell module
+ * pilot. The Ship data model is the most schema-blocked in the project — most
+ * of the facets/views called out in `docs/plans/filters/ship.md` need data
+ * prerequisites that are out of scope for this pass. We wire the small set of
+ * facets the existing `Order` shape supports (stage, carrier, urgent, search)
+ * and TODO the rest.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { LayoutGrid, List, Plus, Truck } from 'lucide-react';
+import {
+  AlertTriangle,
+  Calendar as CalendarIcon,
+  Columns3,
+  List as ListIcon,
+  Plus,
+  Truck,
+  Zap,
+} from 'lucide-react';
 import { Card } from '../ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
@@ -15,8 +30,6 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
-import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -31,6 +44,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ShipBillOfLading } from '@/components/ship/ShipBillOfLading';
+
+import {
+  ModuleFilterBar,
+  applyFilters,
+  registerSystemPresets,
+  useModuleFilters,
+  type FilterSchema,
+} from '@/components/shared/filters';
 
 type Stage = 'Pick' | 'Pack' | 'Ship' | 'Transit' | 'Delivered';
 
@@ -54,6 +75,107 @@ const ORDERS: Order[] = [
 
 const KANBAN_ITEM_TYPE = 'ship-order';
 const STAGES: Stage[] = ['Pick', 'Pack', 'Ship', 'Transit', 'Delivered'];
+
+/* ------------------------------------------------------------------ */
+/*  Filter schema                                                      */
+/* ------------------------------------------------------------------ */
+
+const MODULE_ID = 'ship.orders';
+
+const carrierOptions = Array.from(new Set(ORDERS.map((o) => o.carrier))).map((c) => ({
+  value: c,
+  label: c,
+}));
+
+const customerOptions = Array.from(new Set(ORDERS.map((o) => o.customer))).map((c) => ({
+  value: c,
+  label: c,
+}));
+
+const ordersFilterSchema: FilterSchema = {
+  module: MODULE_ID,
+  label: 'Ship orders',
+  facets: [
+    {
+      id: 'stage',
+      label: 'Stage',
+      kind: 'multi',
+      icon: Columns3,
+      pinned: true,
+      options: [
+        { value: 'Pick',      label: 'Pick',      color: 'var(--neutral-400)' },
+        { value: 'Pack',      label: 'Pack',      color: 'var(--mw-yellow-300)' },
+        { value: 'Ship',      label: 'Ship',      color: 'var(--mw-yellow-500)' },
+        { value: 'Transit',   label: 'Transit',   color: 'var(--mw-mirage)' },
+        { value: 'Delivered', label: 'Delivered', color: 'var(--mw-success)' },
+      ],
+    },
+    {
+      id: 'carrier',
+      label: 'Carrier',
+      kind: 'multi',
+      icon: Truck,
+      pinned: true,
+      options: carrierOptions,
+    },
+    { id: 'urgent', label: 'Urgent', kind: 'boolean', icon: Zap },
+    { id: 'customer', label: 'Customer', kind: 'select', options: customerOptions },
+    // TODO(filters): needs typed `dueAt: ISODate` on Order — today's `due` is a
+    // display string like "2d" / "Today" which can't power a date facet.
+    // TODO(filters): needs `hasIssue: boolean` on Order — flag-issue UI exists
+    // but issues aren't persisted on the order row.
+    // TODO(filters): needs `hazmat: boolean` on Order.
+    // TODO(filters): needs `cod: { amount, currency } | null` on Order.
+    // TODO(filters): needs typed `weightKg: number` + dims on Order — today's
+    // `weight` is a display string ("12.4 kg") so weight bands can't bucket it.
+    // TODO(filters): needs `destination: { state, postcode, ... }` on Order for
+    // the destination/region facet and Map view.
+    // TODO(filters): needs an `owner`/`assignedTo` field on Order.
+  ],
+  viewModes: [
+    { id: 'kanban', label: 'Kanban', icon: Columns3, groupBy: 'stage' },
+    { id: 'list', label: 'List', icon: ListIcon },
+    // TODO(filters): Calendar view needs typed dueAt.
+    // TODO(filters): Map view needs destination + geocoding.
+  ],
+  defaultView: 'kanban',
+  // TODO(filters): wire dateFacetId once dueAt is ISO.
+};
+
+registerSystemPresets(MODULE_ID, [
+  {
+    name: "Today's dispatch board",
+    icon: Truck,
+    iconTone: 'yellow',
+    state: {
+      values: { stage: ['Ship'] },
+      search: '',
+      view: 'kanban',
+    },
+  },
+  {
+    name: 'Urgent — any stage',
+    icon: Zap,
+    iconTone: 'warning',
+    state: {
+      values: { urgent: true },
+      search: '',
+      view: 'kanban',
+    },
+  },
+  {
+    name: 'Picks needing attention',
+    icon: AlertTriangle,
+    iconTone: 'error',
+    state: {
+      values: { stage: ['Pick'], urgent: true },
+      search: '',
+      view: 'list',
+    },
+  },
+  // TODO(filters): "Overdue picks" preset needs typed dueAt.
+  // TODO(filters): "Pallet freight only" preset needs typed weightKg.
+]);
 
 const OrderCardContent = ({ order, onClick }: { order: Order; onClick: () => void }) => (
   <div onClick={onClick} className="p-4 cursor-pointer">
@@ -127,8 +249,6 @@ export function ShipOrders() {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const isNewRoute = routeId === 'new';
-  const [view, setView] = useState<'kanban' | 'list'>('kanban');
-  const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>(ORDERS);
   const [bolOpen, setBolOpen] = useState(false);
@@ -139,6 +259,29 @@ export function ShipOrders() {
     notes: '',
   });
   const [issues, setIssues] = useState<ShipmentIssue[]>([]);
+
+  const filters = useModuleFilters(ordersFilterSchema);
+  const { state } = filters;
+
+  const filtered = useMemo(
+    () =>
+      applyFilters({
+        schema: ordersFilterSchema,
+        state,
+        rows: orders,
+        getSearchText: (o) => `${o.id} ${o.customer} ${o.carrier}`,
+        getFacetValue: (o, id) => {
+          switch (id) {
+            case 'stage': return o.stage;
+            case 'carrier': return o.carrier;
+            case 'customer': return o.customer;
+            case 'urgent': return Boolean(o.urgent);
+            default: return undefined;
+          }
+        },
+      }),
+    [orders, state],
+  );
 
   const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
     setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
@@ -228,28 +371,23 @@ export function ShipOrders() {
         ))}
       </div>
 
-      <PageToolbar>
-        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search orders…" />
-        <ToolbarSpacer />
-        <IconViewToggle
-          value={view}
-          onChange={(k) => setView(k as 'kanban' | 'list')}
-          options={[
-            { key: 'kanban', icon: LayoutGrid, label: 'Kanban view' },
-            { key: 'list', icon: List, label: 'List view' },
-          ]}
-        />
-        <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/ship/orders/new')}>
-          Create shipment
-        </ToolbarPrimaryButton>
-      </PageToolbar>
+      <ModuleFilterBar
+        schema={ordersFilterSchema}
+        filters={filters}
+        searchPlaceholder="Search orders…"
+        actions={
+          <ToolbarPrimaryButton icon={Plus} onClick={() => navigate('/ship/orders/new')}>
+            Create shipment
+          </ToolbarPrimaryButton>
+        }
+      />
 
       {/* Kanban */}
-      {view === 'kanban' && (
+      {state.view === 'kanban' && (
         <div className="flex-1 min-h-0">
           <KanbanBoard className="h-full">
             {STAGES.map(stage => {
-              const stageOrders = orders.filter(o => o.stage === stage);
+              const stageOrders = filtered.filter(o => o.stage === stage);
               return (
                 <KanbanColumn
                   key={stage}
@@ -273,11 +411,11 @@ export function ShipOrders() {
       )}
 
       {/* List */}
-      {view === 'list' && (
+      {state.view === 'list' && (
         <div className="flex-1 overflow-auto">
           <MwDataTable<Order>
             columns={orderColumns}
-            data={orders}
+            data={filtered}
             keyExtractor={(o) => o.id}
             onRowClick={(o) => openShipment(o)}
             selectable
