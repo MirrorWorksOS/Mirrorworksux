@@ -13,7 +13,7 @@
  */
 
 import * as React from "react";
-import { useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -72,10 +72,10 @@ export function ModuleFilterBar({
 
   // Track which non-pinned facets the user has explicitly added this session
   // so an empty chip appears immediately when they pick from + Filter.
-  const adhocRef = useRef<Set<string>>(new Set());
+  const [adhocIds, setAdhocIds] = useState<Set<string>>(new Set());
   const adhocFacets = useMemo(() => {
     const out: FacetSchema[] = [];
-    for (const id of adhocRef.current) {
+    for (const id of adhocIds) {
       const facet = findFacet(schema, id);
       if (!facet) continue;
       if (facet.pinned || facet.id === schema.dateFacetId) continue;
@@ -89,12 +89,10 @@ export function ModuleFilterBar({
       }
     }
     return out;
-  }, [schema, state.values]);
+  }, [schema, state.values, adhocIds]);
 
   const handlePickFromAddMenu = (facetId: string) => {
-    adhocRef.current.add(facetId);
-    // Force a re-render by writing the same value (or no-op) — using setFacet with current val.
-    setFacet(facetId, state.values[facetId] ?? null);
+    setAdhocIds((prev) => new Set([...prev, facetId]));
   };
 
   const viewModeOptions: IconViewOption[] = schema.viewModes.map((v) => ({
@@ -104,7 +102,7 @@ export function ModuleFilterBar({
   }));
 
   const handleLoadPreset = (preset: SavedView) => {
-    adhocRef.current.clear();
+    setAdhocIds(new Set());
     setState({
       ...preset.state,
       presetId: preset.id || undefined,
@@ -183,7 +181,7 @@ export function ModuleFilterBar({
               value={state.values[facet.id]}
               onChange={(v) => setFacet(facet.id, v as FacetValue)}
               onClear={() => {
-                adhocRef.current.delete(facet.id);
+                setAdhocIds((prev) => { const next = new Set(prev); next.delete(facet.id); return next; });
                 clearFacet(facet.id);
               }}
               compact
