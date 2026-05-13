@@ -157,7 +157,7 @@ function FileUploadDialog({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex flex-col items-center justify-center gap-2 rounded-[var(--shape-md)] border-2 border-dashed border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] p-8 text-sm text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground"
+          className="flex flex-col items-center justify-center gap-2 rounded-[var(--shape-md)] border-2 border-dashed border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] p-8 text-sm text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground"
         >
           <FileUp className="h-6 w-6" />
           <span>Click to browse, or drop files</span>

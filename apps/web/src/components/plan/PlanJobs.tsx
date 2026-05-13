@@ -544,7 +544,7 @@ export function PlanJobs() {
       headerClassName: 'w-[130px] text-right',
       cell: (job) => (
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-2 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-full overflow-hidden">
+          <div className="flex-1 h-2 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-full overflow-hidden">
             <div className="h-full bg-[var(--mw-yellow-400)] transition-all duration-200 ease-[var(--ease-standard)]" style={{ width: `${job.progress}%` }} />
           </div>
           <span className="text-xs tabular-nums text-[var(--neutral-500)] w-10 text-right">{job.progress}%</span>

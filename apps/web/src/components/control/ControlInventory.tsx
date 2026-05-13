@@ -151,7 +151,7 @@ function DashboardKpi({ icon: Icon, label, value, subtext, color }: {
   return (
     <motion.div
       variants={staggerItem}
-      className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-[var(--shape-lg)] p-4"
+      className="bg-card border border-[var(--neutral-200)] dark:border-[var(--border)] rounded-[var(--shape-lg)] p-4"
     >
       <div className="flex items-center gap-3">
         <div
@@ -354,7 +354,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
             <React.Fragment key={s.key}>
               <div className={cn(
                 'flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium shrink-0 transition-colors',
-                i <= currentStepIndex ? 'bg-[var(--mw-yellow-400)] text-primary-foreground' : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-[var(--neutral-500)]',
+                i <= currentStepIndex ? 'bg-[var(--mw-yellow-400)] text-primary-foreground' : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-[var(--neutral-500)]',
               )}>
                 {i < currentStepIndex ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
               </div>
@@ -383,7 +383,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
                       'px-3 py-2 rounded-[var(--shape-md)] border text-sm text-left transition-colors',
                       selectedLocation === loc
                         ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10 text-foreground'
-                        : 'border-[var(--neutral-200)] dark:border-[var(--neutral-700)] text-[var(--neutral-600)] hover:border-[var(--neutral-400)]',
+                        : 'border-[var(--neutral-200)] dark:border-[var(--border)] text-[var(--neutral-600)] hover:border-[var(--neutral-400)]',
                     )}
                   >
                     {loc}
@@ -401,7 +401,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
               ) : (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                   {counts.map(c => (
-                    <div key={c.id} className="flex items-center gap-3 bg-[var(--neutral-50)] dark:bg-[var(--neutral-800)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+                    <div key={c.id} className="flex items-center gap-3 bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                         <p className="text-xs text-[var(--neutral-500)]">{c.sku} · Expected: {c.expected} {c.unit}</p>
@@ -434,7 +434,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
                       const item = INVENTORY.find(i => i.id === d.id);
                       const valueImpact = variance * (item?.costPrice ?? 0);
                       return (
-                        <div key={d.id} className="flex items-center justify-between bg-[var(--neutral-50)] dark:bg-[var(--neutral-800)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+                        <div key={d.id} className="flex items-center justify-between bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
                           <div>
                             <p className="text-sm font-medium text-foreground">{d.name}</p>
                             <p className="text-xs text-[var(--neutral-500)]">Expected: {d.expected} / Counted: {d.counted}</p>
@@ -449,7 +449,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--neutral-200)] dark:border-[var(--border)]">
                     <span className="text-sm text-[var(--neutral-500)]">Total value impact</span>
                     <span className={cn('text-sm font-bold tabular-nums', totalVarianceValue >= 0 ? 'text-[var(--mw-success)]' : 'text-[var(--mw-error)]')}>
                       {totalVarianceValue >= 0 ? '+' : ''}{formatCurrency(totalVarianceValue)}
@@ -532,7 +532,7 @@ export function NewAdjustmentDialog({ open, onOpenChange }: { open: boolean; onO
                     'px-3 py-1.5 rounded-full text-xs font-medium transition-colors',
                     adjType === t
                       ? 'bg-[var(--mw-mirage)] text-white'
-                      : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-[var(--neutral-600)] hover:bg-[var(--neutral-200)]',
+                      : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-[var(--neutral-600)] hover:bg-[var(--neutral-200)]',
                   )}
                 >
                   {t}
@@ -766,19 +766,19 @@ export function ControlInventory() {
 
           {/* Turnover Rate cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card className="dark:border-[var(--neutral-700)] p-4">
+            <Card className="dark:border-[var(--border)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Avg Turnover Rate</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">4.2x</p>
               <p className="text-xs text-[var(--mw-success)] mt-0.5">+0.3 from last month</p>
             </Card>
-            <Card className="dark:border-[var(--neutral-700)] p-4">
+            <Card className="dark:border-[var(--border)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Raw Materials Value</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">
                 {formatCurrency(INVENTORY.filter(i => i.category === 'Raw Materials').reduce((s, i) => s + i.onHand * i.costPrice, 0))}
               </p>
               <p className="text-xs text-[var(--neutral-500)] mt-0.5">{INVENTORY.filter(i => i.category === 'Raw Materials').length} items</p>
             </Card>
-            <Card className="dark:border-[var(--neutral-700)] p-4">
+            <Card className="dark:border-[var(--border)] p-4">
               <p className="text-xs text-[var(--neutral-500)]">Finished Goods Value</p>
               <p className="text-2xl font-bold text-foreground tabular-nums mt-1">
                 {formatCurrency(INVENTORY.filter(i => i.category === 'Finished Goods').reduce((s, i) => s + i.onHand * i.costPrice, 0))}
@@ -788,7 +788,7 @@ export function ControlInventory() {
           </div>
 
           {/* Stock Value by Location Chart */}
-          <Card className="dark:border-[var(--neutral-700)] p-5">
+          <Card className="dark:border-[var(--border)] p-5">
             <h3 className="text-sm font-medium text-foreground mb-4">Stock Value by Location</h3>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -816,7 +816,7 @@ export function ControlInventory() {
           </Card>
 
           {/* Dead Stock Alerts */}
-          <Card className="dark:border-[var(--neutral-700)] p-5">
+          <Card className="dark:border-[var(--border)] p-5">
             <h3 className="text-sm font-medium text-foreground mb-3">Dead Stock Alerts</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-3 bg-[var(--mw-error-light)] dark:bg-[var(--mw-error)]/10 rounded-[var(--shape-md)] p-3">

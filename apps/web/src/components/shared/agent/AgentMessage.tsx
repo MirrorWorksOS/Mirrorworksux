@@ -209,7 +209,7 @@ export function AgentTypingIndicator() {
         <AgentLogomarkAnimated size={20} animating />
       </div>
       <div className="bg-[var(--mw-agent-50)] dark:bg-[var(--mw-agent)]/10 border border-[var(--mw-agent-100)] dark:border-[var(--mw-agent)]/20 rounded-2xl rounded-tl-sm px-4 py-3">
-        <p className="text-[13px] text-[var(--neutral-500)] dark:text-[var(--neutral-400)]">
+        <p className="text-[13px] text-[var(--neutral-500)] dark:text-[var(--muted-foreground)]">
           Thinking…
         </p>
       </div>

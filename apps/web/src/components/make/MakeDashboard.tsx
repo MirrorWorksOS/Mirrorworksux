@@ -75,9 +75,9 @@ dashboardWorkOrders.forEach((wo) => {
 const getWoStatusConfig = (status: DashboardWorkOrder['status']) => {
   switch (status) {
     case 'in_progress': return { bg: 'bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10', text: 'text-foreground', label: 'In Progress', dot: 'bg-[var(--mw-yellow-400)]' };
-    case 'scheduled': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]', label: 'Scheduled', dot: 'bg-[var(--neutral-400)]' };
+    case 'scheduled': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]', label: 'Scheduled', dot: 'bg-[var(--neutral-400)]' };
     case 'completed': return { bg: 'bg-[var(--mw-success-light)] dark:bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]', label: 'Completed', dot: 'bg-[var(--mw-success)]' };
-    case 'pending': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-500)]', label: 'Pending', dot: 'bg-[var(--neutral-400)]' };
+    case 'pending': return { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-[var(--neutral-500)]', label: 'Pending', dot: 'bg-[var(--neutral-400)]' };
   }
 };
 
@@ -154,7 +154,7 @@ function ScheduleBlockTooltip({ block }: { block: ScheduleBlock }) {
             </Badge>
           </div>
           {/* Product */}
-          <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{wo.product}</p>
+          <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">{wo.product}</p>
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
             <div>
@@ -309,7 +309,7 @@ export function MakeDashboard() {
                   </div>
 
                   {/* Product name */}
-                  <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)] mb-4">{wo.product}</p>
+                  <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] mb-4">{wo.product}</p>
 
                   {/* Progress indicator */}
                   <div className="mb-4">
@@ -500,7 +500,7 @@ export function MakeDashboard() {
               {scheduleRows.map((row) => (
                 <div key={row.name} className="flex items-center gap-2">
                   <span className="w-[92px] text-xs font-medium text-foreground truncate shrink-0">{row.name}</span>
-                  <div className="flex-1 h-7 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded relative overflow-visible">
+                  <div className="flex-1 h-7 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded relative overflow-visible">
                     {row.blocks.map((block, j) => (
                       <ScheduleBlockTooltip key={j} block={block} />
                     ))}

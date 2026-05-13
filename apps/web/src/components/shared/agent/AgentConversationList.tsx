@@ -127,7 +127,7 @@ export function AgentConversationList({ currentModule, onClose }: AgentConversat
       <div className="flex-1 overflow-y-auto px-1 py-1" style={{ scrollbarWidth: 'none' }}>
         {conversations.length === 0 ? (
           <div className="px-4 py-8 text-center">
-            <MessageCircle className="w-8 h-8 mx-auto text-[var(--neutral-300)] dark:text-[var(--neutral-400)] mb-2" />
+            <MessageCircle className="w-8 h-8 mx-auto text-[var(--neutral-300)] dark:text-[var(--muted-foreground)] mb-2" />
             <p className="text-xs text-[var(--neutral-400)]">No conversations yet</p>
             <p className="text-[10px] text-[var(--neutral-300)] dark:text-[var(--neutral-500)] mt-1">
               Start chatting with Agent

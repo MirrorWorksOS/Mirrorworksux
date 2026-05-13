@@ -449,12 +449,12 @@ export function WelcomeDashboard() {
                 >
                   <div className="flex items-start gap-3">
                     <Layers
-                      className="mt-0.5 h-7 w-7 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--neutral-200)]"
+                      className="mt-0.5 h-7 w-7 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--neutral-800)]"
                       strokeWidth={2}
                       aria-hidden
                     />
                     <div className="min-w-0">
-                      <p className="inline-flex rounded-full border border-[var(--mw-mirage)]/12 bg-muted/60 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[var(--mw-mirage)] dark:border-[var(--border)] dark:text-[var(--neutral-200)]">
+                      <p className="inline-flex rounded-full border border-[var(--mw-mirage)]/12 bg-muted/60 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[var(--mw-mirage)] dark:border-[var(--border)] dark:text-[var(--neutral-800)]">
                         Primary module
                       </p>
                       <p className="mt-3 text-2xl font-bold capitalize text-foreground">
@@ -652,7 +652,7 @@ export function WelcomeDashboard() {
                   <div className="flex h-full flex-col gap-4">
                     <div className="flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--mw-mirage)_12%,var(--border))] pb-3">
                       <Table2
-                        className="h-8 w-8 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--neutral-200)]"
+                        className="h-8 w-8 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--neutral-800)]"
                         aria-hidden
                       />
                       <h2 className={dashboardSectionTitleClass}>

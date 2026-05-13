@@ -71,7 +71,7 @@ function buildColumns(removeFinish: (id: string) => void): MwColumnDef<Finish>[]
       header: 'Type',
       tooltip: 'Finish process',
       cell: (f) => (
-        <span className="inline-flex rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-600)] dark:bg-[var(--neutral-900)] dark:text-[var(--neutral-400)]">
+        <span className="inline-flex rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-600)] dark:bg-[var(--neutral-50)] dark:text-[var(--muted-foreground)]">
           {FINISH_TYPE_LABELS[f.type]}
         </span>
       ),
@@ -289,7 +289,7 @@ export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode
       <p className="text-xs text-muted-foreground">
         Inline editing and &quot;New finish&quot; form land in the next pass. The store and types are
         already wired to support full CRUD — see{' '}
-        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-800)]">useFinishLibraryStore</code>.
+        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-200)]">useFinishLibraryStore</code>.
       </p>
     </PageShell>
   );

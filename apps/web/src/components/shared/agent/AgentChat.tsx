@@ -217,7 +217,7 @@ export function AgentChat({ currentModule }: AgentChatProps) {
               'ai-card-glow p-2 rounded-xl shrink-0 bg-transparent',
               inputValue.trim() && !isTyping
                 ? 'text-[var(--mw-agent)]'
-                : 'text-[var(--neutral-300)] dark:text-[var(--neutral-400)] cursor-not-allowed',
+                : 'text-[var(--neutral-300)] dark:text-[var(--muted-foreground)] cursor-not-allowed',
             )}
             aria-label="Send message"
           >

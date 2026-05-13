@@ -86,7 +86,7 @@ function buildColumns(removeMaterial: (id: string) => void): MwColumnDef<Materia
       header: 'Type',
       tooltip: 'Stock form factor',
       cell: (m) => (
-        <span className="inline-flex rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-600)] dark:bg-[var(--neutral-900)] dark:text-[var(--neutral-400)]">
+        <span className="inline-flex rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--neutral-600)] dark:bg-[var(--neutral-50)] dark:text-[var(--muted-foreground)]">
           {MATERIAL_TYPE_LABELS[m.type]}
         </span>
       ),
@@ -271,7 +271,7 @@ export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNo
       <p className="text-xs text-muted-foreground">
         Inline editing and &quot;New material&quot; form land in the next pass. The store and types are
         already wired to support full CRUD — see{' '}
-        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-800)]">useMaterialLibraryStore</code>.
+        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-200)]">useMaterialLibraryStore</code>.
       </p>
     </PageShell>
   );

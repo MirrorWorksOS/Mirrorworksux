@@ -85,7 +85,7 @@ export function AICreditsCard() {
 
         {/* Quota meter */}
         {remaining.includedQuota === null ? (
-          <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] p-4">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] p-4">
             <p className="text-sm font-medium text-foreground">Unlimited AI actions</p>
             <p className="mt-1 text-xs text-[var(--neutral-500)]">
               Enterprise tiers receive committed AI quota with no overage surprises.

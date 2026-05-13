@@ -392,7 +392,7 @@ export function BuyOrderDetail() {
               {order.notes && (
                 <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
                   <h2 className="mb-2 text-base font-medium text-foreground">Notes</h2>
-                  <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{order.notes}</p>
+                  <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">{order.notes}</p>
                 </Card>
               )}
 
@@ -503,7 +503,7 @@ export function BuyOrderDetail() {
                             isCurrent
                               ? "font-medium text-foreground"
                               : done
-                                ? "text-[var(--neutral-600)] dark:text-[var(--neutral-400)]"
+                                ? "text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]"
                                 : "text-[var(--neutral-400)]",
                           )}
                         >
@@ -538,7 +538,7 @@ export function BuyOrderDetail() {
           {
             key: "description",
             header: "Description",
-            cell: (li) => <span className="text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{li.description}</span>,
+            cell: (li) => <span className="text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">{li.description}</span>,
           },
           {
             key: "qtyOrdered",
@@ -655,7 +655,7 @@ export function BuyOrderDetail() {
             <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
               <h2 className="mb-4 text-base font-medium text-foreground">Receiving progress</h2>
               <div className="mb-2 flex items-baseline justify-between">
-                <span className="text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">
+                <span className="text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">
                   Items received
                 </span>
                 <span className="text-sm font-medium tabular-nums text-foreground">

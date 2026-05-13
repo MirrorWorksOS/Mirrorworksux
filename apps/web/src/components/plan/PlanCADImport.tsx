@@ -262,7 +262,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
               'border-2 border-dashed rounded-[var(--shape-lg)] p-10 cursor-pointer transition-all duration-200 group',
               isDragOver
                 ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/5 dark:bg-[var(--mw-yellow-400)]/10'
-                : 'border-[var(--neutral-300)] dark:border-[var(--neutral-600)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] hover:border-[var(--neutral-400)] dark:hover:border-[var(--neutral-500)]',
+                : 'border-[var(--neutral-300)] dark:border-[var(--neutral-600)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] hover:border-[var(--neutral-400)] dark:hover:border-[var(--neutral-500)]',
             )}
           >
             <div className="flex flex-col items-center text-center">
@@ -291,7 +291,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                 {['.step', '.stp', '.iges', '.dxf', '.dwg'].map((ext) => (
                   <span
                     key={ext}
-                    className="inline-flex items-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] px-2.5 py-0.5 text-xs font-medium text-[var(--neutral-500)] tabular-nums"
+                    className="inline-flex items-center rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] px-2.5 py-0.5 text-xs font-medium text-[var(--neutral-500)] tabular-nums"
                   >
                     {ext}
                   </span>
@@ -342,7 +342,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                               ? 'bg-[var(--mw-success)]/10'
                               : file.status === 'error'
                                 ? 'bg-[var(--mw-error)]/10'
-                                : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]',
+                                : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]',
                           )}
                         >
                           {file.status === 'complete' ? (
@@ -378,7 +378,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
 
                           {/* Progress bar */}
                           {(file.status === 'uploading' || file.status === 'processing') && (
-                            <div className="mt-2 h-1.5 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-full overflow-hidden">
+                            <div className="mt-2 h-1.5 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-full overflow-hidden">
                               <motion.div
                                 className="h-full rounded-full bg-[var(--mw-yellow-400)]"
                                 initial={{ width: 0 }}
@@ -471,7 +471,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                   <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2 block">
                     Units
                   </label>
-                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-lg)] p-1">
+                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
                     {(['mm', 'inch', 'meter'] as UnitSystem[]).map((u) => (
                       <button
                         key={u}
@@ -494,7 +494,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                   <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2 block">
                     Scale
                   </label>
-                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-lg)] p-1">
+                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
                     {(['1:1', '1:10', '1:100', 'custom'] as ScaleOption[]).map((s) => (
                       <button
                         key={s}
@@ -517,7 +517,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                         type="number"
                         value={customScale}
                         onChange={(e) => setCustomScale(e.target.value)}
-                        className="h-9 w-20 tabular-nums border-[var(--border)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-md)] text-sm"
+                        className="h-9 w-20 tabular-nums border-[var(--border)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-md)] text-sm"
                       />
                     </div>
                   )}
@@ -563,7 +563,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                 const Icon = f.icon;
                 return (
                   <div key={f.ext} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-[var(--shape-md)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-[var(--shape-md)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4 text-[var(--neutral-500)]" />
                     </div>
                     <div>
@@ -609,7 +609,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
               </Button>
             </SheetClose>
           </SheetHeader>
-          <div className="relative flex-1 bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] overflow-hidden">
+          <div className="relative flex-1 bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] overflow-hidden">
             {previewFile && (
               <ExecutionModelViewer
                 src="/models/diff.glb"

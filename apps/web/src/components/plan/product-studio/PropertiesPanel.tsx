@@ -76,7 +76,7 @@ export function PropertiesPanel() {
     return (
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="text-center space-y-2 max-w-[200px]">
-          <div className="w-12 h-12 rounded-xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center mx-auto">
             <Package className="w-6 h-6 text-[var(--neutral-400)]" />
           </div>
           <p className="text-sm font-medium text-foreground">Select a node</p>
@@ -143,7 +143,7 @@ function NodeEditor({ node }: { node: ProductNode }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--border)]">
         <div className="flex items-center gap-2">
           <div className={cn('w-2.5 h-2.5 rounded-full', NODE_TYPE_COLORS[node.type])} />
           <h3 className="text-sm font-semibold text-foreground truncate">{node.name}</h3>
@@ -234,7 +234,7 @@ function NodeEditor({ node }: { node: ProductNode }) {
           {node.options.map((opt) => (
             <div
               key={opt.id}
-              className="flex items-start gap-2 p-2 rounded-lg bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] border border-[var(--neutral-200)] dark:border-[var(--neutral-800)]"
+              className="flex items-start gap-2 p-2 rounded-lg bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] border border-[var(--neutral-200)] dark:border-[var(--border)]"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
@@ -254,7 +254,7 @@ function NodeEditor({ node }: { node: ProductNode }) {
                       <span
                         key={i}
                         className={cn(
-                          'text-[10px] px-1.5 py-0.5 rounded bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-muted-foreground',
+                          'text-[10px] px-1.5 py-0.5 rounded bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-muted-foreground',
                           v === opt.defaultValue && 'ring-1 ring-[var(--mw-yellow-400)] font-medium text-foreground',
                         )}
                       >

@@ -82,7 +82,7 @@ export function ProductNodeComponent({
       >
         {/* Drag handle */}
         <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-          <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] rounded-full p-0.5 shadow-sm">
+          <div className="bg-card border border-[var(--neutral-200)] dark:border-[var(--border)] rounded-full p-0.5 shadow-sm">
             <GripVertical className="w-3 h-3 text-[var(--neutral-400)]" />
           </div>
         </div>

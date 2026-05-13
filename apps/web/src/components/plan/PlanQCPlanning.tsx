@@ -299,10 +299,10 @@ export function PlanQCPlanning() {
       {/* KPI cards */}
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Inspection Points', count: INSPECTION_POINTS.length, icon: Eye, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-foreground' },
+          { label: 'Inspection Points', count: INSPECTION_POINTS.length, icon: Eye, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-foreground' },
           { label: 'Active Checklists', count: CHECKLISTS.filter((c) => c.status === 'active').length, icon: ClipboardCheck, bg: 'bg-[var(--mw-amber-100)] dark:bg-[var(--mw-warning)]/10', text: 'text-[var(--mw-yellow-800)] dark:text-[var(--mw-warning)]' },
-          { label: 'Avg Pass Rate', count: avgPassRate, icon: CheckCircle2, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--mw-success)]', suffix: '%' },
-          { label: 'Open NCRs', count: openNcrs, icon: FileWarning, bg: openNcrs > 0 ? 'bg-[var(--mw-error-100)] dark:bg-[var(--mw-error)]/10' : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: openNcrs > 0 ? 'text-[var(--mw-error)]' : 'text-foreground' },
+          { label: 'Avg Pass Rate', count: avgPassRate, icon: CheckCircle2, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-[var(--mw-success)]', suffix: '%' },
+          { label: 'Open NCRs', count: openNcrs, icon: FileWarning, bg: openNcrs > 0 ? 'bg-[var(--mw-error-100)] dark:bg-[var(--mw-error)]/10' : 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: openNcrs > 0 ? 'text-[var(--mw-error)]' : 'text-foreground' },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -322,7 +322,7 @@ export function PlanQCPlanning() {
       </motion.div>
 
       {/* Section tabs */}
-      <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-lg)] p-1 w-fit">
+      <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1 w-fit">
         {[
           { id: 'inspections' as const, label: 'Inspection Points', count: INSPECTION_POINTS.length },
           { id: 'checklists' as const, label: 'Quality Checklists', count: CHECKLISTS.length },
@@ -356,7 +356,7 @@ export function PlanQCPlanning() {
             <ToolbarSearch value={search} onChange={setSearch} placeholder="Search inspection points..." />
             <ToolbarSpacer />
             {/* Work centre filter */}
-            <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-lg)] p-1 flex-wrap">
+            <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1 flex-wrap">
               {WORK_CENTERS.map((wc) => (
                 <button
                   key={wc}
@@ -429,7 +429,7 @@ export function PlanQCPlanning() {
                         {cl.completedCount}/{cl.itemCount} items
                       </span>
                     </div>
-                    <div className="h-2 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{

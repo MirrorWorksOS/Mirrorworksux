@@ -108,7 +108,7 @@ export function BuyMrpSuggestions() {
                 Suggested Purchase Orders
               </h3>
               <Badge
-                className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]"
+                className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]"
               >
                 {suggestions.length} items
               </Badge>

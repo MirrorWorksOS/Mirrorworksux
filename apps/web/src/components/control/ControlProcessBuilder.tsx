@@ -1482,7 +1482,7 @@ export function ControlProcessBuilder() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-2 py-8">
-                  <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center">
                     <Eye className="w-5 h-5 text-[var(--neutral-400)]" />
                   </div>
                   <p className="text-xs text-[var(--neutral-500)]">Select a node or connection to view properties</p>

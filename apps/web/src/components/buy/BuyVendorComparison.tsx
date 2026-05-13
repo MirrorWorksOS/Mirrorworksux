@@ -478,7 +478,7 @@ export function BuyVendorComparison() {
               {filteredVendors.map((v) => (
                 <label
                   key={v.supplierId}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--neutral-200)] px-3 py-2 transition-colors hover:bg-[var(--neutral-100)] dark:border-[var(--neutral-700)]"
+                  className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--neutral-200)] px-3 py-2 transition-colors hover:bg-[var(--neutral-100)] dark:border-[var(--border)]"
                 >
                   <Checkbox
                     checked={selectedIds.has(v.supplierId)}
@@ -622,7 +622,7 @@ export function BuyVendorComparison() {
                 <h3 className="text-base font-medium text-foreground">
                   Detailed Comparison
                 </h3>
-                <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]">
+                <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]">
                   <Users className="mr-1 h-3 w-3" strokeWidth={1.5} />
                   {selectedVendors.length} vendors
                 </Badge>

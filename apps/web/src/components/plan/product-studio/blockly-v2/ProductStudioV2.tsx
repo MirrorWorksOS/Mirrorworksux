@@ -770,7 +770,7 @@ export function ProductStudioV2() {
             controls that drive `evaluator.initialVars`. */}
         <aside
           className={cn(
-            'flex min-h-0 shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card transition-[width,opacity,border-color] duration-200 ease-[var(--ease-standard)] dark:border-[var(--neutral-800)]',
+            'flex min-h-0 shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card transition-[width,opacity,border-color] duration-200 ease-[var(--ease-standard)] dark:border-[var(--border)]',
             inputsPanelOpen && inputDecls.length > 0
               ? 'w-[min(100%,280px)] opacity-100'
               : 'pointer-events-none w-0 min-w-0 overflow-hidden border-l-0 opacity-0',
@@ -788,7 +788,7 @@ export function ProductStudioV2() {
         {/* Output panel — collapsible so the canvas can use full width */}
         <aside
           className={cn(
-            'flex min-h-0 shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card transition-[width,opacity,border-color] duration-200 ease-[var(--ease-standard)] dark:border-[var(--neutral-800)]',
+            'flex min-h-0 shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card transition-[width,opacity,border-color] duration-200 ease-[var(--ease-standard)] dark:border-[var(--border)]',
             rightPanelOpen
               ? 'w-[min(100%,440px)] opacity-100'
               : 'pointer-events-none w-0 min-w-0 overflow-hidden border-l-0 opacity-0',
@@ -1061,7 +1061,7 @@ function DryRunDialog({
           )}
 
           {/* Commit toggle — prominent, so the mode switch is visible */}
-          <section className="flex items-center justify-between rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3 dark:border-[var(--neutral-800)] dark:bg-[var(--neutral-900)]">
+          <section className="flex items-center justify-between rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3 dark:border-[var(--border)] dark:bg-[var(--neutral-50)]">
             <div className="flex-1">
               <Label
                 htmlFor="dry-run-commit"
@@ -1145,7 +1145,7 @@ function InputsPanel({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 border-b border-[var(--neutral-200)] px-3 py-2.5 dark:border-[var(--neutral-800)]">
+      <div className="flex items-center justify-between gap-2 border-b border-[var(--neutral-200)] px-3 py-2.5 dark:border-[var(--border)]">
         <div className="min-w-0">
           <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--neutral-500)]">
             Inputs
@@ -1177,7 +1177,7 @@ function InputsPanel({
           return (
             <div key={decl.name} className="space-y-1">
               <label className="flex items-center justify-between gap-2 text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)]">
-                <span className="truncate normal-case text-[11px] font-medium tracking-normal text-[var(--neutral-800)] dark:text-[var(--neutral-200)]">
+                <span className="truncate normal-case text-[11px] font-medium tracking-normal text-[var(--neutral-800)] dark:text-[var(--neutral-800)]">
                   {decl.name}
                 </span>
                 {overridden && (
@@ -1214,7 +1214,7 @@ function InputEditor({
             onChange={(e) => onChange(decl.name, Number(e.target.value))}
             className="h-8 flex-1 text-[12px] tabular-nums"
           />
-          <span className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] dark:bg-[var(--neutral-900)]">
+          <span className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] dark:bg-[var(--neutral-50)]">
             {decl.unit ?? 'mm'}
           </span>
         </div>
@@ -1252,7 +1252,7 @@ function InputEditor({
     }
     case 'toggle':
       return (
-        <div className="flex h-8 items-center justify-between rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2.5 dark:bg-[var(--neutral-900)]">
+        <div className="flex h-8 items-center justify-between rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2.5 dark:bg-[var(--neutral-50)]">
           <span className="text-[11px] text-muted-foreground">
             {value ? 'On' : 'Off'}
           </span>
@@ -1274,7 +1274,7 @@ function InputEditor({
             onValueChange={(v) => onChange(decl.name, v[0] ?? 0)}
             className="flex-1"
           />
-          <span className="w-9 text-right font-mono text-[11px] tabular-nums text-[var(--neutral-700)] dark:text-[var(--neutral-300)]">
+          <span className="w-9 text-right font-mono text-[11px] tabular-nums text-[var(--neutral-700)] dark:text-[var(--muted-foreground)]">
             {num.toFixed(0)}%
           </span>
         </div>
@@ -1303,7 +1303,7 @@ function InputEditor({
             min={-360}
             max={360}
           />
-          <span className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] dark:bg-[var(--neutral-900)]">
+          <span className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--neutral-500)] dark:bg-[var(--neutral-50)]">
             °
           </span>
         </div>
@@ -1546,7 +1546,7 @@ function FormulaRow({
         <p className="truncate font-medium">{label}</p>
         <p className="truncate font-mono text-[10px] text-muted-foreground">
           {expression}
-          {total !== undefined && <span className="text-[var(--neutral-700)] dark:text-[var(--neutral-300)]">{AUD.format(total)}</span>}
+          {total !== undefined && <span className="text-[var(--neutral-700)] dark:text-[var(--muted-foreground)]">{AUD.format(total)}</span>}
         </p>
       </div>
       {total !== undefined && (
@@ -1577,7 +1577,7 @@ function BomPanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
       {evaluation.bom.map((line) => (
         <div
           key={line.id}
-          className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-2.5 dark:bg-[var(--neutral-900)]"
+          className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-2.5 dark:bg-[var(--neutral-50)]"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="truncate text-xs font-semibold">{line.name}</p>
@@ -1602,7 +1602,7 @@ function BomPanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
           </div>
         </div>
       ))}
-      <div className="mt-3 flex items-center justify-between rounded-md bg-[var(--neutral-100)] px-2.5 py-2 text-[11px] dark:bg-[var(--neutral-800)]">
+      <div className="mt-3 flex items-center justify-between rounded-md bg-[var(--neutral-100)] px-2.5 py-2 text-[11px] dark:bg-[var(--neutral-200)]">
         <span className="font-semibold uppercase tracking-wider text-[var(--neutral-500)]">
           Material total
         </span>
@@ -1673,7 +1673,7 @@ function OpsPanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
       {evaluation.operations.map((op) => (
         <div
           key={op.id}
-          className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-2.5 dark:bg-[var(--neutral-900)]"
+          className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-2.5 dark:bg-[var(--neutral-50)]"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="truncate text-xs font-semibold">{op.name}</p>
@@ -1694,7 +1694,7 @@ function OpsPanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
           </p>
         </div>
       ))}
-      <div className="mt-3 flex items-center justify-between rounded-md bg-[var(--neutral-100)] px-2.5 py-2 text-[11px] dark:bg-[var(--neutral-800)]">
+      <div className="mt-3 flex items-center justify-between rounded-md bg-[var(--neutral-100)] px-2.5 py-2 text-[11px] dark:bg-[var(--neutral-200)]">
         <span className="font-semibold uppercase tracking-wider text-[var(--neutral-500)]">
           Total time
         </span>
@@ -1767,7 +1767,7 @@ function TimePanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
             {formatMins(totalSetup)} + {formatMins(totalRun)}
           </span>
         </div>
-        <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+        <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]">
           <div
             className="h-full bg-[var(--neutral-400)]"
             style={{ width: `${setupPct}%` }}
@@ -1803,7 +1803,7 @@ function TimePanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
             return (
               <div
                 key={c.name}
-                className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2.5 py-2 dark:bg-[var(--neutral-900)]"
+                className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-2.5 py-2 dark:bg-[var(--neutral-50)]"
               >
                 <div className="flex items-center justify-between gap-2 text-[11px]">
                   <div className="flex min-w-0 items-center gap-1.5">
@@ -1818,7 +1818,7 @@ function TimePanel({ evaluation }: { evaluation: EvaluationResultV2 | null }) {
                     {formatMins(c.minutes)}
                   </span>
                 </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]">
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]">
                   <div
                     className="h-full bg-[var(--mw-mirage)] dark:bg-[var(--mw-yellow-400)]"
                     style={{ width: `${widthPct}%` }}
@@ -1908,25 +1908,25 @@ function ActionsPanel({ evaluation }: { evaluation: EvaluationResultV2 | null })
     create_mo: {
       icon: Factory,
       tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
-      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--border)] dark:bg-[var(--neutral-50)]',
       label: 'Manufacturing order',
     },
     create_work_order: {
       icon: Briefcase,
       tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
-      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--border)] dark:bg-[var(--neutral-50)]',
       label: 'Work order',
     },
     record_qc: {
       icon: ClipboardCheck,
       tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
-      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--border)] dark:bg-[var(--neutral-50)]',
       label: 'QC check',
     },
     clock_on: {
       icon: UserCheck,
       tone: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]',
-      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-900)]',
+      tint: 'border-[var(--neutral-300)] bg-[var(--neutral-50)] dark:border-[var(--border)] dark:bg-[var(--neutral-50)]',
       label: 'Clock on',
     },
     // ── Buy ──────────────────────────────────────────────────────────

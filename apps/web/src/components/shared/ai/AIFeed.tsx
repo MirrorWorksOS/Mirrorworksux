@@ -427,7 +427,7 @@ export function AIFeed({
         {/* Feed header */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <h3 className="text-lg font-semibold text-foreground">MirrorWorks Agent</h3>
-          <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] text-[10px] px-1.5 py-0 dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
+          <Badge className="border-0 bg-[var(--neutral-100)] text-[var(--neutral-600)] text-[10px] px-1.5 py-0 dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)]">
             {items.length} new
           </Badge>
         </div>

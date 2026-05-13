@@ -63,7 +63,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 AI-powered
               </Badge>
               {insights.length > 0 && (
-                <Badge className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]">
+                <Badge className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)]">
                   {insights.length} new
                 </Badge>
               )}
@@ -86,7 +86,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Insights */}
       <div className={cn('space-y-3', compact && 'space-y-2')}>
         {insights.length === 0 ? (
-          <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] rounded-[var(--shape-lg)] p-6">
+          <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-6">
             <EmptyState
               variant="compact"
               icon={Brain}
@@ -127,12 +127,12 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]"
+                          className="border-0 bg-[var(--neutral-100)] text-[10px] px-1.5 py-0 text-[var(--neutral-600)] dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)]"
                         >
                           {cfg.label}
                         </Badge>
                         {insight.confidence !== undefined && (
-                          <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-400)] px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] text-[var(--neutral-500)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)] px-1.5 py-0.5 rounded-full">
                             {insight.confidence}% confidence
                           </span>
                         )}

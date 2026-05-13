@@ -37,7 +37,7 @@ function formatTime(iso: string): string {
 }
 
 const TOOLTIP_STATUS_STYLES: Record<JobScheduleStatus, { bg: string; text: string }> = {
-  queued: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]' },
+  queued: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]' },
   setup: { bg: 'bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10', text: 'text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-300)]' },
   running: { bg: 'bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]' },
   done: { bg: 'bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]' },
@@ -158,7 +158,7 @@ export function ScheduleGanttBlock({ block, isProposed, isMoved }: ScheduleGantt
           </span>
         </div>
         {block.customerName && (
-          <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">
+          <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">
             {block.customerName}
           </p>
         )}

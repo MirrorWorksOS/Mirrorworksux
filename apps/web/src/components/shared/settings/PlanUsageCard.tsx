@@ -41,7 +41,7 @@ export function PlanUsageCard({ moduleName, tierName }: PlanUsageCardProps) {
         {/* Header */}
         <div className="flex items-center gap-3">
           <h3 className="text-base font-medium text-foreground">Plan Usage</h3>
-          <Badge className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-[var(--neutral-600)] dark:text-[var(--neutral-400)] border-0 text-xs rounded-full px-2.5 py-0.5 font-medium">
+          <Badge className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] border-0 text-xs rounded-full px-2.5 py-0.5 font-medium">
             {tier}
           </Badge>
         </div>

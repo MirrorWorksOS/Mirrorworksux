@@ -54,7 +54,7 @@ export function MaterialsPickListCard({
             type="button"
             variant="outline"
             size="lg"
-            className="h-11 border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-100)]"
+            className="h-11 border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-100)] dark:bg-[var(--mw-yellow-400)] dark:text-[#1A2732] dark:hover:bg-[var(--mw-yellow-500)]"
             onClick={onIssueAll}
           >
             Issue all

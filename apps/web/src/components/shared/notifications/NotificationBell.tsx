@@ -136,7 +136,7 @@ export function NotificationBell() {
               'absolute -top-0.5 -right-0.5 inline-flex items-center justify-center',
               'min-w-[16px] h-[16px] px-[3px] rounded-full',
               'bg-[#DE350B] text-white text-[9px] font-bold leading-none',
-              'border-2 border-[var(--neutral-50)] dark:border-[var(--neutral-900)]',
+              'border-2 border-[var(--neutral-50)] dark:border-[var(--border)]',
               badgePulsing && 'mw-badge-pulse',
             )}
           >

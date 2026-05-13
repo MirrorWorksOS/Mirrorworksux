@@ -86,7 +86,7 @@ export function DashboardPinList({
           </ul>
         </section>
         <section>
-          <h4 className="mb-2 inline-flex rounded-full border border-[var(--border)] bg-muted/40 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-muted-foreground dark:bg-white/[0.06] dark:text-[var(--neutral-200)]">
+          <h4 className="mb-2 inline-flex rounded-full border border-[var(--border)] bg-muted/40 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-muted-foreground dark:bg-white/[0.06] dark:text-[var(--neutral-800)]">
             All items
           </h4>
           <ul className="space-y-2">
@@ -136,7 +136,7 @@ function Row({
       <button
         type="button"
         onClick={onToggle}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--mw-mirage)] transition-colors hover:bg-[var(--mw-yellow-400-20)] dark:text-[var(--neutral-200)]"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--mw-mirage)] transition-colors hover:bg-[var(--mw-yellow-400-20)] dark:text-[var(--neutral-800)]"
         aria-label={pinned ? `Unpin ${item.title}` : `Pin ${item.title}`}
       >
         {pinned ? (

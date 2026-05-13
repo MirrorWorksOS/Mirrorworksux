@@ -37,7 +37,7 @@ const MODULE_ICON_MAP: Record<NotificationModule, LucideIcon> = {
 };
 
 const TYPE_STYLES: Record<NotificationType, string> = {
-  info: 'bg-[var(--neutral-100)] text-[var(--neutral-500)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-400)]',
+  info: 'bg-[var(--neutral-100)] text-[var(--neutral-500)] dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)]',
   warning: 'bg-[var(--mw-yellow-400)]/10 text-[var(--mw-yellow-600)] dark:bg-[var(--mw-yellow-400)]/15 dark:text-[var(--mw-yellow-400)]',
   success: 'bg-[var(--mw-green)]/10 text-[var(--mw-green)] dark:bg-[var(--mw-green)]/15',
   error: 'bg-[var(--mw-error)]/10 text-[var(--mw-error)] dark:bg-[var(--mw-error)]/15',
@@ -87,7 +87,7 @@ export function NotificationCardCompact({
       className={cn(
         'w-full flex items-start gap-2.5 p-2 rounded-lg text-left',
         'transition-colors duration-150 hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]',
-        !notification.isRead && 'bg-[var(--neutral-50)] dark:bg-[var(--neutral-800)]/50',
+        !notification.isRead && 'bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50',
       )}
     >
       <div className={cn('w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5', TYPE_STYLES[notification.type])}>
@@ -188,7 +188,7 @@ export function NotificationCardFull({
         <span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
           {formatRelativeTime(notification.timestamp)}
         </span>
-        <Badge className="border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-[var(--neutral-500)] dark:text-[var(--neutral-400)] text-[10px] capitalize">
+        <Badge className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-[var(--neutral-500)] dark:text-[var(--muted-foreground)] text-[10px] capitalize">
           {notification.module}
         </Badge>
         {notification.actionUrl && (

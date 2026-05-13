@@ -112,7 +112,7 @@ export function ConfigPreview() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--border)]">
         <div className="flex items-center gap-2">
           <Eye className="w-4 h-4 text-[var(--mw-yellow-500)]" />
           <h3 className="text-sm font-semibold text-foreground">Configuration Preview</h3>
@@ -124,7 +124,7 @@ export function ConfigPreview() {
 
       <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
         {/* Product header */}
-        <div className="px-4 py-4 border-b border-[var(--neutral-100)] dark:border-[var(--neutral-800)]">
+        <div className="px-4 py-4 border-b border-[var(--neutral-100)] dark:border-[var(--border)]">
           <h2 className="text-base font-bold text-foreground">{product.name}</h2>
           <p className="text-xs text-muted-foreground mt-1">{product.description}</p>
         </div>
@@ -160,7 +160,7 @@ export function ConfigPreview() {
         </div>
 
         {/* Summary panel */}
-        <div className="px-4 py-4 mt-2 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)]">
+        <div className="px-4 py-4 mt-2 border-t border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)]">
           <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
             Order Summary
           </h4>
@@ -214,7 +214,7 @@ export function ConfigPreview() {
           </div>
 
           {derivedEntries.some(([, v]) => v) && (
-            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--border)]">
               <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Calculated values
               </h5>
@@ -232,7 +232,7 @@ export function ConfigPreview() {
           )}
 
           {evalResult.operations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+            <div className="mt-3 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--border)]">
               <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Work operations
               </h5>
@@ -251,7 +251,7 @@ export function ConfigPreview() {
           )}
 
           {/* Merged BOM (canvas + engine) */}
-          <div className="mt-4 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+          <div className="mt-4 pt-3 border-t border-[var(--neutral-200)] dark:border-[var(--border)]">
             <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Bill of Materials
             </h5>
@@ -317,7 +317,7 @@ function ConfigSection({
   const hasOptions = node.options.length > 0;
 
   return (
-    <div className={cn(depth > 0 && 'ml-3 pl-3 border-l-2 border-[var(--neutral-200)] dark:border-[var(--neutral-700)]')}>
+    <div className={cn(depth > 0 && 'ml-3 pl-3 border-l-2 border-[var(--neutral-200)] dark:border-[var(--border)]')}>
       {/* Section header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}

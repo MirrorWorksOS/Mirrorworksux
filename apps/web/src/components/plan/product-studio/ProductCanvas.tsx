@@ -208,7 +208,7 @@ export function ProductCanvas() {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
   return (
-    <div className="relative flex-1 overflow-hidden bg-[var(--neutral-50)] dark:bg-[var(--neutral-950)] rounded-xl border border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+    <div className="relative flex-1 overflow-hidden bg-[var(--neutral-50)] dark:bg-[var(--neutral-950)] rounded-xl border border-[var(--neutral-200)] dark:border-[var(--border)]">
       {paletteDragging && (
         <div
           ref={dropPalette}
@@ -257,7 +257,7 @@ export function ProductCanvas() {
       </div>
 
       {/* Scale indicator */}
-      <div className="absolute bottom-3 right-3 z-20 text-[10px] font-mono text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded-md border border-[var(--neutral-200)] dark:border-[var(--neutral-800)]">
+      <div className="absolute bottom-3 right-3 z-20 text-[10px] font-mono text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded-md border border-[var(--neutral-200)] dark:border-[var(--border)]">
         {Math.round(canvasTransform.scale * 100)}%
       </div>
 
@@ -355,7 +355,7 @@ export function ProductCanvas() {
           {nodes.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center" style={{ left: 300, top: 200 }}>
               <div className="text-center space-y-3 max-w-xs">
-                <div className="w-16 h-16 rounded-2xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center mx-auto">
                   <Layers className="w-8 h-8 text-[var(--neutral-400)]" />
                 </div>
                 <p className="text-sm font-medium text-foreground">Start Building</p>

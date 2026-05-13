@@ -339,7 +339,7 @@ export function SellQuoteDetail() {
                 {paymentDetailsTemplate && (
                   <Card className="p-6">
                     <h3 className="mb-3 text-sm font-medium text-foreground">Payment details</h3>
-                    <p className="whitespace-pre-line text-sm text-[var(--neutral-700)] dark:text-[var(--neutral-300)]">
+                    <p className="whitespace-pre-line text-sm text-[var(--neutral-700)] dark:text-[var(--muted-foreground)]">
                       {paymentDetailsTemplate.body}
                     </p>
                   </Card>
@@ -528,7 +528,7 @@ export function SellQuoteDetail() {
             <Card className="overflow-hidden p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="border-b border-[var(--border)] bg-[var(--neutral-50)] text-xs text-[var(--neutral-500)] dark:bg-[var(--neutral-900)]">
+                  <thead className="border-b border-[var(--border)] bg-[var(--neutral-50)] text-xs text-[var(--neutral-500)] dark:bg-[var(--neutral-50)]">
                     <tr>
                       <th className="w-14 px-3 py-2 text-left font-medium">Image</th>
                       <th className="px-3 py-2 text-left font-medium">Product</th>
@@ -686,7 +686,7 @@ export function SellQuoteDetail() {
               </div>
 
               {isDraft && (
-                <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--neutral-50)]/50 px-3 py-2 dark:bg-[var(--neutral-900)]/50">
+                <div className="flex items-center justify-between border-t border-[var(--border)] bg-[var(--neutral-50)]/50 px-3 py-2 dark:bg-[var(--neutral-50)]/50">
                   <Button
                     type="button"
                     variant="ghost"
@@ -783,7 +783,7 @@ export function SellQuoteDetail() {
           {quote.currentRevisionLabel && (
             <Badge
               variant="outline"
-              className="border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-700)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-300)]"
+              className="border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-700)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--muted-foreground)]"
             >
               {quote.currentRevisionLabel}
             </Badge>
@@ -812,7 +812,7 @@ export function SellQuoteDetail() {
             </div>
           )}
           {opp && (
-            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+            <Badge className="border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] text-xs dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)] dark:border-[var(--border)]">
               <Link to={`/sell/opportunities/${opp.id}`} className="hover:underline">
                 Opportunity: {opp.title}
               </Link>
@@ -959,7 +959,7 @@ function TermsAndConditionsCard({ quote, onSave }: TermsAndConditionsCardProps) 
             <p className="text-xs text-[var(--neutral-500)]">
               {activeTemplate?.name ?? 'No template selected'}
             </p>
-            <p className="whitespace-pre-line text-sm text-[var(--neutral-700)] dark:text-[var(--neutral-300)]">
+            <p className="whitespace-pre-line text-sm text-[var(--neutral-700)] dark:text-[var(--muted-foreground)]">
               {quote.notes?.trim() || activeTemplate?.body || '—'}
             </p>
           </div>

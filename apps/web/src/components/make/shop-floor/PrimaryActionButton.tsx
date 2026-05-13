@@ -21,7 +21,7 @@ export function PrimaryActionButton({
   return (
     <div
       className={cn(
-        'pointer-events-none flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-base font-medium text-[var(--neutral-900)]',
+        'pointer-events-none flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-base font-medium text-[var(--mw-mirage)] dark:text-[#1A2732]',
         className
       )}
     >

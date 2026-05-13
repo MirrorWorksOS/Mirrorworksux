@@ -49,7 +49,7 @@ export function MobileBottomNav({ onMenuOpen }: MobileBottomNavProps) {
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-50 border-t border-[var(--neutral-200)] dark:border-[var(--neutral-700)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)]"
+      className="fixed bottom-0 inset-x-0 z-50 border-t border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="flex items-center justify-around h-14">
@@ -67,7 +67,7 @@ export function MobileBottomNav({ onMenuOpen }: MobileBottomNavProps) {
                 'transition-colors duration-150',
                 active
                   ? 'text-[var(--mw-yellow-600)] dark:text-[var(--mw-yellow-400)]'
-                  : 'text-[var(--neutral-500)] dark:text-[var(--neutral-400)]'
+                  : 'text-[var(--neutral-500)] dark:text-[var(--muted-foreground)]'
               )}
             >
               <span
@@ -110,7 +110,7 @@ export function MobileBottomNav({ onMenuOpen }: MobileBottomNavProps) {
           onClick={onMenuOpen}
           className={cn(
             'flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] px-2 py-1',
-            'text-[var(--neutral-500)] dark:text-[var(--neutral-400)]',
+            'text-[var(--neutral-500)] dark:text-[var(--muted-foreground)]',
             'transition-colors duration-150 active:text-foreground'
           )}
         >

@@ -111,7 +111,7 @@ export function BuyReorderRules() {
               <h3 className="text-base font-medium text-foreground">
                 Reorder Configuration
               </h3>
-              <Badge className="gap-1.5 border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]">
+              <Badge className="gap-1.5 border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]">
                 <RefreshCw className="h-3 w-3" strokeWidth={1.5} />
                 {rules.length} rules
               </Badge>

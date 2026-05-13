@@ -794,7 +794,7 @@ function UserProfileSplitButton() {
   const { resolvedTheme, setTheme } = useTheme();
 
   return (
-    <div className="flex items-center rounded-full border border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+    <div className="flex items-center rounded-full border border-[var(--neutral-200)] dark:border-[var(--border)]">
       {/* Leading segment — user profile dropdown trigger */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -891,7 +891,7 @@ function UsageBanner() {
               {nextTier && (
                 <Link
                   to={`/${highest.module.toLowerCase()}/settings`}
-                  className="underline ml-1 text-[var(--neutral-600)] dark:text-[var(--neutral-400)] hover:text-foreground"
+                  className="underline ml-1 text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] hover:text-foreground"
                 >
                   Upgrade
                 </Link>

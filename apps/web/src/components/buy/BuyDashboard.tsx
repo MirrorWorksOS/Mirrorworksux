@@ -35,7 +35,7 @@ import {
 const buyTabs = [{ key: 'overview', label: 'Overview' }];
 
 const badgeNeutral =
-  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]';
+  'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]';
 
 export function BuyDashboard() {
   const [activeTab, setActiveTab] = useState('overview');

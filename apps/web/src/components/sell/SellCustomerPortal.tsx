@@ -943,7 +943,7 @@ function PreviewBanner({
             <p className="font-medium text-[var(--mw-yellow-900)] dark:text-[var(--mw-yellow-100)]">
               Portal preview
             </p>
-            <p className="text-xs text-[var(--neutral-700)] dark:text-[var(--neutral-300)]">
+            <p className="text-xs text-[var(--neutral-700)] dark:text-[var(--muted-foreground)]">
               You're viewing the portal as your customer would see it.
               Configure which sections appear in{' '}
               <a

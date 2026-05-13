@@ -254,7 +254,7 @@ export function Notifications() {
                 className={cn(
                   'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize min-h-[44px] sm:min-h-0',
                   filterTab === f
-                    ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] text-foreground font-medium'
+                    ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-foreground font-medium'
                     : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]',
                 )}
               >
@@ -324,7 +324,7 @@ export function Notifications() {
 
         {/* Expanded filters */}
         {showFilters && (
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] border border-border">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] border border-border">
             <div className="flex items-center gap-2">
               <label className="text-xs text-muted-foreground whitespace-nowrap">Module:</label>
               <select
@@ -396,7 +396,7 @@ export function Notifications() {
         {/* Empty state */}
         {filtered.length === 0 && (
           <Card className="py-16 items-center justify-center text-center">
-            <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center mb-4">
               <Bell className="w-5 h-5 text-[var(--neutral-400)]" />
             </div>
             <p className="text-sm font-medium text-foreground">

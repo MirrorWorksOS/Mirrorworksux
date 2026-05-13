@@ -240,7 +240,7 @@ export function PlanJobDetail() {
                   className={`px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
                     currentStage === stage.id
                       ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
-                      : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:text-[var(--neutral-400)] dark:hover:bg-[var(--neutral-800)]'
+                      : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:text-[var(--muted-foreground)] dark:hover:bg-[var(--neutral-800)]'
                   }`}
                 >
                   {stage.label}

@@ -141,7 +141,7 @@ export function ProductList() {
       {/* Product grid */}
       {products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
-          <div className="w-20 h-20 rounded-2xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-2xl bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center">
             <Box className="w-10 h-10 text-[var(--neutral-400)]" />
           </div>
           <div className="text-center space-y-1">
@@ -167,10 +167,10 @@ export function ProductList() {
             <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
             <Card
               variant="flat"
-              className="group flex h-full min-h-[200px] cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[var(--neutral-300)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.04] dark:border-[var(--neutral-700)] dark:hover:bg-white/[0.06]"
+              className="group flex h-full min-h-[200px] cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[var(--neutral-300)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.04] dark:border-[var(--border)] dark:hover:bg-white/[0.06]"
               onClick={() => setShowNewDialog(true)}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--neutral-100)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:bg-[var(--neutral-200)] dark:bg-[var(--neutral-800)] dark:group-hover:bg-[var(--neutral-700)]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--neutral-100)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:bg-[var(--neutral-200)] dark:bg-[var(--neutral-200)] dark:group-hover:bg-[var(--neutral-700)]">
                 <Plus className="w-6 h-6 text-[var(--neutral-400)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:text-foreground" />
               </div>
               <p className="mt-3 text-sm font-medium text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:text-foreground">

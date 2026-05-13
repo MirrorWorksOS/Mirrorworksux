@@ -133,7 +133,7 @@ function PredictionRow({ prediction }: { prediction: MaintenancePrediction }) {
 
   return (
     <div
-      className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-800)]/40 p-4"
+      className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-4"
       style={{ borderLeft: `3px solid ${cfg.borderAccent}` }}
     >
       <div className="flex items-start gap-3">
@@ -146,7 +146,7 @@ function PredictionRow({ prediction }: { prediction: MaintenancePrediction }) {
                 {cfg.label}
               </Badge>
             </div>
-            <p className="mt-1 text-sm text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">
+            <p className="mt-1 text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">
               {prediction.prediction}
             </p>
           </div>
@@ -165,7 +165,7 @@ function PredictionRow({ prediction }: { prediction: MaintenancePrediction }) {
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[var(--neutral-600)] dark:text-[var(--neutral-400)] hover:text-foreground transition-colors"
+        className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] hover:text-foreground transition-colors"
         aria-expanded={expanded}
       >
         Why?
@@ -184,7 +184,7 @@ function PredictionRow({ prediction }: { prediction: MaintenancePrediction }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="overflow-hidden mt-2 space-y-1 text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)] list-disc pl-5"
+            className="overflow-hidden mt-2 space-y-1 text-xs text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] list-disc pl-5"
           >
             {prediction.evidence.map((e, i) => (
               <li key={i}>{e}</li>
@@ -263,7 +263,7 @@ export function PredictiveMaintenanceSummary({
       </div>
 
       <div
-        className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--neutral-700)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-800)]/40 p-3"
+        className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-3"
         style={{ borderLeft: `3px solid ${topCfg.borderAccent}` }}
       >
         <div className="flex items-center gap-2 mb-1">
@@ -273,7 +273,7 @@ export function PredictiveMaintenanceSummary({
             {topCfg.label}
           </Badge>
         </div>
-        <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)] mb-3">
+        <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] mb-3">
           {top.prediction}
         </p>
         <div className="flex items-center gap-2">

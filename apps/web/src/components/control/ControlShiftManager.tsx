@@ -75,7 +75,7 @@ const SHIFT_STYLES: Record<
     bg: "bg-[color-mix(in_srgb,var(--mw-mirage)_10%,transparent)]",
     border: "border-[color-mix(in_srgb,var(--mw-mirage)_30%,transparent)]",
     dot: "bg-[var(--mw-mirage)]",
-    text: "text-[var(--mw-mirage)] dark:text-[var(--neutral-300)]",
+    text: "text-[var(--mw-mirage)] dark:text-[var(--muted-foreground)]",
     label: "Night",
   },
 };
@@ -419,7 +419,7 @@ export function ControlShiftManager() {
         <Card variant="flat" className="overflow-x-auto p-0">
           <div className="min-w-[920px]">
             {/* Column header */}
-            <div className="grid grid-cols-[240px_repeat(7,1fr)] border-b border-[var(--neutral-200)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)]">
+            <div className="grid grid-cols-[240px_repeat(7,1fr)] border-b border-[var(--neutral-200)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)]">
               <div className="px-3 py-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--neutral-500)]">
                 Employee
               </div>
@@ -436,7 +436,7 @@ export function ControlShiftManager() {
             {/* Department-grouped rows */}
             {groupedByDept.map((group) => (
               <div key={group.department}>
-                <div className="grid grid-cols-[240px_repeat(7,1fr)] bg-[var(--neutral-100)]/60 dark:bg-[var(--neutral-900)]/40 border-b border-[var(--neutral-200)]">
+                <div className="grid grid-cols-[240px_repeat(7,1fr)] bg-[var(--neutral-100)]/60 dark:bg-[var(--neutral-50)]/40 border-b border-[var(--neutral-200)]">
                   <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--neutral-600)]">
                     {group.department}
                   </div>

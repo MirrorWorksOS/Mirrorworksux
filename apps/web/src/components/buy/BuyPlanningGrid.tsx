@@ -87,7 +87,7 @@ export function BuyPlanningGrid() {
           subtitle="6-week demand heatmap by material type"
           breadcrumbs={breadcrumbs}
           actions={
-            <Badge className="gap-1.5 border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--neutral-700)] dark:bg-[var(--neutral-800)] dark:text-[var(--neutral-200)]">
+            <Badge className="gap-1.5 border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]">
               <CalendarRange className="h-3.5 w-3.5" strokeWidth={1.5} />
               Wk 14 -- Wk 19
             </Badge>

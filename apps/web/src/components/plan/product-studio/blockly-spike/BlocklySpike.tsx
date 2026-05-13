@@ -86,7 +86,7 @@ export function BlocklySpike() {
   return (
     <div className="flex h-[calc(100vh-0px)] flex-col bg-background">
       {/* Toolbar */}
-      <div className="flex shrink-0 items-center gap-3 border-b border-[var(--neutral-200)] bg-card px-4 py-2.5 dark:border-[var(--neutral-800)]">
+      <div className="flex shrink-0 items-center gap-3 border-b border-[var(--neutral-200)] bg-card px-4 py-2.5 dark:border-[var(--border)]">
         <Button
           variant="ghost"
           size="icon"
@@ -116,7 +116,7 @@ export function BlocklySpike() {
         </div>
 
         {/* Live JSON output */}
-        <aside className="flex w-[380px] shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card dark:border-[var(--neutral-800)]">
+        <aside className="flex w-[380px] shrink-0 flex-col border-l border-[var(--neutral-200)] bg-card dark:border-[var(--border)]">
           <div className="flex shrink-0 items-center gap-2 border-b border-[var(--border)] px-3 py-2">
             <Code2 className="h-4 w-4 text-muted-foreground" />
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-500)]">
@@ -126,12 +126,12 @@ export function BlocklySpike() {
               {program.triggers.length} trigger{program.triggers.length === 1 ? '' : 's'}
             </Badge>
           </div>
-          <pre className="min-h-0 flex-1 overflow-auto bg-[var(--neutral-50)] p-3 font-mono text-[10px] leading-relaxed text-[var(--neutral-800)] dark:bg-[var(--neutral-950)] dark:text-[var(--neutral-200)]">
+          <pre className="min-h-0 flex-1 overflow-auto bg-[var(--neutral-50)] p-3 font-mono text-[10px] leading-relaxed text-[var(--neutral-800)] dark:bg-[var(--neutral-950)] dark:text-[var(--neutral-800)]">
             {JSON.stringify(program, null, 2)}
           </pre>
           <div className="shrink-0 border-t border-[var(--border)] p-3">
             <p className="text-[10px] leading-relaxed text-muted-foreground">
-              This JSON is the future <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-800)]">ProductDefinitionEngine</code>{' '}
+              This JSON is the future <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-200)]">ProductDefinitionEngine</code>{' '}
               format. The runtime evaluator reads this; the visual layer is just an authoring tool on top.
             </p>
           </div>

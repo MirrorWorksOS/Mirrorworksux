@@ -263,8 +263,8 @@ export function PlanPurchase() {
         {[
           { label: 'Out of Stock', count: countOutOfStock, icon: AlertTriangle, bg: 'bg-[var(--mw-error-100)] dark:bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]' },
           { label: 'Low Stock', count: countLow, icon: Package, bg: 'bg-[var(--mw-amber-100)] dark:bg-[var(--mw-warning)]/10', text: 'text-[var(--mw-yellow-800)] dark:text-[var(--mw-warning)]' },
-          { label: 'In Stock', count: countInStock, icon: CheckCircle, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-foreground' },
-          { label: 'Shortfall Value', count: totalShortfallValue, icon: ShoppingCart, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-foreground', isCurrency: true },
+          { label: 'In Stock', count: countInStock, icon: CheckCircle, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-foreground' },
+          { label: 'Shortfall Value', count: totalShortfallValue, icon: ShoppingCart, bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-foreground', isCurrency: true },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -298,7 +298,7 @@ export function PlanPurchase() {
         />
         <ToolbarSpacer />
         {/* Job filter */}
-        <div className="flex items-center gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)] rounded-[var(--shape-lg)] p-1">
+        <div className="flex items-center gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
           {JOB_OPTIONS.map((opt) => (
             <button
               key={opt.key}

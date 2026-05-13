@@ -224,7 +224,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--neutral-700)]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--neutral-200)] dark:border-[var(--border)]">
           <div className="flex items-center gap-2.5">
             <img
               src={mirrorworksLogomark}
@@ -293,7 +293,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                         'w-full flex items-center gap-3 px-3 py-3 rounded-2xl min-h-[48px]',
                         'transition-colors duration-150',
                         isExpanded
-                          ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]'
+                          ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]'
                           : 'active:bg-[var(--neutral-200)] dark:active:bg-[var(--neutral-700)]'
                       )}
                     >
@@ -341,7 +341,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-[var(--neutral-200)] dark:border-[var(--neutral-700)] px-4 py-3 space-y-3">
+        <div className="border-t border-[var(--neutral-200)] dark:border-[var(--border)] px-4 py-3 space-y-3">
           {/* User + theme + notifications */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center flex-shrink-0">

@@ -98,7 +98,7 @@ function useGanttTasks(): { tasks: GanttTask[]; startDate: Date; endDate: Date }
 const TOOLTIP_STATUS_STYLES: Record<MOStatus, { bg: string; text: string; label: string }> = {
   completed: { bg: 'bg-[var(--mw-success)]/10', text: 'text-[var(--mw-success)]', label: 'Completed' },
   in_progress: { bg: 'bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10', text: 'text-foreground', label: 'In Progress' },
-  scheduled: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-800)]', text: 'text-[var(--neutral-600)] dark:text-[var(--neutral-400)]', label: 'Scheduled' },
+  scheduled: { bg: 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]', text: 'text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]', label: 'Scheduled' },
   overdue: { bg: 'bg-[var(--mw-error)]/10', text: 'text-[var(--mw-error)]', label: 'Overdue' },
 };
 
@@ -128,7 +128,7 @@ function GanttTooltip({ task }: { task: GanttTask }) {
         </Badge>
       </div>
       {/* Product */}
-      <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--neutral-400)]">{meta.product}</p>
+      <p className="text-xs text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">{meta.product}</p>
       {/* Detail grid */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
         <div>

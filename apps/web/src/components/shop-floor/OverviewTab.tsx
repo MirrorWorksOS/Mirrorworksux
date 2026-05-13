@@ -318,7 +318,7 @@ export function OverviewTab() {
                   <div className="space-y-4">
                     <div>
                       <span
-                        className="cursor-pointer text-lg font-medium text-[var(--neutral-800)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-foreground hover:underline dark:text-[var(--neutral-200)]"
+                        className="cursor-pointer text-lg font-medium text-[var(--neutral-800)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:text-foreground hover:underline dark:text-[var(--neutral-800)]"
                         onClick={() => {
                           // TODO(backend): customers.getById(customerId)
                           toast.success(`Opened ${ACTIVE_JOBS_SUMMARY.customer}`);
