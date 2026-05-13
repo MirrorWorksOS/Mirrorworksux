@@ -138,7 +138,13 @@ export function PlanJobDetail() {
   const renderTabPanel = (tab: string) => {
     switch (tab) {
       case 'overview':
-        return <PlanOverviewTab isEditing={isEditing} onEditToggle={() => setIsEditing((v) => !v)} />;
+        return (
+          <PlanOverviewTab
+            isEditing={isEditing}
+            onEditToggle={() => setIsEditing((v) => !v)}
+            onSwitchTab={(t) => setActiveTab(t)}
+          />
+        );
       case 'production':
         return <PlanProductionTab />;
       case 'mirrorview':

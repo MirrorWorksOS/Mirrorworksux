@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink, Pencil, Search, Check } from 'lucide-react';
+import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink, Pencil, Search, Check, Copy, Link2, FileUp } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -17,10 +18,169 @@ import { toast } from 'sonner';
 import { customers as centralCustomers } from '@/services';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from '../ui/dialog';
 
 interface PlanOverviewTabProps {
   isEditing?: boolean;
   onEditToggle?: () => void;
+  /** Switch the parent JobWorkspaceLayout to a sibling tab — wires the
+   *  "Expand" buttons in the right rail (Schedule, Intelligence Hub, Files). */
+  onSwitchTab?: (tab: 'schedule' | 'intelligence' | 'production' | 'travellers' | 'budget' | 'mirrorview') => void;
+}
+
+/** Simple share-link dialog shared by the Products / Budget / Files cards. */
+function ShareLinkDialog({
+  open, onOpenChange, title, url,
+}: { open: boolean; onOpenChange: (v: boolean) => void; title: string; url: string }) {
+  const handleCopy = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      void navigator.clipboard.writeText(url);
+    }
+    toast.success('Link copied');
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share {title}</DialogTitle>
+          <DialogDescription>
+            Anyone with this link can view {title.toLowerCase()} for this job.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center gap-2">
+          <Link2 className="h-4 w-4 text-[var(--neutral-500)]" />
+          <Input readOnly value={url} className="h-10 text-xs" />
+          <Button onClick={handleCopy} className="h-10">
+            <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** "Create schedule item" modal — creates a one-off entry on the mini calendar.
+ *  Submit hands off to the toast for the prototype; production wires to the
+ *  schedule store. */
+function ScheduleItemDialog({
+  open, onOpenChange,
+}: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [from, setFrom] = useState('09:00');
+  const [to, setTo] = useState('10:00');
+  const [notes, setNotes] = useState('');
+  const reset = () => { setTitle(''); setDate(''); setFrom('09:00'); setTo('10:00'); setNotes(''); };
+  const handleCreate = () => {
+    if (!title || !date) {
+      toast.error('Title and date are required');
+      return;
+    }
+    toast.success(`Scheduled: ${title}`, { description: `${date} · ${from}–${to}` });
+    reset();
+    onOpenChange(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create schedule item</DialogTitle>
+          <DialogDescription>
+            Add a one-off entry to this job's mini schedule.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Title</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Order 3rd party powder coating" className="mt-1 h-10" />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">Date</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1 h-10" />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">From</Label>
+              <Input type="time" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 h-10" />
+            </div>
+            <div>
+              <Label className="text-xs text-[var(--neutral-500)]">To</Label>
+              <Input type="time" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 h-10" />
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Notes</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional context or instructions…" className="mt-1 min-h-[80px] text-sm" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleCreate} className="bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]">
+            <Calendar className="mr-1.5 h-3.5 w-3.5" /> Create
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** File upload dialog — uses a hidden input plus drop zone visual. */
+function FileUploadDialog({
+  open, onOpenChange,
+}: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const handleSelect = (selected: FileList | null) => {
+    if (!selected) return;
+    setFiles(Array.from(selected));
+  };
+  const handleConfirm = () => {
+    if (files.length === 0) {
+      toast.error('Pick at least one file first');
+      return;
+    }
+    toast.success(`Uploaded ${files.length} file${files.length === 1 ? '' : 's'}`);
+    setFiles([]);
+    onOpenChange(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setFiles([]); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upload files</DialogTitle>
+          <DialogDescription>
+            Drawings, NC programs, supplier docs, photos — anything that belongs on this job.
+          </DialogDescription>
+        </DialogHeader>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="flex flex-col items-center justify-center gap-2 rounded-[var(--shape-md)] border-2 border-dashed border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-900)] p-8 text-sm text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground"
+        >
+          <FileUp className="h-6 w-6" />
+          <span>Click to browse, or drop files</span>
+          {files.length > 0 ? (
+            <span className="text-xs text-foreground">{files.map((f) => f.name).join(', ')}</span>
+          ) : null}
+        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(e) => handleSelect(e.target.files)}
+        />
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleConfirm} className="bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]">
+            <Upload className="mr-1.5 h-3.5 w-3.5" /> Upload
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 /** Customer combobox — searches the central customer DB instead of a free-text input. */
@@ -135,11 +295,29 @@ const PRODUCT_DATA: ProductRow[] = [
   },
 ];
 
-export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: PlanOverviewTabProps = {}) {
+export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwitchTab }: PlanOverviewTabProps = {}) {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [shareDialog, setShareDialog] = useState<null | 'products' | 'budget' | 'files'>(null);
+  const [createScheduleOpen, setCreateScheduleOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const handleDownload = () => {
+    // Bundle all files for the job and trigger a browser download. The
+    // prototype stub builds a placeholder text manifest; production wires
+    // through a server-side zip endpoint.
+    const blob = new Blob([
+      'CAD Drawings — JOB-2026-0015\n3 items, 2 days ago\n',
+    ], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'job-files.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Downloaded file manifest');
+  };
   // Local edit toggle for the Job Details card. The parent JobWorkspaceLayout
   // exposes a header-level toggle (isEditingProp) which mirrors this — both
   // drive the same view/edit affordance so the card and header stay in sync.
@@ -269,8 +447,17 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
       header: 'CAD',
       headerClassName: 'text-center',
       className: 'text-center',
-      cell: () => (
-        <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+      cell: (row) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-10 w-10 p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSwitchTab?.('mirrorview');
+            toast.info(`Opening MirrorView for ${row.part}`);
+          }}
+        >
           📐
         </Button>
       ),
@@ -482,15 +669,15 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
           />
 
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[var(--border)]">
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Products saved')}>
               <Save className="w-4 h-4 mr-2" />
               Save
             </Button>
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => onSwitchTab?.('production')}>
               <Expand className="w-4 h-4 mr-2" />
               Expand
             </Button>
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => setShareDialog('products')}>
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
@@ -559,15 +746,15 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
           </div>
 
           <div className="flex items-center gap-2 mt-6 pt-4 border-t border-[var(--border)]">
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Budget saved')}>
               <Save className="w-4 h-4 mr-2" />
               Save
             </Button>
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Budget sent to finance')}>
               <Send className="w-4 h-4 mr-2" />
               Send
             </Button>
-            <Button variant="outline" className="border-[var(--border)]">
+            <Button variant="outline" className="border-[var(--border)]" onClick={() => setShareDialog('budget')}>
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
@@ -628,11 +815,11 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
+            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs" onClick={() => onSwitchTab?.('schedule')}>
               <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
-            <Button size="sm" className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground text-xs">
+            <Button size="sm" className="flex-1 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] text-xs" onClick={() => setCreateScheduleOpen(true)}>
               <Calendar className="w-4 h-4 mr-1" />
               Create
             </Button>
@@ -645,7 +832,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
             <h3 className=" text-sm font-medium text-foreground">
               Intelligence Hub
             </h3>
-            <Button variant="ghost" size="sm" className="text-xs h-10">
+            <Button variant="ghost" size="sm" className="text-xs h-10" onClick={() => onSwitchTab?.('intelligence')}>
               <Expand className="w-4 h-4 mr-1" />
               Expand
             </Button>
@@ -700,11 +887,11 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
+            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs" onClick={() => setUploadOpen(true)}>
               <Upload className="w-4 h-4 mr-1" />
               Upload
             </Button>
-            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs">
+            <Button variant="outline" size="sm" className="flex-1 border-[var(--border)] text-xs" onClick={handleDownload}>
               <Download className="w-4 h-4 mr-1" />
               Download
             </Button>
@@ -764,7 +951,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
           )}
 
           <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
-            <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+            <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => setUploadOpen(true)} title="Attach file">
               <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
             <Input
@@ -774,15 +961,31 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle }: Plan
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
             />
-            <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+            <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('Snapshot from camera coming soon')} title="Snapshot">
               <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
             </Button>
-            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground px-3" onClick={handleChatSubmit}>
+            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] px-3" onClick={handleChatSubmit}>
               Send
             </Button>
           </div>
         </Card>
       </div>
+
+      {/* Modals */}
+      <ShareLinkDialog
+        open={shareDialog === 'products'}
+        onOpenChange={(v) => !v && setShareDialog(null)}
+        title="Products"
+        url={typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#products` : ''}
+      />
+      <ShareLinkDialog
+        open={shareDialog === 'budget'}
+        onOpenChange={(v) => !v && setShareDialog(null)}
+        title="Budget"
+        url={typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#budget` : ''}
+      />
+      <ScheduleItemDialog open={createScheduleOpen} onOpenChange={setCreateScheduleOpen} />
+      <FileUploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
     </div>
   );
 }

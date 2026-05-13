@@ -262,15 +262,20 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
         />
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="border-[var(--border)]">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Report saved')}>
             <Save className="w-4 h-4 mr-2" />
             Save
           </Button>
-          <Button variant="outline" className="border-[var(--border)]">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => toast.success('Report sent')}>
             <Send className="w-4 h-4 mr-2" />
             Send Report
           </Button>
-          <Button variant="outline" className="border-[var(--border)]">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => {
+            if (typeof navigator !== 'undefined' && navigator.clipboard) {
+              void navigator.clipboard.writeText(window.location.href);
+            }
+            toast.success('Link copied');
+          }}>
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
@@ -283,7 +288,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
           <h3 className=" text-base font-medium text-foreground">
             Files
           </h3>
-          <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground">
+          <Button size="sm" className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]" onClick={() => toast.info('Use the Files card on the Overview tab to upload')}>
             <Upload className="w-4 h-4 mr-2" />
             Upload
           </Button>
@@ -319,11 +324,25 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
         </div>
 
         <div className="flex items-center gap-2 pt-4 border-t border-[var(--border)]">
-          <Button variant="outline" className="border-[var(--border)]">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => {
+            const blob = new Blob(['Job files manifest — JOB-2026-0015\n6 files, last updated 1 day ago\n'], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'job-files.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('Downloaded all files');
+          }}>
             <Download className="w-4 h-4 mr-2" />
             Download All
           </Button>
-          <Button variant="outline" className="border-[var(--border)]">
+          <Button variant="outline" className="border-[var(--border)]" onClick={() => {
+            if (typeof navigator !== 'undefined' && navigator.clipboard) {
+              void navigator.clipboard.writeText(window.location.href);
+            }
+            toast.success('Link copied');
+          }}>
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
@@ -349,7 +368,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
 
           {/* Intelligence Hub Message */}
           <AIInsightMessage timestamp="10:24 AM" actions={
-            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-foreground">
+            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-foreground" onClick={() => toast.info('Opening QC checkpoint detail…')}>
               View Details
             </Button>
           }>
@@ -452,7 +471,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
 
         {/* Input Bar */}
         <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
-          <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('File attach: use the Files card on the Overview tab')} title="Attach file">
             <Paperclip className="w-5 h-5 text-[var(--neutral-500)]" />
           </Button>
           <Input
@@ -462,10 +481,10 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
             onChange={(e) => setChatInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
           />
-          <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('Snapshot from camera coming soon')} title="Snapshot">
             <Camera className="w-5 h-5 text-[var(--neutral-500)]" />
           </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground" onClick={handleChatSubmit}>
+          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]" onClick={handleChatSubmit}>
             Send
           </Button>
         </div>

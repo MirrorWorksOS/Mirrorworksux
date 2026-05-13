@@ -22,6 +22,26 @@ export function PlanMirrorViewTab() {
   const activePart = assembly.parts.find((p) => p.id === activePartId) ?? assembly.parts[0];
   const visualParts = assembly.parts.filter((p) => p.kind === 'make');
   const viewerApiRef = useRef<GlbViewerApi | null>(null);
+  const view3dRef = useRef<HTMLDivElement | null>(null);
+  const view2dRef = useRef<HTMLDivElement | null>(null);
+
+  /** Browser-native fullscreen toggle for whichever viewer is targeted. */
+  const goFullscreen = (ref: React.RefObject<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void el.requestFullscreen?.().catch(() => toast.error('Fullscreen unavailable'));
+    }
+  };
+
+  const handlePrintDrawing = () => {
+    if (typeof window !== 'undefined') {
+      toast.success(`Printing ${activePart?.partNumber ?? 'drawing'}`);
+      window.print();
+    }
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
@@ -31,7 +51,7 @@ export function PlanMirrorViewTab() {
             <h2 className="text-lg font-medium text-foreground">MirrorView</h2>
             <p className="text-sm text-[var(--neutral-500)] mt-1">3D part visualisation</p>
           </div>
-          <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
+          <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]" onClick={() => goFullscreen(view3dRef)}>
             <Maximize2 className="w-4 h-4 mr-1.5" /> Fullscreen
           </Button>
         </div>
@@ -64,7 +84,7 @@ export function PlanMirrorViewTab() {
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
           </div>
 
-          <div className="aspect-video bg-[var(--neutral-100)] rounded-[var(--shape-md)] relative overflow-hidden">
+          <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-[var(--shape-md)] relative overflow-hidden">
             <GlbViewer
               src="/models/diff.glb"
               className="w-full h-full"
@@ -101,17 +121,17 @@ export function PlanMirrorViewTab() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]" onClick={() => goFullscreen(view2dRef)}>
               <Maximize2 className="w-4 h-4 mr-1.5" /> Fullscreen
             </Button>
-            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]">
+            <Button variant="outline" size="sm" className="h-10 text-xs border-[var(--border)]" onClick={handlePrintDrawing}>
               <Printer className="w-4 h-4 mr-1.5" /> Print
             </Button>
           </div>
         </div>
 
         <div className="p-6">
-          <div className="aspect-[16/9] bg-white border border-[var(--border)] rounded-[var(--shape-md)] relative overflow-hidden">
+          <div ref={view2dRef} className="aspect-[16/9] bg-white border border-[var(--border)] rounded-[var(--shape-md)] relative overflow-hidden">
             <DrawingViewer src="/models/diff.glb" className="absolute inset-0" />
             <div className="absolute bottom-3 right-3 w-48 border border-[var(--neutral-200)] bg-white/90 p-2 pointer-events-none">
               <p className="text-[9px] font-medium text-[var(--neutral-500)]">MIRRORWORKS</p>
