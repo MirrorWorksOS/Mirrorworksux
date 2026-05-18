@@ -1,7 +1,6 @@
-# MirrorWorks Smart FactoryOS — Design System v2.0
+# MirrorWorks Smart FactoryOS — Design System
 
-**Last updated:** 24 March 2026
-**Status:** Active — replaces v1.0
+**Last updated:** 2026-05-19 — radius scale corrections (md=14, lg=22, xl=30, added 2xl=36); short-form Tailwind utilities preferred over `rounded-[var(--shape-*)]`; new Dark Mode section (§8.5).
 **Maintained by:** Matt Quigley
 **Quality benchmark:** [Crextio](https://nixtio.com/cases/crextio) — reference for polish and spacing, not a template to copy.
 
@@ -17,7 +16,7 @@ When building or refactoring screens:
 4. **Charts**: **`getChartScaleColour`**, **`MW_RECHARTS_ANIMATION`** (areas/lines) / **`MW_RECHARTS_ANIMATION_BAR`** (bars), **`MW_BAR_TOOLTIP_CURSOR`** on bar `Tooltip`, optional **`ChartCard`**; no orphan hex fills.
 5. **KPI / icons**: **`KpiStatCard`** / **`StatCard`** + **`IconWell`** (`iconSurface`); Lucide **`strokeWidth={1.5}`** on chrome.
 6. **Spacing**: Page-level section stacks `space-y-8` (32px); card-to-card grids **`gap-6`** (24px); within-card stacks `space-y-6` or tighter; 8px base grid for small gaps.
-7. **Source of truth**: **`src/styles/globals.css`** for tokens; **`src/lib/design-system.ts`** — use **`fonts`**, **`motion`**, **`radius`**; **`colors` object is legacy** — prefer CSS vars in new UI.
+7. **Source of truth**: **`src/styles/globals.css`** is the sole source of truth for design tokens (colours, radius, motion, elevation, type scale). There is no `.ts` token mirror — always reference `var(--*)` directly in TSX.
 
 Run **`npm run build`** after each batch.
 
@@ -210,22 +209,25 @@ M3 defaults to Regular (400) and Medium (500). Bold (700) for page titles and he
 
 ## 3. Shape Scale
 
-M3 seven-step border radius scale.
+M3 border radius scale. The `--shape-*` tokens are aliased to Tailwind's `--radius-*` in `globals.css`, so **use the short Tailwind utilities** (`rounded-md`, `rounded-lg`, …) — they resolve to the same value as `rounded-[var(--shape-*)]`. Pick the short form for consistency.
 
 | M3 Token | Radius | CSS Variable | Tailwind Class | Default Use |
 |---|---|---|---|---|
 | none | 0px | `--shape-none` | `rounded-none` | Table inner rows |
-| extraSmall | 4px | `--shape-xs` | `rounded-[var(--shape-xs)]` | Checkboxes, small chips, toggle thumbs |
-| small | 8px | `--shape-sm` | `rounded-[var(--shape-sm)]` | Toggle tracks, compact elements |
-| medium | 12px | `--shape-md` | `rounded-[var(--shape-md)]` | Buttons, inputs, dropdowns |
-| large | 16px | `--shape-lg` | `rounded-[var(--shape-lg)]` | Cards, modals, dialogs, table containers |
-| extraLarge | 24px | `--shape-xl` | `rounded-[var(--shape-xl)]` | Bottom sheets, expanded containers |
+| extraSmall | 4px | `--shape-xs` | `rounded-xs` | Checkboxes, small chips, toggle thumbs |
+| small | 8px | `--shape-sm` | `rounded-sm` | Toggle tracks, compact elements |
+| medium | 14px | `--shape-md` | `rounded-md` | Buttons, inputs, dropdowns |
+| large | 22px | `--shape-lg` | `rounded-lg` | Cards, modals, dialogs, table containers |
+| extraLarge | 30px | `--shape-xl` | `rounded-xl` | Bottom sheets, expanded containers |
+| 2xl | 36px | `--shape-2xl` | `rounded-2xl` | Hero / feature surfaces |
 | full | 9999px | `--shape-full` | `rounded-full` | Badges, pills, avatars |
 
+**No arbitrary px radii** — never `rounded-[2px]`, `rounded-[16px]`, etc. If a value isn't in the scale, use the nearest token.
+
 **Component defaults:**
-- Buttons: medium (12px)
-- Inputs: medium (12px)
-- Cards: large (16px)
+- Buttons: medium (14px)
+- Inputs: medium (14px)
+- Cards: large (22px)
 - Modals/dialogs: large (16px)
 - Sheets: extraLarge (24px)
 - Badges: full (pill)
@@ -417,6 +419,44 @@ On dark surfaces:
 ### Focus Ring
 
 Standard: `focus-visible:ring-2 focus-visible:ring-[#0A0A0A]`
+
+---
+
+## 8.5 Dark Mode
+
+Dark mode is a **manual user toggle** (light is default; the toggle sits in the sidebar). It is implemented via the `.dark` class on `<html>`, not `prefers-color-scheme`. The `@custom-variant dark (&:is(.dark *))` directive in `globals.css` enables the `dark:` Tailwind variant.
+
+### Rules
+
+1. **Never modify existing light-mode styles when adding dark mode.** Dark mode is additive — layer `dark:` variants on top, leave light untouched.
+2. **Prefer auto-flipping tokens over `dark:` overrides.** Most semantic tokens in `globals.css` redefine themselves under `.dark` (e.g. `--neutral-*`, `--mw-mirage-*`, status `*-light` tokens). `bg-[var(--neutral-50)]` tracks both modes automatically — no `dark:` variant needed.
+3. **Reach for `dark:` only when:**
+   - The base utility is hex- or Tailwind-default-coloured (e.g. `bg-white`, `text-gray-900`).
+   - The element genuinely needs a different colour in dark (not just a different shade of the same token).
+4. **Yellow stays yellow** in both modes. `mw-yellow-400` CTAs and accents are not overridden in dark.
+5. **Mirage cards stay Mirage** in both modes — they're already dark surfaces; no override needed.
+6. **Status colours** have `*-light` background variants that auto-flip; foreground status colours stay the same.
+
+### Common dark-mode overrides
+
+| Light pattern | Add for dark mode |
+|---|---|
+| `bg-white` | `dark:bg-[var(--mw-mirage)]` or refactor to use a surface token |
+| `text-[#0A0A0A]` | switch to `text-foreground` (auto-flips) or `dark:text-white` |
+| hard-coded hex border | switch to `border-[var(--neutral-200)]` (auto-flips) |
+| `text-gray-*` / `bg-slate-*` | not allowed at all — see Critical Rules — use `--neutral-*` tokens |
+
+### Verification
+
+For any visible UI change, toggle dark mode in the running app and check:
+
+- No invisible text (white on white, black on black).
+- Borders and dividers are still discernible.
+- Icons retain enough contrast against their surface.
+- Status colours (success/error/warning/info) still read as themselves.
+- Yellow CTAs are unchanged.
+
+If you find a contrast issue that **also** exists in light mode, fix light first. Do not introduce a dark-only override that papers over a light-mode bug.
 
 ---
 
@@ -665,7 +705,7 @@ export default {
 
 ---
 
-## 16. What Changed from v1.0
+## 16. Migration from v1.0 (historical)
 
 | Area | v1.0 | v2.0 |
 |---|---|---|

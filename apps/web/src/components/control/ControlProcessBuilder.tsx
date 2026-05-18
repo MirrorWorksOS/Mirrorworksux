@@ -1,7 +1,6 @@
 /**
  * Process Builder — node-based diagram tool for factory processes and spaghetti diagrams.
  * Figma-style 3-panel layout: Element Library | SVG Canvas | Properties + AI.
- * @see src/lib/design-system.ts
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';

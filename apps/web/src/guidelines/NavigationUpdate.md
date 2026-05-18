@@ -1,193 +1,83 @@
-# Navigation & Routing Update
+# Navigation & Routing
 
-## Summary
+Rolling reference for the MirrorWorks Smart FactoryOS web app's navigation, routing, and global chrome. Keep this current — log each material change in the [Changelog](#changelog) at the bottom.
 
-Updated the Alliance Metal MirrorWorks Smart FactoryOS application with complete React Router navigation and a comprehensive sidebar that links to all 50 components across 8 modules.
+## Current state
 
-## Changes Made
+### Modules
 
-### 1. New Sidebar Component (`/components/Sidebar.tsx`)
-- Modern, collapsible navigation sidebar
-- MW Yellow (#FFCF4B) highlighting for Quick Create button
-- All 8 modules with expandable sub-menus:
-  - **Sell** (8 components)
-  - **Buy** (11 components)
-  - **Plan** (6 components)
-  - **Make** (3 components)
-  - **Ship** (existing components)
-  - **Book** (existing components)
-  - **Control** (8 components)
-  - **Design** (4 components)
-- Active route highlighting
-- Search functionality placeholder
-- Settings footer
+Seven modules, each with its own directory under `apps/web/src/components/{module}/` and routes under `/{module}`:
 
-### 2. Complete Router Configuration (`/routes.tsx`)
-- React Router v6+ with data mode pattern
-- Nested routes for all modules
-- Clean URL structure:
-  - `/sell` → Sell Dashboard
-  - `/sell/crm` → CRM
-  - `/buy/orders` → Purchase Orders
-  - `/plan/activities` → Production Calendar
-  - `/make/shop-floor` → Shop Floor Kanban
-  - `/control/people` → User Management
-  - `/design/factory-layout` → Layout Designer
-  - And 40+ more routes...
+| Module | Path | Notes |
+|---|---|---|
+| Sell | `/sell/*` | CRM, opportunities, quotes, customer portal |
+| Plan | `/plan/*` | Activities, Gantt, MirrorView, traveller signatures |
+| Make | `/make/*` | Shop floor kanban, jobs, immersive `shop-floor/` legacy UI |
+| Ship | `/ship/*` | Dispatch, timeline, checklists |
+| Book | `/book/*` | Financials (tabular-nums, right-aligned) |
+| Buy | `/buy/*` | POs, requisitions, three-way match |
+| Control | `/control/*` | Admin, settings, factory designer, workflow designer, MirrorWorks Bridge |
 
-### 3. Layout Component (`/components/Layout.tsx`)
-- Main layout wrapper with sidebar + content area
-- Outlet for nested routes
-- Responsive design
+The standalone **Design** module was folded into Control. Legacy `/design/*` URLs redirect to their Control equivalents in `routes.tsx`.
 
-### 4. Welcome Dashboard (`/components/WelcomeDashboard.tsx`)
-- Homepage with module overview cards
-- Stats banner (8 modules, 50 components, 100% complete)
-- Quick links and getting started info
-- Animated cards with hover effects
-- Module descriptions and component counts
+### Global chrome
 
-### 5. Updated App.tsx
-- Now uses RouterProvider
-- Clean entry point for the application
+- **`apps/web/src/components/Sidebar.tsx`** — collapsible left sidebar; per-module expandable sub-menus; active-route highlighting; manual dark-mode toggle; Cmd+K palette trigger; site/role switcher footer.
+- **`apps/web/src/components/Layout.tsx`** — sidebar + outlet wrapper for nested routes.
+- **`apps/web/src/components/WelcomeDashboard.tsx`** — homepage at `/`.
+- **`apps/web/src/components/shared/command/CommandPalette.tsx`** — Cmd+K global search/jump palette (`useCommandPaletteStore`).
+- **`apps/web/src/components/shared/layout/RouteBreadcrumbs.tsx`** — breadcrumbs in page headers.
+- **`apps/web/src/components/shared/layout/MobileBottomNav.tsx` + `MobileMenu.tsx`** — mobile chrome.
 
-## File Structure
+### Routing
 
-```
-/
-├── App.tsx (RouterProvider entry)
-├── routes.tsx (Complete route configuration)
-├── components/
-│   ├── Sidebar.tsx (New navigation sidebar)
-│   ├── Layout.tsx (Layout wrapper)
-│   ├── WelcomeDashboard.tsx (Homepage)
-│   ├── sell/ (8 components)
-│   ├── buy/ (11 components)
-│   ├── plan/ (6 components)
-│   ├── make/ (3 components)
-│   ├── control/ (8 components)
-│   └── design/ (4 components)
-```
+- React Router (`react-router`) with `createBrowserRouter` in `apps/web/src/routes.tsx`.
+- All module screens are **lazy-loaded** via `lazyWithRetry` for code splitting.
+- URL pattern: `/{module}` for dashboards, `/{module}/{page}` for sub-pages.
+- 404 fallback route handles invalid URLs.
+- Legacy `/design/*` URLs are redirected to Control.
 
-## Navigation Features
+### Navigation features
 
-### Sidebar Navigation
-- ✅ Collapsible module sections
-- ✅ Active route highlighting (yellow background)
-- ✅ Icon indicators for each module
-- ✅ Sub-menu navigation for all components
-- ✅ Smooth transitions and animations
-- ✅ MW Yellow (#FFCF4B) accent color
-- ✅ Vertical border lines for expanded sections
+- ✅ Collapsible per-module sidebar with active-route highlighting (MW Yellow)
+- ✅ Cmd+K command palette (search, jump-to-page)
+- ✅ Breadcrumbs in page headers
+- ✅ Dark mode toggle (manual, persisted in `theme-provider`)
+- ✅ Site switcher (multi-site customers)
+- ✅ Mobile bottom nav + slide-out menu
+- ✅ Browser back/forward + deep-linkable URLs
+- ✅ Quick Create global action
 
-### Route Structure
-All routes follow RESTful patterns:
-- Dashboard: `/{module}`
-- Sub-pages: `/{module}/{page}`
+## Design system compliance
 
-Example:
-- `/sell` → Sell Dashboard
-- `/sell/crm` → CRM List
-- `/sell/opportunities` → Opportunities
-- `/buy/requisitions` → Purchase Requisitions
-- `/plan/activities` → Production Calendar
+Navigation follows the canonical design system in [DesignSystem.md](./DesignSystem.md) and `.cursor/rules/design-system.mdc`:
 
-### Active Route Detection
-The sidebar automatically highlights:
-1. The active module (expanded with minus icon)
-2. The active page within that module (bold font, yellow background)
+- MW Yellow (`#FFCF4B`) for active sidebar item + Quick Create
+- M3 shape scale (see DesignSystem.md §3 for current values)
+- Borders use `--neutral-200` (auto-flips in dark mode)
+- Roboto for all text
+- M3 motion tokens (250ms standard easing)
+- 48px minimum touch targets (sidebar items, buttons)
 
-## Module Breakdown
+## Adding a new route
 
-| Module | Components | Routes |
-|--------|-----------|---------|
-| Sell | 8 | `/sell/*` |
-| Buy | 11 | `/buy/*` |
-| Plan | 6 | `/plan/*` |
-| Make | 3 | `/make/*` |
-| Ship | 9 | `/ship/*` |
-| Book | 12 | `/book/*` |
-| Control | 8 | `/control/*` |
-| Design | 4 | `/design/*` |
-| **Total** | **50+** | **50+ routes** |
+1. Create the screen at `apps/web/src/components/{module}/{Module}{Feature}.tsx`.
+2. Add a `lazyWithRetry` import + route entry in `apps/web/src/routes.tsx` under the relevant module's `children`.
+3. Add the menu item in `apps/web/src/components/Sidebar.tsx` (look for the module's section in the sidebar config).
+4. If it should appear in Cmd+K, add a command entry to the CommandPalette registry.
+5. If it needs a breadcrumb label, add it to the breadcrumb config.
 
-## Design System Compliance (v2.0)
+```tsx
+// routes.tsx
+const SellNewFeature = lazyWithRetry(() => import('./components/sell/SellNewFeature').then(m => ({ default: m.SellNewFeature })));
 
-All navigation components follow the MirrorWorks design system:
-- ✅ MW Yellow (#FFCF4B) for primary actions
-- ✅ M3 shape scale (16px cards, 12px buttons)
-- ✅ Clean borders (neutral-200 / #E5E5E5)
-- ✅ Roboto font for all text (single font family)
-- ✅ M3 motion tokens (250ms standard easing)
-- ✅ Proper spacing and touch targets (48px minimum)
-
-## Usage
-
-### Navigating Between Pages
-Users can now:
-1. Click any module in the sidebar to expand its sub-menu
-2. Click any sub-item to navigate to that page
-3. Use the browser back/forward buttons
-4. Bookmark specific pages (clean URLs)
-5. Use the Quick Create button (placeholder)
-6. Search for functionality (placeholder)
-
-### Adding New Routes
-To add a new route:
-
-1. Create the component in `/components/{module}/`
-2. Import it in `/routes.tsx`
-3. Add it to the appropriate module's children array
-4. Add the menu item in `/components/Sidebar.tsx`
-
-Example:
-```typescript
-// In routes.tsx
-import { SellNewComponent } from './components/sell/SellNewComponent';
-
-{
-  path: 'sell',
-  children: [
-    // ... existing routes
-    { path: 'new-page', element: <SellNewComponent /> },
-  ],
-}
-
-// In Sidebar.tsx menuConfig
-{
-  label: 'Sell',
-  subItems: [
-    // ... existing items
-    { label: 'New Page', path: '/sell/new-page' },
-  ],
-}
+// inside the `sell` route node
+{ path: 'new-feature', element: <L><SellNewFeature /></L> },
 ```
 
-## Testing Checklist
+## Changelog
 
-- ✅ All routes navigate correctly
-- ✅ Active route highlighting works
-- ✅ Sidebar expands/collapses properly
-- ✅ Welcome dashboard displays all modules
-- ✅ Browser back/forward buttons work
-- ✅ Direct URL navigation works
-- ✅ 404 page for invalid routes
-- ✅ Responsive design (sidebar + content)
+Newest first. Log meaningful changes — new modules, removed modules, navigation pattern shifts, new global chrome.
 
-## Next Steps
-
-1. **Search Functionality**: Implement the search (Cmd + K) feature
-2. **Quick Create**: Add modal/sheet for quick entity creation
-3. **User Profile**: Add user menu in sidebar footer
-4. **Settings Page**: Create global settings page
-5. **Dark Mode**: Implement dark mode toggle
-6. **Breadcrumbs**: Add breadcrumb navigation in page headers
-7. **Recent Pages**: Track and show recently visited pages
-
-## Notes
-
-- The sidebar matches the Figma design provided
-- All 50 components are now accessible via navigation
-- The routing structure supports future expansion
-- The welcome dashboard provides a clear overview
-- Clean URLs make the app shareable and bookmarkable
+- **2026-05-19** — Doc converted to rolling format with changelog. Removed stale references to "Alliance Metal", the Design module (folded into Control), and out-of-date component counts. Marked dark mode, Cmd+K palette, breadcrumbs, and Quick Create as shipped.
+- **earlier** — Initial navigation system built: sidebar, React Router v6 data mode, nested routes, welcome dashboard, lazy loading. (Historical baseline; pre-dates this rolling format.)
