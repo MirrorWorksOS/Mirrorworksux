@@ -11,7 +11,6 @@ import type {
   CapaRecord,
   BatchLot,
   MaterialConsumptionLine,
-  OperatorMessage,
   ScrapRecord,
 } from '@/types/entities';
 
@@ -67,12 +66,6 @@ export const makeService = {
   async getMaterialConsumption(): Promise<MaterialConsumptionLine[]> {
     await delay();
     return mock.materialConsumption;
-  },
-
-  // ── Operator Chat ──────────────────────────────────────────────
-  async getOperatorMessages(jobId: string): Promise<OperatorMessage[]> {
-    await delay();
-    return mock.operatorMessages.filter((m) => m.jobId === jobId);
   },
 
   // ── Scrap Records ──────────────────────────────────────────────

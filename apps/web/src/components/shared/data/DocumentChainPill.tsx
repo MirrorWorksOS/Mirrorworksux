@@ -9,7 +9,8 @@ export type DocType =
   | 'Sales order'
   | 'Job'
   | 'Work order'
-  | 'Manufacturing order';
+  | 'Manufacturing order'
+  | 'Invoice';
 
 export type FlowDoc = {
   label: string;
@@ -18,7 +19,7 @@ export type FlowDoc = {
 };
 
 /** Canonical mock manufacturing chain — same demo IDs across all detail pages
- *  so the chain reads coherently when the user walks OPP → Q → SO → JOB → WO → MO. */
+ *  so the chain reads coherently when the user walks OPP → Q → SO → JOB → WO → MO → INV. */
 export function buildManufacturingFlow(jobId = 'JOB-2026-0015'): FlowDoc[] {
   return [
     { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', docType: 'Opportunity' },
@@ -27,6 +28,7 @@ export function buildManufacturingFlow(jobId = 'JOB-2026-0015'): FlowDoc[] {
     { label: jobId, href: `/plan/jobs/${jobId}`, docType: 'Job' },
     { label: 'WO-2026-0001', href: '#', docType: 'Work order' },
     { label: 'MO-2026-0001', href: '/make/manufacturing-orders/mo-001', docType: 'Manufacturing order' },
+    { label: 'INV-2026-0234', href: '/book/invoices/inv-001', docType: 'Invoice' },
   ];
 }
 

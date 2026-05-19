@@ -1192,16 +1192,6 @@ export interface MaterialConsumptionLine {
   status: 'ok' | 'over' | 'under';
 }
 
-/** Operator chat message */
-export interface OperatorMessage {
-  id: string;
-  jobId: string;
-  userId: string;
-  userName: string;
-  message: string;
-  timestamp: string;
-}
-
 /** Scrap record for heat map analysis */
 export interface ScrapRecord {
   id: string;

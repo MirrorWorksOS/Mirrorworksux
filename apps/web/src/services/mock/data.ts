@@ -57,7 +57,6 @@ import type {
   CapaRecord,
   BatchLot,
   MaterialConsumptionLine,
-  OperatorMessage,
   ScrapRecord,
   CarrierRate,
   BillOfLading,
@@ -1710,14 +1709,6 @@ export const materialConsumption: MaterialConsumptionLine[] = [
   { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok' },
   { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok' },
   { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok' },
-];
-
-export const operatorMessages: OperatorMessage[] = [
-  { id: 'msg-001', jobId: 'job-001', userId: 'emp-006', userName: 'James Murray', message: 'Material arrived — starting weld sequence on bracket batch', timestamp: '2026-04-03T06:15:00Z' },
-  { id: 'msg-002', jobId: 'job-001', userId: 'emp-004', userName: 'David Lee', message: 'CNC setup complete for mounting holes. Ready for brackets from welding.', timestamp: '2026-04-03T07:30:00Z' },
-  { id: 'msg-003', jobId: 'job-001', userId: 'emp-007', userName: 'Anh Nguyen', message: 'QC hold — 3 brackets with porosity. Quarantined in bay 4.', timestamp: '2026-04-03T09:45:00Z' },
-  { id: 'msg-004', jobId: 'job-001', userId: 'emp-003', userName: 'Emma Wilson', message: 'Noted. Adjusted schedule — extra 2hrs welding tomorrow to rework.', timestamp: '2026-04-03T10:00:00Z' },
-  { id: 'msg-005', jobId: 'job-002', userId: 'emp-006', userName: 'James Murray', message: 'Bracket run complete — 50/50 passed first article.', timestamp: '2026-04-03T14:00:00Z' },
 ];
 
 export const scrapRecords: ScrapRecord[] = [

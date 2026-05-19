@@ -90,9 +90,7 @@ export function AIInsightMessage({
   return (
     <Card className="p-3">
       <div className="flex items-center gap-2 mb-1.5">
-        <div className="w-5 h-5 bg-[var(--mw-mirage)] rounded-full flex items-center justify-center flex-shrink-0">
-          <AgentLogomark size={18} />
-        </div>
+        <AgentLogomark size={18} className="flex-shrink-0" />
         <span className="text-xs font-medium text-foreground">
           MirrorWorks Agent
         </span>

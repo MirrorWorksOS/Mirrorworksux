@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Calendar, Save, Share2, Expand, Send, Upload, Download, Camera, Paperclip, ExternalLink, Pencil, Search, Check, Copy, Link2, FileUp } from 'lucide-react';
+import { Calendar, Save, Share2, Expand, Send, Upload, Download, ExternalLink, Pencil, Search, Check, Copy, Link2, FileUp } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
-import { AIInsightMessage } from '../shared/ai/AIInsightCard';
+import { ChatterSummaryCard } from '../shared/chatter';
 import { MwDataTable, type MwColumnDef } from '../shared/data/MwDataTable';
 import { StatusBadge, type StatusKey } from '../shared/data/StatusBadge';
 import { ProgressBar } from '../shared/data/ProgressBar';
@@ -298,8 +298,6 @@ const PRODUCT_DATA: ProductRow[] = [
 export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwitchTab }: PlanOverviewTabProps = {}) {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
-  const [chatInput, setChatInput] = useState('');
   const [shareDialog, setShareDialog] = useState<null | 'products' | 'budget' | 'files'>(null);
   const [createScheduleOpen, setCreateScheduleOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -333,18 +331,6 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
   };
   const [customer, setCustomer] = useState('');
 
-  const handleChatSubmit = () => {
-    const msg = chatInput.trim();
-    if (!msg) return;
-    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
-    setChatInput('');
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { role: 'ai', text: "I've analyzed the job data. The current schedule looks on track with 67% completion. Would you like me to suggest optimizations?" },
-      ]);
-    }, 800);
-  };
   const allSelected = selectedIds.size === PRODUCT_DATA.length;
   const someSelected = selectedIds.size > 0 && !allSelected;
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -898,77 +884,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
           </div>
         </Card>
 
-        {/* Chatter Section */}
-        <Card className="p-6">
-          <h3 className=" text-sm font-medium text-foreground mb-3">
-            Chatter
-          </h3>
-          
-          <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto">
-            <AIInsightMessage timestamp="1 hour ago">
-              Material requirements calculated. Ready to proceed with scheduling.
-            </AIInsightMessage>
-
-            <div className="flex gap-2">
-              <Avatar className="w-6 h-6 border border-[var(--border)] flex-shrink-0">
-                <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-                <AvatarFallback className="text-xs">DM</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className=" text-xs font-medium text-foreground">
-                    David Miller
-                  </span>
-                  <span className=" text-[10px] text-[var(--neutral-500)]">
-                    2 hours ago
-                  </span>
-                </div>
-                <p className=" text-xs text-foreground">
-                  BOM reviewed and approved. Moving to production planning.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {chatMessages.length > 0 && (
-            <div className="space-y-2 mb-3">
-              {chatMessages.map((m, i) => (
-                <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
-                  {m.role === 'user' ? (
-                    <div className="rounded-lg px-3 py-2 text-xs max-w-[85%] bg-[var(--mw-mirage)] text-white">
-                      {m.text}
-                    </div>
-                  ) : (
-                    <div className="max-w-[85%]">
-                      <AIInsightMessage timestamp="just now">
-                        {m.text}
-                      </AIInsightMessage>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
-            <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => setUploadOpen(true)} title="Attach file">
-              <Paperclip className="w-4 h-4 text-[var(--neutral-500)]" />
-            </Button>
-            <Input
-              placeholder="Ask MirrorWorks Agent..."
-              className="flex-1 h-10 text-xs"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
-            />
-            <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('Snapshot from camera coming soon')} title="Snapshot">
-              <Camera className="w-4 h-4 text-[var(--neutral-500)]" />
-            </Button>
-            <Button size="sm" className="h-10 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)] px-3" onClick={handleChatSubmit}>
-              Send
-            </Button>
-          </div>
-        </Card>
+        <ChatterSummaryCard entity={{ type: 'job', id: 'JOB-2026-0015' }} limit={3} />
       </div>
 
       {/* Modals */}

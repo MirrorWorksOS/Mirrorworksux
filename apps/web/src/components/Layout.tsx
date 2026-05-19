@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Sidebar } from './Sidebar';
 import { AgentFAB } from './shared/agent/AgentFAB';
+import { ChatterSheet } from './shared/chatter';
 import { useCommandPaletteStore } from '@/store/commandPaletteStore';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { MobileBottomNav } from './shared/layout/MobileBottomNav';
@@ -110,6 +111,7 @@ export function Layout() {
       )}
 
       <AgentFAB />
+      <ChatterSheet />
     </div>
   );
 }

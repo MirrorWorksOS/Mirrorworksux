@@ -1,38 +1,19 @@
-import React, { useState } from 'react';
-import { Sparkles, Save, Send, Share2, Upload, Download, Camera, Paperclip, FileText, FileSpreadsheet, Ruler, Clock, Mail, Phone, Eye } from 'lucide-react';
+import React from 'react';
+import { Sparkles, Save, Send, Share2, Upload, Download, FileText, FileSpreadsheet, Ruler, Mail, Phone, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { cn } from '../ui/utils';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
-import { AIInsightMessage } from '@/components/shared/ai/AIInsightCard';
 import { AISuggestion } from '@/components/shared/ai/AISuggestion';
 import { MirrorWorksAgentCard } from '@/components/shared/ai/MirrorWorksAgentCard';
 import { IconWell } from '@/components/shared/icons/IconWell';
+import { ChatterSummaryCard } from '@/components/shared/chatter';
 import { toast } from 'sonner';
 interface PlanIntelligenceHubTabProps {
   onOpenBudget?: () => void;
 }
 
 export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabProps = {}) {
-  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
-  const [chatInput, setChatInput] = useState('');
-
-  const handleChatSubmit = () => {
-    const msg = chatInput.trim();
-    if (!msg) return;
-    setChatMessages((prev) => [...prev, { role: 'user', text: msg }]);
-    setChatInput('');
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { role: 'ai', text: "I've analyzed the job data. The current schedule looks on track with 67% completion. Would you like me to suggest optimizations?" },
-      ]);
-    }, 800);
-  };
-
   return (
     <div className="p-6 space-y-6">
       {/* AI Suggestions */}
@@ -349,146 +330,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
         </div>
       </Card>
 
-      {/* Chatter - Full View */}
-      <Card className="p-6">
-        <h3 className=" text-base font-medium text-foreground mb-6">
-          Chatter
-        </h3>
-
-        {/* Messages */}
-        <div className="space-y-6 mb-6 max-h-[600px] overflow-y-auto">
-          {/* Day Separator */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className=" text-xs font-medium text-[var(--neutral-500)]">
-              Today
-            </span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
-          </div>
-
-          {/* Intelligence Hub Message */}
-          <AIInsightMessage timestamp="10:24 AM" actions={
-            <Button size="sm" variant="outline" className="h-12 text-xs border-[var(--border)] text-foreground" onClick={() => toast.info('Opening QC checkpoint detail…')}>
-              View Details
-            </Button>
-          }>
-            Job production complete in Make module. All quality checkpoints passed. Ready for final inspection.
-          </AIInsightMessage>
-
-          {/* User Message */}
-          <div className="flex gap-3">
-            <Avatar className="w-8 h-8 border border-[var(--border)] flex-shrink-0">
-              <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-              <AvatarFallback className="text-xs">DM</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <span className=" text-xs font-medium text-foreground">
-                  David Miller
-                </span>
-                <span className=" text-xs text-[var(--neutral-500)]">
-                  9:15 AM
-                </span>
-              </div>
-              <p className=" text-xs text-foreground">
-                BOM has been finalized. All materials are in stock. We can proceed with scheduling the laser cutting operations for tomorrow morning.
-              </p>
-            </div>
-          </div>
-
-          {/* File Upload Message */}
-          <div className="flex gap-3">
-            <Avatar className="w-8 h-8 border border-[var(--border)] flex-shrink-0">
-              <AvatarImage src="https://i.pravatar.cc/150?img=5" />
-              <AvatarFallback className="text-xs">JW</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <span className=" text-xs font-medium text-foreground">
-                  Jill Wright
-                </span>
-                <span className=" text-xs text-[var(--neutral-500)]">
-                  8:45 AM
-                </span>
-              </div>
-              <p className=" text-xs text-foreground mb-3">
-                Uploaded BOM and NC files for review
-              </p>
-              <div className="flex gap-2">
-                <div className="border border-[var(--border)] rounded-lg p-3 flex items-center gap-3 hover:bg-[var(--neutral-100)] cursor-pointer">
-                  <IconWell icon={FileText} size="sm" />
-                  <div>
-                    <p className=" text-xs font-medium text-foreground">
-                      BOM_MW001_v2.xlsx
-                    </p>
-                    <p className=" text-xs text-[var(--neutral-500)]">
-                      245 KB
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Day Separator */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className=" text-xs font-medium text-[var(--neutral-500)]">
-              Yesterday
-            </span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
-          </div>
-
-          {/* System Message */}
-          <div className="bg-[var(--neutral-100)] rounded-lg p-3 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[var(--neutral-500)]" />
-            <p className=" text-xs text-[var(--neutral-500)]">
-              Job stage changed from <strong>Planning</strong> to <strong>Materials</strong>
-            </p>
-          </div>
-        </div>
-
-        {/* Chat Messages */}
-          {chatMessages.length > 0 && (
-            <div className="space-y-2 mb-4">
-              {chatMessages.map((m, i) => (
-                <div key={i} className={cn('flex gap-2', m.role === 'user' ? 'justify-end' : '')}>
-                  {m.role === 'user' ? (
-                    <div className="rounded-lg px-3 py-2 text-xs max-w-[85%] bg-[var(--mw-mirage)] text-white">
-                      {m.text}
-                    </div>
-                  ) : (
-                    <div className="max-w-[85%]">
-                      <AIInsightMessage timestamp="just now">
-                        {m.text}
-                      </AIInsightMessage>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-        {/* Input Bar */}
-        <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
-          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('File attach: use the Files card on the Overview tab')} title="Attach file">
-            <Paperclip className="w-5 h-5 text-[var(--neutral-500)]" />
-          </Button>
-          <Input
-            placeholder="Ask MirrorWorks Agent..."
-            className="flex-1"
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleChatSubmit(); }}
-          />
-          <Button variant="ghost" size="sm" className="h-10 w-10 p-0" onClick={() => toast.info('Snapshot from camera coming soon')} title="Snapshot">
-            <Camera className="w-5 h-5 text-[var(--neutral-500)]" />
-          </Button>
-          <Button className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-[var(--mw-mirage)]" onClick={handleChatSubmit}>
-            Send
-          </Button>
-        </div>
-      </Card>
+      <ChatterSummaryCard entity={{ type: 'job', id: 'JOB-2026-0015' }} limit={6} />
     </div>
   );
 }

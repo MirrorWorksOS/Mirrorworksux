@@ -26,6 +26,7 @@ import {
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { AIInsightCard } from "@/components/shared/ai/AIInsightCard";
 import { DocumentChainPill, buildManufacturingFlow } from "@/components/shared/data/DocumentChainPill";
+import { ChatterButton, ChatterSummaryCard } from "@/components/shared/chatter";
 import { TimelineView, type TimelineEvent } from "@/components/shared/schedule/TimelineView";
 import { GanttChart, type GanttTask } from "@/components/shared/schedule/GanttChart";
 import { Button } from "@/components/ui/button";
@@ -618,6 +619,10 @@ export function SellOpportunityPage() {
                   {customer.contact.split(" ")[0]}.
                 </AIInsightCard>
               </Card>
+
+              {!isNew && (
+                <ChatterSummaryCard entity={{ type: 'opportunity', id: opp.id }} />
+              )}
             </div>
           </div>
         );
@@ -1096,6 +1101,7 @@ export function SellOpportunityPage() {
             <Save className="mr-2 h-4 w-4" />
             Save
           </Button>
+          {!isNew && <ChatterButton entity={{ type: 'opportunity', id: opp.id }} />}
           <Button
             className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
             onClick={() => {

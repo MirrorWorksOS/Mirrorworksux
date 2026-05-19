@@ -27,6 +27,7 @@ import {
   type JobWorkspaceTabConfig,
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ChatterButton, ChatterSummaryCard } from '@/components/shared/chatter';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -493,6 +494,8 @@ export function SellQuoteDetail() {
                 <HistoryPanel entries={quote.history ?? []} title="History" />
 
                 <QuoteViewActivity viewEvents={quote.viewEvents} quoteRef={quote.ref} />
+
+                <ChatterSummaryCard entity={{ type: 'quote', id: quote.id }} />
               </div>
             </div>
           </div>
@@ -837,6 +840,7 @@ export function SellQuoteDetail() {
           >
             <Download className="mr-2 h-4 w-4" /> Download PDF
           </Button>
+          <ChatterButton entity={{ type: 'quote', id: quote.id }} />
           <Button
             className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             onClick={() => {

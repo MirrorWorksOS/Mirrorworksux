@@ -28,6 +28,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
+import { ChatterButton, ChatterSummaryCard } from "@/components/shared/chatter";
 import { EditableCard } from "@/components/shared/forms/EditableCard";
 import { EditField, EditSelect, EditTextarea, Field } from "@/components/shared/forms/EditField";
 import { EntityPickerModal } from "@/components/shared/pickers/EntityPickerModal";
@@ -704,6 +705,10 @@ export function SellOrderDetail() {
                 This order is tracking 2 days ahead of schedule. Expected delivery:{" "}
                 <strong className="text-foreground">14 Apr</strong>.
               </AIInsightCard>
+
+              {!isNew && (
+                <ChatterSummaryCard entity={{ type: 'sales_order', id: order.id }} />
+              )}
             </div>
           </div>
         );
@@ -1161,6 +1166,7 @@ export function SellOrderDetail() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
+          {!isNew && <ChatterButton entity={{ type: 'sales_order', id: order.id }} />}
           {editMode ? (
             <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={handleSave}>
               Save

@@ -19,6 +19,7 @@ import { PlanBudgetTab } from './PlanBudgetTab';
 import { PlanTravellersTab } from './PlanTravellersTab';
 import { JobActivitiesTab } from './job-detail/JobActivitiesTab';
 import { DocumentChainPill, buildManufacturingFlow } from '@/components/shared/data/DocumentChainPill';
+import { ChatterButton } from '@/components/shared/chatter';
 import { useJobActivityStore } from '@/store/jobActivityStore';
 import { useTravellerStore, isTravellerReadyForRelease } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -325,6 +326,7 @@ export function PlanJobDetail() {
               {isEditing ? <Save className="mr-2 h-4 w-4" /> : <Pencil className="mr-2 h-4 w-4" />}
               {isEditing ? 'Save' : 'Edit'}
             </Button>
+            {!isNew && <ChatterButton entity={{ type: 'job', id: jobId }} />}
             {canReleaseTraveller && !isNew ? (
               <Button
                 className="h-12 bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"

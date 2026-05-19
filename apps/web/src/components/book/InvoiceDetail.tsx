@@ -8,6 +8,7 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
+import { ChatterButton, ChatterSummaryCard } from '@/components/shared/chatter';
 
 interface LineItem {
   num: number;
@@ -54,6 +55,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             <StatusBadge status="sent">Sent</StatusBadge>
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Send className="w-4 h-4" /> Send</Button>
             <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]"><Download className="w-4 h-4" /> Download PDF</Button>
+            <ChatterButton entity={{ type: 'invoice', id: 'inv-001' }} />
             <Button size="sm" className="h-10 gap-2 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-foreground" onClick={() => {
               // TODO(backend): book.invoices.recordPayment(invoice.id, { amount, method, date })
               toast.success('Payment recorded');
@@ -207,6 +209,8 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-1">Last synced: 24 Feb 2026, 10:33 AM</p>
           </Card>
+
+          <ChatterSummaryCard entity={{ type: 'invoice', id: 'inv-001' }} />
         </div>
       </div>
     </PageShell>

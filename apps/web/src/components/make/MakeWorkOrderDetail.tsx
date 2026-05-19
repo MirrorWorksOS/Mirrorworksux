@@ -16,6 +16,7 @@ import {
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { KpiStatCard } from '@/components/shared/cards/KpiStatCard';
+import { ChatterButton, ChatterSummaryCard } from '@/components/shared/chatter';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -211,6 +212,10 @@ export function MakeWorkOrderDetail() {
               </div>
             </Card>
           )}
+
+          {!isNew && (
+            <ChatterSummaryCard entity={{ type: 'work_order', id: draft.id }} />
+          )}
         </div>
       );
     }
@@ -284,6 +289,7 @@ export function MakeWorkOrderDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Link>
           </Button>
+          {!isNew && <ChatterButton entity={{ type: 'work_order', id: draft.id }} />}
           <Button
             className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             onClick={handleSave}

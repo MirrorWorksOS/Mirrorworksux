@@ -7,7 +7,7 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, MessageSquare, Receipt, Play, Pause, AlertTriangle, Timer, Save } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, Receipt, Play, Pause, AlertTriangle, Timer, Save } from 'lucide-react';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { jobs } from '@/services';
 import { toast } from 'sonner';
@@ -18,6 +18,7 @@ import {
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
 import { DocumentChainPill, buildManufacturingFlow } from '@/components/shared/data/DocumentChainPill';
+import { ChatterButton, ChatterSummaryCard } from '@/components/shared/chatter';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
@@ -30,7 +31,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { manufacturingOrders } from '@/services';
-import { OperatorChat } from '@/components/make/OperatorChat';
 import { MaterialConsumption } from '@/components/make/MaterialConsumption';
 import { useTravellerStore } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -119,7 +119,6 @@ export function MakeManufacturingOrderDetail() {
   const [activeTab, setActiveTab] = useState('overview');
   const [woSearch, setWoSearch] = useState('');
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
-  const [showChat, setShowChat] = useState(false);
   const [summaryFilter, setSummaryFilter] = useState<SummaryFilterKey | null>(null);
   const [shiftPaused, setShiftPaused] = useState(false);
 
@@ -137,8 +136,6 @@ export function MakeManufacturingOrderDetail() {
       ) ?? travellerPackets[0],
     [travellerPackets],
   );
-  const chatJobId = mo?.jobId ?? id ?? 'job-unknown';
-
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
       if (t.id === 'work') return { ...t, count: WORK_ORDERS.length };
@@ -557,6 +554,10 @@ export function MakeManufacturingOrderDetail() {
                   Create Invoice
                 </Button>
               </Card>
+
+              {!isNew && id && (
+                <ChatterSummaryCard entity={{ type: 'manufacturing_order', id }} />
+              )}
             </div>
           </div>
         );
@@ -777,22 +778,10 @@ export function MakeManufacturingOrderDetail() {
               <Printer className="mr-2 h-4 w-4" />
               Print Traveler
             </Button>
+            <ChatterButton entity={{ type: 'manufacturing_order', id: id ?? 'mo-001' }} />
             <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               <Plus className="mr-2 h-4 w-4" />
               Add Work Order
-            </Button>
-            <Button
-              variant={showChat ? 'default' : 'outline'}
-              className={cn(
-                'h-12',
-                showChat
-                  ? 'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]'
-                  : 'border-[var(--border)]'
-              )}
-              onClick={() => setShowChat((v) => !v)}
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Chat
             </Button>
           </>
         }
@@ -801,7 +790,6 @@ export function MakeManufacturingOrderDetail() {
         onTabChange={setActiveTab}
         renderTabPanel={renderTabPanel}
       />
-      <OperatorChat jobId={chatJobId} open={showChat} onOpenChange={setShowChat} />
       {selectedWorkOrder && (
         <WorkOrderFullScreen
           workOrder={selectedWorkOrder}
