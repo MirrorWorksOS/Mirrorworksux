@@ -18,7 +18,7 @@ export function AddWidgetButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-[var(--shape-lg)] border-2 border-dashed border-[var(--neutral-200)] bg-transparent text-center transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+        "flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[var(--neutral-200)] bg-transparent text-center transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
         "hover:border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]/50 focus-visible:ring-offset-2",
         className,

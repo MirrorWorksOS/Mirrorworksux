@@ -93,7 +93,7 @@ export function ScrapDialog({ open, reasons, onOpenChange, onSubmit }: ScrapDial
                     key={r}
                     type="button"
                     onClick={() => setReason(r)}
-                    className={`h-12 rounded-[var(--shape-md)] border text-sm font-medium transition-colors ${
+                    className={`h-12 rounded-md border text-sm font-medium transition-colors ${
                       active
                         ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] text-[var(--mw-mirage)]'
                         : 'border-[var(--neutral-200)] bg-card text-[var(--neutral-700)] hover:bg-[var(--neutral-100)]'

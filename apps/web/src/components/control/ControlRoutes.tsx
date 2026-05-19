@@ -306,7 +306,7 @@ function RouteCard({
             <div key={`${op.id}-${idx}`} className="inline-flex items-center">
               <span
                 className={cn(
-                  'inline-flex items-center gap-1.5 rounded-[var(--shape-sm)] border px-2 py-1 text-[11px]',
+                  'inline-flex items-center gap-1.5 rounded-sm border px-2 py-1 text-[11px]',
                   colour.bg,
                   colour.border,
                 )}

@@ -63,7 +63,7 @@ export function ModuleLeadRow({ moduleKey, moduleName }: ModuleLeadRowProps) {
   };
 
   return (
-    <Card className="bg-card border border-[var(--mw-yellow-400)]/30 rounded-[var(--shape-lg)] p-4">
+    <Card className="bg-card border border-[var(--mw-yellow-400)]/30 rounded-lg p-4">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-full bg-[var(--mw-yellow-400)] flex items-center justify-center shrink-0">
           <Crown className="w-5 h-5 text-[var(--mw-mirage)]" />

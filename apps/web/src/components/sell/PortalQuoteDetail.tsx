@@ -356,7 +356,7 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
                         key={m.id}
                         className="flex items-center gap-2.5 text-xs text-foreground"
                       >
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)]">
                           <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
                         </div>
                         <span className="font-medium">{m.shortLabel}</span>
@@ -396,9 +396,9 @@ export function PortalQuoteDetail({ quote, onBack, onAccept, onDecline }: Portal
                     setAcceptDialogOpen(false);
                     onAccept(quote.id, m.id);
                   }}
-                  className="flex w-full items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-green)] hover:bg-[var(--mw-green)]/5"
+                  className="flex w-full items-start gap-3 rounded-md border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-green)] hover:bg-[var(--mw-green)]/5"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)]">
                     <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
                   </div>
                   <div className="min-w-0 flex-1">

@@ -130,10 +130,10 @@ export function WinLossAnalysis() {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           {[1, 2].map((i) => (
-            <div key={i} className="h-28 animate-pulse rounded-[var(--shape-lg)] bg-[var(--neutral-100)]" />
+            <div key={i} className="h-28 animate-pulse rounded-lg bg-[var(--neutral-100)]" />
           ))}
         </div>
-        <div className="h-72 animate-pulse rounded-[var(--shape-lg)] bg-[var(--neutral-100)]" />
+        <div className="h-72 animate-pulse rounded-lg bg-[var(--neutral-100)]" />
       </div>
     );
   }

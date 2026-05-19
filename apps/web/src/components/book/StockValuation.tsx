@@ -162,7 +162,7 @@ export function StockValuation() {
       </div>
 
       {/* Tabs + Table */}
-      <Card className="bg-card rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-card rounded-lg border border-[var(--border)] overflow-hidden">
         <div className="px-4 pt-4">
           <PillNav
             tabs={TABS.map(t => ({ key: t, label: t }))}

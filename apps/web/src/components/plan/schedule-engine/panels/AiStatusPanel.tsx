@@ -27,7 +27,7 @@ export function AiStatusPanel({ visible, currentStepIndex, onCancel }: AiStatusP
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.25, ease: [0.05, 0.7, 0.1, 1] }}
-          className="ai-card-glow ai-card-glow--animating fixed right-8 top-24 z-50 w-[360px] rounded-[var(--shape-lg)] bg-card p-5"
+          className="ai-card-glow ai-card-glow--animating fixed right-8 top-24 z-50 w-[360px] rounded-lg bg-card p-5"
         >
           <header className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2.5">

@@ -274,7 +274,7 @@ function XeroPanel() {
   return (
     <div className="space-y-6 max-w-[720px]">
       {/* Error Banner */}
-      <Card className="bg-[var(--mw-error)]/10 border border-[var(--mw-error)]/30 rounded-[var(--shape-lg)] p-4 flex items-center gap-3">
+      <Card className="bg-[var(--mw-error)]/10 border border-[var(--mw-error)]/30 rounded-lg p-4 flex items-center gap-3">
         <AlertTriangle className="w-5 h-5 text-[var(--mw-error)] shrink-0" />
         <span className="text-sm text-[var(--mw-error)]">3 items failed to sync</span>
         <Button variant="ghost" className="ml-auto text-[var(--mw-error)] text-sm underline h-auto p-0">View errors</Button>
@@ -331,7 +331,7 @@ function XeroPanel() {
       </Card>
 
       {/* Account Mapping Preview */}
-      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-lg p-6">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-medium text-foreground">Account mapping</h4>

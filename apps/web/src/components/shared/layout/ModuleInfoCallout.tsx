@@ -33,14 +33,14 @@ export function ModuleInfoCallout({
   return (
     <Card
       className={cn(
-        'bg-card border border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] p-6',
+        'bg-card border border-[var(--neutral-200)] shadow-xs rounded-lg p-6',
         className
       )}
     >
       {showIcon ? (
         <div className="flex items-start gap-4">
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)] text-foreground"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--neutral-100)] text-foreground"
             aria-hidden
           >
             {iconNode}

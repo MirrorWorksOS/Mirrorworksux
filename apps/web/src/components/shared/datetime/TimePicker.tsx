@@ -87,7 +87,7 @@ export function TimePicker({
         className="w-auto p-4"
         align="start"
       >
-        <div className="flex max-h-[min(320px,50vh)] flex-col divide-y overflow-hidden rounded-[var(--shape-md)] border border-[var(--neutral-200)] sm:max-h-[300px] sm:w-auto sm:flex-row sm:divide-x sm:divide-y-0">
+        <div className="flex max-h-[min(320px,50vh)] flex-col divide-y overflow-hidden rounded-md border border-[var(--neutral-200)] sm:max-h-[300px] sm:w-auto sm:flex-row sm:divide-x sm:divide-y-0">
           <ScrollArea className="h-32 w-full sm:h-[300px] sm:w-[52px]">
             <div className="flex flex-row gap-0.5 p-2 sm:flex-col">
               {HOURS_12.map((hour) => (

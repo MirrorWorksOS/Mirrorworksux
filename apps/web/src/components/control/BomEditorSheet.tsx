@@ -404,7 +404,7 @@ export function BomEditorSheet({
             </div>
 
             {form.lines.length === 0 ? (
-              <div className="rounded-[var(--shape-md)] border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--neutral-500)]">
+              <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--neutral-500)]">
                 No lines yet — add a Material, Purchased, Labour, or
                 Sub-assembly line above.
               </div>
@@ -499,7 +499,7 @@ function BomLineRow({
   const ext = lineExtendedCost(line);
 
   return (
-    <li className="rounded-[var(--shape-md)] border border-[var(--border)] px-2 py-1.5 space-y-1.5">
+    <li className="rounded-md border border-[var(--border)] px-2 py-1.5 space-y-1.5">
       {/* Row 1 — primary identification */}
       <div className="grid grid-cols-12 gap-2 items-center">
         <div className="col-span-2 flex items-center gap-1.5">

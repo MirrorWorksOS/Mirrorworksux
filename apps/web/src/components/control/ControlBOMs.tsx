@@ -449,7 +449,7 @@ export function ControlBOMs() {
             <div className="bg-[var(--neutral-100)] rounded-b-lg px-4 py-4 border border-t-0 border-[var(--neutral-100)]">
               {/* Notes */}
               {bom.notes && (
-                <div className="mb-3 rounded-[var(--shape-md)] bg-card border border-[var(--border)] px-3 py-2 text-xs text-[var(--neutral-600)]">
+                <div className="mb-3 rounded-md bg-card border border-[var(--border)] px-3 py-2 text-xs text-[var(--neutral-600)]">
                   <span className="font-medium text-foreground">Notes: </span>
                   {bom.notes}
                 </div>
@@ -463,7 +463,7 @@ export function ControlBOMs() {
 
               {/* Cost rollup strip */}
               {rollup.total > 0 && (
-                <div className="mt-3 rounded-[var(--shape-md)] bg-card border border-[var(--border)] p-3">
+                <div className="mt-3 rounded-md bg-card border border-[var(--border)] p-3">
                   <div className="flex items-baseline justify-between mb-2">
                     <span className="text-[10px] uppercase tracking-wider text-[var(--neutral-500)] font-medium">
                       Cost rollup
@@ -502,7 +502,7 @@ export function ControlBOMs() {
               )}
 
               {/* Where-used */}
-              <div className="mt-3 rounded-[var(--shape-md)] bg-card border border-[var(--border)] p-3">
+              <div className="mt-3 rounded-md bg-card border border-[var(--border)] p-3">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--neutral-500)] font-medium mb-1.5">
                   Where used
                 </div>

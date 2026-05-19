@@ -15,7 +15,7 @@ export function QuickActionsFooter({
   onRequestHelp,
 }: QuickActionsFooterProps) {
   return (
-    <Card className="rounded-[var(--shape-lg)] border-[var(--neutral-200)] bg-card p-4 shadow-xs">
+    <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-4 shadow-xs">
       <div className="grid grid-cols-3 gap-2">
         <ActionButton icon={Printer} label="Print label" onClick={onPrintLabel} />
         <ActionButton icon={Trash2} label="Report scrap" onClick={onReportScrap} />
@@ -39,7 +39,7 @@ function ActionButton({
       type="button"
       variant="ghost"
       onClick={onClick}
-      className="flex h-auto flex-col items-center justify-center gap-1.5 rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-card py-3 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+      className="flex h-auto flex-col items-center justify-center gap-1.5 rounded-md border border-[var(--neutral-200)] bg-card py-3 text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
     >
       <Icon className="h-5 w-5" />
       <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-700)]">

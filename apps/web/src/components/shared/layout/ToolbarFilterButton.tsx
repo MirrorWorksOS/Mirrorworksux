@@ -74,7 +74,7 @@ export function ToolbarFilterButton({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-72 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-4 shadow-lg"
+        className="w-72 rounded-lg border border-[var(--border)] bg-popover p-4 shadow-lg"
         align="start"
       >
         <div className="space-y-4">

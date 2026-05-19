@@ -169,7 +169,7 @@ export function PlanTravellersTab({
                   shop-floor PDF print of the traveller (Kevin Meyer's
                   "value-add" idea) requires a visible signature block so the
                   paper copy can be physically initialled. */}
-              <div className="mt-5 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-4 dark:bg-[var(--neutral-50)]">
+              <div className="mt-5 rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-4 dark:bg-[var(--neutral-50)]">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileSignature className="h-3.5 w-3.5 text-[var(--neutral-500)]" />

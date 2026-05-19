@@ -572,7 +572,7 @@ export function SellOpportunityPage() {
                     View all
                   </Button>
                 </div>
-                <div className="mb-4 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-3 text-center text-xs text-[var(--neutral-500)]">
+                <div className="mb-4 rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-3 text-center text-xs text-[var(--neutral-500)]">
                   Calendar — use Activities tab for full schedule
                 </div>
                 <ul className="space-y-3 text-sm">
@@ -699,7 +699,7 @@ export function SellOpportunityPage() {
               {MOCK_ACTIVITIES.map((ev) => (
                 <Card
                   key={ev.id}
-                  className="border border-[var(--neutral-200)] bg-card p-4 shadow-xs rounded-[var(--shape-lg)]"
+                  className="border border-[var(--neutral-200)] bg-card p-4 shadow-xs rounded-lg"
                 >
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <Badge
@@ -849,7 +849,7 @@ export function SellOpportunityPage() {
                           {i > 0 && <div className="h-px w-4 bg-[var(--neutral-300)]" />}
                           <div
                             className={cn(
-                              "flex flex-col items-center gap-1 px-3 py-2 rounded-[var(--shape-md)] text-xs",
+                              "flex flex-col items-center gap-1 px-3 py-2 rounded-md text-xs",
                               s.current
                                 ? "bg-[var(--mw-blue)]/10 text-[var(--mw-blue)] font-medium"
                                 : s.done
@@ -889,7 +889,7 @@ export function SellOpportunityPage() {
                   { label: "Meetings", value: "3", icon: <Users className="h-4 w-4 text-[var(--neutral-500)]" /> },
                   { label: "Documents viewed", value: "7", icon: <FileText className="h-4 w-4 text-[var(--neutral-500)]" /> },
                 ].map((m) => (
-                  <div key={m.label} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-50)] px-4 py-3">
+                  <div key={m.label} className="flex items-center gap-3 rounded-md bg-[var(--neutral-50)] px-4 py-3">
                     {m.icon}
                     <div>
                       <p className="text-lg font-medium tabular-nums text-foreground">{m.value}</p>
@@ -919,7 +919,7 @@ export function SellOpportunityPage() {
                     detail: "Customer contacted alternative supplier for powder coating — may affect scope.",
                   },
                 ].map((c) => (
-                  <div key={c.name} className="rounded-[var(--shape-md)] border border-[var(--neutral-100)] p-4">
+                  <div key={c.name} className="rounded-md border border-[var(--neutral-100)] p-4">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-medium text-foreground">{c.name}</span>
                       <Badge variant="outline" className="text-[10px]" style={{ borderColor: c.color, color: c.color }}>
@@ -1048,7 +1048,7 @@ export function SellOpportunityPage() {
                         toast.success('Priority updated');
                       }}
                       className={cn(
-                        "flex w-full items-center justify-between rounded-[var(--shape-sm)] px-2 py-1.5 text-left text-xs hover:bg-[var(--neutral-50)]",
+                        "flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-xs hover:bg-[var(--neutral-50)]",
                         active && "bg-[var(--neutral-50)]",
                       )}
                     >

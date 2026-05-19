@@ -60,7 +60,7 @@ export function UsersTab({ onOpenUserDetail }: UsersTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-3">
+      <div className="rounded-lg border border-[var(--border)] bg-card p-3">
         <div className="flex flex-wrap gap-2 md:flex-nowrap">
           <div className="relative w-full md:max-w-[320px]">
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--neutral-500)]" />

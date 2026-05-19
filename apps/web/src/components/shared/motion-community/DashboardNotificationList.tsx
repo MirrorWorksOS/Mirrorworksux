@@ -94,7 +94,7 @@ export function DashboardNotificationList({
       className={cn(
         "bg-card p-5 text-foreground shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
         mwHairlineBorder,
-        isTop ? "rounded-[var(--shape-2xl)]" : "rounded-[var(--shape-xl)]",
+        isTop ? "rounded-2xl" : "rounded-xl",
         className,
       )}
     >
@@ -157,7 +157,7 @@ export function DashboardNotificationList({
             >
               <div
                 className={cn(
-                  "rounded-[var(--shape-xl)] border border-[var(--mw-yellow-400)]/50 bg-white p-4 shadow-sm",
+                  "rounded-xl border border-[var(--mw-yellow-400)]/50 bg-white p-4 shadow-sm",
                   "dark:border-[var(--mw-yellow-400)]/28 dark:bg-[var(--secondary)]",
                   "transition-[box-shadow,background-color,border-color] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                   "group-hover/stack:border-[var(--mw-yellow-400)] group-hover/stack:shadow-md",

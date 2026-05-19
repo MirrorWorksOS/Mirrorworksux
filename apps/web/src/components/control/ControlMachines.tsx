@@ -391,7 +391,7 @@ function MachineCard({ machine, onClick }: { machine: Machine; onClick: () => vo
       variants={staggerItem}
       onClick={onClick}
       className={cn(
-        'flex flex-col bg-card text-card-foreground rounded-[var(--shape-lg)] p-6 cursor-pointer',
+        'flex flex-col bg-card text-card-foreground rounded-lg p-6 cursor-pointer',
         'border border-[var(--neutral-200)] dark:border-[var(--border)]',
         'shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:shadow-[var(--card-shadow-elevated)]',
         'transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
@@ -461,7 +461,7 @@ function MachineDetailSheet({
       <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader className="pb-4 border-b border-[var(--neutral-200)] dark:border-[var(--border)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[var(--shape-md)] bg-[var(--mw-mirage)] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-md bg-[var(--mw-mirage)] flex items-center justify-center shrink-0">
               <Cog className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0 flex-1">
@@ -628,7 +628,7 @@ function MachineDetailSheet({
                 {machine.maintenanceHistory.map((record, i) => (
                   <div
                     key={i}
-                    className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]"
+                    className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-md p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]"
                   >
                     <div className="flex items-start justify-between mb-1">
                       <div>
@@ -734,7 +734,7 @@ function ConnectionStatusBadge({
 
 function KpiMini({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)] text-center">
+    <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-md p-3 border border-[var(--neutral-200)] dark:border-[var(--border)] text-center">
       <p className="text-xs text-[var(--neutral-500)]">{label}</p>
       <p className="text-xl font-bold tabular-nums mt-1" style={{ color }}>{value}</p>
     </div>

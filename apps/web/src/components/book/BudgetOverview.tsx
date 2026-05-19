@@ -417,7 +417,7 @@ export function BudgetOverview() {
             type="button"
             onClick={() => setStatusFilter(status)}
             className={cn(
-              'rounded-[var(--shape-lg)] px-4 py-2 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]',
+              'rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.0,0.0,0.2,1.0)]',
               statusFilter === status
                 ? 'bg-[var(--mw-yellow-400)] text-primary-foreground'
                 : 'border border-[var(--neutral-200)] bg-card text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)]',

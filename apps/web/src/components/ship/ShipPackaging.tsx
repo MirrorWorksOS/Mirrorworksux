@@ -72,7 +72,7 @@ export function ShipPackaging() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Items column */}
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-3">
+        <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-3">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-medium tracking-tight text-foreground">SH-001</h1>
@@ -113,7 +113,7 @@ export function ShipPackaging() {
         </div>
 
         {/* Package column */}
-        <div className="flex min-h-0 flex-col overflow-y-auto rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-2">
+        <div className="flex min-h-0 flex-col overflow-y-auto rounded-lg border border-[var(--neutral-200)] bg-card p-6 shadow-xs lg:col-span-2">
           <p className="mb-4 text-[10px] font-medium uppercase tracking-widest text-[var(--neutral-500)]">Package</p>
           <div className="mb-6 grid grid-cols-2 gap-2">
             {PACKAGES.map((p) => (
@@ -122,7 +122,7 @@ export function ShipPackaging() {
                 type="button"
                 onClick={() => setPkg(p.name)}
                 className={cn(
-                  'rounded-[var(--shape-lg)] p-4 text-left transition-all duration-150',
+                  'rounded-lg p-4 text-left transition-all duration-150',
                   pkg === p.name
                     ? 'border-2 border-[var(--mw-yellow-400)] bg-card shadow-xs ring-1 ring-[color-mix(in_srgb,var(--mw-yellow-400)_35%,transparent)]'
                     : 'border border-[var(--border)] bg-[var(--neutral-50)] hover:border-[var(--neutral-400)]',
@@ -147,7 +147,7 @@ export function ShipPackaging() {
               <div className="relative mt-1">
                 <Input
                   defaultValue="12.4"
-                  className="h-12 rounded-[var(--shape-lg)] border-[var(--border)] bg-card pr-10 font-medium"
+                  className="h-12 rounded-lg border-[var(--border)] bg-card pr-10 font-medium"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--neutral-500)]">kg</span>
               </div>
@@ -158,7 +158,7 @@ export function ShipPackaging() {
             </div>
           </div>
 
-          <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-4 text-xs shadow-xs">
+          <div className="rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-4 text-xs shadow-xs">
             <p className="font-medium text-foreground">Special instructions</p>
             <p className="mt-1 text-muted-foreground">Handle with care — powder-coated finish. Use corner protectors.</p>
           </div>
@@ -166,7 +166,7 @@ export function ShipPackaging() {
       </div>
 
       {/* Bottom action bar */}
-      <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs">
+      <div className="flex items-center justify-between rounded-lg border border-[var(--neutral-200)] bg-card p-6 shadow-xs">
         <div className="mr-6 h-1.5 max-w-xs flex-1 overflow-hidden rounded-full bg-[var(--neutral-200)]">
           <div
             className="h-full rounded-full transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"

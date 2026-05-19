@@ -14,7 +14,7 @@ export function TimeSummaryGrid({ summary, totalActualMin }: TimeSummaryGridProp
   ];
 
   return (
-    <Card className="rounded-[var(--shape-lg)] border-[var(--neutral-200)] bg-card p-5 shadow-xs">
+    <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-5 shadow-xs">
       <h3 className="text-base font-medium text-[var(--neutral-900)]">Time vs estimate</h3>
       <div className="mt-4 space-y-3">
         {rows.map((row) => (

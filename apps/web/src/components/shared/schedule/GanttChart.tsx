@@ -140,7 +140,7 @@ export function GanttChart({ tasks, startDate, endDate, today: todayProp, onTask
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full min-w-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card shadow-xs p-4",
+        "relative w-full min-w-0 rounded-lg border border-[var(--neutral-200)] bg-card shadow-xs p-4",
         className,
       )}
     >

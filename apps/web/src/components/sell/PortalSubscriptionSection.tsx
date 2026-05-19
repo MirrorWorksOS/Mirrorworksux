@@ -161,7 +161,7 @@ export function PortalSubscriptionSection({
       <motion.div variants={staggerItem}>
         <Card variant="flat" className="p-6">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--neutral-100)]">
               <Sparkles
                 className="h-5 w-5 text-[var(--neutral-600)]"
                 strokeWidth={1.5}
@@ -308,7 +308,7 @@ export function PortalSubscriptionSection({
       <Card variant="flat" className="p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-yellow-50)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--mw-yellow-50)]">
               <Sparkles
                 className="h-5 w-5 text-[var(--mw-yellow-700)]"
                 strokeWidth={1.5}
@@ -408,7 +408,7 @@ export function PortalSubscriptionSection({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card variant="flat" className="p-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--neutral-100)]">
               <Receipt
                 className="h-4 w-4 text-[var(--neutral-700)]"
                 strokeWidth={1.5}
@@ -488,7 +488,7 @@ export function PortalSubscriptionSection({
 
       {/* ── Cancel footer ────────────────────────────────────────── */}
       {canCancel && (
-        <div className="flex items-center justify-between gap-3 rounded-[var(--shape-md)] border border-dashed border-[var(--border)] px-4 py-3 text-xs">
+        <div className="flex items-center justify-between gap-3 rounded-md border border-dashed border-[var(--border)] px-4 py-3 text-xs">
           <div className="text-[var(--neutral-600)]">
             Need to pause or cancel?{' '}
             {cancelBlocked ? (
@@ -543,7 +543,7 @@ export function PortalSubscriptionSection({
                   key={t.tier}
                   type="button"
                   onClick={() => setSelectedTier(t.tier)}
-                  className={`rounded-[var(--shape-md)] border px-4 py-3 text-left transition-colors ${
+                  className={`rounded-md border px-4 py-3 text-left transition-colors ${
                     isSelected
                       ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-50)]'
                       : 'border-[var(--border)] hover:border-[var(--mw-yellow-300)]'
@@ -740,7 +740,7 @@ function UsageMeter({
     decimals > 0 ? n.toFixed(decimals) : n.toLocaleString();
 
   return (
-    <div className="rounded-[var(--shape-md)] border border-[var(--border)] px-3 py-2">
+    <div className="rounded-md border border-[var(--border)] px-3 py-2">
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-1.5 text-[var(--neutral-600)]">
           {icon}

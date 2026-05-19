@@ -495,7 +495,7 @@ export function XeroMappingPage() {
             </DropdownMenuContent>
           </DropdownMenu>
           <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
-            <AlertDialogContent className="rounded-[var(--shape-lg)]">
+            <AlertDialogContent className="rounded-lg">
               <AlertDialogHeader>
                 <AlertDialogTitle>Reset all mappings?</AlertDialogTitle>
                 <AlertDialogDescription>

@@ -101,7 +101,7 @@ export function PresetMenu({ schema, state, onLoad, className }: PresetMenuProps
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-80 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-0 shadow-lg"
+          className="w-80 rounded-lg border border-[var(--border)] bg-popover p-0 shadow-lg"
         >
           <div className="max-h-96 overflow-y-auto py-1">
             <SectionHeader>Default</SectionHeader>

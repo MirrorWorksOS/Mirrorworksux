@@ -182,7 +182,7 @@ function AccessPermissionsPanel({
             <Card
               key={group.name}
               className={cn(
-                'bg-card border rounded-[var(--shape-lg)] overflow-hidden transition-all',
+                'bg-card border rounded-lg overflow-hidden transition-all',
                 isExpanded ? 'border-[var(--mw-yellow-400)]/50 shadow-sm' : 'border-[var(--border)]'
               )}
             >
@@ -395,7 +395,7 @@ export function ModuleSettingsLayout({
         <div className="flex gap-6">
           {/* Left Navigation */}
           <div className="w-56 flex-shrink-0">
-            <Card className="bg-card border border-border rounded-[var(--shape-lg)] p-3 h-fit">
+            <Card className="bg-card border border-border rounded-lg p-3 h-fit">
               <nav className="space-y-0.5">
                 {allPanels.map(panel => {
                   const Icon = panel.icon;
@@ -427,7 +427,7 @@ export function ModuleSettingsLayout({
 
           {/* Right Panel */}
           <div className="flex-1 min-w-0">
-            <Card className="bg-card border border-border rounded-[var(--shape-lg)] p-6">
+            <Card className="bg-card border border-border rounded-lg p-6">
               <ActiveComponent />
             </Card>
             <PlanUsageCard moduleName={moduleName} tierName={(tierName ?? CURRENT_SUBSCRIPTION.tier) as TierName} />

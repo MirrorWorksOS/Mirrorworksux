@@ -141,9 +141,9 @@ function ControlCustomerPortalInner() {
         </div>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between gap-4 rounded-[var(--shape-md)] border border-[var(--border)] p-4">
+          <div className="flex items-center justify-between gap-4 rounded-md border border-[var(--border)] p-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-yellow-100)] text-[var(--mw-yellow-900)]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--mw-yellow-100)] text-[var(--mw-yellow-900)]">
                 <Globe className="h-4 w-4" />
               </div>
               <div>

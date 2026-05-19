@@ -122,7 +122,7 @@ function ControlNotificationTemplatesInner() {
                     type="button"
                     onClick={() => handleSelect(t.id)}
                     className={cn(
-                      'flex w-full items-center gap-3 rounded-[var(--shape-md)] px-3 py-3 text-left transition-colors',
+                      'flex w-full items-center gap-3 rounded-md px-3 py-3 text-left transition-colors',
                       isActive
                         ? 'bg-[var(--neutral-100)]'
                         : 'hover:bg-[var(--neutral-50)]',
@@ -130,7 +130,7 @@ function ControlNotificationTemplatesInner() {
                   >
                     <div
                       className={cn(
-                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-md)]',
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-md',
                         t.enabled
                           ? 'bg-[var(--mw-yellow-100)] text-[var(--mw-yellow-900)]'
                           : 'bg-[var(--neutral-100)] text-[var(--neutral-400)]',
@@ -206,7 +206,7 @@ function ControlNotificationTemplatesInner() {
                       <span className="mb-1 block text-xs font-medium text-[var(--neutral-500)]">
                         Body preview
                       </span>
-                      <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-4">
+                      <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-4">
                         <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
                           {selected.bodyMd}
                         </pre>

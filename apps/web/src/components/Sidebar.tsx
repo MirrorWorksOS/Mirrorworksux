@@ -561,7 +561,7 @@ function ModuleIcon({
 
   return (
     <div
-      className="bg-[var(--mw-mirage)] p-2 rounded-[var(--shape-md)] transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:scale-105"
+      className="bg-[var(--mw-mirage)] p-2 rounded-md transition-transform duration-[var(--duration-medium1)] ease-[var(--ease-standard)] group-hover:scale-105"
     >
       {AnimatedIcon ? (
         <AnimatedIcon
@@ -773,7 +773,7 @@ function KbdPill({
         <kbd
           key={i}
           className={cn(
-            'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-[var(--shape-sm)] text-xs font-medium leading-none select-none',
+            'inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-sm text-xs font-medium leading-none select-none',
             isYellow
               ? 'bg-[var(--mw-yellow-600)]/20 text-primary-foreground/60 border border-[var(--mw-yellow-600)]/30'
               : 'bg-[var(--neutral-100)] text-[var(--neutral-400)] border border-[var(--neutral-200)]'
@@ -928,7 +928,7 @@ function RailIconButton({
     <Link
       to={firstSubPath}
       className={cn(
-        'group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)]',
+        'group relative flex items-center justify-center w-11 h-11 rounded-md',
         'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
         isActive
           ? 'bg-[var(--mw-mirage)] text-white'
@@ -1118,7 +1118,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="group relative flex items-center justify-center w-11 h-9 rounded-[var(--shape-md)] text-foreground hover:bg-[var(--neutral-200)] transition-colors"
+            className="group relative flex items-center justify-center w-11 h-9 rounded-md text-foreground hover:bg-[var(--neutral-200)] transition-colors"
             title="Expand sidebar"
             aria-label="Expand sidebar"
           >
@@ -1133,7 +1133,7 @@ export function Sidebar({
         <QuickCreatePanel open={quickCreateOpen} onOpenChange={setQuickCreateOpen}>
           <button
             type="button"
-            className="group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] transition-colors"
+            className="group relative flex items-center justify-center w-11 h-11 rounded-md bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] transition-colors"
             title="Quick Create"
           >
             <Plus
@@ -1152,7 +1152,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="group relative flex items-center justify-center w-11 h-11 rounded-[var(--shape-md)] border border-border bg-card hover:bg-[var(--neutral-100)] transition-colors"
+          className="group relative flex items-center justify-center w-11 h-11 rounded-md border border-border bg-card hover:bg-[var(--neutral-100)] transition-colors"
           title="Search"
         >
           <Search
@@ -1238,7 +1238,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={onToggleCollapse}
-              className="flex items-center justify-center w-7 h-7 rounded-[var(--shape-sm)] text-[var(--neutral-500)] hover:bg-[var(--neutral-200)] hover:text-foreground transition-colors"
+              className="flex items-center justify-center w-7 h-7 rounded-sm text-[var(--neutral-500)] hover:bg-[var(--neutral-200)] hover:text-foreground transition-colors"
               title="Collapse sidebar"
               aria-label="Collapse sidebar"
             >

@@ -48,7 +48,7 @@ export function OperationHeaderCard({
         : 'text-[var(--neutral-700)]';
 
   return (
-    <Card className="rounded-[var(--shape-lg)] border-[var(--neutral-200)] bg-card p-6 shadow-xs">
+    <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-6 shadow-xs">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
@@ -63,7 +63,7 @@ export function OperationHeaderCard({
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
+          <div className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
             <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               Cycle time
             </div>
@@ -89,7 +89,7 @@ export function OperationHeaderCard({
             </div>
           </div>
 
-          <div className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
+          <div className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
             <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               Units complete
             </div>

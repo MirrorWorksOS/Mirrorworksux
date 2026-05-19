@@ -525,7 +525,7 @@ export function ProductStudioV2() {
           variant="ghost"
           size="icon"
           onClick={() => setSidebarCollapsed((c) => !c)}
-          className="size-10 rounded-[var(--shape-md)]"
+          className="size-10 rounded-md"
           aria-label={sidebarCollapsed ? 'Show block sidebar' : 'Hide block sidebar'}
           title={sidebarCollapsed ? 'Show block sidebar' : 'Hide block sidebar'}
         >
@@ -543,7 +543,7 @@ export function ProductStudioV2() {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="group flex min-w-0 items-center gap-2 rounded-[var(--shape-md)] px-2 py-1 text-left transition-colors hover:bg-[var(--neutral-100)]"
+              className="group flex min-w-0 items-center gap-2 rounded-md px-2 py-1 text-left transition-colors hover:bg-[var(--neutral-100)]"
             >
               <div className="flex min-w-0 flex-col">
                 <span className="flex items-center gap-1.5">
@@ -695,7 +695,7 @@ export function ProductStudioV2() {
               workspace shows the moment a product is picked. */}
           {!product && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[var(--app-canvas)]/85 backdrop-blur-sm">
-              <div className="pointer-events-auto flex max-w-md flex-col items-center gap-4 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-8 text-center shadow-[var(--elevation-2)]">
+              <div className="pointer-events-auto flex max-w-md flex-col items-center gap-4 rounded-lg border border-[var(--neutral-200)] bg-card p-8 text-center shadow-[var(--elevation-2)]">
                 <IconWell icon={Package} surface="onLight" size="md" shape="squircle" />
                 <div className="space-y-1">
                   <h2 className="text-[16px] font-semibold text-[var(--neutral-900)]">

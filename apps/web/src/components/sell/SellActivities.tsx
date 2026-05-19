@@ -573,7 +573,7 @@ function ActivityCard({
       <Card
         variant="flat"
         className={cn(
-          'cursor-pointer rounded-[var(--shape-lg)] border-[var(--border)] p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+          'cursor-pointer rounded-lg border-[var(--border)] p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
           isOverdue && 'border-[var(--mw-error)]/30 dark:border-red-500/30',
           isCompleted && 'opacity-75',
         )}
@@ -1048,7 +1048,7 @@ export function SellActivities() {
                 </h3>
                 <button
                   onClick={() => setSelectedDate(null)}
-                  className="rounded-[var(--shape-sm)] p-1 text-[var(--neutral-400)] transition-colors hover:bg-[var(--neutral-100)] dark:hover:bg-neutral-800 hover:text-[var(--neutral-600)]"
+                  className="rounded-sm p-1 text-[var(--neutral-400)] transition-colors hover:bg-[var(--neutral-100)] dark:hover:bg-neutral-800 hover:text-[var(--neutral-600)]"
                 >
                   <X className="h-4 w-4" strokeWidth={1.5} />
                 </button>

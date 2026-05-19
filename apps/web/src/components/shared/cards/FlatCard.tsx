@@ -22,7 +22,7 @@ export function FlatCard({
 
   return (
     <SpotlightCard
-      radius="rounded-[var(--shape-lg)]"
+      radius="rounded-lg"
       className="h-full min-h-0"
     >
       <Card

@@ -23,7 +23,7 @@ export function OfflineIndicator() {
       initial="initial"
       animate="animate"
       className={cn(
-        "flex items-center justify-between gap-3 rounded-[var(--shape-lg)] border px-4 py-2 text-sm transition-colors",
+        "flex items-center justify-between gap-3 rounded-lg border px-4 py-2 text-sm transition-colors",
         isOffline
           ? "border-[var(--mw-red,#dc2626)]/30 bg-[var(--mw-red,#dc2626)]/5"
           : "border-[var(--chart-scale-high)]/30 bg-[var(--chart-scale-high)]/5",

@@ -133,7 +133,7 @@ function PredictionRow({ prediction }: { prediction: MaintenancePrediction }) {
 
   return (
     <div
-      className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-4"
+      className="rounded-md border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-4"
       style={{ borderLeft: `3px solid ${cfg.borderAccent}` }}
     >
       <div className="flex items-start gap-3">
@@ -263,7 +263,7 @@ export function PredictiveMaintenanceSummary({
       </div>
 
       <div
-        className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-3"
+        className="rounded-md border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/40 p-3"
         style={{ borderLeft: `3px solid ${topCfg.borderAccent}` }}
       >
         <div className="flex items-center gap-2 mb-1">

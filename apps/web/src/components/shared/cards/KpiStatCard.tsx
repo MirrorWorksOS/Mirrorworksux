@@ -102,7 +102,7 @@ export function KpiStatCard({
   if (layout === "inlineEnd") {
     return (
       <SpotlightCard
-        radius="rounded-[var(--shape-lg)]"
+        radius="rounded-lg"
         className="h-full min-h-0"
       >
         <Card
@@ -141,7 +141,7 @@ export function KpiStatCard({
   if (layout === "compact") {
     return (
       <SpotlightCard
-        radius="rounded-[var(--shape-lg)]"
+        radius="rounded-lg"
         className="h-full min-h-0"
       >
         <Card
@@ -169,7 +169,7 @@ export function KpiStatCard({
 
   return (
     <SpotlightCard
-      radius="rounded-[var(--shape-lg)]"
+      radius="rounded-lg"
       className="h-full min-h-0"
     >
       <Card

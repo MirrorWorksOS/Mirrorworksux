@@ -554,7 +554,7 @@ export function SellOrderDetail() {
                       {order.opportunityId ? (
                         <Link
                           to={`/sell/opportunities/${order.opportunityId}`}
-                          className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
+                          className="inline-flex h-12 w-full items-center rounded-md border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
                         >
                           {order.opportunityId.toUpperCase()}
                         </Link>
@@ -569,7 +569,7 @@ export function SellOrderDetail() {
                       {order.jobId ? (
                         <Link
                           to={`/plan/jobs/${order.jobId}`}
-                          className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
+                          className="inline-flex h-12 w-full items-center rounded-md border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
                         >
                           {order.jobId}
                         </Link>
@@ -806,7 +806,7 @@ export function SellOrderDetail() {
         return (
           <div className="space-y-6">
             {/* Advisory: detailed shipping lives in Ship */}
-            <div className="flex items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--mw-info)]/8 px-4 py-3 text-sm text-[var(--neutral-700)]">
+            <div className="flex items-start gap-3 rounded-md border border-[var(--border)] bg-[var(--mw-info)]/8 px-4 py-3 text-sm text-[var(--neutral-700)]">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-info)]" />
               <p>
                 Detailed shipping (label printing, dimensions, route) is managed in{' '}

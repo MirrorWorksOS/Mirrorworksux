@@ -70,7 +70,7 @@ function EmptyState({
 
     return (
       <div className={cn("flex flex-col items-center justify-center flex-1 p-10", className)}>
-        <div className="border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] flex flex-col items-center gap-6 p-10 w-full max-w-2xl">
+        <div className="border border-dashed border-[var(--neutral-200)] rounded-lg flex flex-col items-center gap-6 p-10 w-full max-w-2xl">
           {illustration && (
             <img
               src={illustration}
@@ -148,7 +148,7 @@ function InlineEmpty({ message = "No items", className }: InlineEmptyProps) {
   return (
     <div
       className={cn(
-        "bg-card border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] p-6 text-center",
+        "bg-card border border-dashed border-[var(--neutral-200)] rounded-lg p-6 text-center",
         className,
       )}
     >

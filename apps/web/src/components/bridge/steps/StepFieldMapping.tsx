@@ -100,13 +100,13 @@ export function StepFieldMapping() {
       </div>
 
       {attentionCount > 0 && (
-        <p className="text-sm font-medium text-foreground rounded-[var(--shape-lg)] border border-[var(--mw-warning)]/30 bg-[color-mix(in_srgb,var(--mw-warning)_10%,white)] dark:bg-[color-mix(in_srgb,var(--mw-warning)_12%,var(--card))] px-4 py-3">
+        <p className="text-sm font-medium text-foreground rounded-lg border border-[var(--mw-warning)]/30 bg-[color-mix(in_srgb,var(--mw-warning)_10%,white)] dark:bg-[color-mix(in_srgb,var(--mw-warning)_12%,var(--card))] px-4 py-3">
           {attentionCount} column{attentionCount === 1 ? '' : 's'} need your attention — unmapped, skipped, or lower
           confidence.
         </p>
       )}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-4 py-3">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-4 py-3">
         <div className="flex items-center gap-3">
           <Switch id="bridge-attention-only" checked={attentionOnly} onCheckedChange={setAttentionOnly} />
           <Label htmlFor="bridge-attention-only" className="text-sm font-normal cursor-pointer">

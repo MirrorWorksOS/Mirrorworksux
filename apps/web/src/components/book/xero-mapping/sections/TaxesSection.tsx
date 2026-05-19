@@ -30,7 +30,7 @@ function TaxRow({ entry, taxRates, onChange }: RowProps) {
   return (
     <div
       className={
-        'flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] border px-3 py-2.5 transition-colors ' +
+        'flex flex-wrap items-center gap-3 rounded-md border px-3 py-2.5 transition-colors ' +
         (requiredUnmapped
           ? 'bg-[var(--mw-error)]/5 border-[var(--mw-error)]/25'
           : 'bg-background border-[var(--border)]')

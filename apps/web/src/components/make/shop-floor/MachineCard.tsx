@@ -23,7 +23,7 @@ export function MachineCard({ machine, onSelect }: MachineCardProps) {
       type="button"
       onClick={() => onSelect(machine.id)}
       className={cn(
-        'flex h-full min-h-[296px] w-full flex-col rounded-[16px] border bg-card p-6 text-left',
+        'flex h-full min-h-[296px] w-full flex-col rounded-lg border bg-card p-6 text-left',
         'transition-colors duration-[var(--duration-short3)] ease-[var(--ease-standard)]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2',
         isActive
@@ -65,7 +65,7 @@ export function MachineCard({ machine, onSelect }: MachineCardProps) {
 
       <div className="mt-auto pt-6">
         {machine.blockingIssue ? (
-          <div className="mb-4 rounded-[var(--shape-md)] border border-[var(--mw-error)]/20 bg-[var(--mw-error)]/5 p-4">
+          <div className="mb-4 rounded-md border border-[var(--mw-error)]/20 bg-[var(--mw-error)]/5 p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-error)]" />
               <div>
@@ -79,7 +79,7 @@ export function MachineCard({ machine, onSelect }: MachineCardProps) {
             </div>
           </div>
         ) : machine.cycleTimeLabel ? (
-          <div className="mb-4 flex min-h-11 items-center gap-2 rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-4 text-sm text-[var(--neutral-700)]">
+          <div className="mb-4 flex min-h-11 items-center gap-2 rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-4 text-sm text-[var(--neutral-700)]">
             <Clock3 className="h-4 w-4 text-[var(--neutral-500)]" />
             <span>Cycle target {machine.cycleTimeLabel}</span>
           </div>
@@ -102,7 +102,7 @@ function JobPanel({ label, job, emptyLabel, active = false }: JobPanelProps) {
   return (
     <div
       className={cn(
-        'rounded-[var(--shape-md)] border p-4',
+        'rounded-md border p-4',
         active
           ? 'border-[var(--mw-yellow-300)] bg-[var(--mw-yellow-50)]'
           : 'border-[var(--neutral-200)] bg-[var(--neutral-100)]'

@@ -137,7 +137,7 @@ export function ControlOperations() {
               className="pl-8 h-9 text-xs"
             />
           </div>
-          <div className="inline-flex flex-wrap rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-0.5 gap-0.5">
+          <div className="inline-flex flex-wrap rounded-md bg-[var(--neutral-100)] p-0.5 gap-0.5">
             <CategoryPill label="All" active={activeCategory === 'all'} onClick={() => setActiveCategory('all')} />
             {categories.map((cat) => (
               <CategoryPill
@@ -185,7 +185,7 @@ function CategoryPill({
       type="button"
       onClick={onClick}
       className={
-        'px-2.5 py-1 rounded-[var(--shape-sm)] text-xs font-medium transition-colors ' +
+        'px-2.5 py-1 rounded-sm text-xs font-medium transition-colors ' +
         (active
           ? 'bg-card text-foreground shadow-xs'
           : 'text-[var(--neutral-500)] hover:text-foreground')

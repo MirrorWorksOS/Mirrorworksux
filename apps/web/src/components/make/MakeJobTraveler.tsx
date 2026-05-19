@@ -235,7 +235,7 @@ export function MakeJobTraveler() {
                       type="button"
                       onClick={() => toggleOp(op.id)}
                       className={cn(
-                        "flex w-full items-center gap-3 rounded-[var(--shape-md)] px-3 min-h-[56px] text-left transition-colors",
+                        "flex w-full items-center gap-3 rounded-md px-3 min-h-[56px] text-left transition-colors",
                         done
                           ? "bg-[var(--chart-scale-high)]/5"
                           : "hover:bg-[var(--neutral-100)]",
@@ -294,7 +294,7 @@ export function MakeJobTraveler() {
                     <button
                       key={att.id}
                       type="button"
-                      className="flex flex-col items-center gap-2 rounded-[var(--shape-md)] border border-[var(--neutral-200)] p-4 min-h-[56px] text-center transition-colors hover:bg-[var(--neutral-100)]"
+                      className="flex flex-col items-center gap-2 rounded-md border border-[var(--neutral-200)] p-4 min-h-[56px] text-center transition-colors hover:bg-[var(--neutral-100)]"
                     >
                       <AttIcon
                         className="h-8 w-8 text-[var(--neutral-400)]"
@@ -332,7 +332,7 @@ export function MakeJobTraveler() {
                       type="button"
                       onClick={() => toggleQC(qc.id)}
                       className={cn(
-                        "flex w-full items-center gap-3 rounded-[var(--shape-md)] px-3 min-h-[56px] text-left transition-colors",
+                        "flex w-full items-center gap-3 rounded-md px-3 min-h-[56px] text-left transition-colors",
                         done
                           ? "bg-[var(--chart-scale-high)]/5"
                           : "hover:bg-[var(--neutral-100)]",
@@ -386,7 +386,7 @@ export function MakeJobTraveler() {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add job notes..."
                 rows={4}
-                className="w-full min-h-[56px] rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full min-h-[56px] rounded-md border border-[var(--neutral-200)] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </Card>
           </motion.div>

@@ -156,7 +156,7 @@ export function NotificationCardFull({
         </div>
       )}
 
-      <div className={cn('w-9 h-9 rounded-[var(--shape-md)] flex items-center justify-center flex-shrink-0', TYPE_STYLES[notification.type])}>
+      <div className={cn('w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0', TYPE_STYLES[notification.type])}>
         <Icon className="w-4 h-4" />
       </div>
 

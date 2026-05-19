@@ -168,7 +168,7 @@ export function OverviewTab() {
       </div>
 
       {floorMode ? (
-        <div className="p-6 space-y-6 bg-[var(--neutral-900)] rounded-[var(--shape-lg)] flex-1 overflow-auto">
+        <div className="p-6 space-y-6 bg-[var(--neutral-900)] rounded-lg flex-1 overflow-auto">
           {/* Large KPI tiles - 2x2 grid */}
           <div className="grid grid-cols-2 gap-6">
             <div className="bg-[var(--neutral-800)] rounded-2xl p-8 text-center">
@@ -234,7 +234,7 @@ export function OverviewTab() {
       <div className="flex-1 flex flex-col space-y-6 min-w-0">
         
         {/* Intelligence Hub Banner */}
-        <div className="bg-card rounded-[var(--shape-lg)] overflow-hidden border border-[var(--border)]">
+        <div className="bg-card rounded-lg overflow-hidden border border-[var(--border)]">
            <div 
              className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-[var(--accent)] transition-colors"
              onClick={() => setIsInsightsOpen(!isInsightsOpen)}
@@ -310,7 +310,7 @@ export function OverviewTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Card A: Active Jobs */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-lg bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Active Job Focus</CardTitle>
                 </CardHeader>
@@ -334,7 +334,7 @@ export function OverviewTab() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-4 bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)]">
+                    <div className="flex items-center justify-between p-4 bg-card rounded-lg border border-[var(--neutral-200)]">
                       <div className="space-y-1">
                         <div className="text-xs text-[var(--neutral-500)] font-medium">DUE IN</div>
                         <div className="text-2xl font-medium text-[var(--neutral-800)] tabular-nums">4d 12h</div>
@@ -349,7 +349,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card B: Time Tracking */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-lg bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-[var(--neutral-500)] uppercase tracking-wide">Shift Performance</CardTitle>
                 </CardHeader>
@@ -392,7 +392,7 @@ export function OverviewTab() {
               </Card>
 
               {/* Card C: Andon Alerts */}
-              <Card className="border-[var(--neutral-200)] shadow-xs rounded-[var(--shape-lg)] bg-card relative overflow-hidden">
+              <Card className="border-[var(--neutral-200)] shadow-xs rounded-lg bg-card relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
                   <Badge variant="destructive" className="animate-pulse bg-[var(--mw-error)] text-white border-0 rounded-xl px-3">
                     {ANDON_ALERTS.length} Active
@@ -424,7 +424,7 @@ export function OverviewTab() {
             </div>
 
             {/* Manufacturing Orders List */}
-            <div className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+            <div className="bg-card border border-[var(--border)] rounded-lg overflow-hidden">
               <div className="grid grid-cols-12 gap-4 p-4 border-b border-[var(--border)] bg-[var(--neutral-100)] text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wide">
                 <div className="col-span-2">MO #</div>
                 <div className="col-span-3">Customer & Part</div>
@@ -519,7 +519,7 @@ export function OverviewTab() {
 
       {/* Right Sidebar */}
       {isSidebarOpen && (
-        <div className="w-[320px] shrink-0 bg-card flex flex-col rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden py-4">
+        <div className="w-[320px] shrink-0 bg-card flex flex-col rounded-lg border border-[var(--border)] overflow-hidden py-4">
           <div className="flex items-center justify-between px-4 mb-4">
             <h3 className="font-medium text-[var(--neutral-800)]">Communication</h3>
             <Button variant="ghost" size="icon" className="h-14 w-14 hover:bg-[var(--neutral-100)]" onClick={() => setIsSidebarOpen(false)}>
@@ -542,7 +542,7 @@ export function OverviewTab() {
                          <span className="text-sm font-medium text-[var(--neutral-800)]">John Doe</span>
                          <span className="text-xs text-[var(--neutral-500)]">2m</span>
                        </div>
-                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-lg rounded-tl-none">
                          Material for <span className="text-[var(--mw-yellow-400)] font-medium">@MO-26-401</span> is arrived.
                        </p>
                      </div>
@@ -558,7 +558,7 @@ export function OverviewTab() {
                          <span className="text-sm font-medium text-[var(--neutral-800)]">Sarah Jenkins</span>
                          <span className="text-xs text-[var(--neutral-500)]">15m</span>
                        </div>
-                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-[var(--shape-lg)] rounded-tl-none">
+                       <p className="text-sm text-[var(--neutral-800)] mt-0.5 bg-[var(--neutral-100)] p-3 rounded-lg rounded-tl-none">
                          QA check passed for the first batch. Proceeding.
                        </p>
                      </div>
@@ -576,7 +576,7 @@ export function OverviewTab() {
                          <span className="text-sm font-medium text-[var(--neutral-800)]">System</span>
                          <span className="text-xs text-[var(--neutral-500)]">1m</span>
                        </div>
-                       <p className="text-sm text-foreground mt-0.5 bg-[var(--mw-yellow-400)]/20 p-3 rounded-[var(--shape-lg)] rounded-tl-none border border-[var(--mw-yellow-400)]/30">
+                       <p className="text-sm text-foreground mt-0.5 bg-[var(--mw-yellow-400)]/20 p-3 rounded-lg rounded-tl-none border border-[var(--mw-yellow-400)]/30">
                          Production speed increased by 15% after material arrival.
                        </p>
                      </div>
@@ -597,7 +597,7 @@ export function OverviewTab() {
                          </Avatar>
                          <div className="flex-1">
                            <span className="text-sm font-medium text-[var(--neutral-800)]">{m.from === 'ai' ? 'AI Assistant' : 'You'}</span>
-                           <p className={cn('text-sm text-foreground mt-0.5 p-3 rounded-[var(--shape-lg)] rounded-tl-none', m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 border border-[var(--mw-yellow-400)]/30' : 'bg-[var(--neutral-100)]')}>
+                           <p className={cn('text-sm text-foreground mt-0.5 p-3 rounded-lg rounded-tl-none', m.from === 'ai' ? 'bg-[var(--mw-yellow-400)]/20 border border-[var(--mw-yellow-400)]/30' : 'bg-[var(--neutral-100)]')}>
                              {m.text}
                            </p>
                          </div>

@@ -238,7 +238,7 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
   return (
     <div
       className={cn(
-        'flex items-center gap-3 px-3 py-2.5 rounded-[var(--shape-md)] border cursor-grab active:cursor-grabbing',
+        'flex items-center gap-3 px-3 py-2.5 rounded-md border cursor-grab active:cursor-grabbing',
         'shadow-[var(--elevation-1)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:scale-[1.02] active:shadow-[var(--elevation-3)]',
         'transition-all duration-150 ease-[cubic-bezier(0.2,0,0,1)]',
         style.bg, style.border,
@@ -254,7 +254,7 @@ function LibraryItem({ item, onDragStart }: { item: DragItem; onDragStart: (item
       }}
     >
       <div className={cn(
-        'w-8 h-8 rounded-[var(--shape-sm)] flex items-center justify-center flex-shrink-0 border',
+        'w-8 h-8 rounded-sm flex items-center justify-center flex-shrink-0 border',
         style.bg, style.border,
       )}>
         <Icon className="w-4 h-4 text-[var(--mw-mirage-700)]" />
@@ -1112,7 +1112,7 @@ export function ControlProcessBuilder() {
                   Shapes
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-process-stroke)] bg-[var(--pb-process-fill)]" />
+                  <span className="w-4 h-4 rounded-sm border border-[var(--pb-process-stroke)] bg-[var(--pb-process-fill)]" />
                   <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Process</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1124,11 +1124,11 @@ export function ControlProcessBuilder() {
                   <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Resource</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-custom-stroke)] bg-[var(--pb-custom-fill)]" />
+                  <span className="w-4 h-4 rounded-sm border border-[var(--pb-custom-stroke)] bg-[var(--pb-custom-fill)]" />
                   <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Custom</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-[var(--shape-sm)] border border-[var(--pb-text-shapes-stroke)] bg-[var(--pb-text-shapes-fill)]" />
+                  <span className="w-4 h-4 rounded-sm border border-[var(--pb-text-shapes-stroke)] bg-[var(--pb-text-shapes-fill)]" />
                   <span className="text-[var(--mw-mirage-500)]" style={{ fontSize: 'var(--font-label-small)' }}>Text</span>
                 </div>
               </div>

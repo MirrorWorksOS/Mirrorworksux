@@ -64,7 +64,7 @@ export function InviteUserDialog({ open, onOpenChange }: InviteUserDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6">
+      <DialogContent className="max-w-lg rounded-lg border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">Invite team member</DialogTitle>
           <DialogDescription className="text-xs text-[var(--neutral-500)]">

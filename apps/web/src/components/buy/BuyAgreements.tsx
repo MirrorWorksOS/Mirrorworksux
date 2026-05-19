@@ -107,7 +107,7 @@ export function BuyAgreements() {
           { label: 'Total spent YTD',  value: `$${totalSpent.toLocaleString()}`,     sub: `${((totalSpent / totalCommitted) * 100).toFixed(0)}% utilised` },
           { label: 'Remaining',        value: `$${(totalCommitted - totalSpent).toLocaleString()}`, sub: 'Available to spend' },
         ].map(s => (
-          <SpotlightCard key={s.label} radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+          <SpotlightCard key={s.label} radius="rounded-lg" className="h-full min-h-0">
             <Card variant="flat" className="h-full border-[var(--border)] p-6">
               <p className="mb-1 text-xs font-medium text-[var(--neutral-500)]">{s.label}</p>
               <p className="text-xl font-medium tabular-nums text-foreground">{s.value}</p>
@@ -132,7 +132,7 @@ export function BuyAgreements() {
 
           return (
             <motion.div key={agr.id} variants={staggerItem} className="h-full min-h-0">
-              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+              <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                 <Card
                   variant="interactive"
                   onClick={() => navigate(`/buy/agreements/${agr.id}`)}

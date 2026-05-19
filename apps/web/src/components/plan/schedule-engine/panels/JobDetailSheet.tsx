@@ -69,7 +69,7 @@ export function JobDetailSheet({ snapshot }: JobDetailSheetProps) {
                   {blocks.map((b) => (
                     <li
                       key={b.id}
-                      className="flex items-center justify-between gap-3 rounded-[var(--shape-md)] border border-[var(--neutral-200)] p-3"
+                      className="flex items-center justify-between gap-3 rounded-md border border-[var(--neutral-200)] p-3"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">{b.operationName}</p>

@@ -168,7 +168,7 @@ export function DateChip({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-80 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-4 shadow-lg"
+        className="w-80 rounded-lg border border-[var(--border)] bg-popover p-4 shadow-lg"
       >
         <div className="space-y-3">
           <div>

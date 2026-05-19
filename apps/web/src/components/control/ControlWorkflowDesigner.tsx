@@ -435,7 +435,7 @@ export function ControlWorkflowDesigner() {
           </div>
 
           {/* AI generator */}
-          <div className="bg-[var(--mw-purple-50)] border border-[var(--mw-purple)]/25 rounded-[var(--shape-lg)] p-3">
+          <div className="bg-[var(--mw-purple-50)] border border-[var(--mw-purple)]/25 rounded-lg p-3">
             <div className="flex items-center gap-1.5 mb-2">
               <Sparkles className="w-4 h-4 text-[var(--neutral-500)]" />
               <span className="text-xs font-medium text-[var(--mw-purple)]">MirrorWorks Agent</span>
@@ -476,7 +476,7 @@ export function ControlWorkflowDesigner() {
                 key={wf.id}
                 onClick={() => { setSelectedWF(wf); setSelectedNode(null); }}
                 className={cn(
-                  'w-full text-left px-3 py-2 rounded-[var(--shape-lg)] transition-colors',
+                  'w-full text-left px-3 py-2 rounded-lg transition-colors',
                   isSelected ? 'bg-[var(--neutral-100)] border border-[var(--border)]' : 'hover:bg-[var(--neutral-100)]',
                 )}
               >
@@ -524,7 +524,7 @@ export function ControlWorkflowDesigner() {
         {/* Toolbar */}
         <div className="h-14 border-b border-[var(--border)] bg-card flex items-center px-4 gap-3 flex-shrink-0">
           {/* Identity */}
-          <div className="w-8 h-8 flex items-center justify-center rounded-[var(--shape-sm)] bg-[var(--mw-yellow-400)]/10">
+          <div className="w-8 h-8 flex items-center justify-center rounded-sm bg-[var(--mw-yellow-400)]/10">
             <AnimatedRoute className="w-5 h-5 text-[var(--mw-yellow-600)]" />
           </div>
           <div className="flex-1 min-w-0">

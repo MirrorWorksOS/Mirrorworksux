@@ -48,7 +48,7 @@ export function AddFilterMenu({ schema, state, onPick, activeCount }: AddFilterM
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-64 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-1 shadow-lg"
+        className="w-64 rounded-lg border border-[var(--border)] bg-popover p-1 shadow-lg"
       >
         <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--neutral-500)]">
           Add filter

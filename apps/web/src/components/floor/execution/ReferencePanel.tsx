@@ -35,7 +35,7 @@ export function ReferencePanel({
   const reference = snapshot.references[activeView];
 
   return (
-    <Card className="rounded-[var(--shape-lg)] border-[var(--neutral-200)] bg-card p-6 shadow-xs">
+    <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-6 shadow-xs">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex h-12 items-center gap-1 rounded-full bg-[var(--neutral-100)] p-1">
           {SEGMENTS.map((seg) => {
@@ -120,7 +120,7 @@ function ReferenceContent({
   if (view === 'drawing') {
     return (
       <div
-        className={`relative mt-5 ${height} overflow-hidden rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-card`}
+        className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-card`}
       >
         <ExecutionModelViewer src={snapshot.modelSrc} className="absolute inset-0" />
         <div className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-card/85 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-600)] backdrop-blur">
@@ -135,10 +135,10 @@ function ReferenceContent({
     const steps = reference.items ?? [];
     return (
       <div
-        className={`relative mt-5 ${height} overflow-hidden rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)]`}
+        className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)]`}
       >
         <div className="absolute inset-0 overflow-y-auto p-6">
-          <div className="mx-auto max-w-[640px] rounded-[var(--shape-md)] bg-card p-6 shadow-sm">
+          <div className="mx-auto max-w-[640px] rounded-md bg-card p-6 shadow-sm">
             <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               <span>{reference.documentLabel}</span>
               <span>{reference.revision} · Page 1 of 1</span>
@@ -170,7 +170,7 @@ function ReferenceContent({
   const reference = snapshot.references.camera;
   return (
     <div
-      className={`relative mt-5 ${height} overflow-hidden rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--mw-mirage)]`}
+      className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-[var(--mw-mirage)]`}
     >
       {reference.previewSrc ? (
         <img
@@ -193,7 +193,7 @@ function ReferenceContent({
       <div className="pointer-events-none absolute right-4 top-4 rounded-full bg-[var(--mw-mirage)]/85 px-3 py-1.5 text-[11px] font-medium tabular-nums text-white backdrop-blur">
         720p · 30fps
       </div>
-      <div className="pointer-events-none absolute bottom-4 left-4 right-4 rounded-[var(--shape-md)] bg-[var(--mw-mirage)]/85 p-3 text-xs text-[var(--neutral-200)] backdrop-blur">
+      <div className="pointer-events-none absolute bottom-4 left-4 right-4 rounded-md bg-[var(--mw-mirage)]/85 p-3 text-xs text-[var(--neutral-200)] backdrop-blur">
         Use the camera as a secondary aid. Return to the drawing or instructions before any setup-critical step.
       </div>
     </div>

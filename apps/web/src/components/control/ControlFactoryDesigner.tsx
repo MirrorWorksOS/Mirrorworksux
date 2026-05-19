@@ -996,9 +996,9 @@ function PaletteItemCard({ item }: { item: PaletteItem }) {
     <div
       draggable
       onDragStart={handleDragStart}
-      className="flex cursor-grab items-center gap-3 rounded-[var(--shape-md)] border border-transparent px-3 py-2.5 shadow-[var(--elevation-0)] hover:border-[var(--pb-hairline)] hover:bg-[var(--mw-mirage-50)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:cursor-grabbing active:scale-[1.02] active:shadow-[var(--elevation-3)] transition-all duration-150 ease-[cubic-bezier(0.2,0,0,1)]"
+      className="flex cursor-grab items-center gap-3 rounded-md border border-transparent px-3 py-2.5 shadow-[var(--elevation-0)] hover:border-[var(--pb-hairline)] hover:bg-[var(--mw-mirage-50)] hover:shadow-[var(--elevation-2)] hover:-translate-y-0.5 active:cursor-grabbing active:scale-[1.02] active:shadow-[var(--elevation-3)] transition-all duration-150 ease-[cubic-bezier(0.2,0,0,1)]"
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-sm)] bg-[var(--mw-mirage-100)] text-[var(--mw-mirage-700)]">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-[var(--mw-mirage-100)] text-[var(--mw-mirage-700)]">
         {item.icon}
       </div>
       <div className="min-w-0 flex-1">

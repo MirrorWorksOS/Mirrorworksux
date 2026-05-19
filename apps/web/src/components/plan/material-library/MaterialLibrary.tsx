@@ -210,7 +210,7 @@ export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNo
               <Plus className="h-4 w-4 shrink-0" strokeWidth={1.5} />
               New material
             </Button>
-            <p className="max-w-md rounded-[var(--shape-lg)] bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
+            <p className="max-w-md rounded-lg bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
               Source-of-truth for sheet, tube, RHS, angle, and bar stock used by{' '}
               <span className="font-medium">Product Studio</span>. Master data may also be managed in
               Control when connected.
@@ -231,7 +231,7 @@ export function MaterialLibrary({ headerExtras }: { headerExtras?: React.ReactNo
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, code, or grade…"
-            className="h-10 rounded-[var(--shape-lg)] border-transparent bg-[var(--neutral-100)] pl-10 text-sm"
+            className="h-10 rounded-lg border-transparent bg-[var(--neutral-100)] pl-10 text-sm"
           />
         </div>
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as 'all' | MaterialType)}>

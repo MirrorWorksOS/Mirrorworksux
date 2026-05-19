@@ -122,13 +122,13 @@ function ControlLegalTemplatesInner() {
                           type="button"
                           onClick={() => handleSelect(t.id)}
                           className={cn(
-                            'flex w-full items-center gap-3 rounded-[var(--shape-md)] px-3 py-2.5 text-left transition-colors',
+                            'flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors',
                             isActive
                               ? 'bg-[var(--neutral-100)]'
                               : 'hover:bg-[var(--neutral-50)]',
                           )}
                         >
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--shape-sm)] bg-[var(--neutral-100)] text-[var(--neutral-500)]">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-[var(--neutral-100)] text-[var(--neutral-500)]">
                             <FileText className="h-3.5 w-3.5" />
                           </div>
                           <span className="min-w-0 flex-1 truncate text-sm text-foreground">
@@ -191,7 +191,7 @@ function ControlLegalTemplatesInner() {
                     <span className="mb-1 block text-xs font-medium text-[var(--neutral-500)]">
                       Body
                     </span>
-                    <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-4">
+                    <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-4">
                       <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
                         {selected.body}
                       </pre>

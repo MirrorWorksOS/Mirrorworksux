@@ -17,9 +17,9 @@ interface CardSkeletonProps {
 function KpiSkeleton({ className }: CardSkeletonProps) {
   return (
     <Card variant="flat" className={cn("p-6 space-y-3", className)}>
-      <Skeleton className="h-3 w-24 rounded-[var(--shape-xs)]" />
-      <Skeleton className="h-8 w-32 rounded-[var(--shape-md)]" />
-      <Skeleton className="h-3 w-20 rounded-[var(--shape-xs)]" />
+      <Skeleton className="h-3 w-24 rounded-xs" />
+      <Skeleton className="h-8 w-32 rounded-md" />
+      <Skeleton className="h-3 w-20 rounded-xs" />
     </Card>
   );
 }
@@ -41,10 +41,10 @@ function ChartSkeleton({ className }: CardSkeletonProps) {
   return (
     <Card variant="flat" className={cn("p-6 space-y-4", className)}>
       <div className="flex items-center justify-between">
-        <Skeleton className="h-5 w-36 rounded-[var(--shape-xs)]" />
-        <Skeleton className="h-8 w-24 rounded-[var(--shape-md)]" />
+        <Skeleton className="h-5 w-36 rounded-xs" />
+        <Skeleton className="h-8 w-24 rounded-md" />
       </div>
-      <Skeleton className="h-48 w-full rounded-[var(--shape-md)]" />
+      <Skeleton className="h-48 w-full rounded-md" />
     </Card>
   );
 }
@@ -55,13 +55,13 @@ function ContentCardSkeleton({
 }: CardSkeletonProps & { lines?: number }) {
   return (
     <Card variant="flat" className={cn("p-6 space-y-4", className)}>
-      <Skeleton className="h-5 w-40 rounded-[var(--shape-xs)]" />
+      <Skeleton className="h-5 w-40 rounded-xs" />
       <div className="space-y-3">
         {Array.from({ length: lines }).map((_, i) => (
           <Skeleton
             key={i}
             className={cn(
-              "h-4 rounded-[var(--shape-xs)]",
+              "h-4 rounded-xs",
               i === lines - 1 ? "w-3/5" : "w-full",
             )}
           />

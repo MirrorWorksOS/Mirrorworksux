@@ -405,7 +405,7 @@ export function BuyRequisitionDetail() {
           <Card className="p-6 space-y-4">
             <h3 className="text-sm font-medium text-foreground">Approval History</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-[var(--neutral-100)] rounded-[var(--shape-lg)]">
+              <div className="flex items-center gap-3 p-3 bg-[var(--neutral-100)] rounded-lg">
                 <Send className="w-4 h-4 text-[var(--neutral-500)]" />
                 <div className="flex-1">
                   <p className="text-xs font-medium text-foreground">Submitted by {req.requestorName}</p>
@@ -414,7 +414,7 @@ export function BuyRequisitionDetail() {
                 <StatusBadge variant="neutral">Submitted</StatusBadge>
               </div>
               {req.status === 'approved' && (
-                <div className="flex items-center gap-3 p-3 bg-[var(--neutral-100)] rounded-[var(--shape-lg)]">
+                <div className="flex items-center gap-3 p-3 bg-[var(--neutral-100)] rounded-lg">
                   <CheckCircle2 className="w-4 h-4 text-[var(--mw-green)]" />
                   <div className="flex-1">
                     <p className="text-xs font-medium text-foreground">Approved by Sarah Chen</p>
@@ -424,7 +424,7 @@ export function BuyRequisitionDetail() {
                 </div>
               )}
               {req.status === 'pending_approval' && (
-                <div className="flex items-center gap-3 p-3 border border-dashed border-[var(--border)] rounded-[var(--shape-lg)]">
+                <div className="flex items-center gap-3 p-3 border border-dashed border-[var(--border)] rounded-lg">
                   <CheckCircle2 className="w-4 h-4 text-[var(--neutral-400)]" />
                   <div className="flex-1">
                     <p className="text-xs text-[var(--neutral-500)]">Awaiting approval</p>

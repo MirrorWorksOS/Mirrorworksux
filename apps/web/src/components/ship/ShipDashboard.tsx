@@ -166,7 +166,7 @@ export function ShipDashboard() {
               {EXCEPTIONS.map(exc => (
                 <div
                   key={exc.id}
-                  className="flex items-center gap-4 p-4 rounded-[var(--shape-lg)] bg-[var(--neutral-100)] cursor-pointer hover:bg-[var(--neutral-100)] transition-colors duration-[var(--duration-short2)]"
+                  className="flex items-center gap-4 p-4 rounded-lg bg-[var(--neutral-100)] cursor-pointer hover:bg-[var(--neutral-100)] transition-colors duration-[var(--duration-short2)]"
                 >
                   <div className="w-2 h-2 rounded-full bg-[var(--mw-error)] shrink-0" />
                   <div className="flex-1 min-w-0">

@@ -270,7 +270,7 @@ export function PlanPurchase() {
           return (
             <motion.div key={s.label} variants={staggerItem}>
               <Card className="p-6">
-                <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
+                <div className={cn('w-8 h-8 rounded-md flex items-center justify-center mb-4', s.bg)}>
                   <Icon className={cn('w-4 h-4', s.text)} />
                 </div>
                 <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
@@ -298,7 +298,7 @@ export function PlanPurchase() {
         />
         <ToolbarSpacer />
         {/* Job filter */}
-        <div className="flex items-center gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
+        <div className="flex items-center gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-1">
           {JOB_OPTIONS.map((opt) => (
             <button
               key={opt.key}

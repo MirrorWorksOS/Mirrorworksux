@@ -212,7 +212,7 @@ export function PortalProfileDrawer({
           {/* Shipping address */}
           <section className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)] text-[var(--neutral-700)]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-700)]">
                 <MapPin className="h-4 w-4" strokeWidth={1.5} />
               </div>
               <div>
@@ -277,7 +277,7 @@ export function PortalProfileDrawer({
           {/* Contact profile */}
           <section className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)] text-[var(--neutral-700)]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-700)]">
                 <User className="h-4 w-4" strokeWidth={1.5} />
               </div>
               <div>
@@ -339,7 +339,7 @@ export function PortalProfileDrawer({
                 </div>
               </div>
             ) : (
-              <p className="rounded-[var(--shape-md)] border border-dashed border-[var(--border)] px-3 py-4 text-xs text-[var(--neutral-500)]">
+              <p className="rounded-md border border-dashed border-[var(--border)] px-3 py-4 text-xs text-[var(--neutral-500)]">
                 We couldn't find a contact for you on this customer. Ask
                 your admin to invite you from Sell → Customers → Contacts.
               </p>

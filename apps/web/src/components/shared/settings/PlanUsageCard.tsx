@@ -36,7 +36,7 @@ export function PlanUsageCard({ moduleName, tierName }: PlanUsageCardProps) {
   if (tier === 'Enterprise') return null;
 
   return (
-    <Card className="bg-card border border-border rounded-[var(--shape-lg)] overflow-hidden mt-6">
+    <Card className="bg-card border border-border rounded-lg overflow-hidden mt-6">
       <div className="p-6 space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3">

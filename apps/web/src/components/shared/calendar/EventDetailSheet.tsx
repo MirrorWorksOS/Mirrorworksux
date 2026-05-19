@@ -100,7 +100,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
         {/* Header */}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-[var(--border)]">
           <div className="flex items-start gap-3">
-            <div className={cn('w-10 h-10 rounded-[var(--shape-lg)] flex items-center justify-center flex-shrink-0', cfg.bg)}>
+            <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', cfg.bg)}>
               <Icon className={cn('w-5 h-5', cfg.text)} strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
@@ -205,7 +205,7 @@ export function EventDetailSheet({ event, open, onOpenChange }: EventDetailSheet
               <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Related to</h4>
               <a
                 href={event.relatedTo.path}
-                className="inline-flex items-center gap-2 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] px-3 py-2 text-sm font-medium text-[var(--mw-yellow-700)] transition-colors hover:bg-[var(--neutral-100)]"
+                className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--neutral-50)] px-3 py-2 text-sm font-medium text-[var(--mw-yellow-700)] transition-colors hover:bg-[var(--neutral-100)]"
               >
                 <span className="text-xs text-[var(--neutral-500)]">{event.relatedTo.type}:</span>
                 {event.relatedTo.label}

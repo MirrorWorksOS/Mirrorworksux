@@ -41,7 +41,7 @@ export function IssuesSheet({ snapshot }: IssuesSheetProps) {
           {snapshot.issues.map((issue) => (
             <li
               key={issue.id}
-              className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] p-4"
+              className="rounded-md border border-[var(--neutral-200)] p-4"
             >
               <div className="flex items-start gap-3">
                 <span

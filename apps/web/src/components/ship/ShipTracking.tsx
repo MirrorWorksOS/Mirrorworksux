@@ -291,7 +291,7 @@ export function ShipTracking() {
           { label: 'Delivered', value: deliveredCount, sub: `${shipments.length} total`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Exceptions', value: exceptionCount, sub: 'Needs attention', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -342,7 +342,7 @@ export function ShipTracking() {
                   </div>
 
                   {/* Details */}
-                  <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-4 space-y-2">
+                  <div className="bg-[var(--neutral-100)] rounded-lg p-4 space-y-2">
                     {[
                       { l: 'Weight',  v: '12.4 kg',                          mono: true },
                       { l: 'Dims',    v: '45×35×25 cm',                      mono: true },

@@ -40,7 +40,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full max-w-[520px] overflow-y-auto rounded-l-[var(--shape-lg)] border-l border-[var(--border)] bg-white/95 dark:bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
+        className="w-full max-w-[520px] overflow-y-auto rounded-l-lg border-l border-[var(--border)] bg-white/95 dark:bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:max-w-[520px]"
       >
         <SheetHeader className="text-left">
           <SheetTitle className="sr-only">User details</SheetTitle>
@@ -89,13 +89,13 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
           <div className="border-b border-[var(--neutral-100)]" />
 
           {isDeactivated && (
-            <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--neutral-300)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-600)]">
+            <div className="rounded-lg border border-dashed border-[var(--neutral-300)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-600)]">
               This user is deactivated. They hold no effective permissions in any module until reactivated.
             </div>
           )}
 
           {!isDeactivated && (isSuperAdmin || leadModules.length > 0) && (
-            <div className="rounded-[var(--shape-lg)] border border-[var(--mw-yellow-400)]/40 bg-[var(--mw-yellow-50,theme(colors.yellow.50))] p-4">
+            <div className="rounded-lg border border-[var(--mw-yellow-400)]/40 bg-[var(--mw-yellow-50,theme(colors.yellow.50))] p-4">
               <div className="flex items-start gap-3">
                 {isSuperAdmin ? (
                   <Shield className="mt-0.5 h-5 w-5 shrink-0 text-[var(--mw-yellow-500)]" />
@@ -137,7 +137,7 @@ export function UserDetailSheet({ user, open, onOpenChange }: UserDetailSheetPro
             </div>
           </div>
 
-          <Collapsible className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+          <Collapsible className="rounded-lg border border-[var(--border)] bg-card p-4">
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"

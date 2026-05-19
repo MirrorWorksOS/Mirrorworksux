@@ -5,7 +5,7 @@ import { cn } from "./utils";
 
 const cardVariants = cva(
   /* Card shadows use --card-shadow-* in globals.css (softer than shadow-xs/sm utilities). */
-  "flex flex-col rounded-[var(--shape-lg)] transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+  "flex flex-col rounded-lg transition-shadow duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
   {
     variants: {
       variant: {

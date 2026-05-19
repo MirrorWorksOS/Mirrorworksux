@@ -82,7 +82,7 @@ export function ScheduleCalendar({
   return (
     <div
       className={cn(
-        "rounded-[var(--shape-lg)] border border-[var(--neutral-200)] dark:border-neutral-700 bg-card p-4 shadow-xs",
+        "rounded-lg border border-[var(--neutral-200)] dark:border-neutral-700 bg-card p-4 shadow-xs",
         className,
       )}
     >
@@ -111,7 +111,7 @@ export function ScheduleCalendar({
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
-      <div className="grid grid-cols-7 gap-px rounded-[var(--shape-md)] border border-[var(--neutral-200)] dark:border-neutral-700 bg-[var(--neutral-200)] dark:bg-neutral-700">
+      <div className="grid grid-cols-7 gap-px rounded-md border border-[var(--neutral-200)] dark:border-neutral-700 bg-[var(--neutral-200)] dark:bg-neutral-700">
         {weekLabels.map((d) => (
           <div
             key={d}

@@ -306,7 +306,7 @@ function ChartWidgetContent({ type }: { type: string }) {
 
     default:
       return (
-        <div className="flex h-[180px] items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-50)]">
+        <div className="flex h-[180px] items-center justify-center rounded-lg bg-[var(--neutral-50)]">
           <p className="text-sm text-[var(--neutral-400)]">Chart preview</p>
         </div>
       );
@@ -386,7 +386,7 @@ function ListWidgetContent({ type }: { type: string }) {
               className={cn(
                 "flex items-center gap-3 border-b border-[var(--neutral-100)] pb-2 last:border-0 last:pb-0",
                 isFirst &&
-                  "rounded-[var(--shape-md)] border-0 bg-[var(--mw-yellow-400)] px-2 py-1.5",
+                  "rounded-md border-0 bg-[var(--mw-yellow-400)] px-2 py-1.5",
               )}
             >
               <span
@@ -441,14 +441,14 @@ function ListWidgetContent({ type }: { type: string }) {
 function AiWidgetContent() {
   return (
     <div className="space-y-3">
-      <div className="flex items-start gap-3 rounded-[var(--shape-lg)] bg-[var(--neutral-50)] p-3">
+      <div className="flex items-start gap-3 rounded-lg bg-[var(--neutral-50)] p-3">
         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-yellow-400)]" />
         <p className="text-sm text-[var(--neutral-700)]">
           3 deals are stalled over 30 days. Consider scheduling follow-ups for
           Acme Corp ($85K), BuildRight ($62K), and MetalPro ($48K).
         </p>
       </div>
-      <div className="flex items-start gap-3 rounded-[var(--shape-lg)] bg-[var(--neutral-50)] p-3">
+      <div className="flex items-start gap-3 rounded-lg bg-[var(--neutral-50)] p-3">
         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-yellow-400)]" />
         <p className="text-sm text-[var(--neutral-700)]">
           On-time delivery improved 1.8% this quarter. Top contributor: reduced

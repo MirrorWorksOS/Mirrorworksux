@@ -114,7 +114,7 @@ export function FolderCard({
           return (
             <div
               key={i}
-              className="absolute left-1/2 top-1/2 h-[50px] w-[60px] rounded-[3px] shadow-sm"
+              className="absolute left-1/2 top-1/2 h-[50px] w-[60px] rounded-xs shadow-sm"
               style={{
                 backgroundColor: paperShades[i],
                 transform: open ? transforms[i] : "translate(-50%, -50%)",

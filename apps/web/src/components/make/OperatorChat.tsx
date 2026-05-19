@@ -111,7 +111,7 @@ export function OperatorChat({ jobId, open, onOpenChange }: OperatorChatProps) {
               initial="initial"
               animate="animate"
               className={cn(
-                "space-y-1 rounded-[var(--shape-md)] p-3",
+                "space-y-1 rounded-md p-3",
                 msg.userName === "You"
                   ? "ml-8 bg-[var(--mw-mirage)]/5"
                   : "mr-8 bg-[var(--neutral-100)]",

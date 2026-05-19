@@ -157,7 +157,7 @@ export function FloorStationPicker() {
                       <button
                         key={machine.id}
                         onClick={() => handlePick(machine)}
-                        className={`group relative flex flex-col gap-3 p-5 bg-card rounded-[var(--shape-lg)] border text-left transition-all active:scale-[0.98] min-h-[148px] ${
+                        className={`group relative flex flex-col gap-3 p-5 bg-card rounded-lg border text-left transition-all active:scale-[0.98] min-h-[148px] ${
                           isSelected
                             ? 'border-[var(--mw-yellow-400)] shadow-[var(--elevation-2)] ring-2 ring-[var(--mw-yellow-400)]/40'
                             : 'border-[var(--neutral-200)] hover:border-[var(--mw-yellow-400)] hover:shadow-[var(--elevation-2)]'

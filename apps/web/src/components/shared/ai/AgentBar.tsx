@@ -123,7 +123,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
 
       <div
         className={cn(
-          "ai-card-glow rounded-[var(--shape-2xl)] bg-card",
+          "ai-card-glow rounded-2xl bg-card",
           "transition-transform duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)]",
           "hover:-translate-y-px",
           "focus-within:translate-y-0",
@@ -131,7 +131,7 @@ export function AgentBar({ user, className }: AgentBarProps) {
       >
       <form
         onSubmit={onSubmit}
-        className="relative overflow-hidden rounded-[var(--shape-2xl)]"
+        className="relative overflow-hidden rounded-2xl"
         role="search"
         aria-label="Agent — search MirrorWorks"
       >

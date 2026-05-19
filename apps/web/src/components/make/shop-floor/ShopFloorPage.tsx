@@ -74,7 +74,7 @@ export function ShopFloorPage() {
             {releasedQueue.map((traveller) => (
               <div
                 key={traveller.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--shape-md)] border border-[var(--border)] p-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-[var(--border)] p-3"
               >
                 <div>
                   <p className="text-sm font-medium tabular-nums">

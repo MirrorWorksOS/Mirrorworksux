@@ -30,7 +30,7 @@ export function RoutingStrip({
   const totalEstimate = snapshot.timeSummary.setupEstMin + snapshot.timeSummary.runEstMin + snapshot.timeSummary.firstOffEstMin;
 
   return (
-    <Card className="rounded-[var(--shape-lg)] border-[var(--neutral-200)] bg-card p-5 shadow-xs">
+    <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-5 shadow-xs">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-medium text-[var(--neutral-900)]">Routing</h3>
         <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)] tabular-nums">
@@ -77,7 +77,7 @@ export function RoutingStrip({
             {snapshot.routing.map((step) => (
               <div
                 key={step.id}
-                className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-100)] p-4"
+                className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] p-4"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-medium text-[var(--neutral-900)]">
@@ -116,7 +116,7 @@ function RoutingRow({
         <button
           type="button"
           onClick={() => onSelectStep(step)}
-          className="flex w-full items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2 text-left hover:bg-[var(--neutral-200)]"
+          className="flex w-full items-center gap-3 rounded-md bg-[var(--neutral-100)] px-3 py-2 text-left hover:bg-[var(--neutral-200)]"
         >
           <CheckCircle2 className="h-4 w-4 text-[var(--mw-success)]" />
           <span className="flex-1 truncate text-sm text-[var(--neutral-600)]">
@@ -136,7 +136,7 @@ function RoutingRow({
         <button
           type="button"
           onClick={() => onSelectStep(step)}
-          className="flex w-full items-center gap-3 rounded-[var(--shape-md)] bg-card px-3 py-2 text-left hover:bg-[var(--neutral-100)]"
+          className="flex w-full items-center gap-3 rounded-md bg-card px-3 py-2 text-left hover:bg-[var(--neutral-100)]"
         >
           <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[var(--neutral-300)] text-[11px] font-medium text-[var(--neutral-500)] tabular-nums">
             {step.stepNumber}
@@ -151,7 +151,7 @@ function RoutingRow({
   }
 
   return (
-    <li className="rounded-[var(--shape-md)] border border-[var(--mw-yellow-400)] border-l-4 border-l-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] p-4 text-[var(--mw-mirage)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-900)]">
+    <li className="rounded-md border border-[var(--mw-yellow-400)] border-l-4 border-l-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] p-4 text-[var(--mw-mirage)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-900)]">
       <button
         type="button"
         onClick={() => onSelectStep(step)}
@@ -181,7 +181,7 @@ function RoutingRow({
                 <button
                   type="button"
                   onClick={() => onToggleStepItem(item.id)}
-                  className="flex w-full items-center gap-3 rounded-[var(--shape-sm)] bg-white/70 px-2 py-2 text-left text-sm text-[var(--mw-mirage)] hover:bg-white dark:bg-[var(--neutral-200)] dark:text-[#1A2732] dark:hover:bg-[var(--neutral-900)]"
+                  className="flex w-full items-center gap-3 rounded-sm bg-white/70 px-2 py-2 text-left text-sm text-[var(--mw-mirage)] hover:bg-white dark:bg-[var(--neutral-200)] dark:text-[#1A2732] dark:hover:bg-[var(--neutral-900)]"
                 >
                   <span
                     className={`flex h-6 w-6 flex-none items-center justify-center rounded-full border ${

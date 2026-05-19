@@ -106,7 +106,7 @@ export function FacetChip({ facet, value, onChange, onClear, compact }: FacetChi
           <ChevronDown className="h-4 w-4 text-[var(--neutral-500)]" aria-hidden />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-72 rounded-[var(--shape-lg)] border border-[var(--border)] bg-popover p-3 shadow-lg">
+      <PopoverContent align="start" className="w-72 rounded-lg border border-[var(--border)] bg-popover p-3 shadow-lg">
         <FacetPickerBody facet={facet} value={value} onChange={onChange} />
         <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
           <Button

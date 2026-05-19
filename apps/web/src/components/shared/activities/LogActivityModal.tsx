@@ -252,7 +252,7 @@ export function LogActivityModal({
             <Label className="text-sm font-medium text-[var(--neutral-700)]">
               Related {entity.kind}
             </Label>
-            <p className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-3 py-2 text-sm text-foreground">
+            <p className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-3 py-2 text-sm text-foreground">
               {entity.label}
               <Badge variant="outline" className="ml-2 border-[var(--border)] text-xs tabular-nums">
                 {entity.id}

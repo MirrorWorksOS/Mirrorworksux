@@ -238,7 +238,7 @@ function OverviewTab() {
                   key={t.id}
                   onClick={() => setSelectedType(t.id)}
                   className={cn(
-                    'flex flex-col items-start gap-1 p-4 rounded-[var(--shape-lg)] border text-left transition-all',
+                    'flex flex-col items-start gap-1 p-4 rounded-lg border text-left transition-all',
                     active
                       ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] shadow-sm'
                       : 'border-[var(--border)] bg-card hover:border-[var(--neutral-300)]'
@@ -610,7 +610,7 @@ function OverviewTab() {
                 // TODO(backend): products.{a.key}(productId)
                 toast.success(`${a.label} opened`);
               }}
-              className="flex items-center gap-3 p-4 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card hover:bg-[var(--neutral-50)] transition-colors text-left"
+              className="flex items-center gap-3 p-4 rounded-lg border border-[var(--border)] bg-card hover:bg-[var(--neutral-50)] transition-colors text-left"
             >
               <a.icon className="w-5 h-5 text-[var(--neutral-400)]" />
               <span className="text-sm font-medium text-foreground">{a.label}</span>
@@ -1012,7 +1012,7 @@ function RoutingStepPanel({
 
         {/* Capability warnings */}
         {warnings.length > 0 && (
-          <div className="mt-3 rounded-[var(--shape-md)] border border-[var(--mw-warning)] bg-[var(--mw-warning-light)] p-3">
+          <div className="mt-3 rounded-md border border-[var(--mw-warning)] bg-[var(--mw-warning-light)] p-3">
             <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-[var(--neutral-800)]">
               <AlertTriangle className="h-3.5 w-3.5 text-[var(--mw-warning)]" />
               Capability check — {warnings.length} issue{warnings.length === 1 ? '' : 's'}
@@ -1357,7 +1357,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={cn(
-              'flex aspect-[16/10] items-center justify-center rounded-[var(--shape-xl)] border-2 border-dashed transition-colors',
+              'flex aspect-[16/10] items-center justify-center rounded-xl border-2 border-dashed transition-colors',
               dragOver
                 ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/10'
                 : 'border-[var(--border)] bg-[var(--neutral-50)]',
@@ -1365,7 +1365,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
           >
             {selected ? (
               <div className="flex flex-col items-center gap-3 text-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--mw-mirage)] text-white">
+                <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-[var(--mw-mirage)] text-white">
                   {selected.kind === '3d' ? (
                     <Layers3 className="h-10 w-10" strokeWidth={1.5} />
                   ) : selected.kind === '2d' ? (
@@ -1426,7 +1426,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
           </p>
           <ul className="space-y-1.5">
             {files.length === 0 ? (
-              <p className="rounded-[var(--shape-md)] bg-[var(--neutral-50)] p-4 text-center text-xs text-[var(--neutral-500)]">
+              <p className="rounded-md bg-[var(--neutral-50)] p-4 text-center text-xs text-[var(--neutral-500)]">
                 No files yet. Drop CAD files on the left to start.
               </p>
             ) : (
@@ -1437,7 +1437,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                   <li
                     key={f.id}
                     className={cn(
-                      'flex cursor-pointer items-start gap-3 rounded-[var(--shape-md)] border p-3 transition-colors',
+                      'flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors',
                       isSelected
                         ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
                         : 'border-[var(--border)] bg-card hover:border-[var(--neutral-300)]',
@@ -1572,7 +1572,7 @@ function InventoryTab() {
         </div>
 
         {/* Health Banner */}
-        <div className="flex items-center gap-3 p-4 rounded-[var(--shape-lg)] bg-[var(--mw-success-light)] border border-[var(--mw-green-100)]">
+        <div className="flex items-center gap-3 p-4 rounded-lg bg-[var(--mw-success-light)] border border-[var(--mw-green-100)]">
           <CheckCircle className="w-5 h-5 text-[var(--mw-success)]" />
           <div>
             <p className="text-sm font-medium text-[var(--mw-success)]">Healthy Stock Level</p>
@@ -1669,7 +1669,7 @@ function InventoryTab() {
               transfer: <RotateCcw className="w-4 h-4 text-[var(--neutral-500)]" />,
             };
             return (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] bg-card">
                 <div className="p-2 rounded-lg bg-[var(--neutral-100)]">
                   {iconMap[m.icon]}
                 </div>
@@ -1756,7 +1756,7 @@ function AccountingTab() {
                 key={m.id}
                 onClick={() => setValuationMethod(m.id)}
                 className={cn(
-                  'flex flex-col items-start gap-0.5 p-4 rounded-[var(--shape-lg)] border text-left transition-all',
+                  'flex flex-col items-start gap-0.5 p-4 rounded-lg border text-left transition-all',
                   valuationMethod === m.id
                     ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] shadow-sm'
                     : 'border-[var(--border)] bg-card hover:border-[var(--neutral-300)]'
@@ -1948,7 +1948,7 @@ function DocumentsTab() {
         </div>
 
         {/* Drop zone */}
-        <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-[var(--border)] rounded-[var(--shape-lg)] bg-card">
+        <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-[var(--border)] rounded-lg bg-card">
           <Upload className="w-8 h-8 text-[var(--neutral-300)] mb-2" />
           <p className="text-sm font-medium text-foreground">Drag and drop files here</p>
           <p className="text-xs text-[var(--neutral-500)]">or click to browse</p>
@@ -1985,7 +1985,7 @@ function DocumentsTab() {
                   <td className="px-5 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
-                        className="p-2.5 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors"
+                        className="p-2.5 hover:bg-[var(--neutral-100)] rounded-sm transition-colors"
                         onClick={() => {
                           // TODO(backend): products.documents.preview(documentId)
                           toast.success('Preview opened');
@@ -1993,7 +1993,7 @@ function DocumentsTab() {
                       >
                         <Eye className="w-4 h-4 text-[var(--neutral-500)]" />
                       </button>
-                      <button className="p-2.5 hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] transition-colors" onClick={() => toast.success('Downloading...')}>
+                      <button className="p-2.5 hover:bg-[var(--neutral-100)] rounded-sm transition-colors" onClick={() => toast.success('Downloading...')}>
                         <Download className="w-4 h-4 text-[var(--neutral-500)]" />
                       </button>
                     </div>
@@ -2129,11 +2129,11 @@ function DocumentsTab() {
                     </div>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <button className="flex items-center gap-1.5 text-xs text-[var(--neutral-500)] hover:text-foreground hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] px-2 py-1.5 -ml-2 transition-colors">
+                    <button className="flex items-center gap-1.5 text-xs text-[var(--neutral-500)] hover:text-foreground hover:bg-[var(--neutral-100)] rounded-sm px-2 py-1.5 -ml-2 transition-colors">
                       <MessageSquare className="w-3.5 h-3.5" /> {item.comments} Comments
                     </button>
                     {item.likes > 0 && (
-                      <button className="flex items-center gap-1.5 text-xs text-[var(--neutral-500)] hover:text-foreground hover:bg-[var(--neutral-100)] rounded-[var(--shape-sm)] px-2 py-1.5 transition-colors">
+                      <button className="flex items-center gap-1.5 text-xs text-[var(--neutral-500)] hover:text-foreground hover:bg-[var(--neutral-100)] rounded-sm px-2 py-1.5 transition-colors">
                         <Heart className="w-3.5 h-3.5" /> {item.likes} Likes
                       </button>
                     )}

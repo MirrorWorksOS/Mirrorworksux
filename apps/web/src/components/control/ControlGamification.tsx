@@ -284,7 +284,7 @@ export function ControlGamification() {
                 <Card variant="flat" className="border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
                   <div className="flex items-start gap-3 mb-3">
                     <div
-                      className="flex h-12 w-12 items-center justify-center rounded-[var(--shape-lg)] shrink-0"
+                      className="flex h-12 w-12 items-center justify-center rounded-lg shrink-0"
                       style={{ backgroundColor: BADGE_GOLD_SOFT }}
                     >
                       <badge.Icon size={28} color={BADGE_GOLD} aria-hidden />
@@ -333,7 +333,7 @@ export function ControlGamification() {
             <p className="text-sm text-[var(--neutral-500)]">Control how leaderboards appear across the platform</p>
           </div>
 
-          <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-5">
+          <Card className="border border-[var(--border)] rounded-lg p-6 space-y-5">
             {/* Toggle: Show leaderboard */}
             <motion.div variants={staggerItem} className="flex items-center justify-between">
               <div>
@@ -378,7 +378,7 @@ export function ControlGamification() {
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-[var(--shape-lg)] transition-colors ${
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                       timeRange === range
                         ? 'bg-[var(--mw-mirage)] text-white'
                         : 'bg-[var(--neutral-100)] text-[var(--neutral-600)] hover:bg-[var(--neutral-200)]'
@@ -427,13 +427,13 @@ export function ControlGamification() {
               const isExpanded = expandedGroup === group.id;
               return (
                 <motion.div key={group.id} variants={staggerItem}>
-                  <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+                  <Card className="border border-[var(--border)] rounded-lg overflow-hidden">
                     <button
                       onClick={() => setExpandedGroup(isExpanded ? null : group.id)}
                       className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[var(--neutral-50)] transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)]">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--neutral-100)]">
                           <Target className="w-4 h-4 text-foreground" />
                         </div>
                         <div>

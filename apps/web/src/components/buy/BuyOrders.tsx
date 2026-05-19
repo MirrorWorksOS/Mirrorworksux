@@ -349,7 +349,7 @@ export function BuyOrders() {
 
       {state.view === 'calendar' && (
         <motion.div variants={staggerItem}>
-          <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-6">
+          <div className="rounded-lg border border-[var(--border)] bg-card p-6">
             <div className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
               <Calendar className="w-4 h-4" />
               Delivery schedule

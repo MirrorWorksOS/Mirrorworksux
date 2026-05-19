@@ -25,7 +25,7 @@ const wellVariants = cva(
         key: "bg-[var(--icon-well-key-bg)] text-[var(--mw-mirage)] [&_svg]:text-[var(--mw-mirage)]",
       },
       shape: {
-        squircle: "rounded-[var(--shape-md)]",
+        squircle: "rounded-md",
         round: "rounded-full",
       },
       size: {

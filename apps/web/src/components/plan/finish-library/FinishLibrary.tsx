@@ -229,7 +229,7 @@ export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode
               <Plus className="h-4 w-4 shrink-0" strokeWidth={1.5} />
               New finish
             </Button>
-            <p className="max-w-md rounded-[var(--shape-lg)] bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
+            <p className="max-w-md rounded-lg bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
               Powder coat, galv, paint, anodise, polish, and passivate definitions for{' '}
               <span className="font-medium">Product Studio</span>. Tie-ins to Control when connected.
             </p>
@@ -249,7 +249,7 @@ export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, code, or colour…"
-            className="h-10 rounded-[var(--shape-lg)] border-transparent bg-[var(--neutral-100)] pl-10 text-sm"
+            className="h-10 rounded-lg border-transparent bg-[var(--neutral-100)] pl-10 text-sm"
           />
         </div>
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as 'all' | FinishType)}>

@@ -269,7 +269,7 @@ export function WidgetDrawer({
                   >
                     <div className="flex items-start gap-2">
                       {Icon ? (
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--neutral-100)]">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--neutral-100)]">
                           <Icon className="h-4 w-4 text-[var(--neutral-600)]" strokeWidth={1.5} />
                         </div>
                       ) : null}
@@ -343,7 +343,7 @@ export function WidgetDrawer({
                     <div key={i}>
                       <div
                         className={cn(
-                          "max-w-[85%] rounded-[var(--shape-lg)] px-3 py-2 text-sm",
+                          "max-w-[85%] rounded-lg px-3 py-2 text-sm",
                           msg.role === "user"
                             ? "ml-auto bg-[var(--mw-mirage)] text-white"
                             : "bg-[var(--neutral-50)] text-[var(--neutral-800)]",
@@ -362,7 +362,7 @@ export function WidgetDrawer({
                                   msg.suggestedWidget.icon,
                                 );
                                 return Icon ? (
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-lg)] bg-[var(--mw-yellow-400)]/10">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--mw-yellow-400)]/10">
                                     <Icon className="h-4 w-4 text-[var(--mw-yellow-400)]" strokeWidth={1.5} />
                                   </div>
                                 ) : null;

@@ -151,11 +151,11 @@ function DashboardKpi({ icon: Icon, label, value, subtext, color }: {
   return (
     <motion.div
       variants={staggerItem}
-      className="bg-card border border-[var(--neutral-200)] dark:border-[var(--border)] rounded-[var(--shape-lg)] p-4"
+      className="bg-card border border-[var(--neutral-200)] dark:border-[var(--border)] rounded-lg p-4"
     >
       <div className="flex items-center gap-3">
         <div
-          className="w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center shrink-0"
+          className="w-10 h-10 rounded-md flex items-center justify-center shrink-0"
           style={{ backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)` }}
         >
           <Icon className="w-5 h-5" style={{ color }} />
@@ -380,7 +380,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
                     type="button"
                     onClick={() => setSelectedLocation(loc)}
                     className={cn(
-                      'px-3 py-2 rounded-[var(--shape-md)] border text-sm text-left transition-colors',
+                      'px-3 py-2 rounded-md border text-sm text-left transition-colors',
                       selectedLocation === loc
                         ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] dark:bg-[var(--mw-yellow-400)]/10 text-foreground'
                         : 'border-[var(--neutral-200)] dark:border-[var(--border)] text-[var(--neutral-600)] hover:border-[var(--neutral-400)]',
@@ -401,7 +401,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
               ) : (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                   {counts.map(c => (
-                    <div key={c.id} className="flex items-center gap-3 bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
+                    <div key={c.id} className="flex items-center gap-3 bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-md p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                         <p className="text-xs text-[var(--neutral-500)]">{c.sku} · Expected: {c.expected} {c.unit}</p>
@@ -434,7 +434,7 @@ export function StocktakeWizard({ open, onOpenChange }: { open: boolean; onOpenC
                       const item = INVENTORY.find(i => i.id === d.id);
                       const valueImpact = variance * (item?.costPrice ?? 0);
                       return (
-                        <div key={d.id} className="flex items-center justify-between bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-[var(--shape-md)] p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
+                        <div key={d.id} className="flex items-center justify-between bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/50 rounded-md p-3 border border-[var(--neutral-200)] dark:border-[var(--border)]">
                           <div>
                             <p className="text-sm font-medium text-foreground">{d.name}</p>
                             <p className="text-xs text-[var(--neutral-500)]">Expected: {d.expected} / Counted: {d.counted}</p>
@@ -819,7 +819,7 @@ export function ControlInventory() {
           <Card className="dark:border-[var(--border)] p-5">
             <h3 className="text-sm font-medium text-foreground mb-3">Dead Stock Alerts</h3>
             <div className="space-y-2">
-              <div className="flex items-center gap-3 bg-[var(--mw-error-light)] dark:bg-[var(--mw-error)]/10 rounded-[var(--shape-md)] p-3">
+              <div className="flex items-center gap-3 bg-[var(--mw-error-light)] dark:bg-[var(--mw-error)]/10 rounded-md p-3">
                 <AlertTriangle className="w-4 h-4 text-[var(--mw-error)] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">SS Fasteners M10 Grade A4</p>
@@ -827,7 +827,7 @@ export function ControlInventory() {
                 </div>
                 <StatusBadge variant="error">Out</StatusBadge>
               </div>
-              <div className="flex items-center gap-3 bg-[var(--mw-warning-light)] dark:bg-[var(--mw-warning)]/10 rounded-[var(--shape-md)] p-3">
+              <div className="flex items-center gap-3 bg-[var(--mw-warning-light)] dark:bg-[var(--mw-warning)]/10 rounded-md p-3">
                 <AlertTriangle className="w-4 h-4 text-[var(--mw-yellow-600)] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground">Powder Coat Paint RAL 7035</p>

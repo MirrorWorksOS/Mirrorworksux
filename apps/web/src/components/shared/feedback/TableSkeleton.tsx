@@ -27,10 +27,10 @@ function TableSkeleton({
     <Card variant="flat" className={cn("overflow-hidden p-0", className)}>
       {showFilterBar && (
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--neutral-100)]">
-          <Skeleton className="h-9 w-64 rounded-[var(--shape-md)]" />
-          <Skeleton className="h-9 w-24 rounded-[var(--shape-md)]" />
+          <Skeleton className="h-9 w-64 rounded-md" />
+          <Skeleton className="h-9 w-24 rounded-md" />
           <div className="flex-1" />
-          <Skeleton className="h-9 w-32 rounded-[var(--shape-md)]" />
+          <Skeleton className="h-9 w-32 rounded-md" />
         </div>
       )}
 
@@ -39,7 +39,7 @@ function TableSkeleton({
         <div className="flex items-center h-12 px-4 border-b border-[var(--neutral-100)]">
           {Array.from({ length: columns }).map((_, i) => (
             <div key={`head-${i}`} className="flex-1 pr-4">
-              <Skeleton className="h-3 w-20 rounded-[var(--shape-xs)]" />
+              <Skeleton className="h-3 w-20 rounded-xs" />
             </div>
           ))}
         </div>
@@ -54,7 +54,7 @@ function TableSkeleton({
               <div key={`cell-${rowIdx}-${colIdx}`} className="flex-1 pr-4">
                 <Skeleton
                   className={cn(
-                    "h-4 rounded-[var(--shape-xs)]",
+                    "h-4 rounded-xs",
                     colIdx === 0 ? "w-32" : colIdx === columns - 1 ? "w-16" : "w-24",
                   )}
                 />

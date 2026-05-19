@@ -197,7 +197,7 @@ export function PortalContactsPanel({
       <Card className="border border-[var(--border)] p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-mirage)] text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--mw-mirage)] text-white">
               <ShieldCheck className="h-5 w-5" strokeWidth={1.5} />
             </div>
             <div>
@@ -226,7 +226,7 @@ export function PortalContactsPanel({
             return (
               <div
                 key={c.id}
-                className="flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-card px-4 py-3"
+                className="flex flex-wrap items-center gap-3 rounded-md border border-[var(--border)] bg-card px-4 py-3"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--neutral-200)] text-xs font-semibold text-[var(--mw-mirage)]">
                   {c.name
@@ -317,14 +317,14 @@ export function PortalContactsPanel({
             );
           })}
           {contacts.length === 0 && (
-            <p className="rounded-[var(--shape-md)] border border-dashed border-[var(--border)] py-6 text-center text-sm text-[var(--neutral-500)]">
+            <p className="rounded-md border border-dashed border-[var(--border)] py-6 text-center text-sm text-[var(--neutral-500)]">
               No portal users yet. Invite the first one to give them sign-in access.
             </p>
           )}
         </div>
 
         {pendingInvites.length > 0 && (
-          <div className="mt-5 rounded-[var(--shape-md)] border border-[var(--mw-yellow-200)] bg-[var(--mw-yellow-50)] p-3">
+          <div className="mt-5 rounded-md border border-[var(--mw-yellow-200)] bg-[var(--mw-yellow-50)] p-3">
             <p className="text-xs font-medium text-[var(--mw-yellow-700)]">
               {pendingInvites.length} invitation
               {pendingInvites.length === 1 ? '' : 's'} pending

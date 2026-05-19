@@ -124,7 +124,7 @@ export function StepReviewConfirm() {
         </p>
       </Card>
 
-      <div className="flex items-center gap-3 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] px-4 py-3">
+      <div className="flex items-center gap-3 rounded-lg border border-[var(--neutral-200)] px-4 py-3">
         <Switch id="bridge-warnings-only" checked={warningsOnly} onCheckedChange={setWarningsOnly} />
         <Label htmlFor="bridge-warnings-only" className="text-sm font-normal cursor-pointer">
           Show only rows with warnings

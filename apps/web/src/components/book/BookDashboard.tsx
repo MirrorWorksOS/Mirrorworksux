@@ -166,7 +166,7 @@ export function BookDashboard() {
             
             <div className="space-y-4">
               {approvalQueue.map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
+                <div key={i} className="flex items-center justify-between p-3 bg-[var(--neutral-100)] rounded-lg hover:bg-[var(--neutral-100)] transition-colors cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-xs font-medium text-foreground">
@@ -260,7 +260,7 @@ export function BookDashboard() {
             
             <div className="space-y-4">
               {overdueActions.map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--mw-error-100)] rounded-[var(--shape-lg)] hover:bg-[var(--mw-error-200)] transition-colors cursor-pointer">
+                <div key={i} className="flex items-center justify-between p-3 bg-[var(--mw-error-100)] rounded-lg hover:bg-[var(--mw-error-200)] transition-colors cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs text-[var(--mw-error)] font-medium tabular-nums">
@@ -296,7 +296,7 @@ export function BookDashboard() {
           <h3 className="text-base font-medium text-foreground mb-4">
             Revenue vs Expenses
           </h3>
-          <div className="h-[300px] bg-[var(--neutral-100)] rounded-[var(--shape-lg)] flex items-center justify-center">
+          <div className="h-[300px] bg-[var(--neutral-100)] rounded-lg flex items-center justify-center">
             <p className="font-normal text-sm text-[var(--neutral-500)]">
               Chart visualization (Recharts integration)
             </p>

@@ -107,7 +107,7 @@ export function FloorRun() {
   if (notFound || !snapshot) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-100)] p-8">
-        <div className="max-w-[480px] rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-8 text-center shadow-sm">
+        <div className="max-w-[480px] rounded-lg border border-[var(--neutral-200)] bg-card p-8 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mw-error)]/10">
             <AlertCircle className="h-7 w-7 text-[var(--mw-error)]" />
           </div>

@@ -12,7 +12,7 @@ import { cn } from '@/components/ui/utils';
 export type BridgeSegmentOrder = 'skip-first' | 'primary-first';
 
 const shell =
-  'inline-flex items-stretch overflow-hidden rounded-[var(--shape-lg)] border border-[var(--mw-yellow-400)] shadow-xs';
+  'inline-flex items-stretch overflow-hidden rounded-lg border border-[var(--mw-yellow-400)] shadow-xs';
 
 const segmentBase =
   'inline-flex items-center justify-center gap-2 h-12 min-h-[48px] px-6 text-sm font-medium transition-[background-color,color,opacity] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
@@ -266,7 +266,7 @@ export function BridgePrimaryWithTooltip({
       onClick={disabled || isLoading ? undefined : onClick}
       disabled={disabled || isLoading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 h-12 min-h-[48px] px-6 text-sm font-medium rounded-[var(--shape-lg)] border border-[var(--mw-yellow-400)] shadow-xs transition-[background-color,color,opacity] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'inline-flex items-center justify-center gap-2 h-12 min-h-[48px] px-6 text-sm font-medium rounded-lg border border-[var(--mw-yellow-400)] shadow-xs transition-[background-color,color,opacity] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         disabled || isLoading ? primaryDisabled : primaryEnabled,
         className,
       )}

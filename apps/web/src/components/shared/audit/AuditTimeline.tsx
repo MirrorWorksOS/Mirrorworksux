@@ -153,7 +153,7 @@ function TimelineRow({ event, isLast, variant }: { event: AuditEvent; isLast: bo
         </TooltipProvider>
 
         {(event.fieldChanges && event.fieldChanges.length > 0) || event.reason ? (
-          <div className="mt-2 rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-background p-2.5 space-y-1.5">
+          <div className="mt-2 rounded-md border border-[var(--neutral-200)] bg-background p-2.5 space-y-1.5">
             {event.fieldChanges?.map((c, i) => <FieldDiff key={i} change={c} />)}
             {event.reason && (
               <p className="text-xs text-[var(--neutral-500)] italic">
@@ -200,7 +200,7 @@ export function AuditTimeline({
 
   if (events.length === 0) {
     return (
-      <div className={cn('rounded-[var(--shape-lg)] border border-dashed border-[var(--neutral-200)] p-6 text-center', className)}>
+      <div className={cn('rounded-lg border border-dashed border-[var(--neutral-200)] p-6 text-center', className)}>
         <Activity className="mx-auto mb-2 h-5 w-5 text-[var(--neutral-400)]" />
         <p className="text-sm text-[var(--neutral-500)]">No history yet</p>
         <p className="mt-1 text-xs text-[var(--neutral-400)]">Changes will appear here as they happen.</p>

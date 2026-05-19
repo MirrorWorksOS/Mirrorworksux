@@ -193,7 +193,7 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
           align="start"
           sideOffset={6}
           className={cn(
-            "z-[1050] w-[280px] rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-popover",
+            "z-[1050] w-[280px] rounded-lg border border-[var(--neutral-200)] bg-popover",
             "shadow-[0_16px_48px_-8px_rgba(0,0,0,0.15)]",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -234,7 +234,7 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
                       onClick={() => executeItem(item)}
                       onMouseEnter={() => setActiveIndex(item.flatIndex)}
                       className={cn(
-                        'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-[var(--shape-md)] text-left',
+                        'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-left',
                         'transition-all duration-[var(--duration-short2)] ease-[var(--ease-standard)]',
                         isActive
                           ? 'bg-[var(--neutral-100)]'
@@ -243,7 +243,7 @@ export function QuickCreatePanel({ open, onOpenChange, children }: QuickCreatePa
                     >
                       {/* Icon */}
                       <div className={cn(
-                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--shape-sm)]',
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-sm',
                         colors.bg,
                       )}>
                         <Icon className={cn('h-4 w-4', colors.text)} strokeWidth={1.5} />

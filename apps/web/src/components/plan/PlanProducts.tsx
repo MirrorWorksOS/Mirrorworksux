@@ -168,7 +168,7 @@ export function PlanProducts() {
               <Boxes className="w-4 h-4 shrink-0" strokeWidth={1.5} />
               Product Studio
             </Button>
-            <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-[var(--shape-lg)] max-w-md">
+            <p className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-100)] px-3 py-2 rounded-lg max-w-md">
               Product master in <span className="font-medium">Control → Products</span>
               . Use Product Studio for configurable products, options, and rules.
             </p>
@@ -179,7 +179,7 @@ export function PlanProducts() {
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
         <Input placeholder="Search products…" value={search} onChange={e => setSearch(e.target.value)}
-          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] text-sm" />
+          className="pl-10 h-10 bg-[var(--neutral-100)] border-transparent rounded-lg text-sm" />
       </div>
 
       <ToolbarSummaryBar

@@ -2,7 +2,7 @@
  * AIInsightCard — Shared component for AI insight banners across all modules.
  *
  * Design spec (Guidelines §9, AI Insight Card):
- *  - White card, border var(--border), rounded-[var(--shape-lg)], p-4
+ *  - White card, border var(--border), rounded-lg, p-4
  *  - Agent logomark next to title — NO yellow background
  *  - Natural language body text in Roboto Regular 14px var(--neutral-500)
  *  - "Updated X ago" caption with optional refresh button

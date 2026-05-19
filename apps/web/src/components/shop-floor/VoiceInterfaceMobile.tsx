@@ -107,7 +107,7 @@ export function VoiceInterfaceMobile({ onClose }: { onClose?: () => void }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 + (i * 0.1) }}
-                      className="w-full p-4 rounded-[var(--shape-lg)] bg-white/5 border border-white/10 text-left text-sm text-white/90 active:bg-white/10 transition-colors flex items-center justify-between group"
+                      className="w-full p-4 rounded-lg bg-white/5 border border-white/10 text-left text-sm text-white/90 active:bg-white/10 transition-colors flex items-center justify-between group"
                     >
                       "{suggestion}"
                       <Sparkles className="w-4 h-4 text-white/20 group-active:text-foreground transition-colors" />

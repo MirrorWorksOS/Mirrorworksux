@@ -171,7 +171,7 @@ export function EntityPickerModal({
                       type="button"
                       onClick={() => toggle(item.id)}
                       className={cn(
-                        'flex w-full items-center gap-3 rounded-[var(--shape-md)] px-3 py-2.5 text-left transition-colors',
+                        'flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors',
                         isSelected
                           ? 'bg-[var(--mw-yellow-400)]/15 text-foreground'
                           : 'hover:bg-[var(--neutral-100)]',
@@ -201,7 +201,7 @@ export function EntityPickerModal({
                   <button
                     type="button"
                     onClick={handleCreate}
-                    className="flex w-full items-center gap-2 rounded-[var(--shape-md)] px-3 py-2.5 text-left text-sm text-foreground hover:bg-[var(--neutral-100)]"
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm text-foreground hover:bg-[var(--neutral-100)]"
                   >
                     <Plus className="h-4 w-4" />
                     Create &ldquo;{query.trim()}&rdquo;

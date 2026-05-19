@@ -493,7 +493,7 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
               return (
                 <div
                   key={bucket.value}
-                  className="w-72 shrink-0 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-3"
+                  className="w-72 shrink-0 rounded-lg border border-[var(--border)] bg-card p-3"
                 >
                   <div className="mb-2 flex items-center justify-between">
                     <h4 className="text-sm font-medium text-foreground">{bucket.label}</h4>

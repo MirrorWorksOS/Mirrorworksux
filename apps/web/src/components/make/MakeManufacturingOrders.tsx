@@ -79,7 +79,7 @@ export function MakeManufacturingOrders() {
           { label: 'Draft', value: draftCount, sub: 'Needs confirmation', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'Completed', value: doneCount, sub: `${MO_DATA.length} total orders`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>

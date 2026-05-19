@@ -704,13 +704,13 @@ export function PlanJobs() {
             formatValue={(v) => String(v)}
           />
           {filtered.length === 0 ? (
-            <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-12 text-center">
+            <div className="rounded-lg border border-dashed border-[var(--border)] bg-card p-12 text-center">
               <GanttChart className="mx-auto h-10 w-10 text-[var(--neutral-400)]" />
               <p className="mt-3 text-sm text-foreground">No jobs to plot</p>
               <p className="mt-1 text-xs text-[var(--neutral-500)]">Adjust filters to see jobs on the Gantt.</p>
             </div>
           ) : (
-            <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+            <div className="rounded-lg border border-[var(--border)] bg-card p-4">
               {(() => {
                 // Build Gantt tasks from filtered jobs. Duration is anchored to the
                 // due date, walking back a stage-derived working span; this gives

@@ -87,7 +87,7 @@ export function AutoMapDialog({
               return (
                 <li
                   key={s.sourceKey}
-                  className="flex items-center gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-3 py-2"
+                  className="flex items-center gap-3 rounded-md border border-[var(--border)] px-3 py-2"
                 >
                   <Checkbox
                     checked={isChecked}

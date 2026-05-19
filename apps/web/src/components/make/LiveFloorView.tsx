@@ -187,7 +187,7 @@ function SummaryRibbon({ machines }: { machines: Machine[] }) {
           <div
             key={status}
             className={cn(
-              'flex items-center gap-4 rounded-[var(--shape-lg)] px-5 py-4',
+              'flex items-center gap-4 rounded-lg px-5 py-4',
               style.pillBg,
               style.pillText,
               count === 0 && 'opacity-40',
@@ -215,7 +215,7 @@ function MachineAndonCard({ machine }: { machine: Machine }) {
   return (
     <Card
       className={cn(
-        'rounded-[var(--shape-lg)] border-0 p-6',
+        'rounded-lg border-0 p-6',
         style.cardBg,
         style.cardText,
       )}
@@ -297,7 +297,7 @@ function OperatorCard({ op, now }: { op: ActiveOperator; now: number }) {
   return (
     <Card
       className={cn(
-        'rounded-[var(--shape-lg)] border-0 p-6',
+        'rounded-lg border-0 p-6',
         cardBg,
         state === 'over' && 'animate-pulse',
       )}
@@ -426,7 +426,7 @@ export function LiveFloorView() {
     <div
       role="tablist"
       aria-label="Floor view mode"
-      className="inline-flex h-12 items-center gap-1 rounded-[var(--shape-md)] border border-white/15 bg-white/5 p-1 text-sm font-medium"
+      className="inline-flex h-12 items-center gap-1 rounded-md border border-white/15 bg-white/5 p-1 text-sm font-medium"
     >
       {modeOptions.map((opt) => (
         <button
@@ -436,7 +436,7 @@ export function LiveFloorView() {
           aria-selected={mode === opt.value}
           onClick={() => setMode(opt.value)}
           className={cn(
-            'rounded-[var(--shape-sm)] px-4 py-1.5 transition-colors',
+            'rounded-sm px-4 py-1.5 transition-colors',
             mode === opt.value
               ? 'bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
               : 'text-white/70 hover:text-white',
@@ -463,7 +463,7 @@ export function LiveFloorView() {
           <h2 className="mb-4 text-2xl font-medium uppercase tracking-widest text-white/60">
             Shop floor
           </h2>
-          <div className="rounded-[var(--shape-lg)] border border-white/10 bg-[var(--neutral-900,_#171717)] p-4">
+          <div className="rounded-lg border border-white/10 bg-[var(--neutral-900,_#171717)] p-4">
             <IsometricFloorView
               machines={centralMachines}
               className="h-[520px] w-full"
@@ -508,7 +508,7 @@ export function LiveFloorView() {
       onClick={() => setIsExpanded((v) => !v)}
       aria-label={isExpanded ? 'Exit full screen' : 'Expand to full screen'}
       title={isExpanded ? 'Exit full screen (Esc)' : 'Expand to full screen'}
-      className="inline-flex h-12 items-center gap-2 rounded-[var(--shape-md)] border border-white/15 bg-white/5 px-4 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]"
+      className="inline-flex h-12 items-center gap-2 rounded-md border border-white/15 bg-white/5 px-4 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)]"
     >
       {isExpanded ? (
         <>

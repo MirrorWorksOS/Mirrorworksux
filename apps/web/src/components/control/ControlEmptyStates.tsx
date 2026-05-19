@@ -151,7 +151,7 @@ export function ControlEmptyStates() {
 
       <div className="px-8 pb-8">
         {/* Info callout */}
-        <div className="flex items-start gap-3 bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-4 mb-6">
+        <div className="flex items-start gap-3 bg-[var(--neutral-100)] border border-[var(--border)] rounded-lg p-4 mb-6">
           <Info className="w-5 h-5 text-[var(--neutral-500)] mt-0.5 shrink-0" />
           <div className="text-sm text-[var(--neutral-600)]">
             <p className="font-medium text-foreground mb-1">Implementation Notes</p>
@@ -167,7 +167,7 @@ export function ControlEmptyStates() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left: state selector */}
           <div className="col-span-4">
-            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card className="border border-[var(--border)] rounded-lg p-6">
               <h3 className="text-sm font-medium text-foreground mb-3">Available Empty States</h3>
               <div className="space-y-1">
                 {EMPTY_STATES.map((es, i) => (
@@ -205,7 +205,7 @@ export function ControlEmptyStates() {
 
           {/* Right: live preview */}
           <div className="col-span-8">
-            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="border border-[var(--border)] rounded-lg overflow-hidden">
               {/* Preview header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--neutral-50)]">
                 <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ export function ControlEmptyStates() {
             </Card>
 
             {/* Usage snippet */}
-            <Card className="border border-[var(--border)] rounded-[var(--shape-lg)] p-6 mt-4">
+            <Card className="border border-[var(--border)] rounded-lg p-6 mt-4">
               <h4 className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2">Usage</h4>
               <pre className="text-xs bg-[var(--neutral-50)] border border-[var(--border)] rounded-lg p-4 overflow-x-auto text-foreground">
 {`<EmptyState

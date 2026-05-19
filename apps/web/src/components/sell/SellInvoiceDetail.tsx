@@ -408,7 +408,7 @@ export function SellInvoiceDetail() {
               <Card className="p-6">
                 <h2 className="mb-1 text-base font-medium text-foreground">Notes</h2>
                 <p className="mb-4 text-xs text-[var(--neutral-500)]">Internal notes and payment instructions</p>
-                <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-700)]">
+                <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-700)]">
                   {invoice.notes}
                 </div>
               </Card>

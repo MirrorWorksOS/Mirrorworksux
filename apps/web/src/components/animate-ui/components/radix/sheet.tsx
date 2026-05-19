@@ -74,13 +74,13 @@ function SheetContent({
         className={cn(
           'z-[1101] flex flex-col gap-4 overflow-y-auto overscroll-contain border border-[var(--border)] bg-card/95 p-6 text-card-foreground shadow-lg backdrop-blur-xl',
           side === 'right' &&
-            'h-dvh w-3/4 max-w-sm rounded-l-[var(--shape-lg)] rounded-r-none border-l sm:max-w-sm',
+            'h-dvh w-3/4 max-w-sm rounded-l-lg rounded-r-none border-l sm:max-w-sm',
           side === 'left' &&
-            'h-dvh w-3/4 max-w-sm rounded-r-[var(--shape-lg)] rounded-l-none border-r sm:max-w-sm',
+            'h-dvh w-3/4 max-w-sm rounded-r-lg rounded-l-none border-r sm:max-w-sm',
           side === 'top' &&
-            'h-auto max-h-[85vh] w-full rounded-b-[var(--shape-lg)] rounded-t-none border-b',
+            'h-auto max-h-[85vh] w-full rounded-b-lg rounded-t-none border-b',
           side === 'bottom' &&
-            'h-auto max-h-[85vh] w-full rounded-t-[var(--shape-lg)] rounded-b-none border-t',
+            'h-auto max-h-[85vh] w-full rounded-t-lg rounded-b-none border-t',
           className,
         )}
         side={side}

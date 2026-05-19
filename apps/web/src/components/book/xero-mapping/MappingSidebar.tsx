@@ -65,7 +65,7 @@ export function MappingSidebar({
               onClick={() => onSelect(item.id)}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'group flex shrink-0 items-center gap-2 rounded-[var(--shape-md)] px-3 py-2 text-left text-sm transition-colors lg:shrink',
+                'group flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors lg:shrink',
                 isActive
                   ? 'bg-[var(--mw-yellow-400)]/20 text-foreground'
                   : 'text-muted-foreground hover:bg-[var(--neutral-100)] hover:text-foreground',

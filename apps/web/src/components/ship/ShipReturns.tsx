@@ -103,7 +103,7 @@ export function ShipReturns() {
           { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
           { label: 'Resolved', value: closedCount, sub: `${RMAS.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -173,7 +173,7 @@ export function ShipReturns() {
                   <SheetDescription className="text-[var(--neutral-500)]">{selected.customer} · {selected.reason}</SheetDescription>
                 </SheetHeader>
                 <div className="px-6 py-6 space-y-6">
-                  <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-4 space-y-2 text-sm">
+                  <div className="bg-[var(--neutral-100)] rounded-lg p-4 space-y-2 text-sm">
                     <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Order</span><span className="font-medium tabular-nums">{selected.order}</span></div>
                     <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Items</span><span className="font-medium tabular-nums">{selected.items}</span></div>
                     <div className="flex justify-between"><span className="text-[var(--neutral-500)]">Created</span><span>{selected.date}</span></div>

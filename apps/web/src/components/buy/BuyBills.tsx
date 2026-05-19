@@ -307,7 +307,7 @@ export function BuyBills() {
           { label: 'Amount mismatch', value: BILLS.filter(b => b.status === 'mismatch').length, sub: 'Needs review',                        bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
           { label: 'Overdue',         value: BILLS.filter(b => b.status === 'overdue').length,  sub: 'Past due date',                       bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -347,7 +347,7 @@ export function BuyBills() {
               const inBucket = filtered.filter((b) => agingBucket(b) === bucket.value);
               const sum = inBucket.reduce((s, b) => s + b.amount, 0);
               return (
-                <div key={bucket.value} className="w-72 shrink-0 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-3">
+                <div key={bucket.value} className="w-72 shrink-0 rounded-lg border border-[var(--border)] bg-card p-3">
                   <div className="mb-2 flex items-center justify-between">
                     <h4 className="text-sm font-medium text-foreground">{bucket.label}</h4>
                     <span className="rounded-full bg-[var(--neutral-100)] px-2 py-0.5 text-xs tabular-nums">{inBucket.length}</span>
@@ -388,7 +388,7 @@ export function BuyBills() {
               const colBills = filtered.filter((b) => b.status === s);
               const sum = colBills.reduce((sum, b) => sum + b.amount, 0);
               return (
-                <div key={s} className="w-72 shrink-0 rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-3">
+                <div key={s} className="w-72 shrink-0 rounded-lg border border-[var(--border)] bg-card p-3">
                   <div className="mb-2 flex items-center justify-between">
                     <h4 className="text-sm font-medium text-foreground">{STATUS_CONFIG[s].label}</h4>
                     <span className="rounded-full bg-[var(--neutral-100)] px-2 py-0.5 text-xs tabular-nums">{colBills.length}</span>

@@ -224,7 +224,7 @@ export function MakeProducts() {
         ].map(s => (
           <SpotlightCard
             key={s.label}
-            radius="rounded-[var(--shape-lg)]"
+            radius="rounded-lg"
             className="h-full min-h-0"
           >
             <Card variant="flat" className="h-full border-[var(--border)] p-6">
@@ -266,7 +266,7 @@ export function MakeProducts() {
                 className="h-full min-h-0"
               >
                 <SpotlightCard
-                  radius="rounded-[var(--shape-lg)]"
+                  radius="rounded-lg"
                   className="h-full min-h-0"
                 >
                   <Card

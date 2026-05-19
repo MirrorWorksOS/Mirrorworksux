@@ -28,7 +28,7 @@ export function EntityCard({
 
   return (
     <SpotlightCard
-      radius="rounded-[var(--shape-lg)]"
+      radius="rounded-lg"
       className={cn("h-full min-h-0", className)}
     >
       <Card

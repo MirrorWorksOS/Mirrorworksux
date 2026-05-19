@@ -618,7 +618,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
             "bg-card",
             // Desktop: centered dialog
             "sm:inset-auto sm:top-[12%] sm:left-[50%] sm:max-w-[640px] sm:translate-x-[-50%]",
-            "sm:rounded-[var(--shape-xl)] sm:border sm:border-[var(--neutral-200)]",
+            "sm:rounded-xl sm:border sm:border-[var(--neutral-200)]",
             "sm:shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)]",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -646,7 +646,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
               placeholder="Search or type a command..."
               className="flex-1 h-full bg-transparent text-base text-foreground placeholder:text-[var(--neutral-400)] outline-none"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded-[var(--shape-sm)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--neutral-400)]">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded-sm border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--neutral-400)]">
               ⌘K
             </kbd>
           </div>
@@ -717,7 +717,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
                         onClick={() => executeItem(item)}
                         onMouseEnter={() => setActiveIndex(item.flatIndex)}
                         className={cn(
-                          'w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--shape-md)] text-left',
+                          'w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left',
                           'transition-all duration-[var(--duration-short2)] ease-[var(--ease-standard)]',
                           isActive
                             ? 'bg-[var(--neutral-100)]'
@@ -726,7 +726,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
                       >
                         {/* Icon well */}
                         <div className={cn(
-                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)]',
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-md',
                           'transition-colors duration-[var(--duration-short2)]',
                           item.type === 'recent'
                             ? 'bg-[var(--neutral-100)]'
@@ -788,7 +788,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
             /* AI tab */
             <div className="px-5 pb-5 pt-2">
               <form onSubmit={handleAiSubmit} className="flex items-center gap-2">
-                <div className="flex-1 flex items-center gap-2 border border-[var(--border)] rounded-[var(--shape-md)] px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/30 transition-shadow duration-200">
+                <div className="flex-1 flex items-center gap-2 border border-[var(--border)] rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--mw-yellow-400)]/30 transition-shadow duration-200">
                   <AgentLogomark size={16} className="shrink-0" />
                   <input
                     type="text"
@@ -807,7 +807,7 @@ export function CommandPalette({ open, onOpenChange, initialQuery = '' }: Comman
               </form>
 
               {aiResponse && (
-                <div className="mt-3 rounded-[var(--shape-md)] border border-[var(--mw-purple-100)] bg-[var(--mw-purple-50)] p-4">
+                <div className="mt-3 rounded-md border border-[var(--mw-purple-100)] bg-[var(--mw-purple-50)] p-4">
                   <div className="flex items-start gap-2.5">
                     <AgentLogomark size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm text-foreground leading-relaxed">{aiResponse}</p>

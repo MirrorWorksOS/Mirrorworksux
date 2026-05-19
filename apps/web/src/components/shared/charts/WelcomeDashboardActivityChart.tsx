@@ -215,7 +215,7 @@ export function WelcomeDashboardActivityChart({
   return (
     <section
       className={cn(
-        "overflow-hidden rounded-[var(--shape-2xl)] bg-card p-6 shadow-[var(--card-shadow-rest)]",
+        "overflow-hidden rounded-2xl bg-card p-6 shadow-[var(--card-shadow-rest)]",
         mwHairlineBorder,
         "ring-1 ring-[#0A0A0A]/[0.04] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] dark:ring-white/[0.06]",
         "dark:ring-[var(--mw-yellow-400)]/10",

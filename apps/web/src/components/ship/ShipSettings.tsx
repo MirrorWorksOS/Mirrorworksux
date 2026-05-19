@@ -171,7 +171,7 @@ function CarriersPanel() {
         <SectionLabel>Carrier management</SectionLabel>
         <div className="space-y-4">
           {carriers.map(c => (
-            <Card key={c.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+            <Card key={c.name} className="bg-card border border-[var(--border)] rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: c.colour }}>

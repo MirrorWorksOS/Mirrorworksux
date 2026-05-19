@@ -613,7 +613,7 @@ function ClosedConfirmation({
 }) {
   return (
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-[var(--mw-mirage)]/72 backdrop-blur-sm">
-      <div className="flex w-[440px] max-w-[90%] flex-col items-center rounded-[var(--shape-lg)] border border-[var(--mw-success)]/40 bg-card p-8 text-center shadow-md">
+      <div className="flex w-[440px] max-w-[90%] flex-col items-center rounded-lg border border-[var(--mw-success)]/40 bg-card p-8 text-center shadow-md">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mw-success)]/12 text-[var(--mw-success)]">
           <Check className="h-7 w-7" />
         </span>
@@ -655,7 +655,7 @@ function IdleLockBanner({
   onStayActive: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[var(--shape-md)] border border-[var(--mw-error)] bg-[var(--mw-error)]/8 p-4">
+    <div className="flex items-center gap-3 rounded-md border border-[var(--mw-error)] bg-[var(--mw-error)]/8 p-4">
       <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--mw-error)] text-white">
         <Lock className="h-5 w-5" />
       </span>
@@ -683,7 +683,7 @@ function HelpBanner({ since, onCancel }: { since: number; onCancel: () => void }
   const seconds = Math.max(0, Math.floor(since / 1000));
   const label = seconds < 60 ? `${seconds}s ago` : `${Math.floor(seconds / 60)}m ago`;
   return (
-    <div className="flex items-center gap-3 rounded-[var(--shape-md)] border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] p-4">
+    <div className="flex items-center gap-3 rounded-md border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] p-4">
       <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]">
         <LifeBuoy className="h-5 w-5" />
       </span>

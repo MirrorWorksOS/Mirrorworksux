@@ -50,7 +50,7 @@ export function DashboardPinList({
   return (
     <div
       className={cn(
-        "rounded-[var(--shape-xl)] bg-card p-5 shadow-[var(--card-shadow-rest)] transition-[box-shadow,transform] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:-translate-y-px dark:bg-card",
+        "rounded-xl bg-card p-5 shadow-[var(--card-shadow-rest)] transition-[box-shadow,transform] duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:-translate-y-px dark:bg-card",
         mwHairlineBorder,
         className,
       )}
@@ -123,7 +123,7 @@ function Row({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-[var(--shape-xl)] bg-[var(--neutral-50)] px-3 py-2.5 transition-[transform,background-color] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:-translate-y-px hover:bg-[var(--mw-yellow-50)] dark:bg-white/[0.05] dark:hover:bg-white/[0.08]",
+        "flex items-center gap-2 rounded-xl bg-[var(--neutral-50)] px-3 py-2.5 transition-[transform,background-color] duration-[var(--duration-long1)] ease-[var(--ease-emphasized-decelerate)] hover:-translate-y-px hover:bg-[var(--mw-yellow-50)] dark:bg-white/[0.05] dark:hover:bg-white/[0.08]",
         mwHairlineBorder,
       )}
     >

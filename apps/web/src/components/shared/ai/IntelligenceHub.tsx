@@ -86,7 +86,7 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
       {/* Insights */}
       <div className={cn('space-y-3', compact && 'space-y-2')}>
         {insights.length === 0 ? (
-          <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-6">
+          <div className="bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] rounded-lg p-6">
             <EmptyState
               variant="compact"
               icon={Brain}
@@ -105,11 +105,11 @@ export function IntelligenceHub({ module, context, insights, onRefresh, compact 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.25 }}
               >
-                <GlareHover className="rounded-[var(--shape-lg)] shadow-xs" peakOpacity={0.09}>
+                <GlareHover className="rounded-lg shadow-xs" peakOpacity={0.09}>
                   <Card
                     variant="flat"
                     className={cn(
-                      'h-full rounded-[var(--shape-lg)] border p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
+                      'h-full rounded-lg border p-4 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
                       insight.type === 'risk'
                         ? 'border-[var(--mw-error-100)] bg-[var(--mw-error-50)] dark:border-[var(--mw-error)]/30 dark:bg-[var(--mw-error)]/10'
                         : 'border-[var(--border)] bg-card',

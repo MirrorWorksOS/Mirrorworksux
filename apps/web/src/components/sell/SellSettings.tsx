@@ -111,7 +111,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Company name</Label>
             <div className="relative">
-              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] bg-[var(--neutral-100)] pr-10" readOnly />
+              <Input defaultValue="Alliance Metal Pty Ltd" className="h-12 border-[var(--border)] rounded-md bg-[var(--neutral-100)] pr-10" readOnly />
               <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
             </div>
             <p className="text-xs text-[var(--neutral-500)] mt-1">Change in Control &rarr; Organisation settings</p>
@@ -119,7 +119,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Default currency</Label>
             <Select defaultValue="aud">
-              <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-md"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="aud">AUD — Australian Dollar</SelectItem>
                 <SelectItem value="usd">USD — US Dollar</SelectItem>
@@ -131,7 +131,7 @@ function GeneralPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Default tax rate</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
+              <Input defaultValue="10" type="number" className="h-12 border-[var(--border)] rounded-md w-24" />
               <span className="text-sm text-[var(--neutral-500)]">% (GST)</span>
             </div>
           </div>
@@ -247,13 +247,13 @@ function QuotingPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Quote prefix</Label>
             <div className="flex gap-3 items-center">
-              <Input defaultValue="Q-2026-" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
+              <Input defaultValue="Q-2026-" className="h-12 border-[var(--border)] rounded-md w-32" />
               <span className="text-xs text-[var(--neutral-500)]">Preview: Q-2026-0047</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Next number</Label>
-            <Input defaultValue="48" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-32" />
+            <Input defaultValue="48" type="number" className="h-12 border-[var(--border)] rounded-md w-32" />
           </div>
         </div>
       </div>
@@ -263,21 +263,21 @@ function QuotingPanel() {
           <div>
             <Label className="text-sm mb-2 block font-medium">Expiry period</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="30" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
+              <Input defaultValue="30" type="number" className="h-12 border-[var(--border)] rounded-md w-24" />
               <span className="text-sm text-[var(--neutral-500)]">days</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default margin target</Label>
             <div className="flex items-center gap-3">
-              <Input defaultValue="20" type="number" className="h-12 border-[var(--border)] rounded-[var(--shape-md)] w-24" />
+              <Input defaultValue="20" type="number" className="h-12 border-[var(--border)] rounded-md w-24" />
               <span className="text-sm text-[var(--neutral-500)]">%</span>
             </div>
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Default payment terms</Label>
             <Select defaultValue="net30">
-              <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-12 border-[var(--border)] rounded-md"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="cod">COD</SelectItem>
                 <SelectItem value="net14">Net 14</SelectItem>
@@ -343,10 +343,10 @@ function PaymentsPanel() {
     <div className="space-y-6 max-w-[640px]">
       <div className="space-y-4">
         {integrations.map(integ => (
-          <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-[var(--shape-md)] flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
+                <div className="w-11 h-11 rounded-md flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: integ.bgColor }}>
                   {integ.name.charAt(0)}
                 </div>
                 <div>
@@ -379,16 +379,16 @@ function PaymentsPanel() {
           </Card>
         ))}
       </div>
-      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+      <Card className="bg-[var(--neutral-100)] border border-[var(--border)] rounded-lg p-6">
         <h4 className="text-sm font-medium text-foreground mb-3">Bank account (EFT)</h4>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="text-sm mb-2 block font-medium">BSB</Label>
-            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-[var(--shape-md)]" />
+            <Input defaultValue="062-000" className="h-12 border-[var(--border)] rounded-md" />
           </div>
           <div>
             <Label className="text-sm mb-2 block font-medium">Account number</Label>
-            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-[var(--shape-md)]" />
+            <Input defaultValue="12345678" type="password" className="h-12 border-[var(--border)] rounded-md" />
           </div>
         </div>
         <div className="mt-4 flex justify-end">
@@ -396,7 +396,7 @@ function PaymentsPanel() {
         </div>
       </Card>
 
-      <Card className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6 space-y-4">
+      <Card className="bg-card border border-[var(--border)] rounded-lg p-6 space-y-4">
         <div>
           <h4 className="text-sm font-medium text-foreground">Accepted on customer portal</h4>
           <p className="text-xs text-[var(--neutral-500)] mt-0.5">
@@ -410,10 +410,10 @@ function PaymentsPanel() {
             return (
               <div
                 key={m.id}
-                className="flex items-start justify-between gap-4 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3"
+                className="flex items-start justify-between gap-4 rounded-md border border-[var(--border)] px-4 py-3"
               >
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)]">
                     <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
                   </div>
                   <div className="min-w-0">
@@ -464,7 +464,7 @@ function ActivitiesPanel() {
             );
           })}
           <button
-            className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-[var(--shape-md)] p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors"
+            className="w-full flex items-center gap-2 border border-dashed border-[var(--border)] rounded-md p-3 text-sm text-[var(--neutral-500)] hover:border-[var(--neutral-400)] transition-colors"
             onClick={() => {
               // TODO(backend): sell.activityTypes.create(name)
               toast.success('Activity type added');
@@ -526,7 +526,7 @@ function AnalyticsPanel() {
         <div>
           <Label className="text-sm mb-2 block font-medium">Default date range</Label>
           <Select defaultValue="month">
-            <SelectTrigger className="h-12 border-[var(--border)] rounded-[var(--shape-md)]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-12 border-[var(--border)] rounded-md"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="week">This week</SelectItem>
               <SelectItem value="month">This month</SelectItem>
@@ -559,10 +559,10 @@ function IntegrationsPanel() {
         { name: 'Google Cal', description: 'Sync activities to Google Calendar', connected: false, colour: '#4285F4' },
         { name: 'Slack', description: 'Post won/lost deal notifications to Slack', connected: false, colour: '#4A154B' },
       ].map(integ => (
-        <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+        <Card key={integ.name} className="bg-card border border-[var(--border)] rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
+              <div className="w-10 h-10 rounded-md flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: integ.colour }}>
                 {integ.name.charAt(0)}
               </div>
               <div>
@@ -717,7 +717,7 @@ function PortalPanel() {
           to inherit the tenant default again.
         </p>
         {customerOverrideIds.length === 0 ? (
-          <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-[var(--neutral-50)] px-4 py-6 text-center text-xs text-[var(--neutral-500)]">
+          <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--neutral-50)] px-4 py-6 text-center text-xs text-[var(--neutral-500)]">
             No customer-specific overrides yet. Change a toggle from the{' '}
             <a
               href="/sell/portal"
@@ -740,7 +740,7 @@ function PortalPanel() {
               return (
                 <div
                   key={cid}
-                  className="flex items-start justify-between gap-4 rounded-[var(--shape-lg)] border border-[var(--border)] px-4 py-3"
+                  className="flex items-start justify-between gap-4 rounded-lg border border-[var(--border)] px-4 py-3"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground">
@@ -774,7 +774,7 @@ function PortalPanel() {
 
       <div>
         <SectionLabel>Access</SectionLabel>
-        <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4 text-sm">
+        <div className="rounded-lg border border-[var(--border)] bg-card p-4 text-sm">
           <p className="font-medium text-foreground">
             Who can preview and configure the portal
           </p>
@@ -846,7 +846,7 @@ function PortalPanel() {
             </Label>
             <Input
               defaultValue="https://portal.alliancemetal.com.au/"
-              className="h-12 border-[var(--border)] rounded-[var(--shape-md)] font-mono text-sm"
+              className="h-12 border-[var(--border)] rounded-md font-mono text-sm"
               readOnly
             />
             <p className="text-xs text-[var(--neutral-500)] mt-1">

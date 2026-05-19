@@ -140,7 +140,7 @@ export function ScanInput({
     <>
       <div
         className={cn(
-          'flex items-center gap-3 rounded-[var(--shape-lg)] transition-all',
+          'flex items-center gap-3 rounded-lg transition-all',
           isLarge
             ? 'p-2 bg-card border-2 border-[var(--neutral-200)] focus-within:border-[var(--mw-yellow-400)] focus-within:shadow-[var(--elevation-2)]'
             : 'relative',
@@ -151,7 +151,7 @@ export function ScanInput({
       >
         {/* Icon */}
         {isLarge ? (
-          <div className="w-14 h-14 rounded-[var(--shape-md)] bg-[var(--neutral-100)] flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-md bg-[var(--neutral-100)] flex items-center justify-center shrink-0">
             <ScanBarcode className="w-7 h-7 text-[var(--neutral-800)]" />
           </div>
         ) : (

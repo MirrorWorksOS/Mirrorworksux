@@ -284,7 +284,7 @@ export function SellDashboard() {
             </div>
             <div className="space-y-3">
               {approvalQueue.map((item, i) => (
-                <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
+                <div key={i} className="flex cursor-pointer items-center justify-between rounded-md bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-100)]">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       <span className="text-xs font-medium text-foreground">
@@ -375,7 +375,7 @@ export function SellDashboard() {
             </div>
             <div className="space-y-3">
               {overdueActions.map((item, i) => (
-                <div key={i} className="flex cursor-pointer items-center justify-between rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-200)]">
+                <div key={i} className="flex cursor-pointer items-center justify-between rounded-md bg-[var(--neutral-100)] p-3 transition-colors hover:bg-[var(--neutral-200)]">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
                       <span className="text-xs font-medium tabular-nums text-foreground">
@@ -501,7 +501,7 @@ export function SellDashboard() {
                         <span className="text-sm font-medium tabular-nums text-foreground">${((quotaAttainment.target - quotaAttainment.current) / 1000).toFixed(0)}k</span>
                       </div>
                     </div>
-                    <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2">
+                    <div className="rounded-md bg-[var(--neutral-100)] px-3 py-2">
                       <p className="text-xs text-[var(--neutral-600)]">
                         <span className="font-medium text-foreground tabular-nums">{quotaAttainment.daysLeft} days</span> remaining in quarter
                       </p>
@@ -524,7 +524,7 @@ export function SellDashboard() {
                   const heightPct = 40 + (stage.count / maxCount) * 60;
                   return (
                     <div key={stage.stage} className="flex flex-1 flex-col items-center gap-2">
-                      <div className="relative flex w-full flex-col items-center justify-center rounded-[var(--shape-md)] px-2 py-4" style={{
+                      <div className="relative flex w-full flex-col items-center justify-center rounded-md px-2 py-4" style={{
                         backgroundColor: `color-mix(in srgb, var(--mw-yellow-400) ${100 - i * 18}%, var(--neutral-100))`,
                         minHeight: `${heightPct}px`,
                       }}>
@@ -586,7 +586,7 @@ export function SellDashboard() {
                       </div>
                       <span className="text-lg font-bold tabular-nums text-foreground">19</span>
                     </div>
-                    <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2">
+                    <div className="rounded-md bg-[var(--neutral-100)] px-3 py-2">
                       <p className="text-xs text-[var(--neutral-600)]">Top loss reason: <span className="font-medium text-foreground">Price (42%)</span></p>
                     </div>
                   </div>
@@ -634,7 +634,7 @@ export function SellDashboard() {
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {topPerformers.map((rep, i) => (
-                  <div key={rep.name} className="flex items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-4">
+                  <div key={rep.name} className="flex items-center gap-3 rounded-md bg-[var(--neutral-100)] p-4">
                     <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-sm font-bold text-primary-foreground">
                       {rep.initials}
                       {i === 0 && (
@@ -683,7 +683,7 @@ export function SellDashboard() {
                     );
                   })}
                 </div>
-                <div className="flex items-center gap-4 rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-4 py-3">
+                <div className="flex items-center gap-4 rounded-md bg-[var(--neutral-100)] px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-[var(--mw-yellow-500)] shrink-0" />
                   <div className="flex-1">
                     <p className="text-xs font-medium text-foreground">

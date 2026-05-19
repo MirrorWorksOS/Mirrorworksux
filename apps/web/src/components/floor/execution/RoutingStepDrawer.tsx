@@ -59,19 +59,19 @@ export function RoutingStepDrawer({ open, step, snapshot, onOpenChange }: Routin
             </SheetHeader>
 
             {step.caution ? (
-              <div className="mt-4 rounded-[var(--shape-md)] border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] px-4 py-3 text-sm text-[var(--mw-mirage)]">
+              <div className="mt-4 rounded-md border border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)] px-4 py-3 text-sm text-[var(--mw-mirage)]">
                 {step.caution}
               </div>
             ) : null}
 
             <div className="mt-5 grid grid-cols-1 gap-4">
-              <Card className="overflow-hidden rounded-[var(--shape-md)] border-[var(--neutral-200)] bg-card p-0">
+              <Card className="overflow-hidden rounded-md border-[var(--neutral-200)] bg-card p-0">
                 <div className="relative h-[280px]">
                   <ExecutionModelViewer src={snapshot.modelSrc} className="absolute inset-0" rotate={step.status === 'current'} />
                 </div>
               </Card>
 
-              <Card className="rounded-[var(--shape-md)] border-[var(--neutral-200)] bg-card p-4">
+              <Card className="rounded-md border-[var(--neutral-200)] bg-card p-4">
                 <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
                   Step checklist
                 </div>
@@ -81,7 +81,7 @@ export function RoutingStepDrawer({ open, step, snapshot, onOpenChange }: Routin
                     return (
                       <li
                         key={item.id}
-                        className="flex items-start gap-3 rounded-[var(--shape-sm)] bg-[var(--neutral-100)] px-3 py-2 text-sm text-[var(--neutral-800)]"
+                        className="flex items-start gap-3 rounded-sm bg-[var(--neutral-100)] px-3 py-2 text-sm text-[var(--neutral-800)]"
                       >
                         {checked ? (
                           <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-[var(--mw-success)]" />
@@ -97,7 +97,7 @@ export function RoutingStepDrawer({ open, step, snapshot, onOpenChange }: Routin
                 </ul>
               </Card>
 
-              <Card className="rounded-[var(--shape-md)] border-[var(--neutral-200)] bg-card p-4">
+              <Card className="rounded-md border-[var(--neutral-200)] bg-card p-4">
                 <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
                   Reference at this step
                 </div>

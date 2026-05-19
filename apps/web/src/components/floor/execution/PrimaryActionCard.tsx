@@ -34,7 +34,7 @@ export function PrimaryActionCard({
 }: PrimaryActionCardProps) {
   const Icon = ICON[actionIcon];
   return (
-    <Card className="rounded-[var(--shape-lg)] border border-[var(--mw-mirage)] bg-[var(--mw-mirage)] p-6 shadow-md">
+    <Card className="rounded-lg border border-[var(--mw-mirage)] bg-[var(--mw-mirage)] p-6 shadow-md">
       <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--mw-yellow-400)]">
         {eyebrow}
       </div>

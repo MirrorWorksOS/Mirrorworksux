@@ -135,7 +135,7 @@ export function StepFileUpload() {
       )}
 
       {summaryLine && (
-        <p className="text-sm font-medium text-foreground border border-[var(--neutral-200)] rounded-[var(--shape-lg)] px-4 py-3 bg-[var(--neutral-50)]">
+        <p className="text-sm font-medium text-foreground border border-[var(--neutral-200)] rounded-lg px-4 py-3 bg-[var(--neutral-50)]">
           {summaryLine}
         </p>
       )}

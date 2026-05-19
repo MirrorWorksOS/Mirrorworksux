@@ -139,7 +139,7 @@ export function ControlLocations() {
           const Icon = cfg.icon;
           return (
             <motion.div key={loc.id} variants={staggerItem} className="h-full min-h-0">
-              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+              <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                 <Card
                   variant="flat"
                   onClick={() => openEdit(loc)}

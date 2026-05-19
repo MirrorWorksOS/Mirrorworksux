@@ -45,7 +45,7 @@ export function MappingRow({
   return (
     <div
       className={cn(
-        'group flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] border px-3 py-2.5 transition-colors',
+        'group flex flex-wrap items-center gap-3 rounded-md border px-3 py-2.5 transition-colors',
         system
           ? 'bg-[var(--neutral-100)]/50 border-[var(--border)] opacity-90'
           : requiredUnmapped

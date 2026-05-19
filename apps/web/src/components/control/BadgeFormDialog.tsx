@@ -101,7 +101,7 @@ export function BadgeFormDialog({ open, onOpenChange, initialData, onSave }: Bad
         {/* Icon preview */}
         <div className="flex justify-center">
           <div
-            className="flex h-16 w-16 items-center justify-center rounded-[var(--shape-lg)]"
+            className="flex h-16 w-16 items-center justify-center rounded-lg"
             style={{ backgroundColor: BADGE_GOLD_SOFT }}
           >
             <PreviewIcon size={36} color={BADGE_GOLD} />

@@ -112,7 +112,7 @@ export function ScheduleGanttBlock({ block, isProposed, isMoved }: ScheduleGantt
           dragSnapToOrigin={false}
           onDragEnd={handleDragEnd}
           onClick={() => openJobDetail(block.jobId)}
-          className={`absolute top-1 flex items-center gap-2 overflow-hidden rounded-[var(--shape-sm)] px-2 text-left shadow-[var(--card-shadow-rest)] transition-shadow hover:shadow-[var(--card-shadow-elevated)] ${
+          className={`absolute top-1 flex items-center gap-2 overflow-hidden rounded-sm px-2 text-left shadow-[var(--card-shadow-rest)] transition-shadow hover:shadow-[var(--card-shadow-elevated)] ${
             isDraggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
           }`}
           style={{

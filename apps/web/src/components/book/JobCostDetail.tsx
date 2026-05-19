@@ -273,7 +273,7 @@ export function JobCostDetail({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Detail Tabs */}
-      <Card className="bg-card rounded-[var(--shape-lg)] border border-[var(--border)] overflow-hidden">
+      <Card className="bg-card rounded-lg border border-[var(--border)] overflow-hidden">
         <div className="flex border-b border-[var(--border)]">
           {detailTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}

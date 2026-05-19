@@ -29,7 +29,7 @@ export function NowLine() {
       style={{ left, width: 0 }}
     >
       <div className="absolute inset-y-0 w-[2px] bg-[var(--mw-yellow-400)]" />
-      <span className="absolute -top-6 left-1 inline-block whitespace-nowrap rounded-[var(--shape-xs)] bg-[var(--mw-mirage)] px-1.5 py-0.5 text-[10px] font-medium tabular-nums tracking-wide text-white">
+      <span className="absolute -top-6 left-1 inline-block whitespace-nowrap rounded-xs bg-[var(--mw-mirage)] px-1.5 py-0.5 text-[10px] font-medium tabular-nums tracking-wide text-white">
         {label}
       </span>
     </div>

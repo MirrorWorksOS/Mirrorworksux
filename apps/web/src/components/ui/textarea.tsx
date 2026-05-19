@@ -10,7 +10,7 @@ import { cn } from "./utils";
 const textareaVariants = cva(
   [
     "resize-none placeholder:text-muted-foreground",
-    "flex field-sizing-content min-h-16 w-full rounded-[var(--shape-md)] px-3 py-2 text-base",
+    "flex field-sizing-content min-h-16 w-full rounded-md px-3 py-2 text-base",
     "transition-[background-color,border-color,box-shadow] duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
     "outline-none",
     "disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",

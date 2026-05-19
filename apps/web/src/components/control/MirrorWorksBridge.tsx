@@ -41,11 +41,11 @@ export function MirrorWorksBridge() {
           return (
             <Card
               key={type.key}
-              className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-card p-6 shadow-xs"
+              className="rounded-lg border border-[var(--neutral-200)] bg-card p-6 shadow-xs"
             >
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-blue-100)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--mw-blue-100)]">
                     <Icon className="h-5 w-5 text-[var(--mw-blue)]" />
                   </div>
                   <div>

@@ -154,7 +154,7 @@ export function SellOpportunityQuickActivitySheet({
 
           <div className="grid gap-1.5">
             <Label className="text-sm font-medium text-[var(--neutral-700)]">Related opportunity</Label>
-            <p className="rounded-[var(--shape-md)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-3 py-2 text-sm text-foreground">
+            <p className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-3 py-2 text-sm text-foreground">
               {opportunityLabel}
               <span className="ml-2 tabular-nums text-xs text-muted-foreground">{opportunityId}</span>
             </p>

@@ -157,7 +157,7 @@ function FileUploadDialog({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex flex-col items-center justify-center gap-2 rounded-[var(--shape-md)] border-2 border-dashed border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] p-8 text-sm text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground"
+          className="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] p-8 text-sm text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground"
         >
           <FileUp className="h-6 w-6" />
           <span>Click to browse, or drop files</span>
@@ -212,7 +212,7 @@ function CustomerSearch({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex h-10 w-full items-center justify-between rounded-[var(--shape-md)] border border-[var(--border)] px-3 text-left text-sm hover:bg-[var(--accent)]"
+          className="flex h-10 w-full items-center justify-between rounded-md border border-[var(--border)] px-3 text-left text-sm hover:bg-[var(--accent)]"
         >
           <span className={value ? 'text-foreground' : 'text-[var(--neutral-400)]'}>
             {value || 'Search customers…'}
@@ -563,7 +563,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
                 <button
                   type="button"
                   onClick={() => navigate('/sell/orders/so-001')}
-                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
+                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-md hover:bg-[var(--accent)] transition-colors"
                 >
                   <span className="text-xs font-medium text-[var(--mw-blue)] tabular-nums">
                     SO-2026-0089 · TechCorp
@@ -578,7 +578,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
                 <button
                   type="button"
                   onClick={() => navigate('/sell/opportunities/opp-001')}
-                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-[var(--shape-md)] hover:bg-[var(--accent)] transition-colors"
+                  className="w-full flex items-center justify-between h-10 px-3 text-left border border-[var(--border)] rounded-md hover:bg-[var(--accent)] transition-colors"
                 >
                   <span className="text-xs font-medium text-[var(--mw-blue)] line-clamp-2">
                     Server Rack Fabrication
@@ -773,7 +773,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
             <Calendar className="w-4 h-4 text-[var(--neutral-500)]" />
           </div>
           
-          <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 mb-4">
+          <div className="bg-[var(--neutral-100)] rounded-lg p-3 mb-4">
             <div className="text-center mb-2">
               <span className=" text-xs font-medium text-foreground">
                 April 2026
@@ -838,7 +838,7 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
             </Button>
           </div>
 
-          <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] aspect-video mb-3 flex items-center justify-center">
+          <div className="bg-[var(--neutral-100)] rounded-lg aspect-video mb-3 flex items-center justify-center">
             <span className="text-4xl">🔧</span>
           </div>
 

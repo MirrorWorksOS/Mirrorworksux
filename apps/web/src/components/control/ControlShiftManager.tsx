@@ -331,7 +331,7 @@ export function ControlShiftManager() {
       <motion.div variants={staggerItem} className="grid gap-3 sm:grid-cols-4">
         <Card variant="flat" className="p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--neutral-100)]">
               <Users
                 className="h-4 w-4 text-[var(--neutral-600)]"
                 strokeWidth={1.5}
@@ -347,7 +347,7 @@ export function ControlShiftManager() {
         </Card>
         <Card variant="flat" className="p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-yellow-50)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--mw-yellow-50)]">
               <Calendar
                 className="h-4 w-4 text-[var(--mw-yellow-700)]"
                 strokeWidth={1.5}

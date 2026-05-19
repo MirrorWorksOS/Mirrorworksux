@@ -253,7 +253,7 @@ const InsightCard = ({ insight }: { insight: Insight }) => {
    };
 
    return (
-      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-[var(--shape-lg)] bg-card transition-shadow hover:shadow-[var(--elevation-2)]">
+      <Card className="overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-[var(--neutral-200)] rounded-lg bg-card transition-shadow hover:shadow-[var(--elevation-2)]">
          <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--neutral-200)]">
             <div className="flex items-center gap-3">
                <div className={cn("flex items-center justify-center w-8 h-8 rounded-full bg-[var(--neutral-100)]", headerIconColors[insight.severity])}>
@@ -433,7 +433,7 @@ export function IntelligenceHubTab() {
                    <>
                       <div className="text-center space-y-3 mb-12">
                          <h3 className="text-2xl font-bold">How can I help?</h3>
-                         <div className="bg-[var(--neutral-800)] p-4 rounded-[var(--shape-lg)] text-left max-w-xs mx-auto">
+                         <div className="bg-[var(--neutral-800)] p-4 rounded-lg text-left max-w-xs mx-auto">
                             <p className="text-xs text-[var(--neutral-400)] mb-2 uppercase tracking-wide font-bold">Suggestions</p>
                             <div className="text-sm text-white space-y-2">
                                <p className="cursor-pointer hover:text-[var(--mw-purple-light)]">"Show me efficiency for Amada Ensis Laser"</p>

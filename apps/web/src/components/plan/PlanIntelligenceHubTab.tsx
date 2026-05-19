@@ -305,7 +305,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
           ].map((file, i) => (
             <div
               key={i}
-              className="border border-[var(--border)] rounded-[var(--shape-lg)] p-4 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer"
+              className="border border-[var(--border)] rounded-lg p-4 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer"
             >
               <IconWell icon={file.icon} surface="onLight" className="mb-3" />
               <h4 className=" text-xs font-medium text-foreground mb-1 truncate">
@@ -415,7 +415,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
                 Uploaded BOM and NC files for review
               </p>
               <div className="flex gap-2">
-                <div className="border border-[var(--border)] rounded-[var(--shape-lg)] p-3 flex items-center gap-3 hover:bg-[var(--neutral-100)] cursor-pointer">
+                <div className="border border-[var(--border)] rounded-lg p-3 flex items-center gap-3 hover:bg-[var(--neutral-100)] cursor-pointer">
                   <IconWell icon={FileText} size="sm" />
                   <div>
                     <p className=" text-xs font-medium text-foreground">
@@ -440,7 +440,7 @@ export function PlanIntelligenceHubTab({ onOpenBudget }: PlanIntelligenceHubTabP
           </div>
 
           {/* System Message */}
-          <div className="bg-[var(--neutral-100)] rounded-[var(--shape-lg)] p-3 flex items-center gap-2">
+          <div className="bg-[var(--neutral-100)] rounded-lg p-3 flex items-center gap-2">
             <Clock className="w-4 h-4 text-[var(--neutral-500)]" />
             <p className=" text-xs text-[var(--neutral-500)]">
               Job stage changed from <strong>Planning</strong> to <strong>Materials</strong>

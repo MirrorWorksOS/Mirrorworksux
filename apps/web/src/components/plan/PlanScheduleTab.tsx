@@ -203,7 +203,7 @@ export function PlanScheduleTab({ editable = false }: PlanScheduleTabProps = {})
           />
 
           {isEditing && (
-            <div className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card">
+            <div className="rounded-lg border border-[var(--border)] bg-card">
               <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
                 <h3 className="text-sm font-medium">Edit operations</h3>
                 <Button variant="outline" size="sm" className="h-8 text-xs" onClick={addOp}>

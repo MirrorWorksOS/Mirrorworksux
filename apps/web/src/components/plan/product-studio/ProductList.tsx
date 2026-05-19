@@ -164,7 +164,7 @@ export function ProductList() {
         >
           {/* New product card */}
           <motion.div variants={staggerItem} className="h-full min-h-0">
-            <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+            <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
             <Card
               variant="flat"
               className="group flex h-full min-h-[200px] cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[var(--neutral-300)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.04] dark:border-[var(--border)] dark:hover:bg-white/[0.06]"
@@ -187,7 +187,7 @@ export function ProductList() {
 
             return (
               <motion.div key={product.id} variants={staggerItem} className="h-full min-h-0">
-                <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                 <Card
                   variant="flat"
                   className="group flex h-full min-h-[200px] cursor-pointer flex-col border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"

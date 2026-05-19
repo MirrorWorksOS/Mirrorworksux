@@ -215,7 +215,7 @@ export function MakeManufacturingOrderDetail() {
                         setSummaryFilter((f) => (f === card.key ? null : card.key))
                       }
                       className={cn(
-                        'rounded-[var(--shape-lg)] border p-6 text-left transition-colors',
+                        'rounded-lg border p-6 text-left transition-colors',
                         active
                           ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10 shadow-xs'
                           : 'border-[var(--neutral-200)] bg-card shadow-xs hover:bg-[var(--neutral-50)]',
@@ -429,7 +429,7 @@ export function MakeManufacturingOrderDetail() {
                   </div>
                   <span className="text-xs text-[var(--neutral-500)]">+8 operators</span>
                 </div>
-                <div className="rounded-[var(--shape-md)] bg-[var(--neutral-100)] px-3 py-2 text-center mb-4">
+                <div className="rounded-md bg-[var(--neutral-100)] px-3 py-2 text-center mb-4">
                   <p className="text-xs">
                     <span className="font-medium text-[var(--chart-scale-high)]">5% ahead</span>
                     <span className="text-[var(--neutral-500)]"> vs target</span>
@@ -512,7 +512,7 @@ export function MakeManufacturingOrderDetail() {
                   <Badge variant="secondary" className="border-0 bg-[var(--mw-error)]/10 text-[var(--mw-error)] text-xs tabular-nums">2</Badge>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3 rounded-[var(--shape-md)] bg-[var(--mw-error)]/5 border border-[var(--mw-error)]/20 p-3">
+                  <div className="flex items-start gap-3 rounded-md bg-[var(--mw-error)]/5 border border-[var(--mw-error)]/20 p-3">
                     <AlertTriangle className="h-4 w-4 text-[var(--mw-error)] shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-foreground">Material Shortage</p>
@@ -520,7 +520,7 @@ export function MakeManufacturingOrderDetail() {
                       <p className="text-[10px] text-[var(--neutral-400)] mt-1 tabular-nums">12 min ago</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 rounded-[var(--shape-md)] bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 p-3">
+                  <div className="flex items-start gap-3 rounded-md bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 p-3">
                     <Timer className="h-4 w-4 text-[var(--mw-yellow-500)] shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-foreground">Maintenance Required</p>
@@ -641,7 +641,7 @@ export function MakeManufacturingOrderDetail() {
             </div>
             <div className="space-y-3">
               {ISSUES.map((issue) => (
-                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <Card key={issue.id} className="border border-[var(--neutral-200)] bg-card p-6 shadow-xs rounded-lg">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-medium text-foreground">{issue.title}</p>

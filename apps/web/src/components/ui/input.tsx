@@ -15,7 +15,7 @@ import { cn } from "./utils";
 const inputVariants = cva(
   [
     "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
-    "flex w-full min-w-0 rounded-[var(--shape-md)] px-3 py-1 text-base",
+    "flex w-full min-w-0 rounded-md px-3 py-1 text-base",
     "transition-[background-color,border-color,box-shadow] duration-[var(--duration-short2)] ease-[var(--ease-standard)]",
     "outline-none",
     "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",

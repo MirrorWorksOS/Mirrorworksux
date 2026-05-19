@@ -45,7 +45,7 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        "flex min-w-[280px] w-[280px] flex-col overflow-hidden rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)]",
+        "flex min-w-[280px] w-[280px] flex-col overflow-hidden rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)]",
         className,
       )}
     >
@@ -64,7 +64,7 @@ export function KanbanColumn({
       </div>
       <div
         ref={drop}
-        className="flex-1 rounded-b-[var(--shape-md)] border-2 border-transparent bg-transparent transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
+        className="flex-1 rounded-b-md border-2 border-transparent bg-transparent transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
       >
         <div ref={listRef} className="space-y-2 min-h-[200px] p-2">
           {children}

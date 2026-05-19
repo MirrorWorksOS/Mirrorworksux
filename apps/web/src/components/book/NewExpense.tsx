@@ -167,7 +167,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
             {!uploaded ? (
               <div
                 onClick={() => setUploaded(true)}
-                className="min-h-[200px] border-2 border-dashed border-[var(--border)] rounded-[var(--shape-lg)] bg-[var(--neutral-100)] flex flex-col items-center justify-center cursor-pointer hover:border-[var(--mw-yellow-400)] hover:bg-[var(--accent)] transition-colors"
+                className="min-h-[200px] border-2 border-dashed border-[var(--border)] rounded-lg bg-[var(--neutral-100)] flex flex-col items-center justify-center cursor-pointer hover:border-[var(--mw-yellow-400)] hover:bg-[var(--accent)] transition-colors"
               >
                 <Upload className="w-12 h-12 text-[var(--neutral-400)] mb-3" />
                 <p className="text-[var(--neutral-600)]">Drag receipt here or tap to upload</p>
@@ -175,7 +175,7 @@ export function NewExpense({ onBack }: { onBack: () => void }) {
               </div>
             ) : (
               <>
-                <div className="relative rounded-[var(--shape-lg)] overflow-hidden bg-[var(--neutral-100)] min-h-[200px] flex items-center justify-center">
+                <div className="relative rounded-lg overflow-hidden bg-[var(--neutral-100)] min-h-[200px] flex items-center justify-center">
                   <div className="text-center text-[var(--neutral-400)] text-sm p-8">
                     <p className="text-lg text-foreground mb-1 font-medium">Blackwoods_receipt_25Feb.jpg</p>
                     <p className="text-xs">Receipt image preview</p>

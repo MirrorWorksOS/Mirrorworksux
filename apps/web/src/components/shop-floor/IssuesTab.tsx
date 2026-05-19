@@ -84,7 +84,7 @@ const IssueCard = ({
   <div 
     onClick={onClick}
     className={cn(
-      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-[var(--shape-lg)] border transition-all duration-200 cursor-pointer hover:shadow-[var(--elevation-2)] hover:scale-[1.01] group bg-card",
+      "relative flex flex-col items-center justify-center p-6 h-[220px] rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-[var(--elevation-2)] hover:scale-[1.01] group bg-card",
       colorConfig.border,
       colorConfig.hover
     )}
@@ -158,7 +158,7 @@ export function IssuesTab() {
         <button
           onClick={handleCallLead}
           className={cn(
-            "relative w-[420px] h-[88px] rounded-[var(--shape-lg)] flex items-center justify-between px-8 transition-all duration-[250ms] shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
+            "relative w-[420px] h-[88px] rounded-lg flex items-center justify-between px-8 transition-all duration-[250ms] shadow-xs active:scale-95 group overflow-hidden border-2 border-[var(--mw-error)]",
             isLeadCalled
               ? "bg-[var(--mw-error-600)]"
               : "bg-[var(--mw-error)] hover:bg-[var(--mw-error-600)]"
@@ -184,7 +184,7 @@ export function IssuesTab() {
         <div 
            onClick={() => !isRecording && setIsRecording(true)}
            className={cn(
-             "h-[88px] rounded-[var(--shape-lg)] flex items-center shadow-xs transition-all duration-[450ms] ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden cursor-pointer",
+             "h-[88px] rounded-lg flex items-center shadow-xs transition-all duration-[450ms] ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden cursor-pointer",
              isRecording 
                ? "w-[480px] cursor-default bg-card border border-[var(--neutral-200)] ring-4 ring-[var(--mw-yellow-400)]/20" 
                : "w-[88px] bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-300)] justify-center hover:shadow-[var(--elevation-3)] active:scale-95 border border-[var(--mw-yellow-400)]"
@@ -265,7 +265,7 @@ export function IssuesTab() {
             </div>
 
             {/* Active Issues Panel */}
-            <div className="bg-card rounded-[var(--shape-lg)] border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
+            <div className="bg-card rounded-lg border border-[var(--neutral-200)] shadow-[0_1px_3px_rgba(0,0,0,0.08)] overflow-hidden flex-1 min-h-[300px]">
                <div className="p-6 border-b border-[var(--neutral-200)] bg-[var(--neutral-100)] flex items-center justify-between">
                   <h3 className="font-bold text-[var(--neutral-800)] text-lg flex items-center gap-2">
                      <AlertTriangle className="w-5 h-5 text-[var(--neutral-500)]" /> ACTIVE ISSUES
@@ -284,7 +284,7 @@ export function IssuesTab() {
          <div className="w-[340px] shrink-0 space-y-6 hidden lg:block overflow-y-auto pb-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
             
             {/* Andon Status Widget */}
-            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] overflow-hidden rounded-[var(--shape-lg)] bg-card">
+            <Card className="shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[var(--neutral-200)] overflow-hidden rounded-lg bg-card">
                <div className="bg-[var(--neutral-800)] text-white p-4 font-bold text-center uppercase tracking-wider text-sm">
                   Machine Status
                </div>
@@ -312,7 +312,7 @@ export function IssuesTab() {
             </Card>
 
             {/* Intelligence Hub Integration */}
-            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-card rounded-[var(--shape-lg)]">
+            <Card className="shadow-none border-[var(--mw-purple)]/20 bg-card rounded-lg">
                <div className="p-6">
                   <div className="flex items-center gap-2 mb-4 text-[var(--neutral-500)] font-bold text-lg">
                      <AgentLogomark size={20} /> AI Troubleshoot
@@ -334,7 +334,7 @@ export function IssuesTab() {
 
       {/* Modals */}
       <Dialog open={!!activeModal} onOpenChange={(open) => !open && setActiveModal(null)}>
-         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white/95 dark:bg-card/95 backdrop-blur-xl sm:rounded-[var(--shape-lg)] border-[var(--neutral-200)]">
+         <DialogContent className="max-w-2xl w-[90vw] p-0 overflow-hidden bg-white/95 dark:bg-card/95 backdrop-blur-xl sm:rounded-lg border-[var(--neutral-200)]">
             <DialogTitle className="sr-only">Issue Reporting</DialogTitle>
             <DialogDescription className="sr-only">
                Form to report an issue on the shop floor.

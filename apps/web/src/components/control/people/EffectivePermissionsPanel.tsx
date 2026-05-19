@@ -140,7 +140,7 @@ export function EffectivePermissionsPanel({ user }: EffectivePermissionsPanelPro
   }
 
   return (
-    <Collapsible className="rounded-[var(--shape-lg)] border border-[var(--border)] bg-card p-4">
+    <Collapsible className="rounded-lg border border-[var(--border)] bg-card p-4">
       <CollapsibleTrigger asChild>
         <button
           type="button"
@@ -194,7 +194,7 @@ function ModuleTrailCard({ trail }: { trail: ModuleTrail }) {
   })();
 
   return (
-    <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-3">
+    <div className="rounded-lg bg-[var(--neutral-100)] p-3">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: meta.dot }} />

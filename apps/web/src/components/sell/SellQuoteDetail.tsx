@@ -502,7 +502,7 @@ export function SellQuoteDetail() {
         return (
           <div className="space-y-4">
             {locked && (
-              <div className="flex items-start gap-3 rounded-[var(--shape-md)] border border-[var(--mw-amber)]/30 bg-[var(--mw-amber)]/10 px-4 py-3 text-sm">
+              <div className="flex items-start gap-3 rounded-md border border-[var(--mw-amber)]/30 bg-[var(--mw-amber)]/10 px-4 py-3 text-sm">
                 <Lock className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-amber)]" />
                 <div className="space-y-1">
                   <p className="font-medium text-foreground">
@@ -715,7 +715,7 @@ export function SellQuoteDetail() {
                 <div className="mt-1 flex items-center gap-2 tabular-nums">
                   <span className="text-[var(--neutral-500)]">Total margin</span>
                   <span
-                    className="rounded-[var(--shape-md)] px-2 py-0.5 text-xs font-medium text-[var(--mw-mirage)]"
+                    className="rounded-md px-2 py-0.5 text-xs font-medium text-[var(--mw-mirage)]"
                     style={{
                       backgroundColor: getChartScaleColour(
                         marginToScalePercent(marginPct),

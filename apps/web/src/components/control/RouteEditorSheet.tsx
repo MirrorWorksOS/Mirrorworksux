@@ -215,7 +215,7 @@ export function RouteEditorSheet({
             </div>
 
             {steps.length === 0 ? (
-              <div className="rounded-[var(--shape-md)] border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--neutral-500)]">
+              <div className="rounded-md border border-dashed border-[var(--border)] p-6 text-center text-sm text-[var(--neutral-500)]">
                 No steps yet. Click <span className="font-medium">Add op</span>{' '}
                 to insert one.
               </div>
@@ -300,7 +300,7 @@ function StepRow({
         onDropAt(index);
       }}
       className={cn(
-        'flex items-center gap-2 rounded-[var(--shape-md)] border px-2 py-1.5 transition-colors',
+        'flex items-center gap-2 rounded-md border px-2 py-1.5 transition-colors',
         colour.border,
         colour.bg,
         isDragging && 'opacity-40',

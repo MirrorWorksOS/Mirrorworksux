@@ -259,7 +259,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              'border-2 border-dashed rounded-[var(--shape-lg)] p-10 cursor-pointer transition-all duration-200 group',
+              'border-2 border-dashed rounded-lg p-10 cursor-pointer transition-all duration-200 group',
               isDragOver
                 ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/5 dark:bg-[var(--mw-yellow-400)]/10'
                 : 'border-[var(--neutral-300)] dark:border-[var(--neutral-600)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] hover:border-[var(--neutral-400)] dark:hover:border-[var(--neutral-500)]',
@@ -332,12 +332,12 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card className="border border-[var(--border)] bg-card rounded-[var(--shape-lg)] p-4">
+                    <Card className="border border-[var(--border)] bg-card rounded-lg p-4">
                       <div className="flex items-center gap-4">
                         {/* File icon */}
                         <div
                           className={cn(
-                            'w-10 h-10 rounded-[var(--shape-md)] flex items-center justify-center shrink-0',
+                            'w-10 h-10 rounded-md flex items-center justify-center shrink-0',
                             file.status === 'complete'
                               ? 'bg-[var(--mw-success)]/10'
                               : file.status === 'error'
@@ -433,7 +433,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
 
           {/* Empty state */}
           {files.length === 0 && (
-            <Card className="border border-[var(--border)] bg-card rounded-[var(--shape-lg)] p-8">
+            <Card className="border border-[var(--border)] bg-card rounded-lg p-8">
               <div className="flex flex-col items-center text-center">
                 <FileBox className="w-10 h-10 text-[var(--neutral-300)] dark:text-[var(--neutral-600)] mb-3" />
                 <p className="text-sm font-medium text-foreground mb-1">No files added</p>
@@ -447,7 +447,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
 
         {/* Right column — Import settings */}
         <div className="space-y-6">
-          <Card className="border border-[var(--border)] bg-card rounded-[var(--shape-lg)] overflow-hidden">
+          <Card className="border border-[var(--border)] bg-card rounded-lg overflow-hidden">
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="w-full flex items-center justify-between p-5 text-left"
@@ -471,7 +471,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                   <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2 block">
                     Units
                   </label>
-                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
+                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-1">
                     {(['mm', 'inch', 'meter'] as UnitSystem[]).map((u) => (
                       <button
                         key={u}
@@ -494,7 +494,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                   <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider mb-2 block">
                     Scale
                   </label>
-                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1">
+                  <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-1">
                     {(['1:1', '1:10', '1:100', 'custom'] as ScaleOption[]).map((s) => (
                       <button
                         key={s}
@@ -517,7 +517,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                         type="number"
                         value={customScale}
                         onChange={(e) => setCustomScale(e.target.value)}
-                        className="h-9 w-20 tabular-nums border-[var(--border)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-md)] text-sm"
+                        className="h-9 w-20 tabular-nums border-[var(--border)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-md text-sm"
                       />
                     </div>
                   )}
@@ -551,7 +551,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
           </Card>
 
           {/* File format reference */}
-          <Card className="border border-[var(--border)] bg-card rounded-[var(--shape-lg)] p-5">
+          <Card className="border border-[var(--border)] bg-card rounded-lg p-5">
             <h3 className="text-sm font-medium text-foreground mb-3">Supported Formats</h3>
             <div className="space-y-3">
               {[
@@ -563,7 +563,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                 const Icon = f.icon;
                 return (
                   <div key={f.ext} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-[var(--shape-md)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-md bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4 text-[var(--neutral-500)]" />
                     </div>
                     <div>

@@ -125,7 +125,7 @@ export function MirrorWorksAgentCard({
   return (
     <div
       className={cn(
-        'ai-card-glow rounded-[var(--shape-lg)] bg-card p-4',
+        'ai-card-glow rounded-lg bg-card p-4',
         isAnimated && 'ai-card-glow--animating',
         className,
       )}
@@ -159,7 +159,7 @@ export function MirrorWorksAgentCard({
                 <motion.div
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-3 rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-3 text-xs leading-relaxed text-[var(--neutral-600)]"
+                  className="mt-3 rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-3 text-xs leading-relaxed text-[var(--neutral-600)]"
                 >
                   {detailContent}
                 </motion.div>

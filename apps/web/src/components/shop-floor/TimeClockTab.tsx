@@ -247,7 +247,7 @@ export function TimeClockTab() {
             </div>
 
             {/* Today's Summary */}
-            <div className="w-full bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-4 border border-[var(--neutral-200)]">
+            <div className="w-full bg-[var(--neutral-50)] rounded-lg p-4 border border-[var(--neutral-200)]">
                <div className="flex flex-col gap-1">
                   <div className="text-sm font-medium text-foreground">Today: {isClockedIn ? 'In Progress' : '6h 45m'}</div>
                   {isClockedIn && startTime && (

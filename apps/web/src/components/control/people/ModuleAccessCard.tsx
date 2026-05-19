@@ -85,7 +85,7 @@ export function ModuleAccessCard({ user, assignment, groups }: ModuleAccessCardP
   };
 
   return (
-    <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-6">
+    <div className="rounded-lg bg-[var(--neutral-100)] p-6">
       <div className="flex gap-4">
         <div className="w-1 rounded-full" style={{ backgroundColor: moduleMeta.dot }} />
         <div className="min-w-0 flex-1 space-y-4">
@@ -215,7 +215,7 @@ export function UnassignedModuleCard({
   moduleKey: ModuleKey;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-card p-4 opacity-60">
+    <div className="flex items-center justify-between rounded-lg border border-dashed border-[var(--border)] bg-card p-4 opacity-60">
       <span className="text-sm text-[var(--neutral-800)]">{moduleLabels[moduleKey]}</span>
       <Button variant="outline" className="h-12 border-[var(--border)] bg-transparent px-3 text-xs">
         + Assign

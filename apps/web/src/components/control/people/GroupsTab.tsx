@@ -66,7 +66,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
 
       {/* Permission hierarchy info for Control module */}
       {activeModule === 'control' && (
-        <div className="flex items-start gap-3 rounded-[var(--shape-lg)] border border-[var(--border)] bg-[var(--neutral-100)] p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-[var(--border)] bg-[var(--neutral-100)] p-4">
           <Shield className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--mw-yellow-400)]" />
           <div className="text-sm text-[var(--neutral-600)]">
             <p className="mb-1 font-medium text-foreground">Control module permissions</p>
@@ -93,7 +93,7 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
           const open = expandedId === group.id;
 
           return (
-            <div key={group.id} className="overflow-hidden rounded-[var(--shape-lg)] border border-[var(--border)] bg-card shadow-sm">
+            <div key={group.id} className="overflow-hidden rounded-lg border border-[var(--border)] bg-card shadow-sm">
               <button
                 type="button"
                 className="flex w-full items-center justify-between gap-4 p-6 text-left"
@@ -153,16 +153,16 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                   <div className="space-y-4">
                     {/* Document scope toggle */}
                     <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">Scope</p>
-                    <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-1">
+                    <div className="rounded-lg bg-[var(--neutral-100)] p-1">
                       <ToggleGroup
                         type="single"
                         value={group.permissionSet['documents.scope']}
                         className="w-full"
                       >
-                        <ToggleGroupItem value="own" className="h-10 flex-1 rounded-[var(--shape-lg)] text-xs">
+                        <ToggleGroupItem value="own" className="h-10 flex-1 rounded-lg text-xs">
                           Own records
                         </ToggleGroupItem>
-                        <ToggleGroupItem value="all" className="h-10 flex-1 rounded-[var(--shape-lg)] text-xs">
+                        <ToggleGroupItem value="all" className="h-10 flex-1 rounded-lg text-xs">
                           All records
                         </ToggleGroupItem>
                       </ToggleGroup>
@@ -174,16 +174,16 @@ export function GroupsTab({ onOpenGroupDetail }: GroupsTabProps) {
                       .map(entry => (
                         <div key={entry.key}>
                           <p className="mb-2 text-xs font-medium text-[var(--neutral-500)]">{entry.label}</p>
-                          <div className="rounded-[var(--shape-lg)] bg-[var(--neutral-100)] p-1">
+                          <div className="rounded-lg bg-[var(--neutral-100)] p-1">
                             <ToggleGroup
                               type="single"
                               value={(group.permissionSet[entry.key] as string) ?? 'own'}
                               className="w-full"
                             >
-                              <ToggleGroupItem value="own" className="h-10 flex-1 rounded-[var(--shape-lg)] text-xs">
+                              <ToggleGroupItem value="own" className="h-10 flex-1 rounded-lg text-xs">
                                 Own
                               </ToggleGroupItem>
-                              <ToggleGroupItem value="all" className="h-10 flex-1 rounded-[var(--shape-lg)] text-xs">
+                              <ToggleGroupItem value="all" className="h-10 flex-1 rounded-lg text-xs">
                                 All
                               </ToggleGroupItem>
                             </ToggleGroup>
@@ -246,7 +246,7 @@ function PermissionSection({
     <div className="space-y-2">
       <p className="text-xs font-medium tracking-wider text-[var(--neutral-500)] uppercase">{section}</p>
       {sectionRows.map(row => (
-        <div key={row.key} className="flex items-center justify-between rounded-[var(--shape-lg)] bg-card p-2">
+        <div key={row.key} className="flex items-center justify-between rounded-lg bg-card p-2">
           <span className="text-sm text-[var(--neutral-800)]">{row.label}</span>
           <Switch checked={group.permissionSet[row.key] === true} className="h-7 w-12" />
         </div>

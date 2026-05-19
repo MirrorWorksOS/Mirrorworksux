@@ -402,7 +402,7 @@ function NodeCard({
   return (
     <div
       className={cn(
-        'absolute border border-l-[3px] rounded-[var(--shape-lg)] p-3 cursor-pointer select-none',
+        'absolute border border-l-[3px] rounded-lg p-3 cursor-pointer select-none',
         'transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)]',
         'shadow-[var(--elevation-1)]',
         s.card,

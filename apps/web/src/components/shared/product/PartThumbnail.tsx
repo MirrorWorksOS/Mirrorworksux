@@ -18,10 +18,10 @@ import { cn } from '@/components/ui/utils';
 export type PartThumbnailSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const SIZE_CLASSES: Record<PartThumbnailSize, string> = {
-  sm: 'h-8 w-8 rounded-[var(--shape-sm)]',
-  md: 'h-12 w-12 rounded-[var(--shape-md)]',
-  lg: 'h-16 w-16 rounded-[var(--shape-md)]',
-  xl: 'h-24 w-24 rounded-[var(--shape-lg)]',
+  sm: 'h-8 w-8 rounded-sm',
+  md: 'h-12 w-12 rounded-md',
+  lg: 'h-16 w-16 rounded-md',
+  xl: 'h-24 w-24 rounded-lg',
 };
 
 const ICON_CLASSES: Record<PartThumbnailSize, string> = {

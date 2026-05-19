@@ -58,7 +58,7 @@ export function DashboardFlipCard({
     return (
       <div
         className={cn(
-          "flex min-h-[220px] flex-col justify-between rounded-[var(--shape-xl)] bg-card p-6 shadow-xs",
+          "flex min-h-[220px] flex-col justify-between rounded-xl bg-card p-6 shadow-xs",
           mwHairlineBorder,
           className,
         )}
@@ -112,7 +112,7 @@ export function DashboardFlipCard({
       onMouseLeave={() => setHovered(false)}
     >
       <motion.div
-        className="relative min-h-[220px] w-full rounded-[var(--shape-xl)] outline-none"
+        className="relative min-h-[220px] w-full rounded-xl outline-none"
         animate={{ rotateY: showBack ? 180 : 0 }}
         transition={{ duration: FLIP_DURATION, ease: FLIP_EASE }}
         style={{ transformStyle: "preserve-3d" }}
@@ -133,7 +133,7 @@ export function DashboardFlipCard({
       >
         <div
           className={cn(
-            "absolute inset-0 flex flex-col justify-between rounded-[var(--shape-xl)] bg-card p-6 shadow-xs",
+            "absolute inset-0 flex flex-col justify-between rounded-xl bg-card p-6 shadow-xs",
             mwHairlineBorder,
             showBack && "pointer-events-none",
           )}
@@ -172,7 +172,7 @@ export function DashboardFlipCard({
 
         <div
           className={cn(
-            "absolute inset-0 flex flex-col justify-between rounded-[var(--shape-xl)] bg-card p-6 shadow-xs",
+            "absolute inset-0 flex flex-col justify-between rounded-xl bg-card p-6 shadow-xs",
             mwHairlineBorder,
             !showBack && "pointer-events-none",
           )}

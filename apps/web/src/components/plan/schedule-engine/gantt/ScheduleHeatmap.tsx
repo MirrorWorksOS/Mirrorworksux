@@ -146,7 +146,7 @@ export function ScheduleHeatmap({ snapshot, zoom }: ScheduleHeatmapProps) {
                         title={`${wc.name} · day ${idx + 1} · ${dayLoad}%`}
                       >
                         <div
-                          className="rounded-[var(--shape-xs)]"
+                          className="rounded-xs"
                           style={{
                             width: cellWidth - (zoom === 'week' ? 16 : 8),
                             height: fillHeight,

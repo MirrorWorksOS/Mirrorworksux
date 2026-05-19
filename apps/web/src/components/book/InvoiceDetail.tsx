@@ -69,7 +69,7 @@ export function InvoiceDetail({ onBack }: { onBack: () => void }) {
           {/* Company & Invoice Title */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <div className="w-12 h-12 bg-[var(--neutral-100)] rounded-[var(--shape-lg)] mb-2" />
+              <div className="w-12 h-12 bg-[var(--neutral-100)] rounded-lg mb-2" />
               <div className="text-foreground font-medium">MirrorWorks Pty Ltd</div>
               <div className="text-xs text-[var(--neutral-500)]">123 Factory Road, Oberon NSW 2787</div>
               <div className="text-xs text-[var(--neutral-500)] mt-0.5 tabular-nums">ABN: 12 345 678 901</div>

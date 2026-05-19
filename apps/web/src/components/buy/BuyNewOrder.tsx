@@ -640,7 +640,7 @@ export function BuyNewOrder() {
                   )}
                 </div>
                 {supplier && (
-                  <div className="flex items-center gap-2 rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-2.5">
+                  <div className="flex items-center gap-2 rounded-md bg-[var(--neutral-100)] p-2.5">
                     <Sparkles className="w-3.5 h-3.5 text-[var(--mw-mirage)] shrink-0" />
                     <p className="text-xs text-[var(--neutral-600)]">
                       {supplier.onTimePercent}% on-time · rated {supplier.rating}/5

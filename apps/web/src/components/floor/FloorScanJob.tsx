@@ -162,7 +162,7 @@ export function FloorScanJob() {
               Loading queue…
             </div>
           ) : queue.length === 0 ? (
-            <div className="p-8 bg-card border border-dashed border-[var(--neutral-200)] rounded-[var(--shape-lg)] text-center">
+            <div className="p-8 bg-card border border-dashed border-[var(--neutral-200)] rounded-lg text-center">
               <div className="text-base font-medium text-[var(--neutral-800)] mb-1">
                 Nothing queued here right now.
               </div>
@@ -180,10 +180,10 @@ export function FloorScanJob() {
                   <button
                     key={wo.id}
                     onClick={() => runWorkOrder(wo)}
-                    className="group w-full flex items-center gap-4 p-5 bg-card border border-[var(--neutral-200)] rounded-[var(--shape-lg)] text-left hover:border-[var(--mw-yellow-400)] hover:shadow-[var(--elevation-2)] active:scale-[0.995] transition-all min-h-[88px]"
+                    className="group w-full flex items-center gap-4 p-5 bg-card border border-[var(--neutral-200)] rounded-lg text-left hover:border-[var(--mw-yellow-400)] hover:shadow-[var(--elevation-2)] active:scale-[0.995] transition-all min-h-[88px]"
                   >
                     {/* Sequence chip */}
-                    <div className="w-14 h-14 rounded-[var(--shape-md)] bg-[var(--neutral-100)] flex flex-col items-center justify-center shrink-0 border border-[var(--neutral-200)]">
+                    <div className="w-14 h-14 rounded-md bg-[var(--neutral-100)] flex flex-col items-center justify-center shrink-0 border border-[var(--neutral-200)]">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--neutral-500)]">
                         Seq
                       </span>

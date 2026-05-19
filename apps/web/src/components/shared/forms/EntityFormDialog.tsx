@@ -49,7 +49,7 @@ export function EntityFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={[`${widthClass} rounded-[var(--shape-lg)] border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6`, className].filter(Boolean).join(' ')}
+        className={[`${widthClass} rounded-lg border-[var(--border)] bg-white/95 dark:bg-card/95 backdrop-blur-xl p-6`, className].filter(Boolean).join(' ')}
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">{title}</DialogTitle>

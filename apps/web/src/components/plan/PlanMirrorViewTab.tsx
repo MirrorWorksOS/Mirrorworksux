@@ -75,7 +75,7 @@ export function PlanMirrorViewTab() {
         </div>
 
         <div className="p-6">
-          <div className="flex items-center gap-1 mb-3 bg-[var(--neutral-100)] rounded-[var(--shape-sm)] p-1 w-fit">
+          <div className="flex items-center gap-1 mb-3 bg-[var(--neutral-100)] rounded-sm p-1 w-fit">
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Home className="w-3.5 h-3.5" /></Button>
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Layers className="w-3.5 h-3.5 mr-1" /> Model</Button>
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Settings className="w-3.5 h-3.5 mr-1" /> Properties</Button>
@@ -84,7 +84,7 @@ export function PlanMirrorViewTab() {
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
           </div>
 
-          <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-[var(--shape-md)] relative overflow-hidden">
+          <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-md relative overflow-hidden">
             <GlbViewer
               src="/models/diff.glb"
               className="w-full h-full"
@@ -131,7 +131,7 @@ export function PlanMirrorViewTab() {
         </div>
 
         <div className="p-6">
-          <div ref={view2dRef} className="aspect-[16/9] bg-white border border-[var(--border)] rounded-[var(--shape-md)] relative overflow-hidden">
+          <div ref={view2dRef} className="aspect-[16/9] bg-white border border-[var(--border)] rounded-md relative overflow-hidden">
             <DrawingViewer src="/models/diff.glb" className="absolute inset-0" />
             <div className="absolute bottom-3 right-3 w-48 border border-[var(--neutral-200)] bg-white/90 p-2 pointer-events-none">
               <p className="text-[9px] font-medium text-[var(--neutral-500)]">MIRRORWORKS</p>

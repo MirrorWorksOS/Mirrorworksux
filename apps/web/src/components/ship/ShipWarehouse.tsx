@@ -89,7 +89,7 @@ const cycleColumns: MwColumnDef<CycleItem>[] = [
       c.actual !== null ? (
         <span className="font-medium tabular-nums">{c.actual}</span>
       ) : (
-        <Input className="h-10 w-20 text-right tabular-nums bg-[var(--neutral-100)] border-transparent rounded-[var(--shape-lg)] ml-auto" placeholder="—" />
+        <Input className="h-10 w-20 text-right tabular-nums bg-[var(--neutral-100)] border-transparent rounded-lg ml-auto" placeholder="—" />
       ),
   },
   {
@@ -137,7 +137,7 @@ export function ShipWarehouse() {
           { label: 'Low Stock', value: lowStockCount, sub: 'Below threshold', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'Empty Bins', value: emptyCount, sub: 'Needs restock', bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]' },
         ].map(s => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>
@@ -155,7 +155,7 @@ export function ShipWarehouse() {
       {/* Map */}
       {tab === 'map' && (
         <Card className="p-6">
-          <div className="relative bg-[var(--neutral-100)] rounded-[var(--shape-lg)]" style={{ paddingBottom: '55%' }}>
+          <div className="relative bg-[var(--neutral-100)] rounded-lg" style={{ paddingBottom: '55%' }}>
             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
               {ZONES.map((z) => (
                 <g key={z.name}>

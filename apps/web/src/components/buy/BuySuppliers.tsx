@@ -209,7 +209,7 @@ export function BuySuppliers() {
               const perfBadge = getPerformanceBadge(supplier.onTimeRate);
               return (
                 <motion.div key={supplier.id} variants={staggerItem} custom={idx} className="h-full min-h-0">
-                  <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                  <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                     <Card
                       variant="interactive"
                       className="group h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"

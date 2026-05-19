@@ -214,7 +214,7 @@ export function FloorClockIn() {
               <button
                 key={op.id}
                 onClick={() => setSelected(op)}
-                className="group flex flex-col items-center gap-3 p-6 bg-card border border-[var(--neutral-200)] rounded-[var(--shape-lg)] hover:border-[var(--mw-yellow-400)] hover:shadow-[var(--elevation-2)] transition-all active:scale-[0.98] min-h-[180px]"
+                className="group flex flex-col items-center gap-3 p-6 bg-card border border-[var(--neutral-200)] rounded-lg hover:border-[var(--mw-yellow-400)] hover:shadow-[var(--elevation-2)] transition-all active:scale-[0.98] min-h-[180px]"
               >
                 <Avatar className="w-20 h-20 border-2 border-[var(--neutral-200)] group-hover:border-[var(--mw-yellow-400)] transition-colors">
                   <AvatarImage src={undefined} />

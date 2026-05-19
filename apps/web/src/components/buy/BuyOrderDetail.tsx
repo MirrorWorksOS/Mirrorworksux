@@ -269,7 +269,7 @@ export function BuyOrderDetail() {
             {/* Left column */}
             <div className="space-y-6">
               {/* Order details card */}
-              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                 <h2 className="mb-1 text-base font-medium text-foreground">
                   Order details
                 </h2>
@@ -287,7 +287,7 @@ export function BuyOrderDetail() {
                     <div className="mt-1">
                       <Link
                         to={`/buy/suppliers/${order.supplierId}`}
-                        className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline"
+                        className="inline-flex h-12 w-full items-center rounded-md border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline"
                       >
                         {order.supplierName}
                       </Link>
@@ -341,7 +341,7 @@ export function BuyOrderDetail() {
                       <div className="mt-1">
                         <Link
                           to={`/plan/jobs/${order.jobId}`}
-                          className="inline-flex h-12 w-full items-center rounded-[var(--shape-md)] border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
+                          className="inline-flex h-12 w-full items-center rounded-md border border-[var(--border)] bg-background px-3 text-sm text-[var(--mw-info)] hover:underline tabular-nums"
                         >
                           {order.jobId}
                         </Link>
@@ -352,7 +352,7 @@ export function BuyOrderDetail() {
               </Card>
 
               {/* Line items summary */}
-              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">Line items</h2>
                   <Button
@@ -390,14 +390,14 @@ export function BuyOrderDetail() {
 
               {/* Notes */}
               {order.notes && (
-                <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                   <h2 className="mb-2 text-base font-medium text-foreground">Notes</h2>
                   <p className="text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">{order.notes}</p>
                 </Card>
               )}
 
               {/* Recent activity (mini timeline) */}
-              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-medium text-foreground">Recent activity</h2>
                   <Button
@@ -419,7 +419,7 @@ export function BuyOrderDetail() {
 
               {/* Related documents */}
               {relatedDocs.length > 0 && (
-                <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+                <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                   <h2 className="mb-4 text-base font-medium text-foreground">Related documents</h2>
                   <ul className="divide-y divide-[var(--border)]">
                     {relatedDocs.map((doc) => (
@@ -444,7 +444,7 @@ export function BuyOrderDetail() {
             {/* Right column (sticky) */}
             <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
               {/* Order value card */}
-              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                 <h2 className="mb-4 text-base font-medium text-foreground">Order value</h2>
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -479,7 +479,7 @@ export function BuyOrderDetail() {
               </Card>
 
               {/* Status timeline */}
-              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+              <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
                 <h2 className="mb-4 text-base font-medium text-foreground">Status timeline</h2>
                 <ol className="space-y-3">
                   {PO_TIMELINE.map((step, i) => {
@@ -628,7 +628,7 @@ export function BuyOrderDetail() {
         return (
           <div className="space-y-6">
             {/* Delivery tracking */}
-            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
               <h2 className="mb-1 text-base font-medium text-foreground">Delivery tracking</h2>
               <p className="mb-6 text-xs text-[var(--neutral-500)]">Shipment and logistics information</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -652,7 +652,7 @@ export function BuyOrderDetail() {
             </Card>
 
             {/* Receiving progress */}
-            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
               <h2 className="mb-4 text-base font-medium text-foreground">Receiving progress</h2>
               <div className="mb-2 flex items-baseline justify-between">
                 <span className="text-sm text-[var(--neutral-600)] dark:text-[var(--muted-foreground)]">
@@ -679,7 +679,7 @@ export function BuyOrderDetail() {
             </Card>
 
             {/* Per-line receiving detail */}
-            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card shadow-xs rounded-lg overflow-hidden">
               <div className="border-b border-[var(--border)] px-6 py-4">
                 <h2 className="text-base font-medium text-foreground">Line item receiving</h2>
               </div>
@@ -743,7 +743,7 @@ export function BuyOrderDetail() {
         return (
           <div className="space-y-6">
             {/* Audit history — full timeline */}
-            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-medium text-foreground">Audit history</h2>
@@ -764,7 +764,7 @@ export function BuyOrderDetail() {
             </Card>
 
             {/* Comments placeholder */}
-            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-[var(--shape-lg)]">
+            <Card className="border border-[var(--neutral-200)] dark:border-[var(--border)] bg-card p-6 shadow-xs rounded-lg">
               <h2 className="mb-4 text-base font-medium text-foreground">Comments</h2>
               <div className="flex items-center gap-3">
                 <Input

@@ -192,7 +192,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
 
       <div className="px-6 space-y-6">
         {/* File banner */}
-        <Card className="border border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] p-6">
+        <Card className="border border-[var(--border)] bg-card shadow-xs rounded-lg p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
               <IconWell icon={FileCode2} surface="onLight" />
@@ -228,7 +228,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
           {/* Left column */}
           <div className="space-y-6">
             {/* G-code preview */}
-            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden">
+            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-lg overflow-hidden">
               <div className="border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
                 <h3 className="text-sm font-medium text-foreground">G-code Preview</h3>
                 <button className="text-xs font-medium text-[var(--mw-yellow-500)] hover:underline">
@@ -264,7 +264,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
             </Card>
 
             {/* File validation */}
-            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] p-6">
+            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-lg p-6">
               <h3 className="text-sm font-medium text-foreground mb-4">File Validation</h3>
 
               <div className="flex flex-wrap items-center gap-2 mb-5">
@@ -303,7 +303,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
                 </li>
               </ul>
 
-              <div className="mt-5 rounded-[var(--shape-md)] bg-[var(--mw-amber)]/10 p-3">
+              <div className="mt-5 rounded-md bg-[var(--mw-amber)]/10 p-3">
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="h-4 w-4 text-[var(--mw-amber)] shrink-0 mt-0.5" />
                   <div className="text-xs">
@@ -320,10 +320,10 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
 
           {/* Right column — Connected Machines */}
           <div>
-            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-[var(--shape-lg)] p-6">
+            <Card className="border border-[var(--border)] bg-card shadow-xs rounded-lg p-6">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--neutral-100)]">
                     <Cpu className="h-4 w-4 text-foreground" />
                   </div>
                   <div>
@@ -354,7 +354,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
                   <div
                     key={m.name}
                     className={cn(
-                      'border rounded-[var(--shape-lg)] p-4 transition-colors',
+                      'border rounded-lg p-4 transition-colors',
                       m.status === 'offline'
                         ? 'border-[var(--border)] bg-[var(--neutral-50)]'
                         : 'border-[var(--border)] bg-card',

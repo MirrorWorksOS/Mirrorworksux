@@ -308,7 +308,7 @@ export function PlanQCPlanning() {
           return (
             <motion.div key={s.label} variants={staggerItem}>
               <Card className="p-6">
-                <div className={cn('w-8 h-8 rounded-[var(--shape-md)] flex items-center justify-center mb-4', s.bg)}>
+                <div className={cn('w-8 h-8 rounded-md flex items-center justify-center mb-4', s.bg)}>
                   <Icon className={cn('w-4 h-4', s.text)} />
                 </div>
                 <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
@@ -322,7 +322,7 @@ export function PlanQCPlanning() {
       </motion.div>
 
       {/* Section tabs */}
-      <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1 w-fit">
+      <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-1 w-fit">
         {[
           { id: 'inspections' as const, label: 'Inspection Points', count: INSPECTION_POINTS.length },
           { id: 'checklists' as const, label: 'Quality Checklists', count: CHECKLISTS.length },
@@ -356,7 +356,7 @@ export function PlanQCPlanning() {
             <ToolbarSearch value={search} onChange={setSearch} placeholder="Search inspection points..." />
             <ToolbarSpacer />
             {/* Work centre filter */}
-            <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-1 flex-wrap">
+            <div className="flex gap-1 bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-1 flex-wrap">
               {WORK_CENTERS.map((wc) => (
                 <button
                   key={wc}
@@ -393,7 +393,7 @@ export function PlanQCPlanning() {
             const progress = cl.itemCount > 0 ? Math.round((cl.completedCount / cl.itemCount) * 100) : 0;
             return (
               <motion.div key={cl.id} variants={staggerItem} className="h-full min-h-0">
-                <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+                <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                   <Card
                     variant="flat"
                     className="group h-full cursor-pointer border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"

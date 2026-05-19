@@ -369,11 +369,11 @@ export function WelcomeDashboard() {
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
                 <Card
                   variant="flat"
                   className={cn(
-                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+                    "h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -404,11 +404,11 @@ export function WelcomeDashboard() {
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
                 <Card
                   variant="flat"
                   className={cn(
-                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+                    "h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -439,11 +439,11 @@ export function WelcomeDashboard() {
                 whileHover={{ y: -1 }}
                 transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
               >
-                <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
+                <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
                 <Card
                   variant="flat"
                   className={cn(
-                    "h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+                    "h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                     mwHairlineBorder,
                   )}
                 >
@@ -480,8 +480,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
-                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center justify-between gap-3 border-b border-border pb-4">
                       <div className="flex min-w-0 items-center gap-2">
                         <ClipboardList
@@ -547,8 +547,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
-                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <AlertTriangle
                         className="h-7 w-7 shrink-0 text-[var(--mw-warning)]"
@@ -559,7 +559,7 @@ export function WelcomeDashboard() {
                       </h2>
                     </div>
                     <div className="space-y-3 text-base">
-                      <div className="rounded-[var(--shape-xl)] border border-border bg-[var(--neutral-50)] p-4 dark:bg-white/[0.04]">
+                      <div className="rounded-xl border border-border bg-[var(--neutral-50)] p-4 dark:bg-white/[0.04]">
                         <p className="font-bold text-foreground">
                           SP270226001
                         </p>
@@ -567,7 +567,7 @@ export function WelcomeDashboard() {
                           Meridian Fabrication · carrier delay
                         </p>
                       </div>
-                      <div className="rounded-[var(--shape-xl)] border border-border bg-[var(--neutral-50)] p-4 dark:bg-white/[0.04]">
+                      <div className="rounded-xl border border-border bg-[var(--neutral-50)] p-4 dark:bg-white/[0.04]">
                         <p className="font-bold text-foreground">
                           JOB-2026-0012
                         </p>
@@ -601,8 +601,8 @@ export function WelcomeDashboard() {
                     whileHover={{ y: -1 }}
                     transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
                   >
-                  <SpotlightCard radius="rounded-[var(--shape-xl)]" className="h-full min-h-0">
-                  <Card variant="flat" className={cn("h-full rounded-[var(--shape-xl)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
+                  <SpotlightCard radius="rounded-xl" className="h-full min-h-0">
+                  <Card variant="flat" className={cn("h-full rounded-xl p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]", mwHairlineBorder)}>
                     <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
                       <Link2
                         className="h-7 w-7 shrink-0 text-[var(--mw-mirage)] dark:text-[var(--mw-yellow-400)]"
@@ -666,7 +666,7 @@ export function WelcomeDashboard() {
                     >
                       <MwDataTable
                         className={cn(
-                          "rounded-[var(--shape-xl)] shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+                          "rounded-xl shadow-[var(--card-shadow-rest)] transition-[box-shadow] duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                           mwHairlineBorder,
                         )}
                         columns={RECENT_JOB_COLUMNS}
@@ -739,7 +739,7 @@ export function WelcomeDashboard() {
                         <li key={module.key}>
                           <Link
                             to={module.path}
-                            className="flex items-center gap-3 rounded-[var(--shape-md)] p-3 hover:bg-[var(--neutral-50)] dark:hover:bg-white/[0.06]"
+                            className="flex items-center gap-3 rounded-md p-3 hover:bg-[var(--neutral-50)] dark:hover:bg-white/[0.06]"
                           >
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--mw-mirage)]">
                               <Icon

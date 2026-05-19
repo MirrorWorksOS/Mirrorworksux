@@ -110,10 +110,10 @@ export function UpgradeDialog({
 
   return (
     <Dialog open={open} onOpenChange={config.canDismiss ? onOpenChange : undefined}>
-      <DialogContent className="sm:max-w-[440px] rounded-[var(--shape-xl)]">
+      <DialogContent className="sm:max-w-[440px] rounded-xl">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1">
-            <div className={`p-2 rounded-[var(--shape-md)] bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]`}>
+            <div className={`p-2 rounded-md bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)]`}>
               <Icon className={`w-5 h-5 ${config.iconColor}`} />
             </div>
             <DialogTitle className="text-lg">
@@ -129,7 +129,7 @@ export function UpgradeDialog({
         {nextTier && (
           <div className="grid grid-cols-2 gap-3 my-4">
             {/* Current tier */}
-            <div className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-[var(--shape-lg)] p-4">
+            <div className="bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] rounded-lg p-4">
               <Badge className="bg-[var(--neutral-200)] dark:bg-[var(--neutral-700)] text-[var(--neutral-600)] dark:text-[var(--muted-foreground)] border-0 text-xs rounded-full mb-2">
                 Current
               </Badge>
@@ -146,7 +146,7 @@ export function UpgradeDialog({
               </p>
             </div>
             {/* Next tier */}
-            <div className="bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 rounded-[var(--shape-lg)] p-4">
+            <div className="bg-[var(--mw-yellow-400)]/5 border border-[var(--mw-yellow-400)]/20 rounded-lg p-4">
               <Badge variant="softAccent" className="text-xs rounded-full mb-2">
                 Recommended
               </Badge>

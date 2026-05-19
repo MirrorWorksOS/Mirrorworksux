@@ -52,7 +52,7 @@ export const MaterialIssueForm = ({ onClose }: { onClose: () => void }) => {
           <SectionHeader title="Issue Type" />
           <RadioGroup defaultValue="shortage" className="grid grid-cols-2 gap-3">
              {['Shortage', 'Wrong Material', 'Damaged', 'Missing'].map((opt) => (
-                <div key={opt} className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)] cursor-pointer">
+                <div key={opt} className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-lg hover:bg-[var(--neutral-50)] cursor-pointer">
                   <RadioGroupItem value={opt.toLowerCase().replace(' ', '-')} id={opt} />
                   <Label htmlFor={opt} className="cursor-pointer font-medium">{opt}</Label>
                 </div>
@@ -151,15 +151,15 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
         <div>
           <SectionHeader title="Issue Type" />
           <RadioGroup defaultValue="stopped" className="grid grid-cols-1 gap-2">
-             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-lg hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="stopped" id="stopped" />
                <Label htmlFor="stopped" className="font-medium">Machine stopped - Will not start</Label>
              </div>
-             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-lg hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="error" id="error" />
                <Label htmlFor="error" className="font-medium">Error Code / Alarm</Label>
              </div>
-             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-[var(--shape-lg)] hover:bg-[var(--neutral-50)]">
+             <div className="flex items-center space-x-2 border border-[var(--neutral-200)] p-3 rounded-lg hover:bg-[var(--neutral-50)]">
                <RadioGroupItem value="noise" id="noise" />
                <Label htmlFor="noise" className="font-medium">Unusual Noise / Vibration</Label>
              </div>
@@ -168,7 +168,7 @@ export const MachineIssueForm = ({ onClose }: { onClose: () => void }) => {
 
         <div>
            <SectionHeader title="Severity" />
-           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-[var(--shape-lg)] border border-[var(--neutral-200)] overflow-hidden bg-card">
+           <RadioGroup defaultValue="medium" className="flex flex-col gap-0 rounded-lg border border-[var(--neutral-200)] overflow-hidden bg-card">
              {['Critical', 'High', 'Medium'].map((option, index) => (
                <div key={option} className={cn("flex items-center px-4 py-3 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer", index !== 2 && "border-b border-[var(--neutral-200)]")}>
                   <RadioGroupItem 

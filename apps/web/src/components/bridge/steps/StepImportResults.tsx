@@ -126,7 +126,7 @@ export function StepImportResults() {
             ))}
           </div>
 
-          <div className="rounded-[var(--shape-lg)] border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6 space-y-4">
+          <div className="rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-6 space-y-4">
             <div>
               <h3 className="text-sm font-medium text-foreground">What happens next</h3>
               <p className="text-sm text-muted-foreground mt-1">

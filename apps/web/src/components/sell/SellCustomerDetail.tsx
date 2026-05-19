@@ -497,7 +497,7 @@ export function SellCustomerDetail() {
             </DropdownMenu>
 
             <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
-              <AlertDialogContent className="rounded-[var(--shape-lg)]">
+              <AlertDialogContent className="rounded-lg">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Archive {customer.company}?</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -514,7 +514,7 @@ export function SellCustomerDetail() {
             </AlertDialog>
 
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-              <AlertDialogContent className="rounded-[var(--shape-lg)]">
+              <AlertDialogContent className="rounded-lg">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete {customer.company}?</AlertDialogTitle>
                   <AlertDialogDescription>

@@ -167,7 +167,7 @@ export function MakeWorkOrders() {
           { label: 'Pending', value: pendingCount, sub: 'Awaiting start', text: 'text-foreground' },
           { label: 'Completed', value: completedCount, sub: 'Finished', text: 'text-foreground' },
         ].map((s) => (
-          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-[var(--shape-lg)] p-6">
+          <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
             <p className={cn('text-2xl tabular-nums font-medium', s.text)}>{s.value}</p>
             <p className="text-xs text-[var(--neutral-500)] mt-0.5">{s.sub}</p>

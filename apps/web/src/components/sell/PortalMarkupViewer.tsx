@@ -260,7 +260,7 @@ export function PortalMarkupViewer({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-yellow-50)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--mw-yellow-50)]">
             <MessageSquare
               className="h-4 w-4 text-[var(--mw-yellow-700)]"
               strokeWidth={1.5}
@@ -543,7 +543,7 @@ function MarkupList({
             <button
               type="button"
               onClick={() => onSelect(m.id)}
-              className={`w-full rounded-[var(--shape-md)] border px-3 py-2.5 text-left transition-colors ${
+              className={`w-full rounded-md border px-3 py-2.5 text-left transition-colors ${
                 isActive
                   ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-50)]'
                   : 'border-[var(--border)] hover:bg-[var(--neutral-50)]'

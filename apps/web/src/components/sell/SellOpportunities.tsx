@@ -367,7 +367,7 @@ export function SellOpportunities() {
         <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((opp) => (
             <motion.div key={opp.id} variants={staggerItem} className="h-full min-h-0">
-              <SpotlightCard radius="rounded-[var(--shape-lg)]" className="h-full min-h-0">
+              <SpotlightCard radius="rounded-lg" className="h-full min-h-0">
                 <Card
                   variant="interactive"
                   className="group h-full border-[var(--border)] transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"

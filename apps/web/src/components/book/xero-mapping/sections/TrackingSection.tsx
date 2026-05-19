@@ -91,7 +91,7 @@ export function TrackingSection({
 
               {category && (
                 <>
-                  <div className="mt-4 flex flex-wrap items-center gap-3 rounded-[var(--shape-md)] bg-[var(--neutral-100)]/60 px-3 py-2">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 rounded-md bg-[var(--neutral-100)]/60 px-3 py-2">
                     <span className="text-xs font-medium text-foreground">
                       Auto-create missing options on push
                     </span>

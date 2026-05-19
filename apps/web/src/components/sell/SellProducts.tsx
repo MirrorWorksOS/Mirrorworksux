@@ -152,7 +152,7 @@ export function SellProducts() {
                 className="h-full min-h-0"
               >
                 <SpotlightCard
-                  radius="rounded-[var(--shape-lg)]"
+                  radius="rounded-lg"
                   className="h-full min-h-0"
                 >
                   <Card

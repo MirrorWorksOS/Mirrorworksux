@@ -231,7 +231,7 @@ export function PlanBudgetTab({ jobId, canViewBudget, quoteId, onOpenIntelligenc
               <div className="flex justify-center">
                 <div className="w-2 h-2 bg-[var(--mw-mirage)] rotate-45 -mb-1" />
               </div>
-              <div className="bg-[var(--mw-mirage)] text-white rounded-[var(--shape-lg)] px-3 py-2 shadow-lg whitespace-nowrap">
+              <div className="bg-[var(--mw-mirage)] text-white rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
                 <p className=" text-xs text-[var(--neutral-400)] mb-0.5">
                   Total Budget
                 </p>

@@ -203,7 +203,7 @@ function BomRoutingTreeInner({
 
   return (
     <>
-      <Card className={cn('border border-[var(--neutral-200)] bg-card shadow-xs rounded-[var(--shape-lg)] overflow-hidden', className)}>
+      <Card className={cn('border border-[var(--neutral-200)] bg-card shadow-xs rounded-lg overflow-hidden', className)}>
         {/* ---------------------------------------------- Header */}
         <div className="px-6 py-4 border-b border-[var(--border)] flex flex-wrap items-center gap-3 justify-between">
           <div className="flex items-center gap-3">
@@ -222,14 +222,14 @@ function BomRoutingTreeInner({
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* Kind filter */}
-            <div className="inline-flex rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-0.5">
+            <div className="inline-flex rounded-md bg-[var(--neutral-100)] p-0.5">
               {(['all', 'make', 'buy'] as const).map((k) => (
                 <button
                   key={k}
                   type="button"
                   onClick={() => setKindFilter(k)}
                   className={cn(
-                    'px-2.5 py-1 rounded-[var(--shape-sm)] text-xs font-medium capitalize transition-colors',
+                    'px-2.5 py-1 rounded-sm text-xs font-medium capitalize transition-colors',
                     kindFilter === k
                       ? 'bg-card text-foreground shadow-xs'
                       : 'text-[var(--neutral-500)] hover:text-foreground',
@@ -253,13 +253,13 @@ function BomRoutingTreeInner({
 
             {/* Density toggle (plan only) */}
             {!readonly && (
-              <div className="inline-flex rounded-[var(--shape-md)] bg-[var(--neutral-100)] p-0.5">
+              <div className="inline-flex rounded-md bg-[var(--neutral-100)] p-0.5">
                 <button
                   type="button"
                   onClick={() => setDensity('tree')}
                   aria-label="Tree view"
                   className={cn(
-                    'px-2 py-1 rounded-[var(--shape-sm)] transition-colors',
+                    'px-2 py-1 rounded-sm transition-colors',
                     density === 'tree' ? 'bg-card shadow-xs' : 'text-[var(--neutral-500)] hover:text-foreground',
                   )}
                 >
@@ -270,7 +270,7 @@ function BomRoutingTreeInner({
                   onClick={() => setDensity('table')}
                   aria-label="Table view"
                   className={cn(
-                    'px-2 py-1 rounded-[var(--shape-sm)] transition-colors',
+                    'px-2 py-1 rounded-sm transition-colors',
                     density === 'table' ? 'bg-card shadow-xs' : 'text-[var(--neutral-500)] hover:text-foreground',
                   )}
                 >
@@ -400,7 +400,7 @@ function BomRoutingTreeInner({
                 </div>
 
                 {selectedOp.op.instructionsFile && (
-                  <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-50)] p-4">
+                  <div className="rounded-md border border-[var(--border)] bg-[var(--neutral-50)] p-4">
                     <p className="text-xs text-[var(--neutral-500)] mb-2">Instruction file</p>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2 min-w-0">
@@ -542,7 +542,7 @@ function PartRow({
                 {part.inputs.map((input) => (
                   <span
                     key={input.id}
-                    className="inline-flex items-center gap-1.5 rounded-[var(--shape-sm)] border border-[var(--border)] bg-[var(--neutral-50)] px-2.5 py-1 text-xs"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-[var(--border)] bg-[var(--neutral-50)] px-2.5 py-1 text-xs"
                   >
                     <span className="text-foreground">{input.name}</span>
                     {input.spec && <span className="text-[var(--neutral-500)]">· {input.spec}</span>}
@@ -682,7 +682,7 @@ function OpChip({ op, index, partId, isLast, readonly, onClick, onReorder }: OpC
           type="button"
           onClick={onClick}
           className={cn(
-            'inline-flex items-center gap-2 rounded-[var(--shape-sm)] border px-2.5 py-1.5 text-xs transition-colors',
+            'inline-flex items-center gap-2 rounded-sm border px-2.5 py-1.5 text-xs transition-colors',
             op.status === 'in_progress'
               ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
               : op.status === 'done'
@@ -735,7 +735,7 @@ function AddOpButton({ onAdd }: { onAdd: (std: StandardOperation) => void }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1 rounded-[var(--shape-sm)] border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1 rounded-sm border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-yellow-400)] hover:text-foreground transition-colors"
         >
           <Plus className="h-3 w-3" /> Add op
         </button>
@@ -789,7 +789,7 @@ function ApplyRouteButton({ onApply }: { onApply: (route: StandardRoute) => void
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1 rounded-[var(--shape-sm)] border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-blue)] hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1 rounded-sm border border-dashed border-[var(--border)] bg-transparent px-2.5 py-1.5 text-xs text-[var(--neutral-500)] hover:border-[var(--mw-blue)] hover:text-foreground transition-colors"
         >
           <Route className="h-3 w-3" /> Apply route…
         </button>

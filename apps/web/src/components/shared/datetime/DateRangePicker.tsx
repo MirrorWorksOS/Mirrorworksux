@@ -112,7 +112,7 @@ function RangeCalendar({ month, onMonthChange, from, to, onDayClick }: RangeCale
               type="button"
               onClick={() => onDayClick(day)}
               className={cn(
-                "relative flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] text-xs transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
+                "relative flex h-8 w-8 items-center justify-center rounded-md text-xs transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]",
                 !inMonth && "text-muted-foreground opacity-40",
                 inMonth && "text-foreground",
                 inRange && !endpoint && "bg-[var(--mw-yellow-50)]",

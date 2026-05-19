@@ -97,7 +97,7 @@ export function FinancialTable<T>({
       {totals ? (
         <Card
           variant="flat"
-          className="overflow-hidden p-0 rounded-t-none -mt-px border-t-2 border-t-[var(--neutral-200)] rounded-b-[var(--shape-lg)]"
+          className="overflow-hidden p-0 rounded-t-none -mt-px border-t-2 border-t-[var(--neutral-200)] rounded-b-lg"
         >
           <Table>
             <TableBody>

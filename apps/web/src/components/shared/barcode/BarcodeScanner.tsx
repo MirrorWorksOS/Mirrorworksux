@@ -128,7 +128,7 @@ export function BarcodeScanner({
       <div
         id={elementId.current}
         ref={containerRef}
-        className="w-full rounded-[var(--shape-lg)] overflow-hidden bg-black min-h-[280px]"
+        className="w-full rounded-lg overflow-hidden bg-black min-h-[280px]"
       />
 
       {/* Targeting crosshair overlay */}
@@ -146,7 +146,7 @@ export function BarcodeScanner({
 
       {/* Initializing state */}
       {state === 'initializing' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 rounded-[var(--shape-lg)]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 rounded-lg">
           <Camera className="w-10 h-10 text-white/60 animate-pulse mb-3" />
           <p className="text-sm text-white/80">Starting camera…</p>
         </div>
@@ -154,7 +154,7 @@ export function BarcodeScanner({
 
       {/* Error state */}
       {state === 'error' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--neutral-50)] rounded-[var(--shape-lg)] p-6">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--neutral-50)] rounded-lg p-6">
           <XCircle className="w-10 h-10 text-[var(--mw-error)]" />
           <p className="text-sm text-[var(--neutral-600)] text-center max-w-xs">
             {errorMessage || 'Camera access denied or unavailable.'}

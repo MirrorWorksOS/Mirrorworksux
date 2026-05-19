@@ -228,7 +228,7 @@ function KpiTile({
   value: number;
 }) {
   return (
-    <div className="rounded-[var(--shape-md)] border border-border bg-[var(--neutral-50)] dark:bg-card px-3 py-2">
+    <div className="rounded-md border border-border bg-[var(--neutral-50)] dark:bg-card px-3 py-2">
       <div className="flex items-center gap-1.5 text-muted-foreground">
         {icon}
         <span className="text-[10px] uppercase tracking-wide">{label}</span>
@@ -298,7 +298,7 @@ function ShippingSection({
       <Card variant="flat" className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--shape-md)] bg-[var(--mw-yellow-50)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--mw-yellow-50)]">
               <Truck
                 className="h-5 w-5 text-[var(--mw-yellow-700)]"
                 strokeWidth={1.5}
@@ -367,7 +367,7 @@ function ShippingSection({
             {customerShipments.slice(0, 4).map((s) => (
               <div
                 key={s.id}
-                className="flex items-center justify-between gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-3 py-2.5"
+                className="flex items-center justify-between gap-3 rounded-md border border-[var(--border)] px-3 py-2.5"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -797,9 +797,9 @@ function InvoicesSection({
                   key={m.id}
                   type="button"
                   onClick={() => payInvoice && handlePayWithMethod(payInvoice, m)}
-                  className="flex w-full items-start gap-3 rounded-[var(--shape-md)] border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-yellow-500)] hover:bg-[var(--mw-yellow-50)]"
+                  className="flex w-full items-start gap-3 rounded-md border border-[var(--border)] px-4 py-3 text-left transition-colors hover:border-[var(--mw-yellow-500)] hover:bg-[var(--mw-yellow-50)]"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--neutral-100)]">
                     <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -905,7 +905,7 @@ function SectionHeader({
   return (
     <div className="mb-3 flex items-start justify-between gap-3">
       <div className="flex items-start gap-2.5">
-        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-[var(--shape-md)] bg-[var(--neutral-100)] text-[var(--neutral-700)]">
+        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-md bg-[var(--neutral-100)] text-[var(--neutral-700)]">
           {icon}
         </div>
         <div>
@@ -933,7 +933,7 @@ function PreviewBanner({
 
   return (
     <motion.div variants={staggerItem}>
-      <div className="flex items-start gap-3 rounded-[var(--shape-md)] border border-[var(--mw-yellow-300)] bg-[var(--mw-yellow-50)] px-4 py-3 text-sm">
+      <div className="flex items-start gap-3 rounded-md border border-[var(--mw-yellow-300)] bg-[var(--mw-yellow-50)] px-4 py-3 text-sm">
         <Info
           className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mw-yellow-700)]"
           strokeWidth={1.5}

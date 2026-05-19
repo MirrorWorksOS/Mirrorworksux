@@ -252,7 +252,7 @@ export function Notifications() {
                 key={f}
                 onClick={() => setFilterTab(f)}
                 className={cn(
-                  'px-4 py-2 text-xs rounded-[var(--shape-lg)] transition-colors capitalize min-h-[44px] sm:min-h-0',
+                  'px-4 py-2 text-xs rounded-lg transition-colors capitalize min-h-[44px] sm:min-h-0',
                   filterTab === f
                     ? 'bg-[var(--neutral-100)] dark:bg-[var(--neutral-200)] text-foreground font-medium'
                     : 'text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] dark:hover:bg-[var(--neutral-800)]',
