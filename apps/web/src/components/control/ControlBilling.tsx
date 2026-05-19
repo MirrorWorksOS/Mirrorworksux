@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import { Check, CreditCard, TrendingUp, Users, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { DarkAccentCard } from '@/components/shared/cards/DarkAccentCard';
@@ -224,7 +225,7 @@ export function ControlBilling() {
 
       <Card className="p-6 text-sm text-muted-foreground">
         Tier changes take effect immediately. Downgrades prorate against your next invoice; upgrades charge the difference today.
-        See the <a className="underline" href="/pricing" onClick={e => e.preventDefault()}>full pricing page</a> for feature-by-feature comparison.
+        See the <Link className="underline underline-offset-2 hover:text-foreground" to="/pricing">full pricing page</Link> for feature-by-feature comparison.
       </Card>
 
       <Dialog open={pendingTier !== null} onOpenChange={(open) => { if (!open) setPendingTier(null); }}>

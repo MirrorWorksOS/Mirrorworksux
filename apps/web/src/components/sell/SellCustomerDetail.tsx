@@ -18,6 +18,14 @@ import { cn } from '../ui/utils';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -305,6 +313,7 @@ export function SellCustomerDetail() {
   const [logActivityOpen, setLogActivityOpen] = useState(false);
   const [tagPickerOpen, setTagPickerOpen] = useState(false);
   const [contactPickerOpen, setContactPickerOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const updateDraft = (path: string, value: any) => {
     setDraft((prev: any) => {
@@ -930,7 +939,7 @@ export function SellCustomerDetail() {
                               type="button"
                               variant="outline"
                               className="h-10 border-[var(--border)]"
-                              onClick={() => toast.info('Resend integration coming soon')}
+                              onClick={() => setInviteDialogOpen(true)}
                             >
                               Send invite
                             </Button>
@@ -1260,6 +1269,52 @@ export function SellCustomerDetail() {
           onOpenChange={setLogActivityOpen}
           entity={{ kind: 'customer', id: customer.id, label: customer.company }}
         />
+      )}
+
+      {!isNew && (
+        <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Send portal invite</DialogTitle>
+              <DialogDescription>
+                Send a branded portal invitation to the customer contacts who should access quotes, orders, invoices, and activity.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              {(customer.contacts ?? []).slice(0, 4).map((contact: any) => (
+                <label
+                  key={contact.id ?? contact.email}
+                  className="flex items-center justify-between rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] px-3 py-3"
+                >
+                  <span>
+                    <span className="block text-sm font-medium text-foreground">{contact.name}</span>
+                    <span className="block text-xs text-[var(--neutral-500)]">{contact.email}</span>
+                  </span>
+                  <Checkbox defaultChecked />
+                </label>
+              ))}
+              {(customer.contacts ?? []).length === 0 && (
+                <p className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] p-4 text-sm text-[var(--neutral-600)]">
+                  No portal contacts are attached yet. Add a contact before sending an invite.
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setInviteDialogOpen(false)}>Cancel</Button>
+              <Button
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                onClick={() => {
+                  setInviteDialogOpen(false);
+                  toast.success('Portal invite queued', {
+                    description: `${customer.company} contacts will receive the portal access email.`,
+                  });
+                }}
+              >
+                Send invite
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Tag picker — adds/removes tags from customer.tags */}

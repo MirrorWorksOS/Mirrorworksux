@@ -15,6 +15,16 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { EditSelect } from '@/components/shared/forms/EditField';
 import { AccessGate } from '@/components/shared/access/AccessGate';
@@ -60,6 +70,8 @@ function ControlCustomerPortalInner() {
   const [portalEnabled, setPortalEnabled] = useState(true);
   const [landingTab, setLandingTab] = useState<string>('quotes');
   const [rows, setRows] = useState<Customer[]>(() => [...seedCustomers]);
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
+  const [logoName, setLogoName] = useState('Alliance Metal portal mark');
 
   const total = rows.length;
   const enabledCount = useMemo(() => rows.filter((c) => c.portalAccess).length, [rows]);
@@ -170,7 +182,7 @@ function ControlCustomerPortalInner() {
               <Button
                 variant="outline"
                 className="h-10 w-full justify-start gap-2"
-                onClick={() => toast.info('Logo upload coming soon')}
+                onClick={() => setLogoDialogOpen(true)}
               >
                 <Upload className="h-4 w-4" /> Upload logo
               </Button>
@@ -195,6 +207,47 @@ function ControlCustomerPortalInner() {
           keyExtractor={(c) => c.id}
         />
       </Card>
+
+      <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Portal logo</DialogTitle>
+            <DialogDescription>
+              Upload or register the brand mark shown in the customer portal header and login screen.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-[var(--shape-lg)] border border-dashed border-[var(--border)] bg-[var(--neutral-100)] p-6 text-center">
+              <Upload className="mx-auto h-6 w-6 text-[var(--neutral-500)]" />
+              <p className="mt-2 text-sm font-medium text-foreground">Drop SVG, PNG, or JPG here</p>
+              <p className="mt-1 text-xs text-[var(--neutral-500)]">Recommended 480x160, transparent background.</p>
+            </div>
+            <div>
+              <Label htmlFor="portal-logo-name">Asset name</Label>
+              <Input
+                id="portal-logo-name"
+                value={logoName}
+                onChange={(event) => setLogoName(event.target.value)}
+                className="mt-2"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLogoDialogOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => {
+                setLogoDialogOpen(false);
+                toast.success('Portal logo saved', {
+                  description: `${logoName || 'Logo'} is ready for portal previews.`,
+                });
+              }}
+            >
+              Save logo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

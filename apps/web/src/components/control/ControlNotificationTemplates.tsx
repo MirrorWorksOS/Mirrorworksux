@@ -18,6 +18,16 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { EditableCard } from '@/components/shared/forms/EditableCard';
 import { EditField, EditTextarea, Field } from '@/components/shared/forms/EditField';
 import { cn } from '@/components/ui/utils';
@@ -48,6 +58,8 @@ function ControlNotificationTemplatesInner() {
   // Draft state for the edit form
   const [draftSubject, setDraftSubject] = useState('');
   const [draftBody, setDraftBody] = useState('');
+  const [testDialogOpen, setTestDialogOpen] = useState(false);
+  const [testRecipient, setTestRecipient] = useState('alex@alliancemetal.com.au');
 
   // Reset draft whenever the selected template changes
   const resetDraft = (t: NotificationTemplate | null) => {
@@ -76,7 +88,7 @@ function ControlNotificationTemplatesInner() {
   };
 
   const handleSendTest = () => {
-    toast.info('Resend integration coming soon');
+    setTestDialogOpen(true);
   };
 
   return (
@@ -224,6 +236,49 @@ function ControlNotificationTemplatesInner() {
           </Card>
         )}
       </div>
+
+      <Dialog open={testDialogOpen} onOpenChange={setTestDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send test notification</DialogTitle>
+            <DialogDescription>
+              Send the selected template through the notification preview pipeline before enabling it for customers.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="test-recipient">Recipient</Label>
+              <Input
+                id="test-recipient"
+                value={testRecipient}
+                onChange={(event) => setTestRecipient(event.target.value)}
+                className="mt-2"
+              />
+            </div>
+            <div className="rounded-[var(--shape-md)] border border-[var(--border)] bg-[var(--neutral-100)] p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-[var(--neutral-500)]">Template</p>
+              <p className="mt-1 text-sm font-medium text-foreground">{selected?.name ?? 'No template selected'}</p>
+              <p className="mt-2 text-xs text-[var(--neutral-600)]">
+                Placeholder data will use TechCorp Industries, Q-2026-0055, and a $12,400 total.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTestDialogOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => {
+                setTestDialogOpen(false);
+                toast.success('Test notification queued', {
+                  description: `Preview sent to ${testRecipient || 'the selected recipient'}.`,
+                });
+              }}
+            >
+              Send preview
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

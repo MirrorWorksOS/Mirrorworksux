@@ -6,7 +6,7 @@ import {
   Settings, FileText, Link, BarChart3, Calendar, RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { ConfirmDialog } from '@/components/shared/feedback/ConfirmDialog';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -415,6 +415,8 @@ const settingsPanels: SettingsPanel[] = [
 ];
 
 export function BookSettings() {
+  const { pathname } = useLocation();
+
   return (
     <ModuleSettingsLayout
       title="Book Settings"
@@ -422,6 +424,7 @@ export function BookSettings() {
       panels={settingsPanels}
       permissionKeys={bookPermissionKeys}
       defaultGroups={bookDefaultGroups}
+      initialPanelKey={pathname.startsWith('/book/settings/xero') ? 'xero' : undefined}
     />
   );
 }

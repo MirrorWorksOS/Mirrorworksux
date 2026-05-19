@@ -9,7 +9,7 @@
  * - Access tab shows group management with permission toggles
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Shield, ChevronDown, ChevronRight, Plus, Trash2, Users, GripVertical } from 'lucide-react';
 import { ConfirmDialog } from '../feedback/ConfirmDialog';
@@ -72,6 +72,8 @@ interface ModuleSettingsLayoutProps {
   defaultGroups: PermissionGroup[];
   /** Tier info for feature gates */
   tierName?: string;
+  /** Optional panel to select when a route maps directly to a settings section. */
+  initialPanelKey?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -352,9 +354,10 @@ export function ModuleSettingsLayout({
   permissionKeys,
   defaultGroups,
   tierName = 'Run',
+  initialPanelKey,
 }: ModuleSettingsLayoutProps) {
   const resolvedModuleKey = (moduleKey ?? (moduleName.toLowerCase() as ModuleKey));
-  const allPanels: SettingsPanel[] = [
+  const allPanels: SettingsPanel[] = useMemo(() => [
     ...panels,
     {
       key: 'access',
@@ -369,9 +372,14 @@ export function ModuleSettingsLayout({
         />
       ),
     },
-  ];
+  ], [defaultGroups, moduleName, panels, permissionKeys, resolvedModuleKey]);
 
-  const [activePanel, setActivePanel] = useState(allPanels[0].key);
+  const [activePanel, setActivePanel] = useState(initialPanelKey ?? allPanels[0].key);
+  useEffect(() => {
+    if (initialPanelKey && allPanels.some((panel) => panel.key === initialPanelKey)) {
+      setActivePanel(initialPanelKey);
+    }
+  }, [initialPanelKey, allPanels]);
   const ActiveComponent = allPanels.find(p => p.key === activePanel)?.component ?? allPanels[0].component;
 
   return (

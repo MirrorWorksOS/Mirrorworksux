@@ -150,6 +150,7 @@ const ControlMaintenance = lazyWithRetry(() => import('./components/control/Cont
 const ControlTooling = lazyWithRetry(() => import('./components/control/ControlTooling').then(m => ({ default: m.ControlTooling })));
 const ControlDocuments = lazyWithRetry(() => import('./components/control/ControlDocuments').then(m => ({ default: m.ControlDocuments })));
 const ControlBilling = lazyWithRetry(() => import('./components/control/ControlBilling').then(m => ({ default: m.ControlBilling })));
+const PricingPage = lazyWithRetry(() => import('./components/control/PricingPage').then(m => ({ default: m.PricingPage })));
 const ControlAudit = lazyWithRetry(() => import('./components/control/ControlAudit').then(m => ({ default: m.ControlAudit })));
 const ControlGroups = lazyWithRetry(() => import('./components/control/ControlGroups').then(m => ({ default: m.ControlGroups })));
 const ControlPaymentTerms = lazyWithRetry(() => import('./components/control/ControlPaymentTerms').then(m => ({ default: m.ControlPaymentTerms })));
@@ -492,6 +493,12 @@ export const router = createBrowserRouter([
         element: <L><Notifications /></L>,
       },
 
+      // Billing support
+      {
+        path: 'pricing',
+        element: <L><PricingPage /></L>,
+      },
+
       // Legacy /design URLs → Control (bookmarks)
       {
         path: 'design',
@@ -522,6 +529,7 @@ export const router = createBrowserRouter([
           { path: 'stock-valuation', element: <L><StockValuation /></L> },
           { path: 'reports', element: <L><ReportsGallery /></L> },
           { path: 'settings', element: <L><BookSettings /></L> },
+          { path: 'settings/xero', element: <L><BookSettings /></L> },
           { path: 'settings/xero/mapping', element: <L><XeroMappingPage /></L> },
         ],
       },
