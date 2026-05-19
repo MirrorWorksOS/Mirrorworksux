@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
-import { ArrowLeft, Plus, Save, Pencil, ChevronRight, SendToBack, ShieldAlert } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { ArrowLeft, Plus, Save, Pencil, SendToBack, ShieldAlert } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Separator } from '../ui/separator';
@@ -17,6 +17,9 @@ import { PlanScheduleTab } from './PlanScheduleTab';
 import { PlanIntelligenceHubTab } from './PlanIntelligenceHubTab';
 import { PlanBudgetTab } from './PlanBudgetTab';
 import { PlanTravellersTab } from './PlanTravellersTab';
+import { JobActivitiesTab } from './job-detail/JobActivitiesTab';
+import { DocumentChainPill, buildManufacturingFlow } from '@/components/shared/data/DocumentChainPill';
+import { useJobActivityStore } from '@/store/jobActivityStore';
 import { useTravellerStore, isTravellerReadyForRelease } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
 import type { PermissionKey } from '@mirrorworks/contracts';
@@ -48,30 +51,38 @@ function stageProgress(stage: StageId): number {
   return Math.round(((idx + 1) / STAGES.length) * 100);
 }
 
-/** Document flow lineage for the current job — labels are IDs; docType is the full document name for tooltips */
-/** Build the document-flow lineage for the current job. The JOB chip always
- *  uses the active jobId so the yellow "current position" highlight lights up
- *  correctly for deep links (e.g. /plan/jobs/JOB-2026-0015 vs /JOB-2026-0012). */
-function buildDocumentFlow(jobId: string) {
-  return [
-    { label: 'OPP-2026-0001', href: '/sell/opportunities/opp-001', docType: 'Opportunity' as const },
-    { label: 'Q-2026-0055', href: '/sell/quotes/qt-001', docType: 'Quote' as const },
-    { label: 'SO-2026-0085', href: '/sell/orders/so-001', docType: 'Sales order' as const },
-    { label: jobId, href: `/plan/jobs/${jobId}`, docType: 'Job' as const },
-    { label: 'WO-2026-0001', href: '#', docType: 'Work order' as const },
-    { label: 'MO-2026-0001', href: '#', docType: 'Manufacturing order' as const },
-  ];
-}
-
 export function PlanJobDetail() {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const isNew = !routeId || routeId === 'new';
 
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTabInternal] = useState<string>(tabFromUrl ?? 'overview');
+  const setActiveTab = (tab: string) => {
+    setActiveTabInternal(tab);
+    const next = new URLSearchParams(searchParams);
+    if (tab === 'overview') next.delete('tab');
+    else next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  };
+  useEffect(() => {
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTabInternal(tabFromUrl);
+    }
+  }, [tabFromUrl]); // eslint-disable-line react-hooks/exhaustive-deps
   const [currentStage, setCurrentStage] = useState<StageId>('planning');
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
-  const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>('traveller-001');
+  // Allow deep-linking to a specific traveller via `?traveller=<id>` query param.
+  const travellerFromUrl = searchParams.get('traveller');
+  const [selectedTravellerId, setSelectedTravellerId] = useState<string | null>(
+    travellerFromUrl ?? 'traveller-001',
+  );
+  useEffect(() => {
+    if (travellerFromUrl && travellerFromUrl !== selectedTravellerId) {
+      setSelectedTravellerId(travellerFromUrl);
+    }
+  }, [travellerFromUrl]); // eslint-disable-line react-hooks/exhaustive-deps
   // Header-level Edit ↔ Save toggle. Starts in view mode for existing jobs,
   // edit mode for new jobs so the form is immediately writable.
   const [isEditing, setIsEditing] = useState<boolean>(isNew);
@@ -118,12 +129,22 @@ export function PlanJobDetail() {
   const selectedTravellerReady = selectedTraveller ? isTravellerReadyForRelease(selectedTraveller) : false;
   const selectedTravellerReleased = selectedTraveller?.status === 'released';
 
+  const openActivityCount = useJobActivityStore((s) =>
+    s.activities.filter(
+      (a) =>
+        (a.jobId === jobId || a.jobNumber === jobId) &&
+        a.status !== 'completed' &&
+        a.status !== 'cancelled',
+    ).length,
+  );
+
   const tabs = useMemo<JobWorkspaceTabConfig[]>(() => {
     const base: JobWorkspaceTabConfig[] = [
       { id: 'overview', label: 'Overview' },
       { id: 'production', label: 'Production', count: 4 },
       { id: 'mirrorview', label: 'MirrorView' },
       { id: 'travellers', label: 'Travellers', count: travellers.length },
+      { id: 'activities', label: 'Activities', count: openActivityCount },
     ];
     if (canViewBudget) {
       base.push({ id: 'budget', label: 'Budget' });
@@ -133,7 +154,7 @@ export function PlanJobDetail() {
       { id: 'intelligence', label: 'Intelligence Hub' },
     );
     return base;
-  }, [canViewBudget, travellers.length]);
+  }, [canViewBudget, travellers.length, openActivityCount]);
 
   const renderTabPanel = (tab: string) => {
     switch (tab) {
@@ -162,6 +183,8 @@ export function PlanJobDetail() {
             onOpenIntelligence={() => setActiveTab('intelligence')}
           />
         );
+      case 'activities':
+        return <JobActivitiesTab jobId={jobId} />;
       case 'travellers':
         return (
           <PlanTravellersTab
@@ -220,9 +243,10 @@ export function PlanJobDetail() {
         title={titleText}
         subtitle={
           <>
-            <span className="inline-flex items-center rounded-full bg-[var(--mw-yellow-400)] px-3 py-0.5 text-xs font-medium text-[var(--mw-mirage)] tabular-nums">
-              {isNew ? 'JOB-NEW' : jobId}
-            </span>
+            <DocumentChainPill
+              flow={buildManufacturingFlow(isNew ? 'JOB-NEW' : jobId)}
+              activeLabel={isNew ? 'JOB-NEW' : jobId}
+            />
             <span>{subtitleCustomer}</span>
             <span className="tabular-nums">{subtitleValue}</span>
           </>
@@ -247,27 +271,6 @@ export function PlanJobDetail() {
                 </button>
               ))}
             </div>
-
-            <nav aria-label="Document flow" className="flex flex-wrap items-center gap-1">
-              {buildDocumentFlow(isNew ? 'JOB-NEW' : jobId).map((doc, idx) => (
-                <React.Fragment key={doc.label}>
-                  {idx > 0 && (
-                    <ChevronRight className="h-3 w-3 shrink-0 text-[var(--neutral-400)]" aria-hidden />
-                  )}
-                  <Link
-                    to={doc.href}
-                    title={doc.docType}
-                    className={`inline-flex items-center rounded-full border text-xs tabular-nums px-2.5 py-0.5 font-medium transition-colors ${
-                      doc.label === jobId
-                        ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)]'
-                        : 'border-[var(--border)] text-foreground hover:bg-[var(--neutral-50)] dark:hover:bg-[var(--neutral-800)]'
-                    }`}
-                  >
-                    {doc.label}
-                  </Link>
-                </React.Fragment>
-              ))}
-            </nav>
 
             {selectedTraveller ? (
               <Card variant="flat" className="border-[var(--border)] p-4">
@@ -294,7 +297,14 @@ export function PlanJobDetail() {
         }
         headerActions={
           <>
-            <Button variant="outline" className="h-12 border-[var(--border)]" onClick={() => navigate('/plan/jobs')}>
+            <Button
+              variant="outline"
+              className="h-12 border-[var(--border)]"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate('/plan/jobs');
+              }}
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>

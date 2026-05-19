@@ -64,6 +64,7 @@ const PlanDashboard = lazyWithRetry(() => import('./components/plan/PlanDashboar
 const PlanJobs = lazyWithRetry(() => import('./components/plan/PlanJobs').then(m => ({ default: m.PlanJobs })));
 const PlanJobDetail = lazyWithRetry(() => import('./components/plan/PlanJobDetail').then(m => ({ default: m.PlanJobDetail })));
 const PlanScheduleEngine = lazyWithRetry(() => import('./components/plan/PlanScheduleEngine').then(m => ({ default: m.PlanScheduleEngine })));
+const PlanActivities = lazyWithRetry(() => import('./components/plan/PlanActivities').then(m => ({ default: m.PlanActivities })));
 const PlanPurchase = lazyWithRetry(() => import('./components/plan/PlanPurchase').then(m => ({ default: m.PlanPurchase })));
 const PlanQCPlanning = lazyWithRetry(() => import('./components/plan/PlanQCPlanning').then(m => ({ default: m.PlanQCPlanning })));
 const PlanProducts = lazyWithRetry(() => import('./components/plan/PlanProducts').then(m => ({ default: m.PlanProducts })));
@@ -340,7 +341,7 @@ export const router = createBrowserRouter([
           { path: 'jobs/new', element: <L><PlanJobDetail /></L> },
           { path: 'jobs/:id', element: <L><PlanJobDetail /></L> },
           // Schedule Engine is the only schedule view. Old paths redirect.
-          { path: 'activities', element: <Navigate to="/plan/schedule-engine" replace /> },
+          { path: 'activities', element: <L><PlanActivities /></L> },
           { path: 'schedule', element: <Navigate to="/plan/schedule-engine" replace /> },
           { path: 'schedule-engine', element: <L><PlanScheduleEngine /></L> },
           // CAD import + NC Connect + Nesting Studio + Ready to Nest + Nests

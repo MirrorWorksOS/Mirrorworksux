@@ -3,7 +3,8 @@
  * Panels: General, Products, Reports, Access & Permissions
  */
 import { useState } from 'react';
-import { Settings, Package, BarChart3 } from 'lucide-react';
+import { Settings, Package, BarChart3, Tag } from 'lucide-react';
+import { ActivityTypesPanel } from './settings/ActivityTypesPanel';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -268,6 +269,7 @@ function ReportsPanel() {
 // ── Root ──
 const settingsPanels: SettingsPanel[] = [
   { key: 'general', label: 'General', icon: Settings, component: GeneralPanel },
+  { key: 'activity-types', label: 'Activity types', icon: Tag, component: ActivityTypesPanel },
   { key: 'products', label: 'Products', icon: Package, component: ProductsPanel },
   { key: 'reports', label: 'Reports', icon: BarChart3, component: ReportsPanel },
 ];

@@ -46,6 +46,7 @@ import {
 } from '@/lib/subscription';
 import mirrorworksLogomark from '@/art/empty-states/logo/mirrorworks_logomark.svg';
 import { NotificationBell } from './shared/notifications/NotificationBell';
+import { GlobalTimerPill } from './plan/activities/GlobalTimerPill';
 import { DockNav, type DockItemData } from './shared/layout/DockNav';
 import { SiteSwitcher } from './shared/layout/SiteSwitcher';
 import {
@@ -195,6 +196,7 @@ export const menuConfig: MenuItem[] = [
         heading: 'Execution',
         items: [
           { label: 'Jobs', path: '/plan/jobs' },
+          { label: 'Activities', path: '/plan/activities' },
           { label: 'Schedule', path: '/plan/schedule-engine' },
           { label: 'What-if', path: '/plan/what-if' },
         ],
@@ -1206,6 +1208,7 @@ export function Sidebar({
 
         {/* Footer — just icons */}
         <div className="flex flex-col items-center gap-1 pt-2 border-t border-border">
+          <GlobalTimerPill iconOnly />
           <NotificationBell />
           <div className="w-8 h-8 rounded-full bg-[var(--mw-mirage)] flex items-center justify-center">
             <span className="text-white text-[10px] font-medium">
@@ -1405,7 +1408,8 @@ export function Sidebar({
         Smart FactoryOS
       </p>
 
-      {/* Footer — notification bell + M3 split button: user profile + theme toggle */}
+      {/* Footer — running timer pill (if any) + notification bell + M3 split button */}
+      <GlobalTimerPill className="mx-3 mb-2 mt-1" />
       <div className="p-3 border-t border-border flex items-center gap-2">
         <div className="flex-1 min-w-0">
           <UserProfileSplitButton />

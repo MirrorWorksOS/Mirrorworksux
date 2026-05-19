@@ -72,10 +72,16 @@ function SelectContent({
   className,
   children,
   position = "popper",
+  portalContainer,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+}: React.ComponentProps<typeof SelectPrimitive.Content> & {
+  /** Optional container for the underlying Portal. Use to anchor the
+   *  dropdown inside a Sheet/Dialog so its clicks aren't swallowed by the
+   *  modal overlay. */
+  portalContainer?: HTMLElement | null;
+}) {
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal container={portalContainer ?? undefined}>
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(

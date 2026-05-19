@@ -39,7 +39,7 @@ import {
   differenceInDays,
   startOfDay,
 } from 'date-fns';
-import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
+import { MwGantt, type MwGanttItem, type MwGanttRowDef, type MwGanttZoom } from '@/components/shared/gantt';
 import { LogActivityModal, type ActivityDraft } from '@/components/shared/activities/LogActivityModal';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -764,18 +764,33 @@ export function SellActivities() {
     setActivities((prev) => [newActivity, ...prev]);
   };
 
-  /* Build gantt tasks + window from the filtered set */
-  const ganttTasks: GanttTask[] = useMemo(
+  const [ganttZoom, setGanttZoom] = useState<MwGanttZoom>('week');
+
+  /* Build gantt rows (one per assignee) + items (one per activity) for MwGantt. */
+  const ganttRows: MwGanttRowDef[] = useMemo(() => {
+    const seen = new Set<string>();
+    const out: MwGanttRowDef[] = [];
+    filtered.forEach((a) => {
+      if (seen.has(a.assignedTo)) return;
+      seen.add(a.assignedTo);
+      out.push({ id: a.assignedTo, label: a.assignedTo });
+    });
+    return out;
+  }, [filtered]);
+
+  const ganttItems: MwGanttItem[] = useMemo(
     () =>
       filtered.map((a) => {
-        const start = parseISO(`${a.dueDate}T00:00:00`);
+        const start = parseISO(`${a.dueDate}T09:00:00`);
         return {
           id: a.id,
-          label: a.description,
+          rowId: a.assignedTo,
           start,
           end: addDays(start, 1),
-          progress: a.status === 'completed' ? 100 : 0,
+          label: a.description,
+          status: a.status,
           color: a.priority ? PRIORITY_COLOR[a.priority] : TYPE_CALENDAR_COLOR[a.type],
+          progress: a.status === 'completed' ? 100 : 0,
           meta: { activityId: a.id },
         };
       }),
@@ -783,17 +798,14 @@ export function SellActivities() {
   );
 
   const ganttWindow = useMemo(() => {
-    if (ganttTasks.length === 0) {
-      const base = new Date(2026, 3, 1);
-      return { start: base, end: addDays(base, 14) };
-    }
-    const starts = ganttTasks.map((t) => t.start.getTime());
-    const ends = ganttTasks.map((t) => t.end.getTime());
+    if (ganttItems.length === 0) return undefined;
+    const starts = ganttItems.map((t) => t.start.getTime());
+    const ends = ganttItems.map((t) => t.end.getTime());
     return {
-      start: new Date(Math.min(...starts)),
-      end: new Date(Math.max(...ends)),
+      start: new Date(Math.min(...starts) - 2 * 86_400_000),
+      end: new Date(Math.max(...ends) + 2 * 86_400_000),
     };
-  }, [ganttTasks]);
+  }, [ganttItems]);
 
   return (
     <PageShell className="p-6 space-y-6">
@@ -1092,23 +1104,36 @@ export function SellActivities() {
 
       {/* ---- GANTT VIEW ---- */}
       {viewMode === 'gantt' && (
-        <div className="space-y-3">
-          {ganttTasks.length === 0 ? (
+        <div className="h-[640px]">
+          {ganttItems.length === 0 ? (
             <div className="py-12 text-center text-sm text-[var(--neutral-500)]">
               No activities match your filters.
             </div>
           ) : (
-            <Card className="overflow-hidden border border-[var(--border)] p-3">
-              <GanttChart
-                tasks={ganttTasks}
-                startDate={ganttWindow.start}
-                endDate={ganttWindow.end}
-                onTaskClick={(t) => {
-                  const a = activities.find((x) => x.id === t.id);
-                  if (a) setSelectedEvent(activityToEventDetail(a));
-                }}
-              />
-            </Card>
+            <MwGantt
+              rows={ganttRows}
+              items={ganttItems}
+              zoom={ganttZoom}
+              onZoomChange={setGanttZoom}
+              windowStart={ganttWindow?.start}
+              windowEnd={ganttWindow?.end}
+              statusColour={{
+                completed: 'var(--mw-success)',
+                scheduled: 'var(--mw-info)',
+                in_progress: 'var(--mw-warning)',
+                overdue: 'var(--mw-error)',
+              }}
+              legend={[
+                { key: 'completed', label: 'Completed', color: 'var(--mw-success)' },
+                { key: 'scheduled', label: 'Scheduled', color: 'var(--mw-info)' },
+                { key: 'in_progress', label: 'In progress', color: 'var(--mw-warning)' },
+                { key: 'overdue', label: 'Overdue', color: 'var(--mw-error)' },
+              ]}
+              onItemClick={(t) => {
+                const a = activities.find((x) => x.id === t.id);
+                if (a) setSelectedEvent(activityToEventDetail(a));
+              }}
+            />
           )}
         </div>
       )}

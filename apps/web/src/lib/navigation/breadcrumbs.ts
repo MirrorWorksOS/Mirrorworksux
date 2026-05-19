@@ -46,6 +46,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   // Plan
   '/plan': 'Plan',
   '/plan/jobs': 'Jobs',
+  '/plan/activities': 'Activities',
   '/plan/schedule-engine': 'Schedule',
   '/plan/machine-io': 'Machine I/O',
   '/plan/product-studio': 'Product Studio',

@@ -610,6 +610,13 @@ export interface Job {
   value: number;
   progress: number;
   assignedTo: string;
+  /**
+   * Product nature for activity templating and planning depth.
+   *  - widget: repeatable, low planning overhead
+   *  - configurable: kit-of-parts, full planning lifecycle
+   *  - mixed: blends both
+   */
+  productKind?: 'widget' | 'configurable' | 'mixed';
 }
 
 export interface PlanTask {
