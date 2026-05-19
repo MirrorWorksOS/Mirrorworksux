@@ -17,6 +17,7 @@ import {
 } from '@/components/shared/layout/JobWorkspaceLayout';
 import { WorkOrderFullScreen } from '../shop-floor/WorkOrderFullScreen';
 import { AIInsightCard } from '@/components/shared/ai/AIInsightCard';
+import { DocumentChainPill, buildManufacturingFlow } from '@/components/shared/data/DocumentChainPill';
 import { AIFeed } from '@/components/shared/ai/AIFeed';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ProgressBar } from '@/components/shared/data/ProgressBar';
@@ -739,7 +740,10 @@ export function MakeManufacturingOrderDetail() {
         title={mo.product}
         subtitle={
           <>
-            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{mo.moNumber}</span>
+            <DocumentChainPill
+              flow={buildManufacturingFlow()}
+              activeLabel="MO-2026-0001"
+            />
             <span>{mo.customer}</span>
             <span className="inline-flex items-center gap-1.5">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[10px] font-medium text-primary-foreground">{mo.operator.split(' ').map(n => n[0]).join('')}</span>
@@ -758,11 +762,16 @@ export function MakeManufacturingOrderDetail() {
         }
         headerActions={
           <>
-            <Button variant="outline" className="h-12 border-[var(--border)]" asChild>
-              <Link to="/make/manufacturing-orders">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Link>
+            <Button
+              variant="outline"
+              className="h-12 border-[var(--border)]"
+              onClick={() => {
+                if (window.history.length > 1) navigate(-1);
+                else navigate('/make/manufacturing-orders');
+              }}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
             </Button>
             <Button variant="outline" className="h-12 border-[var(--border)]">
               <Printer className="mr-2 h-4 w-4" />

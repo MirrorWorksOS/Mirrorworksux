@@ -1150,11 +1150,16 @@ export function SellOrderDetail() {
       }
       headerActions={
         <>
-          <Button variant="outline" className="h-12 border-[var(--border)]" asChild>
-            <Link to="/sell/orders">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Link>
+          <Button
+            variant="outline"
+            className="h-12 border-[var(--border)]"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate('/sell/orders');
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
           </Button>
           {editMode ? (
             <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={handleSave}>

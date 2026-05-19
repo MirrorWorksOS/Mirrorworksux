@@ -25,6 +25,7 @@ import {
   type JobWorkspaceTabConfig,
 } from "@/components/shared/layout/JobWorkspaceLayout";
 import { AIInsightCard } from "@/components/shared/ai/AIInsightCard";
+import { DocumentChainPill, buildManufacturingFlow } from "@/components/shared/data/DocumentChainPill";
 import { TimelineView, type TimelineEvent } from "@/components/shared/schedule/TimelineView";
 import { GanttChart, type GanttTask } from "@/components/shared/schedule/GanttChart";
 import { Button } from "@/components/ui/button";
@@ -1011,7 +1012,10 @@ export function SellOpportunityPage() {
           <span>Fill out the details below and click Save to create.</span>
         ) : (
           <>
-            <span className="inline-flex items-center rounded-full bg-[var(--mw-mirage)] px-3 py-0.5 text-xs font-medium text-white tabular-nums">{opp.id.toUpperCase()}</span>
+            <DocumentChainPill
+              flow={buildManufacturingFlow()}
+              activeLabel="OPP-2026-0001"
+            />
             <span>{opp.customer}</span>
             <span className="tabular-nums">${opp.value.toLocaleString()}</span>
           </>
@@ -1077,11 +1081,16 @@ export function SellOpportunityPage() {
       }
       headerActions={
         <>
-          <Button variant="outline" className="h-12 border-[var(--border)]" asChild>
-            <Link to="/sell/opportunities">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Link>
+          <Button
+            variant="outline"
+            className="h-12 border-[var(--border)]"
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate('/sell/opportunities');
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
           </Button>
           <Button variant="outline" className="h-12 border-[var(--border)]" onClick={handleSave}>
             <Save className="mr-2 h-4 w-4" />
