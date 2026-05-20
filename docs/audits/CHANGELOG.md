@@ -6,6 +6,67 @@ For detail before consolidation (2026-04-22 to 2026-05-05), see `_archive/change
 
 ---
 
+## 2026-05-20 — 44 commits — Sell + Plan module overhauls, shared filter/Gantt/lineage/chat primitives, dark-mode pass
+
+Two-week run. Five new cross-cutting shared systems landed (ModuleFilterBar, MwGantt, DocumentChainPill, Chatter, EditableCard); Sell and Plan got full module overhauls; dark mode reached visual parity. See ADR-001 through ADR-004 for the pattern-setting decisions.
+
+**Shared primitives**
+
+- **Schema-driven `ModuleFilterBar`** (`apps/web/src/components/shared/filters/`) — single configurable filter strip (`AddFilterMenu`, `FacetChip`, `DateChip`, `PresetMenu`, URL-state sync, saved views). Piloted on Sell list pages, then ported to `BookInvoices`, `BuyBills`, `BuyOrders`, `MakeWorkOrders`, `PlanJobs`, `ShipOrders`, `ShipTracking`. See ADR-001.
+- **`MwGantt`** (`apps/web/src/components/shared/gantt/`) — shared Gantt primitive used by Plan job-detail schedule tab and Plan activity timeline. `MwGanttBar`, `MwGanttRow`, `MwGanttToolbar`, `NowLine`, geometry helpers. See ADR-002.
+- **`DocumentChainPill`** (`apps/web/src/components/shared/data/DocumentChainPill.tsx`) — surfaces the upstream + downstream document chain (e.g. Quote → Order → MO → Invoice) on detail headers. Wired into `SellOpportunityPage`, `SellOrderDetail`, `SellQuoteDetail`, `MakeManufacturingOrderDetail`. See ADR-003.
+- **Chatter** (`apps/web/src/components/shared/chatter/` + `chatterService`, `chatterStore`) — app-wide record-following chat. `ChatterButton`, `ChatterSheet`, `ChatterComposer`, `ChatterChainFilter`, `ChatterSummaryCard`, `useChatterFollow` hook. Available on Sell, Make, Plan detail surfaces. See ADR-004.
+- **`EditableCard` + `EditField`** (`apps/web/src/components/shared/forms/`) — inline editable card pattern adopted across Sell detail pages. Pairs with shared `LogActivityModal`, `HistoryPanel`, `EntityPickerModal`.
+- **`MwDataTable`** added under `shared/data/` (used by the ported filter bars).
+- **`ModuleLeadRow`** + `ModuleAccessCard` — per-ARCH-00 module-lead assignment surfaces (admin → lead → team vocabulary only).
+- **`SiteSwitcher`** — tier-gated multi-site switcher in sidebar header (`store/siteStore.ts`).
+
+**Plan**
+
+- **New `/plan/activities` page** — log job activity, run timers (`GlobalTimerPill`, `TimerPill`, `TimeEntryDialog`), activity templates. Job-detail gains a `JobActivitiesTab` + `JobActivityTimeSummary`. Settings gain an `ActivityTypesPanel`.
+- **Plan module overhaul** — editable schedule on `PlanScheduleTab`, new `PlanMirrorViewTab`, `PlanProductionTab`, `PlanTravellersTab` with sign-off; `PlanMachineIO` and `PlanMrp` consolidated. Wires up previously dead buttons (Schedule / File / Share dialogs on job detail).
+- **Plan Nesting Studio polish** — polygon-aware nester, true DXF shapes rendered, canvas context menu, redirect from `/plan/nesting`, `/plan/nesting-studio` into the machine-io tabbed surface.
+- **Plan CAD Import** — real 3D preview sheet for STEP/IGES uploads.
+- **Plan Schedule** — Optimisation priority selectable in auto-schedule dialog.
+
+**Sell**
+
+- **Sell module overhaul** — editable cards on customer / opportunity / order / quote detail; quote state machine; quote/order lineage; consolidated `LogActivityModal`; `numbering.ts` service for document numbering.
+- **Sell Products** — button alignment, SKU rename, machine assignment, MirrorView tab, pricing intel; tab badges derived from real counts.
+- **Sell CRM** — editable new-customer form; crash-on-`/sell/crm/new` fix (missing `documents` field).
+- **Sell Quote Assistant** — history-recall surface with source-quote badges.
+- **Sell ownership filters** — "My quotes", "My orders", "My accounts", "My pipeline" presets.
+- **Quote totals** — show total margin; fulfilment address split.
+
+**Make**
+
+- **Dashboard** — OEE composition donut and cycle-time-vs-standard charts.
+- **Quality** — AI-flagged NCR rows with detail sheet.
+- **Live Floor** — 3D isometric shop-floor view toggle.
+
+**Buy / Ship / Book**
+
+- **Buy** — "Chase late POs" AI agent scenario with email drafts; supplier AI agent; expanded reports; `BuyRequisitionDetail` line editor; vendor-comparison filters + AI agent.
+- **Ship** — intelligent carrier-selection comparison card; scan-to-ship dispatch modal; tracking actions.
+- **Ship → Book** — auto-draft invoice when shipment marked delivered.
+
+**Control**
+
+- **Pricing page** at `/control/pricing` (read-only marketing view) + settings deep-link from coming-soon toast replacement.
+- **Billing** — AI usage radial meter; AICreditsCard wiring.
+- **Control + Make** — predictive maintenance card with ML-style signals.
+- **Machine form cleanup** in `ControlMachines`.
+
+**Cross-cutting**
+
+- **Dark mode contrast pass** — sweep across Sidebar, WelcomeDashboard, every Buy/Plan/Make/Control surface, agent / AI / notification / settings shared components.
+- **Border-radius normalisation** — Tailwind utilities standardised to short form (`rounded-lg`, `rounded-md`, etc.) repo-wide; design-system doc updated with correct radius scale + dark-mode section.
+- **Bridge** — MYOB added as a selectable migration source.
+- **Roles** — Supervisor / Operator UI labels renamed to **Lead / Team** (admin / lead / team is the only sanctioned vocabulary).
+- **animate-ui** — forwardRef on icon wrappers to silence Radix Slot warnings.
+
+---
+
 ## 2026-05-05 — 1 commit — Xero account mapping, Nesting Studio v2, dashboard polish
 
 `6d0b485c` (feat) bundles three surfaces:
