@@ -9,12 +9,14 @@ import type {
   JobActivity,
   JobActivityPriority,
   JobActivityStatus,
+  JobActivityTemplate,
   JobActivityType,
   ProductKind,
+  TemplateActivity,
   TimeEntry,
 } from '@/types/job-activity';
 import { PLAN_ACTIVITIES_MOCK, PLAN_CURRENT_USER } from '@/data/plan-activities-mock';
-import { JOB_ACTIVITY_TEMPLATES } from '@/data/job-activity-templates';
+import { JOB_ACTIVITY_TEMPLATE_SEEDS } from '@/data/job-activity-templates';
 
 export type ActivityGanttZoom = 'day' | 'week' | 'month';
 export type ActivityGanttGroupBy = 'job' | 'assignee' | 'workCentre';
@@ -47,6 +49,8 @@ interface JobActivityState {
   templateAppliedJobIds: string[];
   /** Admin-defined activity types — extend the canonical baseline. */
   customActivityTypes: CustomActivityType[];
+  /** Recipe registry — seeded from JOB_ACTIVITY_TEMPLATE_SEEDS, fully editable. */
+  templates: JobActivityTemplate[];
 
   // Toolbar state — module-level Activities page
   ganttZoom: ActivityGanttZoom;
@@ -86,6 +90,20 @@ interface JobActivityState {
   addCustomActivityType: (input: Omit<CustomActivityType, 'id'>) => CustomActivityType;
   updateCustomActivityType: (id: string, patch: Partial<Omit<CustomActivityType, 'id'>>) => void;
   removeCustomActivityType: (id: string) => void;
+
+  // Templates
+  addTemplate: (input: Omit<JobActivityTemplate, 'id'>) => JobActivityTemplate;
+  updateTemplate: (id: string, patch: Partial<Omit<JobActivityTemplate, 'id'>>) => void;
+  removeTemplate: (id: string) => void;
+  duplicateTemplate: (id: string) => JobActivityTemplate | null;
+  addTemplateActivity: (templateId: string, activity: TemplateActivity) => void;
+  updateTemplateActivity: (
+    templateId: string,
+    index: number,
+    patch: Partial<TemplateActivity>,
+  ) => void;
+  removeTemplateActivity: (templateId: string, index: number) => void;
+  reorderTemplateActivities: (templateId: string, fromIndex: number, toIndex: number) => void;
 }
 
 function id(prefix: string): string {
@@ -113,6 +131,7 @@ export const useJobActivityStore = create<JobActivityState>((set, get) => ({
       description: 'Tool / die / fixture change between batches.',
     },
   ],
+  templates: JOB_ACTIVITY_TEMPLATE_SEEDS,
 
   ganttZoom: 'week',
   ganttGroupBy: 'job',
@@ -286,7 +305,7 @@ export const useJobActivityStore = create<JobActivityState>((set, get) => ({
     })),
 
   applyTemplate: (jobId, jobNumber, templateId, jobStartDate) => {
-    const template = JOB_ACTIVITY_TEMPLATES.find((t) => t.id === templateId);
+    const template = get().templates.find((t) => t.id === templateId);
     if (!template) return 0;
     const start = jobStartDate ? new Date(jobStartDate) : new Date();
     const stageOffset: Record<string, number> = {
@@ -375,6 +394,85 @@ export const useJobActivityStore = create<JobActivityState>((set, get) => ({
     set((state) => ({
       customActivityTypes: state.customActivityTypes.filter((t) => t.id !== id),
     })),
+
+  // ── Templates ────────────────────────────────────────────────────────
+
+  addTemplate: (input) => {
+    const created: JobActivityTemplate = { id: id('tpl'), ...input };
+    set((state) => ({ templates: [...state.templates, created] }));
+    return created;
+  },
+
+  updateTemplate: (templateId, patch) =>
+    set((state) => ({
+      templates: state.templates.map((t) =>
+        t.id === templateId ? { ...t, ...patch } : t,
+      ),
+    })),
+
+  removeTemplate: (templateId) =>
+    set((state) => ({
+      templates: state.templates.filter((t) => t.id !== templateId),
+    })),
+
+  duplicateTemplate: (templateId) => {
+    const src = get().templates.find((t) => t.id === templateId);
+    if (!src) return null;
+    const copy: JobActivityTemplate = {
+      ...src,
+      id: id('tpl'),
+      name: `${src.name} (copy)`,
+      activities: src.activities.map((a) => ({ ...a })),
+    };
+    set((state) => ({ templates: [...state.templates, copy] }));
+    return copy;
+  },
+
+  addTemplateActivity: (templateId, activity) =>
+    set((state) => ({
+      templates: state.templates.map((t) =>
+        t.id === templateId ? { ...t, activities: [...t.activities, activity] } : t,
+      ),
+    })),
+
+  updateTemplateActivity: (templateId, index, patch) =>
+    set((state) => ({
+      templates: state.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        return {
+          ...t,
+          activities: t.activities.map((a, i) => (i === index ? { ...a, ...patch } : a)),
+        };
+      }),
+    })),
+
+  removeTemplateActivity: (templateId, index) =>
+    set((state) => ({
+      templates: state.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        return { ...t, activities: t.activities.filter((_, i) => i !== index) };
+      }),
+    })),
+
+  reorderTemplateActivities: (templateId, fromIndex, toIndex) =>
+    set((state) => ({
+      templates: state.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        if (
+          fromIndex === toIndex ||
+          fromIndex < 0 ||
+          toIndex < 0 ||
+          fromIndex >= t.activities.length ||
+          toIndex >= t.activities.length
+        ) {
+          return t;
+        }
+        const next = [...t.activities];
+        const [moved] = next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, moved);
+        return { ...t, activities: next };
+      }),
+    })),
 }));
 
 /** Selector helpers for derived data. */
@@ -385,3 +483,11 @@ export const selectRunningActivity = (state: JobActivityState) =>
   state.runningTimerActivityId
     ? state.activities.find((a) => a.id === state.runningTimerActivityId) ?? null
     : null;
+
+/** Live-registry version of templatesForProductKind — consults the store. */
+export const selectTemplatesForProductKind =
+  (kind: ProductKind | undefined) =>
+  (state: JobActivityState): JobActivityTemplate[] => {
+    if (!kind) return [];
+    return state.templates.filter((t) => t.productKinds.includes(kind));
+  };

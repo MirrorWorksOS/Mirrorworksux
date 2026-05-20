@@ -144,8 +144,9 @@ export function LogJobActivityModal({
       assignedTo,
       productKind: selectedJob.productKind,
     });
+    const typeLabel = resolveActivityType(type, customTypes).label;
     toast.success('Activity created', {
-      description: `${JOB_ACTIVITY_TYPE_LABELS[type]} · ${selectedJob.jobNumber} · due ${format(dueAt, 'MMM d, h:mm a')}`,
+      description: `${typeLabel} · ${selectedJob.jobNumber} · due ${format(dueAt, 'MMM d, h:mm a')}`,
     });
     onCreated?.(created.id);
     onOpenChange(false);

@@ -11,7 +11,15 @@
 
 import type { JobActivityTemplate } from '@/types/job-activity';
 
-export const JOB_ACTIVITY_TEMPLATES: JobActivityTemplate[] = [
+/**
+ * Seed registry — loaded into `jobActivityStore.templates` at startup so the
+ * recipes survive as the initial state, but every template (including these
+ * seeds) becomes user-editable via the Plan Settings ▸ Templates panel.
+ *
+ * If you need the *live* registry at runtime use the store
+ * (`useJobActivityStore.templates` or `selectTemplatesForProductKind`).
+ */
+export const JOB_ACTIVITY_TEMPLATE_SEEDS: JobActivityTemplate[] = [
   {
     id: 'tpl-configurable-full',
     name: 'Configurable kit — full lifecycle',
@@ -97,7 +105,11 @@ export const JOB_ACTIVITY_TEMPLATES: JobActivityTemplate[] = [
   },
 ];
 
+/**
+ * @deprecated Reads from the static seed list — won't see admin edits.
+ * Use `selectTemplatesForProductKind` from the store instead.
+ */
 export function templatesForProductKind(kind: 'widget' | 'configurable' | 'mixed' | undefined) {
   if (!kind) return [];
-  return JOB_ACTIVITY_TEMPLATES.filter((t) => t.productKinds.includes(kind));
+  return JOB_ACTIVITY_TEMPLATE_SEEDS.filter((t) => t.productKinds.includes(kind));
 }

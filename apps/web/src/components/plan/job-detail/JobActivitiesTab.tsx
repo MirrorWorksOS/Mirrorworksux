@@ -43,7 +43,7 @@ import {
   type MwGanttRowDef,
   type MwGanttZoom,
 } from '@/components/shared/gantt';
-import { templatesForProductKind } from '@/data/job-activity-templates';
+import { selectTemplatesForProductKind } from '@/store/jobActivityStore';
 import { jobs as MOCK_JOBS, workCentres as MOCK_WCS } from '@/services/mock/data';
 
 interface JobActivitiesTabProps {
@@ -72,9 +72,9 @@ export function JobActivitiesTab({ jobId }: JobActivitiesTabProps) {
     () => MOCK_JOBS.find((j) => j.id === jobId || j.jobNumber === jobId),
     [jobId],
   );
-  const suggestedTemplates = useMemo(
-    () => templatesForProductKind(job?.productKind),
-    [job],
+  // Live registry — picks up admin edits in Plan Settings ▸ Templates.
+  const suggestedTemplates = useJobActivityStore(
+    useShallow(selectTemplatesForProductKind(job?.productKind)),
   );
 
   const [statusFilter, setStatusFilter] = useState<JobActivityStatus | 'all'>('all');
