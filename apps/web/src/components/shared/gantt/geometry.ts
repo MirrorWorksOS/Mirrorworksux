@@ -1,26 +1,35 @@
 /**
  * MwGantt — pixel/date geometry helpers. Multi-zoom: day / week / month.
  *
- * Day view: 1 hour per column, 64px each (matches Schedule Engine).
- * Week view: 1 day per column, 96px each.
- * Month view: 1 day per column, 32px each (compact density).
+ * - Day view: single-day 24-hour grid, 1 hour per column, 56px each.
+ *   Items that overlap "today" render at their actual hours. Whole-day or
+ *   no-time items appear in an all-day banner above the hour grid (handled
+ *   in MwGantt rendering, not here).
+ * - Week view: 1 day per column, 96px each.
+ * - Month view: rendered as a 7×N calendar grid by `MwGanttCalendar`, not as
+ *   a horizontal timeline. The geometry below is only used by the existing
+ *   timeline scaffold for backward-compatibility.
  *
- * The window is anchored to today (configurable) and extends forward/backward
- * to provide useful context. Geometry helpers are pure functions of the
- * `windowStart` reference and the zoom level.
+ * Geometry helpers are pure functions of the `windowStart` reference and the
+ * zoom level.
  */
 import { addDays, differenceInMinutes, endOfDay, startOfDay } from 'date-fns';
 
 import type { MwGanttZoom } from './types';
 
+/** Day-view hour-column width. Slightly tighter than Schedule Engine (64) so 24h fits more comfortably. */
+export const DAY_HOUR_PX = 56;
+/** Number of hour columns rendered in Day view. Full 24h coverage. */
+export const DAY_HOUR_COUNT = 24;
+
 export const DAY_PX_BY_ZOOM: Record<MwGanttZoom, number> = {
-  day: 64 * 15, // 15 visible hours per day at 64px each
+  day: DAY_HOUR_PX * DAY_HOUR_COUNT,
   week: 96,
   month: 32,
 };
 
 export const HOUR_PX_BY_ZOOM: Record<MwGanttZoom, number> = {
-  day: 64,
+  day: DAY_HOUR_PX,
   // For week/month zoom, hour resolution is sub-pixel — bars are clamped to day boundaries below.
   week: 96 / 24,
   month: 32 / 24,
@@ -36,7 +45,7 @@ export function columnsInWindow(start: Date, end: Date, zoom: MwGanttZoom): numb
   const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000));
   switch (zoom) {
     case 'day':
-      return 15; // 6am–9pm
+      return DAY_HOUR_COUNT;
     case 'week':
     case 'month':
       return days;
@@ -45,7 +54,7 @@ export function columnsInWindow(start: Date, end: Date, zoom: MwGanttZoom): numb
 
 /** Column width in pixels. */
 export function colPx(zoom: MwGanttZoom): number {
-  return zoom === 'day' ? 64 : DAY_PX_BY_ZOOM[zoom];
+  return zoom === 'day' ? DAY_HOUR_PX : DAY_PX_BY_ZOOM[zoom];
 }
 
 /** Total timeline width in px (gutter excluded). */
@@ -56,9 +65,9 @@ export function timelineWidthPx(start: Date, end: Date, zoom: MwGanttZoom): numb
 /** Left edge in px for a given date inside the window. */
 export function pxLeft(date: Date, windowStart: Date, zoom: MwGanttZoom): number {
   if (zoom === 'day') {
-    // Day view: window start is midnight; columns run 6am–9pm.
-    const minutes = differenceInMinutes(date, addHours(startOfDay(windowStart), 6));
-    return Math.max(0, (minutes / 60) * 64);
+    // Day view: window start is the focused day's midnight; columns run 00:00–24:00.
+    const minutes = differenceInMinutes(date, startOfDay(windowStart));
+    return Math.max(0, (minutes / 60) * DAY_HOUR_PX);
   }
   // Week/month: 1 day per column
   const days = (date.getTime() - startOfDay(windowStart).getTime()) / 86_400_000;
@@ -69,7 +78,7 @@ export function pxLeft(date: Date, windowStart: Date, zoom: MwGanttZoom): number
 export function pxWidth(start: Date, end: Date, zoom: MwGanttZoom): number {
   if (zoom === 'day') {
     const minutes = Math.max(1, differenceInMinutes(end, start));
-    return Math.max(24, (minutes / 60) * 64);
+    return Math.max(24, (minutes / 60) * DAY_HOUR_PX);
   }
   const days = Math.max(0.25, (end.getTime() - start.getTime()) / 86_400_000);
   return Math.max(24, days * DAY_PX_BY_ZOOM[zoom]);
@@ -79,6 +88,23 @@ export function pxWidth(start: Date, end: Date, zoom: MwGanttZoom): number {
 export function pxNow(now: Date, windowStart: Date, windowEnd: Date, zoom: MwGanttZoom): number | null {
   if (now.getTime() < windowStart.getTime() || now.getTime() > windowEnd.getTime()) return null;
   return pxLeft(now, windowStart, zoom);
+}
+
+/** True when an item's [start,end] overlaps the focused day window. */
+export function itemOverlapsDay(itemStart: Date, itemEnd: Date, dayStart: Date): boolean {
+  const dayStartMs = startOfDay(dayStart).getTime();
+  const dayEndMs = endOfDay(dayStart).getTime();
+  return itemEnd.getTime() >= dayStartMs && itemStart.getTime() <= dayEndMs;
+}
+
+/**
+ * Heuristic: an item is "all-day" if its span covers ≥ 22 hours and doesn't
+ * start at a non-midnight hour. These items render in the all-day banner
+ * rather than the hour grid (where they'd swamp visible blocks).
+ */
+export function isAllDayItem(itemStart: Date, itemEnd: Date): boolean {
+  const spanH = (itemEnd.getTime() - itemStart.getTime()) / 3_600_000;
+  return spanH >= 22;
 }
 
 /** Header tick labels. */
@@ -96,11 +122,14 @@ export interface MwGanttTick {
 export function buildTicks(windowStart: Date, _windowEnd: Date, zoom: MwGanttZoom): MwGanttTick[] {
   const colWidth = colPx(zoom);
   if (zoom === 'day') {
-    return Array.from({ length: 15 }, (_, i) => ({
+    // Show full 24-hour day. Primary header carries the day label.
+    const dayLabel = `${shortWeekday(windowStart)} ${windowStart.getDate()} ${monthShort(windowStart)}`;
+    return Array.from({ length: DAY_HOUR_COUNT }, (_, i) => ({
       key: `h${i}`,
-      label: `${String(6 + i).padStart(2, '0')}:00`,
+      label: `${String(i).padStart(2, '0')}:00`,
       px: i * colWidth,
       width: colWidth,
+      primary: i === 0 ? dayLabel : undefined,
     }));
   }
   const cols = columnsInWindow(windowStart, _windowEnd, zoom);
@@ -141,12 +170,6 @@ export function defaultWindow(zoom: MwGanttZoom, anchor: Date = new Date()): { s
 }
 
 // ─── helpers ───────────────────────────────────────────────────────────
-
-function addHours(d: Date, h: number): Date {
-  const x = new Date(d);
-  x.setHours(x.getHours() + h);
-  return x;
-}
 
 const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 function shortWeekday(d: Date): string {

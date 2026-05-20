@@ -5,6 +5,7 @@ export { MwGantt } from './MwGantt';
 export { MwGanttRow } from './MwGanttRow';
 export { MwGanttBar } from './MwGanttBar';
 export { MwGanttToolbar } from './MwGanttToolbar';
+export { MwGanttCalendar } from './MwGanttCalendar';
 export { NowLine } from './NowLine';
 export type { MwGanttItem, MwGanttProps, MwGanttRowDef, MwGanttZoom } from './types';
 export {
