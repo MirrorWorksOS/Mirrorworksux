@@ -291,10 +291,17 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                 key={idx}
                 className="overflow-hidden rounded-[var(--shape-md)] border border-[var(--border)] bg-card"
               >
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setExpandedIdx(expanded ? null : idx)}
-                  className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-900/30"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setExpandedIdx(expanded ? null : idx);
+                    }
+                  }}
+                  className="flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--neutral-50)] dark:hover:bg-neutral-900/30"
                 >
                   <span className="text-xs font-medium tabular-nums text-[var(--neutral-500)]">
                     {idx + 1}.
@@ -316,7 +323,10 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                       {a.blocksNext ? ' · blocks next' : ''}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className="flex shrink-0 items-center gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       type="button"
                       onClick={() => moveActivity(idx, -1)}
@@ -349,7 +359,7 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                       <ChevronDown className="h-4 w-4 text-[var(--neutral-500)]" />
                     )}
                   </div>
-                </button>
+                </div>
 
                 {expanded && (
                   <div className="space-y-3 border-t border-[var(--neutral-100)] bg-[var(--neutral-50)]/40 px-3 py-3 dark:bg-neutral-900/20">
