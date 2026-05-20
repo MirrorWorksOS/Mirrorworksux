@@ -3,7 +3,7 @@
  * Tabs: Overview | Manufacturing | Inventory | Planning | Accounting | Documents
  * Figma: 484:251921, 519:290499, 519:295628, 519:332160
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
@@ -51,12 +51,34 @@ import {
 } from '@/components/shared/charts/chart-theme';
 
 import { machines as allMachines } from '@/services';
+import { getAccounts as getXeroAccounts } from '@/services/xeroService';
+import type { XeroAccount } from '@/types/xero';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { MirrorWorksAgentCard } from '@/components/shared/ai/MirrorWorksAgentCard';
 import { studioProductIdForCatalogId } from '@/lib/product-studio-catalog-map';
+import { PartThumbnail } from '@/components/shared/product/PartThumbnail';
+import { BomEditorSheet, type BomDraft, type BomLineDraft } from '@/components/control/BomEditorSheet';
+import { BomRoutingTree } from '@/components/plan/BomRoutingTree';
+import type { AssemblyNode, OperationStatus } from '@/components/plan/BomRoutingTree.types';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 // ── Mock product data ─────────────────────────────────────
 const PRODUCT = {
@@ -77,6 +99,7 @@ const PRODUCT = {
   salesDescription: 'Description shown on quotes and orders.',
   invoicingPolicy: 'Ordered quantities',
   warranty: '1 year manufacturer warranty',
+  imageUrl: undefined as string | undefined,
 };
 
 const PRODUCT_TYPES = [
@@ -119,6 +142,32 @@ const STOCK_PROJECTION = Array.from({ length: 30 }, (_, i) => {
     safetyStock: 25,
   };
 });
+
+// ── Suppliers (Odoo / FulcrumPro parity) ──────────────────
+// Per-vendor pricing, lead time and MOQ. Mock data; backend wiring TODO.
+interface ProductSupplier {
+  id: string;
+  vendorName: string;
+  vendorPartNo?: string;
+  mpn?: string;
+  unitPrice: number;
+  leadTimeDays: number;
+  moq: number;
+  preferred: boolean;
+}
+const PRODUCT_SUPPLIERS: ProductSupplier[] = [
+  { id: 'sup-1', vendorName: 'Acme Industries',    vendorPartNo: 'ACM-BKT-1200', mpn: 'BKT-001-A',  unitPrice: 645.00, leadTimeDays: 14, moq: 25, preferred: true  },
+  { id: 'sup-2', vendorName: 'Bluescope Steel',    vendorPartNo: 'BS-12345',     mpn: 'BS-BKT-001', unitPrice: 660.00, leadTimeDays: 7,  moq: 50, preferred: false },
+  { id: 'sup-3', vendorName: 'Sandvik Coromant',   vendorPartNo: 'SC-789-A',                       unitPrice: 692.00, leadTimeDays: 28, moq: 10, preferred: false },
+];
+
+// ── Where-used (parent BOMs that reference this product) ──
+interface WhereUsedRow { id: string; parentName: string; parentSku: string; qtyPer: number; bomVersion: string; }
+const WHERE_USED: WhereUsedRow[] = [
+  { id: 'wu-1', parentName: 'Frame Assembly v2',     parentSku: 'FRM-200',  qtyPer: 4, bomVersion: 'v1.4' },
+  { id: 'wu-2', parentName: 'Mezzanine Module',      parentSku: 'MZN-110',  qtyPer: 2, bomVersion: 'v2.0' },
+  { id: 'wu-3', parentName: 'Trailer Decking Kit',   parentSku: 'TDK-S320', qtyPer: 8, bomVersion: 'v1.0' },
+];
 
 const BOM_LINES = [
   { sku: 'MS-10-3678', description: '10mm MS Plate', qty: 4, unit: 'sheet', cost: 185.00 },
@@ -221,6 +270,26 @@ function OverviewTab() {
   const [selectedType, setSelectedType] = useState(PRODUCT.productType);
   const [barcodeValue, setBarcodeValue] = useState(PRODUCT.barcode);
   const [barcodeType, setBarcodeType] = useState<BarcodeSymbology>('ean13');
+  const [listPrice, setListPrice] = useState(PRODUCT.listPrice.toFixed(2));
+  const [tiers, setTiers] = useState<typeof TIERED_PRICING[number][]>(TIERED_PRICING);
+
+  const handleAddTier = () => {
+    setTiers((prev) => {
+      const last = prev[prev.length - 1];
+      const nextMin = last ? last.maxQty + 1 : 1;
+      // TODO(backend): products.priceTiers.add(productId, fields)
+      return [
+        ...prev,
+        {
+          minQty: nextMin,
+          maxQty: nextMin + 99,
+          unitPrice: last ? Math.round(last.unitPrice * 0.95 * 100) / 100 : 0,
+          effectiveDate: new Date().toISOString().slice(0, 10),
+        },
+      ];
+    });
+    toast.success('Pricing tier added');
+  };
 
   return (
     <div className="space-y-8">
@@ -358,7 +427,11 @@ function OverviewTab() {
             <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">List Price</label>
             <div className="flex">
               <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-[var(--border)] bg-[var(--neutral-100)] text-sm text-[var(--neutral-500)]">USD</span>
-              <Input defaultValue="1,000.00" className="h-10 rounded-l-none bg-card border-[var(--border)]" />
+              <Input
+                value={listPrice}
+                onChange={(e) => setListPrice(e.target.value)}
+                className="h-10 rounded-l-none bg-card border-[var(--border)]"
+              />
             </div>
           </div>
           <div>
@@ -383,10 +456,7 @@ function OverviewTab() {
             variant="outline"
             size="sm"
             className="h-8 gap-1 text-xs border-[var(--border)]"
-            onClick={() => {
-              // TODO(backend): products.priceTiers.add(productId, fields)
-              toast.success('Pricing tier added');
-            }}
+            onClick={handleAddTier}
           >
             <Plus className="w-3 h-3" /> Add Tier
           </Button>
@@ -402,7 +472,7 @@ function OverviewTab() {
               </tr>
             </thead>
             <tbody>
-              {TIERED_PRICING.map((tier, i) => (
+              {tiers.map((tier, i) => (
                 <tr key={i} className="border-b border-[var(--border)] last:border-0">
                   <td className="px-4 py-3 tabular-nums">{tier.minQty}</td>
                   <td className="px-4 py-3 tabular-nums">{tier.maxQty}</td>
@@ -1029,12 +1099,17 @@ function RoutingStepPanel({
   );
 }
 
-function ManufacturingTab() {
-  const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
-  const totalMaterial = BOM_LINES.reduce((s, l) => s + l.qty * l.cost, 0);
-  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+type BomLine = { sku: string; description: string; qty: number; unit: string; cost: number };
 
-  const bomColumns: FinancialColumn<(typeof BOM_LINES)[number]>[] = [
+function ManufacturingTab() {
+  const [bomLines, setBomLines] = useState<BomLine[]>(BOM_LINES);
+  const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
+  const totalMaterial = bomLines.reduce((s, l) => s + l.qty * l.cost, 0);
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [bomSheetOpen, setBomSheetOpen] = useState(false);
+  const [routingEditMode, setRoutingEditMode] = useState(false);
+
+  const bomColumns: FinancialColumn<BomLine>[] = [
     { key: 'sku', header: 'SKU', accessor: (row) => row.sku, format: 'text', align: 'left', className: 'text-xs text-[var(--neutral-500)]' },
     { key: 'description', header: 'Description', accessor: (row) => row.description, format: 'text', align: 'left' },
     { key: 'qty', header: 'Qty', accessor: (row) => row.qty, format: 'number', align: 'right' },
@@ -1047,6 +1122,91 @@ function ManufacturingTab() {
     lineTotal: totalMaterial,
   };
 
+  // Map ProductDetail's flat BOM_LINES → BomEditorSheet's BomLineDraft shape.
+  // Sub-assembly support is preserved because BomEditorSheet exposes it natively.
+  const inferKind = (sku: string, unit: string): BomLineDraft['kind'] => {
+    if (sku.startsWith('LABOUR')) return 'labour';
+    if (unit === 'hrs') return 'labour';
+    if (sku.startsWith('PNT-') || sku.startsWith('HW-')) return 'purchased';
+    return 'material';
+  };
+
+  const initialBomDraft: BomDraft = {
+    id: PRODUCT.sku,
+    product: PRODUCT.name,
+    sku: PRODUCT.sku,
+    version: 'v1.2',
+    status: 'active',
+    kind: 'manufacture',
+    lines: bomLines.map((l, i): BomLineDraft => ({
+      key: `init-${i}`,
+      kind: inferKind(l.sku, l.unit),
+      sku: l.sku,
+      description: l.description,
+      qty: l.qty,
+      unit: l.unit,
+      unitCost: l.cost,
+    })),
+  };
+
+  const handleBomSave = (next: BomDraft) => {
+    // TODO(backend): products.bom.update(productId, next.lines)
+    setBomLines(
+      next.lines.map((l) => ({
+        sku: l.sku,
+        description: l.description,
+        qty: l.qty,
+        unit: l.unit,
+        cost: l.unitCost ?? 0,
+      })),
+    );
+    toast.success('BOM updated');
+  };
+
+  // Map the flat ROUTING array into the AssemblyNode shape consumed by
+  // BomRoutingTree. The product itself acts as the single "make" part.
+  const routingStatusMap: Record<RoutingStatus, OperationStatus> = {
+    not_started: 'pending',
+    in_progress: 'in_progress',
+    complete: 'done',
+  };
+  const assembly: AssemblyNode = {
+    name: PRODUCT.name,
+    partNumber: PRODUCT.sku,
+    qty: 1,
+    cost: totalMaterial + totalTime * 55,
+    parts: [
+      {
+        id: 'self',
+        name: PRODUCT.name,
+        partNumber: PRODUCT.sku,
+        kind: 'make',
+        qty: 1,
+        uom: 'ea',
+        material: 'Mild Steel',
+        cost: totalMaterial + totalTime * 55,
+        ncReady: true,
+        inputs: bomLines.map((l, i) => ({
+          id: `in-${i}`,
+          name: l.description,
+          spec: l.sku,
+          qty: l.qty,
+          uom: l.unit,
+        })),
+        operations: ROUTING.map((op) => ({
+          id: `op-${op.step}`,
+          sequence: op.step,
+          name: op.name,
+          workCentre: op.workCenter,
+          minutes: Math.round(op.duration * 60),
+          status: routingStatusMap[op.status],
+        })),
+        imageUrl: PRODUCT.imageUrl,
+      },
+    ],
+    imageUrl: PRODUCT.imageUrl,
+  };
+
   return (
     <div className="space-y-8">
       {/* ── BOM Material Pills ────────────────────────── */}
@@ -1056,10 +1216,7 @@ function ManufacturingTab() {
             variant="outline"
             size="sm"
             className="border-[var(--border)] h-8 text-xs"
-            onClick={() => {
-              // TODO(backend): products.bom.update(productId, lines)
-              toast.success('BOM saved');
-            }}
+            onClick={() => setBomSheetOpen(true)}
           >
             Edit BOM
           </Button>
@@ -1069,7 +1226,7 @@ function ManufacturingTab() {
 
         {/* Pill chips */}
         <div className="flex flex-wrap gap-2">
-          {BOM_LINES.map((line) => (
+          {bomLines.map((line) => (
             <button
               key={line.sku}
               onClick={() => toast(`${line.description}: ${line.qty} ${line.unit} @ $${line.cost.toFixed(2)}`)}
@@ -1085,12 +1242,19 @@ function ManufacturingTab() {
         <details className="group">
           <summary className="text-xs text-[var(--neutral-500)] cursor-pointer hover:text-foreground transition-colors flex items-center gap-1">
             <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90" />
-            Show full BOM table — {BOM_LINES.length} lines, ${totalMaterial.toLocaleString('en-AU', { minimumFractionDigits: 2 })} total
+            Show full BOM table — {bomLines.length} lines, ${totalMaterial.toLocaleString('en-AU', { minimumFractionDigits: 2 })} total
           </summary>
           <div className="mt-3">
-            <FinancialTable columns={bomColumns} data={BOM_LINES} keyExtractor={(row) => row.sku} totals={bomTotals} />
+            <FinancialTable columns={bomColumns} data={bomLines} keyExtractor={(row) => row.sku} totals={bomTotals} />
           </div>
         </details>
+
+        <BomEditorSheet
+          open={bomSheetOpen}
+          onOpenChange={setBomSheetOpen}
+          bom={initialBomDraft}
+          onSave={handleBomSave}
+        />
       </section>
 
       {/* ── Routing Flow Pipeline ─────────────────────── */}
@@ -1101,16 +1265,20 @@ function ManufacturingTab() {
             size="sm"
             className="border-[var(--border)] h-8 text-xs"
             onClick={() => {
-              // TODO(backend): products.routing.update(productId, steps)
-              toast.success('Routing saved');
+              if (routingEditMode) toast.success('Routing updated');
+              setRoutingEditMode((v) => !v);
             }}
           >
-            Edit routing
+            {routingEditMode ? 'Done' : 'Edit routing'}
           </Button>
         }>
           Routing — <span className="tabular-nums">{totalTime}h</span> total cycle time
         </SubHeading>
 
+        {routingEditMode ? (
+          <BomRoutingTree assembly={assembly} mode="plan" defaultExpandedPartIds={['self']} />
+        ) : (
+        <React.Fragment>
         {/* Pipeline pills with arrow connectors */}
         <div className="flex flex-wrap items-center gap-y-3">
           {ROUTING.map((op, idx) => (
@@ -1168,6 +1336,8 @@ function ManufacturingTab() {
             <span className="w-3 h-3 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600" /> Not started
           </span>
         </div>
+        </React.Fragment>
+        )}
       </section>
 
       {/* ── Cost Summary ──────────────────────────────── */}
@@ -1191,6 +1361,82 @@ function ManufacturingTab() {
             </Card>
           ))}
         </div>
+      </section>
+
+      {/* ── Suppliers — Odoo / FulcrumPro parity ──────── */}
+      <section className="space-y-4">
+        <SubHeading actions={
+          <Button variant="outline" size="sm" className="border-[var(--border)] h-8 text-xs gap-1"
+            onClick={() => toast.info('Add supplier — coming soon')}
+          >
+            <Plus className="w-3 h-3" /> Add supplier
+          </Button>
+        }>
+          Suppliers · <span className="text-[var(--neutral-500)] font-normal">{PRODUCT_SUPPLIERS.length} vendors</span>
+        </SubHeading>
+        <Card variant="flat" className="overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Vendor</th>
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Vendor part #</th>
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">MPN</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Unit price</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Lead time</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">MOQ</th>
+                <th className="text-center px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Preferred</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRODUCT_SUPPLIERS.map((s) => (
+                <tr key={s.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] transition-colors">
+                  <td className="px-4 py-3 font-medium text-foreground">{s.vendorName}</td>
+                  <td className="px-4 py-3 tabular-nums text-[var(--neutral-500)]">{s.vendorPartNo ?? '—'}</td>
+                  <td className="px-4 py-3 tabular-nums text-[var(--neutral-500)]">{s.mpn ?? '—'}</td>
+                  <td className="px-4 py-3 text-right tabular-nums">${s.unitPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-[var(--neutral-500)]">{s.leadTimeDays} days</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-[var(--neutral-500)]">{s.moq}</td>
+                  <td className="px-4 py-3 text-center">
+                    {s.preferred ? (
+                      <Badge className="border-0 bg-[var(--mw-yellow-400)] text-primary-foreground text-xs">Preferred</Badge>
+                    ) : (
+                      <span className="text-[var(--neutral-400)] text-xs">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </section>
+
+      {/* ── Where-used — parent BOMs that consume this product ── */}
+      <section className="space-y-4">
+        <SubHeading>
+          Where-used · <span className="text-[var(--neutral-500)] font-normal">{WHERE_USED.length} parent assemblies</span>
+        </SubHeading>
+        <Card variant="flat" className="overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Parent assembly</th>
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">SKU</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Qty / parent</th>
+                <th className="text-left  px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">BOM</th>
+              </tr>
+            </thead>
+            <tbody>
+              {WHERE_USED.map((w) => (
+                <tr key={w.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] transition-colors">
+                  <td className="px-4 py-3 font-medium text-foreground">{w.parentName}</td>
+                  <td className="px-4 py-3 tabular-nums text-[var(--neutral-500)]">{w.parentSku}</td>
+                  <td className="px-4 py-3 text-right tabular-nums">{w.qtyPer}</td>
+                  <td className="px-4 py-3 tabular-nums text-[var(--neutral-500)]">{w.bomVersion}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
       </section>
     </div>
   );
@@ -1283,6 +1529,8 @@ interface MirrorViewTabProps {
 }
 
 function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
+  const navigate = useNavigate();
+  const { id: routeProductId } = useParams<{ id: string }>();
   const [selectedFileId, setSelectedFileId] = useState<string>(files[0]?.id ?? '');
   const [dragOver, setDragOver] = useState(false);
 
@@ -1337,7 +1585,16 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
             variant="outline"
             size="sm"
             className="h-9 gap-1.5 border-[var(--border)]"
-            onClick={() => toast.info('Revision designer coming next')}
+            onClick={() => {
+              const studioId = routeProductId
+                ? studioProductIdForCatalogId(routeProductId)
+                : null;
+              if (studioId) {
+                navigate(`/plan/product-studio/${studioId}`);
+              } else {
+                navigate('/plan/product-studio');
+              }
+            }}
           >
             <Plus className="h-3.5 w-3.5" />
             New revision
@@ -1550,6 +1807,17 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
 // INVENTORY TAB
 // ═══════════════════════════════════════════════════════════
 function InventoryTab() {
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferFrom, setTransferFrom] = useState(STOCK_BY_LOCATION.warehouseA.name);
+  const [transferTo, setTransferTo] = useState(STOCK_BY_LOCATION.warehouseB.name);
+  const [transferQty, setTransferQty] = useState('10');
+
+  const submitTransfer = () => {
+    // TODO(backend): inventory.transfer(productId, fromLoc, toLoc, qty)
+    toast.success(`Transferred ${transferQty} units from ${transferFrom} to ${transferTo}`);
+    setTransferOpen(false);
+  };
+
   return (
     <div className="space-y-8">
       {/* ── Stock Overview KPIs ───────────────────────── */}
@@ -1598,14 +1866,68 @@ function InventoryTab() {
             variant="outline"
             size="sm"
             className="h-8 text-xs border-[var(--border)]"
-            onClick={() => {
-              // TODO(backend): inventory.transfer(productId, fromLoc, toLoc, qty)
-              toast.success('Stock transfer initiated');
-            }}
+            onClick={() => setTransferOpen(true)}
           >
             Transfer Stock
           </Button>
         </div>
+
+        <Sheet open={transferOpen} onOpenChange={setTransferOpen}>
+          <SheetContent side="right" className="sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>Transfer stock</SheetTitle>
+              <SheetDescription>Move inventory between warehouses for this product.</SheetDescription>
+            </SheetHeader>
+            <div className="space-y-4 px-4">
+              <div>
+                <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">From</label>
+                <Select value={transferFrom} onValueChange={setTransferFrom}>
+                  <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[STOCK_BY_LOCATION.warehouseA.name, STOCK_BY_LOCATION.warehouseB.name].map((n) => (
+                      <SelectItem key={n} value={n}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">To</label>
+                <Select value={transferTo} onValueChange={setTransferTo}>
+                  <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[STOCK_BY_LOCATION.warehouseA.name, STOCK_BY_LOCATION.warehouseB.name].map((n) => (
+                      <SelectItem key={n} value={n}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Quantity</label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={transferQty}
+                  onChange={(e) => setTransferQty(e.target.value)}
+                  className="h-10 bg-card border-[var(--border)]"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" className="border-[var(--border)]" onClick={() => setTransferOpen(false)}>Cancel</Button>
+                <Button
+                  className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
+                  disabled={transferFrom === transferTo || Number(transferQty) <= 0}
+                  onClick={submitTransfer}
+                >
+                  Transfer
+                </Button>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         {[STOCK_BY_LOCATION.warehouseA, STOCK_BY_LOCATION.warehouseB].map((wh) => (
           <Card key={wh.name} variant="flat" className="overflow-hidden">
@@ -1724,20 +2046,76 @@ function AccountingTab() {
   const [valuationMethod, setValuationMethod] = useState('fifo');
   const [financialPeriod, setFinancialPeriod] = useState('90');
 
+  // Chart of accounts (Xero) — fetched once and reused for the three role-filtered Selects.
+  const [accounts, setAccounts] = useState<XeroAccount[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    getXeroAccounts().then((acc) => {
+      if (!cancelled) setAccounts(acc);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const incomeAccounts = useMemo(
+    () => accounts.filter((a) => a.Class === 'REVENUE'),
+    [accounts],
+  );
+  const expenseAccounts = useMemo(
+    () => accounts.filter((a) => a.Type === 'EXPENSE' || a.Type === 'DIRECTCOSTS' || a.Type === 'OVERHEADS'),
+    [accounts],
+  );
+  const inventoryAccounts = useMemo(
+    () => accounts.filter((a) => a.Type === 'INVENTORY' || a.Type === 'CURRENT' || a.Class === 'ASSET'),
+    [accounts],
+  );
+
+  // Defaults attempt to match the previous free-text labels; if no match, pick the first
+  // available account in the role. Stays in component state — backend wiring is TODO.
+  const findCode = (list: XeroAccount[], name: string) =>
+    list.find((a) => a.Name.toLowerCase().includes(name.toLowerCase()))?.Code ?? list[0]?.Code ?? '';
+
+  const [incomeCode, setIncomeCode] = useState<string>('');
+  const [expenseCode, setExpenseCode] = useState<string>('');
+  const [inventoryCode, setInventoryCode] = useState<string>('');
+
+  useEffect(() => {
+    if (incomeAccounts.length && !incomeCode) setIncomeCode(findCode(incomeAccounts, 'Sales'));
+  }, [incomeAccounts, incomeCode]);
+  useEffect(() => {
+    if (expenseAccounts.length && !expenseCode) setExpenseCode(findCode(expenseAccounts, 'Raw materials'));
+  }, [expenseAccounts, expenseCode]);
+  useEffect(() => {
+    if (inventoryAccounts.length && !inventoryCode) setInventoryCode(findCode(inventoryAccounts, 'Inventory'));
+  }, [inventoryAccounts, inventoryCode]);
+
+  const accountFields: { label: string; value: string; setValue: (v: string) => void; options: XeroAccount[] }[] = [
+    { label: 'Income Account',    value: incomeCode,    setValue: setIncomeCode,    options: incomeAccounts },
+    { label: 'Expense Account',   value: expenseCode,   setValue: setExpenseCode,   options: expenseAccounts },
+    { label: 'Inventory Account', value: inventoryCode, setValue: setInventoryCode, options: inventoryAccounts },
+  ];
+
   return (
     <div className="space-y-8">
       {/* ── Accounting Configuration ─────────────────── */}
       <section className="space-y-4">
         <SectionHeading>Accounting Configuration</SectionHeading>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { label: 'Income Account', value: 'Product Sales' },
-            { label: 'Expense Account', value: 'Cost of Goods Sold' },
-            { label: 'Inventory Account', value: 'Finished Goods Inventory' },
-          ].map((a) => (
-            <div key={a.label}>
-              <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">{a.label}</label>
-              <Input defaultValue={a.value} className="h-10 bg-card border-[var(--border)]" />
+          {accountFields.map((f) => (
+            <div key={f.label}>
+              <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">{f.label}</label>
+              <Select value={f.value} onValueChange={f.setValue}>
+                <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                  <SelectValue placeholder={accounts.length ? 'Select account…' : 'Loading…'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {f.options.map((a) => (
+                    <SelectItem key={a.AccountID} value={a.Code}>
+                      <span className="tabular-nums text-[var(--neutral-500)] mr-2">{a.Code}</span>
+                      {a.Name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           ))}
         </div>
@@ -1886,7 +2264,10 @@ function AccountingTab() {
           tone="opportunity"
           primaryAction={{
             label: 'Apply $1,050 price',
-            onClick: () => toast.success('Suggested price applied'),
+            onClick: () => {
+              setListPrice('1050.00');
+              toast.success('List price updated to $1,050');
+            },
           }}
           detailContent={
             <div className="space-y-2">
@@ -1929,7 +2310,43 @@ function AccountingTab() {
 // ═══════════════════════════════════════════════════════════
 // DOCUMENTS TAB
 // ═══════════════════════════════════════════════════════════
+type ProductDocument = typeof DOCUMENTS[number];
+
 function DocumentsTab() {
+  const [docs, setDocs] = useState<ProductDocument[]>(DOCUMENTS);
+  const [previewDoc, setPreviewDoc] = useState<ProductDocument | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const additions: ProductDocument[] = [];
+    Array.from(files).forEach((f) => {
+      additions.push({
+        name: f.name,
+        category: 'Uploaded',
+        version: '1.0',
+        uploadedBy: 'You',
+        date: new Date().toISOString().slice(0, 10),
+        type: (f.name.split('.').pop() || 'file').toLowerCase(),
+      });
+    });
+    setDocs((prev) => [...additions, ...prev]);
+    // TODO(backend): products.documents.upload(productId, files)
+    toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+  };
+
+  const handleDownload = (doc: ProductDocument) => {
+    // Mock download — synthesize a small blob with the doc's metadata.
+    const content = `MirrorWorks document — ${doc.name}\nCategory: ${doc.category}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.date}\n`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.name;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-8">
       {/* ── Product Documents ────────────────────────── */}
@@ -1938,21 +2355,32 @@ function DocumentsTab() {
           <SectionHeading>Product Documents</SectionHeading>
           <Button
             className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground gap-2"
-            onClick={() => {
-              // TODO(backend): products.documents.upload(productId, files)
-              toast.success('Documents uploaded');
-            }}
+            onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="w-4 h-4" /> Upload Documents
           </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              handleFiles(e.target.files);
+              e.target.value = '';
+            }}
+          />
         </div>
 
         {/* Drop zone */}
-        <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-[var(--border)] rounded-lg bg-card">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-[var(--border)] rounded-lg bg-card hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-50)] transition-colors"
+        >
           <Upload className="w-8 h-8 text-[var(--neutral-300)] mb-2" />
           <p className="text-sm font-medium text-foreground">Drag and drop files here</p>
           <p className="text-xs text-[var(--neutral-500)]">or click to browse</p>
-        </div>
+        </button>
 
         {/* Documents Table */}
         <Card variant="flat" className="overflow-hidden">
@@ -1969,7 +2397,7 @@ function DocumentsTab() {
               </tr>
             </thead>
             <tbody>
-              {DOCUMENTS.map((doc, i) => (
+              {docs.map((doc, i) => (
                 <tr key={i} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--neutral-50)] transition-colors">
                   <td className="px-5 py-3">
                     <FileText className={cn(
@@ -1986,14 +2414,16 @@ function DocumentsTab() {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         className="p-2.5 hover:bg-[var(--neutral-100)] rounded-sm transition-colors"
-                        onClick={() => {
-                          // TODO(backend): products.documents.preview(documentId)
-                          toast.success('Preview opened');
-                        }}
+                        onClick={() => setPreviewDoc(doc)}
+                        aria-label={`Preview ${doc.name}`}
                       >
                         <Eye className="w-4 h-4 text-[var(--neutral-500)]" />
                       </button>
-                      <button className="p-2.5 hover:bg-[var(--neutral-100)] rounded-sm transition-colors" onClick={() => toast.success('Downloading...')}>
+                      <button
+                        className="p-2.5 hover:bg-[var(--neutral-100)] rounded-sm transition-colors"
+                        onClick={() => handleDownload(doc)}
+                        aria-label={`Download ${doc.name}`}
+                      >
                         <Download className="w-4 h-4 text-[var(--neutral-500)]" />
                       </button>
                     </div>
@@ -2003,6 +2433,32 @@ function DocumentsTab() {
             </tbody>
           </table>
         </Card>
+
+        {/* Preview dialog */}
+        <Dialog open={previewDoc != null} onOpenChange={(o) => !o && setPreviewDoc(null)}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{previewDoc?.name}</DialogTitle>
+              <DialogDescription>
+                {previewDoc?.category} · v{previewDoc?.version} · {previewDoc?.uploadedBy} · {previewDoc?.date}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex h-80 items-center justify-center rounded-md border border-dashed border-[var(--border)] bg-[var(--neutral-50)] text-sm text-[var(--neutral-500)]">
+              <div className="flex flex-col items-center gap-2">
+                <FileText className="h-10 w-10 text-[var(--neutral-300)]" strokeWidth={1.5} />
+                <span>Preview not available in demo</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 border-[var(--border)]"
+                  onClick={() => previewDoc && handleDownload(previewDoc)}
+                >
+                  <Download className="mr-1.5 h-3.5 w-3.5" /> Download instead
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </section>
 
       {/* ── Related Records ──────────────────────────── */}
@@ -2549,16 +3005,26 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
     <PageShell>
       {/* ── Header ──────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : PRODUCT.name}</h1>
-          {!isNew && PRODUCT.capabilities.map((cap) => (
-            <Badge key={cap} className={cn('border-0 text-xs', capabilityColors[cap] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
-              {cap}
-            </Badge>
-          ))}
-          {!isNew && PRODUCT.traceable && (
-            <Badge variant="outline" className="border-[var(--border)] text-xs">Traceable</Badge>
+        <div className="flex items-center gap-4 flex-wrap">
+          {!isNew && (
+            <PartThumbnail
+              size="xl"
+              imageUrl={PRODUCT.imageUrl}
+              alt={PRODUCT.name}
+              fallbackIcon={Package}
+            />
           )}
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : PRODUCT.name}</h1>
+            {!isNew && PRODUCT.capabilities.map((cap) => (
+              <Badge key={cap} className={cn('border-0 text-xs', capabilityColors[cap] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
+                {cap}
+              </Badge>
+            ))}
+            {!isNew && PRODUCT.traceable && (
+              <Badge variant="outline" className="border-[var(--border)] text-xs">Traceable</Badge>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           <Button
@@ -2600,39 +3066,32 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* ── Tab bar ─────────────────────────────────── */}
-      <div className="flex border-b border-[var(--border)] -mx-6 px-6">
-        {TABS.map((t) => {
-          const badge = tabBadges[t];
-          return (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={cn(
-                'py-3 mr-6 text-sm border-b-2 transition-colors flex items-center gap-1.5',
-                tab === t
-                  ? 'border-[var(--mw-mirage)] text-foreground font-medium'
-                  : 'border-transparent text-[var(--neutral-500)] hover:text-foreground'
-              )}
-            >
-              {t}
-              {badge !== undefined && (
-                <span className={cn(
-                  'inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-medium px-1',
-                  tab === t
-                    ? 'bg-[var(--mw-mirage)] text-white'
-                    : 'bg-[var(--neutral-200)] text-[var(--neutral-500)]'
-                )}>
-                  {badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+      {/* ── Tab bar — pill style matching Sell Opportunity / Plan Job ─ */}
+      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="flex w-full flex-col gap-0">
+        <TabsList className="h-auto w-full min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 sm:w-fit">
+          {TABS.map((t) => {
+            const badge = tabBadges[t];
+            return (
+              <TabsTrigger key={t} value={t} className="gap-2 px-3 sm:px-4">
+                <span>{t}</span>
+                {badge !== undefined && (
+                  <Badge
+                    variant="secondary"
+                    className="border-0 bg-[var(--neutral-200)] px-1.5 py-0 text-xs font-medium text-[var(--neutral-800)] tabular-nums"
+                  >
+                    {badge}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
 
-      {/* ── Tab content ─────────────────────────────── */}
-      {renderTabContent()}
+        {/* ── Tab content ─────────────────────────────── */}
+        <TabsContent value={tab} className="mt-6 focus-visible:outline-none">
+          {renderTabContent()}
+        </TabsContent>
+      </Tabs>
     </PageShell>
   );
 }

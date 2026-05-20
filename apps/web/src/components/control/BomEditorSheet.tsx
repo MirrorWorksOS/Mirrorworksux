@@ -498,17 +498,22 @@ function BomLineRow({
   const isSub = line.kind === 'subAssembly';
   const ext = lineExtendedCost(line);
 
+  // Hide native browser number-input spinners so qty/cost cells aren't squeezed
+  // by the ~24px stepper widget that swallows placeholder + value.
+  const noSpinners =
+    '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
+
   return (
     <li className="rounded-md border border-[var(--border)] px-2 py-1.5 space-y-1.5">
       {/* Row 1 — primary identification */}
       <div className="grid grid-cols-12 gap-2 items-center">
-        <div className="col-span-2 flex items-center gap-1.5">
+        <div className="col-span-2 flex items-center gap-1.5 min-w-0">
           {isSub ? (
-            <Layers className="h-3.5 w-3.5 text-[var(--mw-blue)]" />
+            <Layers className="h-3.5 w-3.5 shrink-0 text-[var(--mw-blue)]" />
           ) : (
-            <Component className="h-3.5 w-3.5 text-[var(--neutral-500)]" />
+            <Component className="h-3.5 w-3.5 shrink-0 text-[var(--neutral-500)]" />
           )}
-          <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', meta.badge)}>
+          <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap', meta.badge)}>
             {meta.label}
           </span>
         </div>
@@ -547,7 +552,7 @@ function BomLineRow({
                 className="h-8 text-xs"
               />
             </div>
-            <div className="col-span-4">
+            <div className="col-span-3">
               <Input
                 value={line.description}
                 onChange={(e) => onChange({ description: e.target.value })}
@@ -558,14 +563,14 @@ function BomLineRow({
           </>
         )}
 
-        <div className="col-span-1">
+        <div className="col-span-2">
           <Input
             type="number"
             min={0}
             step="any"
             value={line.qty}
             onChange={(e) => onChange({ qty: Number(e.target.value) || 0 })}
-            className="h-8 text-xs text-right tabular-nums"
+            className={cn('h-8 text-xs text-right tabular-nums', noSpinners)}
           />
         </div>
         <div className="col-span-2">
@@ -605,13 +610,13 @@ function BomLineRow({
               })
             }
             placeholder="$/unit"
-            className="h-7 text-[11px] text-right tabular-nums"
+            className={cn('h-7 text-[11px] text-right tabular-nums', noSpinners)}
           />
         </div>
         <span className="col-span-2 text-right tabular-nums text-[var(--neutral-500)]">
           {ext > 0 ? formatAud(ext) : '—'}
         </span>
-        <div className="col-span-1">
+        <div className="col-span-2">
           <Input
             type="number"
             min={0}
@@ -624,17 +629,17 @@ function BomLineRow({
                   e.target.value === '' ? undefined : Number(e.target.value) || 0,
               })
             }
-            placeholder="scrap%"
-            className="h-7 text-[11px] text-right tabular-nums"
+            placeholder="Scrap %"
+            className={cn('h-7 text-[11px] text-right tabular-nums', noSpinners)}
           />
         </div>
-        <div className="col-span-2">
+        <div className={routeOpCount > 0 ? 'col-span-2' : 'col-span-4'}>
           <Input
             value={line.reference ?? ''}
             onChange={(e) =>
               onChange({ reference: e.target.value || undefined })
             }
-            placeholder="Drawing / pos"
+            placeholder="Drawing / position"
             className="h-7 text-[11px]"
           />
         </div>
@@ -673,7 +678,7 @@ function BomLineRow({
       {line.kind === 'purchased' && (
         <div className="grid grid-cols-12 gap-2 items-center pl-2 text-[10px]">
           <span className="col-span-2 text-[var(--neutral-500)]">Source</span>
-          <div className="col-span-3">
+          <div className="col-span-4">
             <Input
               value={line.manufacturer ?? ''}
               onChange={(e) =>
@@ -683,7 +688,7 @@ function BomLineRow({
               className="h-7 text-[11px]"
             />
           </div>
-          <div className="col-span-4">
+          <div className="col-span-3">
             <Input
               value={line.mpn ?? ''}
               onChange={(e) => onChange({ mpn: e.target.value || undefined })}
@@ -704,8 +709,8 @@ function BomLineRow({
                       : Number(e.target.value) || 0,
                 })
               }
-              placeholder="Lead days"
-              className="h-7 text-[11px] text-right tabular-nums"
+              placeholder="Lead time (days)"
+              className={cn('h-7 text-[11px] text-right tabular-nums', noSpinners)}
             />
           </div>
         </div>
