@@ -39,7 +39,15 @@ import {
   differenceInDays,
   startOfDay,
 } from 'date-fns';
-import { MwGantt, type MwGanttItem, type MwGanttRowDef, type MwGanttZoom } from '@/components/shared/gantt';
+import {
+  MwGantt,
+  MW_GANTT_LEGEND,
+  MW_GANTT_STATUS_COLOUR,
+  tokenFor,
+  type MwGanttItem,
+  type MwGanttRowDef,
+  type MwGanttZoom,
+} from '@/components/shared/gantt';
 import { LogActivityModal, type ActivityDraft } from '@/components/shared/activities/LogActivityModal';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -782,15 +790,19 @@ export function SellActivities() {
     () =>
       filtered.map((a) => {
         const start = parseISO(`${a.dueDate}T09:00:00`);
+        // Status-driven monochrome palette. Treat past-due + open as overdue.
+        const isOverdueOpen =
+          a.status !== 'completed' && new Date(a.dueDate).getTime() < Date.now();
+        const token = isOverdueOpen ? 'overdue' : tokenFor(a.status);
         return {
           id: a.id,
           rowId: a.assignedTo,
           start,
           end: addDays(start, 1),
           label: a.description,
-          status: a.status,
-          color: a.priority ? PRIORITY_COLOR[a.priority] : TYPE_CALENDAR_COLOR[a.type],
-          progress: a.status === 'completed' ? 100 : 0,
+          status: token,
+          progress:
+            a.status === 'completed' ? 100 : a.status === 'in_progress' ? 50 : 0,
           meta: { activityId: a.id },
         };
       }),
@@ -1117,18 +1129,8 @@ export function SellActivities() {
               onZoomChange={setGanttZoom}
               windowStart={ganttWindow?.start}
               windowEnd={ganttWindow?.end}
-              statusColour={{
-                completed: 'var(--mw-success)',
-                scheduled: 'var(--mw-info)',
-                in_progress: 'var(--mw-warning)',
-                overdue: 'var(--mw-error)',
-              }}
-              legend={[
-                { key: 'completed', label: 'Completed', color: 'var(--mw-success)' },
-                { key: 'scheduled', label: 'Scheduled', color: 'var(--mw-info)' },
-                { key: 'in_progress', label: 'In progress', color: 'var(--mw-warning)' },
-                { key: 'overdue', label: 'Overdue', color: 'var(--mw-error)' },
-              ]}
+              statusColour={MW_GANTT_STATUS_COLOUR}
+              legend={[...MW_GANTT_LEGEND]}
               onItemClick={(t) => {
                 const a = activities.find((x) => x.id === t.id);
                 if (a) setSelectedEvent(activityToEventDetail(a));

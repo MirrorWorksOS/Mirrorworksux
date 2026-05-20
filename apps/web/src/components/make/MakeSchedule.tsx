@@ -14,6 +14,15 @@ import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { staggerItem } from '@/components/shared/motion/motion-variants';
 import { GanttChart, type GanttTask } from '@/components/shared/schedule/GanttChart';
+import {
+  MwGantt,
+  MW_GANTT_LEGEND,
+  MW_GANTT_STATUS_COLOUR,
+  tokenFor,
+  type MwGanttItem,
+  type MwGanttRowDef,
+  type MwGanttZoom,
+} from '@/components/shared/gantt';
 import { ScheduleCalendar, type CalendarEvent } from '@/components/shared/datetime/ScheduleCalendar';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
@@ -265,6 +274,37 @@ export function MakeSchedule() {
   const [calendarMonth, setCalendarMonth] = useState(
     () => new Date(START_DATE.getFullYear(), START_DATE.getMonth(), 1),
   );
+  const [ganttZoom, setGanttZoom] = useState<MwGanttZoom>('week');
+
+  // Build MwGantt rows + items from the MO mock. One row per work centre so
+  // the Gantt reads as a per-resource schedule (same convention as Schedule
+  // Engine), and bars carry the canonical monochrome status palette.
+  const ganttRows: MwGanttRowDef[] = useMemo(() => {
+    const seen = new Set<string>();
+    return MOs.flatMap<MwGanttRowDef>((mo) => {
+      if (seen.has(mo.workCenter)) return [];
+      seen.add(mo.workCenter);
+      return [{ id: mo.workCenter, label: mo.workCenter }];
+    });
+  }, []);
+
+  const ganttItems: MwGanttItem[] = useMemo(
+    () =>
+      MOs.map((mo) => {
+        const start = addDays(START_DATE, mo.startDay);
+        const end = addDays(START_DATE, mo.startDay + mo.durationDays);
+        return {
+          id: mo.id,
+          rowId: mo.workCenter,
+          start,
+          end,
+          label: `${mo.moNumber} — ${mo.product}`,
+          status: tokenFor(mo.status),
+          progress: STATUS_TO_PROGRESS[mo.status],
+        };
+      }),
+    [],
+  );
 
   const statusCounts = {
     in_progress: MOs.filter((m) => m.status === 'in_progress').length,
@@ -326,13 +366,17 @@ export function MakeSchedule() {
       </div>
 
       {view === 'gantt' && (
-        <motion.div className="w-full min-w-0" variants={staggerItem}>
-          <GanttChart
-            tasks={tasks}
-            startDate={startDate}
-            endDate={endDate}
+        <motion.div className="h-[640px] w-full min-w-0" variants={staggerItem}>
+          <MwGantt
+            rows={ganttRows}
+            items={ganttItems}
+            zoom={ganttZoom}
+            onZoomChange={setGanttZoom}
             today={DEMO_TODAY}
-            renderTooltip={(task) => <GanttTooltip task={task} />}
+            windowStart={startDate}
+            windowEnd={endDate}
+            statusColour={MW_GANTT_STATUS_COLOUR}
+            legend={[...MW_GANTT_LEGEND]}
           />
         </motion.div>
       )}

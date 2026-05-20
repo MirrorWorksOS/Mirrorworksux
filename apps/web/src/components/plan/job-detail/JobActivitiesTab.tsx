@@ -39,6 +39,9 @@ import {
 import type { JobActivity, JobActivityStatus } from '@/types/job-activity';
 import {
   MwGantt,
+  MW_GANTT_LEGEND,
+  MW_GANTT_STATUS_COLOUR,
+  tokenFor,
   type MwGanttItem,
   type MwGanttRowDef,
   type MwGanttZoom,
@@ -357,16 +360,21 @@ function JobGanttView({
         return pred && pred.status !== 'completed' && pred.status !== 'cancelled';
       });
 
+      // Status-driven monochrome — type icon stays on activity cards.
+      const isOverdueOpen =
+        !!a.dueDate &&
+        new Date(a.dueDate).getTime() < Date.now() &&
+        a.status !== 'completed' &&
+        a.status !== 'cancelled';
+      const token = isOverdueOpen ? 'overdue' : tokenFor(a.status);
       items.push({
         id: a.id,
         rowId,
         start,
         end,
         label: a.title,
-        status: a.status,
-        color: JOB_ACTIVITY_TYPE_COLOUR[a.type],
-        progress:
-          a.status === 'completed' ? 100 : a.status === 'in_progress' ? 50 : 0,
+        status: token,
+        progress: a.status === 'completed' ? 100 : a.status === 'in_progress' ? 50 : 0,
         dimmed: predecessorBlocked,
       });
     }
@@ -409,19 +417,8 @@ function JobGanttView({
         onZoomChange={onZoomChange}
         windowStart={window?.start}
         windowEnd={window?.end}
-        statusColour={{
-          todo: 'var(--neutral-400)',
-          in_progress: 'var(--mw-warning)',
-          blocked: 'var(--mw-error)',
-          completed: 'var(--mw-success)',
-          cancelled: 'var(--neutral-300)',
-        }}
-        legend={[
-          { key: 'todo', label: 'To do', color: 'var(--neutral-400)' },
-          { key: 'in_progress', label: 'In progress', color: 'var(--mw-warning)' },
-          { key: 'blocked', label: 'Blocked', color: 'var(--mw-error)' },
-          { key: 'completed', label: 'Completed', color: 'var(--mw-success)' },
-        ]}
+        statusColour={MW_GANTT_STATUS_COLOUR}
+        legend={[...MW_GANTT_LEGEND]}
       />
     </div>
   );

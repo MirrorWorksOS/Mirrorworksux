@@ -52,7 +52,14 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/ui/utils';
 
 import { useJobActivityStore, type ActivityGanttGroupBy } from '@/store/jobActivityStore';
-import { MwGantt, type MwGanttItem, type MwGanttRowDef } from '@/components/shared/gantt';
+import {
+  MwGantt,
+  MW_GANTT_LEGEND,
+  MW_GANTT_STATUS_COLOUR,
+  tokenFor,
+  type MwGanttItem,
+  type MwGanttRowDef,
+} from '@/components/shared/gantt';
 import { PLAN_CURRENT_USER, PLAN_TEAM_MEMBERS } from '@/data/plan-activities-mock';
 import { JobActivityCard } from './activities/JobActivityCard';
 import { TimerPill } from './activities/TimerPill';
@@ -715,14 +722,22 @@ function GanttView({
         return pred && pred.status !== 'completed' && pred.status !== 'cancelled';
       });
 
+      // Drive bar colour by STATUS not type — the canonical Gantt is
+      // monochrome + yellow. The type icon still shows on the activity
+      // card; bars just speak status.
+      const isOverdueOpen =
+        !!a.dueDate &&
+        new Date(a.dueDate).getTime() < Date.now() &&
+        a.status !== 'completed' &&
+        a.status !== 'cancelled';
+      const token = isOverdueOpen ? 'overdue' : tokenFor(a.status);
       items.push({
         id: a.id,
         rowId,
         start,
         end,
         label: a.title,
-        status: a.status,
-        color: JOB_ACTIVITY_TYPE_COLOUR[a.type],
+        status: token,
         progress: a.status === 'completed' ? 100 : a.status === 'in_progress' ? 50 : 0,
         dimmed: predecessorBlocked,
         meta: { activityId: a.id },
@@ -765,19 +780,8 @@ function GanttView({
           windowStart={window?.start}
           windowEnd={window?.end}
           toolbar={<GanttGroupBySelector value={groupBy} onChange={onGroupByChange} />}
-          statusColour={{
-            todo: 'var(--neutral-400)',
-            in_progress: 'var(--mw-warning)',
-            blocked: 'var(--mw-error)',
-            completed: 'var(--mw-success)',
-            cancelled: 'var(--neutral-300)',
-          }}
-          legend={[
-            { key: 'todo', label: 'To do', color: 'var(--neutral-400)' },
-            { key: 'in_progress', label: 'In progress', color: 'var(--mw-warning)' },
-            { key: 'blocked', label: 'Blocked', color: 'var(--mw-error)' },
-            { key: 'completed', label: 'Completed', color: 'var(--mw-success)' },
-          ]}
+          statusColour={MW_GANTT_STATUS_COLOUR}
+          legend={[...MW_GANTT_LEGEND]}
           onItemClick={(t) => {
             const a = activities.find((x) => x.id === t.id);
             if (a) onItemClick(a);
