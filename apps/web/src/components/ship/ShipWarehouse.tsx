@@ -191,7 +191,11 @@ export function ShipWarehouse() {
             onSearchChange={setInvSearch}
             searchPlaceholder="Search inventory…"
             actions={
-              <button className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+              <button
+                type="button"
+                onClick={() => toast.success('Inventory exported')}
+                className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium"
+              >
                 <Download className="w-4 h-4" /> Export
               </button>
             }

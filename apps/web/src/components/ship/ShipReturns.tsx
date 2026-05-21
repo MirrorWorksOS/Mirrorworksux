@@ -90,7 +90,11 @@ export function ShipReturns() {
       <PageHeader
         title="Returns"
         actions={
-          <button className="h-14 px-5 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors flex items-center gap-2 font-medium">
+          <button
+            type="button"
+            onClick={() => toast('Create RMA — coming soon')}
+            className="h-14 px-5 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors flex items-center gap-2 font-medium"
+          >
             <PlusCircle className="w-4 h-4" /> Create RMA
           </button>
         }
@@ -203,16 +207,28 @@ export function ShipReturns() {
 
                   <div className="space-y-2 pt-2">
                     {selected.status === 'pending' && (
-                      <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-mirage)] text-white hover:bg-[var(--neutral-800)] transition-colors font-medium">
+                      <button
+                        type="button"
+                        onClick={() => toast.success(`${selected.id} approved`)}
+                        className="w-full h-14 rounded-full text-sm bg-[var(--mw-mirage)] text-white hover:bg-[var(--neutral-800)] transition-colors font-medium"
+                      >
                         Approve return
                       </button>
                     )}
                     {selected.status === 'received' && (
-                      <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
+                      <button
+                        type="button"
+                        onClick={() => toast.success(`Refund issued for ${selected.id}`)}
+                        className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium"
+                      >
                         Process refund
                       </button>
                     )}
-                    <button className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium">
+                    <button
+                      type="button"
+                      onClick={() => toast(`Contacting ${selected.customer}…`)}
+                      className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium"
+                    >
                       Contact customer
                     </button>
                   </div>

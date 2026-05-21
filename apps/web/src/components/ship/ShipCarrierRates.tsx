@@ -5,6 +5,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { ArrowUpDown, Truck, CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "motion/react";
+import { toast } from "sonner";
 
 import { shipService } from "@/services";
 import type { CarrierRate } from "@/types/entities";
@@ -60,7 +61,7 @@ export function ShipCarrierRates() {
           { label: "Carrier Rates" },
         ]}
         actions={
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast('Quote request — coming soon')}>
             <Truck className="mr-2 h-4 w-4" strokeWidth={1.5} />
             Request Quote
           </Button>
