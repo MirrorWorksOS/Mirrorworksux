@@ -6,8 +6,8 @@
  * Apply template dropdown.
  */
 
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import { Pencil, Plus, Copy, Trash2, Sparkles, Package } from 'lucide-react';
 
@@ -43,6 +43,21 @@ export function TemplatesPanel() {
 
   /** Either an existing template id (edit), the literal "new" (create), or null (closed). */
   const [editing, setEditing] = useState<string | 'new' | null>(null);
+
+  // Deep-link: `?template=<id>` auto-opens the editor on mount so Edit
+  // links from the Product ▸ Planning tab land in the right place.
+  const [search, setSearch] = useSearchParams();
+  useEffect(() => {
+    const tid = search.get('template');
+    if (tid && templates.some((t) => t.id === tid)) {
+      setEditing(tid);
+      // Clean the URL so a refresh doesn't keep re-opening the editor.
+      const next = new URLSearchParams(search);
+      next.delete('template');
+      setSearch(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templates]);
 
   const handleDuplicate = (id: string, name: string) => {
     const copy = duplicateTemplate(id);

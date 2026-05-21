@@ -3,6 +3,7 @@
  * Panels: General, Products, Reports, Access & Permissions
  */
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Settings, Package, BarChart3, Tag, Sparkles } from 'lucide-react';
 import { ActivityTypesPanel } from './settings/ActivityTypesPanel';
 import { TemplatesPanel } from './settings/TemplatesPanel';
@@ -277,6 +278,12 @@ const settingsPanels: SettingsPanel[] = [
 ];
 
 export function PlanSettings() {
+  // Honour `?panel=templates` deep-links from Product ▸ Planning ▸ Activity
+  // templates "Edit" affordance so the user lands on the right side-nav row.
+  const [search] = useSearchParams();
+  const panel = search.get('panel');
+  const initialPanelKey =
+    panel && settingsPanels.some((p) => p.key === panel) ? panel : undefined;
   return (
     <ModuleSettingsLayout
       title="Plan Settings"
@@ -284,6 +291,7 @@ export function PlanSettings() {
       panels={settingsPanels}
       permissionKeys={planPermissionKeys}
       defaultGroups={planDefaultGroups}
+      initialPanelKey={initialPanelKey}
     />
   );
 }

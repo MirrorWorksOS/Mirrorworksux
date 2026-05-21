@@ -2632,6 +2632,17 @@ function PlanningTab() {
   const [productKind, setProductKind] = useState<ProductKind>(PRODUCT.productKind);
   const [pinnedTemplateIds, setPinnedTemplateIds] = useState<string[]>(PRODUCT.defaultTemplateIds);
   const allTemplates = useJobActivityStore((s) => s.templates);
+  const [expandedTemplateIds, setExpandedTemplateIds] = useState<Set<string>>(new Set());
+  const planningNavigate = useNavigate();
+
+  const toggleTemplateExpanded = (id: string) => {
+    setExpandedTemplateIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   // Stock level color indicator
   const stockColor = currentStock > Number(reorderPoint) * 2
@@ -2710,70 +2721,158 @@ function PlanningTab() {
                 {allTemplates.map((t) => {
                   const isPinned = pinnedTemplateIds.includes(t.id);
                   const matchesKind = t.productKinds.includes(productKind);
+                  const isExpanded = expandedTemplateIds.has(t.id);
+                  const togglePin = () => {
+                    setPinnedTemplateIds((prev) =>
+                      prev.includes(t.id)
+                        ? prev.filter((id) => id !== t.id)
+                        : [...prev, t.id],
+                    );
+                  };
                   return (
-                    <label
+                    <div
                       key={t.id}
                       className={cn(
-                        'flex items-start gap-3 rounded-md border px-3 py-2.5 transition-colors cursor-pointer',
+                        'rounded-md border transition-colors',
                         isPinned
                           ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)]'
-                          : 'border-[var(--border)] bg-card hover:bg-[var(--neutral-50)]',
+                          : 'border-[var(--border)] bg-card',
                       )}
                     >
-                      <Checkbox
-                        checked={isPinned}
-                        onCheckedChange={(checked) => {
-                          setPinnedTemplateIds((prev) =>
-                            checked
-                              ? [...prev, t.id]
-                              : prev.filter((id) => id !== t.id),
-                          );
-                        }}
-                        className="mt-0.5"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">{t.name}</span>
-                          <Badge
-                            variant="outline"
-                            className="border-[var(--border)] text-[10px] tabular-nums"
-                          >
-                            {t.id}
-                          </Badge>
-                          {!matchesKind && !isPinned && (
+                      {/* Row header — checkbox + summary + actions */}
+                      <div className="flex items-start gap-3 px-3 py-2.5">
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={isPinned}
+                          aria-label={isPinned ? `Unpin ${t.name}` : `Pin ${t.name}`}
+                          onClick={togglePin}
+                          className="mt-0.5 outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded"
+                        >
+                          <Checkbox checked={isPinned} className="pointer-events-none" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={togglePin}
+                          className="min-w-0 flex-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded"
+                        >
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-medium text-foreground">{t.name}</span>
                             <Badge
                               variant="outline"
-                              className="border-[var(--neutral-300)] text-[10px] text-[var(--neutral-500)]"
+                              className="border-[var(--border)] text-[10px] tabular-nums"
                             >
-                              outside {productKind}
+                              {t.id}
                             </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">
-                          {t.activities.length} {t.activities.length === 1 ? 'activity' : 'activities'}
-                          {' · '}
-                          for{' '}
-                          {t.productKinds.map((k, i) => (
-                            <span key={k}>
-                              {i > 0 ? ', ' : ''}
-                              <span className="capitalize">{k}</span>
-                            </span>
-                          ))}
-                        </p>
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {t.activities
-                            .flatMap((a) =>
-                              [a.defaultAssignee, a.defaultMachine].filter(
-                                (x): x is NonNullable<typeof x> => Boolean(x),
-                              ),
-                            )
-                            .slice(0, 6)
-                            .map((a, i) => (
-                              <AssigneeChip key={i} assignee={a} />
+                            {!matchesKind && !isPinned && (
+                              <Badge
+                                variant="outline"
+                                className="border-[var(--neutral-300)] text-[10px] text-[var(--neutral-500)]"
+                              >
+                                outside {productKind}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                            {t.activities.length} {t.activities.length === 1 ? 'activity' : 'activities'}
+                            {' · '}
+                            for{' '}
+                            {t.productKinds.map((k, i) => (
+                              <span key={k}>
+                                {i > 0 ? ', ' : ''}
+                                <span className="capitalize">{k}</span>
+                              </span>
                             ))}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {t.activities
+                              .flatMap((a) =>
+                                [a.defaultAssignee, a.defaultMachine].filter(
+                                  (x): x is NonNullable<typeof x> => Boolean(x),
+                                ),
+                              )
+                              .slice(0, 6)
+                              .map((a, i) => (
+                                <AssigneeChip key={i} assignee={a} />
+                              ))}
+                          </div>
+                        </button>
+
+                        {/* Row actions — expand + edit, kept off the pin toggle */}
+                        <div className="flex shrink-0 items-center gap-0.5">
+                          <button
+                            type="button"
+                            onClick={() => toggleTemplateExpanded(t.id)}
+                            aria-expanded={isExpanded}
+                            aria-label={isExpanded ? 'Collapse activity flow' : 'Show activity flow'}
+                            title={isExpanded ? 'Collapse' : 'Show activity flow'}
+                            className="rounded p-1.5 text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-foreground"
+                          >
+                            <ChevronDown
+                              className={cn(
+                                'h-4 w-4 transition-transform duration-150',
+                                isExpanded && 'rotate-180',
+                              )}
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              planningNavigate(`/plan/settings?panel=templates&template=${t.id}`)
+                            }
+                            aria-label={`Edit ${t.name}`}
+                            title="Edit template in Plan Settings"
+                            className="rounded p-1.5 text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] hover:text-foreground"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
                         </div>
                       </div>
-                    </label>
+
+                      {/* Expanded — ordered activity list */}
+                      {isExpanded && (
+                        <div className="border-t border-[var(--border)] bg-[var(--neutral-50)]/40 px-3 py-2.5 space-y-1.5 dark:bg-neutral-900/20">
+                          {t.activities.length === 0 ? (
+                            <p className="text-xs italic text-[var(--neutral-500)]">
+                              No activities in this template.
+                            </p>
+                          ) : (
+                            t.activities.map((a, i) => (
+                              <div
+                                key={i}
+                                className="flex items-start gap-2.5 rounded border border-[var(--border)] bg-card px-2.5 py-1.5"
+                              >
+                                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--neutral-100)] text-[10px] font-medium tabular-nums text-[var(--neutral-600)] dark:bg-neutral-800">
+                                  {i + 1}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className="text-xs font-medium text-foreground">{a.title}</span>
+                                    {a.defaultAssignee && <AssigneeChip assignee={a.defaultAssignee} />}
+                                    {a.defaultMachine && <AssigneeChip assignee={a.defaultMachine} />}
+                                  </div>
+                                  <p className="text-[10px] text-[var(--neutral-500)]">
+                                    {a.type}
+                                    {a.anchorStage && ` · stage ${a.anchorStage}`}
+                                    {typeof a.offsetDaysFromStart === 'number' &&
+                                      ` · +${a.offsetDaysFromStart}d`}
+                                    {typeof a.estimatedMinutes === 'number' &&
+                                      ` · ${a.estimatedMinutes}m`}
+                                    {a.priority && ` · ${a.priority}`}
+                                    {a.blocksNext && ' · blocks next'}
+                                  </p>
+                                  {a.description && (
+                                    <p className="text-[10px] text-[var(--neutral-500)] mt-0.5 truncate">
+                                      {a.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
