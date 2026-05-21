@@ -1113,9 +1113,6 @@ type BomLine = { sku: string; description: string; qty: number; unit: string; co
 
 function ManufacturingTab() {
   const [bomLines, setBomLines] = useState<BomLine[]>(BOM_LINES);
-  const [productKind, setProductKind] = useState<ProductKind>(PRODUCT.productKind);
-  const [pinnedTemplateIds, setPinnedTemplateIds] = useState<string[]>(PRODUCT.defaultTemplateIds);
-  const allTemplates = useJobActivityStore((s) => s.templates);
   const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
   const totalMaterial = bomLines.reduce((s, l) => s + l.qty * l.cost, 0);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
@@ -1452,129 +1449,6 @@ function ManufacturingTab() {
         </Card>
       </section>
 
-      {/* ── Activity templates — fired when this product is sold ── */}
-      <section className="space-y-4">
-        <SubHeading>
-          Activity templates ·{' '}
-          <span className="text-[var(--neutral-500)] font-normal">
-            Applied when sold (Plan)
-          </span>
-        </SubHeading>
-
-        <Card variant="flat" className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
-                Product kind
-              </label>
-              <Select value={productKind} onValueChange={(v) => setProductKind(v as ProductKind)}>
-                <SelectTrigger className="h-10 bg-card border-[var(--border)]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="widget">Widget — repeatable, light planning</SelectItem>
-                  <SelectItem value="configurable">Configurable — full lifecycle</SelectItem>
-                  <SelectItem value="mixed">Mixed — blend of both</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-[var(--neutral-500)] mt-1.5">
-                Drives the default suggested template list. Pins below override.
-              </p>
-            </div>
-            <div className="flex items-end">
-              <p className="text-xs text-[var(--neutral-500)]">
-                When this product is added to a sales order and the order is confirmed,
-                the templates ticked below are pre-applied to the resulting Plan job.
-                If none are pinned, all templates matching <em>{productKind}</em> are
-                suggested.
-              </p>
-            </div>
-          </div>
-
-          {allTemplates.length === 0 ? (
-            <p className="text-xs italic text-[var(--neutral-500)]">
-              No templates defined yet — open Plan Settings ▸ Templates to create one.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--neutral-500)] block">
-                Pinned templates ({pinnedTemplateIds.length}/{allTemplates.length})
-              </label>
-              <div className="grid grid-cols-1 gap-2">
-                {allTemplates.map((t) => {
-                  const isPinned = pinnedTemplateIds.includes(t.id);
-                  const matchesKind = t.productKinds.includes(productKind);
-                  return (
-                    <label
-                      key={t.id}
-                      className={cn(
-                        'flex items-start gap-3 rounded-md border px-3 py-2.5 transition-colors cursor-pointer',
-                        isPinned
-                          ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)]'
-                          : 'border-[var(--border)] bg-card hover:bg-[var(--neutral-50)]',
-                      )}
-                    >
-                      <Checkbox
-                        checked={isPinned}
-                        onCheckedChange={(checked) => {
-                          setPinnedTemplateIds((prev) =>
-                            checked
-                              ? [...prev, t.id]
-                              : prev.filter((id) => id !== t.id),
-                          );
-                        }}
-                        className="mt-0.5"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">{t.name}</span>
-                          <Badge
-                            variant="outline"
-                            className="border-[var(--border)] text-[10px] tabular-nums"
-                          >
-                            {t.id}
-                          </Badge>
-                          {!matchesKind && !isPinned && (
-                            <Badge
-                              variant="outline"
-                              className="border-[var(--neutral-300)] text-[10px] text-[var(--neutral-500)]"
-                            >
-                              outside {productKind}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">
-                          {t.activities.length} {t.activities.length === 1 ? 'activity' : 'activities'}
-                          {' · '}
-                          for{' '}
-                          {t.productKinds.map((k, i) => (
-                            <span key={k}>
-                              {i > 0 ? ', ' : ''}
-                              <span className="capitalize">{k}</span>
-                            </span>
-                          ))}
-                        </p>
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {t.activities
-                            .flatMap((a) =>
-                              [a.defaultAssignee, a.defaultMachine].filter(
-                                (x): x is NonNullable<typeof x> => Boolean(x),
-                              ),
-                            )
-                            .slice(0, 6)
-                            .map((a, i) => (
-                              <AssigneeChip key={i} assignee={a} />
-                            ))}
-                        </div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </Card>
-      </section>
     </div>
   );
 }
@@ -2754,6 +2628,11 @@ function PlanningTab() {
   const [abcClass] = useState<'A' | 'B' | 'C'>('A');
   const currentStock = 230;
 
+  // ── Activity templates (Plan-side workflow config) ─────────
+  const [productKind, setProductKind] = useState<ProductKind>(PRODUCT.productKind);
+  const [pinnedTemplateIds, setPinnedTemplateIds] = useState<string[]>(PRODUCT.defaultTemplateIds);
+  const allTemplates = useJobActivityStore((s) => s.templates);
+
   // Stock level color indicator
   const stockColor = currentStock > Number(reorderPoint) * 2
     ? 'text-[var(--mw-success)]'
@@ -2781,6 +2660,128 @@ function PlanningTab() {
 
   return (
     <div className="space-y-8">
+      {/* ── Activity templates — fires when this product is sold ── */}
+      <section className="space-y-4">
+        <SectionHeading>Activity templates</SectionHeading>
+        <p className="-mt-2 text-sm text-[var(--neutral-500)]">
+          When this product is added to a sales order and the order is confirmed, the
+          templates ticked below pre-apply to the resulting Plan job. If none are
+          pinned, all templates matching the chosen product kind are suggested.
+        </p>
+
+        <Card variant="flat" className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+                Product kind
+              </label>
+              <Select value={productKind} onValueChange={(v) => setProductKind(v as ProductKind)}>
+                <SelectTrigger className="h-10 bg-card border-[var(--border)]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="widget">Widget — repeatable, light planning</SelectItem>
+                  <SelectItem value="configurable">Configurable — full lifecycle</SelectItem>
+                  <SelectItem value="mixed">Mixed — blend of both</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-[var(--neutral-500)] mt-1.5">
+                Drives the default suggested template list. Pins below override.
+              </p>
+            </div>
+            <div className="flex items-end">
+              <p className="text-xs text-[var(--neutral-500)]">
+                Suggested templates fall back to{' '}
+                <em>{productKind}</em> when no pins are set.
+              </p>
+            </div>
+          </div>
+
+          {allTemplates.length === 0 ? (
+            <p className="text-xs italic text-[var(--neutral-500)]">
+              No templates defined yet — open Plan Settings ▸ Templates to create one.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <label className="text-sm text-[var(--neutral-500)] block">
+                Pinned templates ({pinnedTemplateIds.length}/{allTemplates.length})
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                {allTemplates.map((t) => {
+                  const isPinned = pinnedTemplateIds.includes(t.id);
+                  const matchesKind = t.productKinds.includes(productKind);
+                  return (
+                    <label
+                      key={t.id}
+                      className={cn(
+                        'flex items-start gap-3 rounded-md border px-3 py-2.5 transition-colors cursor-pointer',
+                        isPinned
+                          ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-50)]'
+                          : 'border-[var(--border)] bg-card hover:bg-[var(--neutral-50)]',
+                      )}
+                    >
+                      <Checkbox
+                        checked={isPinned}
+                        onCheckedChange={(checked) => {
+                          setPinnedTemplateIds((prev) =>
+                            checked
+                              ? [...prev, t.id]
+                              : prev.filter((id) => id !== t.id),
+                          );
+                        }}
+                        className="mt-0.5"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-medium text-foreground">{t.name}</span>
+                          <Badge
+                            variant="outline"
+                            className="border-[var(--border)] text-[10px] tabular-nums"
+                          >
+                            {t.id}
+                          </Badge>
+                          {!matchesKind && !isPinned && (
+                            <Badge
+                              variant="outline"
+                              className="border-[var(--neutral-300)] text-[10px] text-[var(--neutral-500)]"
+                            >
+                              outside {productKind}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-[var(--neutral-500)] mt-0.5">
+                          {t.activities.length} {t.activities.length === 1 ? 'activity' : 'activities'}
+                          {' · '}
+                          for{' '}
+                          {t.productKinds.map((k, i) => (
+                            <span key={k}>
+                              {i > 0 ? ', ' : ''}
+                              <span className="capitalize">{k}</span>
+                            </span>
+                          ))}
+                        </p>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {t.activities
+                            .flatMap((a) =>
+                              [a.defaultAssignee, a.defaultMachine].filter(
+                                (x): x is NonNullable<typeof x> => Boolean(x),
+                              ),
+                            )
+                            .slice(0, 6)
+                            .map((a, i) => (
+                              <AssigneeChip key={i} assignee={a} />
+                            ))}
+                        </div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </Card>
+      </section>
+
       {/* ── Current Stock & Classification ─────────────── */}
       <section className="space-y-4">
         <SectionHeading>Current Stock Level</SectionHeading>
