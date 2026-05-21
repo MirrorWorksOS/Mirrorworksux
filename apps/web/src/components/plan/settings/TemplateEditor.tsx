@@ -317,11 +317,10 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                     <Icon className="h-3.5 w-3.5" style={{ color: meta.colour }} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <p className="truncate text-sm font-medium text-foreground">{a.title}</p>
-                      {a.defaultAssignee && (
-                        <AssigneeChip assignee={a.defaultAssignee} />
-                      )}
+                      {a.defaultAssignee && <AssigneeChip assignee={a.defaultAssignee} />}
+                      {a.defaultMachine && <AssigneeChip assignee={a.defaultMachine} />}
                     </div>
                     <p className="truncate text-[10px] text-[var(--neutral-500)]">
                       {meta.label} · {anchorSummary}
@@ -534,17 +533,33 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                       </div>
                     </div>
 
-                    <div className="grid gap-1.5">
-                      <Label className="text-xs">Default assignee</Label>
-                      <AssigneePicker
-                        value={a.defaultAssignee}
-                        onChange={(next) => updateActivity(idx, { defaultAssignee: next })}
-                        placeholder="Unassigned — set per-job at apply-time"
-                      />
-                      <p className="text-[10px] text-[var(--neutral-500)]">
-                        Copied to <code className="font-mono">assignedTo</code> when this
-                        template is applied. User, production team (access group), or machine.
-                      </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="grid gap-1.5">
+                        <Label className="text-xs">Default assignee</Label>
+                        <AssigneePicker
+                          value={a.defaultAssignee}
+                          onChange={(next) => updateActivity(idx, { defaultAssignee: next })}
+                          allowedKinds={['user', 'team']}
+                          placeholder="Unassigned — pick user or team"
+                        />
+                        <p className="text-[10px] text-[var(--neutral-500)]">
+                          A single <em>person</em> or <em>team</em> responsible — copied to{' '}
+                          <code className="font-mono">assignedTo</code> at apply-time.
+                        </p>
+                      </div>
+                      <div className="grid gap-1.5">
+                        <Label className="text-xs">Machine</Label>
+                        <AssigneePicker
+                          value={a.defaultMachine}
+                          onChange={(next) => updateActivity(idx, { defaultMachine: next })}
+                          allowedKinds={['machine']}
+                          placeholder="No machine"
+                        />
+                        <p className="text-[10px] text-[var(--neutral-500)]">
+                          Resource the activity runs <em>on</em>. Optional — overrides any
+                          routing-step preference.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}

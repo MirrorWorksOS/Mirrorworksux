@@ -1556,9 +1556,12 @@ function ManufacturingTab() {
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {t.activities
-                            .map((a) => a.defaultAssignee)
-                            .filter((x): x is NonNullable<typeof x> => Boolean(x))
-                            .slice(0, 4)
+                            .flatMap((a) =>
+                              [a.defaultAssignee, a.defaultMachine].filter(
+                                (x): x is NonNullable<typeof x> => Boolean(x),
+                              ),
+                            )
+                            .slice(0, 6)
                             .map((a, i) => (
                               <AssigneeChip key={i} assignee={a} />
                             ))}

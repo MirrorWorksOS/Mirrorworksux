@@ -134,9 +134,16 @@ export interface TemplateActivity {
   priority?: JobActivityPriority;
   /**
    * Default assignee copied into `JobActivity.assignedTo` at apply-time.
-   * Polymorphic over the three things a real shop assigns work to.
+   * Many-to-one over **people**: a single User OR Team (mutually exclusive).
+   * Machines live on `defaultMachine` — different concept (where vs who).
    */
   defaultAssignee?: Assignee;
+  /**
+   * Default machine for this activity (e.g. "Laser Cutter #1"). Separate
+   * from `defaultAssignee` because a machine is a resource the activity
+   * runs *on*, not the person/crew responsible *for* it.
+   */
+  defaultMachine?: Assignee;
 }
 
 /** Polymorphic assignee target — user, production team, or machine. */

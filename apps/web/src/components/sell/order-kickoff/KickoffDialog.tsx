@@ -258,9 +258,12 @@ export function KickoffDialog({
                                 {t.activities.length} acts
                               </span>
                               {t.activities
-                                .map((a) => a.defaultAssignee)
-                                .filter((x): x is NonNullable<typeof x> => Boolean(x))
-                                .slice(0, 3)
+                                .flatMap((a) =>
+                                  [a.defaultAssignee, a.defaultMachine].filter(
+                                    (x): x is NonNullable<typeof x> => Boolean(x),
+                                  ),
+                                )
+                                .slice(0, 4)
                                 .map((a, i) => (
                                   <AssigneeChip key={i} assignee={a} />
                                 ))}
