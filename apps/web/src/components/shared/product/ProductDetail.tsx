@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
   Package, Box, Layers, Settings, Wrench, Scissors,
-  Barcode, Plus, TrendingUp, Eye, Download, Upload, FileText,
+  Barcode, Plus, TrendingUp, Eye, Download, Upload, FileText, Pencil,
   CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
   RotateCcw, Star, BarChart3, ChevronRight, ChevronDown, Clock, MapPin,
@@ -3102,6 +3102,31 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
 
   const [tab, setTab] = useState<Tab>('Overview');
 
+  // Product image — local state so the user can swap it via the hero-hover
+  // edit affordance. TODO(backend): products.uploadImage(productId, file)
+  const [imageUrl, setImageUrl] = useState<string | undefined>(PRODUCT.imageUrl);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [imageUrlDraft, setImageUrlDraft] = useState('');
+  const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleImageFile = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please pick an image file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = typeof reader.result === 'string' ? reader.result : undefined;
+      if (dataUrl) {
+        setImageUrl(dataUrl);
+        setImageDialogOpen(false);
+        toast.success('Product image updated');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   // CAD files lifted up so the MirrorView tab badge reflects live state.
   const [cadFiles, setCadFiles] = useState<CadFile[]>(MOCK_CAD_FILES);
 
@@ -3145,12 +3170,31 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4 flex-wrap">
           {!isNew && (
-            <PartThumbnail
-              size="xl"
-              imageUrl={PRODUCT.imageUrl}
-              alt={PRODUCT.name}
-              fallbackIcon={Package}
-            />
+            <button
+              type="button"
+              onClick={() => setImageDialogOpen(true)}
+              aria-label="Change product image"
+              className="group relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] focus-visible:ring-offset-2 rounded-lg"
+            >
+              <PartThumbnail
+                size="xl"
+                imageUrl={imageUrl}
+                alt={PRODUCT.name}
+                fallbackIcon={Package}
+              />
+              {/* Hover edit affordance — pen in top-right corner */}
+              <span
+                className="pointer-events-none absolute -top-1.5 -right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[#2C2C2C] opacity-0 shadow-sm transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+                aria-hidden
+              >
+                <Pencil className="h-3 w-3" strokeWidth={2.25} />
+              </span>
+              {/* Subtle dimmer on hover so the pen is legible over any image */}
+              <span
+                className="pointer-events-none absolute inset-0 rounded-lg bg-black/0 transition-colors duration-150 group-hover:bg-black/15"
+                aria-hidden
+              />
+            </button>
           )}
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : PRODUCT.name}</h1>
@@ -3230,6 +3274,120 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
           {renderTabContent()}
         </TabsContent>
       </Tabs>
+
+      {/* ── Product image upload dialog ──────────────────── */}
+      <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Product image</DialogTitle>
+            <DialogDescription>
+              Upload a photo or paste an image URL. Used wherever this product appears
+              — quotes, BOM rows, work-order travellers, the shop-floor pick list.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {imageUrl && (
+              <div className="flex items-center gap-3 rounded-md border border-[var(--border)] bg-card p-3">
+                <PartThumbnail size="lg" imageUrl={imageUrl} alt={PRODUCT.name} fallbackIcon={Package} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-foreground">Current image</p>
+                  <p className="truncate text-[10px] text-[var(--neutral-500)]">
+                    {imageUrl.startsWith('data:') ? 'Uploaded file' : imageUrl}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-[var(--mw-error)] hover:bg-[var(--mw-error-light,_#FEE2E2)]"
+                  onClick={() => {
+                    setImageUrl(undefined);
+                    toast.success('Image removed');
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            )}
+
+            {/* Drop zone — clickable, fires hidden file input */}
+            <button
+              type="button"
+              onClick={() => imageFileInputRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('border-[var(--mw-yellow-400)]', 'bg-[var(--mw-yellow-50)]');
+              }}
+              onDragLeave={(e) => {
+                e.currentTarget.classList.remove('border-[var(--mw-yellow-400)]', 'bg-[var(--mw-yellow-50)]');
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('border-[var(--mw-yellow-400)]', 'bg-[var(--mw-yellow-50)]');
+                handleImageFile(e.dataTransfer.files?.[0]);
+              }}
+              className="flex w-full flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-[var(--border)] bg-card py-8 transition-colors hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-50)]"
+            >
+              <Upload className="h-7 w-7 text-[var(--neutral-300)]" strokeWidth={1.5} />
+              <p className="text-sm font-medium text-foreground">Drop an image, or click to browse</p>
+              <p className="text-[10px] text-[var(--neutral-500)]">PNG, JPG, SVG, WebP — up to 5 MB</p>
+            </button>
+            <input
+              ref={imageFileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                handleImageFile(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center" aria-hidden>
+                <span className="w-full border-t border-[var(--border)]" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-[var(--background)] px-2 text-[10px] uppercase tracking-wide text-[var(--neutral-500)]">
+                  or paste a URL
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Input
+                value={imageUrlDraft}
+                onChange={(e) => setImageUrlDraft(e.target.value)}
+                placeholder="https://example.com/product.png"
+                className="h-10 bg-card border-[var(--border)]"
+              />
+              <Button
+                variant="outline"
+                className="h-10 border-[var(--border)]"
+                disabled={!imageUrlDraft.trim()}
+                onClick={() => {
+                  setImageUrl(imageUrlDraft.trim());
+                  setImageUrlDraft('');
+                  setImageDialogOpen(false);
+                  toast.success('Product image updated');
+                }}
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="border-[var(--border)]"
+              onClick={() => setImageDialogOpen(false)}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }
