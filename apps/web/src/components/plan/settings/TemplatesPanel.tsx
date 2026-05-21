@@ -19,6 +19,8 @@ import { SectionLabel } from '@/components/shared/settings/ModuleSettingsLayout'
 
 import { useJobActivityStore } from '@/store/jobActivityStore';
 import { products } from '@/services';
+import { AssigneeChip } from '@/components/shared/assignee/AssigneeChip';
+import type { Assignee } from '@/types/job-activity';
 import { TemplateEditor } from './TemplateEditor';
 
 export function TemplatesPanel() {
@@ -98,6 +100,34 @@ export function TemplatesPanel() {
                         {t.description}
                       </p>
                     )}
+                    {(() => {
+                      // Deduped chip set: each unique assignee/machine once,
+                      // regardless of how many activities reference it.
+                      const seen = new Set<string>();
+                      const chips: Assignee[] = [];
+                      for (const a of t.activities) {
+                        for (const x of [a.defaultAssignee, a.defaultMachine]) {
+                          if (!x) continue;
+                          const key = `${x.kind}:${x.id}`;
+                          if (seen.has(key)) continue;
+                          seen.add(key);
+                          chips.push(x);
+                        }
+                      }
+                      if (chips.length === 0) return null;
+                      return (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {chips.slice(0, 6).map((c, i) => (
+                            <AssigneeChip key={i} assignee={c} />
+                          ))}
+                          {chips.length > 6 && (
+                            <span className="text-[10px] text-[var(--neutral-500)] self-center">
+                              +{chips.length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       {t.productKinds.map((k) => (
                         <span
