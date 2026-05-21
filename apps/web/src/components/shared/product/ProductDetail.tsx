@@ -85,6 +85,7 @@ import {
   Checkbox,
 } from '@/components/ui/checkbox';
 import { AssigneeChip } from '@/components/shared/assignee/AssigneeChip';
+import { withReturnContext } from '@/components/shared/nav/ReturnContextChip';
 
 // ── Mock product data ─────────────────────────────────────
 const PRODUCT = {
@@ -2818,7 +2819,13 @@ function PlanningTab() {
                           <button
                             type="button"
                             onClick={() =>
-                              planningNavigate(`/plan/settings?panel=templates&template=${t.id}`)
+                              planningNavigate(
+                                `/plan/settings?panel=templates&template=${t.id}` +
+                                  withReturnContext(
+                                    window.location.pathname + window.location.search,
+                                    PRODUCT.name,
+                                  ),
+                              )
                             }
                             aria-label={`Edit ${t.name}`}
                             title="Edit template in Plan Settings"

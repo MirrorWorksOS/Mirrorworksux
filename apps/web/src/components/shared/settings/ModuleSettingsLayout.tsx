@@ -24,6 +24,7 @@ import { staggerContainer } from '@/components/shared/motion/motion-variants';
 import { ModuleInfoCallout } from '@/components/shared/layout/ModuleInfoCallout';
 import { PlanUsageCard } from './PlanUsageCard';
 import { ModuleLeadRow } from './ModuleLeadRow';
+import { ReturnContextChip } from '@/components/shared/nav/ReturnContextChip';
 import { CURRENT_SUBSCRIPTION, type TierName } from '@/lib/subscription';
 import type { ModuleKey } from '@mirrorworks/contracts';
 
@@ -385,6 +386,7 @@ export function ModuleSettingsLayout({
   return (
     <motion.div initial="initial" animate="animate" variants={staggerContainer} className="p-8">
       <div className="max-w-[1200px] mx-auto">
+        <ReturnContextChip className="mb-3" />
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl tracking-tight text-foreground">{title}</h1>
           <Badge className="bg-[var(--neutral-100)] text-[var(--neutral-500)] border-0 text-xs rounded-full px-3 py-1">
