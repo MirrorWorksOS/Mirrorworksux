@@ -132,4 +132,20 @@ export interface TemplateActivity {
   /** If true, the *next* template activity gets this one in its `blockedBy`. */
   blocksNext?: boolean;
   priority?: JobActivityPriority;
+  /**
+   * Default assignee copied into `JobActivity.assignedTo` at apply-time.
+   * Polymorphic over the three things a real shop assigns work to.
+   */
+  defaultAssignee?: Assignee;
+}
+
+/** Polymorphic assignee target — user, production team, or machine. */
+export type AssigneeKind = 'user' | 'team' | 'machine';
+
+export interface Assignee {
+  kind: AssigneeKind;
+  /** Stable id within the source registry (User id, Group id, Machine id). */
+  id: string;
+  /** Denormalised display label so renderers never need the source registry. */
+  label: string;
 }

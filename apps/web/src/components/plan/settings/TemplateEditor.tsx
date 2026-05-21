@@ -51,6 +51,8 @@ import type {
   ProductKind,
   TemplateActivity,
 } from '@/types/job-activity';
+import { AssigneePicker } from '@/components/shared/assignee/AssigneePicker';
+import { AssigneeChip } from '@/components/shared/assignee/AssigneeChip';
 
 const PRODUCT_KIND_OPTIONS: ProductKind[] = ['widget', 'configurable', 'mixed'];
 
@@ -315,7 +317,12 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                     <Icon className="h-3.5 w-3.5" style={{ color: meta.colour }} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-foreground">{a.title}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-medium text-foreground">{a.title}</p>
+                      {a.defaultAssignee && (
+                        <AssigneeChip assignee={a.defaultAssignee} />
+                      )}
+                    </div>
                     <p className="truncate text-[10px] text-[var(--neutral-500)]">
                       {meta.label} · {anchorSummary}
                       {a.estimatedMinutes ? ` · ${a.estimatedMinutes}m` : ''}
@@ -525,6 +532,19 @@ export function TemplateEditor({ templateId, onClose }: TemplateEditorProps) {
                           Blocks the next activity (sets <code className="font-mono">blockedBy</code> chain)
                         </Label>
                       </div>
+                    </div>
+
+                    <div className="grid gap-1.5">
+                      <Label className="text-xs">Default assignee</Label>
+                      <AssigneePicker
+                        value={a.defaultAssignee}
+                        onChange={(next) => updateActivity(idx, { defaultAssignee: next })}
+                        placeholder="Unassigned — set per-job at apply-time"
+                      />
+                      <p className="text-[10px] text-[var(--neutral-500)]">
+                        Copied to <code className="font-mono">assignedTo</code> when this
+                        template is applied. User, production team (access group), or machine.
+                      </p>
                     </div>
                   </div>
                 )}

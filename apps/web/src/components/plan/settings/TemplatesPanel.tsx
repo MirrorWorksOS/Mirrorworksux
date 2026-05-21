@@ -6,22 +6,38 @@
  * Apply template dropdown.
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
-import { Pencil, Plus, Copy, Trash2, Sparkles } from 'lucide-react';
+import { Pencil, Plus, Copy, Trash2, Sparkles, Package } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SectionLabel } from '@/components/shared/settings/ModuleSettingsLayout';
 
 import { useJobActivityStore } from '@/store/jobActivityStore';
+import { products } from '@/services';
 import { TemplateEditor } from './TemplateEditor';
 
 export function TemplatesPanel() {
   const templates = useJobActivityStore((s) => s.templates);
   const duplicateTemplate = useJobActivityStore((s) => s.duplicateTemplate);
   const removeTemplate = useJobActivityStore((s) => s.removeTemplate);
+
+  /** Reverse-index: templateId → products that pin it (mock-only). */
+  const productsByTemplate = useMemo(() => {
+    const out: Record<string, { id: string; partNumber: string; description: string }[]> = {};
+    for (const p of products) {
+      if (!p.defaultTemplateIds || p.defaultTemplateIds.length === 0) continue;
+      for (const tid of p.defaultTemplateIds) {
+        if (!out[tid]) out[tid] = [];
+        out[tid].push({ id: p.id, partNumber: p.partNumber, description: p.description });
+      }
+    }
+    return out;
+  }, []);
 
   /** Either an existing template id (edit), the literal "new" (create), or null (closed). */
   const [editing, setEditing] = useState<string | 'new' | null>(null);
@@ -94,6 +110,39 @@ export function TemplatesPanel() {
                       <span className="text-[10px] tabular-nums text-[var(--neutral-500)]">
                         · {t.activities.length} {t.activities.length === 1 ? 'activity' : 'activities'}
                       </span>
+                      {(productsByTemplate[t.id]?.length ?? 0) > 0 && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-1 rounded-full bg-[var(--mw-yellow-50)] px-2 py-0.5 text-[10px] font-medium text-[var(--mw-yellow-800)] hover:bg-[var(--mw-yellow-100)] dark:text-yellow-300"
+                            >
+                              <Package className="h-3 w-3" />
+                              Used by {productsByTemplate[t.id].length}{' '}
+                              {productsByTemplate[t.id].length === 1 ? 'product' : 'products'}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent align="start" className="w-72 p-2">
+                            <p className="px-2 pb-1 pt-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--neutral-500)]">
+                              Pinned by
+                            </p>
+                            <div className="max-h-64 overflow-y-auto">
+                              {productsByTemplate[t.id].map((p) => (
+                                <Link
+                                  key={p.id}
+                                  to={`/plan/products/${p.id}`}
+                                  className="block rounded px-2 py-1.5 text-xs hover:bg-[var(--neutral-100)] dark:hover:bg-neutral-800"
+                                >
+                                  <span className="font-medium text-foreground">{p.partNumber}</span>
+                                  <span className="ml-2 text-[var(--neutral-500)] truncate">
+                                    {p.description}
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">

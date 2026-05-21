@@ -342,7 +342,9 @@ export const useJobActivityStore = create<JobActivityState>((set, get) => ({
         dueDate: dueDate.toISOString(),
         status: 'todo',
         priority: step.priority ?? 'med',
-        assignedTo: PLAN_CURRENT_USER,
+        // If the template carries a defaultAssignee, use its denormalised label;
+        // otherwise fall through to the planner running the apply.
+        assignedTo: step.defaultAssignee?.label ?? PLAN_CURRENT_USER,
         blockedBy: prevId ? [prevId] : undefined,
         templateId: template.id,
         createdAt: nowIso,

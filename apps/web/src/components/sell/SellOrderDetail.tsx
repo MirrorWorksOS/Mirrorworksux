@@ -35,6 +35,8 @@ import { EntityPickerModal } from "@/components/shared/pickers/EntityPickerModal
 import { products, quotes, salesOrders, sellInvoices } from "@/services";
 import { lineage, parseRef, type DocumentPrefix } from "@/services/numbering";
 import { cn } from "@/components/ui/utils";
+import { KickoffDialog, type KickoffLine } from "./order-kickoff/KickoffDialog";
+import { Rocket } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -252,10 +254,10 @@ const MOCK_ORDERS: Record<string, SellOrder> = {
 };
 
 const MOCK_LINE_ITEMS: LineItem[] = [
-  { id: "li-1", product: "PROD-SR-001", description: "Server rack frame — powder coated", qty: 4, unitPrice: 5120, total: 20480, status: "Ready" },
-  { id: "li-2", product: "PROD-SR-002", description: "Side panel — 1.6 mm galv steel", qty: 8, unitPrice: 980, total: 7840, status: "Ready" },
+  { id: "li-1", product: "SRC-100", description: "Server Rack Chassis 42U — powder coated", qty: 4, unitPrice: 1250, total: 5000, status: "Ready" },
+  { id: "li-2", product: "MGD-020", description: "Machine Guard Assembly — CNC", qty: 2, unitPrice: 320, total: 640, status: "Ready" },
   { id: "li-3", product: "LABOUR-FAB", description: "Fabrication labour (hrs)", qty: 24, unitPrice: 140, total: 3360, status: "In Progress" },
-  { id: "li-4", product: "PROD-SR-003", description: "Cable management tray", qty: 4, unitPrice: 420, total: 1680, status: "Pending" },
+  { id: "li-4", product: "BKT-001", description: "Mounting Bracket 90° — Mild Steel", qty: 40, unitPrice: 24.5, total: 980, status: "Pending" },
   { id: "li-5", product: "MAT-HDWR-010", description: "M8 cage nuts & bolts kit", qty: 16, unitPrice: 38, total: 608, status: "Ready" },
   { id: "li-6", product: "LABOUR-QC", description: "Quality inspection (hrs)", qty: 6, unitPrice: 160, total: 960, status: "Pending" },
 ];
@@ -392,6 +394,31 @@ export function SellOrderDetail() {
   const [lineItems, setLineItems] = useState<LineItem[]>(isNew ? [] : MOCK_LINE_ITEMS);
   const [documents, setDocuments] = useState<DocFile[]>(isNew ? [] : MOCK_DOCUMENTS);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [kickoffOpen, setKickoffOpen] = useState(false);
+
+  // Build the line set the KickoffDialog needs (filtered to make-able products).
+  const kickoffLines: KickoffLine[] = useMemo(() => {
+    return lineItems
+      .map((li) => {
+        // Match by SKU/partNumber — line.product carries the partNumber.
+        const p = products.find(
+          (x) => x.partNumber === li.product || x.sku === li.product,
+        );
+        if (!p) return null;
+        return {
+          id: li.id,
+          qty: li.qty,
+          product: {
+            id: p.id,
+            label: p.partNumber,
+            description: li.description ?? p.description,
+            productKind: p.productKind,
+            defaultTemplateIds: p.defaultTemplateIds,
+          },
+        } satisfies KickoffLine;
+      })
+      .filter((x): x is KickoffLine => x !== null);
+  }, [lineItems]);
 
   // ── Fulfilment editable state (mirrors SalesOrder fields) ─────────
   const [carrier, setCarrier] = useState<string>(order?.carrier ?? '');
@@ -1167,6 +1194,17 @@ export function SellOrderDetail() {
             Back
           </Button>
           {!isNew && <ChatterButton entity={{ type: 'sales_order', id: order.id }} />}
+          {!isNew && kickoffLines.length > 0 && (
+            <Button
+              variant="outline"
+              className="h-12 border-[var(--mw-yellow-400)] text-[var(--mw-yellow-700)] hover:bg-[var(--mw-yellow-50)]"
+              onClick={() => setKickoffOpen(true)}
+              title="Confirm order and create Plan jobs with linked templates"
+            >
+              <Rocket className="mr-2 h-4 w-4" />
+              Release to Plan
+            </Button>
+          )}
           {editMode ? (
             <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]" onClick={handleSave}>
               Save
@@ -1198,6 +1236,29 @@ export function SellOrderDetail() {
   return (
     <>
       {layout}
+      <KickoffDialog
+        open={kickoffOpen}
+        onOpenChange={setKickoffOpen}
+        orderNumber={order.soNumber}
+        lines={kickoffLines}
+        onApplied={(created) => {
+          const jobs = created.length;
+          const acts = created.reduce(
+            (sum, c) => sum + c.templateIds.length,
+            0,
+          );
+          toast.success(
+            `${jobs} job${jobs === 1 ? '' : 's'} released to Plan`,
+            {
+              description: `${acts} template${acts === 1 ? '' : 's'} applied. Open Plan ▸ Activities to see them.`,
+              action: {
+                label: 'Open Plan',
+                onClick: () => navigate('/plan/activities'),
+              },
+            },
+          );
+        }}
+      />
       {/* D2: Product picker — opens from Line Items tab "Add item" button. */}
       <EntityPickerModal
         open={pickerOpen}

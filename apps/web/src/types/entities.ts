@@ -150,6 +150,18 @@ export interface Product {
    * Plan / Make schedulers to enforce capability constraints.
    */
   routingMachinePrefs?: Record<string, RoutingMachinePrefs>;
+  /**
+   * Drives the *default* set of activity templates suggested when this
+   * product is sold. Pairs with `defaultTemplateIds` for explicit pins.
+   */
+  productKind?: 'widget' | 'configurable' | 'mixed';
+  /**
+   * Explicit activity-template ids to apply when this product is sold.
+   * Empty / undefined = fall back to the `productKind` filter on
+   * `selectTemplatesForProductKind`. Stored as ids only — the template
+   * registry is the source of truth for content.
+   */
+  defaultTemplateIds?: string[];
 }
 
 /** Preferred / excluded machines for a single routing step on a product. */
