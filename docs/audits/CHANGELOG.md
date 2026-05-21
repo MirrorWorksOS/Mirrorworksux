@@ -6,6 +6,18 @@ For detail before consolidation (2026-04-22 to 2026-05-05), see `_archive/change
 
 ---
 
+## 2026-05-21 — 7 commits — Product↔Template wiring, polymorphic Assignee, cross-module return chip
+
+**Product detail screen, continued.** Activity templates are now first-class on the product (Planning tab): set `productKind`, pin one or more templates, and the templates pre-apply to Plan jobs when the order is confirmed. Each row expands to show the full activity flow and links straight into the template editor.
+
+- `feat(product+plan): link Products to activity templates, add template assignees` — new `Assignee` discriminated union (`user | team | machine`), `AssigneeChip` + `AssigneePicker` (cmdk grouped), `TemplateActivity.defaultAssignee`, `Product.productKind` + `defaultTemplateIds`, KickoffDialog on Sales Orders (Release to Plan → per-line template selection → create Plan jobs), TemplatesPanel "Used by N products" lens.
+- `feat(templates): split assignee from machine on TemplateActivity` — Default assignee restricted to user|team; new dedicated Machine picker beside it. Two columns in the activity editor.
+- `refactor(product): move Activity templates from Manufacturing to Planning tab` — Manufacturing stays about the physical artefact (BOM, routing, suppliers); Planning gets the Plan-side workflow config.
+- `polish(templates): deduped assignee + machine chips on template card` — TemplatesPanel rows surface the template's overall assignment pattern at a glance.
+- `feat(product): hover-edit + upload dialog on hero thumbnail` — hover the product image → pen icon top-right → upload Dialog with drag-drop, file picker, and URL paste.
+- `feat(product): expand + edit links on Activity templates rows` — chevron reveals the full numbered activity flow with stage/duration/priority/chips; pencil deep-links to Plan Settings with the editor pre-opened.
+- `feat(nav): ReturnContextChip — back-to-previous after cross-module deep-links` — shared primitive. Source pages append `?from=&fromLabel=`; destination drops `<ReturnContextChip />` near the title. ModuleSettingsLayout wires it for every module's settings page. First consumer: Product → Template editor.
+
 ## 2026-05-20 — 44 commits — Sell + Plan module overhauls, shared filter/Gantt/lineage/chat primitives, dark-mode pass
 
 Two-week run. Five new cross-cutting shared systems landed (ModuleFilterBar, MwGantt, DocumentChainPill, Chatter, EditableCard); Sell and Plan got full module overhauls; dark mode reached visual parity. See ADR-001 through ADR-004 for the pattern-setting decisions.
