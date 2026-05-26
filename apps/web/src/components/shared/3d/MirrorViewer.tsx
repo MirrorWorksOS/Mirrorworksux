@@ -167,11 +167,30 @@ export function MirrorViewer({
           (doc) => {
             if (cancelled) return;
             const viewable = doc.getRoot().getDefaultGeometry();
-            void viewer.loadDocumentNode(doc, viewable);
             setMode('aps');
+            // loadDocumentNode is async — the canvas mounts immediately but
+            // the geometry only paints after this promise resolves. STEP files
+            // often translate with origins far from world-zero, so the default
+            // camera lands on empty space; fit to view once geometry lands.
+            void viewer
+              .loadDocumentNode(doc, viewable)
+              .then(() => {
+                if (cancelled) return;
+                try {
+                  viewer.fitToView();
+                } catch {
+                  // some 2D viewables don't support fitToView — fall through
+                }
+              })
+              .catch((err) => {
+                if (cancelled) return;
+                console.warn('[MirrorViewer] loadDocumentNode failed', err);
+                setMode(resolvedSource.glbSrc ? 'glb' : 'empty');
+              });
           },
-          () => {
+          (errorCode, message) => {
             if (cancelled) return;
+            console.warn('[MirrorViewer] APS Document.load failed', errorCode, message);
             setMode(resolvedSource.glbSrc ? 'glb' : 'empty');
           },
         );

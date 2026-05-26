@@ -25,8 +25,10 @@ export interface ApsViewerInstance {
   resize(): void;
   setLightPreset(idx: number): void;
   setTheme(theme: string): void;
+  fitToView(dbIds?: number[]): boolean;
   navigation: {
     setRequestHomeView(b: boolean): void;
+    fitBounds(immediate: boolean, bounds?: unknown): void;
   };
   setActiveNavigationTool(tool: string): void;
   addEventListener(type: string, cb: (e: unknown) => void): void;
