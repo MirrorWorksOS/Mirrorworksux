@@ -10,7 +10,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { RevDriftBanner } from '@/components/shared/3d/RevDriftBanner';
+import { manufacturingOrders } from '@/services/mock/data';
 import type { ReferenceView, WorkOrderExecutionSnapshot } from './types';
+
+/** Resolve the product ID for a snapshot's MO number — used by the drift banner. */
+function productIdForMo(moNumber: string): string | undefined {
+  return manufacturingOrders.find((mo) => mo.moNumber === moNumber)?.productId;
+}
 
 type Segment = Exclude<ReferenceView, 'checklist'>;
 
@@ -36,9 +43,17 @@ export function ReferencePanel({
 }: ReferencePanelProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const reference = snapshot.references[activeView];
+  const productId = productIdForMo(snapshot.moNumber);
 
   return (
     <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-6 shadow-xs">
+      {productId && (
+        <RevDriftBanner
+          pinnedRevisionLabel={snapshot.revision}
+          productOwnerId={productId}
+          className="mb-4"
+        />
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex h-12 items-center gap-1 rounded-full bg-[var(--neutral-100)] p-1">
           {SEGMENTS.map((seg) => {

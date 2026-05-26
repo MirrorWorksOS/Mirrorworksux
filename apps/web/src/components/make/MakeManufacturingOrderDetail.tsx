@@ -37,6 +37,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { BomRoutingTree } from '@/components/plan/BomRoutingTree';
 import { getDifferentialAssembly } from '@/components/plan/BomRoutingTree.data';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { RevDriftBanner } from '@/components/shared/3d/RevDriftBanner';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -66,12 +67,13 @@ const STATUS_DISPLAY: Record<string, string> = {
   draft: 'Draft', confirmed: 'Confirmed', in_progress: 'In Progress', done: 'Done',
 };
 
-const MO_BY_ID: Record<string, { moNumber: string; product: string; jobNumber: string; jobId: string; status: string; operator: string; startDate: string; customer: string }> = Object.fromEntries(
+const MO_BY_ID: Record<string, { moNumber: string; product: string; productId: string; jobNumber: string; jobId: string; status: string; operator: string; startDate: string; customer: string }> = Object.fromEntries(
   manufacturingOrders.map((mo) => [
     mo.id,
     {
       moNumber: mo.moNumber,
       product: mo.productName,
+      productId: mo.productId,
       jobNumber: mo.jobNumber,
       jobId: mo.jobId,
       status: STATUS_DISPLAY[mo.status] ?? mo.status,
@@ -651,6 +653,12 @@ export function MakeManufacturingOrderDetail() {
                 </p>
               </div>
             </div>
+            {mo?.productId && (
+              <RevDriftBanner
+                pinnedRevisionLabel={primaryTravellerPacket?.drawingRevision}
+                productOwnerId={mo.productId}
+              />
+            )}
             <Card className="aspect-video overflow-hidden p-0">
               <MirrorViewer
                 context={moViewerContext}
