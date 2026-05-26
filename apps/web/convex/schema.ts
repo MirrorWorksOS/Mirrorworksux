@@ -65,4 +65,35 @@ export default defineSchema({
   })
     .index('by_urn', ['urn'])
     .index('by_owner', ['ownerType', 'ownerId']),
+
+  /**
+   * Anchored 3D markup. Each row is either a root comment (no
+   * parentMarkupId) or a reply (parentMarkupId set). Camera + optional
+   * dbIds let the viewer restore the exact viewpoint the commenter saw.
+   *
+   * Root markups carry status ('open' | 'resolved'). Replies inherit
+   * their root's status — the resolveMarkup mutation only patches roots.
+   */
+  mirrorviewMarkups: defineTable({
+    modelId: v.id('mirrorviewModels'),
+    parentMarkupId: v.optional(v.id('mirrorviewMarkups')),
+    body: v.string(),
+    author: v.optional(v.string()),
+    // Camera state captured at pin time. `null`-able for reply rows.
+    camera: v.optional(
+      v.object({
+        px: v.number(), py: v.number(), pz: v.number(),
+        tx: v.number(), ty: v.number(), tz: v.number(),
+        ux: v.number(), uy: v.number(), uz: v.number(),
+      }),
+    ),
+    dbIds: v.optional(v.array(v.number())),
+    status: v.union(v.literal('open'), v.literal('resolved')),
+    resolvedAt: v.optional(v.number()),
+    resolvedBy: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_model', ['modelId'])
+    .index('by_parent', ['parentMarkupId']),
 });

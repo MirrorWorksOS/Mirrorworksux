@@ -139,3 +139,145 @@ export const releaseRevision = mutation({
     });
   },
 });
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* Markup — anchored 3D comments                                           */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+const cameraValidator = v.object({
+  px: v.number(), py: v.number(), pz: v.number(),
+  tx: v.number(), ty: v.number(), tz: v.number(),
+  ux: v.number(), uy: v.number(), uz: v.number(),
+});
+
+/** Create a root markup (pinned comment) anchored to a model + viewpoint. */
+export const createMarkup = mutation({
+  args: {
+    modelId: v.id('mirrorviewModels'),
+    body: v.string(),
+    author: v.optional(v.string()),
+    camera: v.optional(cameraValidator),
+    dbIds: v.optional(v.array(v.number())),
+  },
+  handler: async (ctx, args) => {
+    const trimmed = args.body.trim();
+    if (!trimmed) throw new Error('Markup body cannot be empty');
+    const now = Date.now();
+    return ctx.db.insert('mirrorviewMarkups', {
+      modelId: args.modelId,
+      body: trimmed,
+      author: args.author,
+      camera: args.camera,
+      dbIds: args.dbIds,
+      status: 'open',
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+/** Reply to an existing root markup. Inherits the root's modelId. */
+export const replyToMarkup = mutation({
+  args: {
+    parentMarkupId: v.id('mirrorviewMarkups'),
+    body: v.string(),
+    author: v.optional(v.string()),
+  },
+  handler: async (ctx, { parentMarkupId, body, author }) => {
+    const trimmed = body.trim();
+    if (!trimmed) throw new Error('Reply body cannot be empty');
+    const parent = await ctx.db.get(parentMarkupId);
+    if (!parent) throw new Error('Parent markup not found');
+    if (parent.parentMarkupId) {
+      throw new Error('Replies cannot have replies (flat thread only)');
+    }
+    const now = Date.now();
+    return ctx.db.insert('mirrorviewMarkups', {
+      modelId: parent.modelId,
+      parentMarkupId,
+      body: trimmed,
+      author,
+      status: 'open',
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+/** Flip a root markup to resolved. Idempotent. */
+export const resolveMarkup = mutation({
+  args: {
+    id: v.id('mirrorviewMarkups'),
+    resolvedBy: v.optional(v.string()),
+  },
+  handler: async (ctx, { id, resolvedBy }) => {
+    const row = await ctx.db.get(id);
+    if (!row) throw new Error('Markup not found');
+    if (row.parentMarkupId) throw new Error('Can only resolve root markups');
+    if (row.status === 'resolved') return;
+    await ctx.db.patch(id, {
+      status: 'resolved',
+      resolvedAt: Date.now(),
+      resolvedBy,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+/** Re-open a resolved root markup. */
+export const reopenMarkup = mutation({
+  args: { id: v.id('mirrorviewMarkups') },
+  handler: async (ctx, { id }) => {
+    const row = await ctx.db.get(id);
+    if (!row) throw new Error('Markup not found');
+    if (row.parentMarkupId) throw new Error('Can only re-open root markups');
+    await ctx.db.patch(id, {
+      status: 'open',
+      resolvedAt: undefined,
+      resolvedBy: undefined,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+/** Delete a markup row (and its replies if it's a root). */
+export const deleteMarkup = mutation({
+  args: { id: v.id('mirrorviewMarkups') },
+  handler: async (ctx, { id }) => {
+    const row = await ctx.db.get(id);
+    if (!row) return;
+    if (!row.parentMarkupId) {
+      // Root — delete all replies first.
+      const replies = await ctx.db
+        .query('mirrorviewMarkups')
+        .withIndex('by_parent', (q) => q.eq('parentMarkupId', id))
+        .collect();
+      for (const r of replies) await ctx.db.delete(r._id);
+    }
+    await ctx.db.delete(id);
+  },
+});
+
+/**
+ * All markup rows for a model, with replies grouped under their roots.
+ * Returns roots sorted newest-first; replies sorted oldest-first within
+ * each root (natural conversation order).
+ */
+export const listMarkups = query({
+  args: { modelId: v.id('mirrorviewModels') },
+  handler: async (ctx, { modelId }) => {
+    const rows = await ctx.db
+      .query('mirrorviewMarkups')
+      .withIndex('by_model', (q) => q.eq('modelId', modelId))
+      .collect();
+    const roots = rows.filter((r) => !r.parentMarkupId);
+    const replies = rows.filter((r) => r.parentMarkupId);
+    roots.sort((a, b) => b.createdAt - a.createdAt);
+    return roots.map((root) => ({
+      ...root,
+      replies: replies
+        .filter((r) => r.parentMarkupId === root._id)
+        .sort((a, b) => a.createdAt - b.createdAt),
+    }));
+  },
+});

@@ -18,6 +18,18 @@ declare global {
   }
 }
 
+interface Vec3Like {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface ApsCameraSnapshot {
+  position: Vec3Like;
+  target: Vec3Like;
+  up: Vec3Like;
+}
+
 export interface ApsViewerInstance {
   start(): number;
   loadDocumentNode(doc: unknown, viewable: unknown): Promise<unknown>;
@@ -26,9 +38,17 @@ export interface ApsViewerInstance {
   setLightPreset(idx: number): void;
   setTheme(theme: string): void;
   fitToView(dbIds?: number[]): boolean;
+  getCamera(): { position: Vec3Like; target: Vec3Like; up: Vec3Like };
+  isolate(dbIds?: number[]): void;
+  getIsolatedNodes(): number[];
+  getSelection(): number[];
+  select(dbIds: number[]): void;
+  clearSelection(): void;
   navigation: {
     setRequestHomeView(b: boolean): void;
     fitBounds(immediate: boolean, bounds?: unknown): void;
+    setView(position: Vec3Like, target: Vec3Like): void;
+    setCameraUpVector(up: Vec3Like): void;
   };
   setActiveNavigationTool(tool: string): void;
   addEventListener(type: string, cb: (e: unknown) => void): void;

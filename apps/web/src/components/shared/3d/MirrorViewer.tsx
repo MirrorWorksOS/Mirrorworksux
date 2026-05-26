@@ -19,7 +19,13 @@
  * uploading → translating → success → APS render — no extra plumbing needed.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { Loader2, Upload } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '@convex/_generated/api';
@@ -39,6 +45,28 @@ import {
   type ApsViewerInstance,
 } from './aps-loader';
 import { cn } from '@/components/ui/utils';
+
+/** Serialised camera state — survives transport through Convex. */
+export interface MirrorViewerCamera {
+  px: number; py: number; pz: number;
+  tx: number; ty: number; tz: number;
+  ux: number; uy: number; uz: number;
+}
+
+/**
+ * Imperative API for MirrorView surfaces that need to attach extra UI
+ * (markup pins, saved viewpoints) without re-implementing camera/isolation.
+ */
+export interface MirrorViewerHandle {
+  /** Snapshot the APS camera. Returns null when not in APS mode. */
+  captureCamera(): MirrorViewerCamera | null;
+  /** Restore a previously captured camera. No-op when not in APS mode. */
+  restoreCamera(snapshot: MirrorViewerCamera): void;
+  /** Currently-selected dbIds, or the isolated set if nothing is selected. */
+  captureSelection(): number[];
+  /** Isolate the given dbIds (ghost everything else). Pass [] to clear. */
+  isolate(dbIds: number[]): void;
+}
 
 const REMOTE_MODE = import.meta.env.VITE_DATA_SOURCE === 'remote';
 
@@ -68,7 +96,7 @@ type Mode = 'loading' | 'uploading' | 'translating' | 'aps' | 'glb' | 'empty' | 
 
 const DEMO_GLB = '/models/diff.glb';
 
-export function MirrorViewer({
+export const MirrorViewer = forwardRef<MirrorViewerHandle, MirrorViewerProps>(function MirrorViewer({
   source,
   context,
   density = 'full',
@@ -76,7 +104,7 @@ export function MirrorViewer({
   service = mirrorViewerService,
   hideToolbar = false,
   enableUpload = false,
-}: MirrorViewerProps) {
+}, ref) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const apsRef = useRef<ApsViewerInstance | null>(null);
   const glbApiRef = useRef<GlbViewerApi | null>(null);
@@ -270,6 +298,65 @@ export function MirrorViewer({
     }
   };
 
+  // Imperative handle for parent components that overlay markup pins,
+  // saved viewpoints, etc. Each method no-ops when APS isn't mounted.
+  useImperativeHandle(
+    ref,
+    () => ({
+      captureCamera(): MirrorViewerCamera | null {
+        const viewer = apsRef.current;
+        if (!viewer) return null;
+        try {
+          const c = viewer.getCamera();
+          return {
+            px: c.position.x, py: c.position.y, pz: c.position.z,
+            tx: c.target.x, ty: c.target.y, tz: c.target.z,
+            ux: c.up.x, uy: c.up.y, uz: c.up.z,
+          };
+        } catch {
+          return null;
+        }
+      },
+      restoreCamera(snap: MirrorViewerCamera) {
+        const viewer = apsRef.current;
+        if (!viewer) return;
+        try {
+          viewer.navigation.setView(
+            { x: snap.px, y: snap.py, z: snap.pz },
+            { x: snap.tx, y: snap.ty, z: snap.tz },
+          );
+          viewer.navigation.setCameraUpVector({ x: snap.ux, y: snap.uy, z: snap.uz });
+        } catch {
+          // ignore — some viewables can't accept arbitrary cameras
+        }
+      },
+      captureSelection(): number[] {
+        const viewer = apsRef.current;
+        if (!viewer) return [];
+        try {
+          const sel = viewer.getSelection();
+          if (sel && sel.length > 0) return sel;
+          const iso = viewer.getIsolatedNodes();
+          return iso ?? [];
+        } catch {
+          return [];
+        }
+      },
+      isolate(dbIds: number[]) {
+        const viewer = apsRef.current;
+        if (!viewer) return;
+        try {
+          viewer.isolate(dbIds.length > 0 ? dbIds : undefined);
+        } catch {
+          // ignore
+        }
+      },
+    }),
+    // mode is intentionally NOT in the dep array — the imperative handle
+    // reads apsRef.current at call time so it always sees the live viewer.
+    [],
+  );
+
   // Drag-drop upload handlers. Active only when `enableUpload` is set. Calls
   // the same Convex pipeline (startUpload → S3 PUT → finishUpload) that
   // ProductDetail's surrounding dropzone uses; reactive query picks up the
@@ -444,4 +531,4 @@ export function MirrorViewer({
       )}
     </div>
   );
-}
+});

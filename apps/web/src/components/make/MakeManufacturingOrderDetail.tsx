@@ -5,7 +5,7 @@
  * Follows PlanJobDetail / SellOpportunityPage pattern.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router';
 import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, Receipt, Play, Pause, AlertTriangle, Timer, Save } from 'lucide-react';
 import { PageShell } from '@/components/shared/layout/PageShell';
@@ -36,8 +36,12 @@ import { useTravellerStore } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
 import { BomRoutingTree } from '@/components/plan/BomRoutingTree';
 import { getDifferentialAssembly } from '@/components/plan/BomRoutingTree.data';
-import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { MirrorViewer, type MirrorViewerHandle } from '@/components/shared/3d/MirrorViewer';
+import { MirrorMarkupPanel } from '@/components/shared/3d/MirrorMarkupPanel';
 import { RevDriftBanner } from '@/components/shared/3d/RevDriftBanner';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -134,6 +138,21 @@ export function MakeManufacturingOrderDetail() {
     () => ({ ownerType: 'mo' as const, ownerId: id ?? 'demo' }),
     [id],
   );
+  // Imperative ref into the MirrorViewer — used by the markup panel to
+  // capture + restore camera and isolate parts.
+  const moMirrorViewerRef = useRef<MirrorViewerHandle | null>(null);
+  // Active model for the MO surface — drives the markup panel's `modelId`.
+  const moActiveModel = useQuery(
+    api.mirrorview.getActiveModel,
+    import.meta.env.VITE_DATA_SOURCE === 'remote'
+      ? moViewerContext
+      : 'skip',
+  );
+  const { identity, hasPermission } = useAuth();
+  const moMarkupAuthor =
+    identity.kind === 'internal' ? identity.user.name : undefined;
+  const canResolveMarkup = hasPermission('mirrorview.revision.release');
+  const canDeleteMarkup = canResolveMarkup;
   const assembly = useMemo(() => getDifferentialAssembly('make'), []);
   const travellerPackets = useTravellerStore(
     useShallow((state) =>
@@ -659,13 +678,24 @@ export function MakeManufacturingOrderDetail() {
                 productOwnerId={mo.productId}
               />
             )}
-            <Card className="aspect-video overflow-hidden p-0">
-              <MirrorViewer
-                context={moViewerContext}
-                enableUpload
-                className="h-full w-full"
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <Card className="aspect-video overflow-hidden p-0">
+                <MirrorViewer
+                  ref={moMirrorViewerRef}
+                  context={moViewerContext}
+                  enableUpload
+                  className="h-full w-full"
+                />
+              </Card>
+              <MirrorMarkupPanel
+                modelId={moActiveModel?._id ?? null}
+                viewerRef={moMirrorViewerRef}
+                author={moMarkupAuthor}
+                canResolve={canResolveMarkup}
+                canDelete={canDeleteMarkup}
+                className="min-h-[420px] lg:min-h-0"
               />
-            </Card>
+            </div>
           </div>
         );
 
