@@ -10,8 +10,12 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
-import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { MirrorViewer, type MirrorViewerHandle } from '@/components/shared/3d/MirrorViewer';
+import { StepViewsControl } from '@/components/shared/3d/StepViewsControl';
 import { DrawingViewer } from '@/components/shared/3d/DrawingViewer';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { getDifferentialAssembly } from './BomRoutingTree.data';
 import { cn } from '../ui/utils';
 
@@ -22,6 +26,7 @@ export function PlanMirrorViewTab() {
   const visualParts = assembly.parts.filter((p) => p.kind === 'make');
   const view3dRef = useRef<HTMLDivElement | null>(null);
   const view2dRef = useRef<HTMLDivElement | null>(null);
+  const mirrorViewerRef = useRef<MirrorViewerHandle | null>(null);
 
   // Memoize so MirrorViewer's source-resolve effect doesn't see a new context
   // reference each render and remount the APS Viewer mid-load.
@@ -29,6 +34,15 @@ export function PlanMirrorViewTab() {
     () => ({ ownerType: 'job' as const, ownerId: activePart?.id ?? 'demo' }),
     [activePart?.id],
   );
+
+  // Active model for the StepViewsControl + author from auth context.
+  const activeModel = useQuery(
+    api.mirrorview.getActiveModel,
+    import.meta.env.VITE_DATA_SOURCE === 'remote' ? jobViewerContext : 'skip',
+  );
+  const { identity, hasPermission } = useAuth();
+  const author = identity.kind === 'internal' ? identity.user.name : undefined;
+  const canCaptureViews = hasPermission('mirrorview.revision.release');
 
   /** Browser-native fullscreen toggle for whichever viewer is targeted. */
   const goFullscreen = (ref: React.RefObject<HTMLDivElement>) => {
@@ -89,8 +103,16 @@ export function PlanMirrorViewTab() {
             <Button variant="ghost" size="sm" className="h-10 px-2 text-xs" onClick={() => toast('Viewer control activated')}><Share2 className="w-3.5 h-3.5" /></Button>
           </div>
 
+          <StepViewsControl
+            modelId={activeModel?._id ?? null}
+            viewerRef={mirrorViewerRef}
+            author={author}
+            canCapture={canCaptureViews}
+            className="mb-3"
+          />
           <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-md relative overflow-hidden">
             <MirrorViewer
+              ref={mirrorViewerRef}
               context={jobViewerContext}
               enableUpload
               className="absolute inset-0"

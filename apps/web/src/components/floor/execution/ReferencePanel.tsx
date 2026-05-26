@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Camera, FileText, Maximize2, Ruler } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { MirrorViewer, type MirrorViewerHandle } from '@/components/shared/3d/MirrorViewer';
 import { RevDriftBanner } from '@/components/shared/3d/RevDriftBanner';
+import { StepViewsControl } from '@/components/shared/3d/StepViewsControl';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
 import { manufacturingOrders } from '@/services/mock/data';
 import type { ReferenceView, WorkOrderExecutionSnapshot } from './types';
 
@@ -45,6 +48,19 @@ export function ReferencePanel({
   const reference = snapshot.references[activeView];
   const productId = productIdForMo(snapshot.moNumber);
 
+  // Imperative ref into the inner MirrorViewer — needed by StepViewsControl
+  // to restore camera + isolation when the operator picks a saved view.
+  const mirrorViewerRef = useRef<MirrorViewerHandle | null>(null);
+  // Active model for this work-order surface — drives step-view + drift queries.
+  const workOrderContext = useMemo(
+    () => ({ ownerType: 'workOrder' as const, ownerId: snapshot.workOrderId }),
+    [snapshot.workOrderId],
+  );
+  const activeModel = useQuery(
+    api.mirrorview.getActiveModel,
+    import.meta.env.VITE_DATA_SOURCE === 'remote' ? workOrderContext : 'skip',
+  );
+
   return (
     <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-6 shadow-xs">
       {productId && (
@@ -52,6 +68,16 @@ export function ReferencePanel({
           pinnedRevisionLabel={snapshot.revision}
           productOwnerId={productId}
           className="mb-4"
+        />
+      )}
+      {activeView === 'drawing' && (
+        <StepViewsControl
+          modelId={activeModel?._id ?? null}
+          viewerRef={mirrorViewerRef}
+          // Shop-floor is operator-facing — read-only on capture. Engineers
+          // save step views from PlanMirrorViewTab; operators just consume.
+          canCapture={false}
+          className="mb-3"
         />
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -106,6 +132,7 @@ export function ReferencePanel({
         snapshot={snapshot}
         height="h-[480px]"
         compact={false}
+        mirrorViewerRef={mirrorViewerRef}
       />
 
       <Dialog open={fullscreen} onOpenChange={setFullscreen}>
@@ -118,6 +145,7 @@ export function ReferencePanel({
             snapshot={snapshot}
             height="h-[680px]"
             compact={false}
+            mirrorViewerRef={mirrorViewerRef}
           />
         </DialogContent>
       </Dialog>
@@ -129,11 +157,13 @@ function ReferenceContent({
   view,
   snapshot,
   height,
+  mirrorViewerRef,
 }: {
   view: Segment;
   snapshot: WorkOrderExecutionSnapshot;
   height: string;
   compact: boolean;
+  mirrorViewerRef?: React.Ref<MirrorViewerHandle>;
 }) {
   if (view === 'drawing') {
     return (
@@ -141,6 +171,7 @@ function ReferenceContent({
         className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-card`}
       >
         <MirrorViewer
+          ref={mirrorViewerRef}
           context={{ ownerType: 'workOrder', ownerId: snapshot.workOrderId }}
           source={{ glbSrc: snapshot.modelSrc }}
           density="compact"

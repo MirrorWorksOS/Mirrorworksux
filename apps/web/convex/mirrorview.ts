@@ -258,6 +258,58 @@ export const deleteMarkup = mutation({
   },
 });
 
+/* ─────────────────────────────────────────────────────────────────────── */
+/* Step views — saved viewpoints anchored to a routing step                */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Engineer captures a labelled camera + isolation set for a routing step.
+ * Operators jump between them via the StepViewsControl dropdown — replaces
+ * orbit-gymnastics with a one-tap menu.
+ */
+export const saveStepView = mutation({
+  args: {
+    modelId: v.id('mirrorviewModels'),
+    label: v.string(),
+    camera: cameraValidator,
+    dbIds: v.optional(v.array(v.number())),
+    capturedBy: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const trimmed = args.label.trim();
+    if (!trimmed) throw new Error('Step-view label cannot be empty');
+    const now = Date.now();
+    return ctx.db.insert('mirrorviewStepViews', {
+      modelId: args.modelId,
+      label: trimmed,
+      camera: args.camera,
+      dbIds: args.dbIds,
+      capturedBy: args.capturedBy,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+export const deleteStepView = mutation({
+  args: { id: v.id('mirrorviewStepViews') },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
+  },
+});
+
+export const listStepViews = query({
+  args: { modelId: v.id('mirrorviewModels') },
+  handler: async (ctx, { modelId }) => {
+    const rows = await ctx.db
+      .query('mirrorviewStepViews')
+      .withIndex('by_model', (q) => q.eq('modelId', modelId))
+      .collect();
+    rows.sort((a, b) => a.createdAt - b.createdAt);
+    return rows;
+  },
+});
+
 /**
  * All markup rows for a model, with replies grouped under their roots.
  * Returns roots sorted newest-first; replies sorted oldest-first within

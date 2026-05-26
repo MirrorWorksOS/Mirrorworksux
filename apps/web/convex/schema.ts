@@ -74,6 +74,30 @@ export default defineSchema({
    * Root markups carry status ('open' | 'resolved'). Replies inherit
    * their root's status — the resolveMarkup mutation only patches roots.
    */
+  /**
+   * Saved viewpoints anchored to a model. Engineers capture them once
+   * per routing step (e.g. "Bend sequence", "Weld this seam"); operators
+   * jump between them via a dropdown on shop-floor MirrorView, replacing
+   * orbit-gymnastics with a labelled menu.
+   *
+   * Anchored to a model rather than a global routing entity so a new
+   * revision can lay down its own step views without inheriting stale
+   * camera offsets from the previous geometry.
+   */
+  mirrorviewStepViews: defineTable({
+    modelId: v.id('mirrorviewModels'),
+    label: v.string(),
+    camera: v.object({
+      px: v.number(), py: v.number(), pz: v.number(),
+      tx: v.number(), ty: v.number(), tz: v.number(),
+      ux: v.number(), uy: v.number(), uz: v.number(),
+    }),
+    dbIds: v.optional(v.array(v.number())),
+    capturedBy: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index('by_model', ['modelId']),
+
   mirrorviewMarkups: defineTable({
     modelId: v.id('mirrorviewModels'),
     parentMarkupId: v.optional(v.id('mirrorviewMarkups')),
