@@ -35,6 +35,7 @@
         'figma:asset/1d6dedd8a5ccde3a869b04f6290bddffb243535a.png': path.resolve(__dirname, './src/assets/1d6dedd8a5ccde3a869b04f6290bddffb243535a.png'),
         '@mirrorworks/contracts': path.resolve(__dirname, '../../packages/contracts/src/index.ts'),
         '@': path.resolve(__dirname, './src'),
+        '@convex': path.resolve(__dirname, './convex'),
       },
     },
     optimizeDeps: {

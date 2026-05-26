@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
+      "@convex/*": ["./convex/*"],
       "@mirrorworks/contracts": ["../../packages/contracts/src/index.ts"],
       "@mirrorworks/contracts/*": ["../../packages/contracts/src/*"]
     }

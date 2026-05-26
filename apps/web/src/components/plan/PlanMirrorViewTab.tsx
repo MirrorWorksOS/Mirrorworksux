@@ -10,8 +10,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
-import { GlbViewer, type GlbViewerApi } from '@/components/shared/3d/GlbViewer';
-import { MirrorViewToolbar } from '@/components/shared/3d/MirrorViewToolbar';
+import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
 import { DrawingViewer } from '@/components/shared/3d/DrawingViewer';
 import { getDifferentialAssembly } from './BomRoutingTree.data';
 import { cn } from '../ui/utils';
@@ -21,7 +20,6 @@ export function PlanMirrorViewTab() {
   const [activePartId, setActivePartId] = useState(assembly.parts[0]?.id ?? '');
   const activePart = assembly.parts.find((p) => p.id === activePartId) ?? assembly.parts[0];
   const visualParts = assembly.parts.filter((p) => p.kind === 'make');
-  const viewerApiRef = useRef<GlbViewerApi | null>(null);
   const view3dRef = useRef<HTMLDivElement | null>(null);
   const view2dRef = useRef<HTMLDivElement | null>(null);
 
@@ -85,29 +83,13 @@ export function PlanMirrorViewTab() {
           </div>
 
           <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-md relative overflow-hidden">
-            <GlbViewer
-              src="/models/diff.glb"
-              className="w-full h-full"
-              background="#f5f5f5"
-              modelColor={0x9aa0a8}
-              modelMetalness={0.55}
-              modelRoughness={0.5}
-              shadows
-              gridColor={[0xd4d4d4, 0xe5e5e5]}
-              gridOpacity={0.6}
-              onReady={(api) => { viewerApiRef.current = api; }}
+            <MirrorViewer
+              context={{ ownerType: 'job', ownerId: activePart?.id ?? 'demo' }}
+              className="absolute inset-0"
             />
             <div className="absolute top-3 left-3 flex items-center gap-2 pointer-events-none">
               <Badge className="bg-black/5 text-foreground/60 border-0 text-[10px] dark:bg-white/10 dark:text-white/70">Isometric</Badge>
             </div>
-            <div className="absolute bottom-3 right-3 flex items-center gap-2 pointer-events-none">
-              <Badge className="bg-black/5 text-foreground/60 border-0 text-[10px] dark:bg-white/10 dark:text-white/70">GLB · three.js</Badge>
-            </div>
-            <MirrorViewToolbar
-              onReset={() => viewerApiRef.current?.reset()}
-              onMode={(mode) => viewerApiRef.current?.setMode(mode)}
-              onComment={() => toast('Commenting coming soon')}
-            />
           </div>
         </div>
       </Card>

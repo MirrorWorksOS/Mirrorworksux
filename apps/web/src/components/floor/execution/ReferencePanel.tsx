@@ -9,13 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ExecutionModelViewer } from './ExecutionModelViewer';
+import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
 import type { ReferenceView, WorkOrderExecutionSnapshot } from './types';
 
 type Segment = Exclude<ReferenceView, 'checklist'>;
 
+// NOTE: the segment id stays 'drawing' (internal enum threaded through
+// types.ts, snapshot.ts, and the FloorExecutionScreen state machine).
+// Only the UI label changes to "MirrorView" per the 2026-05-26 rename.
 const SEGMENTS: { id: Segment; label: string; icon: typeof Ruler }[] = [
-  { id: 'drawing', label: 'Drawing', icon: Ruler },
+  { id: 'drawing', label: 'MirrorView', icon: Ruler },
   { id: 'instructions', label: 'Instructions', icon: FileText },
   { id: 'camera', label: 'Camera', icon: Camera },
 ];
@@ -122,10 +125,12 @@ function ReferenceContent({
       <div
         className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-card`}
       >
-        <ExecutionModelViewer src={snapshot.modelSrc} className="absolute inset-0" />
-        <div className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-card/85 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-600)] backdrop-blur">
-          Drag to rotate · Auto-spin
-        </div>
+        <MirrorViewer
+          context={{ ownerType: 'workOrder', ownerId: snapshot.workOrderId }}
+          source={{ glbSrc: snapshot.modelSrc }}
+          density="compact"
+          className="absolute inset-0"
+        />
       </div>
     );
   }

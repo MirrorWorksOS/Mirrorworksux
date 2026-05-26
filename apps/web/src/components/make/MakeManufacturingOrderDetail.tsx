@@ -36,6 +36,7 @@ import { useTravellerStore } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
 import { BomRoutingTree } from '@/components/plan/BomRoutingTree';
 import { getDifferentialAssembly } from '@/components/plan/BomRoutingTree.data';
+import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -101,6 +102,7 @@ const ISSUES: Issue[] = [
 const DEFAULT_TABS: JobWorkspaceTabConfig[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'work', label: 'Work' },
+  { id: 'mirrorview', label: 'MirrorView' },
   { id: 'issues', label: 'Issues' },
   { id: 'documents', label: 'Documents' },
   { id: 'intelligence', label: 'Intelligence Hub' },
@@ -626,6 +628,27 @@ export function MakeManufacturingOrderDetail() {
                   <ChevronRight className="h-4 w-4 text-[var(--neutral-400)] shrink-0" />
                 </div>
               ))}
+            </Card>
+          </div>
+        );
+
+      /* ── MirrorView ── */
+      case 'mirrorview':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">MirrorView</p>
+                <p className="text-xs text-[var(--neutral-500)]">
+                  3D model attached to {mo?.moNumber ?? 'this manufacturing order'} · {mo?.product ?? ''}
+                </p>
+              </div>
+            </div>
+            <Card className="aspect-video overflow-hidden p-0">
+              <MirrorViewer
+                context={{ ownerType: 'mo', ownerId: id ?? 'demo' }}
+                className="h-full w-full"
+              />
             </Card>
           </div>
         );

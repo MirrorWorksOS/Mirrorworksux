@@ -54,6 +54,8 @@ import { machines as allMachines } from '@/services';
 import { getAccounts as getXeroAccounts } from '@/services/xeroService';
 import type { XeroAccount } from '@/types/xero';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
+import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { uploadCadFile } from '@/services/mirrorViewerUpload';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -1549,11 +1551,13 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
   const activeRevision = MOCK_REVISIONS[0];
   const selected = files.find((f) => f.id === selectedFileId) ?? files[0];
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
     const dropped = Array.from(e.dataTransfer.files);
     if (dropped.length === 0) return;
+
+    // Local file-list bookkeeping (sidebar metadata).
     const additions: CadFile[] = dropped.map((f, i) => {
       const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
       const kind: CadFile['kind'] =
@@ -1571,7 +1575,33 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
       };
     });
     setFiles((prev) => [...additions, ...prev]);
-    toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+
+    // Real APS upload pipeline for the first dropped file. Convex reactive
+    // query pushes status updates into MirrorViewer as the file moves through
+    // uploading → translating → success.
+    if (import.meta.env.VITE_DATA_SOURCE === 'remote') {
+      const file = dropped[0];
+      const ownerId = routeProductId ?? 'demo';
+      const toastId = toast.loading(`Uploading ${file.name}…`);
+      try {
+        await uploadCadFile(file, { ownerType: 'product', ownerId }, (p) => {
+          if (p.phase === 'uploading') {
+            toast.loading(`Uploading ${file.name} · ${p.percent}%`, { id: toastId });
+          } else if (p.phase === 'finalizing') {
+            toast.loading('Finalising upload…', { id: toastId });
+          } else if (p.phase === 'translating') {
+            toast.success('Translating in Autodesk — viewer will refresh when ready', { id: toastId });
+          }
+        });
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : 'Upload failed',
+          { id: toastId },
+        );
+      }
+    } else {
+      toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+    }
   };
 
   const removeFile = (id: string) => {
@@ -1626,33 +1656,26 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={cn(
-              'flex aspect-[16/10] items-center justify-center rounded-xl border-2 border-dashed transition-colors',
+              'relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-colors',
               dragOver
                 ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/10'
                 : 'border-[var(--border)] bg-[var(--neutral-50)]',
             )}
           >
             {selected ? (
-              <div className="flex flex-col items-center gap-3 text-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-[var(--mw-mirage)] text-white">
-                  {selected.kind === '3d' ? (
-                    <Layers3 className="h-10 w-10" strokeWidth={1.5} />
-                  ) : selected.kind === '2d' ? (
-                    <Boxes className="h-10 w-10" strokeWidth={1.5} />
-                  ) : (
-                    <FileText className="h-10 w-10" strokeWidth={1.5} />
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{selected.name}</p>
-                  <p className="text-xs text-[var(--neutral-500)]">
+              <>
+                <MirrorViewer
+                  context={{ ownerType: 'product', ownerId: routeProductId ?? 'demo' }}
+                  className="absolute inset-0"
+                />
+                {/* Filename strip stays so users see which file is loaded. */}
+                <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5 shadow-xs backdrop-blur">
+                  <span className="text-[11px] font-medium text-foreground">{selected.name}</span>
+                  <span className="text-[10px] text-[var(--neutral-500)]">
                     {FILE_KIND_LABEL[selected.kind].label} · {fmtKb(selected.sizeKb)}
-                  </p>
+                  </span>
                 </div>
-                <p className="max-w-xs text-xs text-[var(--neutral-500)]">
-                  3D preview wires up to the existing GLB viewer in P2. Drop files here to upload — DXF, DWG, STEP, STL, GLB, PDF.
-                </p>
-              </div>
+              </>
             ) : (
               <div className="flex flex-col items-center gap-2 text-center">
                 <Upload className="h-8 w-8 text-[var(--neutral-400)]" strokeWidth={1.5} />
