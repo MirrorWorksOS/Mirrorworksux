@@ -291,18 +291,17 @@ export function MirrorViewer({
         </div>
       )}
 
-      {!hideToolbar &&
-        mode !== 'loading' &&
-        mode !== 'uploading' &&
-        mode !== 'translating' &&
-        mode !== 'empty' &&
-        mode !== 'failed' && (
-          <MirrorViewToolbar
-            onReset={handleReset}
-            onMode={handleMode}
-            className={density === 'compact' ? 'bottom-2' : undefined}
-          />
-        )}
+      {/* Our toolbar is only useful for the GLB fallback path. When APS is
+          mounted it ships its own complete native toolbar (orbit / pan /
+          walk / measure / sections / fit / view-cube) and stacking ours on
+          top of it just hides their controls. */}
+      {!hideToolbar && mode === 'glb' && (
+        <MirrorViewToolbar
+          onReset={handleReset}
+          onMode={handleMode}
+          className={density === 'compact' ? 'bottom-2' : undefined}
+        />
+      )}
     </div>
   );
 }

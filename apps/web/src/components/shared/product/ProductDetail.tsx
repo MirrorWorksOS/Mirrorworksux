@@ -56,7 +56,7 @@ import type { XeroAccount } from '@/types/xero';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
 import { uploadCadFile } from '@/services/mirrorViewerUpload';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { Loader2 } from 'lucide-react';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
@@ -1579,6 +1579,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
     setSelectedUploadId(firstReady?._id ?? null);
   }, [uploadedModels, selectedUploadId]);
   const selectedUpload = uploadedModels?.find((m) => m._id === selectedUploadId) ?? null;
+  const deleteUploadedModel = useMutation(api.mirrorview.deleteModel);
 
   // CRITICAL: memoize both props passed to <MirrorViewer>. Without stable
   // references, the viewer's load useEffect re-fires on every parent render
@@ -1842,6 +1843,29 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                           </span>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        className="rounded p-1 text-[var(--neutral-400)] hover:bg-[var(--neutral-100)] hover:text-[var(--mw-error)]"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // If we're about to delete the row that's currently
+                          // driving the viewer, clear the selection so the
+                          // auto-select effect picks the next-newest Ready row.
+                          if (selectedUploadId === m._id) {
+                            setSelectedUploadId(null);
+                          }
+                          void deleteUploadedModel({ id: m._id })
+                            .then(() => toast.success(`Removed ${m.fileName}`))
+                            .catch((err) =>
+                              toast.error(
+                                err instanceof Error ? err.message : 'Delete failed',
+                              ),
+                            );
+                        }}
+                        aria-label={`Remove ${m.fileName}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </li>
                   );
                 })}

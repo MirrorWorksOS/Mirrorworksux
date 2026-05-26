@@ -1,4 +1,4 @@
-import { internalMutation, query } from './_generated/server';
+import { internalMutation, mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
 /**
@@ -89,5 +89,20 @@ export const listModels = query({
       .collect();
     rows.sort((a, b) => b.createdAt - a.createdAt);
     return rows;
+  },
+});
+
+/**
+ * Delete a model row from the sidebar.
+ *
+ * NOTE: this only removes the metadata row from Convex. The translated SVF
+ * derivative in APS Object Storage is left behind — at go-live we'll add an
+ * `aps.deleteObject` action wired here to keep OSS tidy. Until then,
+ * orphaned derivatives are harmless (just APS storage quota).
+ */
+export const deleteModel = mutation({
+  args: { id: v.id('mirrorviewModels') },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
   },
 });
