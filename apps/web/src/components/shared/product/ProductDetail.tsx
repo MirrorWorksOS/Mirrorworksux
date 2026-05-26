@@ -55,7 +55,8 @@ import { getAccounts as getXeroAccounts } from '@/services/xeroService';
 import type { XeroAccount } from '@/types/xero';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
-import { uploadCadFile } from '@/services/mirrorViewerUpload';
+import { CadUploadConfirmDialog } from '@/components/shared/3d/CadUploadConfirmDialog';
+import { uploadCadFile, nextRevisionLabel } from '@/services/mirrorViewerUpload';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
 import { Loader2 } from 'lucide-react';
@@ -1599,7 +1600,14 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
     [routeProductId],
   );
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  // Pending file for the confirm-revision dialog. Set by handleDrop; cleared
+  // when the user confirms or cancels.
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const suggestedRevisionLabel = nextRevisionLabel(
+    (uploadedModels ?? []).map((m) => m.revisionLabel),
+  );
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
     const dropped = Array.from(e.dataTransfer.files);
@@ -1624,31 +1632,50 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
     });
     setFiles((prev) => [...additions, ...prev]);
 
-    // Real APS upload pipeline for the first dropped file. Convex reactive
-    // query pushes status updates into MirrorViewer as the file moves through
-    // uploading → translating → success.
     if (import.meta.env.VITE_DATA_SOURCE === 'remote') {
-      const file = dropped[0];
-      const ownerId = routeProductId ?? 'demo';
-      const toastId = toast.loading(`Uploading ${file.name}…`);
-      try {
-        await uploadCadFile(file, { ownerType: 'product', ownerId }, (p) => {
+      // Defer the upload until the engineer confirms (or overrides) the
+      // auto-bumped revision label + optional change-note.
+      setPendingFile(dropped[0]);
+    } else {
+      toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+    }
+  };
+
+  const handleConfirmUpload = async (value: {
+    revisionLabel: string;
+    revisionNotes: string;
+  }) => {
+    const file = pendingFile;
+    setPendingFile(null);
+    if (!file) return;
+    const ownerId = routeProductId ?? 'demo';
+    const toastId = toast.loading(`Uploading ${file.name} as ${value.revisionLabel}…`);
+    try {
+      await uploadCadFile(
+        file,
+        { ownerType: 'product', ownerId },
+        (p) => {
           if (p.phase === 'uploading') {
-            toast.loading(`Uploading ${file.name} · ${p.percent}%`, { id: toastId });
+            toast.loading(
+              `Uploading ${file.name} · ${value.revisionLabel} · ${p.percent}%`,
+              { id: toastId },
+            );
           } else if (p.phase === 'finalizing') {
             toast.loading('Finalising upload…', { id: toastId });
           } else if (p.phase === 'translating') {
-            toast.success('Translating in Autodesk — viewer will refresh when ready', { id: toastId });
+            toast.success(
+              `Translating ${value.revisionLabel} in Autodesk — viewer will refresh when ready`,
+              { id: toastId },
+            );
           }
-        });
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : 'Upload failed',
-          { id: toastId },
-        );
-      }
-    } else {
-      toast.success(`Uploaded ${additions.length} file${additions.length === 1 ? '' : 's'}`);
+        },
+        {
+          revisionLabel: value.revisionLabel,
+          revisionNotes: value.revisionNotes || undefined,
+        },
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed', { id: toastId });
     }
   };
 
@@ -1721,6 +1748,11 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                 <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5 shadow-xs backdrop-blur">
                   {selectedUpload ? (
                     <>
+                      {selectedUpload.revisionLabel && (
+                        <span className="rounded-full bg-[var(--mw-yellow-400)]/30 px-1.5 py-0.5 text-[10px] font-medium text-foreground">
+                          {selectedUpload.revisionLabel}
+                        </span>
+                      )}
                       <span className="text-[11px] font-medium text-foreground">{selectedUpload.fileName}</span>
                       <span className="text-[10px] text-[var(--neutral-500)]">
                         {selectedUpload.status === 'success' ? 'Ready' : selectedUpload.status} · {(selectedUpload.sizeBytes / (1024 * 1024)).toFixed(1)} MB
@@ -1826,7 +1858,14 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">{m.fileName}</p>
+                        <div className="flex items-center gap-1.5">
+                          {m.revisionLabel && (
+                            <span className="shrink-0 rounded-full bg-[var(--mw-yellow-400)]/30 px-1.5 py-0.5 text-[10px] font-medium text-foreground tabular-nums">
+                              {m.revisionLabel}
+                            </span>
+                          )}
+                          <p className="truncate text-sm font-medium text-foreground">{m.fileName}</p>
+                        </div>
                         <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-[var(--neutral-500)]">
                           <span
                             className={cn(
@@ -1842,6 +1881,11 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                             {(m.sizeBytes / (1024 * 1024)).toFixed(1)} MB
                           </span>
                         </div>
+                        {m.revisionNotes && (
+                          <p className="mt-1 truncate text-[11px] italic text-[var(--neutral-500)]" title={m.revisionNotes}>
+                            “{m.revisionNotes}”
+                          </p>
+                        )}
                       </div>
                       <button
                         type="button"
@@ -1995,6 +2039,13 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
           ))}
         </Card>
       </section>
+
+      <CadUploadConfirmDialog
+        file={pendingFile}
+        suggestedLabel={suggestedRevisionLabel}
+        onCancel={() => setPendingFile(null)}
+        onConfirm={handleConfirmUpload}
+      />
     </div>
   );
 }

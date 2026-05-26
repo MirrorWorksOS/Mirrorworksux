@@ -24,6 +24,8 @@ export const insertModel = internalMutation({
     bucketKey: v.string(),
     objectKey: v.string(),
     uploadKey: v.string(),
+    revisionLabel: v.optional(v.string()),
+    revisionNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();

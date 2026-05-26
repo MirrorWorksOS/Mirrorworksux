@@ -32,7 +32,8 @@ import {
   type MirrorViewerService,
   type ViewerContext,
 } from '@/services/mirrorViewer';
-import { uploadCadFile } from '@/services/mirrorViewerUpload';
+import { uploadCadFile, nextRevisionLabel } from '@/services/mirrorViewerUpload';
+import { CadUploadConfirmDialog } from './CadUploadConfirmDialog';
 import {
   ensureApsInitialised,
   type ApsViewerInstance,
@@ -90,12 +91,23 @@ export function MirrorViewer({
       : 'skip',
   );
 
+  // Full upload history for this owner — used to auto-bump the revision label
+  // in the upload confirm dialog. Only queried when uploads are enabled.
+  const uploadedModels = useQuery(
+    api.mirrorview.listModels,
+    enableUpload && REMOTE_MODE
+      ? { ownerType: context.ownerType, ownerId: context.ownerId }
+      : 'skip',
+  );
+
   const [mode, setMode] = useState<Mode>('loading');
   const [resolvedSource, setResolvedSource] = useState<MirrorViewerSource | null>(
     source ?? null,
   );
   const [progressLabel, setProgressLabel] = useState<string>('');
   const [dragOver, setDragOver] = useState(false);
+  // Pending file from a drop — opens the confirm dialog. Null while idle.
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   // Resolve the source. Order of precedence:
   //   1. explicit `source` prop
@@ -271,25 +283,54 @@ export function MirrorViewer({
     if (!enableUpload) return;
     setDragOver(false);
   };
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     if (!enableUpload) return;
     e.preventDefault();
     setDragOver(false);
     const file = Array.from(e.dataTransfer.files)[0];
     if (!file) return;
-    const toastId = toast.loading(`Uploading ${file.name}…`);
+    // Open the confirm dialog instead of uploading immediately — gives the
+    // engineer a chance to override the auto-bumped revision label and add
+    // a 1-line "what changed" note.
+    setPendingFile(file);
+  };
+
+  const suggestedRevisionLabel = nextRevisionLabel(
+    (uploadedModels ?? []).map((m) => m.revisionLabel),
+  );
+
+  const handleConfirmUpload = async (value: {
+    revisionLabel: string;
+    revisionNotes: string;
+  }) => {
+    const file = pendingFile;
+    setPendingFile(null);
+    if (!file) return;
+    const toastId = toast.loading(`Uploading ${file.name} as ${value.revisionLabel}…`);
     try {
-      await uploadCadFile(file, context, (p) => {
-        if (p.phase === 'uploading') {
-          toast.loading(`Uploading ${file.name} · ${p.percent}%`, { id: toastId });
-        } else if (p.phase === 'finalizing') {
-          toast.loading('Finalising upload…', { id: toastId });
-        } else if (p.phase === 'translating') {
-          toast.success('Translating in Autodesk — viewer will refresh when ready', {
-            id: toastId,
-          });
-        }
-      });
+      await uploadCadFile(
+        file,
+        context,
+        (p) => {
+          if (p.phase === 'uploading') {
+            toast.loading(
+              `Uploading ${file.name} · ${value.revisionLabel} · ${p.percent}%`,
+              { id: toastId },
+            );
+          } else if (p.phase === 'finalizing') {
+            toast.loading('Finalising upload…', { id: toastId });
+          } else if (p.phase === 'translating') {
+            toast.success(
+              `Translating ${value.revisionLabel} in Autodesk — viewer will refresh when ready`,
+              { id: toastId },
+            );
+          }
+        },
+        {
+          revisionLabel: value.revisionLabel,
+          revisionNotes: value.revisionNotes || undefined,
+        },
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Upload failed', { id: toastId });
     }
@@ -390,6 +431,15 @@ export function MirrorViewer({
           onReset={handleReset}
           onMode={handleMode}
           className={density === 'compact' ? 'bottom-2' : undefined}
+        />
+      )}
+
+      {enableUpload && (
+        <CadUploadConfirmDialog
+          file={pendingFile}
+          suggestedLabel={suggestedRevisionLabel}
+          onCancel={() => setPendingFile(null)}
+          onConfirm={handleConfirmUpload}
         />
       )}
     </div>

@@ -44,6 +44,12 @@ export default defineSchema({
     progress: v.number(),
     error: v.optional(v.string()),
 
+    // Revision metadata. `revisionLabel` is short and bumped client-side
+    // (Rev A → Rev B → … → Rev AA). `revisionNotes` is the free-text
+    // "what changed" line surfaced in the drift banner + history.
+    revisionLabel: v.optional(v.string()),
+    revisionNotes: v.optional(v.string()),
+
     createdAt: v.number(),
     updatedAt: v.number(),
   })

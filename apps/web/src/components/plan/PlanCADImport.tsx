@@ -39,7 +39,9 @@ import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
-import { uploadCadFile } from '@/services/mirrorViewerUpload';
+import { uploadCadFile, nextRevisionLabel } from '@/services/mirrorViewerUpload';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
 import { toast } from 'sonner';
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -105,6 +107,13 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
   const [customScale, setCustomScale] = useState('1');
   const [showSettings, setShowSettings] = useState(true);
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
+
+  // Reactive list of existing uploads in this staging namespace — used to
+  // auto-bump revision labels across batch drops without per-file prompts.
+  const stagedModels = useQuery(
+    api.mirrorview.listModels,
+    import.meta.env.VITE_DATA_SOURCE === 'remote' ? PLAN_CAD_IMPORT_CONTEXT : 'skip',
+  );
 
   // Simulate file import with progress
   const simulateImport = useCallback((fileId: string) => {
@@ -181,8 +190,21 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
       setFiles((prev) => [...prev, ...accepted.map((a) => a.entry)]);
 
       const isRemote = import.meta.env.VITE_DATA_SOURCE === 'remote';
+      // Auto-bump revision labels across the whole batch starting from the
+      // existing history in this staging namespace. (PlanCADImport is a
+      // bulk-import surface — per-file dialogs would be too much friction.)
+      const existingLabels = (stagedModels ?? []).map((m) => m.revisionLabel);
+      let nextLabel = nextRevisionLabel(existingLabels);
+
       for (const { file, entry } of accepted) {
         const id = entry.id;
+        const revisionLabel = nextLabel;
+        // Roll the next-label forward so each file in this batch gets a
+        // distinct revision (Rev D, Rev E, Rev F …) without waiting for the
+        // first row to land in Convex.
+        nextLabel = nextRevisionLabel([...existingLabels, revisionLabel]);
+        existingLabels.push(revisionLabel);
+
         const patch = (next: Partial<UploadedFile>) =>
           setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, ...next } : f)));
 
@@ -193,21 +215,23 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
         }
 
         patch({ status: 'uploading', progress: 1 });
-        uploadCadFile(file, PLAN_CAD_IMPORT_CONTEXT, (p) => {
-          if (p.phase === 'uploading') {
-            // S3 PUT phase — scale to 5-50% of the progress bar.
-            patch({ status: 'uploading', progress: 5 + Math.round(p.percent * 0.45) });
-          } else if (p.phase === 'finalizing') {
-            patch({ status: 'uploading', progress: 55 });
-          } else if (p.phase === 'translating') {
-            // Convex `pollManifest` will push success via the reactive query;
-            // the file row sits at "processing" until then.
-            patch({ status: 'processing', progress: 70 });
-          }
-        })
+        uploadCadFile(
+          file,
+          PLAN_CAD_IMPORT_CONTEXT,
+          (p) => {
+            if (p.phase === 'uploading') {
+              patch({ status: 'uploading', progress: 5 + Math.round(p.percent * 0.45) });
+            } else if (p.phase === 'finalizing') {
+              patch({ status: 'uploading', progress: 55 });
+            } else if (p.phase === 'translating') {
+              patch({ status: 'processing', progress: 70 });
+            }
+          },
+          { revisionLabel },
+        )
           .then((result) => {
             patch({ status: 'complete', progress: 100, urn: result.urn });
-            toast.success(`Translating ${file.name} in Autodesk — preview when ready`);
+            toast.success(`Translating ${file.name} (${revisionLabel}) in Autodesk`);
           })
           .catch((err) => {
             patch({ status: 'error', progress: 0 });
@@ -215,7 +239,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
           });
       }
     },
-    [simulateImport],
+    [simulateImport, stagedModels],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {

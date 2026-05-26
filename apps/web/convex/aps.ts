@@ -118,6 +118,8 @@ export const startUpload = action({
     sizeBytes: v.number(),
     ownerType,
     ownerId: v.string(),
+    revisionLabel: v.optional(v.string()),
+    revisionNotes: v.optional(v.string()),
   },
   handler: async (
     ctx,
@@ -153,6 +155,8 @@ export const startUpload = action({
       bucketKey: bucketKey(),
       objectKey,
       uploadKey: json.uploadKey,
+      revisionLabel: args.revisionLabel,
+      revisionNotes: args.revisionNotes,
     });
 
     return {
