@@ -59,7 +59,8 @@ import { CadUploadConfirmDialog } from '@/components/shared/3d/CadUploadConfirmD
 import { uploadCadFile, nextRevisionLabel } from '@/services/mirrorViewerUpload';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@convex/_generated/api';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -1581,6 +1582,10 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
   }, [uploadedModels, selectedUploadId]);
   const selectedUpload = uploadedModels?.find((m) => m._id === selectedUploadId) ?? null;
   const deleteUploadedModel = useMutation(api.mirrorview.deleteModel);
+  const releaseUploadedModel = useMutation(api.mirrorview.releaseRevision);
+  const { identity, hasPermission } = useAuth();
+  const canRelease = hasPermission('mirrorview.revision.release');
+  const releaserName = identity.kind === 'internal' ? identity.user.name : undefined;
 
   // CRITICAL: memoize both props passed to <MirrorViewer>. Without stable
   // references, the viewer's load useEffect re-fires on every parent render
@@ -1755,7 +1760,12 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                       )}
                       <span className="text-[11px] font-medium text-foreground">{selectedUpload.fileName}</span>
                       <span className="text-[10px] text-[var(--neutral-500)]">
-                        {selectedUpload.status === 'success' ? 'Ready' : selectedUpload.status} · {(selectedUpload.sizeBytes / (1024 * 1024)).toFixed(1)} MB
+                        {selectedUpload.revisionStatus === 'released'
+                          ? 'Released'
+                          : selectedUpload.status === 'success'
+                            ? 'Ready'
+                            : selectedUpload.status}{' '}
+                        · {(selectedUpload.sizeBytes / (1024 * 1024)).toFixed(1)} MB
                       </span>
                     </>
                   ) : (
@@ -1821,14 +1831,17 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
               </p>
               <ul className="space-y-1.5">
                 {uploadedModels.map((m) => {
+                  const isReleased = m.revisionStatus === 'released';
                   const statusLabel =
-                    m.status === 'success'
-                      ? 'Ready'
-                      : m.status === 'failed'
-                        ? 'Failed'
-                        : m.status === 'translating'
-                          ? `Translating · ${m.progress}%`
-                          : 'Uploading…';
+                    m.status === 'failed'
+                      ? 'Failed'
+                      : m.status === 'translating'
+                        ? `Translating · ${m.progress}%`
+                        : m.status === 'uploading'
+                          ? 'Uploading…'
+                          : isReleased
+                            ? 'Released'
+                            : 'Ready';
                   const inFlight = m.status === 'uploading' || m.status === 'translating';
                   const isReady = m.status === 'success';
                   const isSelected = m._id === selectedUploadId;
@@ -1869,17 +1882,41 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                         <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-[var(--neutral-500)]">
                           <span
                             className={cn(
-                              'rounded-full px-1.5 py-0.5 text-[10px] font-medium',
-                              m.status === 'success' && 'bg-[var(--mw-success)]/15 text-[var(--mw-success)]',
+                              'inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium',
+                              isReleased && 'bg-[var(--mw-success)]/15 text-[var(--mw-success)]',
+                              m.status === 'success' && !isReleased && 'bg-[var(--neutral-200)] text-[var(--neutral-700)]',
                               m.status === 'failed' && 'bg-[var(--mw-error)]/15 text-[var(--mw-error)]',
                               inFlight && 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
                             )}
                           >
+                            {isReleased && <CheckCircle2 className="h-2.5 w-2.5" />}
                             {statusLabel}
                           </span>
                           <span className="tabular-nums">
                             {(m.sizeBytes / (1024 * 1024)).toFixed(1)} MB
                           </span>
+                          {isReady && !isReleased && canRelease && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void releaseUploadedModel({ id: m._id, releasedBy: releaserName })
+                                  .then(() =>
+                                    toast.success(
+                                      `Released ${m.revisionLabel ?? m.fileName}`,
+                                    ),
+                                  )
+                                  .catch((err) =>
+                                    toast.error(
+                                      err instanceof Error ? err.message : 'Release failed',
+                                    ),
+                                  );
+                              }}
+                              className="ml-auto rounded-full bg-[var(--mw-yellow-400)] px-2 py-0.5 text-[10px] font-medium text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+                            >
+                              Release {m.revisionLabel ?? 'rev'}
+                            </button>
+                          )}
                         </div>
                         {m.revisionNotes && (
                           <p className="mt-1 truncate text-[11px] italic text-[var(--neutral-500)]" title={m.revisionNotes}>

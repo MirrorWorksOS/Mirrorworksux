@@ -50,6 +50,16 @@ export default defineSchema({
     revisionLabel: v.optional(v.string()),
     revisionNotes: v.optional(v.string()),
 
+    // Release gate. New uploads land as 'draft'. Engineering's "Release Rev X"
+    // button (Phase 2e) flips to 'released'; only released revisions trigger
+    // the stale-rev drift banner on operator surfaces and (Phase 2e-future)
+    // gate `isTravellerReadyForRelease()` in the traveller store.
+    revisionStatus: v.optional(
+      v.union(v.literal('draft'), v.literal('released')),
+    ),
+    releasedAt: v.optional(v.number()),
+    releasedBy: v.optional(v.string()),
+
     createdAt: v.number(),
     updatedAt: v.number(),
   })

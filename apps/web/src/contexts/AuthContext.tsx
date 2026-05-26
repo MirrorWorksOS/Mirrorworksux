@@ -55,7 +55,9 @@ export type PermissionKey =
   | 'portal.markup.create'
   | 'portal.markup.reply'
   | 'portal.markup.resolve'
-  | 'portal.markup.delete';
+  | 'portal.markup.delete'
+  // MirrorView revision lifecycle
+  | 'mirrorview.revision.release';
 
 export interface InternalIdentity {
   kind: 'internal';
@@ -125,6 +127,7 @@ const PERMISSION_MATRIX: Record<
     'portal.markup.reply': true,
     'portal.markup.resolve': true,
     'portal.markup.delete': true,
+    'mirrorview.revision.release': true,
   },
   internal_lead: {
     'portal.access': true,
@@ -140,6 +143,7 @@ const PERMISSION_MATRIX: Record<
     'portal.markup.reply': true,
     'portal.markup.resolve': true,
     'portal.markup.delete': false,
+    'mirrorview.revision.release': true,
   },
   internal_team: {
     'portal.access': true,
@@ -155,6 +159,7 @@ const PERMISSION_MATRIX: Record<
     'portal.markup.reply': false,
     'portal.markup.resolve': false,
     'portal.markup.delete': false,
+    'mirrorview.revision.release': false,
   },
   customer_admin: {
     'portal.access': true,

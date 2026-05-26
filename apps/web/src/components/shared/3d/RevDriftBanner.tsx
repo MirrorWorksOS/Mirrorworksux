@@ -1,19 +1,19 @@
 /**
  * RevDriftBanner — operator-facing nudge that fires when a Manufacturing
  * Order / work order is pinned to an older drawing revision than the latest
- * one engineering has released for the product.
+ * one engineering has *released* for the product.
  *
  * Mounts above the viewer on:
  *   - MakeManufacturingOrderDetail MirrorView tab
  *   - FloorExecution / ReferencePanel (shop floor)
  *
  * Reactive: subscribes to the product's latest revision via Convex, so the
- * moment engineering drops a new model the banner pops up on every open
- * operator screen — no client polling.
+ * moment engineering clicks "Release Rev X" the banner pops up on every
+ * open operator screen — no client polling.
  *
- * NOTE: Phase 2e introduces an explicit `revisionStatus: 'released'` gate.
- * Until then we treat any successful translation as "released" so the banner
- * has something useful to compare against. Swap the predicate when 2e lands.
+ * The release gate (Phase 2e) is `revisionStatus === 'released'`. Pre-2e
+ * rows that lack the field fall through to the `status === 'success'`
+ * check so older demo data still triggers drift detection.
  */
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
@@ -84,9 +84,13 @@ export function RevDriftBanner({
 
   // Nothing to compare yet — query still loading or no product uploads exist.
   if (!latest || !latest.revisionLabel) return null;
-  // Suppress drift for in-flight or failed translations; only released-style
-  // success matters until Phase 2e adds the explicit gate.
-  if (latest.status !== 'success') return null;
+  // Only released revs trigger drift. Pre-Phase-2e rows have no
+  // revisionStatus field — fall back to "successful translation counts" for
+  // back-compat with older demo data.
+  const isReleased =
+    latest.revisionStatus === 'released' ||
+    (latest.revisionStatus === undefined && latest.status === 'success');
+  if (!isReleased) return null;
   // Same rev → no drift.
   if (latest.revisionLabel === pinnedRevisionLabel) return null;
   // Only nudge when the product is *newer* than the pinned rev — running

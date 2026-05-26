@@ -108,3 +108,34 @@ export const deleteModel = mutation({
     await ctx.db.delete(id);
   },
 });
+
+/**
+ * Flip a revision from draft → released. Called by the Release Rev X
+ * button in ProductDetail. UI-side permission gate (admin|lead) blocks
+ * the button for team-level operators; once WorkOS lands at go-live
+ * this mutation will also verify `ctx.auth.getUserIdentity()` for
+ * server-side enforcement.
+ *
+ * `releasedBy` is provided by the client (employee display name) for now
+ * because Convex doesn't yet see WorkOS identities.
+ */
+export const releaseRevision = mutation({
+  args: {
+    id: v.id('mirrorviewModels'),
+    releasedBy: v.optional(v.string()),
+  },
+  handler: async (ctx, { id, releasedBy }) => {
+    const row = await ctx.db.get(id);
+    if (!row) throw new Error('Model not found');
+    if (row.status !== 'success') {
+      throw new Error('Can only release a successfully translated revision');
+    }
+    if (row.revisionStatus === 'released') return; // idempotent
+    await ctx.db.patch(id, {
+      revisionStatus: 'released',
+      releasedAt: Date.now(),
+      releasedBy,
+      updatedAt: Date.now(),
+    });
+  },
+});
