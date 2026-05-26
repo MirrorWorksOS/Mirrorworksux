@@ -1677,10 +1677,19 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                 </div>
               </>
             ) : (
-              <div className="flex flex-col items-center gap-2 text-center">
-                <Upload className="h-8 w-8 text-[var(--neutral-400)]" strokeWidth={1.5} />
-                <p className="text-sm font-medium text-foreground">Drop CAD files to upload</p>
-                <p className="text-xs text-[var(--neutral-500)]">DXF, DWG, STEP, STL, GLB, PDF — up to 50 MB each</p>
+              <div className="flex flex-col items-center gap-4 px-6 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--mw-yellow-400)]/15">
+                  <Upload className="h-8 w-8 text-[var(--mw-mirage)]" strokeWidth={1.5} />
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-lg font-medium text-foreground sm:text-xl">
+                    Drop a CAD file to view it in MirrorView
+                  </p>
+                  <p className="max-w-md text-sm text-[var(--neutral-600)]">
+                    Supports STEP, DWG, IPT, IAM, SLDPRT, SLDASM, RVT, IGES, STL,
+                    GLB, and 70+ other CAD &amp; BIM formats.
+                  </p>
+                </div>
               </div>
             )}
           </div>
