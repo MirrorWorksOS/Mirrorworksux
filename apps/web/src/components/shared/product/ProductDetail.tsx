@@ -56,6 +56,9 @@ import type { XeroAccount } from '@/types/xero';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
 import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
 import { uploadCadFile } from '@/services/mirrorViewerUpload';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
+import { Loader2 } from 'lucide-react';
 import { FinancialTable, type FinancialColumn } from '@/components/shared/data/FinancialTable';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
@@ -1551,6 +1554,18 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
   const activeRevision = MOCK_REVISIONS[0];
   const selected = files.find((f) => f.id === selectedFileId) ?? files[0];
 
+  // Reactive list of real APS-translated models for this product. Each row
+  // updates live as `pollManifest` ticks: uploading → translating → success.
+  // Persists across reloads because it's backed by Convex (mock files in
+  // `files` reset to MOCK_CAD_FILES on every mount).
+  const remoteOwnerId = routeProductId ?? 'demo';
+  const uploadedModels = useQuery(
+    api.mirrorview.listModels,
+    import.meta.env.VITE_DATA_SOURCE === 'remote'
+      ? { ownerType: 'product', ownerId: remoteOwnerId }
+      : 'skip',
+  );
+
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
@@ -1721,6 +1736,67 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
 
         {/* Right: File list */}
         <div className="space-y-2">
+          {/* Live uploads from Convex — persists across reloads. */}
+          {uploadedModels && uploadedModels.length > 0 && (
+            <div className="mb-4 space-y-2">
+              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--neutral-500)]">
+                Uploaded · {uploadedModels.length}
+              </p>
+              <ul className="space-y-1.5">
+                {uploadedModels.map((m) => {
+                  const statusLabel =
+                    m.status === 'success'
+                      ? 'Ready'
+                      : m.status === 'failed'
+                        ? 'Failed'
+                        : m.status === 'translating'
+                          ? `Translating · ${m.progress}%`
+                          : 'Uploading…';
+                  const inFlight = m.status === 'uploading' || m.status === 'translating';
+                  return (
+                    <li
+                      key={m._id}
+                      className={cn(
+                        'flex items-start gap-3 rounded-md border p-3 transition-colors',
+                        m.status === 'success'
+                          ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
+                          : m.status === 'failed'
+                            ? 'border-[var(--mw-error)]/30 bg-[var(--mw-error)]/5'
+                            : 'border-[var(--border)] bg-card',
+                      )}
+                    >
+                      <div className="mt-0.5 shrink-0">
+                        {inFlight ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-[var(--neutral-500)]" />
+                        ) : (
+                          <Layers3 className="h-4 w-4 text-[var(--neutral-500)]" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-foreground">{m.fileName}</p>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-[var(--neutral-500)]">
+                          <span
+                            className={cn(
+                              'rounded-full px-1.5 py-0.5 text-[10px] font-medium',
+                              m.status === 'success' && 'bg-[var(--mw-success)]/15 text-[var(--mw-success)]',
+                              m.status === 'failed' && 'bg-[var(--mw-error)]/15 text-[var(--mw-error)]',
+                              inFlight && 'bg-[var(--neutral-100)] text-[var(--neutral-600)]',
+                            )}
+                          >
+                            {statusLabel}
+                          </span>
+                          <span className="tabular-nums">
+                            {(m.sizeBytes / (1024 * 1024)).toFixed(1)} MB
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
           <p className="text-sm font-medium text-foreground">
             Files{' '}
             <span className="text-xs text-[var(--neutral-500)] tabular-nums">({files.length})</span>

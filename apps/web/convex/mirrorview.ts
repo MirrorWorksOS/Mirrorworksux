@@ -73,3 +73,21 @@ export const getActiveModel = query({
     return rows[0];
   },
 });
+
+/**
+ * Full list of models for an owner, newest first. Used by the file-list
+ * sidebar so uploaded models persist across reloads with live status pills.
+ */
+export const listModels = query({
+  args: { ownerType, ownerId: v.string() },
+  handler: async (ctx, { ownerType, ownerId }) => {
+    const rows = await ctx.db
+      .query('mirrorviewModels')
+      .withIndex('by_owner', (q) =>
+        q.eq('ownerType', ownerType).eq('ownerId', ownerId),
+      )
+      .collect();
+    rows.sort((a, b) => b.createdAt - a.createdAt);
+    return rows;
+  },
+});
