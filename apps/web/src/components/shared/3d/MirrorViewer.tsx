@@ -132,8 +132,14 @@ export function MirrorViewer({
   }, [source, activeModel, service, context]);
 
   // Mount the APS viewer when we have a URN in hand.
+  //
+  // Depends on `resolvedSource` (and `service`) ONLY — not on `mode`. When
+  // Document.load succeeds we flip mode to 'aps', and if `mode` were in this
+  // dep array the cleanup would run and call `finish()` on the just-loaded
+  // viewer. Mode is just a render-state hint; the viewer lives until the URN
+  // changes or the component unmounts.
   useEffect(() => {
-    if (mode !== 'loading' || !resolvedSource?.urn) return;
+    if (!resolvedSource?.urn) return;
 
     let cancelled = false;
     void (async () => {
@@ -210,7 +216,7 @@ export function MirrorViewer({
         apsRef.current = null;
       }
     };
-  }, [mode, resolvedSource, service]);
+  }, [resolvedSource, service]);
 
   const handleReset = () => {
     if (mode === 'aps' && apsRef.current) {

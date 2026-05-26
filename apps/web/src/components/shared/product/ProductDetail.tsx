@@ -1579,10 +1579,24 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
     setSelectedUploadId(firstReady?._id ?? null);
   }, [uploadedModels, selectedUploadId]);
   const selectedUpload = uploadedModels?.find((m) => m._id === selectedUploadId) ?? null;
-  const viewerSource =
-    selectedUpload?.status === 'success' && selectedUpload.urn
-      ? { urn: selectedUpload.urn, glbSrc: '/models/diff.glb' }
-      : undefined;
+
+  // CRITICAL: memoize both props passed to <MirrorViewer>. Without stable
+  // references, the viewer's load useEffect re-fires on every parent render
+  // and cancels its own Document.load before geometry can paint — symptom
+  // is a blank canvas + multiple `WebGLRenderer: …` console lines.
+  const selectedUploadUrn = selectedUpload?.urn;
+  const selectedUploadStatus = selectedUpload?.status;
+  const viewerSource = useMemo(
+    () =>
+      selectedUploadStatus === 'success' && selectedUploadUrn
+        ? { urn: selectedUploadUrn, glbSrc: '/models/diff.glb' }
+        : undefined,
+    [selectedUploadStatus, selectedUploadUrn],
+  );
+  const viewerContext = useMemo(
+    () => ({ ownerType: 'product' as const, ownerId: routeProductId ?? 'demo' }),
+    [routeProductId],
+  );
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -1699,7 +1713,7 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
               <>
                 <MirrorViewer
                   source={viewerSource}
-                  context={{ ownerType: 'product', ownerId: routeProductId ?? 'demo' }}
+                  context={viewerContext}
                   className="absolute inset-0"
                 />
                 {/* Filename strip — reflects what the viewer is actually rendering. */}
