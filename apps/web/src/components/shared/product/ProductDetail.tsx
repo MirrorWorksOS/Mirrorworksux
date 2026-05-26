@@ -1566,6 +1566,24 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
       : 'skip',
   );
 
+  // Which Uploaded model to render in the viewer. Click an Uploaded row in
+  // the sidebar to switch; auto-selects the most-recent Ready upload when
+  // nothing is picked yet (so a fresh upload pops straight into the viewer).
+  const [selectedUploadId, setSelectedUploadId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!uploadedModels) return;
+    const stillValid =
+      selectedUploadId && uploadedModels.some((m) => m._id === selectedUploadId);
+    if (stillValid) return;
+    const firstReady = uploadedModels.find((m) => m.status === 'success');
+    setSelectedUploadId(firstReady?._id ?? null);
+  }, [uploadedModels, selectedUploadId]);
+  const selectedUpload = uploadedModels?.find((m) => m._id === selectedUploadId) ?? null;
+  const viewerSource =
+    selectedUpload?.status === 'success' && selectedUpload.urn
+      ? { urn: selectedUpload.urn, glbSrc: '/models/diff.glb' }
+      : undefined;
+
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
@@ -1677,18 +1695,30 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                 : 'border-[var(--border)] bg-[var(--neutral-50)]',
             )}
           >
-            {selected ? (
+            {(selectedUpload || selected) ? (
               <>
                 <MirrorViewer
+                  source={viewerSource}
                   context={{ ownerType: 'product', ownerId: routeProductId ?? 'demo' }}
                   className="absolute inset-0"
                 />
-                {/* Filename strip stays so users see which file is loaded. */}
+                {/* Filename strip — reflects what the viewer is actually rendering. */}
                 <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5 shadow-xs backdrop-blur">
-                  <span className="text-[11px] font-medium text-foreground">{selected.name}</span>
-                  <span className="text-[10px] text-[var(--neutral-500)]">
-                    {FILE_KIND_LABEL[selected.kind].label} · {fmtKb(selected.sizeKb)}
-                  </span>
+                  {selectedUpload ? (
+                    <>
+                      <span className="text-[11px] font-medium text-foreground">{selectedUpload.fileName}</span>
+                      <span className="text-[10px] text-[var(--neutral-500)]">
+                        {selectedUpload.status === 'success' ? 'Ready' : selectedUpload.status} · {(selectedUpload.sizeBytes / (1024 * 1024)).toFixed(1)} MB
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[11px] font-medium text-foreground">{selected!.name}</span>
+                      <span className="text-[10px] text-[var(--neutral-500)]">
+                        {FILE_KIND_LABEL[selected!.kind].label} · {fmtKb(selected!.sizeKb)}
+                      </span>
+                    </>
+                  )}
                 </div>
               </>
             ) : (
@@ -1753,16 +1783,24 @@ function MirrorViewTab({ files, setFiles }: MirrorViewTabProps) {
                           ? `Translating · ${m.progress}%`
                           : 'Uploading…';
                   const inFlight = m.status === 'uploading' || m.status === 'translating';
+                  const isReady = m.status === 'success';
+                  const isSelected = m._id === selectedUploadId;
                   return (
                     <li
                       key={m._id}
+                      onClick={
+                        isReady ? () => setSelectedUploadId(m._id) : undefined
+                      }
                       className={cn(
                         'flex items-start gap-3 rounded-md border p-3 transition-colors',
-                        m.status === 'success'
-                          ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
-                          : m.status === 'failed'
-                            ? 'border-[var(--mw-error)]/30 bg-[var(--mw-error)]/5'
-                            : 'border-[var(--border)] bg-card',
+                        isReady && 'cursor-pointer hover:border-[var(--neutral-300)]',
+                        isSelected
+                          ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/20 ring-2 ring-[var(--mw-yellow-400)]/30'
+                          : isReady
+                            ? 'border-[var(--mw-yellow-400)] bg-[var(--mw-yellow-400)]/10'
+                            : m.status === 'failed'
+                              ? 'border-[var(--mw-error)]/30 bg-[var(--mw-error)]/5'
+                              : 'border-[var(--border)] bg-card',
                       )}
                     >
                       <div className="mt-0.5 shrink-0">
