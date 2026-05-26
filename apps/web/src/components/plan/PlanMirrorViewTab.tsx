@@ -23,6 +23,13 @@ export function PlanMirrorViewTab() {
   const view3dRef = useRef<HTMLDivElement | null>(null);
   const view2dRef = useRef<HTMLDivElement | null>(null);
 
+  // Memoize so MirrorViewer's source-resolve effect doesn't see a new context
+  // reference each render and remount the APS Viewer mid-load.
+  const jobViewerContext = useMemo(
+    () => ({ ownerType: 'job' as const, ownerId: activePart?.id ?? 'demo' }),
+    [activePart?.id],
+  );
+
   /** Browser-native fullscreen toggle for whichever viewer is targeted. */
   const goFullscreen = (ref: React.RefObject<HTMLDivElement>) => {
     const el = ref.current;
@@ -84,7 +91,8 @@ export function PlanMirrorViewTab() {
 
           <div ref={view3dRef} className="aspect-video bg-[var(--neutral-100)] rounded-md relative overflow-hidden">
             <MirrorViewer
-              context={{ ownerType: 'job', ownerId: activePart?.id ?? 'demo' }}
+              context={jobViewerContext}
+              enableUpload
               className="absolute inset-0"
             />
             <div className="absolute top-3 left-3 flex items-center gap-2 pointer-events-none">

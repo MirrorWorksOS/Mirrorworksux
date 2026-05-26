@@ -47,11 +47,16 @@ function putToS3(
   });
 }
 
+export interface UploadResult {
+  modelId: Id<'mirrorviewModels'>;
+  urn: string;
+}
+
 export async function uploadCadFile(
   file: File,
   context: ViewerContext,
   onProgress: UploadProgressCallback = () => {},
-): Promise<Id<'mirrorviewModels'>> {
+): Promise<UploadResult> {
   const client = getClient();
 
   onProgress({ phase: 'starting', percent: 0 });
@@ -77,13 +82,13 @@ export async function uploadCadFile(
   });
 
   onProgress({ phase: 'finalizing', percent: 100 });
-  await client.action(api.aps.finishUpload, {
+  const finish = (await client.action(api.aps.finishUpload, {
     modelId: start.modelId,
     uploadKey: start.uploadKey,
     bucketKey: start.bucketKey,
     objectKey: start.objectKey,
-  });
+  })) as { urn: string };
 
   onProgress({ phase: 'translating', percent: 0 });
-  return start.modelId;
+  return { modelId: start.modelId, urn: finish.urn };
 }

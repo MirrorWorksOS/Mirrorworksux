@@ -125,6 +125,13 @@ export function MakeManufacturingOrderDetail() {
   const [shiftPaused, setShiftPaused] = useState(false);
 
   const mo = id ? MO_BY_ID[id] : undefined;
+  // Memoize the MirrorViewer context so its identity is stable across renders
+  // (the viewer's source-resolve effect depends on context; identity churn
+  // would trigger a remount loop and cancel in-flight Document.load).
+  const moViewerContext = useMemo(
+    () => ({ ownerType: 'mo' as const, ownerId: id ?? 'demo' }),
+    [id],
+  );
   const assembly = useMemo(() => getDifferentialAssembly('make'), []);
   const travellerPackets = useTravellerStore(
     useShallow((state) =>
@@ -646,7 +653,8 @@ export function MakeManufacturingOrderDetail() {
             </div>
             <Card className="aspect-video overflow-hidden p-0">
               <MirrorViewer
-                context={{ ownerType: 'mo', ownerId: id ?? 'demo' }}
+                context={moViewerContext}
+                enableUpload
                 className="h-full w-full"
               />
             </Card>

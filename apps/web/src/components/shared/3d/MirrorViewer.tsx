@@ -10,13 +10,20 @@
  * - When the row reaches `success`, mounts the Autodesk APS Viewer v7 against
  *   the URN. APS handles ~80 native CAD/BIM formats.
  * - Falls back to the bundled GLB demo asset when no row exists yet (so the
- *   demo never shows a blank screen).
+ *   demo never shows a blank screen) — unless `enableUpload` is set, in which
+ *   case the "no model" state is a drop affordance instead of a GLB.
+ *
+ * When `enableUpload` is set: a STEP/DWG/RVT/etc. dragged onto the viewer is
+ * uploaded via the same APS pipeline the ProductDetail dropzone uses. The
+ * reactive `getActiveModel` query picks up the new row and drives the UI from
+ * uploading → translating → success → APS render — no extra plumbing needed.
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '@convex/_generated/api';
+import { toast } from 'sonner';
 
 import { GlbViewer, type GlbViewerApi } from './GlbViewer';
 import { MirrorViewToolbar } from './MirrorViewToolbar';
@@ -25,6 +32,7 @@ import {
   type MirrorViewerService,
   type ViewerContext,
 } from '@/services/mirrorViewer';
+import { uploadCadFile } from '@/services/mirrorViewerUpload';
 import {
   ensureApsInitialised,
   type ApsViewerInstance,
@@ -46,6 +54,13 @@ export interface MirrorViewerProps {
   className?: string;
   service?: MirrorViewerService;
   hideToolbar?: boolean;
+  /**
+   * Accept drag-and-drop CAD uploads scoped to `context`. When set, the
+   * "no model" state becomes a drop affordance instead of the demo GLB
+   * fallback. Off by default so surfaces that should stay read-only
+   * (operator shop-floor) don't accidentally accept uploads.
+   */
+  enableUpload?: boolean;
 }
 
 type Mode = 'loading' | 'uploading' | 'translating' | 'aps' | 'glb' | 'empty' | 'failed';
@@ -59,6 +74,7 @@ export function MirrorViewer({
   className,
   service = mirrorViewerService,
   hideToolbar = false,
+  enableUpload = false,
 }: MirrorViewerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const apsRef = useRef<ApsViewerInstance | null>(null);
@@ -79,6 +95,7 @@ export function MirrorViewer({
     source ?? null,
   );
   const [progressLabel, setProgressLabel] = useState<string>('');
+  const [dragOver, setDragOver] = useState(false);
 
   // Resolve the source. Order of precedence:
   //   1. explicit `source` prop
@@ -94,8 +111,15 @@ export function MirrorViewer({
     if (REMOTE_MODE) {
       if (activeModel === undefined) return; // query still loading
       if (activeModel === null) {
-        setResolvedSource({ glbSrc: DEMO_GLB });
-        setMode('glb');
+        // No upload yet for this owner. If the surface accepts uploads, prefer
+        // the drop-affordance empty state over a misleading demo-GLB stand-in.
+        if (enableUpload) {
+          setResolvedSource(null);
+          setMode('empty');
+        } else {
+          setResolvedSource({ glbSrc: DEMO_GLB });
+          setMode('glb');
+        }
         return;
       }
       switch (activeModel.status) {
@@ -129,7 +153,7 @@ export function MirrorViewer({
     return () => {
       cancelled = true;
     };
-  }, [source, activeModel, service, context]);
+  }, [source, activeModel, service, context, enableUpload]);
 
   // Mount the APS viewer when we have a URN in hand.
   //
@@ -234,8 +258,56 @@ export function MirrorViewer({
     }
   };
 
+  // Drag-drop upload handlers. Active only when `enableUpload` is set. Calls
+  // the same Convex pipeline (startUpload → S3 PUT → finishUpload) that
+  // ProductDetail's surrounding dropzone uses; reactive query picks up the
+  // new row and drives the UI from uploading → translating → success → APS.
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!enableUpload) return;
+    e.preventDefault();
+    setDragOver(true);
+  };
+  const handleDragLeave = () => {
+    if (!enableUpload) return;
+    setDragOver(false);
+  };
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    if (!enableUpload) return;
+    e.preventDefault();
+    setDragOver(false);
+    const file = Array.from(e.dataTransfer.files)[0];
+    if (!file) return;
+    const toastId = toast.loading(`Uploading ${file.name}…`);
+    try {
+      await uploadCadFile(file, context, (p) => {
+        if (p.phase === 'uploading') {
+          toast.loading(`Uploading ${file.name} · ${p.percent}%`, { id: toastId });
+        } else if (p.phase === 'finalizing') {
+          toast.loading('Finalising upload…', { id: toastId });
+        } else if (p.phase === 'translating') {
+          toast.success('Translating in Autodesk — viewer will refresh when ready', {
+            id: toastId,
+          });
+        }
+      });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed', { id: toastId });
+    }
+  };
+
   return (
-    <div className={cn('relative h-full w-full', className)}>
+    <div
+      className={cn(
+        'relative h-full w-full',
+        enableUpload &&
+          dragOver &&
+          'outline-dashed outline-2 outline-offset-[-6px] outline-[var(--mw-yellow-500)]',
+        className,
+      )}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       {/* APS mount point — always rendered so the ref exists when init resolves */}
       <div
         ref={containerRef}
@@ -274,11 +346,29 @@ export function MirrorViewer({
         />
       )}
 
-      {mode === 'empty' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-50)]">
-          <p className="text-xs text-[var(--neutral-500)]">No model attached</p>
-        </div>
-      )}
+      {mode === 'empty' &&
+        (enableUpload ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-50)]">
+            <div className="flex flex-col items-center gap-4 px-6 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--mw-yellow-400)]/15">
+                <Upload className="h-8 w-8 text-[var(--mw-mirage)]" strokeWidth={1.5} />
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-lg font-medium text-foreground sm:text-xl">
+                  Drop a CAD file to view it in MirrorView
+                </p>
+                <p className="max-w-md text-sm text-[var(--neutral-600)]">
+                  Supports STEP, DWG, IPT, IAM, SLDPRT, SLDASM, RVT, IGES, STL,
+                  GLB, and 70+ other CAD &amp; BIM formats.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-50)]">
+            <p className="text-xs text-[var(--neutral-500)]">No model attached</p>
+          </div>
+        ))}
 
       {mode === 'failed' && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--mw-error)]/5 px-6 text-center">

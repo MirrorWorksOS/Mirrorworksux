@@ -38,7 +38,8 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { StatusBadge } from '@/components/shared/data/StatusBadge';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
-import { ExecutionModelViewer } from '@/components/floor/execution/ExecutionModelViewer';
+import { MirrorViewer } from '@/components/shared/3d/MirrorViewer';
+import { uploadCadFile } from '@/services/mirrorViewerUpload';
 import { toast } from 'sonner';
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -66,7 +67,15 @@ interface UploadedFile {
   status: ImportStatus;
   progress: number;
   addedAt: Date;
+  /** APS URN once the file has finished uploading (translation may still be in flight). */
+  urn?: string;
 }
+
+/** Owner context used for every upload coming through the Plan CAD Import surface. */
+const PLAN_CAD_IMPORT_CONTEXT = {
+  ownerType: 'product' as const,
+  ownerId: 'plan-cad-import',
+};
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
@@ -146,7 +155,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
 
   const addFiles = useCallback(
     (fileList: FileList) => {
-      const newFiles: UploadedFile[] = [];
+      const accepted: { file: File; entry: UploadedFile }[] = [];
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         const ext = getFileExtension(file.name);
@@ -155,20 +164,58 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
           continue;
         }
         const id = `cad-${Date.now()}-${i}`;
-        newFiles.push({
-          id,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          extension: ext,
-          status: 'idle',
-          progress: 0,
-          addedAt: new Date(),
+        accepted.push({
+          file,
+          entry: {
+            id,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            extension: ext,
+            status: 'idle',
+            progress: 0,
+            addedAt: new Date(),
+          },
         });
       }
-      setFiles((prev) => [...prev, ...newFiles]);
+      setFiles((prev) => [...prev, ...accepted.map((a) => a.entry)]);
+
+      const isRemote = import.meta.env.VITE_DATA_SOURCE === 'remote';
+      for (const { file, entry } of accepted) {
+        const id = entry.id;
+        const patch = (next: Partial<UploadedFile>) =>
+          setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, ...next } : f)));
+
+        if (!isRemote) {
+          // Mock mode keeps the original simulated progress for offline demos.
+          simulateImport(id);
+          continue;
+        }
+
+        patch({ status: 'uploading', progress: 1 });
+        uploadCadFile(file, PLAN_CAD_IMPORT_CONTEXT, (p) => {
+          if (p.phase === 'uploading') {
+            // S3 PUT phase — scale to 5-50% of the progress bar.
+            patch({ status: 'uploading', progress: 5 + Math.round(p.percent * 0.45) });
+          } else if (p.phase === 'finalizing') {
+            patch({ status: 'uploading', progress: 55 });
+          } else if (p.phase === 'translating') {
+            // Convex `pollManifest` will push success via the reactive query;
+            // the file row sits at "processing" until then.
+            patch({ status: 'processing', progress: 70 });
+          }
+        })
+          .then((result) => {
+            patch({ status: 'complete', progress: 100, urn: result.urn });
+            toast.success(`Translating ${file.name} in Autodesk — preview when ready`);
+          })
+          .catch((err) => {
+            patch({ status: 'error', progress: 0 });
+            toast.error(err instanceof Error ? err.message : 'Upload failed');
+          });
+      }
     },
-    [],
+    [simulateImport],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -611,18 +658,16 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
           </SheetHeader>
           <div className="relative flex-1 bg-[var(--neutral-50)] dark:bg-[var(--neutral-50)] overflow-hidden">
             {previewFile && (
-              <ExecutionModelViewer
-                src="/models/diff.glb"
-                className="absolute inset-0 w-full h-full"
+              <MirrorViewer
+                // When the file has finished uploading we pin to its specific
+                // URN; otherwise fall through to the active-model query for
+                // this surface so progress states render correctly.
+                source={previewFile.urn ? { urn: previewFile.urn } : undefined}
+                context={PLAN_CAD_IMPORT_CONTEXT}
+                enableUpload
+                className="absolute inset-0"
               />
             )}
-            <Badge
-              variant="outline"
-              className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm border-[var(--border)] text-foreground text-xs gap-1.5 py-1.5 px-2.5 shadow-sm"
-            >
-              <Loader2 className="w-3 h-3 animate-spin text-[var(--mw-yellow-400)]" />
-              STEP processing — preview shown is illustrative.
-            </Badge>
           </div>
         </SheetContent>
       </Sheet>
