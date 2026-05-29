@@ -295,22 +295,26 @@ export const customers: Customer[] = [
 // PRODUCTS — Fabricated parts that flow through jobs & MOs
 // ═══════════════════════════════════════════════════════════════════════
 
+// Phase A backfill: every existing product gets an explicit `defaultRoute`
+// + `isManufactured`. Most fab-shop items are MTO; the small fasteners /
+// off-the-shelf items below are catalogued for the Catalogue Sale fast
+// path; one configurable assembly is ETO to seed the engineering queue.
 export const products: Product[] = [
-  { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, weightKg: 0.85, category: 'Brackets', isActive: true, imageUrl: '/products/bracket-90.svg', productKind: 'widget', defaultTemplateIds: ['tpl-widget-light'],
+  { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, weightKg: 0.85, category: 'Brackets', isActive: true, imageUrl: '/products/bracket-90.svg', productKind: 'widget', defaultTemplateIds: ['tpl-widget-light'], defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 150, heightMm: 100 }, thicknessMm: 3, grade: '250', dxfAssetId: 'dxf-001', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
-  { id: 'prod-002', partNumber: 'PLT-042', description: 'Base Plate 200×200 — Stainless 304', material: 'Stainless 304 5mm', unitPrice: 67.00, weightKg: 2.10, category: 'Plates', isActive: true, imageUrl: '/products/base-plate.svg',
+  { id: 'prod-002', partNumber: 'PLT-042', description: 'Base Plate 200×200 — Stainless 304', material: 'Stainless 304 5mm', unitPrice: 67.00, weightKg: 2.10, category: 'Plates', isActive: true, imageUrl: '/products/base-plate.svg', defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 200, heightMm: 200 }, thicknessMm: 5, grade: '304', dxfAssetId: 'dxf-002', allowRotation: true, rotationStepsDeg: [0, 90], allowMirror: false, grainSensitive: false } },
-  { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, weightKg: 3.45, category: 'Housings', isActive: true, imageUrl: '/products/motor-housing.svg' },
-  { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, weightKg: 48.0, category: 'Racks', isActive: true, imageUrl: '/products/server-rack.svg', productKind: 'configurable', defaultTemplateIds: ['tpl-configurable-full'],
+  { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, weightKg: 3.45, category: 'Housings', isActive: true, imageUrl: '/products/motor-housing.svg', defaultRoute: 'mto', isManufactured: true },
+  { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, weightKg: 48.0, category: 'Racks', isActive: true, imageUrl: '/products/server-rack.svg', productKind: 'configurable', defaultTemplateIds: ['tpl-configurable-full'], defaultRoute: 'eto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 480 }, thicknessMm: 1.6, grade: 'CR1', dxfAssetId: 'dxf-003', allowRotation: true, rotationStepsDeg: [0, 180], allowMirror: false, grainSensitive: true } },
-  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg',
+  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg', defaultRoute: 'make_to_stock', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 80 }, thicknessMm: 2, grade: 'Z275', dxfAssetId: 'dxf-004', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
-  { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, weightKg: 8.50, category: 'Guards', isActive: true, imageUrl: '/products/machine-guard.svg', productKind: 'configurable' },
-  { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, weightKg: 2.80, category: 'Enclosures', isActive: true, imageUrl: '/products/enclosure-panel.svg',
+  { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, weightKg: 8.50, category: 'Guards', isActive: true, imageUrl: '/products/machine-guard.svg', productKind: 'configurable', defaultRoute: 'mto', isManufactured: true },
+  { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, weightKg: 2.80, category: 'Enclosures', isActive: true, imageUrl: '/products/enclosure-panel.svg', defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 400, heightMm: 300 }, thicknessMm: 2, grade: '5052', dxfAssetId: 'dxf-005', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: true } },
-  { id: 'prod-008', partNumber: 'SSP-200', description: 'Structural Steel Package — I-Beam Assembly', material: 'Grade 350 Steel', unitPrice: 4500.00, weightKg: 280.0, category: 'Structural', isActive: true, imageUrl: '/products/i-beam.svg' },
-  { id: 'prod-009', partNumber: 'RPC-010', description: 'Rail Platform Component — Handrail Section', material: 'Stainless 316 Tube', unitPrice: 890.00, weightKg: 12.0, category: 'Rail', isActive: true, imageUrl: '/products/handrail.svg' },
-  { id: 'prod-010', partNumber: 'CPE-030', description: 'Control Panel Enclosure 600×800', material: 'Mild Steel 1.6mm + Powder Coat', unitPrice: 420.00, weightKg: 15.0, category: 'Enclosures', isActive: true, imageUrl: '/products/control-panel.svg',
+  { id: 'prod-008', partNumber: 'SSP-200', description: 'Structural Steel Package — I-Beam Assembly', material: 'Grade 350 Steel', unitPrice: 4500.00, weightKg: 280.0, category: 'Structural', isActive: true, imageUrl: '/products/i-beam.svg', defaultRoute: 'eto', isManufactured: true },
+  { id: 'prod-009', partNumber: 'RPC-010', description: 'Rail Platform Component — Handrail Section', material: 'Stainless 316 Tube', unitPrice: 890.00, weightKg: 12.0, category: 'Rail', isActive: true, imageUrl: '/products/handrail.svg', defaultRoute: 'mto', isManufactured: true },
+  { id: 'prod-010', partNumber: 'CPE-030', description: 'Control Panel Enclosure 600×800', material: 'Mild Steel 1.6mm + Powder Coat', unitPrice: 420.00, weightKg: 15.0, category: 'Enclosures', isActive: true, imageUrl: '/products/control-panel.svg', defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 800, heightMm: 600 }, thicknessMm: 1.6, grade: '250', dxfAssetId: 'dxf-006', allowRotation: true, rotationStepsDeg: [0, 180], allowMirror: false, grainSensitive: false } },
 ];
 
@@ -555,12 +559,16 @@ export const goodsReceipts: GoodsReceipt[] = [
 // PLAN — Jobs, Tasks, Capacity
 // ═══════════════════════════════════════════════════════════════════════
 
+// Phase A backfill: every Job carries an explicit `source` + `qty`.
+// All existing fixtures originate from a Sales Order (`source: 'sales_order'`);
+// replenishment / engineering / variation Jobs land alongside their owning
+// flows in Phase B3 / B4 / B5.
 export const jobs: Job[] = [
-  { id: 'job-001', jobNumber: 'JOB-2026-0012', title: 'Mounting Bracket Assembly', customerId: 'cust-001', customerName: 'TechCorp Industries', salesOrderId: 'so-001', status: 'in_progress', priority: 'high', startDate: '2026-03-10', dueDate: '2026-04-03', estimatedHours: 120, actualHours: 78, value: 24500, progress: 45, assignedTo: 'emp-003', productKind: 'configurable' },
-  { id: 'job-002', jobNumber: 'JOB-2026-0011', title: 'Custom Brackets x50', customerId: 'cust-002', customerName: 'Pacific Fabrication', salesOrderId: 'so-002', status: 'in_progress', priority: 'medium', startDate: '2026-03-12', dueDate: '2026-04-01', estimatedHours: 40, actualHours: 32, value: 8500, progress: 72, assignedTo: 'emp-003', productKind: 'widget' },
-  { id: 'job-003', jobNumber: 'JOB-2026-0013', title: 'Cable Tray Supports — Rail', customerId: 'cust-005', customerName: 'Sydney Rail Corp', salesOrderId: 'so-003', status: 'planned', priority: 'high', startDate: '2026-03-20', dueDate: '2026-04-28', estimatedHours: 200, actualHours: 0, value: 35600, progress: 0, assignedTo: 'emp-003', productKind: 'mixed' },
-  { id: 'job-004', jobNumber: 'JOB-2026-0010', title: 'Machine Guards — Kemppi', customerId: 'cust-006', customerName: 'Kemppi Australia', salesOrderId: 'so-004', status: 'completed', priority: 'low', startDate: '2026-02-20', dueDate: '2026-03-20', estimatedHours: 60, actualHours: 55, value: 12000, progress: 100, assignedTo: 'emp-003', productKind: 'widget' },
-  { id: 'job-005', jobNumber: 'JOB-2026-0015', title: 'Control Panel Enclosure', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'draft', priority: 'medium', startDate: '2026-04-05', dueDate: '2026-04-20', estimatedHours: 80, actualHours: 0, value: 31000, progress: 0, assignedTo: 'emp-003', productKind: 'configurable' },
+  { id: 'job-001', jobNumber: 'JOB-2026-0012', title: 'Mounting Bracket Assembly', customerId: 'cust-001', customerName: 'TechCorp Industries', salesOrderId: 'so-001', status: 'in_progress', priority: 'high', startDate: '2026-03-10', dueDate: '2026-04-03', estimatedHours: 120, actualHours: 78, value: 24500, progress: 45, assignedTo: 'emp-003', productKind: 'configurable', source: 'sales_order', qty: 10 },
+  { id: 'job-002', jobNumber: 'JOB-2026-0011', title: 'Custom Brackets x50', customerId: 'cust-002', customerName: 'Pacific Fabrication', salesOrderId: 'so-002', status: 'in_progress', priority: 'medium', startDate: '2026-03-12', dueDate: '2026-04-01', estimatedHours: 40, actualHours: 32, value: 8500, progress: 72, assignedTo: 'emp-003', productKind: 'widget', source: 'sales_order', qty: 50 },
+  { id: 'job-003', jobNumber: 'JOB-2026-0013', title: 'Cable Tray Supports — Rail', customerId: 'cust-005', customerName: 'Sydney Rail Corp', salesOrderId: 'so-003', status: 'planned', priority: 'high', startDate: '2026-03-20', dueDate: '2026-04-28', estimatedHours: 200, actualHours: 0, value: 35600, progress: 0, assignedTo: 'emp-003', productKind: 'mixed', source: 'sales_order', qty: 120 },
+  { id: 'job-004', jobNumber: 'JOB-2026-0010', title: 'Machine Guards — Kemppi', customerId: 'cust-006', customerName: 'Kemppi Australia', salesOrderId: 'so-004', status: 'completed', priority: 'low', startDate: '2026-02-20', dueDate: '2026-03-20', estimatedHours: 60, actualHours: 55, value: 12000, progress: 100, assignedTo: 'emp-003', productKind: 'widget', source: 'sales_order', qty: 8 },
+  { id: 'job-005', jobNumber: 'JOB-2026-0015', title: 'Control Panel Enclosure', customerId: 'cust-001', customerName: 'TechCorp Industries', status: 'draft', priority: 'medium', startDate: '2026-04-05', dueDate: '2026-04-20', estimatedHours: 80, actualHours: 0, value: 31000, progress: 0, assignedTo: 'emp-003', productKind: 'configurable', source: 'sales_order', qty: 4 },
 ];
 
 export const planTasks: PlanTask[] = [

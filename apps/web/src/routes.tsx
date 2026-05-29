@@ -31,6 +31,9 @@ const SellNewQuote = lazyWithRetry(() => import('./components/sell/SellNewQuote'
 const SellProductDetail = lazyWithRetry(() => import('./components/sell/SellProductDetail').then(m => ({ default: m.SellProductDetail })));
 const SellCustomerDetail = lazyWithRetry(() => import('./components/sell/SellCustomerDetail').then(m => ({ default: m.SellCustomerDetail })));
 const SellOrderDetail = lazyWithRetry(() => import('./components/sell/SellOrderDetail').then(m => ({ default: m.SellOrderDetail })));
+const OrderJourneyPage = lazyWithRetry(() => import('./components/workflow/OrderJourneyPage').then(m => ({ default: m.OrderJourneyPage })));
+const ReorderRulesPage = lazyWithRetry(() => import('./components/workflow/ReorderRulesPage').then(m => ({ default: m.ReorderRulesPage })));
+const EngineeringJobsPage = lazyWithRetry(() => import('./components/workflow/EngineeringJobsPage').then(m => ({ default: m.EngineeringJobsPage })));
 const SellInvoiceDetail = lazyWithRetry(() => import('./components/sell/SellInvoiceDetail').then(m => ({ default: m.SellInvoiceDetail })));
 const SellNewInvoice = lazyWithRetry(() => import('./components/sell/SellNewInvoice').then(m => ({ default: m.SellNewInvoice })));
 const SellQuoteDetail = lazyWithRetry(() => import('./components/sell/SellQuoteDetail').then(m => ({ default: m.SellQuoteDetail })));
@@ -286,6 +289,7 @@ export const router = createBrowserRouter([
           { path: 'orders', element: <L><SellOrders /></L> },
           { path: 'orders/new', element: <L><SellOrderDetail /></L> },
           { path: 'orders/:id', element: <L><SellOrderDetail /></L> },
+          { path: 'orders/:id/journey', element: <L><OrderJourneyPage /></L> },
           { path: 'activities', element: <L><SellActivities /></L> },
           { path: 'invoices', element: <L><SellInvoices /></L> },
           { path: 'invoices/new', element: <L><SellNewInvoice /></L> },
@@ -353,6 +357,8 @@ export const router = createBrowserRouter([
           // direct links so existing bookmarks survive.
           { path: 'purchase', element: <Navigate to="/plan/mrp?tab=purchase" replace /> },
           { path: 'qc-planning', element: <L><PlanQCPlanning /></L> },
+          { path: 'reorder-rules', element: <L><ReorderRulesPage /></L> },
+          { path: 'engineering', element: <L><EngineeringJobsPage /></L> },
           // Product Studio is now exclusively the Blockly-based v2 editor.
           // Legacy v1 + spike routes are kept as redirects so any saved
           // bookmarks land on the new editor instead of 404'ing.

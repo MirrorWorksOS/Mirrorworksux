@@ -510,6 +510,74 @@ export function SellOrderDetail() {
     });
   }, [lineItems.length, documents.length]);
 
+  // ── D1: Lineage strip — Q → SO → INV → WO → DO chips ───────────────
+  const lineageChips = useMemo(() => {
+    if (isNew || !order || !parseRef(order.soNumber)) return null;
+    const items = lineage(order.soNumber, ['Q', 'SO', 'INV', 'WO', 'DO'] as DocumentPrefix[]);
+    return (
+      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+        {items.map(({ prefix, ref }, i) => {
+          const href = resolveLineageHref(prefix, ref);
+          const isCurrent = ref === order.soNumber;
+          const exists = href !== null;
+          const tooltip = isCurrent
+            ? `${ref} — this order`
+            : exists
+              ? `Open ${ref}`
+              : `${ref} — not yet generated`;
+          const chip = (
+            <span
+              title={tooltip}
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs tabular-nums transition-all',
+                isCurrent
+                  ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/15 text-foreground'
+                  : exists
+                    ? 'cursor-pointer border-[var(--border)] bg-card text-[var(--neutral-600)] hover:-translate-y-0.5 hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-foreground hover:shadow-sm'
+                    : 'cursor-not-allowed border-dashed border-[var(--border)] bg-card text-[var(--neutral-400)] opacity-70',
+              )}
+            >
+              <strong className="font-semibold">{prefix}</strong>
+              <span className="text-[var(--neutral-500)]">-</span>
+              <span>{ref.slice(prefix.length + 1)}</span>
+            </span>
+          );
+          return (
+            <React.Fragment key={prefix}>
+              {i > 0 && <span className="text-[var(--neutral-400)]">→</span>}
+              {isCurrent ? (
+                chip
+              ) : exists ? (
+                <Link to={href} aria-label={`Open ${ref}`}>
+                  {chip}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast(`${ref} not yet generated`, {
+                      description:
+                        prefix === 'WO'
+                          ? 'Work order will be created when this order enters production.'
+                          : prefix === 'DO'
+                            ? 'Delivery order will be created at dispatch.'
+                            : prefix === 'INV'
+                              ? 'Invoice will be created when items ship.'
+                              : 'Linked document not yet created.',
+                    })
+                  }
+                  aria-label={`${ref} — not yet generated`}
+                >
+                  {chip}
+                </button>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }, [isNew, order?.soNumber]);
+
   if (!order) {
     return (
       <div className="p-6 space-y-4">
@@ -1074,74 +1142,6 @@ export function SellOrderDetail() {
     }
   };
 
-  // ── D1: Lineage strip — Q → SO → INV → WO → DO chips ───────────────
-  const lineageChips = useMemo(() => {
-    if (isNew || !parseRef(order.soNumber)) return null;
-    const items = lineage(order.soNumber, ['Q', 'SO', 'INV', 'WO', 'DO'] as DocumentPrefix[]);
-    return (
-      <div className="mt-1 flex flex-wrap items-center gap-1.5">
-        {items.map(({ prefix, ref }, i) => {
-          const href = resolveLineageHref(prefix, ref);
-          const isCurrent = ref === order.soNumber;
-          const exists = href !== null;
-          const tooltip = isCurrent
-            ? `${ref} — this order`
-            : exists
-              ? `Open ${ref}`
-              : `${ref} — not yet generated`;
-          const chip = (
-            <span
-              title={tooltip}
-              className={cn(
-                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs tabular-nums transition-all',
-                isCurrent
-                  ? 'border-[var(--mw-yellow-500)] bg-[var(--mw-yellow-400)]/15 text-foreground'
-                  : exists
-                    ? 'cursor-pointer border-[var(--border)] bg-card text-[var(--neutral-600)] hover:-translate-y-0.5 hover:border-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-400)]/10 hover:text-foreground hover:shadow-sm'
-                    : 'cursor-not-allowed border-dashed border-[var(--border)] bg-card text-[var(--neutral-400)] opacity-70',
-              )}
-            >
-              <strong className="font-semibold">{prefix}</strong>
-              <span className="text-[var(--neutral-500)]">-</span>
-              <span>{ref.slice(prefix.length + 1)}</span>
-            </span>
-          );
-          return (
-            <React.Fragment key={prefix}>
-              {i > 0 && <span className="text-[var(--neutral-400)]">→</span>}
-              {isCurrent ? (
-                chip
-              ) : exists ? (
-                <Link to={href} aria-label={`Open ${ref}`}>
-                  {chip}
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast(`${ref} not yet generated`, {
-                      description:
-                        prefix === 'WO'
-                          ? 'Work order will be created when this order enters production.'
-                          : prefix === 'DO'
-                            ? 'Delivery order will be created at dispatch.'
-                            : prefix === 'INV'
-                              ? 'Invoice will be created when items ship.'
-                              : 'Linked document not yet created.',
-                    })
-                  }
-                  aria-label={`${ref} — not yet generated`}
-                >
-                  {chip}
-                </button>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-    );
-  }, [isNew, order.soNumber]);
-
   const layout = (
     <JobWorkspaceLayout
       breadcrumbs={[
@@ -1193,6 +1193,17 @@ export function SellOrderDetail() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
+          {!isNew && (
+            <Button
+              variant="outline"
+              className="h-12"
+              asChild
+            >
+              <Link to={`/sell/orders/${order.id}/journey`}>
+                View journey
+              </Link>
+            </Button>
+          )}
           {!isNew && <ChatterButton entity={{ type: 'sales_order', id: order.id }} />}
           {!isNew && kickoffLines.length > 0 && (
             <Button

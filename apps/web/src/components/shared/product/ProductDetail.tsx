@@ -12,7 +12,7 @@ import {
   CheckCircle, ClipboardList, Tag, Cog, DollarSign,
   ShoppingCart, Truck, ArrowDownUp, Heart, MessageSquare,
   RotateCcw, Star, BarChart3, ChevronRight, ChevronDown, Clock, MapPin,
-  RefreshCw, Boxes, ArrowLeft, AlertTriangle, Trash2, Layers3,
+  RefreshCw, Boxes, ArrowLeft, AlertTriangle, Trash2, Layers3, Info,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -86,6 +86,11 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Tooltip as UITooltip,
+  TooltipTrigger as UITooltipTrigger,
+  TooltipContent as UITooltipContent,
+} from '@/components/ui/tooltip';
 import { useJobActivityStore } from '@/store/jobActivityStore';
 import type { ProductKind } from '@/types/job-activity';
 import {
@@ -93,6 +98,9 @@ import {
 } from '@/components/ui/checkbox';
 import { AssigneeChip } from '@/components/shared/assignee/AssigneeChip';
 import { withReturnContext } from '@/components/shared/nav/ReturnContextChip';
+import { products as catalogProducts } from '@/services';
+import type { Product } from '@/types/entities';
+import { RouteChip } from '@/components/workflow/RouteChip';
 
 // ── Mock product data ─────────────────────────────────────
 const PRODUCT = {
@@ -118,7 +126,83 @@ const PRODUCT = {
   productKind: 'configurable' as 'widget' | 'configurable' | 'mixed',
   /** Explicit template pins; empty = fall back to productKind filter. */
   defaultTemplateIds: [] as string[],
+  /** Default fulfilment route; surfaced + editable on the Overview tab. */
+  defaultRoute: 'mto' as 'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock',
 };
+
+// ── AUD currency formatter (tenant is Australian — Alliance Metal) ──
+const AUD = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' });
+const fmtAud = (n: number): string => AUD.format(n);
+
+// Inline money validation — returns a human message or null when valid.
+// Used by the pricing fields so errors surface as the user types, not on submit.
+const validateMoney = (raw: string): string | null => {
+  const v = raw.trim();
+  if (v === '') return 'Required';
+  const n = Number(v);
+  if (Number.isNaN(n)) return 'Enter a number';
+  if (n < 0) return 'Must be 0 or more';
+  return null;
+};
+
+// Recognition-over-recall: a small info icon beside jargon labels that reveals
+// a plain-English definition on hover/focus. Keeps the SME from needing to
+// remember what "EOQ" or "valuation method" means.
+function JargonHint({ children }: { children: React.ReactNode }) {
+  return (
+    <UITooltip>
+      <UITooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label="What does this mean?"
+          className="ml-1 inline-flex shrink-0 align-middle text-[var(--neutral-400)] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded-full"
+        >
+          <Info className="h-3.5 w-3.5" aria-hidden />
+        </button>
+      </UITooltipTrigger>
+      <UITooltipContent className="max-w-[260px] leading-relaxed">
+        {children}
+      </UITooltipContent>
+    </UITooltip>
+  );
+}
+
+// ── Real-product view-model ─────────────────────────────────
+// ProductDetail used to render the hardcoded PRODUCT constant for every
+// route. We now resolve the product from the mock catalogue and expose a
+// view-model via context so each tab reads *that* product's data. Fields
+// absent from the catalogue (serial prefix, warranty, barcode) fall back
+// to the constant so nothing breaks.
+type ProductVM = Omit<typeof PRODUCT, 'capabilities'> & { capabilities: readonly string[] };
+
+function buildProductVM(p: Product | undefined): ProductVM {
+  if (!p) return PRODUCT;
+  const isMfg = p.isManufactured ?? true;
+  return {
+    ...PRODUCT,
+    name: p.description,
+    sku: p.sku ?? p.partNumber,
+    mpn: p.partNumber,
+    category: p.category,
+    listPrice: p.unitPrice,
+    cost: Math.round(p.unitPrice * 0.65 * 100) / 100,
+    imageUrl: p.imageUrl,
+    productKind: p.productKind ?? PRODUCT.productKind,
+    defaultRoute: p.defaultRoute ?? PRODUCT.defaultRoute,
+    capabilities: ['Can be Sold', isMfg ? 'Can be Manufactured' : 'Can be Purchased'],
+    traceable: Boolean(p.geometry),
+  };
+}
+
+const ProductContext = React.createContext<ProductVM>(PRODUCT);
+const useProductVM = (): ProductVM => React.useContext(ProductContext);
+
+// Shared dirty signal so any nested tab control can flag unsaved edits, which
+// surfaces the sticky save bar at the page root. Native input/textarea/select
+// edits are caught by a bubbling onChange at the root; custom controls (radix
+// Select, Switch, the route editor) call markDirty() explicitly.
+const ProductDirtyContext = React.createContext<() => void>(() => {});
+const useMarkDirty = (): (() => void) => React.useContext(ProductDirtyContext);
 
 const PRODUCT_TYPES = [
   { id: 'storable', label: 'Storable Product', sub: 'Inventory tracked', icon: Package },
@@ -223,7 +307,7 @@ const STOCK_BY_LOCATION = {
 
 const STOCK_MOVEMENTS = [
   { icon: 'receive', label: 'Received 50 units (PO-2398)', sub: 'Today — Warehouse A' },
-  { icon: 'ship', label: 'Shipped 25 units (SO-1234)', sub: 'Today — Customer ABC' },
+  { icon: 'ship', label: 'Shipped 25 units (SO-1234)', sub: 'Today — TechCorp Industries' },
   { icon: 'transfer', label: 'Transferred 30 units', sub: 'Yesterday — Warehouse A to B' },
 ];
 
@@ -243,28 +327,31 @@ const DOCUMENTS = [
 ];
 
 const SALES_ORDERS = [
-  { number: 'SO-1234', customer: 'Customer ABC', qty: 75, amount: 75000, status: 'Processing' },
-  { number: 'SO-1189', customer: 'Customer XYZ', qty: 50, amount: 50000, status: 'Shipped' },
+  { number: 'SO-1234', customer: 'TechCorp Industries', qty: 75, amount: 75000, status: 'Processing' },
+  { number: 'SO-1189', customer: 'Pacific Fabrication', qty: 50, amount: 50000, status: 'Shipped' },
 ];
 
 const PURCHASE_ORDERS = [
-  { number: 'PO-2401', vendor: 'Acme Industries', qty: 100, amount: 72500, expectedDate: '2025-10-20' },
+  { number: 'PO-2401', vendor: 'Hunter Steel Co', qty: 100, amount: 72500, expectedDate: '2025-10-20' },
 ];
 
 const COLLAB_FEED = [
   { type: 'system', author: 'System Update', time: '10 min ago', content: 'Stock level dropped below reorder point. PO-2402 auto-created.', comments: 2, likes: 0 },
-  { type: 'user', author: 'John Smith', time: '2 hours ago', content: '@Sarah: Customer ABC requested a quote for 500 units. What\'s lead time?', reply: 'Sarah replied: 12 weeks, we\'ll need to order raw materials', comments: 2, likes: 3 },
+  { type: 'user', author: 'John Smith', time: '2 hours ago', content: '@Sarah: TechCorp Industries requested a quote for 500 units. What\'s lead time?', reply: 'Sarah replied: 12 weeks, we\'ll need to order raw materials', comments: 2, likes: 3 },
   { type: 'document', author: 'Document Added', time: 'Yesterday', content: 'New CAD drawing uploaded: PSCS-76902-RevC.dwg', comments: 0, likes: 0 },
 ];
 
 const TOP_CUSTOMERS = [
-  { name: 'Customer A', amount: 45000, units: '92 units' },
-  { name: 'Customer B', amount: 32000, units: '64 units' },
-  { name: 'Customer C', amount: 28000, units: '57 units' },
+  { name: 'TechCorp Industries', amount: 45000, units: '92 units' },
+  { name: 'Pacific Fabrication', amount: 32000, units: '64 units' },
+  { name: 'BHP Contractors', amount: 28000, units: '57 units' },
 ];
 
 // ── Tab definitions ─────────────────────────────────────
-const TABS = ['Overview', 'Manufacturing', 'MirrorView', 'Inventory', 'Planning', 'Accounting', 'Documents'] as const;
+// Round 2: collapsed 7 → 4. Planning folds into Manufacturing, Accounting
+// folds into Overview, Inventory is renamed Stock. MirrorView is conditional
+// (shown only when a CAD model is attached).
+const TABS = ['Overview', 'Manufacturing', 'MirrorView', 'Stock', 'Documents'] as const;
 type Tab = (typeof TABS)[number];
 
 // ── Section heading helper ──────────────────────────────
@@ -285,11 +372,20 @@ function SubHeading({ children, actions }: { children: React.ReactNode; actions?
 // OVERVIEW TAB
 // ═══════════════════════════════════════════════════════════
 function OverviewTab() {
+  const PRODUCT = useProductVM();
   const [selectedType, setSelectedType] = useState(PRODUCT.productType);
   const [barcodeValue, setBarcodeValue] = useState(PRODUCT.barcode);
   const [barcodeType, setBarcodeType] = useState<BarcodeSymbology>('ean13');
   const [listPrice, setListPrice] = useState(PRODUCT.listPrice.toFixed(2));
+  const [cost, setCost] = useState(PRODUCT.cost.toFixed(2));
   const [tiers, setTiers] = useState<typeof TIERED_PRICING[number][]>(TIERED_PRICING);
+
+  const listPriceErr = validateMoney(listPrice);
+  const costErr = validateMoney(cost);
+  const marginPct =
+    !listPriceErr && !costErr && Number(listPrice) > 0
+      ? Math.round(((Number(listPrice) - Number(cost)) / Number(listPrice)) * 100)
+      : null;
 
   const handleAddTier = () => {
     setTiers((prev) => {
@@ -311,6 +407,9 @@ function OverviewTab() {
 
   return (
     <div className="space-y-8">
+      {/* ── Default fulfilment route (promoted from Manufacturing) ── */}
+      <DefaultRouteEditor />
+
       {/* ── Product Classification ────────────────────── */}
       <section className="space-y-4">
         <SectionHeading>Product Classification</SectionHeading>
@@ -430,7 +529,10 @@ function OverviewTab() {
             </div>
           </div>
           <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Serial Number Prefix</label>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+              Serial Number Prefix
+              <JargonHint>The leading text stamped on each unit's serial number. The system auto-increments the trailing counter for every item produced.</JargonHint>
+            </label>
             <Input defaultValue={PRODUCT.serialPrefix} className="h-10 bg-card border-[var(--border)]" />
             <p className="text-xs text-[var(--neutral-400)] mt-1">example: SN-2025-auto-increment</p>
           </div>
@@ -444,63 +546,93 @@ function OverviewTab() {
           <div>
             <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">List Price</label>
             <div className="flex">
-              <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-[var(--border)] bg-[var(--neutral-100)] text-sm text-[var(--neutral-500)]">USD</span>
+              <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-[var(--border)] bg-[var(--neutral-100)] text-sm text-[var(--neutral-500)]">AUD</span>
               <Input
                 value={listPrice}
                 onChange={(e) => setListPrice(e.target.value)}
-                className="h-10 rounded-l-none bg-card border-[var(--border)]"
+                aria-invalid={listPriceErr ? true : undefined}
+                className={cn(
+                  'h-10 rounded-l-none bg-card border-[var(--border)]',
+                  listPriceErr && 'border-[var(--mw-error)] focus-visible:ring-[var(--mw-error)]',
+                )}
               />
             </div>
+            {listPriceErr && <p className="mt-1 text-xs text-[var(--mw-error)]">{listPriceErr}</p>}
           </div>
           <div>
             <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Cost</label>
-            <Input defaultValue="$650.00" className="h-10 bg-card border-[var(--border)]" />
+            <div className="flex">
+              <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-[var(--border)] bg-[var(--neutral-100)] text-sm text-[var(--neutral-500)]">AUD</span>
+              <Input
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                aria-invalid={costErr ? true : undefined}
+                className={cn(
+                  'h-10 rounded-l-none bg-card border-[var(--border)]',
+                  costErr && 'border-[var(--mw-error)] focus-visible:ring-[var(--mw-error)]',
+                )}
+              />
+            </div>
+            {costErr && <p className="mt-1 text-xs text-[var(--mw-error)]">{costErr}</p>}
           </div>
           <div>
             <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Margin %</label>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-3 rounded-full bg-[var(--neutral-200)] overflow-hidden">
-                <div className="h-full rounded-full bg-[var(--mw-yellow-400)]" style={{ width: '35%' }} />
+                <div
+                  className={cn(
+                    'h-full rounded-full',
+                    marginPct !== null && marginPct < 0 ? 'bg-[var(--mw-error)]' : 'bg-[var(--mw-yellow-400)]',
+                  )}
+                  style={{ width: `${marginPct === null ? 0 : Math.max(0, Math.min(100, marginPct))}%` }}
+                />
               </div>
-              <span className="text-sm tabular-nums font-medium text-foreground">35%</span>
-              <StatusBadge variant="success">healthy</StatusBadge>
+              <span className="text-sm tabular-nums font-medium text-foreground">
+                {marginPct === null ? '—' : `${marginPct}%`}
+              </span>
+              <StatusBadge variant={marginPct === null ? 'neutral' : marginPct < 0 ? 'error' : marginPct < 15 ? 'warning' : 'success'}>
+                {marginPct === null ? 'check inputs' : marginPct < 0 ? 'loss' : marginPct < 15 ? 'thin' : 'healthy'}
+              </StatusBadge>
             </div>
+            <p className="mt-1 text-xs text-[var(--neutral-400)]">Derived from list price and cost</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-foreground">Tiered Pricing</h4>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 text-xs border-[var(--border)]"
-            onClick={handleAddTier}
-          >
-            <Plus className="w-3 h-3" /> Add Tier
-          </Button>
-        </div>
-        <Card variant="flat" className="overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Min Qty</th>
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Max Qty</th>
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Unit Price</th>
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Effective Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tiers.map((tier, i) => (
-                <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                  <td className="px-4 py-3 tabular-nums">{tier.minQty}</td>
-                  <td className="px-4 py-3 tabular-nums">{tier.maxQty}</td>
-                  <td className="px-4 py-3 tabular-nums">${tier.unitPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-4 py-3 tabular-nums">{tier.effectiveDate}</td>
+        <AdvancedSection label="Tiered pricing">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-foreground">Tiered Pricing</h4>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 text-xs border-[var(--border)]"
+              onClick={handleAddTier}
+            >
+              <Plus className="w-3 h-3" /> Add Tier
+            </Button>
+          </div>
+          <Card variant="flat" className="overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Min Qty</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Max Qty</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Unit Price</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Effective Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {tiers.map((tier, i) => (
+                  <tr key={i} className="border-b border-[var(--border)] last:border-0">
+                    <td className="px-4 py-3 tabular-nums">{tier.minQty}</td>
+                    <td className="px-4 py-3 tabular-nums">{tier.maxQty}</td>
+                    <td className="px-4 py-3 tabular-nums">${tier.unitPrice.toLocaleString('en-AU', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-3 tabular-nums">{tier.effectiveDate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </AdvancedSection>
 
         {/* Last sold + margin trend + quick quote */}
         <PricingIntelligence />
@@ -729,6 +861,7 @@ function buildLastSoldHistory() {
 }
 
 function PricingIntelligence() {
+  const PRODUCT = useProductVM();
   const history = useMemo(buildLastSoldHistory, []);
   const lastSold = history[0];
   const avgMargin = history.reduce((s, r) => s + r.margin, 0) / history.length;
@@ -1119,7 +1252,77 @@ function RoutingStepPanel({
 
 type BomLine = { sku: string; description: string; qty: number; unit: string; cost: number };
 
+/**
+ * Phase A — surfaces `Product.defaultRoute` so the customer can see and
+ * change which workflow archetype this product drives by default.
+ * Drives `confirmSalesOrder` dispatch when this product appears on an
+ * SO line (`SalesOrderLine.routeOverride` wins if set per-line).
+ */
+function DefaultRouteEditor() {
+  const PRODUCT = useProductVM();
+  const [route, setRoute] = useState<'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock'>(PRODUCT.defaultRoute);
+  const options: { value: typeof route; label: string; hint: string }[] = [
+    { value: 'mto', label: 'MTO — Make-to-Order', hint: 'Full Plan → Make path on every sale.' },
+    { value: 'eto', label: 'ETO — Engineer-to-Order', hint: 'Engineering Job first; production Job after BoM publish.' },
+    { value: 'catalogue_sale', label: 'Catalogue Sale', hint: 'Picked from stock; skips Plan and Make.' },
+    { value: 'make_to_stock', label: 'Make-to-Stock', hint: 'Replenished by reorder rule; sold as catalogue.' },
+  ];
+  const current = options.find((o) => o.value === route)!;
+  return (
+    <section className="rounded-md border bg-card p-4">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-xs uppercase tracking-wide text-muted-foreground">
+            Default fulfilment route
+          </div>
+          <div className="mt-0.5 text-sm font-medium">{current.label}</div>
+          <div className="mt-0.5 text-xs text-muted-foreground">{current.hint}</div>
+        </div>
+        <select
+          className="rounded border bg-card px-2 py-1 text-sm"
+          value={route}
+          onChange={(e) => setRoute(e.target.value as typeof route)}
+          aria-label="Default fulfilment route"
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Progressive-disclosure wrapper. Enterprise-heavy detail (GL accounts,
+ * valuation methods, tax rules) is collapsed by default so the common SME
+ * view stays focused; nothing is removed, just tucked behind a toggle.
+ */
+function AdvancedSection({ label, children }: { label: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="rounded-md border bg-card">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded-md"
+      >
+        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {open ? 'Hide advanced' : 'Show advanced'}
+          <ChevronDown className={cn('h-4 w-4 transition-transform duration-150', open && 'rotate-180')} />
+        </span>
+      </button>
+      {open && <div className="border-t px-4 py-4">{children}</div>}
+    </section>
+  );
+}
+
 function ManufacturingTab() {
+  const PRODUCT = useProductVM();
   const [bomLines, setBomLines] = useState<BomLine[]>(BOM_LINES);
   const totalTime = ROUTING.reduce((s, r) => s + r.duration, 0);
   const totalMaterial = bomLines.reduce((s, l) => s + l.qty * l.cost, 0);
@@ -1247,7 +1450,7 @@ function ManufacturingTab() {
           {bomLines.map((line) => (
             <button
               key={line.sku}
-              onClick={() => toast(`${line.description}: ${line.qty} ${line.unit} @ $${line.cost.toFixed(2)}`)}
+              onClick={() => toast(`${line.description}: ${line.qty} ${line.unit} @ ${fmtAud(line.cost)}`)}
               className="inline-flex items-center gap-2 rounded-full bg-neutral-100 dark:bg-neutral-800 px-3 py-1 text-sm transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 cursor-pointer"
             >
               <span className="font-medium text-foreground">{line.description}</span>
@@ -1363,10 +1566,10 @@ function ManufacturingTab() {
         <SectionHeading>Cost Summary</SectionHeading>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'Material', value: `$${totalMaterial.toLocaleString('en-AU', { minimumFractionDigits: 2 })}`, pct: 65 },
-            { label: 'Labour', value: `$${(totalTime * 55).toFixed(2)}`, pct: 20 },
-            { label: 'Overhead', value: '$150.00', pct: 15 },
-            { label: 'Total Cost', value: '$1,000.00', pct: 100 },
+            { label: 'Material', value: fmtAud(totalMaterial), pct: 65 },
+            { label: 'Labour', value: fmtAud(totalTime * 55), pct: 20 },
+            { label: 'Overhead', value: fmtAud(150), pct: 15 },
+            { label: 'Total Cost', value: fmtAud(totalMaterial + totalTime * 55 + 150), pct: 100 },
           ].map((c) => (
             <Card key={c.label} variant="flat" className="p-4">
               <p className="text-xs text-[var(--neutral-500)] mb-1">{c.label}</p>
@@ -2213,36 +2416,40 @@ function InventoryTab() {
           </SheetContent>
         </Sheet>
 
-        {[STOCK_BY_LOCATION.warehouseA, STOCK_BY_LOCATION.warehouseB].map((wh) => (
-          <Card key={wh.name} variant="flat" className="overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)]">
-              <h4 className="text-sm font-medium text-foreground">{wh.name}</h4>
-              <Badge className="bg-[var(--mw-yellow-400)] text-primary-foreground border-0 text-xs tabular-nums">{wh.total} units</Badge>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
-                  <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Location</th>
-                  <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Quantity</th>
-                  <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {wh.rows.map((r, i) => (
-                  <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                    <td className="px-5 py-3 text-foreground">{r.location}</td>
-                    <td className="px-5 py-3 tabular-nums text-foreground">{r.qty} units</td>
-                    <td className="px-5 py-3">
-                      <StatusBadge variant={r.status === 'Available' ? 'success' : 'warning'}>
-                        {r.status}
-                      </StatusBadge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
-        ))}
+        <AdvancedSection label="Multi-site warehouse breakdown">
+          <div className="space-y-4">
+            {[STOCK_BY_LOCATION.warehouseA, STOCK_BY_LOCATION.warehouseB].map((wh) => (
+              <Card key={wh.name} variant="flat" className="overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)]">
+                  <h4 className="text-sm font-medium text-foreground">{wh.name}</h4>
+                  <Badge className="bg-[var(--mw-yellow-400)] text-primary-foreground border-0 text-xs tabular-nums">{wh.total} units</Badge>
+                </div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--border)] bg-[var(--neutral-50)]">
+                      <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Location</th>
+                      <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Quantity</th>
+                      <th className="text-left px-5 py-2.5 text-xs font-medium text-[var(--neutral-500)]">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {wh.rows.map((r, i) => (
+                      <tr key={i} className="border-b border-[var(--border)] last:border-0">
+                        <td className="px-5 py-3 text-foreground">{r.location}</td>
+                        <td className="px-5 py-3 tabular-nums text-foreground">{r.qty} units</td>
+                        <td className="px-5 py-3">
+                          <StatusBadge variant={r.status === 'Available' ? 'success' : 'warning'}>
+                            {r.status}
+                          </StatusBadge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Card>
+            ))}
+          </div>
+        </AdvancedSection>
 
         {/* Valuation Summary */}
         <div className="grid grid-cols-3 gap-4">
@@ -2327,6 +2534,7 @@ function InventoryTab() {
 // ACCOUNTING TAB
 // ═══════════════════════════════════════════════════════════
 function AccountingTab() {
+  const PRODUCT = useProductVM();
   const [valuationMethod, setValuationMethod] = useState('fifo');
   const [financialPeriod, setFinancialPeriod] = useState('90');
 
@@ -2405,7 +2613,10 @@ function AccountingTab() {
         </div>
 
         <div>
-          <label className="text-sm text-[var(--neutral-500)] mb-3 block">Inventory Valuation Method</label>
+          <label className="text-sm text-[var(--neutral-500)] mb-3 block">
+            Inventory Valuation Method
+            <JargonHint>How stock value is calculated when items leave inventory. FIFO uses oldest-cost first; LIFO uses newest-cost first; AVCO uses a weighted average. This affects your cost of goods sold.</JargonHint>
+          </label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
               { id: 'manual', label: 'Manual', sub: 'Standard cost' },
@@ -2549,14 +2760,13 @@ function AccountingTab() {
           primaryAction={{
             label: 'Apply $1,050 price',
             onClick: () => {
-              setListPrice('1050.00');
               toast.success('List price updated to $1,050');
             },
           }}
           detailContent={
             <div className="space-y-2">
               <p>Drivers: market trend movement, competitor benchmarks, and recent cost increases.</p>
-              <p>Current list price: ${PRODUCT.listPrice.toFixed(0)}.</p>
+              <p>Current list price: {fmtAud(PRODUCT.listPrice)}.</p>
               <p>Suggested list price: $1,050.</p>
             </div>
           }
@@ -2892,6 +3102,7 @@ function DocumentsTab() {
 // PLANNING TAB (MRP / Reorder Rules)
 // ═══════════════════════════════════════════════════════════
 function PlanningTab() {
+  const PRODUCT = useProductVM();
   const [reorderPoint, setReorderPoint] = useState('50');
   const [reorderQty, setReorderQty] = useState('150');
   const [safetyStock, setSafetyStock] = useState('25');
@@ -3014,16 +3225,22 @@ function PlanningTab() {
                     >
                       {/* Row header — checkbox + summary + actions */}
                       <div className="flex items-start gap-3 px-3 py-2.5">
-                        <button
-                          type="button"
+                        <span
                           role="checkbox"
                           aria-checked={isPinned}
                           aria-label={isPinned ? `Unpin ${t.name}` : `Pin ${t.name}`}
+                          tabIndex={0}
                           onClick={togglePin}
-                          className="mt-0.5 outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded"
+                          onKeyDown={(e) => {
+                            if (e.key === ' ' || e.key === 'Enter') {
+                              e.preventDefault();
+                              togglePin();
+                            }
+                          }}
+                          className="mt-0.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--mw-yellow-400)] rounded"
                         >
                           <Checkbox checked={isPinned} className="pointer-events-none" />
-                        </button>
+                        </span>
                         <button
                           type="button"
                           onClick={togglePin}
@@ -3175,7 +3392,10 @@ function PlanningTab() {
             </div>
           </Card>
           <Card variant="flat" className="p-5">
-            <p className="text-xs font-medium text-[var(--neutral-500)] mb-1">ABC Classification</p>
+            <p className="text-xs font-medium text-[var(--neutral-500)] mb-1">
+              ABC Classification
+              <JargonHint>A way of ranking stock by value and importance. Class A items are high-value and need tight control; B are moderate; C are low-value and managed loosely.</JargonHint>
+            </p>
             <div className="flex items-center gap-3 mt-2">
               {(['A', 'B', 'C'] as const).map((cls) => (
                 <span
@@ -3218,7 +3438,10 @@ function PlanningTab() {
         <SectionHeading>Reorder Rules</SectionHeading>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Reorder Point</label>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+              Reorder Point
+              <JargonHint>The stock level that triggers a new order. When on-hand quantity drops to this number, the system flags (or auto-creates) a replenishment.</JargonHint>
+            </label>
             <div className="relative">
               <Input
                 type="number"
@@ -3231,7 +3454,10 @@ function PlanningTab() {
             <p className="text-xs text-[var(--neutral-400)] mt-1">Trigger reorder at this level</p>
           </div>
           <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Reorder Quantity (EOQ)</label>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+              Reorder Quantity (EOQ)
+              <JargonHint>Economic Order Quantity — the order size that minimises combined ordering and holding costs. How many units to buy each time you reorder.</JargonHint>
+            </label>
             <div className="relative">
               <Input
                 type="number"
@@ -3244,7 +3470,10 @@ function PlanningTab() {
             <p className="text-xs text-[var(--neutral-400)] mt-1">Economic order quantity</p>
           </div>
           <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Safety Stock</label>
+            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+              Safety Stock
+              <JargonHint>A buffer held to absorb demand spikes or supply delays, so you don't run out before the next delivery arrives.</JargonHint>
+            </label>
             <div className="relative">
               <Input
                 type="number"
@@ -3286,21 +3515,25 @@ function PlanningTab() {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">Lot Sizing Method</label>
-            <Select value={lotSizing} onValueChange={setLotSizing}>
-              <SelectTrigger className="h-10 bg-card border-[var(--border)]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fixed">Fixed Quantity</SelectItem>
-                <SelectItem value="lot-for-lot">Lot-for-Lot</SelectItem>
-                <SelectItem value="eoq">Economic Order Quantity (EOQ)</SelectItem>
-                <SelectItem value="period">Period Order Quantity</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
+
+        <AdvancedSection label="Lot sizing policy">
+          <label className="text-sm text-[var(--neutral-500)] mb-1.5 block">
+            Lot Sizing Method
+            <JargonHint>The rule that decides how much to make or buy per batch — e.g. a fixed quantity, exactly what's needed (lot-for-lot), or the cost-optimal EOQ.</JargonHint>
+          </label>
+          <Select value={lotSizing} onValueChange={setLotSizing}>
+            <SelectTrigger className="h-10 bg-card border-[var(--border)] sm:max-w-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fixed">Fixed Quantity</SelectItem>
+              <SelectItem value="lot-for-lot">Lot-for-Lot</SelectItem>
+              <SelectItem value="eoq">Economic Order Quantity (EOQ)</SelectItem>
+              <SelectItem value="period">Period Order Quantity</SelectItem>
+            </SelectContent>
+          </Select>
+        </AdvancedSection>
 
         {/* Visual reorder level indicator */}
         <Card variant="flat" className="p-5">
@@ -3450,6 +3683,21 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
   const studioProductId =
     module === 'plan' ? studioProductIdForCatalogId(routeProductId) : null;
 
+  // Resolve the real product from the catalogue and build the view-model
+  // that every tab reads via ProductContext.
+  const realProduct = useMemo(
+    () => (isNew ? undefined : catalogProducts.find((p) => p.id === routeProductId)),
+    [isNew, routeProductId],
+  );
+  const productVM = useMemo(() => buildProductVM(realProduct), [realProduct]);
+
+  // Unsaved-changes tracking. `resetNonce` is folded into the Tabs key so
+  // Discard remounts the tab subtree, resetting every field's local state to
+  // its initial value without per-field revert wiring.
+  const [dirty, setDirty] = useState(false);
+  const [resetNonce, setResetNonce] = useState(0);
+  const markDirty = React.useCallback(() => setDirty(true), []);
+
   const handleSaveProduct = () => {
     // TODO(backend): isNew ? products.create(product) : products.update(product.id, product)
     if (isNew) {
@@ -3459,7 +3707,14 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       navigate(`/${module}/products`, { replace: true });
     } else {
       toast.success('Product saved');
+      setDirty(false);
     }
+  };
+
+  const handleDiscardChanges = () => {
+    setResetNonce((n) => n + 1);
+    setDirty(false);
+    toast.message('Changes discarded');
   };
 
   const handleNewQuoteFromProduct = () => {
@@ -3482,7 +3737,7 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
 
   // Product image — local state so the user can swap it via the hero-hover
   // edit affordance. TODO(backend): products.uploadImage(productId, file)
-  const [imageUrl, setImageUrl] = useState<string | undefined>(PRODUCT.imageUrl);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(productVM.imageUrl);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [imageUrlDraft, setImageUrlDraft] = useState('');
   const imageFileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -3517,22 +3772,41 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
     () => ({
       Manufacturing: BOM_LINES.length,
       MirrorView: cadFiles.length,
-      Inventory: totalStockLocations(),
-      Planning: 'MRP',
+      Stock: totalStockLocations(),
       Documents: DOCUMENTS.length,
     }),
     [cadFiles.length],
   );
 
-  const renderTabContent = (): JSX.Element => {
+  // MirrorView only appears when a CAD model is attached; everything else
+  // is always present. Keeps the bar at 4 tabs for the common case.
+  const visibleTabs = useMemo(
+    () => TABS.filter((t) => t !== 'MirrorView' || cadFiles.length > 0),
+    [cadFiles.length],
+  );
+
+  const renderTabContent = (): JSX.Element | null => {
     switch (tab) {
-      case 'Overview':      return <OverviewTab />;
-      case 'Manufacturing': return <ManufacturingTab />;
+      case 'Overview':
+        return (
+          <div className="space-y-8">
+            <OverviewTab />
+            <AdvancedSection label="Accounting & financials">
+              <AccountingTab />
+            </AdvancedSection>
+          </div>
+        );
+      case 'Manufacturing':
+        return (
+          <div className="space-y-8">
+            <ManufacturingTab />
+            <PlanningTab />
+          </div>
+        );
       case 'MirrorView':    return <MirrorViewTab files={cadFiles} setFiles={setCadFiles} />;
-      case 'Inventory':     return <InventoryTab />;
-      case 'Planning':      return <PlanningTab />;
-      case 'Accounting':    return <AccountingTab />;
+      case 'Stock':         return <InventoryTab />;
       case 'Documents':     return <DocumentsTab />;
+      default:              return null;
     }
   };
 
@@ -3543,6 +3817,7 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
   };
 
   return (
+    <ProductContext.Provider value={productVM}>
     <PageShell>
       {/* ── Header ──────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
@@ -3557,7 +3832,7 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
               <PartThumbnail
                 size="xl"
                 imageUrl={imageUrl}
-                alt={PRODUCT.name}
+                alt={productVM.name}
                 fallbackIcon={Package}
               />
               {/* Hover edit affordance — pen in top-right corner */}
@@ -3575,13 +3850,16 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
             </button>
           )}
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : PRODUCT.name}</h1>
-            {!isNew && PRODUCT.capabilities.map((cap) => (
+            <h1 className="text-xl font-medium text-foreground">{isNew ? 'New Product' : productVM.name}</h1>
+            {!isNew && realProduct?.defaultRoute && (
+              <RouteChip route={realProduct.defaultRoute} />
+            )}
+            {!isNew && productVM.capabilities.map((cap) => (
               <Badge key={cap} className={cn('border-0 text-xs', capabilityColors[cap] ?? 'bg-[var(--neutral-100)] text-[var(--neutral-500)]')}>
                 {cap}
               </Badge>
             ))}
-            {!isNew && PRODUCT.traceable && (
+            {!isNew && productVM.traceable && (
               <Badge variant="outline" className="border-[var(--border)] text-xs">Traceable</Badge>
             )}
           </div>
@@ -3627,9 +3905,11 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
       </div>
 
       {/* ── Tab bar — pill style matching Sell Opportunity / Plan Job ─ */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="flex w-full flex-col gap-0">
+      <ProductDirtyContext.Provider value={markDirty}>
+      <div onChange={markDirty} className="contents">
+      <Tabs key={`${routeProductId ?? 'new'}-${resetNonce}`} value={tab} onValueChange={(v) => setTab(v as Tab)} className="flex w-full flex-col gap-0">
         <TabsList className="h-auto w-full min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 sm:w-fit">
-          {TABS.map((t) => {
+          {visibleTabs.map((t) => {
             const badge = tabBadges[t];
             return (
               <TabsTrigger key={t} value={t} className="gap-2 px-3 sm:px-4">
@@ -3652,6 +3932,8 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
           {renderTabContent()}
         </TabsContent>
       </Tabs>
+      </div>
+      </ProductDirtyContext.Provider>
 
       {/* ── Product image upload dialog ──────────────────── */}
       <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
@@ -3766,6 +4048,36 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ── Sticky save bar — appears only when there are unsaved edits ─── */}
+      {!isNew && dirty && (
+        <div className="sticky bottom-0 z-30 -mx-4 sm:-mx-6 mt-2 border-t border-[var(--border)] bg-card/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <p className="flex items-center gap-2 text-sm text-foreground">
+              <span className="inline-block h-2 w-2 rounded-full bg-[var(--mw-yellow-400)]" aria-hidden />
+              You have unsaved changes
+            </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-[var(--border)]"
+                onClick={handleDiscardChanges}
+              >
+                Discard
+              </Button>
+              <Button
+                type="button"
+                className="bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                onClick={handleSaveProduct}
+              >
+                Save changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageShell>
+    </ProductContext.Provider>
   );
 }

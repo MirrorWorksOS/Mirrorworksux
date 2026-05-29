@@ -162,7 +162,34 @@ export interface Product {
    * registry is the source of truth for content.
    */
   defaultTemplateIds?: string[];
+  /**
+   * Default fulfilment route used by `confirmSalesOrder` to dispatch
+   * each line of a Sales Order. Maps 1:1 to the Figma workflow archetypes:
+   *  - mto: Make-to-Order — create a Job, BoM explosion, MRP, schedule.
+   *  - catalogue_sale: stocked pick — reserve, pick, pack, dispatch.
+   *  - eto: Engineer-to-Order — create an engineering Job; production
+   *    Job auto-creates once the BoM is published.
+   *  - make_to_stock: replenishment item — sale of these is unusual;
+   *    `confirmSalesOrder` soft-warns and treats as MTO unless the BoM
+   *    already resolves to stock-on-hand.
+   * Per-line overrides on `SalesOrderLine.routeOverride` win when set.
+   */
+  defaultRoute?: ProductRoute;
+  /**
+   * True when this product passes through the shop floor (has or will
+   * have a BoM + routing). False for pure catalogue / resale items.
+   * Stored explicitly because a stocked item *can* have a BoM (the
+   * make-to-stock case) — `defaultRoute` alone can't represent that.
+   */
+  isManufactured?: boolean;
 }
+
+/**
+ * Fulfilment route discriminator — see {@link Product.defaultRoute} and
+ * the workflow archetypes documented in
+ * `docs/architecture/workflows.md`.
+ */
+export type ProductRoute = 'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock';
 
 /** Preferred / excluded machines for a single routing step on a product. */
 export interface RoutingMachinePrefs {
@@ -333,6 +360,31 @@ export interface SalesOrder {
   fulfilmentLabels?: string[];
   /** When the sales order was confirmed. */
   confirmedAt?: string;
+  /**
+   * Per-product lines. Each line is dispatched independently by
+   * `confirmSalesOrder` so a single SO can mix MTO + catalogue_sale +
+   * ETO lines. Optional during the Phase A rollout while legacy fixtures
+   * with a scalar `total` continue to render; required once Phase B1 ships.
+   */
+  lines?: SalesOrderLine[];
+}
+
+/**
+ * One line on a Sales Order. The `routeOverride` is the per-line
+ * escape hatch from `Product.defaultRoute` (used e.g. when a usually-MTO
+ * item is shipped from existing finished stock for one customer).
+ */
+export interface SalesOrderLine {
+  id: string;
+  salesOrderId: string;
+  productId: string;
+  /** Snapshot of product description at line-creation time. */
+  description: string;
+  qty: number;
+  unitPrice: number;
+  /** Optional per-line override of {@link Product.defaultRoute}. */
+  routeOverride?: ProductRoute;
+  status: 'pending' | 'reserved' | 'in_production' | 'shipped' | 'cancelled';
 }
 
 export interface SellInvoice {
@@ -629,7 +681,44 @@ export interface Job {
    *  - mixed: blends both
    */
   productKind?: 'widget' | 'configurable' | 'mixed';
+  /**
+   * What triggered this Job's creation. Drives queue filters and the
+   * journey stepper's first-stage badge.
+   *  - sales_order: spawned by `confirmSalesOrder` (the MTO default).
+   *  - replenishment: auto-created by reorder-rule cron when stock
+   *    falls below threshold. Uses the "Stock" pseudo-customer.
+   *  - engineering: ETO engineering Job — produces a BoM, then spawns
+   *    a sibling production Job linked via `parentJobId`.
+   *  - variation: child of a parent Job, scoped to a VO delta.
+   *  - manual: operator-created, no upstream trigger.
+   */
+  source?: JobSource;
+  /**
+   * Parent Job for ETO (engineering → production) and VO (parent → delta)
+   * chains. Cost rolls up to the parent's `JobCost` record.
+   */
+  parentJobId?: string;
+  /**
+   * Sibling-group key shared by a parent SO and every variation derived
+   * from it. Lets `Invoice.variationChainId` post a delta or separate
+   * invoice without losing the lineage.
+   */
+  variationChainId?: string;
+  /**
+   * Units to manufacture. Distinct from `estimatedHours` (effort) and
+   * `value` (price). Required for the diagram-2 "Job product - 10 units"
+   * shape; optional on legacy fixtures.
+   */
+  qty?: number;
 }
+
+/** See {@link Job.source}. */
+export type JobSource =
+  | 'sales_order'
+  | 'replenishment'
+  | 'engineering'
+  | 'variation'
+  | 'manual';
 
 export interface PlanTask {
   id: string;
@@ -1156,6 +1245,14 @@ export interface WorkOrder {
   operatorName?: string;
   /** Set when this WO's cut step is being fulfilled by a Nest job. */
   nestId?: string;
+  /** Phase B6 — rework chain. Points to the original WO this is reworking. */
+  parentWorkOrderId?: string;
+  /** Phase B6 — rework iteration count. Capped at 2 → supervisor escalation. */
+  reworkDepth?: number;
+  /** Phase B7 — set on subcontracted ops to flag the WO in the timeline. */
+  isSubcontracted?: boolean;
+  startedAt?: string;
+  completedAt?: string;
 }
 
 /** CAPA (Corrective and Preventive Action) record */
@@ -1692,3 +1789,218 @@ export interface MarkupComment {
 
 // ── Shipment → delivery-note attachment convenience type ───────────
 // (Actual storage goes through `Attachment` with kind='delivery_note')
+
+// ═══════════════════════════════════════════════════════════════════════
+// WORKFLOW ARCHETYPES — types added in Phases B1–B7 + E
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * One canonical 10-stage journey, used by the universal Order page and
+ * the `JourneyStepper` component. Each stage maps to an Advance action.
+ */
+export type JourneyStage =
+  | 'quote'
+  | 'sales_order'
+  | 'job'
+  | 'bom'
+  | 'mrp'
+  | 'schedule'
+  | 'manufacturing'
+  | 'qc'
+  | 'dispatch'
+  | 'invoice';
+
+/** Bill of Materials — landed in Phase B1. */
+export interface BillOfMaterials {
+  id: string;
+  /** Owning product whose BoM this is. */
+  productId: string;
+  /** Engineering revision label. */
+  revision: string;
+  components: BomComponent[];
+  publishedAt?: string;
+  publishedBy?: string;
+}
+
+export interface BomComponent {
+  productId: string;
+  /** Qty of this component per unit of the parent product. */
+  qtyPer: number;
+  /**
+   * Sub-assembly that should spawn a nested Manufacturing Order when
+   * the parent is built. Mirrors the diagram-2 cascade.
+   */
+  isManufactured: boolean;
+  /** Routed through an outwork supplier — drives Phase B7. */
+  isSubcontracted?: boolean;
+  /** Phantom assemblies flatten into the parent; no nested MO. */
+  isPhantom?: boolean;
+}
+
+/** Row produced by `explodeBom` — gross material need per component. */
+export interface MaterialDemand {
+  productId: string;
+  qtyRequired: number;
+  qtyOnHand: number;
+  qtyShort: number;
+  isManufactured: boolean;
+}
+
+/** Inventory snapshot per product / location. */
+export interface InventoryRecord {
+  id: string;
+  productId: string;
+  locationId: string;
+  qtyOnHand: number;
+  qtyReserved: number;
+}
+
+export interface StockLocation {
+  id: string;
+  code: string;
+  name: string;
+  /** Distinguishes raw / WIP / finished-goods / subcontract pseudo-locations. */
+  kind: 'raw' | 'wip' | 'finished' | 'subcontract';
+}
+
+export interface Reservation {
+  id: string;
+  productId: string;
+  locationId: string;
+  qty: number;
+  salesOrderLineId?: string;
+  workOrderId?: string;
+  createdAt: string;
+  status: 'active' | 'released' | 'consumed';
+}
+
+export interface StockMovement {
+  id: string;
+  productId: string;
+  fromLocationId?: string;
+  toLocationId?: string;
+  qty: number;
+  reason: 'gr' | 'pick' | 'consume' | 'putaway' | 'sub_out' | 'sub_in' | 'scrap' | 'adjust';
+  at: string;
+  refType?: 'so_line' | 'work_order' | 'mo' | 'po' | 'rma';
+  refId?: string;
+}
+
+export interface PickList {
+  id: string;
+  pickNumber: string;
+  salesOrderId: string;
+  status: 'pending' | 'in_progress' | 'picked' | 'cancelled';
+  createdAt: string;
+  pickedAt?: string;
+  pickedBy?: string;
+  lines: PickListLine[];
+}
+
+export interface PickListLine {
+  productId: string;
+  qtyOrdered: number;
+  qtyPicked: number;
+  locationId: string;
+  batchLotId?: string;
+}
+
+/** Phase B3 — distinct from Goods Receipt; goes to FG location. */
+export interface PutAwayRecord {
+  id: string;
+  manufacturingOrderId: string;
+  productId: string;
+  qty: number;
+  toLocationId: string;
+  batchLotId?: string;
+  at: string;
+  by: string;
+}
+
+/** Per-WO QC gate result — Phase B6 wires Pass/Fail/Hold into rework. */
+export interface QualityCheck {
+  id: string;
+  workOrderId: string;
+  inspectionPointId?: string;
+  result: 'pass' | 'fail' | 'hold';
+  inspectorId: string;
+  at: string;
+  ncrId?: string;
+}
+
+/** Per-WO operator time entry. */
+export interface TimeEntry {
+  id: string;
+  workOrderId: string;
+  operatorId: string;
+  startAt: string;
+  endAt?: string;
+  durationMin?: number;
+}
+
+/** Phase B5 — Variation Order. */
+export interface VariationOrder {
+  id: string;
+  voNumber: string;
+  parentSalesOrderId: string;
+  type: 'additive' | 'descope' | 'mixed';
+  costDelta: number;
+  scheduleDeltaDays: number;
+  description: string;
+  status: 'draft' | 'awaiting_approval' | 'approved' | 'rejected';
+  variationChainId: string;
+  createdAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
+}
+
+/** Phase B6 — log of customer approvals to ship-with-concession. */
+export interface ConcessionRecord {
+  id: string;
+  workOrderId: string;
+  jobId: string;
+  reason: string;
+  approvedBy: string;
+  approvedAt: string;
+  customerContact?: string;
+}
+
+/** Phase B7 — subcontract material model + flow status. */
+export type SubcontractMaterialModel = 'sub_supplied' | 'free_issue' | 'hybrid';
+
+export interface SubcontractDispatch {
+  id: string;
+  workOrderId: string;
+  operationId: string;
+  supplierId: string;
+  materialModel: SubcontractMaterialModel;
+  purchaseOrderId: string;
+  outboundShipmentId?: string;
+  status: 'released' | 'subcontract_in_transit' | 'at_supplier' | 'returning' | 'received' | 'closed';
+  releasedAt: string;
+  returnedAt?: string;
+}
+
+/** Structured gate failure — surfaced via `GateBanner`. */
+export interface GateFailureDetail {
+  code: string;
+  message: string;
+  /** Optional URL the GateBanner deep-links to (relative or absolute). */
+  fixUrl?: string;
+}
+
+/**
+ * Product-level reorder rule used by the Phase B3 replenishment monitor.
+ * Separate from the legacy material-keyed {@link ReorderRule} (which
+ * keys by `material` + `grade` for the raw-material buy side).
+ */
+export interface ProductReorderRule {
+  id: string;
+  productId: string;
+  reorderPoint: number;
+  reorderQty: number;
+  leadTimeDays: number;
+  /** Behaviour when on-hand falls below reorderPoint. */
+  shortageBehaviour: 'backorder' | 'auto_po' | 'wait';
+  enabled: boolean;
+}

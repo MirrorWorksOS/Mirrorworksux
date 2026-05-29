@@ -37,6 +37,10 @@ function Switch(props: SwitchProps) {
     onChange: props.onCheckedChange,
   });
 
+  // Radix Root consumes the controlled-state props; stripping them here keeps
+  // them off the rendered <button>, where React would warn they're unknown.
+  const { checked, defaultChecked, onCheckedChange, ...buttonProps } = props;
+
   return (
     <SwitchProvider
       value={{ isChecked, setIsChecked, isPressed, setIsPressed }}
@@ -49,7 +53,7 @@ function Switch(props: SwitchProps) {
           onTapStart={() => setIsPressed(true)}
           onTapCancel={() => setIsPressed(false)}
           onTap={() => setIsPressed(false)}
-          {...props}
+          {...buttonProps}
         />
       </SwitchPrimitives.Root>
     </SwitchProvider>
