@@ -8,11 +8,8 @@
  */
 import { create } from 'zustand';
 
-import { planService } from '@/services';
-import type {
-  AutoScheduleRequest,
-  ScheduleSnapshot,
-} from '@/types/entities';
+import { planScheduleAdapter } from '@/services/planScheduleAdapter';
+import type { ScheduleSnapshot } from '@/types/entities';
 
 export type ScheduleRunState = 'idle' | 'confirming' | 'running' | 'awaiting_approval';
 export type GanttGroupBy = 'workCentre' | 'job';
@@ -68,7 +65,7 @@ export const useScheduleEngineStore = create<ScheduleEngineState>((set, get) => 
   toast: null,
 
   loadSnapshot: async () => {
-    const snap = await planService.getScheduleSnapshot();
+    const snap = await planScheduleAdapter.getScheduleSnapshot();
     set({ current: snap });
   },
 
@@ -85,8 +82,8 @@ export const useScheduleEngineStore = create<ScheduleEngineState>((set, get) => 
   applyProposal: async () => {
     const proposed = get().proposed;
     if (!proposed) return;
-    await planService.applySchedule(proposed.id);
-    const fresh = await planService.getScheduleSnapshot();
+    await planScheduleAdapter.applySchedule(proposed.id);
+    const fresh = await planScheduleAdapter.getScheduleSnapshot();
     set({
       current: fresh,
       proposed: null,
@@ -98,7 +95,7 @@ export const useScheduleEngineStore = create<ScheduleEngineState>((set, get) => 
   },
 
   discardProposal: async () => {
-    await planService.discardProposal();
+    await planScheduleAdapter.discardProposal();
     set({
       proposed: null,
       proposalSummary: null,

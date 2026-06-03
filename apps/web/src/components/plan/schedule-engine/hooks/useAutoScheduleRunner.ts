@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useRef } from 'react';
 
-import { planService } from '@/services';
+import { planScheduleAdapter } from '@/services/planScheduleAdapter';
 import { useScheduleEngineStore } from '@/store/scheduleEngineStore';
 import type { AutoScheduleRequest } from '@/types/entities';
 
@@ -61,7 +61,7 @@ export function useAutoScheduleRunner(): UseAutoScheduleRunnerReturn {
         setStepIndex(i);
       }, AI_STEP_DURATION_MS);
 
-      const result = await planService.runAutoSchedule(req);
+      const result = await planScheduleAdapter.runAutoSchedule(req);
 
       if (cancelledRef.current) return;
       if (stepTimerRef.current) {
