@@ -8,6 +8,8 @@ import { Grid3x3, List, Mail, Phone, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { SpotlightCard } from '@/components/shared/surfaces/SpotlightCard';
 import { Input } from '../ui/input';
 import { Avatar, AvatarFallback } from '../ui/avatar';
@@ -57,14 +59,24 @@ const getPerformanceBadge = (onTimeRate: number) => {
   return { bg: 'bg-[var(--mw-error-100)]', text: 'text-[var(--mw-error)]', label: 'Poor' };
 };
 
+const ALL_CATEGORIES = Array.from(new Set(mockSuppliers.flatMap((s) => s.categories))).sort();
+
 export function BuySuppliers() {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+
+  const toggleCategory = (cat: string) => {
+    setCategoryFilter((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    );
+  };
 
   const filteredSuppliers = mockSuppliers.filter(supplier =>
-    supplier.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    supplier.contact.toLowerCase().includes(searchQuery.toLowerCase()),
+    (supplier.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      supplier.contact.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    (categoryFilter.length === 0 || supplier.categories.some((c) => categoryFilter.includes(c))),
   );
 
   const countActive = mockSuppliers.filter(s => s.activePOs > 0).length;
@@ -155,10 +167,43 @@ export function BuySuppliers() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-      <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
-        <AnimatedFilter className="h-4 w-4" />
-        Filter
-      </Button>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
+            <AnimatedFilter className="h-4 w-4" />
+            Filter
+            {categoryFilter.length > 0 && (
+              <Badge className="border-0 bg-[var(--mw-yellow-400)] px-1.5 py-0 text-xs tabular-nums text-primary-foreground">
+                {categoryFilter.length}
+              </Badge>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-60 p-4">
+          <div className="space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-500)]">Category</p>
+            {ALL_CATEGORIES.map((cat) => (
+              <label key={cat} className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+                <Checkbox
+                  checked={categoryFilter.includes(cat)}
+                  onCheckedChange={() => toggleCategory(cat)}
+                />
+                {cat}
+              </label>
+            ))}
+            {categoryFilter.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-full text-xs text-[var(--neutral-500)]"
+                onClick={() => setCategoryFilter([])}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
       <div className="flex items-center rounded-lg border border-[var(--border)] p-1">
         <button
           type="button"

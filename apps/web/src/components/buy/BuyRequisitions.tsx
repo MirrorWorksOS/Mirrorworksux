@@ -195,11 +195,7 @@ export function BuyRequisitions() {
           onDelete={(keys) => toast.success(`Deleting ${keys.size} items\u2026`)}
         />
         <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--neutral-100)]">
-          <p className="text-xs text-[var(--neutral-500)]">Showing 1-{filteredReqs.length} of {filteredReqs.length}</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Previous</button>
-            <button className="px-3 py-1 text-xs border border-[var(--border)] rounded hover:bg-[var(--neutral-100)] disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]" disabled>Next</button>
-          </div>
+          <p className="text-xs text-[var(--neutral-500)]">Showing {filteredReqs.length} of {mockRequisitions.length} requisitions</p>
         </div>
       </motion.div>
     </motion.div>

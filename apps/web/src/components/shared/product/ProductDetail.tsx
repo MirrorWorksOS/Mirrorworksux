@@ -3911,8 +3911,17 @@ export function ProductDetail({ module = 'sell' }: ProductDetailProps) {
         <TabsList className="h-auto w-full min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 sm:w-fit">
           {visibleTabs.map((t) => {
             const badge = tabBadges[t];
+            // Related-data tabs have nothing real behind them until the
+            // product is saved — disabled while creating (/products/new).
+            const preSaveDisabled = isNew && t !== 'Overview';
             return (
-              <TabsTrigger key={t} value={t} className="gap-2 px-3 sm:px-4">
+              <TabsTrigger
+                key={t}
+                value={t}
+                disabled={preSaveDisabled}
+                title={preSaveDisabled ? 'Available after saving' : undefined}
+                className="gap-2 px-3 sm:px-4"
+              >
                 <span>{t}</span>
                 {badge !== undefined && (
                   <Badge

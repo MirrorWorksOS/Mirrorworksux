@@ -255,6 +255,10 @@ export function ProductStudioV2() {
 
     const ws = Blockly.inject(container, {
       toolbox: toolbox as unknown as Blockly.utils.toolbox.ToolboxDefinition,
+      // Self-hosted media (copied from node_modules/blockly/media into
+      // public/blockly-media/) — Blockly otherwise loads sprites/sounds from
+      // blockly-demo.appspot.com, an external runtime dependency.
+      media: '/blockly-media/',
       trashcan: true,
       zoom: {
         controls: true,

@@ -701,7 +701,7 @@ function PortalPanel() {
                 </p>
               </div>
               <Switch
-                checked={prefs[t.key]}
+                checked={prefs[t.key] === true}
                 onCheckedChange={(v) => updateTenant({ [t.key]: v })}
               />
             </div>

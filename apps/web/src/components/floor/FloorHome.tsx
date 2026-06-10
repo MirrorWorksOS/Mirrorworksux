@@ -71,15 +71,26 @@ export function FloorHome() {
     // Look up the machine and persist to session. Unknown IDs fall through
     // to the picker, which is the safer failure mode.
     let cancelled = false;
-    makeService.getMachineById(stationParam).then((machine) => {
-      if (cancelled) return;
-      if (machine) {
-        session.setStation({ id: machine.id, name: machine.name });
-      }
-      searchParams.delete('station');
-      setSearchParams(searchParams, { replace: true });
-      setStationHydrated(true);
-    });
+    makeService
+      .getMachineById(stationParam)
+      .then((machine) => {
+        if (cancelled) return;
+        if (machine) {
+          session.setStation({ id: machine.id, name: machine.name });
+        }
+        searchParams.delete('station');
+        setSearchParams(searchParams, { replace: true });
+        setStationHydrated(true);
+      })
+      .catch((err) => {
+        // A failed lookup must never strand the kiosk on the boot screen —
+        // fall through to the station picker instead.
+        console.error('[floor] failed to resolve ?station= machine', err);
+        if (cancelled) return;
+        searchParams.delete('station');
+        setSearchParams(searchParams, { replace: true });
+        setStationHydrated(true);
+      });
     return () => {
       cancelled = true;
     };

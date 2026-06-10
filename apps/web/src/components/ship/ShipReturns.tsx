@@ -3,9 +3,27 @@
  * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  * Status dots now use semantic colours
  */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { PlusCircle, ChevronRight } from 'lucide-react';
 import { Card } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { cn } from '../ui/utils';
 import { MwDataTable, type MwColumnDef } from '@/components/shared/data/MwDataTable';
@@ -76,21 +94,75 @@ const returnColumns: MwColumnDef<RMA>[] = [
   { key: 'arrow', header: '', cell: () => <ChevronRight className="w-4 h-4 text-[var(--neutral-200)]" /> },
 ];
 
+const RMA_REASONS = ['Defective', 'Damaged', 'Wrong Item', 'Change of Mind', 'Other'];
+
 export function ShipReturns() {
+  const [rmas, setRmas] = useState<RMA[]>(RMAS);
   const [selected, setSelected] = useState<RMA | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
 
-  const pendingCount = RMAS.filter(r => r.status === 'pending').length;
-  const inTransitCount = RMAS.filter(r => r.status === 'in_transit').length;
-  const receivedCount = RMAS.filter(r => r.status === 'received').length;
-  const closedCount = RMAS.filter(r => r.status === 'closed' || r.status === 'refunded').length;
+  // Create-RMA form state
+  const [formOrder, setFormOrder] = useState('');
+  const [formCustomer, setFormCustomer] = useState('');
+  const [formItems, setFormItems] = useState('1');
+  const [formReason, setFormReason] = useState(RMA_REASONS[0]);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const orderRef = useRef<HTMLInputElement>(null);
+  const customerRef = useRef<HTMLInputElement>(null);
+
+  const resetForm = () => {
+    setFormOrder('');
+    setFormCustomer('');
+    setFormItems('1');
+    setFormReason(RMA_REASONS[0]);
+    setFormErrors({});
+  };
+
+  const handleCreateRma = () => {
+    const errors: Record<string, string> = {};
+    if (!formOrder.trim()) errors.order = 'Order number is required';
+    if (!formCustomer.trim()) errors.customer = 'Customer is required';
+    const items = Number(formItems);
+    if (!Number.isInteger(items) || items < 1) errors.items = 'Enter at least 1 item';
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      toast.error('Please fix the highlighted fields');
+      if (errors.order) orderRef.current?.focus();
+      else if (errors.customer) customerRef.current?.focus();
+      return;
+    }
+    const nextId = `RMA-${String(rmas.length + 1).padStart(3, '0')}`;
+    const created: RMA = {
+      id: nextId,
+      order: formOrder.trim().toUpperCase(),
+      customer: formCustomer.trim(),
+      items,
+      reason: formReason,
+      status: 'pending',
+      date: new Date().toLocaleDateString('en-AU', { day: '2-digit', month: 'short' }),
+    };
+    setRmas((prev) => [created, ...prev]);
+    toast.success(`${nextId} created`, { description: `${created.customer} · ${created.reason}` });
+    resetForm();
+    setCreateOpen(false);
+  };
+
+  const pendingCount = rmas.filter(r => r.status === 'pending').length;
+  const inTransitCount = rmas.filter(r => r.status === 'in_transit').length;
+  const receivedCount = rmas.filter(r => r.status === 'received').length;
+  const closedCount = rmas.filter(r => r.status === 'closed' || r.status === 'refunded').length;
 
   return (
     <PageShell className="overflow-y-auto">
       <PageHeader
         title="Returns"
         actions={
-          <button className="h-14 px-5 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors flex items-center gap-2 font-medium">
+          <button
+            type="button"
+            className="h-14 px-5 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors flex items-center gap-2 font-medium"
+            onClick={() => setCreateOpen(true)}
+          >
             <PlusCircle className="w-4 h-4" /> Create RMA
           </button>
         }
@@ -101,7 +173,7 @@ export function ShipReturns() {
           { label: 'Pending', value: pendingCount, sub: 'Awaiting review', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
           { label: 'In Transit', value: inTransitCount, sub: 'Return shipping', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
           { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
-          { label: 'Resolved', value: closedCount, sub: `${RMAS.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Resolved', value: closedCount, sub: `${rmas.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
           <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
@@ -121,7 +193,7 @@ export function ShipReturns() {
         <div className="lg:col-span-3">
           <MwDataTable
             columns={returnColumns}
-            data={RMAS}
+            data={rmas}
             keyExtractor={(r) => r.id}
             onRowClick={(r) => setSelected(r)}
             selectable
@@ -222,6 +294,83 @@ export function ShipReturns() {
           })()}
         </SheetContent>
       </Sheet>
+
+      {/* Create RMA dialog */}
+      <Dialog open={createOpen} onOpenChange={(o) => { if (!o) resetForm(); setCreateOpen(o); }}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Create RMA</DialogTitle>
+            <DialogDescription>
+              Raise a return merchandise authorisation against a shipped order.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="rma-order" className="text-xs text-[var(--neutral-500)]">Order number</Label>
+              <Input
+                id="rma-order"
+                ref={orderRef}
+                value={formOrder}
+                onChange={(e) => setFormOrder(e.target.value)}
+                placeholder="e.g. SH-042"
+                aria-invalid={!!formErrors.order}
+                className="mt-1 h-10 tabular-nums"
+              />
+              {formErrors.order && <p className="mt-1 text-xs text-destructive">{formErrors.order}</p>}
+            </div>
+            <div>
+              <Label htmlFor="rma-customer" className="text-xs text-[var(--neutral-500)]">Customer</Label>
+              <Input
+                id="rma-customer"
+                ref={customerRef}
+                value={formCustomer}
+                onChange={(e) => setFormCustomer(e.target.value)}
+                placeholder="Customer name"
+                aria-invalid={!!formErrors.customer}
+                className="mt-1 h-10"
+              />
+              {formErrors.customer && <p className="mt-1 text-xs text-destructive">{formErrors.customer}</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="rma-items" className="text-xs text-[var(--neutral-500)]">Items</Label>
+                <Input
+                  id="rma-items"
+                  type="number"
+                  min="1"
+                  value={formItems}
+                  onChange={(e) => setFormItems(e.target.value)}
+                  aria-invalid={!!formErrors.items}
+                  className="mt-1 h-10 tabular-nums"
+                />
+                {formErrors.items && <p className="mt-1 text-xs text-destructive">{formErrors.items}</p>}
+              </div>
+              <div>
+                <Label className="text-xs text-[var(--neutral-500)]">Reason</Label>
+                <Select value={formReason} onValueChange={setFormReason}>
+                  <SelectTrigger className="mt-1 h-10 w-full text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RMA_REASONS.map((r) => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" className="h-10" onClick={() => setCreateOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" className="h-10" onClick={handleCreateRma}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create RMA
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

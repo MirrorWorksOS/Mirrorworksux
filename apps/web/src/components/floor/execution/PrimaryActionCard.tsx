@@ -35,7 +35,7 @@ export function PrimaryActionCard({
   const Icon = ICON[actionIcon];
   return (
     <Card className="rounded-lg border border-[var(--mw-mirage)] bg-[var(--mw-mirage)] p-6 shadow-md">
-      <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--mw-yellow-400)]">
+      <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--mw-yellow-400)]">
         {eyebrow}
       </div>
       <h3 className="mt-2 text-[22px] font-medium leading-tight text-white">
@@ -51,7 +51,7 @@ export function PrimaryActionCard({
         <Icon className="h-5 w-5" />
         <span>{actionLabel}</span>
       </Button>
-      <p className="mt-3 text-sm leading-relaxed text-[var(--neutral-300)]">
+      <p className="mt-3 text-base leading-relaxed text-[var(--neutral-300)]">
         {supportingText}
       </p>
     </Card>

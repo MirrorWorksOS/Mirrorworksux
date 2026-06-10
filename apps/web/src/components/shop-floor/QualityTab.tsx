@@ -38,6 +38,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 // --- Types & Mock Data ---
 
@@ -50,7 +58,8 @@ const QUALITY_HOLDS = [
     part: 'Chassis Side Panel L',
     issue: 'Dimensional Variance',
     time: 'Held 2 hours ago',
-    severity: 'critical'
+    severity: 'critical',
+    raisedBy: 'Elena Rodriguez'
   },
   {
     id: 'QH-2024-090',
@@ -58,7 +67,8 @@ const QUALITY_HOLDS = [
     part: 'Enclosure Frame A',
     issue: 'Surface Finish',
     time: 'Held 4 hours ago',
-    severity: 'high'
+    severity: 'high',
+    raisedBy: 'Carlos Gomez'
   },
   {
     id: 'QH-2024-091',
@@ -66,10 +76,14 @@ const QUALITY_HOLDS = [
     part: 'Bus Bar Connector',
     issue: 'Material Defect',
     time: 'Held 5 hours ago',
-    severity: 'medium'
+    severity: 'medium',
+    raisedBy: 'David Miller'
   }
 ];
 
+type QualityHold = (typeof QUALITY_HOLDS)[number];
+
+// daysAgo drives the Today / This Week / Month period filter (0 = today).
 const RECENT_INSPECTIONS = [
   {
     id: 'INSP-001',
@@ -78,6 +92,7 @@ const RECENT_INSPECTIONS = [
     inspector: 'Elena Rodriguez',
     machine: 'Amada Ensis Laser',
     time: '10 min ago',
+    daysAgo: 0,
     status: 'passed'
   },
   {
@@ -87,6 +102,7 @@ const RECENT_INSPECTIONS = [
     inspector: 'Carlos Gomez',
     machine: 'Miller Tig Weld 3',
     time: '25 min ago',
+    daysAgo: 0,
     status: 'failed'
   },
   {
@@ -96,6 +112,7 @@ const RECENT_INSPECTIONS = [
     inspector: 'Elena Rodriguez',
     machine: 'Amada Ensis Laser',
     time: '45 min ago',
+    daysAgo: 0,
     status: 'passed'
   },
   {
@@ -104,9 +121,38 @@ const RECENT_INSPECTIONS = [
     part: 'Mounting Plate',
     inspector: 'David Miller',
     machine: 'Mitsubishi 3015',
-    time: '1 hour ago',
+    time: 'Yesterday',
+    daysAgo: 1,
     status: 'passed'
+  },
+  {
+    id: 'INSP-005',
+    wo: 'MO-26-398',
+    part: 'Frame Gusset',
+    inspector: 'Lisa Ray',
+    machine: 'Press Brake 2',
+    time: '3 days ago',
+    daysAgo: 3,
+    status: 'passed'
+  },
+  {
+    id: 'INSP-006',
+    wo: 'MO-26-395',
+    part: 'Cover Panel',
+    inspector: 'Tom Wilson',
+    machine: 'Powder Coat Line 1',
+    time: '2 weeks ago',
+    daysAgo: 14,
+    status: 'failed'
   }
+];
+
+type InspectionPeriod = 'today' | 'week' | 'month';
+
+const INSPECTION_PERIODS: { key: InspectionPeriod; label: string; maxDaysAgo: number }[] = [
+  { key: 'today', label: 'Today', maxDaysAgo: 0 },
+  { key: 'week', label: 'This Week', maxDaysAgo: 6 },
+  { key: 'month', label: 'Month', maxDaysAgo: 29 },
 ];
 
 type AiFlag = {
@@ -265,6 +311,21 @@ export function QualityTab() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [showLogModal, setShowLogModal] = useState(false);
   const [aiSheetIssue, setAiSheetIssue] = useState<ActiveIssue | null>(null);
+  const [holds, setHolds] = useState<QualityHold[]>(QUALITY_HOLDS);
+  const [reviewHold, setReviewHold] = useState<QualityHold | null>(null);
+  const [inspectionPeriod, setInspectionPeriod] = useState<InspectionPeriod>('today');
+
+  const periodMaxDaysAgo =
+    INSPECTION_PERIODS.find((p) => p.key === inspectionPeriod)?.maxDaysAgo ?? 0;
+  const visibleInspections = RECENT_INSPECTIONS.filter((insp) => insp.daysAgo <= periodMaxDaysAgo);
+
+  const handleReleaseHold = (hold: QualityHold) => {
+    setHolds((prev) => prev.filter((h) => h.id !== hold.id));
+    setReviewHold(null);
+    toast.success(`Hold ${hold.id} released`, {
+      description: `${hold.wo} — ${hold.part} returned to production.`,
+    });
+  };
 
   const handleAcceptAi = (issue: ActiveIssue) => {
     toast.success(`Accepted AI suggestion for ${issue.id}`, {
@@ -351,23 +412,33 @@ export function QualityTab() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-medium text-[var(--neutral-800)]">Quality Holds</h3>
             </div>
-            <div className="flex overflow-x-auto gap-4 pb-4 -mx-1 px-1 hide-scrollbar">
-              {QUALITY_HOLDS.map((hold) => (
-                <div key={hold.id} className="flex-shrink-0 w-[320px] bg-card rounded-lg shadow-xs border border-[var(--neutral-200)] p-6">
-                   <div className="flex justify-between items-start mb-2">
-                     <span className="text-base font-bold text-[var(--neutral-800)]">{hold.wo}</span>
-                     <span className="text-xs text-[var(--neutral-500)]">{hold.time}</span>
-                   </div>
-                   <div className="text-sm text-[var(--neutral-500)] mb-3">{hold.part}</div>
-                   <Badge variant="secondary" className="bg-[var(--mw-error)]/10 text-[var(--mw-error)] hover:bg-[var(--mw-error)]/20 border-0 mb-4 font-medium">
-                     {hold.issue}
-                   </Badge>
-                   <Button variant="outline" className="w-full h-10 border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]">
-                     Review Hold
-                   </Button>
-                </div>
-              ))}
-            </div>
+            {holds.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-[var(--neutral-200)] p-6 text-sm text-[var(--neutral-500)]">
+                No active quality holds.
+              </div>
+            ) : (
+              <div className="flex overflow-x-auto gap-4 pb-4 -mx-1 px-1 hide-scrollbar">
+                {holds.map((hold) => (
+                  <div key={hold.id} className="flex-shrink-0 w-[320px] bg-card rounded-lg shadow-xs border border-[var(--neutral-200)] p-6">
+                     <div className="flex justify-between items-start mb-2">
+                       <span className="text-base font-bold text-[var(--neutral-800)]">{hold.wo}</span>
+                       <span className="text-xs text-[var(--neutral-500)]">{hold.time}</span>
+                     </div>
+                     <div className="text-sm text-[var(--neutral-500)] mb-3">{hold.part}</div>
+                     <Badge variant="secondary" className="bg-[var(--mw-error)]/10 text-[var(--mw-error)] hover:bg-[var(--mw-error)]/20 border-0 mb-4 font-medium">
+                       {hold.issue}
+                     </Badge>
+                     <Button
+                       variant="outline"
+                       onClick={() => setReviewHold(hold)}
+                       className="w-full h-10 border-[var(--neutral-200)] text-[var(--neutral-800)] hover:bg-[var(--neutral-100)]"
+                     >
+                       Review Hold
+                     </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Recent Inspections & Scrap/Rework Grid */}
@@ -378,19 +449,32 @@ export function QualityTab() {
                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-medium text-[var(--neutral-800)]">Recent Inspections</h3>
                   <div className="flex bg-[var(--neutral-200)]/30 p-1 rounded-lg">
-                    {['Today', 'This Week', 'Month'].map((filter, i) => (
-                      <button key={filter} className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        i === 0 ? "bg-card text-[var(--neutral-800)] shadow-sm" : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]"
-                      )}>{filter}</button>
+                    {INSPECTION_PERIODS.map((period) => (
+                      <button
+                        key={period.key}
+                        type="button"
+                        onClick={() => setInspectionPeriod(period.key)}
+                        aria-pressed={inspectionPeriod === period.key}
+                        className={cn(
+                          "px-3 py-1 min-h-9 text-xs font-medium rounded-md transition-colors",
+                          inspectionPeriod === period.key
+                            ? "bg-card text-[var(--neutral-800)] shadow-sm"
+                            : "text-[var(--neutral-500)] hover:text-[var(--neutral-800)]"
+                        )}
+                      >{period.label}</button>
                     ))}
                   </div>
                </div>
                <div className="bg-card rounded-lg border border-[var(--neutral-200)] shadow-sm overflow-hidden">
-                 {RECENT_INSPECTIONS.map((insp, i) => (
+                 {visibleInspections.length === 0 && (
+                   <div className="p-4 text-sm text-[var(--neutral-500)]">
+                     No inspections in this period.
+                   </div>
+                 )}
+                 {visibleInspections.map((insp, i) => (
                    <div key={insp.id} className={cn(
                      "flex items-center justify-between p-4 hover:bg-[var(--neutral-100)] transition-colors cursor-pointer",
-                     i !== RECENT_INSPECTIONS.length - 1 && "border-b border-[var(--neutral-200)]"
+                     i !== visibleInspections.length - 1 && "border-b border-[var(--neutral-200)]"
                    )}>
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -689,6 +773,65 @@ export function QualityTab() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Hold review dialog */}
+      <Dialog open={!!reviewHold} onOpenChange={(open) => !open && setReviewHold(null)}>
+        <DialogContent className="sm:max-w-[440px]">
+          {reviewHold && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Review Hold {reviewHold.id}</DialogTitle>
+                <DialogDescription>
+                  Production is paused on this work order until the hold is released.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-[var(--mw-error)]/10 text-[var(--mw-error)] hover:bg-[var(--mw-error)]/20 border-0 font-medium">
+                    {reviewHold.issue}
+                  </Badge>
+                  <PriorityBadge priority={reviewHold.severity} />
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Work order</div>
+                    <div className="text-[var(--neutral-800)]">{reviewHold.wo}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Part</div>
+                    <div className="text-[var(--neutral-800)]">{reviewHold.part}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Raised by</div>
+                    <div className="text-[var(--neutral-800)]">{reviewHold.raisedBy}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[var(--neutral-500)] mb-1">Held</div>
+                    <div className="text-[var(--neutral-800)]">{reviewHold.time.replace(/^Held /, '')}</div>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 border-[var(--neutral-200)]"
+                  onClick={() => setReviewHold(null)}
+                >
+                  Keep on hold
+                </Button>
+                <Button
+                  type="button"
+                  className="h-10 bg-[var(--mw-mirage)] hover:bg-[var(--mw-mirage)]/90 text-white"
+                  onClick={() => handleReleaseHold(reviewHold)}
+                >
+                  Release hold
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Log Issue Modal Overlay */}
       {showLogModal && (

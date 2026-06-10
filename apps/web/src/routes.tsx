@@ -9,6 +9,7 @@ import { createBrowserRouter, Navigate, useNavigate, useParams } from 'react-rou
 import { Layout } from './components/Layout';
 import { WelcomeDashboard } from './components/WelcomeDashboard';
 import { RouteErrorBoundary } from './components/RouteErrorBoundary';
+import { RouteFallback } from './components/ui/route-fallback';
 import { lazyWithRetry } from '@/lib/lazy-with-retry';
 import { appRoutes, navigateBackOrTo } from '@/lib/navigation/routes';
 
@@ -191,7 +192,7 @@ const BookPurchaseOrderDetail = lazyWithRetry(() => import('./components/book/Bo
 // Suspense wrapper for lazy routes
 // ---------------------------------------------------------------------------
 function L({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>}>{children}</Suspense>;
+  return <Suspense fallback={<RouteFallback />}>{children}</Suspense>;
 }
 
 // Redirect old `/plan/product-studio/v2/:productId` deep links to the new

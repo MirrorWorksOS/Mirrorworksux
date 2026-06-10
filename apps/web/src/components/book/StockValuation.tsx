@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Package, Wrench, CheckCircle, Calendar } from 'lucide-react';
+import { Package, Wrench, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -39,7 +40,18 @@ const donutData = [
 
 type AgeCategory = 'Fresh' | 'Active' | 'Slow' | 'Stale';
 
-const rawMaterials = [
+interface StockRow {
+  item: string;
+  sku: string;
+  qty: number;
+  unit: string;
+  total: number;
+  location: string;
+  lastMove: string;
+  age: AgeCategory;
+}
+
+const rawMaterials: StockRow[] = [
   { item: '10mm MS Plate', sku: 'MS-10-3678', qty: 120, unit: '$85.00', total: 10200, location: 'Bay A1', lastMove: '25 Feb', age: 'Fresh' as AgeCategory },
   { item: '5052 Aluminum Sheet', sku: 'AL-5052-12G', qty: 85, unit: '$92.00', total: 7820, location: 'Bay A3', lastMove: '22 Feb', age: 'Fresh' as AgeCategory },
   { item: 'RHS 50x25x2.5', sku: 'RHS-50252', qty: 200, unit: '$18.50', total: 3700, location: 'Rack B2', lastMove: '15 Feb', age: 'Active' as AgeCategory },
@@ -50,9 +62,27 @@ const rawMaterials = [
   { item: '6mm MS Plate', sku: 'MS-06-3678', qty: 45, unit: '$65.00', total: 2925, location: 'Bay A1', lastMove: '12 Feb', age: 'Active' as AgeCategory },
 ];
 
-type RawMaterialRow = typeof rawMaterials[number];
+const workInProgress: StockRow[] = [
+  { item: 'Switchroom enclosure frames', sku: 'JOB-2026-0012', qty: 4, unit: '$2,850.00', total: 11400, location: 'Bay 2 — Welding', lastMove: '24 Feb', age: 'Active' },
+  { item: 'Conveyor guard panels', sku: 'JOB-2026-0010', qty: 12, unit: '$640.00', total: 7680, location: 'Bay 1 — Cutting', lastMove: '23 Feb', age: 'Fresh' },
+  { item: 'Stair stringer assemblies', sku: 'JOB-2026-0013', qty: 2, unit: '$3,150.00', total: 6300, location: 'Bay 3 — Fab', lastMove: '21 Feb', age: 'Active' },
+  { item: 'Pump skid base frame', sku: 'JOB-2026-0008', qty: 1, unit: '$5,200.00', total: 5200, location: 'Paint Room', lastMove: '12 Feb', age: 'Slow' },
+];
 
-const stockColumns: FinancialColumn<RawMaterialRow>[] = [
+const finishedGoods: StockRow[] = [
+  { item: 'Cable ladder 600mm — galv', sku: 'FG-CL600-G', qty: 30, unit: '$185.00', total: 5550, location: 'FG Rack 1', lastMove: '25 Feb', age: 'Fresh' },
+  { item: 'Access platform kit', sku: 'FG-APK-12', qty: 2, unit: '$4,400.00', total: 8800, location: 'Dispatch', lastMove: '18 Feb', age: 'Active' },
+  { item: 'Handrail stanchions', sku: 'FG-HRS-90', qty: 48, unit: '$72.00', total: 3456, location: 'FG Rack 2', lastMove: '20 Feb', age: 'Active' },
+  { item: 'Guard mesh panels 2.4m', sku: 'FG-GMP-24', qty: 16, unit: '$210.00', total: 3360, location: 'FG Rack 3', lastMove: '02 Dec', age: 'Stale' },
+];
+
+const adjustments: StockRow[] = [
+  { item: 'Stocktake variance — MS plate', sku: 'ADJ-2026-014', qty: -3, unit: '$85.00', total: -255, location: 'Bay A1', lastMove: '28 Feb', age: 'Fresh' },
+  { item: 'Damaged stock write-off — SS sheet', sku: 'ADJ-2026-013', qty: -2, unit: '$185.00', total: -370, location: 'Bay A2', lastMove: '21 Feb', age: 'Active' },
+  { item: 'Found stock — welding wire', sku: 'ADJ-2026-012', qty: 4, unit: '$32.00', total: 128, location: 'Store C1', lastMove: '14 Feb', age: 'Active' },
+];
+
+const stockColumns: FinancialColumn<StockRow>[] = [
   { key: 'item', header: 'ITEM', accessor: (r) => r.item, format: 'text', align: 'left' },
   { key: 'sku', header: 'SKU', accessor: (r) => r.sku, format: 'text', align: 'left' },
   { key: 'qty', header: 'QTY', accessor: (r) => r.qty, format: 'number' },
@@ -63,10 +93,17 @@ const stockColumns: FinancialColumn<RawMaterialRow>[] = [
   { key: 'age', header: 'AGE', accessor: (r) => r.age, format: 'text', align: 'left' },
 ];
 
-const TABS = ['Raw Materials', 'Work in Progress', 'Finished Goods', 'Adjustments'];
+const TABS = ['Raw Materials', 'Work in Progress', 'Finished Goods', 'Adjustments'] as const;
+
+const STOCK_BY_TAB: Record<(typeof TABS)[number], StockRow[]> = {
+  'Raw Materials': rawMaterials,
+  'Work in Progress': workInProgress,
+  'Finished Goods': finishedGoods,
+  Adjustments: adjustments,
+};
 
 export function StockValuation() {
-  const [activeTab, setActiveTab] = useState('Raw Materials');
+  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>('Raw Materials');
 
   return (
     <PageShell className="p-6 space-y-6">
@@ -85,10 +122,10 @@ export function StockValuation() {
                 <SelectItem value="actual">Actual Cost</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
-              <Calendar className="h-4 w-4" /> As at
-            </Button>
-            <Button className="h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
+            <Button
+              className="h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={() => toast('Generating stock valuation report…')}
+            >
               Generate report
             </Button>
           </div>
@@ -165,24 +202,19 @@ export function StockValuation() {
       <Card className="bg-card rounded-lg border border-[var(--border)] overflow-hidden">
         <div className="px-4 pt-4">
           <PillNav
-            tabs={TABS.map(t => ({ key: t, label: t }))}
+            tabs={TABS.map(t => ({ key: t, label: t, count: STOCK_BY_TAB[t].length }))}
             value={activeTab}
-            onValueChange={setActiveTab}
+            onValueChange={(v) => setActiveTab(v as (typeof TABS)[number])}
             listClassName="w-fit"
             aria-label="Stock category"
           />
         </div>
 
-        {activeTab === 'Raw Materials' && (
-          <FinancialTable
-            columns={stockColumns}
-            data={rawMaterials}
-            keyExtractor={(r) => r.sku}
-          />
-        )}
-        {activeTab !== 'Raw Materials' && (
-          <div className="p-8 text-center text-sm text-[var(--neutral-400)]">No {activeTab.toLowerCase()} data to display.</div>
-        )}
+        <FinancialTable
+          columns={stockColumns}
+          data={STOCK_BY_TAB[activeTab]}
+          keyExtractor={(r) => r.sku}
+        />
       </Card>
     </PageShell>
   );

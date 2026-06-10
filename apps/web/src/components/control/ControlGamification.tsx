@@ -403,7 +403,7 @@ export function ControlGamification() {
                       type="checkbox"
                       checked={visibleMetrics[m.key] ?? false}
                       onChange={() => toggleMetric(m.key)}
-                      className="h-4 w-4 rounded border-[var(--border)] text-foreground accent-[var(--mw-mirage)]"
+                      className="h-5 w-5 rounded border-[var(--border)] text-foreground accent-[var(--mw-mirage)]"
                     />
                     <span className="text-sm text-[var(--neutral-600)] group-hover:text-foreground transition-colors">
                       {m.label}

@@ -51,32 +51,32 @@ export function OperationHeaderCard({
     <Card className="rounded-lg border-[var(--neutral-200)] bg-card p-6 shadow-xs">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
-          <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+          <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
             Step {snapshot.currentStep.stepNumber} of {snapshot.routing.length} · {snapshot.machineName} · {snapshot.revision}
           </div>
           <h2 className="mt-2 text-2xl font-medium leading-tight text-[var(--neutral-900)]">
             {snapshot.currentStep.title}
           </h2>
-          <p className="mt-1 max-w-prose text-sm text-[var(--neutral-600)]">
+          <p className="mt-1 max-w-prose text-base text-[var(--neutral-600)]">
             {snapshot.currentStep.description}
           </p>
         </div>
 
         <div className="flex items-center gap-6">
           <div className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               Cycle time
             </div>
             <div className="mt-2 flex items-end gap-3">
               <div>
-                <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">Est</div>
+                <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">Est</div>
                 <div className="text-2xl font-medium tabular-nums text-[var(--neutral-700)]">
                   {cycleEstimateLabel}
                 </div>
               </div>
               <div className="h-8 w-px bg-[var(--neutral-200)]" />
               <div>
-                <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">Actual</div>
+                <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">Actual</div>
                 <div className="text-2xl font-medium tabular-nums text-[var(--neutral-900)]">
                   {cycleActualLabel}
                 </div>
@@ -90,7 +90,7 @@ export function OperationHeaderCard({
           </div>
 
           <div className="rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-5 py-4">
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               Units complete
             </div>
             <div className="mt-2 flex items-center gap-4">
@@ -123,7 +123,7 @@ export function OperationHeaderCard({
                 <Plus className="h-6 w-6" />
               </Button>
             </div>
-            <div className="mt-3 flex items-center gap-2 border-t border-[var(--neutral-200)] pt-2 text-[11px] font-medium uppercase tracking-[0.18em]">
+            <div className="mt-3 flex items-center gap-2 border-t border-[var(--neutral-200)] pt-2 text-xs font-medium uppercase tracking-[0.18em]">
               <span className="text-[var(--neutral-500)]">WO total run</span>
               <span className={`tabular-nums ${totalTone}`}>{formatMinutes(totalActualMin)}</span>
               <span className="text-[var(--neutral-400)]">/</span>

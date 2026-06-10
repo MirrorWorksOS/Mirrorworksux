@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Plus, LayoutGrid, List, GripVertical, Paperclip, X } from 'lucide-react';
+import { Plus, GripVertical, Paperclip, X } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { cn } from '../ui/utils';
@@ -13,7 +13,6 @@ import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageToolbar, ToolbarSearch, ToolbarSpacer } from '@/components/shared/layout/PageToolbar';
 import { ToolbarFilterButton } from '@/components/shared/layout/ToolbarFilterButton';
 import { ToolbarPrimaryButton } from '@/components/shared/layout/ToolbarPrimaryButton';
-import { IconViewToggle } from '@/components/shared/layout/IconViewToggle';
 
 const KANBAN_ITEM_TYPE = 'book-expense';
 
@@ -175,14 +174,6 @@ export function ExpenseKanban({ onNewExpense }: { onNewExpense?: () => void }) {
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search expenses…" />
         <ToolbarSpacer />
         <ToolbarFilterButton />
-        <IconViewToggle
-          value="kanban"
-          onChange={() => {}}
-          options={[
-            { key: 'kanban', icon: LayoutGrid, label: 'Board view' },
-            { key: 'list', icon: List, label: 'List view' },
-          ]}
-        />
         <ToolbarPrimaryButton icon={Plus} onClick={handleNewExpenseClick}>
           New Expense
         </ToolbarPrimaryButton>

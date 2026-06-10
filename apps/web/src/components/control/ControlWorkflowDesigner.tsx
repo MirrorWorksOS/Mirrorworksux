@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import {
-  Sparkles, Plus, Play, Save, Edit2, Copy, Trash2, X,
+  Sparkles, Play, Save, Edit2, Copy, Trash2, X,
   RefreshCw, Zap, Bell, GitBranch, ShoppingCart, Mail,
   Settings2, Calendar, Pause, Timer,
 } from 'lucide-react';
@@ -425,14 +425,10 @@ export function ControlWorkflowDesigner() {
 
         {/* Panel header */}
         <div className="p-4 border-b border-[var(--border)] space-y-3 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-foreground">
-              Workflows
-            </h2>
-            <Button size="sm" className="h-10 w-10 p-0 bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground">
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
+          {/* New workflows are created via the MirrorWorks Agent prompt below. */}
+          <h2 className="text-sm font-medium text-foreground">
+            Workflows
+          </h2>
 
           {/* AI generator */}
           <div className="bg-[var(--mw-purple-50)] border border-[var(--mw-purple)]/25 rounded-lg p-3">

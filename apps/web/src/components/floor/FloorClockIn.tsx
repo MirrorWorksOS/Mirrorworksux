@@ -16,13 +16,13 @@
  * banner so managers can see which sessions clocked in without visual
  * verification.
  *
- * Demo PIN: "1234" for every operator in the mock data. Shown explicitly
- * on screen while we're prototyping.
+ * PIN: each operator has their own 4-digit PIN (Employee.pin). Operators
+ * without a PIN configured fall back to a default with a console warning.
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ShieldAlert } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
@@ -31,30 +31,52 @@ import { useFloorSession } from '@/store/floorSessionStore';
 import type { Employee } from '@/types/entities';
 import ReflectiveCard, { type CameraStatus } from './ReflectiveCard';
 
-const DEMO_PIN = '1234';
+const FALLBACK_PIN = '1234';
 
 export function FloorClockIn() {
   const session = useFloorSession();
   const [operators, setOperators] = useState<Employee[]>([]);
+  const [rosterStatus, setRosterStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [selected, setSelected] = useState<Employee | null>(null);
   const [pin, setPin] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>('idle');
 
-  useEffect(() => {
-    makeService.getOperators().then(setOperators);
+  const loadOperators = useCallback(() => {
+    setRosterStatus('loading');
+    makeService
+      .getOperators()
+      .then((roster) => {
+        setOperators(roster);
+        setRosterStatus('ready');
+      })
+      .catch((err) => {
+        console.error('[floor] failed to load operator roster', err);
+        setRosterStatus('error');
+      });
   }, []);
+
+  useEffect(() => {
+    loadOperators();
+  }, [loadOperators]);
 
   const handleSubmit = () => {
     if (!selected) return;
-    if (pin === DEMO_PIN) {
+    let expectedPin = selected.pin;
+    if (!expectedPin) {
+      console.warn(
+        `[floor] operator ${selected.id} has no PIN configured — falling back to default PIN`,
+      );
+      expectedPin = FALLBACK_PIN;
+    }
+    if (pin === expectedPin) {
       session.clockIn({
         id: selected.id,
         name: selected.name,
         role: selected.role,
       });
     } else {
-      setError('Incorrect PIN. Demo PIN is 1234.');
+      setError('Incorrect PIN. Ask a supervisor if you need a reset.');
       setPin('');
     }
   };
@@ -179,9 +201,6 @@ export function FloorClockIn() {
               </div>
             )}
 
-            <div className="mt-8 text-xs uppercase tracking-wider text-white/30">
-              Demo PIN: 1234
-            </div>
           </motion.div>
         </div>
       </div>
@@ -204,9 +223,30 @@ export function FloorClockIn() {
           </p>
         </div>
 
-        {operators.length === 0 ? (
-          <div className="text-sm text-[var(--neutral-500)]">
+        {rosterStatus === 'loading' ? (
+          <div className="flex items-center gap-3 text-sm text-[var(--neutral-500)]">
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--mw-yellow-400)]" />
             Loading operators…
+          </div>
+        ) : rosterStatus === 'error' ? (
+          <div className="flex max-w-[480px] flex-col items-start gap-4 rounded-lg border border-[var(--neutral-200)] bg-card p-6">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-6 w-6 text-[var(--mw-error)]" />
+              <div className="text-base font-medium text-[var(--neutral-800)]">
+                Couldn&apos;t load the operator roster.
+              </div>
+            </div>
+            <Button
+              onClick={loadOperators}
+              className="min-h-[56px] bg-[var(--neutral-800)] px-8 text-white hover:bg-[var(--neutral-900)]"
+            >
+              Retry
+            </Button>
+          </div>
+        ) : operators.length === 0 ? (
+          <div className="max-w-[480px] rounded-lg border border-[var(--neutral-200)] bg-card p-6 text-sm text-[var(--neutral-600)]">
+            No shop-floor operators configured — add employees with Make
+            access in Control &gt; People.
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

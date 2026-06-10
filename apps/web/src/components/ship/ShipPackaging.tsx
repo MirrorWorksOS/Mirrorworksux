@@ -2,7 +2,17 @@
  * Ship Packaging — pack station touch interface
  */
 import React, { useRef, useState } from 'react';
+import { Printer } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { cn } from '../ui/utils';
@@ -27,10 +37,14 @@ const PACKAGES = [
   { name: 'Pallet', dims: '120×80' },
 ];
 
+const CURRENT_ORDER = { id: 'SH-001', customer: 'Meridian Fabrication' };
+
 export function ShipPackaging() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [pkg, setPkg] = useState('Medium');
   const [fragile, setFragile] = useState(false);
+  const [packedCount, setPackedCount] = useState(34);
+  const [labelOpen, setLabelOpen] = useState(false);
   const scanRef = useRef<ScanInputHandle>(null);
 
   const handleScan = (value: string) => {
@@ -45,6 +59,22 @@ export function ShipPackaging() {
 
   const toggle = (sku: string) => {
     setChecked(p => { const n = new Set(p); n.has(sku) ? n.delete(sku) : n.add(sku); return n; });
+  };
+
+  const handlePark = () => {
+    setChecked(new Set());
+    toast(`${CURRENT_ORDER.id} parked`, {
+      description: 'Order returned to the pack queue — progress saved for the next packer.',
+    });
+  };
+
+  const handlePrintLabel = () => {
+    setLabelOpen(false);
+    setChecked(new Set());
+    setPackedCount((n) => n + 1);
+    toast.success(`${CURRENT_ORDER.id} complete`, {
+      description: `Label sent to Zebra ZD420 — Dispatch (${pkg} package).`,
+    });
   };
 
   const allPacked = checked.size === ITEMS.length;
@@ -64,7 +94,7 @@ export function ShipPackaging() {
         }
         actions={
           <div className="flex items-center gap-6 text-sm text-[var(--neutral-500)]">
-            <span>Packed: <span className="font-medium text-foreground tabular-nums">34</span></span>
+            <span>Packed: <span className="font-medium text-foreground tabular-nums">{packedCount}</span></span>
             <span>Orders: <span className="font-medium text-foreground tabular-nums">8</span></span>
           </div>
         }
@@ -181,6 +211,7 @@ export function ShipPackaging() {
             type="button"
             variant="outline"
             className="h-12 min-h-[48px] border-[var(--border)] px-6 font-medium text-foreground"
+            onClick={handlePark}
           >
             Park
           </Button>
@@ -193,11 +224,82 @@ export function ShipPackaging() {
                 ? 'bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]'
                 : 'cursor-not-allowed bg-[var(--neutral-100)] text-[var(--neutral-400)]',
             )}
+            onClick={() => setLabelOpen(true)}
           >
             Complete & print label
           </Button>
         </div>
       </div>
+
+      {/* Shipping label preview — confirm before "printing" */}
+      <Dialog open={labelOpen} onOpenChange={setLabelOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Shipping label</DialogTitle>
+            <DialogDescription>
+              Review the label before sending it to the pack-station printer.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md border border-[var(--neutral-300)] bg-white p-5 text-[var(--mw-mirage)] shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+                MirrorWorks
+              </span>
+              <span className="rounded-full border border-[var(--mw-mirage)] bg-[var(--mw-mirage)] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--mw-yellow-400)]">
+                Dispatch
+              </span>
+            </div>
+            <h4 className="mt-4 text-lg font-medium leading-tight">{CURRENT_ORDER.customer}</h4>
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-600)]">
+              {CURRENT_ORDER.id}
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+              <div className="rounded-sm bg-[var(--neutral-100)] px-2.5 py-2">
+                <div>Package</div>
+                <div className="mt-0.5 text-sm font-medium normal-case tracking-normal text-[var(--mw-mirage)]">
+                  {pkg}
+                </div>
+              </div>
+              <div className="rounded-sm bg-[var(--neutral-100)] px-2.5 py-2">
+                <div>Items</div>
+                <div className="mt-0.5 text-sm font-medium normal-case tracking-normal text-[var(--mw-mirage)] tabular-nums">
+                  {ITEMS.reduce((sum, i) => sum + i.qty, 0)}
+                </div>
+              </div>
+              <div className="rounded-sm bg-[var(--neutral-100)] px-2.5 py-2">
+                <div>Fragile</div>
+                <div className="mt-0.5 text-sm font-medium normal-case tracking-normal text-[var(--mw-mirage)]">
+                  {fragile ? 'Yes — corner protectors' : 'No'}
+                </div>
+              </div>
+              <div className="rounded-sm bg-[var(--neutral-100)] px-2.5 py-2">
+                <div>Printer</div>
+                <div className="mt-0.5 text-sm font-medium normal-case tracking-normal text-[var(--mw-mirage)]">
+                  Zebra ZD420
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 min-h-[48px] border-[var(--border)]"
+              onClick={() => setLabelOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="h-12 min-h-[48px] bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+              onClick={handlePrintLabel}
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Print label
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

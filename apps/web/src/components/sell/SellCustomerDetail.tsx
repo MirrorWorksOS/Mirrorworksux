@@ -3,7 +3,7 @@
  * Follows PlanJobDetail tab pattern with 65/35 two-column overview
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowLeft, MoreVertical, Mail, Phone, MapPin, Users, FileText, Clock, Plus, ChevronDown, ChevronUp, MessageSquare, PhoneCall, Upload, Trash2, Archive, Bell, ExternalLink } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
@@ -86,9 +86,23 @@ const mockCustomers: Record<string, any> = {};
 
 // Blank-form factory for create-mode rendering at `/sell/crm/new`.
 // In mock mode the new id is local-only; the backend mutation will
-// replace this with the real generated id.
+// replace this with the real generated id. Ids follow the central
+// `cust-###` convention (see services/mock/data.ts) so created
+// customers get clean URLs like /sell/crm/cust-007.
+const nextCustomerId = (): string => {
+  const suffixes = [
+    ...customers.map(c => c.id),
+    ...Object.keys(mockCustomers),
+  ]
+    .map(id => /^cust-(\d+)$/.exec(id)?.[1])
+    .filter((s): s is string => Boolean(s))
+    .map(Number);
+  const next = (suffixes.length > 0 ? Math.max(...suffixes) : 0) + 1;
+  return `cust-${String(next).padStart(3, '0')}`;
+};
+
 const createBlankCustomer = (): any => ({
-  id: `new-${Date.now()}`,
+  id: nextCustomerId(),
   company: '',
   abn: '',
   industry: '',
@@ -315,6 +329,10 @@ export function SellCustomerDetail() {
   const [contactPickerOpen, setContactPickerOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
+  // Create-mode validation: inline error + focus target for the company field.
+  const [companyError, setCompanyError] = useState<string | null>(null);
+  const companyFieldRef = useRef<HTMLDivElement>(null);
+
   const updateDraft = (path: string, value: any) => {
     setDraft((prev: any) => {
       const next = { ...prev };
@@ -347,9 +365,14 @@ export function SellCustomerDetail() {
     // TODO(backend): isNew ? customers.create(customer) : customers.update(customer.id, customer)
     if (isNew) {
       if (!customer.company.trim()) {
-        toast.error('Company name is required');
+        setCompanyError('Company name is required');
+        companyFieldRef.current?.querySelector('input')?.focus();
+        toast.error('Fix the highlighted fields');
         return;
       }
+      // Register in the in-memory record set so the detail route resolves
+      // after navigation (mock mode only — survives until full reload).
+      mockCustomers[customer.id] = { ...customer };
       toast.success('Customer created');
       navigate(`/sell/crm/${customer.id}`, { replace: true });
     } else {
@@ -536,7 +559,14 @@ export function SellCustomerDetail() {
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Tab)} className="overflow-x-auto">
           <TabsList className="h-auto min-h-11 flex-wrap justify-start gap-1 rounded-xl p-1 w-fit bg-[var(--neutral-200)]/45">
             {tabs.map(tab => (
-              <TabsTrigger key={tab.key} value={tab.key} className="gap-2 px-3 sm:px-4">
+              <TabsTrigger
+                key={tab.key}
+                value={tab.key}
+                // Related-record tabs are meaningless until the customer is saved.
+                disabled={isNew && tab.key !== 'overview'}
+                title={isNew && tab.key !== 'overview' ? 'Available after saving' : undefined}
+                className="gap-2 px-3 sm:px-4"
+              >
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <Badge variant="secondary" className="border-0 bg-[var(--neutral-200)] px-1.5 py-0 text-xs font-medium text-[var(--neutral-800)] tabular-nums">
@@ -561,7 +591,21 @@ export function SellCustomerDetail() {
                 <Card className="p-6">
                   <h2 className="text-lg font-medium text-foreground mb-6">Company information</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                    <EditField label="Company name" required value={customer.company} onChange={v => updateDraft('company', v)} placeholder="e.g. Alliance Metal Fabrication" />
+                    <div ref={companyFieldRef}>
+                      <EditField
+                        label="Company name"
+                        required
+                        value={customer.company}
+                        onChange={v => {
+                          updateDraft('company', v);
+                          if (companyError && v.trim()) setCompanyError(null);
+                        }}
+                        placeholder="e.g. Alliance Metal Fabrication"
+                      />
+                      {companyError && (
+                        <p className="mt-1 text-xs text-[var(--mw-error)]" role="alert">{companyError}</p>
+                      )}
+                    </div>
                     <EditField label="ABN" mono value={customer.abn} onChange={v => updateDraft('abn', v)} placeholder="11 222 333 444" />
                     <EditSelect
                       label="Industry"

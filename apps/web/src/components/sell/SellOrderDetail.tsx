@@ -383,6 +383,10 @@ export function SellOrderDetail() {
   const handleSave = () => {
     // TODO(backend): isNew ? salesOrders.create(order) : salesOrders.update(order.id, order)
     if (isNew) {
+      if (!order?.customer.trim()) {
+        toast.error('Customer is required');
+        return;
+      }
       toast.success('Sales order created');
       navigate(`/sell/orders/${order!.id}`, { replace: true });
     } else {
@@ -399,7 +403,7 @@ export function SellOrderDetail() {
   // Build the line set the KickoffDialog needs (filtered to make-able products).
   const kickoffLines: KickoffLine[] = useMemo(() => {
     return lineItems
-      .map((li) => {
+      .map((li): KickoffLine | null => {
         // Match by SKU/partNumber — line.product carries the partNumber.
         const p = products.find(
           (x) => x.partNumber === li.product || x.sku === li.product,
@@ -504,11 +508,17 @@ export function SellOrderDetail() {
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
+      // Fulfilment (carrier/tracking/shipping) is meaningless until the order
+      // is saved. Line Items and Documents stay enabled — both are used to
+      // build the order before saving.
+      if (isNew && t.id === "fulfilment") {
+        return { ...t, disabled: true, disabledReason: "Available after saving" };
+      }
       if (t.id === "line-items") return { ...t, count: lineItems.length };
       if (t.id === "documents") return { ...t, count: documents.length };
       return { ...t };
     });
-  }, [lineItems.length, documents.length]);
+  }, [isNew, lineItems.length, documents.length]);
 
   // ── D1: Lineage strip — Q → SO → INV → WO → DO chips ───────────────
   const lineageChips = useMemo(() => {

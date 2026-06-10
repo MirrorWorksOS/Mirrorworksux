@@ -232,6 +232,10 @@ export function SellOpportunityPage() {
     if (!opp) return;
     // TODO(backend): isNew ? opportunities.create(opp) : opportunities.update(opp.id, opp)
     if (isNew) {
+      if (!opp.title.trim()) {
+        toast.error('Opportunity title is required');
+        return;
+      }
       toast.success('Opportunity created');
       navigate(`/sell/opportunities/${opp.id}`, { replace: true });
     } else {
@@ -243,11 +247,15 @@ export function SellOpportunityPage() {
     const q = MOCK_QUOTES.length;
     const a = MOCK_ACTIVITIES.length;
     return DEFAULT_SELL_OPPORTUNITY_TABS.map((t) => {
+      // Related-record tabs are meaningless until the opportunity is saved.
+      if (isNew && t.id !== "overview") {
+        return { ...t, disabled: true, disabledReason: "Available after saving" };
+      }
       if (t.id === "quotes") return { ...t, count: q };
       if (t.id === "activities") return { ...t, count: a };
       return { ...t };
     });
-  }, []);
+  }, [isNew]);
 
   const agentFeedItems = useMemo(() => {
     if (!opp) return null;

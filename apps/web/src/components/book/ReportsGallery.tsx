@@ -1,4 +1,4 @@
-import { BarChart3, PieChart, FileText, Clock, Scale, TrendingUp, Users, DollarSign, Target, Wrench, Receipt, Sparkles, Calendar } from 'lucide-react';
+import { BarChart3, PieChart, FileText, Clock, Scale, TrendingUp, Users, DollarSign, Target, Wrench, Receipt } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -82,16 +82,6 @@ export function ReportsGallery() {
       <PageHeader
         title="Reports"
         subtitle="Financial reports and manufacturing analytics"
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" size="sm" className="h-10 gap-2 border-[var(--border)]">
-              <Calendar className="h-4 w-4" /> Schedule report
-            </Button>
-            <Button className="h-10 gap-2 rounded-full bg-[var(--mw-yellow-400)] px-5 text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
-              <Sparkles className="h-4 w-4" /> Custom report
-            </Button>
-          </div>
-        }
       />
 
       {/* Xero Reports */}

@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { ShoppingCart, FileText, AlertTriangle, Clock, DollarSign, Package } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -38,6 +39,7 @@ const badgeNeutral =
   'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)] dark:border-[var(--border)] dark:bg-[var(--neutral-200)] dark:text-[var(--neutral-800)]';
 
 export function BuyDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   const spendTotal = useMemo(
@@ -256,7 +258,7 @@ export function BuyDashboard() {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="mt-4 w-full border-[var(--border)]">View All Approvals</Button>
+            <Button variant="outline" className="mt-4 w-full border-[var(--border)]" onClick={() => navigate('/buy/requisitions')}>View All Approvals</Button>
           </Card>
         </motion.div>
 
@@ -267,7 +269,7 @@ export function BuyDashboard() {
               <Badge className={badgeNeutral}>3</Badge>
             </div>
             <p className="mb-4 text-sm text-[var(--neutral-500)]">3 purchase orders ready for goods receipt</p>
-            <Button variant="outline" className="w-full border-[var(--border)]">Go to Receipts</Button>
+            <Button variant="outline" className="w-full border-[var(--border)]" onClick={() => navigate('/buy/receipts')}>Go to Receipts</Button>
           </Card>
         </motion.div>
 
@@ -278,7 +280,7 @@ export function BuyDashboard() {
               <Badge className={badgeNeutral}>5</Badge>
             </div>
             <p className="mb-4 text-sm text-[var(--neutral-500)]">5 bills awaiting three-way match</p>
-            <Button variant="outline" className="w-full border-[var(--border)]">Go to Bills</Button>
+            <Button variant="outline" className="w-full border-[var(--border)]" onClick={() => navigate('/buy/bills')}>Go to Bills</Button>
           </Card>
         </motion.div>
       </div>

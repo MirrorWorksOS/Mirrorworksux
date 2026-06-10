@@ -1,14 +1,14 @@
 /**
  * WorkflowCanvas — Visual node-based canvas for AI Agent Workflow Designer.
  * Renders nodes as absolute-positioned cards with SVG bezier connections.
- * v2: Enhanced node types, visual canvas with branching, add-step buttons.
+ * v2: Enhanced node types, visual canvas with branching.
  */
 
 import { useState } from 'react';
 import {
   Zap, Sparkles, RefreshCw, Bell, GitBranch,
   ShoppingCart, Calendar, Settings2, Mail, Pause,
-  Plus, Timer,
+  Timer,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '../ui/utils';
@@ -370,20 +370,6 @@ function Connections({ edges, nodes, canvasW, canvasH }: { edges: WFEdge[]; node
   );
 }
 
-// ─── Add Step Button ─────────────────────────────────────────────────────────
-
-function AddStepButton({ x, y }: { x: number; y: number }) {
-  return (
-    <button
-      className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--neutral-300)] bg-card text-[var(--neutral-400)] transition-all duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:border-[var(--neutral-400)] hover:bg-[#0A0A0A]/[0.06] hover:text-foreground hover:shadow-[var(--card-shadow-rest)] hover:scale-110"
-      style={{ left: x - 12, top: y - 12 }}
-      title="Add step"
-    >
-      <Plus className="w-3.5 h-3.5" />
-    </button>
-  );
-}
-
 // ─── Node card ────────────────────────────────────────────────────────────────
 
 function NodeCard({
@@ -475,25 +461,6 @@ export function WorkflowCanvas({
     onSelectNode(next);
   };
 
-  // Compute add-step button positions (midpoints of edges between vertically-aligned nodes)
-  const addStepPositions = edges
-    .filter(e => {
-      const from = nodes.find(n => n.id === e.from);
-      const to = nodes.find(n => n.id === e.to);
-      if (!from || !to) return false;
-      // Only show between same-column nodes (within 50px x delta)
-      return Math.abs(from.x - to.x) < 50;
-    })
-    .map(e => {
-      const from = nodes.find(n => n.id === e.from)!;
-      const to = nodes.find(n => n.id === e.to)!;
-      return {
-        key: `${e.from}-${e.to}`,
-        x: from.x + NODE_W / 2,
-        y: from.y + from.h + (to.y - from.y - from.h) / 2,
-      };
-    });
-
   return (
     <div
       className="flex-1 overflow-auto"
@@ -525,11 +492,6 @@ export function WorkflowCanvas({
             >
               {bl.text}
             </div>
-          ))}
-
-          {/* Add-step buttons */}
-          {addStepPositions.map(pos => (
-            <AddStepButton key={pos.key} x={pos.x} y={pos.y} />
           ))}
 
           {/* Nodes */}

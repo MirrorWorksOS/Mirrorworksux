@@ -4,6 +4,7 @@
  */
 
 import * as React from "react";
+import { Link } from "react-router";
 import { motion, type Transition } from "motion/react";
 import { Bell, CheckCircle2, Package, Zap } from "lucide-react";
 
@@ -119,14 +120,14 @@ export function DashboardNotificationList({
               </span>
             </div>
             <Button
-              type="button"
+              asChild
               variant="outline"
               className={cn(
                 "h-11 min-h-[48px] shrink-0 rounded-full bg-transparent font-bold text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--muted)]",
                 mwHairlineBorder,
               )}
             >
-              View all
+              <Link to="/notifications">View all</Link>
             </Button>
           </div>
         ) : (
@@ -185,11 +186,11 @@ export function DashboardNotificationList({
 
       {isTop ? null : (
         <Button
-          type="button"
+          asChild
           variant="ghost"
           className="mt-4 w-full rounded-full text-sm font-light text-muted-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)] hover:bg-[var(--mw-yellow-400-20)] hover:text-foreground"
         >
-          View all activity
+          <Link to="/notifications">View all activity</Link>
         </Button>
       )}
     </motion.div>

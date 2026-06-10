@@ -42,7 +42,7 @@ export function MaterialsPickListCard({
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-medium text-[var(--neutral-900)]">Pick list</h3>
-          <p className="text-sm text-[var(--neutral-600)]">
+          <p className="text-base text-[var(--neutral-600)]">
             Issue materials for {rows.length} BOM lines.
           </p>
         </div>
@@ -69,18 +69,18 @@ export function MaterialsPickListCard({
             className="grid grid-cols-[1fr_auto_auto] items-center gap-4 rounded-md border border-[var(--neutral-200)] bg-[var(--neutral-100)] px-4 py-3"
           >
             <div className="min-w-0">
-              <div className="truncate text-sm font-medium text-[var(--neutral-900)]">
+              <div className="truncate text-base font-medium text-[var(--neutral-900)]">
                 {row.partNumber}
               </div>
-              <div className="truncate text-sm text-[var(--neutral-600)]">
+              <div className="truncate text-base text-[var(--neutral-600)]">
                 {row.description}
               </div>
             </div>
             <div className="text-center">
-              <div className="text-sm font-medium tabular-nums text-[var(--neutral-900)]">
+              <div className="text-base font-medium tabular-nums text-[var(--neutral-900)]">
                 {row.requiredQty} {row.unit}
               </div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+              <div className="text-xs uppercase tracking-[0.18em] text-[var(--neutral-500)]">
                 {row.binLocation}
               </div>
             </div>

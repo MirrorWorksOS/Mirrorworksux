@@ -272,7 +272,7 @@ function init(
     setHovered(null);
     setHover(null);
   };
-  const onClick = (e: PointerEvent) => {
+  const onClick = (e: MouseEvent) => {
     const mesh = pickAt(e.clientX, e.clientY);
     if (!mesh) return;
     const machine = blockMachine.get(mesh.uuid);

@@ -180,8 +180,7 @@ export function PlanNCConnect({ headerExtras }: { headerExtras?: React.ReactNode
       <PageHeader
         breadcrumbs={[
           { label: 'Plan', href: '/plan' },
-          { label: 'Jobs', href: '/plan/jobs' },
-          { label: 'Differential Assembly', href: '/plan/jobs' },
+          { label: 'Machine I/O', href: '/plan/machine-io' },
           { label: 'NC Connect' },
         ]}
         title="NC Connect"

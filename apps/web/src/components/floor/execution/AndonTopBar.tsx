@@ -75,7 +75,7 @@ export function AndonTopBar({
           />
 
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               {snapshot.machineName} · {snapshot.operatorName}
             </div>
             <div className="mt-0.5 flex items-center gap-2">
@@ -88,7 +88,7 @@ export function AndonTopBar({
 
           <div className="flex items-center gap-2">
             <div
-              className={`flex h-9 items-center gap-2 rounded-full border px-3 text-[11px] font-medium uppercase tracking-[0.18em] ${
+              className={`flex h-9 items-center gap-2 rounded-full border px-3 text-xs font-medium uppercase tracking-[0.18em] ${
                 isBlocked
                   ? 'border-[var(--mw-error)] bg-[var(--mw-error)]/12 text-[var(--mw-error)]'
                   : 'border-[var(--neutral-200)] bg-card text-[var(--neutral-700)]'
@@ -99,18 +99,18 @@ export function AndonTopBar({
             </div>
 
             <div className="flex h-9 items-center gap-2 rounded-full border border-[var(--neutral-200)] bg-card px-3 text-sm font-medium tabular-nums text-[var(--neutral-900)]">
-              <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--neutral-500)]">Cycle</span>
+              <span className="text-xs uppercase tracking-[0.18em] text-[var(--neutral-500)]">Cycle</span>
               <span>{liveCycleLabel}</span>
               <span className="text-[var(--neutral-400)]">/</span>
               <span className="text-[var(--neutral-600)]">{cycleTargetLabel}</span>
               {overTarget ? (
-                <span className="ml-1 rounded-full bg-[var(--mw-yellow-400)] px-2 py-0.5 text-[11px] font-medium text-[var(--mw-mirage)]">
+                <span className="ml-1 rounded-full bg-[var(--mw-yellow-400)] px-2 py-0.5 text-xs font-medium text-[var(--mw-mirage)]">
                   +{cycleVariancePct}%
                 </span>
               ) : null}
             </div>
 
-            <div className="hidden h-9 items-center rounded-full border border-[var(--neutral-200)] bg-card px-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)] md:flex">
+            <div className="hidden h-9 items-center rounded-full border border-[var(--neutral-200)] bg-card px-3 text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)] md:flex">
               {syncLabel}
             </div>
 
@@ -119,14 +119,14 @@ export function AndonTopBar({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="hidden h-9 px-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] md:inline-flex"
+                className="hidden h-9 px-2 text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)] hover:bg-[var(--neutral-100)] md:inline-flex"
                 onClick={onResetDemo}
               >
                 Reset demo
               </Button>
             ) : null}
 
-            <ThemeToggle />
+            <ThemeToggle kiosk={mode === 'route'} />
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@ function OperatorAvatar({
     >
       <Avatar className="h-10 w-10 ring-2 ring-[var(--mw-yellow-400)] ring-offset-2 ring-offset-[var(--neutral-100)]">
         <AvatarImage src={operatorImage} alt={name} className="object-cover" />
-        <AvatarFallback className="bg-[var(--mw-mirage)] text-[11px] font-medium text-[var(--mw-yellow-400)]">
+        <AvatarFallback className="bg-[var(--mw-mirage)] text-xs font-medium text-[var(--mw-yellow-400)]">
           {initials}
         </AvatarFallback>
       </Avatar>
@@ -162,7 +162,7 @@ function OperatorAvatar({
   );
 }
 
-function ThemeToggle() {
+function ThemeToggle({ kiosk = false }: { kiosk?: boolean }) {
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   return (
@@ -171,7 +171,7 @@ function ThemeToggle() {
       variant="outline"
       size="lg"
       aria-label="Toggle dark mode"
-      className="h-11 w-11 border-[var(--neutral-200)] bg-card p-0 text-[var(--neutral-800)]"
+      className={`${kiosk ? 'h-14 w-14' : 'h-11 w-11'} border-[var(--neutral-200)] bg-card p-0 text-[var(--neutral-800)]`}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}

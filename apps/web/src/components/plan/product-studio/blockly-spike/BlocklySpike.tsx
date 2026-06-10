@@ -38,6 +38,8 @@ export function BlocklySpike() {
 
     const ws = Blockly.inject(containerRef.current, {
       toolbox: SPIKE_TOOLBOX as unknown as Blockly.utils.toolbox.ToolboxDefinition,
+      // Self-hosted media — avoids loading from blockly-demo.appspot.com.
+      media: '/blockly-media/',
       trashcan: true,
       zoom: {
         controls: true,

@@ -7,6 +7,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ChevronDown, Layers, Wallet, CreditCard, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '../ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
 import { motion } from 'motion/react';
@@ -15,7 +22,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie
 } from 'recharts';
-import { AnimatedPlus, AnimatedFilter } from '../ui/animated-icons';
+import { AnimatedFilter } from '../ui/animated-icons';
 import {
   MW_AXIS_TICK,
   MW_BAR_TOOLTIP_CURSOR,
@@ -209,6 +216,7 @@ function SortableHead({
 export function BudgetOverview() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<BudgetStatus>('active');
+  const [typeFilter, setTypeFilter] = useState<'all' | BudgetType>('all');
   const [sortColumn, setSortColumn] = useState<keyof Budget | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -232,7 +240,18 @@ export function BudgetOverview() {
     });
   }, []);
 
-  let sortedBudgets = [...mockBudgets];
+  // Apply the status pills + Type dropdown before sorting.
+  // 'active' covers every non-draft health state; no mock budgets are closed yet.
+  const visibleBudgets = mockBudgets.filter((b) => {
+    const statusMatch =
+      statusFilter === 'active' ? b.status !== 'draft'
+      : statusFilter === 'draft' ? b.status === 'draft'
+      : false;
+    const typeMatch = typeFilter === 'all' || b.type === typeFilter;
+    return statusMatch && typeMatch;
+  });
+
+  let sortedBudgets = [...visibleBudgets];
   if (sortColumn) {
     sortedBudgets.sort((a, b) => {
       const aVal = a[sortColumn];
@@ -396,17 +415,26 @@ export function BudgetOverview() {
         title="Budgets"
         subtitle={`Showing ${statusFilter} budgets`}
         actions={
-          <>
-            <Button variant="outline" size="sm" className="group h-10 gap-2 border-[var(--border)]">
-              <AnimatedFilter className="h-4 w-4" />
-              Type: All
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-            <Button className="group h-10 rounded-full bg-[var(--mw-yellow-400)] px-5 text-foreground hover:bg-[var(--mw-yellow-600)]">
-              <AnimatedPlus className="mr-2 h-4 w-4" />
-              New Budget
-            </Button>
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="group h-10 gap-2 border-[var(--border)]">
+                <AnimatedFilter className="h-4 w-4" />
+                Type: {typeFilter === 'all' ? 'All' : TYPE_LABEL_MAP[typeFilter]}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuRadioGroup
+                value={typeFilter}
+                onValueChange={(v) => setTypeFilter(v as 'all' | BudgetType)}
+              >
+                <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="job">Job</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="department">Department</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="annual">Annual</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         }
       />
 
@@ -636,6 +664,11 @@ export function BudgetOverview() {
           keyExtractor={(row) => row.id}
           striped
           selectable
+          emptyState={
+            <span className="text-sm text-[var(--neutral-500)]">
+              No {statusFilter} budgets{typeFilter !== 'all' ? ` of type ${TYPE_LABEL_MAP[typeFilter]}` : ''}.
+            </span>
+          }
           onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
           onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
           onRowClick={(budget) => {

@@ -54,9 +54,15 @@ const createBlankWorkOrder = (preset: { manufacturingOrderId?: string } = {}): E
   operatorName: '',
 });
 
-const TABS: JobWorkspaceTabConfig[] = [
+const buildTabs = (isNew: boolean): JobWorkspaceTabConfig[] => [
   { id: 'overview', label: 'Overview' },
-  { id: 'execution', label: 'Execution' },
+  // Execution data only exists once the WO is saved — disabled while creating.
+  {
+    id: 'execution',
+    label: 'Execution',
+    disabled: isNew,
+    disabledReason: isNew ? 'Available after saving' : undefined,
+  },
 ];
 
 export function MakeWorkOrderDetail() {
@@ -298,7 +304,7 @@ export function MakeWorkOrderDetail() {
           </Button>
         </>
       }
-      tabs={TABS}
+      tabs={buildTabs(isNew)}
       activeTab={activeTab}
       onTabChange={setActiveTab}
       renderTabPanel={renderTabPanel}

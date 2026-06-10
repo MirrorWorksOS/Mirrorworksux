@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { WorkOrderFullScreen } from '@/components/shop-floor/WorkOrderFullScreen';
@@ -34,7 +34,9 @@ export function FloorRun() {
 
   const [snapshot, setSnapshot] = useState<WorkOrderExecutionSnapshot | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
     if (!workOrderId) {
@@ -44,6 +46,9 @@ export function FloorRun() {
     }
 
     let cancelled = false;
+    setLoading(true);
+    setLoadError(false);
+    setNotFound(false);
 
     (async () => {
       const wo = await makeService.getWorkOrderById(workOrderId);
@@ -63,7 +68,12 @@ export function FloorRun() {
 
       setSnapshot(buildSnapshot(wo, mo, machine, session));
       setLoading(false);
-    })();
+    })().catch((err) => {
+      if (cancelled) return;
+      console.error('[floor] failed to load work order', err);
+      setLoadError(true);
+      setLoading(false);
+    });
 
     return () => {
       cancelled = true;
@@ -71,7 +81,7 @@ export function FloorRun() {
     // Session is read once at hydration time so a mid-job operator note does
     // not trigger a full refetch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workOrderId]);
+  }, [workOrderId, retryToken]);
 
   useEffect(() => {
     if (!snapshot) return;
@@ -97,8 +107,52 @@ export function FloorRun() {
   if (loading) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-100)]">
-        <div className="text-sm text-[var(--neutral-500)]">
+        <div className="flex items-center gap-3 text-sm text-[var(--neutral-500)]">
+          <span
+            aria-hidden
+            className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--mw-yellow-400)] border-t-transparent"
+          />
           Loading work order…
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-[var(--neutral-100)] p-8">
+        <div className="max-w-[480px] rounded-lg border border-[var(--neutral-200)] bg-card p-8 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mw-error)]/10">
+            <AlertCircle className="h-7 w-7 text-[var(--mw-error)]" />
+          </div>
+          <h2 className="mb-2 text-xl font-bold text-[var(--neutral-800)]">
+            Couldn&apos;t load the work order
+          </h2>
+          <p className="mb-6 text-sm text-[var(--neutral-500)]">
+            Something went wrong fetching{' '}
+            <span className="font-medium">{workOrderId}</span>. Check the
+            tablet&apos;s connection and try again.
+          </p>
+          <div className="flex flex-col items-center gap-3">
+            <Button
+              onClick={() => setRetryToken((token) => token + 1)}
+              className="min-h-[56px] w-full bg-[var(--mw-yellow-400)] text-[var(--mw-mirage)] hover:bg-[var(--mw-yellow-500)]"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                session.endJob();
+                navigate('/floor');
+              }}
+              className="min-h-[56px] w-full border-[var(--neutral-200)]"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to queue
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -112,7 +166,7 @@ export function FloorRun() {
             <AlertCircle className="h-7 w-7 text-[var(--mw-error)]" />
           </div>
           <h2 className="mb-2 text-xl font-bold text-[var(--neutral-800)]">
-            Unknown work order
+            Work order not found
           </h2>
           <p className="mb-6 text-sm text-[var(--neutral-500)]">
             We couldn&apos;t find <span className="font-medium">{workOrderId}</span>.

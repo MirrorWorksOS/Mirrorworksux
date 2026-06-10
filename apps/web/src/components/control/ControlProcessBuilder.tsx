@@ -963,7 +963,7 @@ export function ControlProcessBuilder() {
                 type="checkbox"
                 checked={flowFilters[ft]}
                 onChange={() => setFlowFilters(prev => ({ ...prev, [ft]: !prev[ft] }))}
-                className="w-3 h-3 rounded accent-[var(--mw-yellow-400)]"
+                className="w-5 h-5 rounded accent-[var(--mw-yellow-400)]"
               />
               <span className="flex items-center gap-1">
                 <span

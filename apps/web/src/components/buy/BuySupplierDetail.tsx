@@ -71,6 +71,10 @@ export function BuySupplierDetail() {
   const handleSave = () => {
     // TODO(backend): isNew ? suppliers.create(supplier) : suppliers.update(supplier.id, supplier)
     if (isNew && supplier) {
+      if (!supplier.company.trim()) {
+        toast.error('Company name is required');
+        return;
+      }
       toast.success('Supplier created');
       navigate(`/buy/suppliers/${supplier.id}`, { replace: true });
     } else {
@@ -201,11 +205,15 @@ export function BuySupplierDetail() {
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
+      // Related-record tabs are meaningless until the supplier is saved.
+      if (isNew && t.id !== 'overview') {
+        return { ...t, disabled: true, disabledReason: 'Available after saving' };
+      }
       if (t.id === 'purchase-orders') return { ...t, count: supplierPOs.length };
       if (t.id === 'bills') return { ...t, count: supplierBills.length };
       return t;
     });
-  }, [supplierPOs, supplierBills]);
+  }, [isNew, supplierPOs, supplierBills]);
 
   if (!supplier) {
     return (

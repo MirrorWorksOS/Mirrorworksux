@@ -37,12 +37,15 @@ interface ReferencePanelProps {
   snapshot: WorkOrderExecutionSnapshot;
   activeView: Segment;
   onViewChange: (view: Segment) => void;
+  /** Kiosk ('route') gets ≥56px touch targets on the viewer toolbar. */
+  mode?: 'overlay' | 'route';
 }
 
 export function ReferencePanel({
   snapshot,
   activeView,
   onViewChange,
+  mode = 'overlay',
 }: ReferencePanelProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const reference = snapshot.references[activeView];
@@ -116,13 +119,13 @@ export function ReferencePanel({
       </div>
 
       <div className="mt-5">
-        <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+        <div className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
           {reference.documentLabel} · {reference.revision}
         </div>
         <h3 className="mt-1 text-lg font-medium text-[var(--neutral-900)]">
           {reference.title}
         </h3>
-        <p className="mt-1 text-sm text-[var(--neutral-600)]">
+        <p className="mt-1 text-base text-[var(--neutral-600)]">
           {reference.summary}
         </p>
       </div>
@@ -132,6 +135,7 @@ export function ReferencePanel({
         snapshot={snapshot}
         height="h-[480px]"
         compact={false}
+        kiosk={mode === 'route'}
         mirrorViewerRef={mirrorViewerRef}
       />
 
@@ -145,6 +149,7 @@ export function ReferencePanel({
             snapshot={snapshot}
             height="h-[680px]"
             compact={false}
+            kiosk={mode === 'route'}
             mirrorViewerRef={mirrorViewerRef}
           />
         </DialogContent>
@@ -157,18 +162,26 @@ function ReferenceContent({
   view,
   snapshot,
   height,
+  kiosk = false,
   mirrorViewerRef,
 }: {
   view: Segment;
   snapshot: WorkOrderExecutionSnapshot;
   height: string;
   compact: boolean;
+  kiosk?: boolean;
   mirrorViewerRef?: React.Ref<MirrorViewerHandle>;
 }) {
   if (view === 'drawing') {
+    // Kiosk tablets need gloved-finger targets: scale the floating viewer
+    // toolbar buttons (32px by default) up to 56px without touching the
+    // shared MirrorViewToolbar used by office surfaces.
+    const kioskToolbarOverrides = kiosk
+      ? '[&_[role=toolbar]_button]:min-h-14 [&_[role=toolbar]_button]:min-w-14 [&_[role=toolbar]_button_svg]:h-6 [&_[role=toolbar]_button_svg]:w-6'
+      : '';
     return (
       <div
-        className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-card`}
+        className={`relative mt-5 ${height} overflow-hidden rounded-md border border-[var(--neutral-200)] bg-card ${kioskToolbarOverrides}`}
       >
         <MirrorViewer
           ref={mirrorViewerRef}
@@ -190,25 +203,25 @@ function ReferenceContent({
       >
         <div className="absolute inset-0 overflow-y-auto p-6">
           <div className="mx-auto max-w-[640px] rounded-md bg-card p-6 shadow-sm">
-            <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            <div className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               <span>{reference.documentLabel}</span>
               <span>{reference.revision} · Page 1 of 1</span>
             </div>
             <h4 className="mt-3 text-lg font-medium text-[var(--neutral-900)]">
               {reference.title}
             </h4>
-            <p className="mt-1 text-sm text-[var(--neutral-600)]">{reference.summary}</p>
+            <p className="mt-1 text-base text-[var(--neutral-600)]">{reference.summary}</p>
             <ol className="mt-5 space-y-3">
               {steps.map((step, idx) => (
                 <li key={idx} className="flex gap-3">
                   <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[var(--mw-yellow-400)] text-[12px] font-medium text-[var(--mw-mirage)] tabular-nums">
                     {idx + 1}
                   </span>
-                  <p className="text-sm leading-relaxed text-[var(--neutral-800)]">{step}</p>
+                  <p className="text-base leading-relaxed text-[var(--neutral-800)]">{step}</p>
                 </li>
               ))}
             </ol>
-            <div className="mt-6 border-t border-[var(--neutral-200)] pt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
+            <div className="mt-6 border-t border-[var(--neutral-200)] pt-4 text-xs font-medium uppercase tracking-[0.18em] text-[var(--neutral-500)]">
               Signed off by Engineering · {reference.revision}
             </div>
           </div>
@@ -234,14 +247,14 @@ function ReferenceContent({
           Camera offline
         </div>
       )}
-      <div className="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-[var(--mw-mirage)]/85 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
+      <div className="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-[var(--mw-mirage)]/85 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
         <span className="relative inline-flex h-2 w-2">
           <span className="absolute inset-0 animate-ping rounded-full bg-[var(--mw-error)] opacity-70" />
           <span className="relative inline-block h-2 w-2 rounded-full bg-[var(--mw-error)]" />
         </span>
         Live · {snapshot.machineName}
       </div>
-      <div className="pointer-events-none absolute right-4 top-4 rounded-full bg-[var(--mw-mirage)]/85 px-3 py-1.5 text-[11px] font-medium tabular-nums text-white backdrop-blur">
+      <div className="pointer-events-none absolute right-4 top-4 rounded-full bg-[var(--mw-mirage)]/85 px-3 py-1.5 text-xs font-medium tabular-nums text-white backdrop-blur">
         720p · 30fps
       </div>
       <div className="pointer-events-none absolute bottom-4 left-4 right-4 rounded-md bg-[var(--mw-mirage)]/85 p-3 text-xs text-[var(--neutral-200)] backdrop-blur">

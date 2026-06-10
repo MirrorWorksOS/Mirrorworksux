@@ -7,7 +7,6 @@ import {
   CalendarRange,
   ChevronLeft,
   ChevronRight,
-  Download,
   Factory,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -101,15 +100,6 @@ export function DashboardManagementBar({
         role="group"
         aria-label="Week actions"
       >
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="rounded-full border border-[var(--border)] font-light transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
-        >
-          <Download className="mr-2 h-4 w-4" strokeWidth={1.5} aria-hidden />
-          Export week
-        </Button>
         <Button
           asChild
           size="sm"

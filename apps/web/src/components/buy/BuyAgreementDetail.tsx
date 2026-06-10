@@ -80,10 +80,14 @@ export function BuyAgreementDetail() {
 
   const tabConfig = useMemo(() => {
     return DEFAULT_TABS.map((t) => {
+      // Related-record tabs are meaningless until the agreement is saved.
+      if (isNew && t.id !== 'overview') {
+        return { ...t, disabled: true, disabledReason: 'Available after saving' };
+      }
       if (t.id === 'linked-pos') return { ...t, count: linkedPOs.length };
       return t;
     });
-  }, [linkedPOs]);
+  }, [isNew, linkedPOs]);
 
   if (!agreement) {
     return (
@@ -104,6 +108,10 @@ export function BuyAgreementDetail() {
   const handleSave = () => {
     // TODO(backend): isNew ? agreements.create(agreement) : agreements.update(agreement.id, agreement)
     if (isNew) {
+      if (!agreement.supplier.trim()) {
+        toast.error('Supplier is required');
+        return;
+      }
       toast.success('Agreement created');
       navigate(`/buy/agreements/${agreement.id}`, { replace: true });
     } else {

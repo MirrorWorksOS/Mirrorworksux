@@ -3,7 +3,7 @@
  * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  */
 import React from 'react';
-import { Calendar, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
@@ -75,14 +75,9 @@ export function ShipReports() {
       <PageHeader
         title="Reports"
         actions={
-          <>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-full border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]">
-              <Calendar className="h-4 w-4" strokeWidth={1.5} /> This Week
-            </button>
-            <button type="button" className="flex h-14 items-center gap-2 rounded-full border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
-              <Download className="h-4 w-4" strokeWidth={1.5} /> Export
-            </button>
-          </>
+          <button type="button" className="flex h-14 items-center gap-2 rounded-full border border-[var(--border)] px-4 text-sm font-medium text-foreground transition-colors hover:bg-[var(--neutral-100)]" onClick={() => toast.success('Exporting report…')}>
+            <Download className="h-4 w-4" strokeWidth={1.5} /> Export
+          </button>
         }
       />
 

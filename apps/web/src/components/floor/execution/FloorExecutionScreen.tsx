@@ -445,7 +445,7 @@ export function FloorExecutionScreen({
         cycleSeconds={cycleSeconds}
         syncLabel={`Synced ${formatRelative(now)}`}
         onClose={onClose}
-        onResetDemo={handleResetDemo}
+        onResetDemo={import.meta.env.DEV ? handleResetDemo : undefined}
       />
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 lg:grid-cols-[1fr_420px] lg:overflow-hidden">
@@ -486,6 +486,7 @@ export function FloorExecutionScreen({
             snapshot={snapshot}
             activeView={referenceView}
             onViewChange={(view) => setReferenceView(workOrderId, view)}
+            mode={mode}
           />
 
           <div id="mw-pick-list">

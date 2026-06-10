@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { PlusCircle, Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, CheckCircle, AlertCircle, Circle } from 'lucide-react';
+import { PlusCircle, Search, SlidersHorizontal, ChevronDown, MoreHorizontal, CheckCircle, AlertCircle, Circle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { cn } from '../ui/utils';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { ToolbarSummaryBar } from '@/components/shared/layout/PageToolbar';
@@ -38,10 +37,12 @@ const POS: PO[] = [
   { id: 'PO-2026-027', vendor: 'Freight Corp', orderDate: '05 Feb', expectedDelivery: '12 Feb', status: 'Cancelled', total: 450, jobRef: '\u2014', match: 'grey' },
 ];
 
-const TABS = [
-  { label: 'All', count: 89 }, { label: 'Draft', count: 12 }, { label: 'Sent', count: 23 },
-  { label: 'Partial', count: 8 }, { label: 'Received', count: 41 }, { label: 'Cancelled', count: 5 },
-];
+const TAB_LABELS = ['All', 'Draft', 'Sent', 'Partial', 'Received', 'Cancelled'] as const;
+
+const TABS = TAB_LABELS.map((label) => ({
+  label,
+  count: label === 'All' ? POS.length : POS.filter((p) => p.status === label).length,
+}));
 
 const MatchIcon = ({ match }: { match: string }) => {
   if (match === 'green') return <CheckCircle className="w-4 h-4 text-foreground" />;
@@ -52,6 +53,8 @@ const MatchIcon = ({ match }: { match: string }) => {
 export function PurchaseOrders() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('All');
+
+  const filteredPOs = activeTab === 'All' ? POS : POS.filter((p) => p.status === activeTab);
 
   // Compute summary totals by status
   const receivedTotal = POS.filter(p => p.status === 'Received').reduce((s, p) => s + p.total, 0);
@@ -170,25 +173,22 @@ export function PurchaseOrders() {
       />
       <MwDataTable
         columns={columns}
-        data={POS}
+        data={filteredPOs}
         keyExtractor={(po) => po.id}
         striped
         selectable
         onRowClick={(po) => navigate(`/book/purchases/${po.id}`)}
         onExport={(keys) => toast.success(`Exporting ${keys.size} items…`)}
         onDelete={(keys) => toast.success(`Deleting ${keys.size} items…`)}
+        emptyState={
+          <span className="text-sm text-[var(--neutral-500)]">No {activeTab.toLowerCase()} purchase orders.</span>
+        }
       />
 
       <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-xs text-[var(--neutral-500)]">Showing 1-8 of 89 purchase orders</span>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronLeft className="w-4 h-4" /></Button>
-          {[1, 2, 3].map(p => (
-            <Button key={p} variant={p === 1 ? "default" : "ghost"} size="icon"
-              className={cn("w-8 h-8 text-xs", p === 1 ? "bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-600)]" : "text-[var(--neutral-500)]")}>{p}</Button>
-          ))}
-          <Button variant="ghost" size="icon" className="w-8 h-8"><ChevronRight className="w-4 h-4" /></Button>
-        </div>
+        <span className="text-xs text-[var(--neutral-500)]">
+          Showing {filteredPOs.length} of {POS.length} purchase orders
+        </span>
       </div>
     </PageShell>
   );

@@ -107,6 +107,12 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
   const [customScale, setCustomScale] = useState('1');
   const [showSettings, setShowSettings] = useState(true);
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
+  const [importOptions, setImportOptions] = useState<Record<string, boolean>>({
+    'Auto-detect units from file': true,
+    'Merge identical components': false,
+    'Generate flat pattern (sheet metal)': true,
+    'Extract BOM from assembly': true,
+  });
 
   // Reactive list of existing uploads in this staging namespace — used to
   // auto-bump revision labels across batch drops without per-file prompts.
@@ -300,7 +306,7 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
       <PageHeader
         breadcrumbs={[
           { label: 'Plan', href: '/plan' },
-          { label: 'NC Connect', href: '/plan/nc-connect' },
+          { label: 'Machine I/O', href: '/plan/machine-io' },
           { label: 'CAD Import' },
         ]}
         title="MirrorView CAD Import"
@@ -599,20 +605,18 @@ export function PlanCADImport({ headerExtras }: { headerExtras?: React.ReactNode
                   <label className="text-xs font-medium text-[var(--neutral-500)] uppercase tracking-wider block">
                     Options
                   </label>
-                  {[
-                    { label: 'Auto-detect units from file', checked: true },
-                    { label: 'Merge identical components', checked: false },
-                    { label: 'Generate flat pattern (sheet metal)', checked: true },
-                    { label: 'Extract BOM from assembly', checked: true },
-                  ].map((opt) => (
-                    <label key={opt.label} className="flex items-center gap-3 cursor-pointer group">
+                  {Object.keys(importOptions).map((label) => (
+                    <label key={label} className="flex items-center gap-3 cursor-pointer group">
                       <input
                         type="checkbox"
-                        defaultChecked={opt.checked}
-                        className="w-4 h-4 rounded border-[var(--border)] accent-[var(--mw-yellow-400)]"
+                        checked={importOptions[label]}
+                        onChange={() =>
+                          setImportOptions((prev) => ({ ...prev, [label]: !prev[label] }))
+                        }
+                        className="w-5 h-5 rounded border-[var(--border)] accent-[var(--mw-yellow-400)]"
                       />
                       <span className="text-sm text-foreground transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]">
-                        {opt.label}
+                        {label}
                       </span>
                     </label>
                   ))}

@@ -464,12 +464,23 @@ export function MakeDashboard() {
                     <p className="text-sm text-foreground">{alert.desc}</p>
                     <p className="text-xs text-[var(--neutral-500)] mt-0.5">{alert.time}</p>
                   </div>
-                  <button className="text-xs font-medium text-foreground hover:underline shrink-0">View</button>
+                  <button
+                    type="button"
+                    className="min-h-11 px-2 text-xs font-medium text-foreground hover:underline shrink-0"
+                    onClick={() => navigate('/make/quality')}
+                  >
+                    View
+                  </button>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-3 border-t border-[var(--border)]">
-              <Button variant="outline" size="sm" className="w-full h-14">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-14"
+                onClick={() => navigate('/make/quality')}
+              >
                 <ShieldAlert className="w-4 h-4" />
                 Report Issue
               </Button>

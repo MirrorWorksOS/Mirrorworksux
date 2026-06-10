@@ -244,6 +244,11 @@ export interface Employee {
   status: 'active' | 'invited' | 'deactivated';
   modules: { module: ModuleKey; groups: string[] }[];
   lastActive: string;
+  /**
+   * 4-digit shop-floor kiosk PIN. Optional so legacy rows can omit it —
+   * the kiosk falls back to a default with a console warning when absent.
+   */
+  pin?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════

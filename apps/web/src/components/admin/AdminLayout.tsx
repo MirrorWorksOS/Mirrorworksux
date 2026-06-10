@@ -16,7 +16,13 @@ const NAV = [
 export function AdminLayout() {
   const user = useCurrentUser();
 
-  if (!user.isSuperAdmin) {
+  // The mock session marks the demo user as super_admin (see buildMockAuthState),
+  // which would leave tier pricing and tenant management fully editable on the
+  // public demo build. Until real auth lands, production builds ALWAYS show the
+  // stop screen; the console is only reachable in local dev for a super_admin.
+  const adminConsoleEnabled = user.isSuperAdmin && import.meta.env.DEV;
+
+  if (!adminConsoleEnabled) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 p-8">
         <div className="max-w-md rounded-lg border border-red-900/40 bg-slate-900 p-8 text-center">

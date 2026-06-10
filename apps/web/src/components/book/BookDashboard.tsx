@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { DollarSign, Receipt, TrendingUp, BarChart3, AlertTriangle, CreditCard, FileText, CheckCircle2, RefreshCw, Clock } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -17,7 +19,22 @@ const badgeNeutral =
   'border border-[var(--neutral-200)] bg-[var(--neutral-100)] text-[var(--neutral-800)]';
 
 export function BookDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSyncNow = () => {
+    if (syncing) return;
+    setSyncing(true);
+    setTimeout(() => {
+      setSyncing(false);
+      toast.success('Xero sync complete — 0 changes (demo)');
+    }, 1500);
+  };
+
+  const handleFollowUpAll = () => {
+    toast.success(`Follow-up reminders queued for ${overdueActions.length} overdue items (demo)`);
+  };
 
   return (
     <ModuleDashboard
@@ -185,7 +202,7 @@ export function BookDashboard() {
               ))}
             </div>
             
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)]">
+            <Button variant="outline" className="w-full mt-4 border-[var(--border)]" onClick={() => navigate('/book/expenses')}>
               <FileText className="w-4 h-4 mr-2" strokeWidth={1.5} />
               View All Approvals
             </Button>
@@ -229,19 +246,23 @@ export function BookDashboard() {
               </div>
             </div>
             
-            <Button className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground group">
+            <Button
+              className="w-full bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground group"
+              onClick={handleSyncNow}
+              disabled={syncing}
+            >
               <motion.div
                 animate={{ rotate: [0, 360] }}
-                transition={{ 
-                  duration: 2, 
+                transition={{
+                  duration: 2,
                   repeat: Infinity,
                   ease: "linear",
-                  repeatDelay: 3
+                  repeatDelay: syncing ? 0 : 3
                 }}
               >
                 <RefreshCw className="w-4 h-4 mr-2" strokeWidth={1.5} />
               </motion.div>
-              Sync Now
+              {syncing ? 'Syncing…' : 'Sync Now'}
             </Button>
           </Card>
         </motion.div>
@@ -282,7 +303,7 @@ export function BookDashboard() {
               ))}
             </div>
             
-            <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]">
+            <Button variant="outline" className="w-full mt-4 border-[var(--border)] text-[var(--mw-error)]" onClick={handleFollowUpAll}>
               <AlertTriangle className="w-4 h-4 mr-2" strokeWidth={1.5} />
               Follow Up All
             </Button>

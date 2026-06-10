@@ -5,7 +5,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Card } from '../ui/card';
 import { cn } from '../ui/utils';
@@ -255,7 +255,6 @@ type ProductRow = {
   inventory: string;
   uom: string;
   status: StatusKey;
-  avatarSrc: string;
   avatarFallback: string;
 };
 
@@ -268,7 +267,6 @@ const PRODUCT_DATA: ProductRow[] = [
     inventory: '0',
     uom: 'pcs',
     status: 'produced',
-    avatarSrc: 'https://i.pravatar.cc/150?img=12',
     avatarFallback: 'DM',
   },
   {
@@ -279,7 +277,6 @@ const PRODUCT_DATA: ProductRow[] = [
     inventory: '2,550',
     uom: 'pcs',
     status: 'inProgress',
-    avatarSrc: 'https://i.pravatar.cc/150?img=5',
     avatarFallback: 'SC',
   },
   {
@@ -290,7 +287,6 @@ const PRODUCT_DATA: ProductRow[] = [
     inventory: '500',
     uom: 'meters',
     status: 'scheduled',
-    avatarSrc: 'https://i.pravatar.cc/150?img=8',
     avatarFallback: 'MJ',
   },
 ];
@@ -423,7 +419,6 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
       header: 'Responsible',
       cell: (row) => (
         <Avatar className="w-6 h-6 border border-[var(--border)]">
-          <AvatarImage src={row.avatarSrc} />
           <AvatarFallback className="text-xs">{row.avatarFallback}</AvatarFallback>
         </Avatar>
       ),
@@ -835,7 +830,6 @@ export function PlanOverviewTab({ isEditing: isEditingProp, onEditToggle, onSwit
           <div className="space-y-2">
             <div className="flex gap-2">
               <Avatar className="w-6 h-6 border border-[var(--border)] flex-shrink-0">
-                <AvatarImage src="https://i.pravatar.cc/150?img=5" />
                 <AvatarFallback className="text-xs">JW</AvatarFallback>
               </Avatar>
               <div>

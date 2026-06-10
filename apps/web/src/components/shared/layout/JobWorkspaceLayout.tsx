@@ -13,6 +13,10 @@ export interface JobWorkspaceTabConfig {
   label: string;
   /** Optional count badge (e.g. linked quotes, open tasks). */
   count?: number;
+  /** Disable the trigger (e.g. related-record tabs on unsaved /new records). */
+  disabled?: boolean;
+  /** Native tooltip shown on the disabled trigger, e.g. "Available after saving". */
+  disabledReason?: string;
 }
 
 export interface JobWorkspaceLayoutProps {
@@ -77,6 +81,8 @@ export function JobWorkspaceLayout({
             <TabsTrigger
               key={t.id}
               value={t.id}
+              disabled={t.disabled}
+              title={t.disabled ? t.disabledReason : undefined}
               className="gap-2 px-3 sm:px-4"
             >
               <span>{t.label}</span>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { WorkOrderFullScreen } from '@/components/shop-floor/WorkOrderFullScreen';
@@ -57,6 +58,16 @@ export function ShopFloorPage() {
         <PageHeader
           title="Shop Floor"
           subtitle="The team consumes released travellers only. Tap a machine to run work."
+          actions={
+            <Button
+              variant="outline"
+              title="Full-screen operator mode for shared tablets."
+              onClick={() => window.open('/floor', '_blank', 'noopener')}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Open Floor Kiosk
+            </Button>
+          }
         />
 
         <MachineGrid machines={machines} onSelectMachine={handleSelectMachine} />

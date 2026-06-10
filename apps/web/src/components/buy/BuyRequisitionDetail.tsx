@@ -132,10 +132,15 @@ export function BuyRequisitionDetail() {
   const tabConfig = useMemo(() => {
     if (!req) return DEFAULT_TABS;
     return DEFAULT_TABS.map((t) => {
+      // No approval history exists until the requisition is saved.
+      // Line Items stays enabled — items are added there before saving.
+      if (isNew && t.id === 'approvals') {
+        return { ...t, disabled: true, disabledReason: 'Available after saving' };
+      }
       if (t.id === 'line-items') return { ...t, count: req.items.length };
       return t;
     });
-  }, [req]);
+  }, [isNew, req]);
 
   if (!req) {
     return (

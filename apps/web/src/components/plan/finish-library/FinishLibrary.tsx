@@ -7,7 +7,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { Search, Plus, Trash2, RotateCcw, Sparkles, Truck, Building2 } from 'lucide-react';
+import { Search, Trash2, RotateCcw, Sparkles, Truck, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -216,19 +216,17 @@ export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode
         subtitle={subtitle}
         actions={
           <div className="flex flex-wrap items-center gap-2 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              className="h-10 gap-2 border-[var(--border)]"
-              onClick={resetToSeed}
-            >
-              <RotateCcw className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-              Reset to seed
-            </Button>
-            <Button type="button" className="h-10 gap-2" disabled title="Inline editing in v2">
-              <Plus className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-              New finish
-            </Button>
+            {import.meta.env.DEV && (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 gap-2 border-[var(--border)]"
+                onClick={resetToSeed}
+              >
+                <RotateCcw className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                Reset to seed
+              </Button>
+            )}
             <p className="max-w-md rounded-lg bg-[var(--neutral-100)] px-3 py-2 text-xs text-[var(--neutral-500)]">
               Powder coat, galv, paint, anodise, polish, and passivate definitions for{' '}
               <span className="font-medium">Product Studio</span>. Tie-ins to Control when connected.
@@ -286,11 +284,6 @@ export function FinishLibrary({ headerExtras }: { headerExtras?: React.ReactNode
         }
       />
 
-      <p className="text-xs text-muted-foreground">
-        Inline editing and &quot;New finish&quot; form land in the next pass. The store and types are
-        already wired to support full CRUD — see{' '}
-        <code className="rounded bg-[var(--neutral-100)] px-1 dark:bg-[var(--neutral-200)]">useFinishLibraryStore</code>.
-      </p>
     </PageShell>
   );
 }
