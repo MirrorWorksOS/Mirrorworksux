@@ -67,7 +67,7 @@ export const MACHINE_GRID_MOCKS: Machine[] = [
     stationGroup: 'Welding',
     status: 'blocked',
     cycleTimeLabel: '4:40 target',
-    blockingIssue: 'First-off weld angle needs supervisor sign-off.',
+    blockingIssue: 'First-off weld angle needs lead sign-off.',
     currentJob: {
       id: 'wo-003',
       woNumber: 'WO-2026-0003',

@@ -327,7 +327,7 @@ export function FloorExecutionScreen({
       }),
     );
     setOverrideState('failed_pending_ncr');
-    toast.error(`${ncrId} raised. Supervisor notified.`);
+    toast.error(`${ncrId} raised. Lead notified.`);
   };
 
   const handleHoldSubmit = (payload: { reason: string; notes: string }) => {
@@ -390,7 +390,7 @@ export function FloorExecutionScreen({
         handleResume();
         break;
       case 'failed_pending_ncr':
-        toast.message('NCR pending review', { description: 'Supervisor follow-up needed before resuming.' });
+        toast.message('NCR pending review', { description: 'Lead follow-up needed before resuming.' });
         break;
       case 'complete':
         setCloseOpen(true);
@@ -747,7 +747,7 @@ function derivePrimaryActionView(state: DerivedState) {
       return {
         eyebrow: 'Quality hold',
         title: 'Open NCR',
-        supportingText: 'Supervisor review is required before the job can continue.',
+        supportingText: 'Lead review is required before the job can continue.',
         actionLabel: 'Open NCR',
         actionIcon: 'alert' as const,
       };

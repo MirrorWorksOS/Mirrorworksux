@@ -76,7 +76,7 @@ export function FloorClockIn() {
         role: selected.role,
       });
     } else {
-      setError('Incorrect PIN. Ask a supervisor if you need a reset.');
+      setError('Incorrect PIN. Ask a lead if you need a reset.');
       setPin('');
     }
   };
@@ -276,7 +276,7 @@ export function FloorClockIn() {
         )}
 
         <div className="mt-12 text-xs text-[var(--neutral-500)]">
-          Don't see yourself? Ask a supervisor to be added to the shop floor
+          Don't see yourself? Ask a lead to be added to the shop floor
           roster.
         </div>
       </div>

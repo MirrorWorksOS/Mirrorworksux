@@ -77,7 +77,7 @@ const makeDefaultGroups: PermissionGroup[] = [
   },
   {
     name: 'Office',
-    description: 'Production managers, supervisors',
+    description: 'Production leads',
     isDefault: true,
     members: [],
     permissions: {
@@ -151,7 +151,7 @@ function GeneralPanel() {
           </div>
           {[
             { label: 'Enable shift handover notes', checked: true },
-            { label: 'Notify supervisor on shift changeover', checked: false },
+            { label: 'Notify lead on shift changeover', checked: false },
           ].map(r => (
             <div key={r.label} className="flex items-center justify-between py-2 border-b border-[var(--neutral-100)] last:border-0">
               <span className="text-sm text-foreground">{r.label}</span>

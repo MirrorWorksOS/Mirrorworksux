@@ -69,7 +69,7 @@ export function NCRDialog({ open, onOpenChange, onSubmit }: NCRDialogProps) {
         <DialogHeader>
           <DialogTitle>Raise NCR</DialogTitle>
           <DialogDescription>
-            Capture the non-conformance. The cycle timer will pause and a supervisor will be notified.
+            Capture the non-conformance. The cycle timer will pause and a lead will be notified.
           </DialogDescription>
         </DialogHeader>
 
