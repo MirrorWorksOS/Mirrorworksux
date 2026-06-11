@@ -10,6 +10,7 @@
 import type {
   BillOfMaterials,
   ConcessionRecord,
+  CreditNote,
   Customer,
   InventoryRecord,
   PickList,
@@ -118,6 +119,7 @@ export const putAwayRecords: PutAwayRecord[] = [];
 export const qualityChecks: QualityCheck[] = [];
 export const timeEntries: TimeEntry[] = [];
 export const variationOrders: VariationOrder[] = [];
+export const creditNotes: CreditNote[] = [];
 export const concessionRecords: ConcessionRecord[] = [];
 export const subcontractDispatches: SubcontractDispatch[] = [];
 

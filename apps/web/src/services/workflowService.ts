@@ -22,6 +22,7 @@ import * as mock from './mock';
 import type {
   BillOfMaterials,
   ConcessionRecord,
+  CreditNote,
   GateFailureDetail,
   GoodsReceipt,
   InventoryRecord,
@@ -44,6 +45,7 @@ import type {
   StockMovement,
   SubcontractDispatch,
   SubcontractMaterialModel,
+  VariationBaseline,
   VariationOrder,
   WorkOrder,
 } from '@/types/entities';
@@ -496,6 +498,107 @@ const newId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
 const today = () => new Date().toISOString().slice(0, 10);
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+/** Shift an ISO `yyyy-mm-dd` date by `days` (negative shifts earlier). */
+function shiftIsoDate(iso: string, days: number): string {
+  if (!days || !iso) return iso;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+// ── VO money helpers (decision D8) ─────────────────────────────────
+
+/** Total already invoiced against an SO (any non-void invoice linked to it). */
+function invoicedTotalForSo(salesOrderId: string): number {
+  return mock.sellInvoices
+    .filter((i) => i.salesOrderId === salesOrderId && i.status !== 'void')
+    .reduce((s, i) => s + i.amount, 0);
+}
+
+/**
+ * The uninvoiced remainder of an SO — order total minus invoices
+ * already raised, clamped at 0. A VO descope beyond this remainder
+ * must raise a Credit Note (decision D8).
+ */
+export function uninvoicedRemainderForSo(so: SalesOrder): number {
+  return Math.max(0, round2(so.total - invoicedTotalForSo(so.id)));
+}
+
+/** Recursively freeze a snapshot so baseline immutability is enforced. */
+function deepFreeze<T>(obj: T): T {
+  if (obj && typeof obj === 'object') {
+    for (const value of Object.values(obj)) deepFreeze(value);
+    Object.freeze(obj);
+  }
+  return obj;
+}
+
+/**
+ * Capture the immutable pre-variation baseline at VO raise time
+ * (decision D8): job dates/value/cost, the MO list with qtys, the
+ * order total and the uninvoiced remainder. Deep-frozen — approval
+ * amends the LIVE records, so this snapshot is the only "before".
+ */
+function captureVariationBaseline(so: SalesOrder): VariationBaseline {
+  const job =
+    mock.jobs.find((j) => j.id === so.jobId) ??
+    mock.jobs.find((j) => j.salesOrderId === so.id && j.source === 'sales_order') ??
+    mock.jobs.find((j) => j.salesOrderId === so.id);
+  const mos = job
+    ? mock.manufacturingOrders
+        .filter((m) => m.jobId === job.id)
+        .map((m) => ({
+          id: m.id,
+          moNumber: m.moNumber,
+          productId: m.productId,
+          productName: m.productName,
+          status: m.status,
+          qty: m.qty,
+          dueDate: m.dueDate,
+        }))
+    : [];
+  return deepFreeze({
+    capturedAt: new Date().toISOString(),
+    soTotal: so.total,
+    uninvoicedRemainder: uninvoicedRemainderForSo(so),
+    jobId: job?.id,
+    jobNumber: job?.jobNumber,
+    jobStartDate: job?.startDate,
+    jobDueDate: job?.dueDate,
+    jobValue: job?.value,
+    jobEstimatedHours: job?.estimatedHours,
+    mos,
+  });
+}
+
+/** Shared Credit Note constructor — `raiseCreditNote` + the VO descope path. */
+function buildCreditNote(input: {
+  customerId: string;
+  amount: number;
+  reason: string;
+  salesOrderId?: string;
+  variationOrderId?: string;
+  returnId?: string;
+}): CreditNote {
+  const cn: CreditNote = {
+    id: newId('cn'),
+    creditNoteNumber: `CN-${new Date().getFullYear()}-${(mock.creditNotes.length + 100).toString().padStart(4, '0')}`,
+    customerId: input.customerId,
+    salesOrderId: input.salesOrderId,
+    variationOrderId: input.variationOrderId,
+    returnId: input.returnId,
+    amount: round2(input.amount),
+    reason: input.reason,
+    status: 'draft',
+    xeroSyncStatus: 'pending',
+  };
+  mock.creditNotes.push(cn);
+  return cn;
+}
 
 /**
  * BoM explosion. Walks `productId`'s BoM recursively and yields
@@ -1126,7 +1229,7 @@ export const workflowService = {
     return { bom, productionJob };
   },
 
-  // ── B5: Variation Order ──────────────────────────────────────
+  // ── B5: Variation Order — amend-in-place (decision D8) ────────
   async createVariation(input: {
     parentSalesOrderId: string;
     type: 'additive' | 'descope' | 'mixed';
@@ -1151,48 +1254,154 @@ export const workflowService = {
       status: 'awaiting_approval',
       variationChainId,
       createdAt: new Date().toISOString(),
+      // Immutable pre-variation snapshot (D8) — approval amends the
+      // live Job in place, so this is the only record of the "before".
+      baseline: captureVariationBaseline(parent),
     };
     mock.variationOrders.push(vo);
     return vo;
   },
 
+  /**
+   * Approve a Variation Order — decision D8: amend the LIVE Job and
+   * its MOs in place. NO delta Job is spawned (that path is removed).
+   *
+   * - `so.total` moves by `costDelta`, so every un-raised milestone
+   *   re-prices automatically through `raiseInvoiceForMilestone`'s
+   *   pct × order total. Already-raised invoices are untouched.
+   * - The Job's value moves by `costDelta`; its due date shifts by
+   *   `scheduleDeltaDays`.
+   * - Open MOs (not `done`) are amended in place: qty scaled to the
+   *   new order value (mock-service approximation of the BoM diff),
+   *   due dates shifted, and `needsReschedule` set for the Schedule
+   *   Engine. Done MOs — and therefore all completed WOs — are
+   *   preserved untouched.
+   * - When a descope's reduction exceeds the uninvoiced remainder, a
+   *   draft {@link CreditNote} is raised automatically for the
+   *   difference (money already invoiced that is no longer owed).
+   */
   async approveVariation(variationOrderId: string, approvedBy: string): Promise<{
     vo: VariationOrder;
-    deltaJob?: Job;
+    /** The LIVE order Job, amended in place (no new Job is created). */
+    job?: Job;
+    /** Open MOs amended + flagged `needsReschedule`. */
+    amendedMos: ManufacturingOrder[];
+    /** How the uninvoiced milestone remainder moved. */
+    milestoneAdjustment: {
+      previousTotal: number;
+      newTotal: number;
+      uninvoicedBefore: number;
+      uninvoicedAfter: number;
+    };
+    /** Draft credit raised when a descope exceeds the uninvoiced remainder. */
+    creditNote?: CreditNote;
   }> {
     await delay();
     const vo = mock.variationOrders.find((v) => v.id === variationOrderId);
     if (!vo) throw new Error(`VO ${variationOrderId} not found.`);
+    if (vo.status === 'approved') {
+      throw new Error(`${vo.voNumber} is already approved — the Job was amended at approval time.`);
+    }
+    const so = mock.salesOrders.find((s) => s.id === vo.parentSalesOrderId);
+    if (!so) throw new Error(`Parent SO ${vo.parentSalesOrderId} not found.`);
+
     vo.status = 'approved';
     vo.approvedAt = new Date().toISOString();
     vo.approvedBy = approvedBy;
-    const parent = mock.salesOrders.find((s) => s.id === vo.parentSalesOrderId);
-    if (!parent) return { vo };
-    const parentJob = mock.jobs.find((j) => j.salesOrderId === parent.id);
-    if (vo.type === 'descope' || !parentJob) return { vo };
-    const deltaJob: Job = {
-      id: newId('job'),
-      jobNumber: `${parentJob.jobNumber}-${vo.voNumber}`,
-      title: `Variation — ${vo.description}`,
-      customerId: parent.customerId,
-      customerName: parent.customerName,
-      salesOrderId: parent.id,
-      status: 'planned',
-      priority: parentJob.priority,
-      startDate: today(),
-      dueDate: parentJob.dueDate,
-      estimatedHours: Math.abs(vo.costDelta) / 100,
-      actualHours: 0,
-      value: vo.costDelta,
-      progress: 0,
-      assignedTo: parentJob.assignedTo,
-      source: 'variation',
-      parentJobId: parentJob.id,
-      variationChainId: vo.variationChainId,
-      qty: 1,
+
+    // ── Money: re-price the remaining UNINVOICED milestones ──────
+    const previousTotal = so.total;
+    const invoiced = invoicedTotalForSo(so.id);
+    const uninvoicedBefore = Math.max(0, round2(previousTotal - invoiced));
+    const newTotal = Math.max(0, round2(previousTotal + vo.costDelta));
+    so.total = newTotal;
+    const uninvoicedAfter = Math.max(0, round2(newTotal - invoiced));
+
+    // Descope beyond the uninvoiced remainder → the customer has been
+    // invoiced for value that no longer exists. Raise a draft Credit
+    // Note for the difference (D8); already-raised invoices stay put.
+    let creditNote: CreditNote | undefined;
+    const reduction = -vo.costDelta;
+    if (reduction > 0 && reduction > uninvoicedBefore) {
+      creditNote = buildCreditNote({
+        customerId: so.customerId,
+        salesOrderId: so.id,
+        variationOrderId: vo.id,
+        amount: round2(reduction - uninvoicedBefore),
+        reason: `${vo.voNumber} descope exceeds the uninvoiced remainder on ${so.orderNumber} — credit for value already invoiced.`,
+      });
+    }
+    // Milestone invoices already cover (or exceed) the amended total —
+    // nothing is left to raise.
+    if (invoiced >= newTotal - 0.01 && invoiced > 0) so.status = 'invoiced';
+
+    // ── Job: amend the LIVE Job in place (no delta Job) ──────────
+    const job =
+      mock.jobs.find((j) => j.id === so.jobId) ??
+      mock.jobs.find((j) => j.salesOrderId === so.id && j.source === 'sales_order') ??
+      mock.jobs.find((j) => j.salesOrderId === so.id);
+    const amendedMos: ManufacturingOrder[] = [];
+    if (job) {
+      job.value = round2(job.value + vo.costDelta);
+      job.dueDate = shiftIsoDate(job.dueDate, vo.scheduleDeltaDays);
+      if (!job.variationChainId) job.variationChainId = vo.variationChainId;
+
+      // Open MOs are amended in place; done MOs (and their completed
+      // WOs) are preserved. Qty scales with the order value — the
+      // mock-service stand-in for a real BoM/MO diff.
+      const ratio = previousTotal > 0 ? newTotal / previousTotal : 1;
+      for (const mo of mock.manufacturingOrders.filter(
+        (m) => m.jobId === job.id && m.status !== 'done',
+      )) {
+        if (mo.qty != null) mo.qty = Math.max(0, Math.round(mo.qty * ratio));
+        mo.dueDate = shiftIsoDate(mo.dueDate, vo.scheduleDeltaDays);
+        mo.needsReschedule = true;
+        amendedMos.push(mo);
+      }
+    }
+
+    return {
+      vo,
+      job,
+      amendedMos,
+      milestoneAdjustment: { previousTotal, newTotal, uninvoicedBefore, uninvoicedAfter },
+      creditNote,
     };
-    mock.jobs.push(deltaJob);
-    return { vo, deltaJob };
+  },
+
+  // ── Credit Notes (decisions D8/D13) ───────────────────────────
+  /**
+   * Raise a Credit Note — money owed back to the customer (VO descope
+   * beyond the uninvoiced remainder, or an RMA credit). Starts `draft`;
+   * `issueCreditNote` issues it and queues the Xero push (D11).
+   */
+  async raiseCreditNote(input: {
+    customerId: string;
+    amount: number;
+    reason: string;
+    salesOrderId?: string;
+    variationOrderId?: string;
+    returnId?: string;
+  }): Promise<CreditNote> {
+    await delay();
+    if (!(input.amount > 0)) {
+      throw new Error('Credit note amount must be greater than zero.');
+    }
+    return buildCreditNote(input);
+  },
+
+  /** Issue a draft Credit Note — stamps `issuedAt` and syncs to Xero (mock: immediate). */
+  async issueCreditNote(creditNoteId: string): Promise<CreditNote> {
+    await delay();
+    const cn = mock.creditNotes.find((c) => c.id === creditNoteId);
+    if (!cn) throw new Error(`Credit note ${creditNoteId} not found.`);
+    if (cn.status !== 'draft') {
+      throw new Error(`Credit note ${cn.creditNoteNumber} is ${cn.status} — only drafts can be issued.`);
+    }
+    cn.status = 'issued';
+    cn.issuedAt = new Date().toISOString();
+    cn.xeroSyncStatus = 'synced'; // mock: the Xero push succeeds instantly
+    return cn;
   },
 
   // ── B6: Rework loop ──────────────────────────────────────────

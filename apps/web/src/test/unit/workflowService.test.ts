@@ -223,8 +223,13 @@ describe('B4 — ETO publish BoM → production Job', () => {
 });
 
 describe('B5 — Variation Order', () => {
-  it('raises a VO awaiting approval, then approves + spawns a delta Job', async () => {
+  it('raises a VO with a baseline snapshot, then approves by amending the LIVE Job — no delta Job (D8)', async () => {
     const so = mock.salesOrders[0];
+    const totalBefore = so.total;
+    const jobsBefore = mock.jobs.length;
+    const job = mock.jobs.find((j) => j.id === so.jobId)!;
+    const jobValueBefore = job.value;
+
     const vo = await workflowService.createVariation({
       parentSalesOrderId: so.id,
       type: 'additive',
@@ -234,10 +239,21 @@ describe('B5 — Variation Order', () => {
     });
     expect(vo.status).toBe('awaiting_approval');
     expect(vo.variationChainId).toBeTruthy();
+    // Immutable baseline captured at raise time.
+    expect(vo.baseline?.soTotal).toBe(totalBefore);
+    expect(vo.baseline?.jobId).toBe(job.id);
+
     const approved = await workflowService.approveVariation(vo.id, 'emp-001');
     expect(approved.vo.status).toBe('approved');
-    expect(approved.deltaJob?.source).toBe('variation');
-    expect(approved.deltaJob?.variationChainId).toBe(vo.variationChainId);
+    // The deltaJob path is REMOVED — the live Job is amended in place.
+    expect(mock.jobs.length).toBe(jobsBefore);
+    expect(approved.job?.id).toBe(job.id);
+    expect(job.value).toBeCloseTo(jobValueBefore + 1500, 2);
+    expect(so.total).toBeCloseTo(totalBefore + 1500, 2);
+    // Changed MOs are flagged for the Schedule Engine.
+    for (const mo of approved.amendedMos) expect(mo.needsReschedule).toBe(true);
+    // Approving twice is rejected — the Job was already amended.
+    await expect(workflowService.approveVariation(vo.id, 'emp-001')).rejects.toThrow(/already approved/);
   });
 
   it('shares variationChainId across siblings of the same parent SO', async () => {
@@ -910,5 +926,272 @@ describe('G4 action — raiseInvoiceForMilestone', () => {
     await expect(
       workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'order_confirmed' }),
     ).rejects.toThrow(/no order confirmed milestone/);
+  });
+});
+
+/* ──────────────────────────────────────────────────────────────────
+ * D8 — approveVariation amends in place; Credit Notes
+ * ────────────────────────────────────────────────────────────────── */
+
+let d8Seq = 0;
+
+/** Push a Job (+ MOs) for an SO so approveVariation has something to amend. */
+function makeD8Job(
+  so: SalesOrder,
+  mos: Array<{ qty: number; status: ManufacturingOrder['status'] }>,
+): { job: Job; mos: ManufacturingOrder[] } {
+  const seq = ++d8Seq;
+  const job: Job = {
+    id: `job-d8-${seq}`,
+    jobNumber: `JOB-D8-${String(seq).padStart(3, '0')}`,
+    title: `${so.orderNumber} — D8 test`,
+    customerId: so.customerId,
+    customerName: so.customerName,
+    status: 'in_progress',
+    priority: 'medium',
+    startDate: '2026-06-01',
+    dueDate: '2026-07-01',
+    estimatedHours: 40,
+    actualHours: 8,
+    value: so.total,
+    progress: 25,
+    assignedTo: 'emp-001',
+    salesOrderId: so.id,
+    source: 'sales_order',
+  };
+  mock.jobs.push(job);
+  so.jobId = job.id;
+  const made = mos.map((m, i) => {
+    const mo: ManufacturingOrder = {
+      id: `mo-d8-${seq}-${i + 1}`,
+      moNumber: `MO-D8-${String(seq).padStart(3, '0')}-${i + 1}`,
+      productId: 'prod-001',
+      productName: 'Mounting Bracket',
+      jobId: job.id,
+      jobNumber: job.jobNumber,
+      customerId: so.customerId,
+      customerName: so.customerName,
+      status: m.status,
+      priority: 'medium',
+      dueDate: '2026-06-20',
+      progress: m.status === 'done' ? 100 : 0,
+      workOrders: 1,
+      operatorId: 'emp-001',
+      operatorName: 'Test Operator',
+      qty: m.qty,
+    };
+    mock.manufacturingOrders.push(mo);
+    return mo;
+  });
+  return { job, mos: made };
+}
+
+describe('D8 — approveVariation (amend-in-place money cluster)', () => {
+  it('additive: bumps so.total so un-raised milestones re-price; open MOs amended; done MOs preserved', async () => {
+    const customer = makeG4Customer({
+      label: '50/50 (D8 additive)',
+      days: 14,
+      milestones: [
+        { event: 'order_confirmed', pct: 50 },
+        { event: 'completion', pct: 50 },
+      ],
+    });
+    const so = makeG4SalesOrder({
+      customerId: customer.id,
+      total: 10000,
+      lines: [{ qty: 10, unitPrice: 1000 }],
+    });
+    const { job, mos } = makeD8Job(so, [
+      { qty: 10, status: 'confirmed' },
+      { qty: 5, status: 'done' },
+    ]);
+    const deposit = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'order_confirmed',
+    });
+    expect(deposit.amount).toBe(5000);
+
+    const vo = await workflowService.createVariation({
+      parentSalesOrderId: so.id,
+      type: 'additive',
+      costDelta: 2000,
+      scheduleDeltaDays: 5,
+      description: 'Add 2 more brackets.',
+    });
+    const jobsBefore = mock.jobs.length;
+    const r = await workflowService.approveVariation(vo.id, 'emp-001');
+
+    // No new Job; the live Job amended in place.
+    expect(mock.jobs.length).toBe(jobsBefore);
+    expect(r.job?.id).toBe(job.id);
+    expect(so.total).toBe(12000);
+    expect(job.value).toBe(12000);
+    expect(job.dueDate).toBe('2026-07-06'); // +5 days
+    expect(r.milestoneAdjustment).toEqual({
+      previousTotal: 10000,
+      newTotal: 12000,
+      uninvoicedBefore: 5000,
+      uninvoicedAfter: 7000,
+    });
+    expect(r.creditNote).toBeUndefined();
+
+    // Open MO scaled + flagged; done MO (completed work) untouched.
+    expect(mos[0].qty).toBe(12); // 10 × 12000/10000
+    expect(mos[0].needsReschedule).toBe(true);
+    expect(mos[0].dueDate).toBe('2026-06-25');
+    expect(mos[1].qty).toBe(5);
+    expect(mos[1].needsReschedule).toBeUndefined();
+    expect(r.amendedMos.map((m) => m.id)).toEqual([mos[0].id]);
+
+    // The un-raised completion milestone re-prices off the new total.
+    so.lines![0].status = 'shipped';
+    const balance = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'completion',
+    });
+    expect(balance.amount).toBe(6000); // 50% × amended 12000
+  });
+
+  it('descope beyond the uninvoiced remainder raises a draft Credit Note for the difference', async () => {
+    const customer = makeG4Customer({
+      label: '50/50 (D8 descope)',
+      days: 14,
+      milestones: [
+        { event: 'order_confirmed', pct: 50 },
+        { event: 'completion', pct: 50 },
+      ],
+    });
+    const so = makeG4SalesOrder({
+      customerId: customer.id,
+      total: 10000,
+      lines: [{ qty: 10, unitPrice: 1000 }],
+    });
+    makeD8Job(so, [{ qty: 10, status: 'confirmed' }]);
+    await workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'order_confirmed' });
+
+    const vo = await workflowService.createVariation({
+      parentSalesOrderId: so.id,
+      type: 'descope',
+      costDelta: -7000,
+      scheduleDeltaDays: -2,
+      description: 'Drop most of the scope.',
+    });
+    const r = await workflowService.approveVariation(vo.id, 'emp-001');
+
+    // $5,000 deposit raised; only $5,000 uninvoiced — a $7,000 descope
+    // owes the customer $2,000 back.
+    expect(r.creditNote).toBeDefined();
+    expect(r.creditNote!.status).toBe('draft');
+    expect(r.creditNote!.amount).toBe(2000);
+    expect(r.creditNote!.salesOrderId).toBe(so.id);
+    expect(r.creditNote!.variationOrderId).toBe(vo.id);
+    expect(r.creditNote!.customerId).toBe(so.customerId);
+    expect(r.creditNote!.xeroSyncStatus).toBe('pending');
+    expect(mock.creditNotes).toContain(r.creditNote);
+
+    expect(so.total).toBe(3000);
+    expect(r.milestoneAdjustment.uninvoicedAfter).toBe(0);
+    // Invoices already cover the amended total — nothing left to raise.
+    expect(so.status).toBe('invoiced');
+  });
+
+  it('descope within the uninvoiced remainder raises NO credit note', async () => {
+    const customer = makeG4Customer({
+      label: '50/50 (D8 small descope)',
+      days: 14,
+      milestones: [
+        { event: 'order_confirmed', pct: 50 },
+        { event: 'completion', pct: 50 },
+      ],
+    });
+    const so = makeG4SalesOrder({
+      customerId: customer.id,
+      total: 10000,
+      lines: [{ qty: 10, unitPrice: 1000 }],
+    });
+    makeD8Job(so, [{ qty: 10, status: 'confirmed' }]);
+    await workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'order_confirmed' });
+
+    const vo = await workflowService.createVariation({
+      parentSalesOrderId: so.id,
+      type: 'descope',
+      costDelta: -3000,
+      scheduleDeltaDays: 0,
+      description: 'Trim the scope.',
+    });
+    const r = await workflowService.approveVariation(vo.id, 'emp-001');
+    expect(r.creditNote).toBeUndefined();
+    expect(so.total).toBe(7000);
+    expect(r.milestoneAdjustment.uninvoicedAfter).toBe(2000);
+  });
+
+  it('keeps the baseline snapshot immutable while the live records change', async () => {
+    const so = makeG4SalesOrder({ total: 10000, lines: [{ qty: 10, unitPrice: 1000 }] });
+    const { job, mos } = makeD8Job(so, [{ qty: 10, status: 'confirmed' }]);
+
+    const vo = await workflowService.createVariation({
+      parentSalesOrderId: so.id,
+      type: 'additive',
+      costDelta: 5000,
+      scheduleDeltaDays: 10,
+      description: 'Big add.',
+    });
+    const baseline = vo.baseline!;
+    expect(Object.isFrozen(baseline)).toBe(true);
+    expect(Object.isFrozen(baseline.mos)).toBe(true);
+    expect(Object.isFrozen(baseline.mos[0])).toBe(true);
+    expect(baseline.soTotal).toBe(10000);
+    expect(baseline.uninvoicedRemainder).toBe(10000);
+    expect(baseline.jobValue).toBe(10000);
+    expect(baseline.jobDueDate).toBe('2026-07-01');
+    expect(baseline.mos[0].qty).toBe(10);
+
+    await workflowService.approveVariation(vo.id, 'emp-001');
+
+    // Live records moved…
+    expect(so.total).toBe(15000);
+    expect(job.value).toBe(15000);
+    expect(job.dueDate).toBe('2026-07-11');
+    expect(mos[0].qty).toBe(15);
+    // …the baseline did not.
+    expect(baseline.soTotal).toBe(10000);
+    expect(baseline.jobValue).toBe(10000);
+    expect(baseline.jobDueDate).toBe('2026-07-01');
+    expect(baseline.mos[0].qty).toBe(10);
+    expect(() => {
+      (baseline as { soTotal: number }).soTotal = 1;
+    }).toThrow();
+  });
+});
+
+describe('Credit Notes — raiseCreditNote / issueCreditNote', () => {
+  it('raises a draft credit note pending Xero sync, then issues it', async () => {
+    const cn = await workflowService.raiseCreditNote({
+      customerId: 'cust-001',
+      amount: 450.5,
+      reason: 'RMA credit (test).',
+      returnId: 'rma-001',
+    });
+    expect(cn.status).toBe('draft');
+    expect(cn.creditNoteNumber).toMatch(/^CN-\d{4}-\d{4}$/);
+    expect(cn.amount).toBe(450.5);
+    expect(cn.returnId).toBe('rma-001');
+    expect(cn.xeroSyncStatus).toBe('pending');
+    expect(cn.issuedAt).toBeUndefined();
+    expect(mock.creditNotes).toContain(cn);
+
+    const issued = await workflowService.issueCreditNote(cn.id);
+    expect(issued.status).toBe('issued');
+    expect(issued.issuedAt).toBeTruthy();
+    expect(issued.xeroSyncStatus).toBe('synced');
+
+    // Only drafts can be issued.
+    await expect(workflowService.issueCreditNote(cn.id)).rejects.toThrow(/only drafts/);
+  });
+
+  it('rejects a non-positive amount', async () => {
+    await expect(
+      workflowService.raiseCreditNote({ customerId: 'cust-001', amount: 0, reason: 'x' }),
+    ).rejects.toThrow(/greater than zero/);
   });
 });

@@ -1277,6 +1277,12 @@ export interface ManufacturingOrder {
   qty?: number;
   /** Planned start date (ISO yyyy-mm-dd). */
   startDate?: string;
+  /**
+   * Set when an approved Variation Order amended this MO in place
+   * (decision D8) — flags it for the Schedule Engine to re-plan.
+   * Cleared on re-schedule.
+   */
+  needsReschedule?: boolean;
 }
 
 export interface WorkOrder {
@@ -2029,7 +2035,44 @@ export interface TimeEntry {
   durationMin?: number;
 }
 
-/** Phase B5 — Variation Order. */
+/**
+ * Immutable snapshot of one MO at VO raise time — part of
+ * {@link VariationBaseline}. Used for the baseline-vs-amended diff in
+ * the VO impact preview and for variance reporting.
+ */
+export interface VariationBaselineMo {
+  id: string;
+  moNumber: string;
+  productId: string;
+  productName: string;
+  status: ManufacturingOrderStatus;
+  qty?: number;
+  dueDate: string;
+}
+
+/**
+ * Immutable baseline captured on the VariationOrder at raise time
+ * (decision D8). Approval amends the LIVE Job/MOs in place, so this
+ * snapshot is the only record of the pre-variation state — it is
+ * deep-frozen and must never be mutated.
+ */
+export interface VariationBaseline {
+  capturedAt: string;
+  /** Order total at raise time — un-raised milestones re-price off the delta. */
+  soTotal: number;
+  /** Order total minus invoices already raised (clamped at 0). */
+  uninvoicedRemainder: number;
+  jobId?: string;
+  jobNumber?: string;
+  jobStartDate?: string;
+  jobDueDate?: string;
+  jobValue?: number;
+  /** Cost basis: the Job's estimated hours at raise time. */
+  jobEstimatedHours?: number;
+  mos: VariationBaselineMo[];
+}
+
+/** Phase B5 — Variation Order. Approval amends the live Job in place (D8). */
 export interface VariationOrder {
   id: string;
   voNumber: string;
@@ -2043,6 +2086,31 @@ export interface VariationOrder {
   createdAt: string;
   approvedAt?: string;
   approvedBy?: string;
+  /** Immutable pre-variation snapshot captured at raise time (D8). */
+  baseline?: VariationBaseline;
+}
+
+/**
+ * Credit Note (decisions D8/D13) — raised when money is owed BACK to
+ * the customer: a VO descope beyond the uninvoiced remainder, or an
+ * RMA credit. Pushed to Xero like an AR invoice (decision D11).
+ */
+export interface CreditNote {
+  id: string;
+  creditNoteNumber: string;
+  customerId: string;
+  /** SO the credit traces to (VO descope path). */
+  salesOrderId?: string;
+  /** VO whose descope raised this credit. */
+  variationOrderId?: string;
+  /** RMA / return receipt that owed the credit (D13 minimal RMA). */
+  returnId?: string;
+  amount: number;
+  reason: string;
+  status: 'draft' | 'issued' | 'applied' | 'void';
+  issuedAt?: string;
+  /** Xero push state — credit notes sync like AR invoices (D11). */
+  xeroSyncStatus?: 'pending' | 'synced' | 'error';
 }
 
 /** Phase B6 — log of customer approvals to ship-with-concession. */
