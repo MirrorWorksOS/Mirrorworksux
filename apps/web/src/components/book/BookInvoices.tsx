@@ -26,7 +26,8 @@ import {
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { sellInvoices, salesOrders, jobs, customers as centralCustomers } from '@/services';
+import { sellInvoices, salesOrders, jobs, shipments, customers as centralCustomers } from '@/services';
+import { MILESTONE_EVENT_LABELS } from '@/services/workflowService';
 import { useDraftInvoiceStore } from '@/store/draftInvoiceStore';
 
 import { EmptyState } from '@/components/shared/feedback/EmptyState';
@@ -63,6 +64,23 @@ interface Invoice {
   total: number;
   balanceDue: number;
   jobReference?: string;
+  /** D5 milestone link summary — "Dispatch · 30% · SP-2026-0043". */
+  milestone?: string;
+}
+
+/** "Dispatch · 30% · SP-2026-0043" when the invoice carries a D5 milestone link. */
+function milestoneSummary(inv: (typeof sellInvoices)[number]): string | undefined {
+  if (!inv.milestoneEvent) return undefined;
+  const shipRef = inv.shipmentId
+    ? shipments.find((s) => s.id === inv.shipmentId)?.shipmentNumber ?? inv.shipmentId
+    : undefined;
+  return [
+    MILESTONE_EVENT_LABELS[inv.milestoneEvent],
+    `${inv.milestonePct ?? '—'}%`,
+    shipRef,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 const BASE_INVOICES: Invoice[] = [
@@ -78,6 +96,7 @@ const BASE_INVOICES: Invoice[] = [
       total: inv.amount,
       balanceDue: inv.amount - inv.paidAmount,
       jobReference: job?.jobNumber,
+      milestone: milestoneSummary(inv),
     };
   }),
   // Extra entries for status variety (viewed, partiallyPaid)
@@ -320,6 +339,11 @@ export function BookInvoices({ onSelectInvoice }: BookInvoicesProps) {
           {invoice.jobReference && (
             <span className="font-normal text-xs text-[var(--neutral-500)]">
               Job: {invoice.jobReference}
+            </span>
+          )}
+          {invoice.milestone && (
+            <span className="font-normal text-xs text-[var(--neutral-500)] tabular-nums">
+              Milestone: {invoice.milestone}
             </span>
           )}
         </div>

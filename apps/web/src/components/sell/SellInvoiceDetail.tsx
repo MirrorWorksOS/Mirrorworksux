@@ -32,6 +32,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { cn } from "@/components/ui/utils";
+import { sellInvoices as centralInvoices, salesOrders, shipments } from "@/services";
+import { MILESTONE_EVENT_LABELS } from "@/services/workflowService";
+import type { SellInvoice as CentralSellInvoice } from "@/types/entities";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -279,7 +282,58 @@ export function SellInvoiceDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
-  const invoice = id ? MOCK_INVOICES[id] : undefined;
+  // Central record (services/mock) — carries the D5 milestone link
+  // { milestoneEvent, milestonePct, shipmentId? } when the invoice was
+  // raised via `raiseInvoiceForMilestone`.
+  const central: CentralSellInvoice | undefined = id
+    ? centralInvoices.find((i) => i.id === id)
+    : undefined;
+
+  // Fall back to a view synthesised from the central record so invoices
+  // raised at a milestone (pushed into mock.sellInvoices at runtime)
+  // are openable even without a local MOCK_INVOICES entry.
+  const invoice: SellInvoice | undefined =
+    (id ? MOCK_INVOICES[id] : undefined) ??
+    (central
+      ? {
+          id: central.id,
+          invoiceNumber: central.invoiceNumber,
+          customer: central.customerName,
+          issueDate: central.date,
+          dueDate: central.dueDate,
+          poReference:
+            salesOrders.find((s) => s.id === central.salesOrderId)?.orderNumber ?? "—",
+          status:
+            central.status === "paid"
+              ? "Paid"
+              : central.status === "overdue"
+                ? "Overdue"
+                : central.status === "draft"
+                  ? "Draft"
+                  : "Sent",
+          subtotal: Math.round((central.amount / 1.1) * 100) / 100,
+          taxRate: 10,
+          tax: Math.round((central.amount - central.amount / 1.1) * 100) / 100,
+          total: central.amount,
+          amountPaid: central.paidAmount,
+          balanceDue: central.amount - central.paidAmount,
+          notes: "Raised at a payment-term milestone (gate G4).",
+        }
+      : undefined);
+
+  // "Dispatch · 30% · SP-2026-0043" — shown when the milestone link is present.
+  const milestoneSummary = central?.milestoneEvent
+    ? [
+        MILESTONE_EVENT_LABELS[central.milestoneEvent],
+        `${central.milestonePct ?? "—"}%`,
+        central.shipmentId
+          ? shipments.find((s) => s.id === central.shipmentId)?.shipmentNumber ??
+            central.shipmentId
+          : undefined,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : undefined;
 
   // Local-state mirrors so Add Line Item / Record Payment behave like real edits in mock mode.
   const [lineItems, setLineItems] = useState<InvoiceLineItem[]>(MOCK_LINE_ITEMS);
@@ -401,6 +455,18 @@ export function SellInvoiceDetail() {
                       value={new Date(invoice.dueDate).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
                     />
                   </div>
+                  {milestoneSummary && (
+                    <div className="sm:col-span-2">
+                      <Label className="text-xs text-[var(--neutral-500)]">
+                        Payment-term milestone
+                      </Label>
+                      <Input
+                        readOnly
+                        className="mt-1 h-12 border-[var(--border)]"
+                        value={milestoneSummary}
+                      />
+                    </div>
+                  )}
                 </div>
               </Card>
 

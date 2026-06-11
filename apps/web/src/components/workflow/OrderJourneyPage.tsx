@@ -45,6 +45,7 @@ import { QcReworkInspector } from './QcReworkInspector';
 import { JobGraphMini } from './JobGraphMini';
 import { RouteOverrideSelect } from './RouteOverrideSelect';
 import { EntityPeek } from './EntityPeek';
+import { InvoiceMilestonePanel } from './InvoiceMilestonePanel';
 
 // ── Stage inference ───────────────────────────────────────────────
 
@@ -463,6 +464,9 @@ export function OrderJourneyPage() {
           </table>
         )}
       </Card>
+
+      {/* G4 — raise invoices at the customer's payment-term milestones (D5). */}
+      <InvoiceMilestonePanel salesOrderId={so.id} onRaised={refresh} />
 
       {jobs.length > 0 && <JobGraphMini jobs={jobs} />}
 

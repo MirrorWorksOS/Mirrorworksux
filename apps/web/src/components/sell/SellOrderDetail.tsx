@@ -36,6 +36,7 @@ import { products, quotes, salesOrders, sellInvoices } from "@/services";
 import { lineage, parseRef, type DocumentPrefix } from "@/services/numbering";
 import { cn } from "@/components/ui/utils";
 import { KickoffDialog, type KickoffLine } from "./order-kickoff/KickoffDialog";
+import { InvoiceMilestonePanel } from "@/components/workflow/InvoiceMilestonePanel";
 import { Rocket } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -807,6 +808,13 @@ export function SellOrderDetail() {
                   })}
                 </ol>
               </Card>
+
+              {/* G4 — raise invoices at the customer's payment-term
+                  milestones (D5). Only renders when the id resolves to a
+                  central SalesOrder record. */}
+              {!isNew && salesOrders.some((s) => s.id === order.id) && (
+                <InvoiceMilestonePanel salesOrderId={order.id} className="p-6" />
+              )}
 
               {/* AI insight */}
               <AIInsightCard title="Delivery forecast">
