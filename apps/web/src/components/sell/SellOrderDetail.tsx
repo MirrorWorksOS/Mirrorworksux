@@ -400,7 +400,9 @@ export function SellOrderDetail() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [kickoffOpen, setKickoffOpen] = useState(false);
 
-  // Build the line set the KickoffDialog needs (filtered to make-able products).
+  // Build the line set the KickoffDialog needs. The route decides the
+  // grain (D2): manufactured (mto/eto) lines become MOs under the
+  // order's single Job; stock_sale lines raise a pick list instead.
   const kickoffLines: KickoffLine[] = useMemo(() => {
     return lineItems
       .map((li): KickoffLine | null => {
@@ -418,6 +420,7 @@ export function SellOrderDetail() {
             description: li.description ?? p.description,
             productKind: p.productKind,
             defaultTemplateIds: p.defaultTemplateIds,
+            route: p.defaultRoute ?? 'mto',
           },
         } satisfies KickoffLine;
       })
@@ -1262,16 +1265,28 @@ export function SellOrderDetail() {
         onOpenChange={setKickoffOpen}
         orderNumber={order.soNumber}
         lines={kickoffLines}
-        onApplied={(created) => {
-          const jobs = created.length;
-          const acts = created.reduce(
+        onApplied={(result) => {
+          // One Job per SO (D2): the order's manufactured lines become
+          // MOs under a single Job; stock-only orders create no Job.
+          if (!result.job) {
+            toast.success('No Job — pick list raised', {
+              description: `${result.stockLineCount} stock line${result.stockLineCount === 1 ? '' : 's'} will be picked from inventory.`,
+            });
+            return;
+          }
+          const mos = result.lines.length;
+          const acts = result.lines.reduce(
             (sum, c) => sum + c.templateIds.length,
             0,
           );
           toast.success(
-            `${jobs} job${jobs === 1 ? '' : 's'} released to Plan`,
+            `Job ${result.job.jobNumber} released to Plan — ${mos} MO${mos === 1 ? '' : 's'}`,
             {
-              description: `${acts} template${acts === 1 ? '' : 's'} applied. Open Plan ▸ Activities to see them.`,
+              description: `${acts} template${acts === 1 ? '' : 's'} applied${
+                result.stockLineCount > 0
+                  ? `; ${result.stockLineCount} stock line${result.stockLineCount === 1 ? '' : 's'} → pick list`
+                  : ''
+              }. Open Plan ▸ Activities to see them.`,
               action: {
                 label: 'Open Plan',
                 onClick: () => navigate('/plan/activities'),

@@ -1,19 +1,23 @@
 /**
  * KickoffDialog — surfaced on Sell ▸ Order Detail when the user confirms a
- * sales order. For each make-line on the order, picks the activity templates
- * that should be applied to the resulting Plan job.
+ * sales order. Reflects the one-Job-per-SO grain (workflow decision D2):
+ * the order releases ONE Plan Job covering its manufactured (mto / eto)
+ * lines, and each manufactured line becomes a Manufacturing Order under
+ * that Job. Stock-sale lines skip Plan entirely — a pick list is raised
+ * instead — and pure stock-sale orders create no Job at all.
  *
- * Resolution order per line:
+ * For each manufactured line, picks the activity templates that should be
+ * applied to the order's Plan job. Resolution order per line:
  *   1. Explicit pins on the Product (`Product.defaultTemplateIds`)
  *   2. Fallback: templates whose `productKinds` include the Product's `productKind`
  *
- * On confirm we synthesise a JobId per included line and call
- * `useJobActivityStore.applyTemplate` so the resulting activities land in the
- * Plan ▸ Activities feed (with the template's `defaultAssignee.label` already
- * copied into `assignedTo`).
+ * On confirm we synthesise ONE JobId for the order and call
+ * `useJobActivityStore.applyTemplate` per included line so the resulting
+ * activities land in the Plan ▸ Activities feed (with the template's
+ * `defaultAssignee.label` already copied into `assignedTo`).
  *
  * This is a demo wiring — there's no `planService.jobs.create` yet, so the
- * dialog returns the synthetic jobIds via the `onApplied` callback for the
+ * dialog returns the synthetic jobId via the `onApplied` callback for the
  * caller to surface (e.g. toast with "Open Plan ▸ Activities").
  */
 
@@ -35,6 +39,7 @@ import { cn } from '@/components/ui/utils';
 
 import { useJobActivityStore } from '@/store/jobActivityStore';
 import type { JobActivityTemplate, ProductKind } from '@/types/job-activity';
+import type { ProductRoute } from '@/types/entities';
 import { AssigneeChip } from '@/components/shared/assignee/AssigneeChip';
 
 /**
@@ -51,6 +56,12 @@ export interface KickoffProduct {
   productKind?: ProductKind;
   /** Explicit template pins from the product. */
   defaultTemplateIds?: string[];
+  /**
+   * Effective fulfilment route for the line. Manufactured routes
+   * (mto / eto) become MOs under the order's single Job; stock_sale
+   * lines skip Plan — a pick list is raised instead.
+   */
+  route?: ProductRoute;
 }
 
 export interface KickoffLine {
@@ -60,15 +71,23 @@ export interface KickoffLine {
   qty: number;
 }
 
+/** Result of confirming the kickoff — one Job per order (decision D2). */
+export interface KickoffResult {
+  /** Absent when the order is pure stock-sale (no Job — pick list raised). */
+  job?: { jobId: string; jobNumber: string };
+  /** One entry per included manufactured line — each becomes an MO under the Job. */
+  lines: { lineId: string; templateIds: string[] }[];
+  /** Count of stock-sale lines that bypass Plan via pick lists. */
+  stockLineCount: number;
+}
+
 interface KickoffDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   orderNumber: string;
   lines: KickoffLine[];
-  /** Called when the user confirms; receives `{ lineId, jobId, jobNumber, templateIds }[]`. */
-  onApplied?: (
-    created: { lineId: string; jobId: string; jobNumber: string; templateIds: string[] }[],
-  ) => void;
+  /** Called when the user confirms. */
+  onApplied?: (result: KickoffResult) => void;
 }
 
 interface LineDraft {
@@ -86,6 +105,12 @@ export function KickoffDialog({
   const allTemplates = useJobActivityStore((s) => s.templates);
   const applyTemplate = useJobActivityStore((s) => s.applyTemplate);
 
+  // One Job per order (D2): only manufactured lines feed the Job; stock
+  // lines are picked from inventory.
+  const isStockLine = (line: KickoffLine) => line.product.route === 'stock_sale';
+  const manufacturedLines = lines.filter((l) => !isStockLine(l));
+  const stockLines = lines.filter(isStockLine);
+
   /** Pre-resolve which templates apply to a line. */
   const resolveSuggested = (p: KickoffProduct): JobActivityTemplate[] => {
     if (p.defaultTemplateIds && p.defaultTemplateIds.length > 0) {
@@ -99,7 +124,7 @@ export function KickoffDialog({
 
   const initialDraft = (): Record<string, LineDraft> => {
     const out: Record<string, LineDraft> = {};
-    for (const line of lines) {
+    for (const line of manufacturedLines) {
       const suggested = resolveSuggested(line.product);
       out[line.id] = {
         included: suggested.length > 0,
@@ -133,42 +158,44 @@ export function KickoffDialog({
   };
 
   const summary = useMemo(() => {
-    let jobs = 0;
+    let mos = 0;
     let activities = 0;
-    for (const line of lines) {
+    for (const line of manufacturedLines) {
       const d = drafts[line.id];
       if (!d?.included) continue;
-      jobs += 1;
+      mos += 1;
       for (const tid of d.pickedTemplateIds) {
         const t = allTemplates.find((x) => x.id === tid);
         if (t) activities += t.activities.length;
       }
     }
-    return { jobs, activities };
-  }, [drafts, lines, allTemplates]);
+    return { mos, activities };
+  }, [drafts, manufacturedLines, allTemplates]);
+
+  const stockOnly = manufacturedLines.length === 0 && stockLines.length > 0;
 
   const handleConfirm = () => {
-    const created: { lineId: string; jobId: string; jobNumber: string; templateIds: string[] }[] =
-      [];
     const startIso = new Date().toISOString();
-    let seq = 1;
-    for (const line of lines) {
-      const d = drafts[line.id];
-      if (!d?.included) continue;
-      const jobId = `job-${orderNumber.toLowerCase()}-${seq}-${Date.now().toString(36)}`;
-      const jobNumber = `JOB-${orderNumber.replace(/[^0-9]/g, '')}-${String(seq).padStart(2, '0')}`;
-      for (const tid of d.pickedTemplateIds) {
-        applyTemplate(jobId, jobNumber, tid, startIso);
+    const includedLines: { lineId: string; templateIds: string[] }[] = [];
+
+    // ONE Job per order (D2) — every included manufactured line becomes
+    // an MO under it. Pure stock-sale orders create no Job.
+    let job: KickoffResult['job'];
+    if (summary.mos > 0) {
+      const jobId = `job-${orderNumber.toLowerCase()}-${Date.now().toString(36)}`;
+      const jobNumber = `JOB-${orderNumber.replace(/[^0-9]/g, '')}`;
+      job = { jobId, jobNumber };
+      for (const line of manufacturedLines) {
+        const d = drafts[line.id];
+        if (!d?.included) continue;
+        for (const tid of d.pickedTemplateIds) {
+          applyTemplate(jobId, jobNumber, tid, startIso);
+        }
+        includedLines.push({ lineId: line.id, templateIds: d.pickedTemplateIds });
       }
-      created.push({
-        lineId: line.id,
-        jobId,
-        jobNumber,
-        templateIds: d.pickedTemplateIds,
-      });
-      seq += 1;
     }
-    onApplied?.(created);
+
+    onApplied?.({ job, lines: includedLines, stockLineCount: stockLines.length });
     onOpenChange(false);
   };
 
@@ -178,13 +205,14 @@ export function KickoffDialog({
         <DialogHeader>
           <DialogTitle>Confirm order &amp; release to Plan</DialogTitle>
           <DialogDescription>
-            Each line below will spawn a Plan job. Pick which activity templates pre-apply.
-            Pins from the product are ticked by default.
+            {stockOnly
+              ? 'All lines are stock-sale — no Job is created; a pick list is raised instead.'
+              : 'The order releases one Plan Job; each included line becomes a Manufacturing Order under it. Pick which activity templates pre-apply — pins from the product are ticked by default.'}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-          {lines.map((line) => {
+          {manufacturedLines.map((line) => {
             const draft = drafts[line.id] ?? { included: false, pickedTemplateIds: [] };
             const suggested = resolveSuggested(line.product);
             const hasSuggestions = suggested.length > 0;
@@ -277,20 +305,52 @@ export function KickoffDialog({
               </div>
             );
           })}
+
+          {stockLines.map((line) => (
+            <div
+              key={line.id}
+              className="rounded-md border border-dashed border-[var(--border)] bg-card px-4 py-3"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {line.product.label}
+                </span>
+                <Badge variant="outline" className="border-[var(--border)] text-[10px]">
+                  Qty {line.qty}
+                </Badge>
+                <Badge variant="outline" className="border-[var(--border)] text-[10px]">
+                  Stock sale
+                </Badge>
+              </div>
+              <p className="text-[11px] text-[var(--neutral-500)] mt-1.5">
+                No Job — pick list raised. This line is picked from stock and skips Plan.
+              </p>
+            </div>
+          ))}
         </div>
 
         <DialogFooter className="flex items-center justify-between gap-3 sm:justify-between">
           <p className="text-xs text-[var(--neutral-500)]">
             <FileText className="inline-block h-3 w-3 mr-1" />
-            {summary.jobs} {summary.jobs === 1 ? 'job' : 'jobs'} · {summary.activities}{' '}
-            {summary.activities === 1 ? 'activity' : 'activities'} will be created
+            {summary.mos > 0 ? (
+              <>
+                1 Job · {summary.mos} {summary.mos === 1 ? 'MO' : 'MOs'} · {summary.activities}{' '}
+                {summary.activities === 1 ? 'activity' : 'activities'} will be created
+                {stockLines.length > 0 &&
+                  ` · ${stockLines.length} stock line${stockLines.length === 1 ? '' : 's'} → pick list`}
+              </>
+            ) : stockOnly ? (
+              <>No Job — pick list raised for {stockLines.length} stock line{stockLines.length === 1 ? '' : 's'}</>
+            ) : (
+              <>Nothing selected — include at least one line</>
+            )}
           </p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)} className="border-[var(--border)]">
               Cancel
             </Button>
             <Button
-              disabled={summary.jobs === 0}
+              disabled={summary.mos === 0 && !stockOnly}
               onClick={handleConfirm}
               className="bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground"
             >
