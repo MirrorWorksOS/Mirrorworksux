@@ -12,11 +12,22 @@ import {
   evaluateSoToJob,
   evaluatePlanToMake,
   evaluateGateReceiving,
+  evaluateInvoiceMilestone,
+  milestonesForTerm,
   RECEIVING_QTY_TOLERANCE,
   GateFailure,
 } from '@/services/workflowService';
 import * as mock from '@/services/mock';
-import type { GoodsReceipt, Job, ManufacturingOrder, PurchaseOrder } from '@/types/entities';
+import type {
+  Customer,
+  GoodsReceipt,
+  Job,
+  ManufacturingOrder,
+  PaymentTerm,
+  PurchaseOrder,
+  SalesOrder,
+  Shipment,
+} from '@/types/entities';
 
 /**
  * Seed an SO line on the first fixture so `confirmSalesOrder` has
@@ -568,5 +579,336 @@ describe('G5 action — receiveGoods', () => {
         lines: [{ productId: 'prod-001', qty: 1 }],
       }),
     ).rejects.toBeInstanceOf(GateFailure);
+  });
+});
+
+/* ──────────────────────────────────────────────────────────────────
+ * G4 — milestone-aware invoicing (decision D5)
+ * ────────────────────────────────────────────────────────────────── */
+
+let g4Seq = 0;
+
+/** Push a synthetic SO (unique ids — shared mock state survives between tests). */
+function makeG4SalesOrder(opts: {
+  customerId?: string;
+  status?: SalesOrder['status'];
+  total?: number;
+  lines?: Array<{ qty: number; unitPrice: number; status?: 'pending' | 'shipped' }>;
+}): SalesOrder {
+  const seq = ++g4Seq;
+  const id = `so-g4-${seq}`;
+  const so: SalesOrder = {
+    id,
+    orderNumber: `SO-G4-${String(seq).padStart(3, '0')}`,
+    customerId: opts.customerId ?? `cust-g4-none-${seq}`,
+    customerName: 'Gate Four Fabrication',
+    date: '2026-06-01',
+    deliveryDate: '2026-07-01',
+    status: opts.status ?? 'confirmed',
+    total: opts.total ?? 10000,
+    lines: opts.lines?.map((l, i) => ({
+      id: `${id}-line-${i + 1}`,
+      salesOrderId: id,
+      productId: 'prod-001',
+      description: `Line ${i + 1}`,
+      qty: l.qty,
+      unitPrice: l.unitPrice,
+      status: l.status ?? 'pending',
+    })),
+  };
+  mock.salesOrders.push(so);
+  return so;
+}
+
+function makeG4Shipment(
+  so: SalesOrder,
+  opts: { delivered?: boolean; lineIds?: string[] } = {},
+): Shipment {
+  const seq = ++g4Seq;
+  const shipment: Shipment = {
+    id: `shp-g4-${seq}`,
+    shipmentNumber: `SP-G4-${String(seq).padStart(3, '0')}`,
+    salesOrderId: so.id,
+    orderNumber: so.orderNumber,
+    customerId: so.customerId,
+    customerName: so.customerName,
+    carrier: 'Toll',
+    stage: opts.delivered ? 'delivered' : 'transit',
+    dispatchDate: '2026-06-05',
+    estimatedDelivery: '2026-06-08',
+    actualDelivery: opts.delivered ? '2026-06-08' : undefined,
+    weight: 10,
+    packages: 1,
+    lineIds: opts.lineIds,
+  };
+  mock.shipments.push(shipment);
+  return shipment;
+}
+
+/** Customer wired to a synthetic payment term so raise* resolves the schedule. */
+function makeG4Customer(term: Omit<PaymentTerm, 'id'>): Customer {
+  const seq = ++g4Seq;
+  const paymentTerm: PaymentTerm = { id: `pt-g4-${seq}`, ...term };
+  mock.paymentTerms.push(paymentTerm);
+  const customer: Customer = {
+    id: `cust-g4-${seq}`,
+    company: 'Gate Four Fabrication',
+    contact: 'Gigi Fourier',
+    email: 'accounts@gatefour.example',
+    phone: '+61 2 0000 0000',
+    address: '4 Milestone Way',
+    city: 'Oberon',
+    state: 'NSW',
+    postcode: '2787',
+    totalRevenue: 0,
+    activeOpportunities: 0,
+    status: 'active',
+    notes: '',
+    createdAt: '2026-06-01',
+    paymentTermsId: paymentTerm.id,
+  };
+  mock.customers.push(customer);
+  return customer;
+}
+
+describe('milestonesForTerm — schedule resolution + depositPct migration', () => {
+  it('returns the explicit schedule untouched', () => {
+    const schedule = milestonesForTerm({
+      id: 'pt-x',
+      label: 'x',
+      days: 30,
+      milestones: [
+        { event: 'order_confirmed', pct: 40 },
+        { event: 'completion', pct: 60 },
+      ],
+    });
+    expect(schedule).toEqual([
+      { event: 'order_confirmed', pct: 40 },
+      { event: 'completion', pct: 60 },
+    ]);
+  });
+
+  it('migrates a legacy depositPct into deposit-on-confirm + remainder-on-completion', () => {
+    const schedule = milestonesForTerm({ id: 'pt-x', label: 'x', days: 0, depositPct: 30 });
+    expect(schedule).toEqual([
+      { event: 'order_confirmed', pct: 30 },
+      { event: 'completion', pct: 70 },
+    ]);
+  });
+
+  it('defaults to 100% on dispatch when neither milestones nor deposit exist', () => {
+    expect(milestonesForTerm({ id: 'pt-x', label: 'x', days: 30 })).toEqual([
+      { event: 'dispatch', pct: 100 },
+    ]);
+    expect(milestonesForTerm(undefined)).toEqual([{ event: 'dispatch', pct: 100 }]);
+  });
+});
+
+describe('G4 — evaluateInvoiceMilestone (each event type)', () => {
+  it('order_confirmed: blocked on a draft SO, passes once confirmed', () => {
+    const draft = makeG4SalesOrder({ status: 'draft' });
+    expect(
+      evaluateInvoiceMilestone(draft, { event: 'order_confirmed', pct: 50 }).map((f) => f.code),
+    ).toEqual(['milestone_not_reached']);
+
+    const confirmed = makeG4SalesOrder({ status: 'confirmed' });
+    expect(evaluateInvoiceMilestone(confirmed, { event: 'order_confirmed', pct: 50 })).toEqual([]);
+  });
+
+  it('dispatch: no_shipment until a shipment exists', () => {
+    const so = makeG4SalesOrder({});
+    expect(
+      evaluateInvoiceMilestone(so, { event: 'dispatch', pct: 100 }).map((f) => f.code),
+    ).toEqual(['no_shipment']);
+
+    makeG4Shipment(so);
+    expect(evaluateInvoiceMilestone(so, { event: 'dispatch', pct: 100 })).toEqual([]);
+  });
+
+  it('delivery: undelivered until the PoD is recorded (scoped to delivery only)', () => {
+    const so = makeG4SalesOrder({});
+    const shipment = makeG4Shipment(so, { delivered: false });
+    expect(
+      evaluateInvoiceMilestone(so, { event: 'delivery', pct: 100 }, shipment.id).map((f) => f.code),
+    ).toEqual(['undelivered']);
+    // The same undelivered shipment does NOT block a dispatch milestone.
+    expect(evaluateInvoiceMilestone(so, { event: 'dispatch', pct: 100 }, shipment.id)).toEqual([]);
+
+    shipment.actualDelivery = '2026-06-09';
+    expect(evaluateInvoiceMilestone(so, { event: 'delivery', pct: 100 }, shipment.id)).toEqual([]);
+  });
+
+  it('completion: blocked while any line is unshipped, passes when every line shipped', () => {
+    const so = makeG4SalesOrder({
+      lines: [
+        { qty: 1, unitPrice: 500, status: 'shipped' },
+        { qty: 1, unitPrice: 500, status: 'pending' },
+      ],
+    });
+    expect(
+      evaluateInvoiceMilestone(so, { event: 'completion', pct: 50 }).map((f) => f.code),
+    ).toEqual(['milestone_not_reached']);
+
+    so.lines![1].status = 'shipped';
+    expect(evaluateInvoiceMilestone(so, { event: 'completion', pct: 50 })).toEqual([]);
+  });
+
+  it('dedup is per-SO for order_confirmed but per-shipment for dispatch', () => {
+    const so = makeG4SalesOrder({});
+    const shipmentA = makeG4Shipment(so);
+    mock.sellInvoices.push({
+      id: `inv-g4-${++g4Seq}`,
+      invoiceNumber: `INV-G4-${g4Seq}`,
+      customerId: so.customerId,
+      customerName: so.customerName,
+      salesOrderId: so.id,
+      date: '2026-06-10',
+      dueDate: '2026-07-10',
+      amount: 5000,
+      paidAmount: 0,
+      status: 'sent',
+      milestoneEvent: 'order_confirmed',
+      milestonePct: 50,
+    });
+    mock.sellInvoices.push({
+      id: `inv-g4-${++g4Seq}`,
+      invoiceNumber: `INV-G4-${g4Seq}`,
+      customerId: so.customerId,
+      customerName: so.customerName,
+      salesOrderId: so.id,
+      date: '2026-06-10',
+      dueDate: '2026-07-10',
+      amount: 5000,
+      paidAmount: 0,
+      status: 'sent',
+      milestoneEvent: 'dispatch',
+      milestonePct: 100,
+      shipmentId: shipmentA.id,
+    });
+
+    // (SO, event) key — a second order_confirmed invoice is a duplicate.
+    expect(
+      evaluateInvoiceMilestone(so, { event: 'order_confirmed', pct: 50 }).map((f) => f.code),
+    ).toEqual(['milestone_already_invoiced']);
+
+    // (SO, event, shipmentId) key — shipment A is invoiced, but a NEW
+    // shipment B is a new invoice, not a duplicate.
+    expect(
+      evaluateInvoiceMilestone(so, { event: 'dispatch', pct: 100 }, shipmentA.id).map((f) => f.code),
+    ).toEqual(['milestone_already_invoiced']);
+    const shipmentB = makeG4Shipment(so);
+    expect(evaluateInvoiceMilestone(so, { event: 'dispatch', pct: 100 }, shipmentB.id)).toEqual([]);
+  });
+});
+
+describe('G4 action — raiseInvoiceForMilestone', () => {
+  it('pro-rates a dispatch invoice to the shipment lines and stamps the milestone link', async () => {
+    const customer = makeG4Customer({
+      label: 'Net 30 on dispatch (test)',
+      days: 30,
+      milestones: [{ event: 'dispatch', pct: 100 }],
+    });
+    const so = makeG4SalesOrder({
+      customerId: customer.id,
+      total: 2000,
+      lines: [
+        { qty: 10, unitPrice: 100 }, // $1,000 — shipped first
+        { qty: 1, unitPrice: 1000 }, // $1,000 — ships later
+      ],
+    });
+    const shipment = makeG4Shipment(so, { lineIds: [so.lines![0].id] });
+
+    const invoice = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'dispatch',
+      shipmentId: shipment.id,
+    });
+
+    // 100% of the shipped half of a $2,000 order.
+    expect(invoice.amount).toBe(1000);
+    expect(invoice.milestoneEvent).toBe('dispatch');
+    expect(invoice.milestonePct).toBe(100);
+    expect(invoice.shipmentId).toBe(shipment.id);
+    expect(invoice.salesOrderId).toBe(so.id);
+
+    // Net 30: due = issue + 30 days.
+    const expectedDue = new Date(invoice.date);
+    expectedDue.setDate(expectedDue.getDate() + 30);
+    expect(invoice.dueDate).toBe(expectedDue.toISOString().slice(0, 10));
+
+    // Same shipment again → milestone_already_invoiced; the second
+    // shipment auto-resolves as the next eligible one.
+    await expect(
+      workflowService.raiseInvoiceForMilestone({
+        salesOrderId: so.id,
+        event: 'dispatch',
+        shipmentId: shipment.id,
+      }),
+    ).rejects.toBeInstanceOf(GateFailure);
+
+    const shipmentB = makeG4Shipment(so, { lineIds: [so.lines![1].id] });
+    const second = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'dispatch',
+    });
+    expect(second.shipmentId).toBe(shipmentB.id);
+    expect(second.amount).toBe(1000);
+    // The whole order is now invoiced.
+    expect(so.status).toBe('invoiced');
+  });
+
+  it('runs the 50/50 deposit-then-completion schedule once per SO', async () => {
+    const customer = makeG4Customer({
+      label: '50% deposit / 50% on completion (test)',
+      days: 14,
+      milestones: [
+        { event: 'order_confirmed', pct: 50 },
+        { event: 'completion', pct: 50 },
+      ],
+    });
+    const so = makeG4SalesOrder({
+      customerId: customer.id,
+      total: 8000,
+      lines: [{ qty: 4, unitPrice: 2000 }],
+    });
+
+    const deposit = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'order_confirmed',
+    });
+    expect(deposit.amount).toBe(4000);
+    expect(deposit.milestonePct).toBe(50);
+    expect(deposit.shipmentId).toBeUndefined();
+
+    // Deposit fires once per SO.
+    await expect(
+      workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'order_confirmed' }),
+    ).rejects.toBeInstanceOf(GateFailure);
+
+    // Completion blocked until every line has shipped…
+    await expect(
+      workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'completion' }),
+    ).rejects.toBeInstanceOf(GateFailure);
+
+    // …then invoices the remainder and closes out the SO.
+    so.lines![0].status = 'shipped';
+    const balance = await workflowService.raiseInvoiceForMilestone({
+      salesOrderId: so.id,
+      event: 'completion',
+    });
+    expect(balance.amount).toBe(4000);
+    expect(so.status).toBe('invoiced');
+  });
+
+  it('rejects an event missing from the customer schedule', async () => {
+    const customer = makeG4Customer({
+      label: 'On delivery (test)',
+      days: 7,
+      milestones: [{ event: 'delivery', pct: 100 }],
+    });
+    const so = makeG4SalesOrder({ customerId: customer.id });
+    await expect(
+      workflowService.raiseInvoiceForMilestone({ salesOrderId: so.id, event: 'order_confirmed' }),
+    ).rejects.toThrow(/no order confirmed milestone/);
   });
 });

@@ -29,6 +29,9 @@ import type {
   JobSource,
   ManufacturingOrder,
   MaterialDemand,
+  PaymentMilestone,
+  PaymentMilestoneEvent,
+  PaymentTerm,
   PickList,
   ProductRoute,
   PutAwayRecord,
@@ -36,6 +39,8 @@ import type {
   Reservation,
   SalesOrder,
   SalesOrderLine,
+  SellInvoice,
+  Shipment,
   StockMovement,
   SubcontractDispatch,
   SubcontractMaterialModel,
@@ -226,19 +231,205 @@ export function evaluateMakeToShip(job: Job): GateFailureDetail[] {
   return errors;
 }
 
-/** Ship → Book: delivery confirmed; invoice ready. */
-export function evaluateShipToBook(so: SalesOrder): GateFailureDetail[] {
+// ── Gate G4 · Ship → Book (milestone-aware, decision D5) ──────────
+
+/** Display labels for the four payment-milestone events. */
+export const MILESTONE_EVENT_LABELS: Record<PaymentMilestoneEvent, string> = {
+  order_confirmed: 'Order confirmed',
+  dispatch: 'Dispatch',
+  delivery: 'Delivery',
+  completion: 'Completion',
+};
+
+/**
+ * Effective milestone schedule for a PaymentTerm (decision D5).
+ * Precedence: explicit `milestones` → legacy `depositPct` migrated to
+ * `[{order_confirmed, depositPct}, {completion, remainder}]` → the
+ * default `[{dispatch, 100}]`.
+ */
+export function milestonesForTerm(term?: PaymentTerm): PaymentMilestone[] {
+  if (term?.milestones && term.milestones.length > 0) return term.milestones;
+  if (term?.depositPct != null && term.depositPct > 0) {
+    if (term.depositPct >= 100) return [{ event: 'order_confirmed', pct: 100 }];
+    return [
+      { event: 'order_confirmed', pct: term.depositPct },
+      { event: 'completion', pct: 100 - term.depositPct },
+    ];
+  }
+  return [{ event: 'dispatch', pct: 100 }];
+}
+
+/** The customer's PaymentTerm for an SO, falling back to the global default. */
+export function paymentTermForSalesOrder(so: SalesOrder): PaymentTerm | undefined {
+  const customer = mock.customers.find((c) => c.id === so.customerId);
+  return (
+    mock.paymentTerms.find((t) => t.id === customer?.paymentTermsId) ??
+    mock.paymentTerms.find((t) => t.isDefault)
+  );
+}
+
+/**
+ * Dedup check for `milestone_already_invoiced`. Key is (SO, event) for
+ * order_confirmed/completion — they fire once per SO — but
+ * (SO, event, shipmentId) for dispatch/delivery, which fire once PER
+ * SHIPMENT (one pro-rated invoice each; a second partial shipment is a
+ * NEW invoice, not a duplicate).
+ */
+export function milestoneInvoiceExists(
+  salesOrderId: string,
+  event: PaymentMilestoneEvent,
+  shipmentId?: string,
+): boolean {
+  const perShipment = event === 'dispatch' || event === 'delivery';
+  return mock.sellInvoices.some(
+    (inv) =>
+      inv.salesOrderId === salesOrderId &&
+      inv.milestoneEvent === event &&
+      (!perShipment || inv.shipmentId === shipmentId),
+  );
+}
+
+/**
+ * Resolve which shipment a dispatch/delivery milestone invoice covers.
+ * Explicit `shipmentId` wins; otherwise the next eligible shipment —
+ * the first not yet invoiced for this event (for delivery, preferring
+ * ones with a PoD recorded). Falls back to the first shipment so the
+ * dedup failure can surface. Returns undefined for order-level events.
+ */
+function resolveMilestoneShipment(
+  so: SalesOrder,
+  event: PaymentMilestoneEvent,
+  shipmentId?: string,
+): Shipment | undefined {
+  if (event !== 'dispatch' && event !== 'delivery') return undefined;
+  const ships = mock.shipments.filter((s) => s.salesOrderId === so.id);
+  if (shipmentId) return ships.find((s) => s.id === shipmentId);
+  const uninvoiced = ships.filter((s) => !milestoneInvoiceExists(so.id, event, s.id));
+  if (event === 'delivery') {
+    const delivered = uninvoiced.find((s) => Boolean(s.actualDelivery));
+    if (delivered) return delivered;
+  }
+  return uninvoiced[0] ?? ships[0];
+}
+
+/**
+ * Invoice amount for a milestone: `pct` × order total, pro-rated to
+ * the shipment's lines for dispatch/delivery events. A shipment
+ * without `lineIds` covers the whole order. Rounded to cents.
+ */
+export function milestoneInvoiceAmount(
+  so: SalesOrder,
+  milestone: PaymentMilestone,
+  shipment?: Shipment,
+): number {
+  let base = so.total;
+  const perShipment = milestone.event === 'dispatch' || milestone.event === 'delivery';
+  if (perShipment && shipment?.lineIds?.length && so.lines?.length) {
+    const value = (l: SalesOrderLine) => l.qty * l.unitPrice;
+    const orderValue = so.lines.reduce((s, l) => s + value(l), 0);
+    const shippedValue = so.lines
+      .filter((l) => shipment.lineIds!.includes(l.id))
+      .reduce((s, l) => s + value(l), 0);
+    if (orderValue > 0) base = so.total * (shippedValue / orderValue);
+  }
+  return Math.round(base * milestone.pct) / 100;
+}
+
+/**
+ * Gate G4 · Ship → Book — fires on invoice raise (decision D5).
+ * REPLACES the old hard-coded "PoD recorded" check (evaluateShipToBook).
+ *
+ * Asks "has THIS milestone's event actually happened?":
+ * - `order_confirmed`: SO confirmed (no shipment needed)
+ * - `dispatch`: a shipment exists for the lines being invoiced
+ * - `delivery`: shipment exists AND PoD (`actualDelivery`) recorded
+ * - `completion`: every line has shipped
+ *
+ * …then dedups via {@link milestoneInvoiceExists} — (SO, event) for
+ * order_confirmed/completion, (SO, event, shipmentId) for
+ * dispatch/delivery.
+ *
+ * Failure codes: `milestone_not_reached`, `milestone_already_invoiced`,
+ * `no_shipment`, `undelivered` (delivery milestones only).
+ */
+export function evaluateInvoiceMilestone(
+  so: SalesOrder,
+  milestone: PaymentMilestone,
+  shipmentId?: string,
+): GateFailureDetail[] {
   const errors: GateFailureDetail[] = [];
-  const shipment = mock.shipments.find((s) => s.salesOrderId === so.id);
-  if (!shipment) {
+  const event = milestone.event;
+  const label = MILESTONE_EVENT_LABELS[event].toLowerCase();
+  const shipment = resolveMilestoneShipment(so, event, shipmentId);
+
+  switch (event) {
+    case 'order_confirmed': {
+      const confirmed =
+        so.status === 'confirmed' ||
+        so.status === 'in_production' ||
+        so.status === 'shipped' ||
+        so.status === 'invoiced';
+      if (!confirmed) {
+        errors.push({
+          code: 'milestone_not_reached',
+          message: `Sales Order ${so.orderNumber} is not confirmed yet — the ${label} milestone (${milestone.pct}%) cannot be invoiced.`,
+          fixUrl: `/sell/orders/${so.id}`,
+        });
+      }
+      break;
+    }
+    case 'dispatch': {
+      if (!shipment) {
+        errors.push({
+          code: 'no_shipment',
+          message: `Sales Order ${so.orderNumber} has no shipment — the ${label} milestone (${milestone.pct}%) invoices per shipment.`,
+          fixUrl: '/ship/orders',
+        });
+      }
+      break;
+    }
+    case 'delivery': {
+      if (!shipment) {
+        errors.push({
+          code: 'no_shipment',
+          message: `Sales Order ${so.orderNumber} has no shipment — the ${label} milestone (${milestone.pct}%) invoices per delivered shipment.`,
+          fixUrl: '/ship/orders',
+        });
+      } else if (!shipment.actualDelivery) {
+        errors.push({
+          code: 'undelivered',
+          message: `Shipment ${shipment.shipmentNumber} has no Proof of Delivery yet — the ${label} milestone (${milestone.pct}%) needs the PoD recorded.`,
+          fixUrl: '/ship/orders',
+        });
+      }
+      break;
+    }
+    case 'completion': {
+      const lines = (so.lines ?? []).filter((l) => l.status !== 'cancelled');
+      const allShipped =
+        lines.length > 0
+          ? lines.every((l) => l.status === 'shipped')
+          : so.status === 'shipped' || so.status === 'invoiced';
+      if (!allShipped) {
+        errors.push({
+          code: 'milestone_not_reached',
+          message: `Sales Order ${so.orderNumber} still has unshipped lines — the ${label} milestone (${milestone.pct}%) fires once every line has shipped.`,
+          fixUrl: `/sell/orders/${so.id}`,
+        });
+      }
+      break;
+    }
+  }
+
+  if (errors.length === 0 && milestoneInvoiceExists(so.id, event, shipment?.id)) {
+    const scope =
+      event === 'dispatch' || event === 'delivery'
+        ? ` for shipment ${shipment?.shipmentNumber ?? shipment?.id}`
+        : '';
     errors.push({
-      code: 'no_shipment',
-      message: `Sales Order ${so.orderNumber} has no shipment.`,
-    });
-  } else if (!shipment.actualDelivery) {
-    errors.push({
-      code: 'undelivered',
-      message: `Shipment ${shipment.shipmentNumber} has no Proof of Delivery yet.`,
+      code: 'milestone_already_invoiced',
+      message: `The ${label} milestone (${milestone.pct}%) is already invoiced${scope} on ${so.orderNumber}.`,
+      fixUrl: '/sell/invoices',
     });
   }
   return errors;
@@ -792,6 +983,74 @@ export const workflowService = {
     return { goodsReceipt, stockMovements: movements };
   },
 
+  // ── G4 action: raise an invoice at a payment-term milestone ─────
+  /**
+   * Raise the invoice for one milestone of the customer's payment-term
+   * schedule (decision D5). Runs gate G4 (`evaluateInvoiceMilestone`)
+   * and throws {@link GateFailure} when blocked.
+   *
+   * Amount = `pct` × order total — pro-rated to the shipment's lines
+   * for dispatch/delivery events (one invoice per shipment). The
+   * invoice is stamped with `{ milestoneEvent, milestonePct,
+   * shipmentId? }` so the dedup key survives; due date = issue date +
+   * `PaymentTerm.days` (net terms per invoice).
+   */
+  async raiseInvoiceForMilestone(input: {
+    salesOrderId: string;
+    event: PaymentMilestoneEvent;
+    shipmentId?: string;
+  }): Promise<SellInvoice> {
+    await delay();
+    const so = mock.salesOrders.find((s) => s.id === input.salesOrderId);
+    if (!so) throw new Error(`Sales Order ${input.salesOrderId} not found.`);
+
+    const term = paymentTermForSalesOrder(so);
+    const schedule = milestonesForTerm(term);
+    const milestone = schedule.find((m) => m.event === input.event);
+    if (!milestone) {
+      throw new Error(
+        `Payment term "${term?.label ?? 'default'}" has no ${MILESTONE_EVENT_LABELS[input.event].toLowerCase()} milestone.`,
+      );
+    }
+
+    const shipment = resolveMilestoneShipment(so, input.event, input.shipmentId);
+    const failures = evaluateInvoiceMilestone(so, milestone, shipment?.id);
+    if (failures.length > 0) throw new GateFailure(failures);
+
+    const perShipment = input.event === 'dispatch' || input.event === 'delivery';
+    const amount = milestoneInvoiceAmount(so, milestone, shipment);
+
+    const issueDate = today();
+    const due = new Date(issueDate);
+    due.setDate(due.getDate() + (term?.days ?? 30));
+
+    const invoice: SellInvoice = {
+      id: newId('inv'),
+      invoiceNumber: `INV-${new Date().getFullYear()}-${(mock.sellInvoices.length + 300).toString().padStart(4, '0')}`,
+      customerId: so.customerId,
+      customerName: so.customerName,
+      salesOrderId: so.id,
+      date: issueDate,
+      dueDate: due.toISOString().slice(0, 10),
+      amount,
+      paidAmount: 0,
+      status: 'sent',
+      milestoneEvent: milestone.event,
+      milestonePct: milestone.pct,
+      shipmentId: perShipment ? shipment?.id : undefined,
+    };
+    mock.sellInvoices.push(invoice);
+
+    // Once milestone invoices cover the order total, the SO is fully
+    // invoiced (cent-rounding tolerance).
+    const invoicedTotal = mock.sellInvoices
+      .filter((i) => i.salesOrderId === so.id && i.milestoneEvent)
+      .reduce((s, i) => s + i.amount, 0);
+    if (invoicedTotal >= so.total - 0.01) so.status = 'invoiced';
+
+    return invoice;
+  },
+
   // ── B4: ETO — child engineering Job under the order's Job ──────
   _createEngineeringJob(so: SalesOrder, line: SalesOrderLine, parentJobId?: string): Job {
     const product = findProduct(line.productId)!;
@@ -1107,6 +1366,9 @@ export const __test = {
   evaluateSoToJob,
   evaluatePlanToMake,
   evaluateMakeToShip,
-  evaluateShipToBook,
+  evaluateInvoiceMilestone,
   evaluateGateReceiving,
+  milestonesForTerm,
+  milestoneInvoiceExists,
+  paymentTermForSalesOrder,
 };

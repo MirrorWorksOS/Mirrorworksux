@@ -406,6 +406,17 @@ export interface SellInvoice {
   amount: number;
   paidAmount: number;
   status: InvoiceStatus;
+  /**
+   * Payment-term milestone this invoice covers (decision D5). Gate
+   * G4's `milestone_already_invoiced` dedup reads this — keyed
+   * (SO, event) for order_confirmed/completion, (SO, event, shipmentId)
+   * for dispatch/delivery.
+   */
+  milestoneEvent?: PaymentMilestoneEvent;
+  /** Percent of the order total this milestone invoice covers. */
+  milestonePct?: number;
+  /** Shipment this invoice is pro-rated to (dispatch/delivery milestones). */
+  shipmentId?: string;
 }
 
 export interface SellActivity {
@@ -1372,6 +1383,12 @@ export interface Shipment {
   actualDelivery?: string;
   weight: number;
   packages: number;
+  /**
+   * Sales-order line ids covered by this shipment (decision D5 —
+   * dispatch/delivery milestone invoices are pro-rated to these lines).
+   * Absent = the shipment covers the whole order.
+   */
+  lineIds?: string[];
 }
 
 export interface Carrier {
@@ -1543,14 +1560,50 @@ export interface DocumentRevision {
 
 // ─── Control → Settings: templates (Sell overhaul, 2026-05) ────────
 
+/**
+ * Events that can trigger a payment-term milestone (decision D5).
+ * Gate G4 (`evaluateInvoiceMilestone`) checks the event has actually
+ * occurred before an invoice can be raised against it.
+ */
+export type PaymentMilestoneEvent =
+  | 'order_confirmed'
+  | 'dispatch'
+  | 'delivery'
+  | 'completion';
+
+/**
+ * One row of a PaymentTerm's milestone schedule: invoice `pct` percent
+ * of the order total when `event` occurs. Rows are ordered and must
+ * sum to 100 across the schedule.
+ */
+export interface PaymentMilestone {
+  event: PaymentMilestoneEvent;
+  pct: number;
+}
+
 /** Reusable payment-term template (e.g. Net 30, 50% deposit + balance on delivery). */
 export interface PaymentTerm {
   id: string;
   label: string;
-  /** Days from invoice/order date to payment due. */
+  /** Days from invoice issue to payment due — net terms applied to each invoice raised. */
   days: number;
-  /** Optional deposit required up-front (percent of total). */
+  /**
+   * Optional deposit required up-front (percent of total).
+   *
+   * @deprecated Decision D5 — superseded by {@link milestones}. Kept so
+   * legacy terms still render; `milestonesForTerm` (workflowService)
+   * migrates a lone `depositPct` into
+   * `[{order_confirmed, depositPct}, {completion, remainder}]` when
+   * `milestones` is absent.
+   */
   depositPct?: number;
+  /**
+   * Ordered milestone schedule (decision D5). `pct` values must sum to
+   * 100. When absent, the effective schedule is derived from
+   * `depositPct` (legacy) or defaults to `[{dispatch, 100}]` — see
+   * `milestonesForTerm` in workflowService.
+   */
+  milestones?: PaymentMilestone[];
   /** Marks this row as the global default applied to new customers. */
   isDefault?: boolean;
   notes?: string;

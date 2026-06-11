@@ -182,7 +182,8 @@ export const customers: Customer[] = [
     createdAt: '2024-09-01',
     accountManagerId: 'emp-002',
     tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
-    paymentTermsId: 'pt-net30',
+    // D5 demo: 50% deposit on confirm, 50% on completion (gate G4).
+    paymentTermsId: 'pt-50-50-completion',
     portalAccess: true,
     notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
     contacts: [
@@ -285,7 +286,10 @@ export const customers: Customer[] = [
     createdAt: '2024-04-12',
     accountManagerId: 'emp-001',
     tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
-    paymentTermsId: 'pt-net14',
+    // D5 demo: explicit "Net 30 on dispatch" — so-004's delivered
+    // shipment (shp-001) makes the dispatch milestone immediately
+    // raisable on the order journey page.
+    paymentTermsId: 'pt-net30-dispatch',
     portalAccess: true,
     notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
   },
@@ -2023,12 +2027,21 @@ export const shopFloorLeaderboardItems = [
 // (Sell module overhaul, 2026-05)
 // ===============================================================
 
+// Milestone schedules (decision D5): `milestones` rows must sum to 100.
+// Terms without `milestones` fall back via `milestonesForTerm` — a lone
+// legacy `depositPct` migrates to [{order_confirmed, depositPct},
+// {completion, remainder}]; otherwise the default is [{dispatch, 100}].
+// pt-50-balance is deliberately left on legacy `depositPct` to exercise
+// the one-click convert affordance in Control ▸ Payment terms.
 export const paymentTerms: PaymentTerm[] = [
   { id: 'pt-net7',  label: 'Net 7',  days: 7,  notes: 'Used for rush jobs or new accounts.' },
   { id: 'pt-net14', label: 'Net 14', days: 14, notes: 'Trade default for established suppliers.' },
   { id: 'pt-net30', label: 'Net 30', days: 30, isDefault: true, notes: 'Default for new customers.' },
+  { id: 'pt-net30-dispatch', label: 'Net 30 on dispatch', days: 30, milestones: [{ event: 'dispatch', pct: 100 }], notes: 'One invoice per shipment, pro-rated to shipped lines.' },
   { id: 'pt-net45', label: 'Net 45', days: 45 },
   { id: 'pt-net60', label: 'Net 60', days: 60, notes: 'Reserved for strategic accounts.' },
+  { id: 'pt-50-50-completion', label: '50% deposit / 50% on completion', days: 14, milestones: [{ event: 'order_confirmed', pct: 50 }, { event: 'completion', pct: 50 }], notes: 'Deposit on confirm; balance once every line has shipped.' },
+  { id: 'pt-on-delivery', label: 'On delivery', days: 7, milestones: [{ event: 'delivery', pct: 100 }], notes: 'Invoice on Proof of Delivery, per shipment.' },
   { id: 'pt-50-balance', label: '50% deposit, balance on delivery', days: 0, depositPct: 50, notes: 'Required for first-time orders > $20k.' },
 ];
 
