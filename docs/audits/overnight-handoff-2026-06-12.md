@@ -206,3 +206,62 @@ branched from `main` @ 8520f469). Worker 6 opens the PR.
   /sell/orders/so-001/journey and approve (toast should say "amended
   in place"), then a −$big descope on an invoiced SO to see the CN
   warning, and check /book/credit-notes for the draft + Issue action.
+
+---
+
+## Worker 5 — ETO approval + publishBom rework + QC dispositions + vocab (audit P0 item 11, P1 item 14, P2 item 25; decisions D7, D9)
+
+**Status: all scope items done. Typecheck, lint, unit tests (8 files /
+108 tests — 16 new in workflowService.test.ts, now 61) and `vite build`
+green.**
+
+| Scope | Status | Notes |
+|---|---|---|
+| A — ETO approval state machine | done | `Job.approvalStatus: 'in_design' \| 'submitted_for_approval' \| 'approved' \| 'revision_requested'` (new `EngineeringApprovalStatus` union) + `Job.waiver { by, reason, at }` — engineering Jobs only; `_createEngineeringJob` seeds `in_design`. Mutations: `submitForApproval` (in_design \| revision_requested → submitted; revision loops back through submit), `approveEngineeringJob(id, { decision, by })` (submitted → approved \| revision_requested), `waiveBomApproval(id, { by, reason })` (validates both non-blank). `evaluateBomPublish(engJob)` → `bom_unapproved` unless approved OR waiver; `not_engineering_job` for non-eng Jobs. Exported + in `__test`. |
+| B — publishBom under parent Job | done | `publishBomToProductionJob` RENAMED `publishBom`; gated on `evaluateBomPublish` (throws `GateFailure`); the two-Job internals are gone — it now creates ONE draft MO under the PARENT Job (`engJob.parentJobId`, the order's Job) for the published product (qty from the SO line when resolvable by productId, else `engJob.qty ?? 1`; `salesOrderLineId` stamped when found), pushes the BoM, completes the eng Job. Return shape is now `{ bom, parentJob, manufacturingOrders }` — `productionJob` no longer exists. Throws on eng Jobs with no `parentJobId`. Stale JSDoc on `Job.source`/`Job.parentJobId` fixed (and the service header's pseudo-customer comment corrected to replenishment-only per the amendments). Callers updated: EngineeringJobsPage, OrderJourneyPage B4, tests. |
+| C — EngineeringJobsPage UI | done | Approval badge per row (+ amber "Waived" badge with who/why in the title tooltip); Submit / Resubmit for approval; Approve + Request revision buttons labelled "(portal demo)" with explanatory tooltips — demo stand-ins for the customer portal action; Waive-approval Dialog capturing who + why → `waiveBomApproval`; Publish BoM disabled with a tooltip until approved/waived, plus a ghost "Force (gate demo)" button that attempts the publish and renders `GateBanner` with `bom_unapproved`; page copy now says publishing creates MOs under the parent Job. Published rows show "BoM published → MOs under JOB-xxxx". |
+| D — QC disposition completion | done | `QualityCheck` gains `disposition` (`QcDisposition` union) / `qty` / `costImpact` / `links { reworkWorkOrderId?, concessionId?, supplierReturnId? }`; **`ncrId` dropped** (no NCR entity, D9). New `SupplierReturn` entity (`status 'raised' \| 'debited' \| 'closed'`) + `mock.supplierReturns`. Mutations: `setQcDisposition` (merges links), `createShortfallMo({ qualityCheckId })` (requires scrap disposition + qty; clones the WO's MO → `-SF` number, draft, `needsReschedule`, qty = scrap qty, SAME Job), `createSupplierReturn` (validates qty/reason; stamps the QC when `qualityCheckId` passed). `QcReworkInspector` rebuilt: every disposition stamps the failed QC (id captured at Fail time); scrap opens a two-step modal (record qty + cost impact → explicit "Remake — shortfall MO" / "Ship short — concession" choice); return-to-vendor opens a qty + reason modal that raises the SupplierReturn. Concessions now use the WO's real `jobId` (via its MO) instead of hard-coded `job-001`. |
+| E — vocabulary sweep | done | All "supervisor" role copy in `apps/web/src` `.ts`/`.tsx` → "lead": MakeSettings (×2), shop-floor mockMachines, FloorScanJob, FloorStationPicker, FloorClockIn (×2), FloorExecutionScreen (×3), NCRDialog, ControlFactoryDesigner (palette node `'supervisor'`/"Supervisor Station" → `'lead'`/"Lead Station" — the type id only appears at the palette definition), control/people mock-data, entities.ts + QcReworkInspector comments/toasts. Post-sweep grep of `.ts`/`.tsx` is clean. |
+| F — tests + checks | done | 16 new tests: `evaluateBomPublish` (blocks ×4 statuses, approved passes, waiver passes, non-eng rejected), submit/approve/waive transitions incl. invalid ones, `publishBom` (gate failure; MOs under parent + NO new Job; end-to-end off the confirmed SO's eto line via waiver; no-parent rejection), scrap-remake shortfall MO, supplier-return creation + validation. `npm run typecheck`, `lint`, `test` (108), `npx vite build` all green in `apps/web`. |
+
+**Files touched**
+
+- `apps/web/src/types/entities.ts` — `EngineeringApprovalStatus`, `Job.approvalStatus`/`waiver`, source/parentJobId JSDoc fix, `QcDisposition`, `QualityCheck` rework (ncrId dropped), `SupplierReturn`
+- `apps/web/src/services/mock/workflow.ts` — `supplierReturns` collection
+- `apps/web/src/services/workflowService.ts` — `evaluateBomPublish`, D7 mutations, `publishBom` rework, `setQcDisposition`/`createShortfallMo`/`createSupplierReturn`, `__test` updated
+- `apps/web/src/components/workflow/EngineeringJobsPage.tsx` — rebuilt for D7
+- `apps/web/src/components/workflow/OrderJourneyPage.tsx` — B4 demo walks approval then `publishBom`
+- `apps/web/src/components/workflow/QcReworkInspector.tsx` — rebuilt for D9
+- Vocab sweep: `make/MakeSettings.tsx`, `make/shop-floor/mockMachines.ts`, `floor/FloorScanJob.tsx`, `floor/FloorStationPicker.tsx`, `floor/FloorClockIn.tsx`, `floor/execution/FloorExecutionScreen.tsx`, `floor/execution/dialogs/NCRDialog.tsx`, `control/ControlFactoryDesigner.tsx`, `control/people/mock-data.ts`
+- `apps/web/src/test/unit/workflowService.test.ts` — D7 + D9 suites (`makeD7Jobs`/`makeD9Chain` factories)
+
+**For worker 6**
+
+- `publishBomToProductionJob` is GONE — anything publishing a BoM calls
+  `publishBom` and gets `{ bom, parentJob, manufacturingOrders }`. The
+  gate is `evaluateBomPublish`; failure code `bom_unapproved`.
+- `QualityCheck.ncrId` no longer exists. `FloorExecutionScreen`'s NCR
+  demo flow (local `ncrId` strings, NCRDialog) is a kiosk-local mock
+  that never touched the QualityCheck entity — left functional, but it
+  still SAYS "NCR" on the floor kiosk while D9 says the band is "QC";
+  flag if the kiosk copy should follow.
+- `src/guidelines/**/*.md` legacy spec docs still contain
+  Operator/Supervisor/Manager role dropdowns (e.g.
+  `Control-04-Screen-by-Screen.md`, `BudgetFunctionalityReview.md`) —
+  archived specs, not runtime copy; left untouched per scope. Decide if
+  they need a docs pass.
+- `SupplierReturn.status` `'debited'`/`'closed'` transitions and the
+  Bill debit (D9 "debit against the Bill") have no service mutation or
+  Book surface yet — only `raised` is reachable. Same for surfacing
+  `mock.supplierReturns` anywhere outside the QC toast.
+- `createShortfallMo` clones the source MO (`MO-xxxx-SF`) — MRP/schedule
+  re-fire is represented only by `needsReschedule: true` (same hook the
+  Schedule Engine worker should clear on re-plan).
+- Browser verification not possible from this worktree (Claude-Preview
+  serves the MAIN repo — see worker 2's note); verified via unit suite +
+  `vite build`. Worker 6 browser checks: /plan/engineering-jobs after
+  confirming SO-2026-0085 (badge walk → submit → approve → publish;
+  "Force (gate demo)" shows the bom_unapproved GateBanner; waiver modal
+  records who/why), OrderJourneyPage B4 one-click demo, and a QC Fail →
+  Scrap on a journey-page WO inspector (remake creates the -SF MO;
+  ship-short logs the concession; RTV raises the supplier return).
