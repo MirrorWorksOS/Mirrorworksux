@@ -571,6 +571,27 @@ export interface PurchaseOrder {
   total: number;
   received: number;
   jobId?: string;
+  /**
+   * Itemised PO lines (decision D4). Gate G5 (`evaluateGateReceiving`)
+   * matches every Goods Receipt line against one of these, and gate G2's
+   * `material_short` check counts open-PO line qty as shortage coverage.
+   * Optional because legacy fixtures / quick mock POs may carry only a
+   * `total`.
+   */
+  lines?: PurchaseOrderLine[];
+}
+
+/** One product line on a Purchase Order — the G5 matching unit. */
+export interface PurchaseOrderLine {
+  id: string;
+  productId: string;
+  description: string;
+  /** Ordered quantity — G5 tolerance is measured against this. */
+  qty: number;
+  unit?: string;
+  unitPrice?: number;
+  /** Cumulative quantity already booked in via Goods Receipts. */
+  receivedQty?: number;
 }
 
 export interface Requisition {

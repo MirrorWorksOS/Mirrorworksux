@@ -9,8 +9,9 @@
  * can refresh. Mutations are synchronous from the caller's POV but
  * wrapped in `delay()` to mimic Convex latency.
  *
- * The four named **validation gates** from the spec are exported as
- * `evaluateGate*` helpers — they return `GateFailureDetail[]` when a
+ * The five named **validation gates** from the spec (G1 SO→Job, G2
+ * Plan→Make, G3 Make→Ship, G4 Ship→Book, G5 Receiving) are exported as
+ * `evaluate*` helpers — they return `GateFailureDetail[]` when a
  * transition is blocked (caller surfaces via `GateBanner`).
  *
  * Replenishment / engineering / variation Jobs use the "Stock"
@@ -22,6 +23,7 @@ import type {
   BillOfMaterials,
   ConcessionRecord,
   GateFailureDetail,
+  GoodsReceipt,
   InventoryRecord,
   Job,
   JobSource,
@@ -66,6 +68,38 @@ const lineRoute = (line: SalesOrderLine): ProductRoute => {
   return product?.defaultRoute ?? 'mto';
 };
 
+/**
+ * Gate G5 receiving tolerance: received qty may exceed the PO line qty
+ * by at most this fraction before `qty_out_of_tolerance` blocks accept.
+ *
+ * TODO(decisions): open question — should the tolerance live as a
+ * global setting, per-product, or per-PO-line? The 5% module constant
+ * is a placeholder until that is decided (workflow-figjam-content-pack
+ * Open Questions panel, item 5).
+ */
+export const RECEIVING_QTY_TOLERANCE = 0.05;
+
+/**
+ * PO statuses that count as "open" — i.e. inbound supply that can cover
+ * a G2 material shortage and that G5 will accept receipts against.
+ *
+ * TODO(decisions): open question — does a covering PO need to be
+ * sent/acknowledged, or does a draft count? We currently exclude
+ * `draft` (workflow-figjam-content-pack Open Questions panel, item 6).
+ */
+const OPEN_PO_STATUSES = ['sent', 'acknowledged', 'partial'] as const;
+
+const isOpenPo = (po: { status: string }) =>
+  (OPEN_PO_STATUSES as readonly string[]).includes(po.status);
+
+/** Outstanding (not yet received) qty on open PO lines for a product. */
+const openPoQtyFor = (productId: string): number =>
+  mock.purchaseOrders
+    .filter(isOpenPo)
+    .flatMap((po) => po.lines ?? [])
+    .filter((l) => l.productId === productId)
+    .reduce((s, l) => s + Math.max(0, l.qty - (l.receivedQty ?? 0)), 0);
+
 // ── Gate evaluators ────────────────────────────────────────────────
 
 /** SO → Job: SO confirmed, product active, BoM exists for MTO lines. */
@@ -107,7 +141,14 @@ export function evaluateSoToJob(so: SalesOrder): GateFailureDetail[] {
   return errors;
 }
 
-/** Plan → Make: every product has routing, planned dates set, material status OK. */
+/**
+ * Gate G2 · Plan → Make — fires on MO release (decision D4).
+ * Checks: start/due dates set (`dates_missing`), ≥1 MO (`no_mos`),
+ * every MO has a routing / operation sequence (`routing_missing`), and
+ * material status OK — every BoM-explosion shortage is covered by free
+ * stock or an open PO; a shortage with no covering PO blocks release
+ * (`material_short`).
+ */
 export function evaluatePlanToMake(job: Job): GateFailureDetail[] {
   const errors: GateFailureDetail[] = [];
   if (!job.startDate || !job.dueDate) {
@@ -116,7 +157,6 @@ export function evaluatePlanToMake(job: Job): GateFailureDetail[] {
       message: `Job ${job.jobNumber} needs start + due dates before release.`,
     });
   }
-  // Routing check: we look up MOs for this job; if none, fail.
   const mos = mock.manufacturingOrders.filter((m) => m.jobId === job.id);
   if (mos.length === 0) {
     errors.push({
@@ -124,6 +164,38 @@ export function evaluatePlanToMake(job: Job): GateFailureDetail[] {
       message: `Job ${job.jobNumber} has no Manufacturing Orders. Run MRP + Schedule first.`,
       fixUrl: `/plan/jobs/${job.id}`,
     });
+  }
+  for (const mo of mos) {
+    // Routing = the MO's operation sequence. In the mock model that is
+    // its Work Order rows (or, for legacy fixtures, the `workOrders`
+    // count seeded on the MO).
+    const hasRouting =
+      mo.workOrders > 0 ||
+      mock.workOrders.some((w) => w.manufacturingOrderId === mo.id);
+    if (!hasRouting) {
+      errors.push({
+        code: 'routing_missing',
+        message: `MO ${mo.moNumber} has no routing — add the Work Order operation sequence before release.`,
+        fixUrl: `/make/manufacturing-orders/${mo.id}`,
+      });
+    }
+    // Material status: explode the MO product's BoM; any shortage not
+    // covered by outstanding qty on an open PO blocks release. (Free
+    // stock is already netted off inside `explodeBom`'s qtyShort.)
+    // Mock simplification: open-PO qty is not apportioned across MOs
+    // competing for the same component.
+    for (const demand of explodeBom(mo.productId, mo.qty ?? 1)) {
+      if (demand.qtyShort <= 0) continue;
+      const coveringQty = openPoQtyFor(demand.productId);
+      if (coveringQty < demand.qtyShort) {
+        const component = findProduct(demand.productId);
+        errors.push({
+          code: 'material_short',
+          message: `MO ${mo.moNumber}: ${component?.partNumber ?? demand.productId} short ${demand.qtyShort} with no covering open PO (free stock ${demand.qtyOnHand}, on order ${coveringQty}).`,
+          fixUrl: '/buy/orders/new',
+        });
+      }
+    }
   }
   return errors;
 }
@@ -168,6 +240,59 @@ export function evaluateShipToBook(so: SalesOrder): GateFailureDetail[] {
       code: 'undelivered',
       message: `Shipment ${shipment.shipmentNumber} has no Proof of Delivery yet.`,
     });
+  }
+  return errors;
+}
+
+/**
+ * Gate G5 · Receiving — fires on Goods Receipt accept (decision D4).
+ * Checks every GR line matches an open PO line — right product, PO not
+ * cancelled/closed (`po_mismatch`) — and that the received qty is
+ * within tolerance of the PO line qty (`qty_out_of_tolerance`, see
+ * {@link RECEIVING_QTY_TOLERANCE}).
+ *
+ * Under-receipt is NOT blocked: a short delivery is a normal partial
+ * receipt (PO status → `partial`); only over-receipt beyond tolerance
+ * blocks accept. Subcontract returns come back through this same gate
+ * against the subcontractor's PO.
+ */
+export function evaluateGateReceiving(gr: GoodsReceipt): GateFailureDetail[] {
+  const errors: GateFailureDetail[] = [];
+  const po = mock.purchaseOrders.find((p) => p.id === gr.poId);
+  if (!po) {
+    errors.push({
+      code: 'po_mismatch',
+      message: `Goods Receipt ${gr.receiptNumber} references PO ${gr.poNumber || gr.poId}, which does not exist.`,
+    });
+    return errors;
+  }
+  if (po.status === 'cancelled' || po.status === 'received') {
+    errors.push({
+      code: 'po_mismatch',
+      message: `PO ${po.poNumber} is ${po.status === 'received' ? 'closed (fully received)' : 'cancelled'} — it is not open for receiving.`,
+      fixUrl: `/buy/orders/${po.id}`,
+    });
+    return errors;
+  }
+  for (const item of gr.items) {
+    const line = po.lines?.find((l) => l.productId === item.productId);
+    if (!line) {
+      const product = findProduct(item.productId);
+      errors.push({
+        code: 'po_mismatch',
+        message: `${product?.partNumber ?? item.description ?? item.productId} is not a line on PO ${po.poNumber}.`,
+        fixUrl: `/buy/orders/${po.id}`,
+      });
+      continue;
+    }
+    const maxAccept = line.qty * (1 + RECEIVING_QTY_TOLERANCE);
+    if (item.receivedQty > maxAccept) {
+      errors.push({
+        code: 'qty_out_of_tolerance',
+        message: `${line.description}: received ${item.receivedQty} exceeds PO line qty ${line.qty} by more than ${RECEIVING_QTY_TOLERANCE * 100}% tolerance.`,
+        fixUrl: `/buy/orders/${po.id}`,
+      });
+    }
   }
   return errors;
 }
@@ -558,6 +683,115 @@ export const workflowService = {
     return record;
   },
 
+  // ── G2 action: release an MO to the floor ──────────────────────
+  /**
+   * Release a draft/confirmed Manufacturing Order to the floor. Runs
+   * gate G2 (`evaluatePlanToMake`) against the MO's Job and throws
+   * {@link GateFailure} when blocked; on pass the MO moves to
+   * `in_progress` (and its Job follows if still draft/planned).
+   */
+  async releaseManufacturingOrder(manufacturingOrderId: string): Promise<ManufacturingOrder> {
+    await delay();
+    const mo = mock.manufacturingOrders.find((m) => m.id === manufacturingOrderId);
+    if (!mo) throw new Error(`Manufacturing Order ${manufacturingOrderId} not found.`);
+    if (mo.status !== 'draft' && mo.status !== 'confirmed') {
+      throw new Error(`MO ${mo.moNumber} is ${mo.status} — only draft or confirmed MOs can be released.`);
+    }
+    const job = mock.jobs.find((j) => j.id === mo.jobId);
+    if (!job) throw new Error(`Job ${mo.jobId} for MO ${mo.moNumber} not found.`);
+    const failures = evaluatePlanToMake(job);
+    if (failures.length > 0) throw new GateFailure(failures);
+    mo.status = 'in_progress';
+    if (job.status === 'draft' || job.status === 'planned') {
+      job.status = 'in_progress';
+    }
+    return mo;
+  },
+
+  // ── G5 action: accept a Goods Receipt ──────────────────────────
+  /**
+   * Accept arrived goods against a PO. Builds the GoodsReceipt, runs
+   * gate G5 (`evaluateGateReceiving`) and throws {@link GateFailure}
+   * when blocked; on pass it persists the receipt, books a `gr`
+   * StockMovement per line into raw stock, updates inventory + PO line
+   * receivedQty, and flips the PO to `partial` / `received`.
+   */
+  async receiveGoods(input: {
+    poId: string;
+    lines: Array<{ productId: string; qty: number }>;
+    receivedBy?: string;
+  }): Promise<{ goodsReceipt: GoodsReceipt; stockMovements: StockMovement[] }> {
+    await delay();
+    const po = mock.purchaseOrders.find((p) => p.id === input.poId);
+    if (!po) throw new Error(`Purchase Order ${input.poId} not found.`);
+    if (input.lines.length === 0 || input.lines.every((l) => l.qty <= 0)) {
+      throw new Error('Nothing to receive — enter a quantity on at least one line.');
+    }
+    const receiptLines = input.lines.filter((l) => l.qty > 0);
+    const goodsReceipt: GoodsReceipt = {
+      id: newId('gr'),
+      receiptNumber: `GR-${new Date().getFullYear()}-${(mock.goodsReceipts.length + 100).toString().padStart(4, '0')}`,
+      poId: po.id,
+      poNumber: po.poNumber,
+      supplierId: po.supplierId,
+      supplierName: po.supplierName,
+      date: today(),
+      items: receiptLines.map((l) => {
+        const poLine = po.lines?.find((pl) => pl.productId === l.productId);
+        return {
+          productId: l.productId,
+          description: poLine?.description ?? findProduct(l.productId)?.description ?? l.productId,
+          orderedQty: poLine?.qty ?? 0,
+          receivedQty: l.qty,
+          acceptedQty: l.qty,
+        };
+      }),
+    };
+
+    const failures = evaluateGateReceiving(goodsReceipt);
+    if (failures.length > 0) throw new GateFailure(failures);
+
+    mock.goodsReceipts.push(goodsReceipt);
+    const movements: StockMovement[] = [];
+    for (const l of receiptLines) {
+      const poLine = po.lines?.find((pl) => pl.productId === l.productId)!;
+      poLine.receivedQty = (poLine.receivedQty ?? 0) + l.qty;
+      po.received += l.qty * (poLine.unitPrice ?? 0);
+      // Book into raw stock (FG put-away is a separate flow).
+      const inv = mock.inventoryRecords.find(
+        (i) => i.productId === l.productId && i.locationId === 'loc-raw',
+      );
+      if (inv) {
+        inv.qtyOnHand += l.qty;
+      } else {
+        mock.inventoryRecords.push({
+          id: newId('inv'),
+          productId: l.productId,
+          locationId: 'loc-raw',
+          qtyOnHand: l.qty,
+          qtyReserved: 0,
+        });
+      }
+      const movement: StockMovement = {
+        id: newId('sm'),
+        productId: l.productId,
+        toLocationId: 'loc-raw',
+        qty: l.qty,
+        reason: 'gr',
+        at: new Date().toISOString(),
+        refType: 'po',
+        refId: po.id,
+      };
+      mock.stockMovements.push(movement);
+      movements.push(movement);
+    }
+    const fullyReceived = (po.lines ?? []).every(
+      (pl) => (pl.receivedQty ?? 0) >= pl.qty,
+    );
+    po.status = fullyReceived ? 'received' : 'partial';
+    return { goodsReceipt, stockMovements: movements };
+  },
+
   // ── B4: ETO — child engineering Job under the order's Job ──────
   _createEngineeringJob(so: SalesOrder, line: SalesOrderLine, parentJobId?: string): Job {
     const product = findProduct(line.productId)!;
@@ -734,7 +968,7 @@ export const workflowService = {
       throw new GateFailure([
         {
           code: 'rework_cap',
-          message: `Work Order ${parent.woNumber} has reached rework cap (depth 2). Escalate to supervisor.`,
+          message: `Work Order ${parent.woNumber} has reached rework cap (depth 2). Escalate to a lead.`,
         },
       ]);
     }
@@ -874,4 +1108,5 @@ export const __test = {
   evaluatePlanToMake,
   evaluateMakeToShip,
   evaluateShipToBook,
+  evaluateGateReceiving,
 };

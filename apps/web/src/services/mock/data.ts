@@ -525,12 +525,33 @@ export const sellActivities: SellActivity[] = [
 // BUY — Purchase Orders, Requisitions, Bills
 // ═══════════════════════════════════════════════════════════════════════
 
+// PO `lines` added for gates G2 (material_short coverage) + G5 (GR line
+// match / qty tolerance) — see workflowService.evaluateGateReceiving.
+// po-002/po-003 lines mirror the goodsReceipts fixtures below.
 export const purchaseOrders: PurchaseOrder[] = [
-  { id: 'po-001', poNumber: 'PO-2026-0089', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', date: '2026-03-15', deliveryDate: '2026-03-25', status: 'acknowledged', total: 12400, received: 0, jobId: 'job-001' },
-  { id: 'po-002', poNumber: 'PO-2026-0088', supplierId: 'sup-002', supplierName: 'Pacific Metals', date: '2026-03-12', deliveryDate: '2026-03-22', status: 'partial', total: 8500, received: 4200, jobId: 'job-002' },
-  { id: 'po-003', poNumber: 'PO-2026-0087', supplierId: 'sup-003', supplierName: 'Sydney Welding Supply', date: '2026-03-10', deliveryDate: '2026-03-20', status: 'received', total: 3200, received: 3200 },
-  { id: 'po-004', poNumber: 'PO-2026-0086', supplierId: 'sup-004', supplierName: 'BHP Suppliers', date: '2026-03-08', deliveryDate: '2026-03-18', status: 'sent', total: 28000, received: 0, jobId: 'job-003' },
-  { id: 'po-005', poNumber: 'PO-2026-DRAFT-01', supplierId: 'sup-005', supplierName: 'Generic Parts Co', date: '2026-03-19', deliveryDate: '2026-03-29', status: 'draft', total: 4500, received: 0 },
+  { id: 'po-001', poNumber: 'PO-2026-0089', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', date: '2026-03-15', deliveryDate: '2026-03-25', status: 'acknowledged', total: 12400, received: 0, jobId: 'job-001',
+    lines: [
+      { id: 'pol-001a', productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 200, unit: 'each', unitPrice: 24.5, receivedQty: 0 },
+      { id: 'pol-001b', productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 112, unit: 'each', unitPrice: 67, receivedQty: 0 },
+    ] },
+  { id: 'po-002', poNumber: 'PO-2026-0088', supplierId: 'sup-002', supplierName: 'Pacific Metals', date: '2026-03-12', deliveryDate: '2026-03-22', status: 'partial', total: 8500, received: 4200, jobId: 'job-002',
+    lines: [
+      { id: 'pol-002a', productId: 'prod-002', description: 'Stainless 304 5mm Sheet', qty: 20, unit: 'sheets', unitPrice: 350, receivedQty: 12 },
+      { id: 'pol-002b', productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 10, unit: 'each', unitPrice: 145, receivedQty: 0 },
+    ] },
+  { id: 'po-003', poNumber: 'PO-2026-0087', supplierId: 'sup-003', supplierName: 'Sydney Welding Supply', date: '2026-03-10', deliveryDate: '2026-03-20', status: 'received', total: 3200, received: 3200,
+    lines: [
+      { id: 'pol-003a', productId: 'prod-005', description: 'Welding wire MIG 1.0mm', qty: 50, unit: 'spools', unitPrice: 64, receivedQty: 50 },
+    ] },
+  { id: 'po-004', poNumber: 'PO-2026-0086', supplierId: 'sup-004', supplierName: 'BHP Suppliers', date: '2026-03-08', deliveryDate: '2026-03-18', status: 'sent', total: 28000, received: 0, jobId: 'job-003',
+    lines: [
+      { id: 'pol-004a', productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 400, unit: 'each', unitPrice: 67, receivedQty: 0 },
+      { id: 'pol-004b', productId: 'prod-009', description: 'Rail Platform Component — Handrail Section', qty: 1, unit: 'each', unitPrice: 890, receivedQty: 0 },
+    ] },
+  { id: 'po-005', poNumber: 'PO-2026-DRAFT-01', supplierId: 'sup-005', supplierName: 'Generic Parts Co', date: '2026-03-19', deliveryDate: '2026-03-29', status: 'draft', total: 4500, received: 0,
+    lines: [
+      { id: 'pol-005a', productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 31, unit: 'each', unitPrice: 145, receivedQty: 0 },
+    ] },
 ];
 
 export const requisitions: Requisition[] = [

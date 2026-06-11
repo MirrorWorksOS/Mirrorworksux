@@ -10,9 +10,13 @@ import {
   workflowService,
   explodeBom,
   evaluateSoToJob,
+  evaluatePlanToMake,
+  evaluateGateReceiving,
+  RECEIVING_QTY_TOLERANCE,
   GateFailure,
 } from '@/services/workflowService';
 import * as mock from '@/services/mock';
+import type { GoodsReceipt, Job, ManufacturingOrder, PurchaseOrder } from '@/types/entities';
 
 /**
  * Seed an SO line on the first fixture so `confirmSalesOrder` has
@@ -302,5 +306,267 @@ describe('Stage inference helpers', () => {
   it('explodeBom returns no demand for a product with no BoM', () => {
     const demand = explodeBom('prod-008', 1);
     expect(demand).toEqual([]);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// Gate G2 (Plan → Make) — strengthened checks + release action
+// ─────────────────────────────────────────────────────────────────────
+
+/** Push a throwaway Job + MO pair for gate G2 tests. */
+const seedJobWithMo = (
+  suffix: string,
+  moOverrides: Partial<ManufacturingOrder> = {},
+  jobOverrides: Partial<Job> = {},
+): { job: Job; mo: ManufacturingOrder } => {
+  const job: Job = {
+    id: `g2-job-${suffix}`,
+    jobNumber: `JOB-G2-${suffix}`,
+    title: `G2 test job ${suffix}`,
+    customerId: 'cust-001',
+    customerName: 'TechCorp Industries',
+    status: 'planned',
+    priority: 'medium',
+    startDate: '2026-06-01',
+    dueDate: '2026-07-01',
+    estimatedHours: 8,
+    actualHours: 0,
+    value: 1000,
+    progress: 0,
+    assignedTo: 'emp-001',
+    source: 'sales_order',
+    qty: 1,
+    ...jobOverrides,
+  };
+  const mo: ManufacturingOrder = {
+    id: `g2-mo-${suffix}`,
+    moNumber: `MO-G2-${suffix}`,
+    productId: 'prod-009', // no BoM → no material demand by default
+    productName: 'Rail Platform Component',
+    jobId: job.id,
+    jobNumber: job.jobNumber,
+    customerId: job.customerId,
+    customerName: job.customerName,
+    status: 'draft',
+    priority: 'medium',
+    dueDate: job.dueDate,
+    progress: 0,
+    workOrders: 0,
+    operatorId: 'emp-001',
+    operatorName: 'Sarah Chen',
+    qty: 1,
+    startDate: job.startDate,
+    ...moOverrides,
+  };
+  mock.jobs.push(job);
+  mock.manufacturingOrders.push(mo);
+  return { job, mo };
+};
+
+describe('G2 — evaluatePlanToMake routing + material checks', () => {
+  it('flags routing_missing when an MO has no operation sequence', () => {
+    const { job } = seedJobWithMo('routing');
+    const failures = evaluatePlanToMake(job);
+    expect(failures.map((f) => f.code)).toContain('routing_missing');
+    expect(failures.map((f) => f.code)).not.toContain('dates_missing');
+    expect(failures.map((f) => f.code)).not.toContain('no_mos');
+  });
+
+  it('passes routing when the MO carries Work Order steps', () => {
+    const { job, mo } = seedJobWithMo('routing-ok', { workOrders: 2 });
+    const failures = evaluatePlanToMake(job);
+    expect(failures).toEqual([]);
+    expect(mo.workOrders).toBe(2);
+  });
+
+  it('flags material_short when a BoM shortage has no covering open PO', () => {
+    // prod-001's BoM needs 1× prod-002 per unit; qty 10000 dwarfs free
+    // stock + every open PO line for prod-002 in the fixtures.
+    const { job } = seedJobWithMo('short', {
+      productId: 'prod-001',
+      workOrders: 1,
+      qty: 10000,
+    });
+    const failures = evaluatePlanToMake(job);
+    const short = failures.find((f) => f.code === 'material_short');
+    expect(short).toBeDefined();
+    expect(short!.message).toContain('PLT-042'); // prod-002 part number
+  });
+
+  it('does NOT flag material_short when an open PO covers the shortage', () => {
+    const { job } = seedJobWithMo('covered', {
+      productId: 'prod-001',
+      workOrders: 1,
+      qty: 10000,
+    });
+    // Raise a covering PO for the shortage, then withdraw it.
+    const coveringPo: PurchaseOrder = {
+      id: 'po-g2-cover',
+      poNumber: 'PO-G2-COVER',
+      supplierId: 'sup-001',
+      supplierName: 'Hunter Steel Co',
+      date: '2026-06-01',
+      deliveryDate: '2026-06-15',
+      status: 'sent',
+      total: 0,
+      received: 0,
+      lines: [
+        { id: 'pol-g2-cover', productId: 'prod-002', description: 'Base Plate', qty: 50000, receivedQty: 0 },
+      ],
+    };
+    mock.purchaseOrders.push(coveringPo);
+    const failures = evaluatePlanToMake(job);
+    expect(failures.find((f) => f.code === 'material_short')).toBeUndefined();
+    // A draft PO must NOT count as coverage (open question 6 — excluded).
+    coveringPo.status = 'draft';
+    const failuresWithDraftPo = evaluatePlanToMake(job);
+    expect(failuresWithDraftPo.some((f) => f.code === 'material_short')).toBe(true);
+    mock.purchaseOrders.splice(mock.purchaseOrders.indexOf(coveringPo), 1);
+  });
+});
+
+describe('G2 action — releaseManufacturingOrder', () => {
+  it('throws GateFailure (and leaves the MO draft) when the gate blocks', async () => {
+    const { mo } = seedJobWithMo('rel-blocked'); // no routing
+    await expect(
+      workflowService.releaseManufacturingOrder(mo.id),
+    ).rejects.toBeInstanceOf(GateFailure);
+    expect(mo.status).toBe('draft');
+  });
+
+  it('releases a draft MO to in_progress (Job follows) when the gate passes', async () => {
+    const { job, mo } = seedJobWithMo('rel-ok', { workOrders: 3 });
+    const released = await workflowService.releaseManufacturingOrder(mo.id);
+    expect(released.status).toBe('in_progress');
+    expect(mo.status).toBe('in_progress');
+    expect(job.status).toBe('in_progress');
+  });
+
+  it('refuses MOs that are not draft/confirmed', async () => {
+    const { mo } = seedJobWithMo('rel-done', { status: 'done', workOrders: 1 });
+    await expect(
+      workflowService.releaseManufacturingOrder(mo.id),
+    ).rejects.toThrowError(/only draft or confirmed/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// Gate G5 (Receiving) — evaluator + receiveGoods action
+// ─────────────────────────────────────────────────────────────────────
+
+const grFor = (
+  poId: string,
+  items: Array<{ productId: string; receivedQty: number }>,
+): GoodsReceipt => {
+  const po = mock.purchaseOrders.find((p) => p.id === poId);
+  return {
+    id: `gr-test-${poId}`,
+    receiptNumber: `GR-TEST-${poId}`,
+    poId,
+    poNumber: po?.poNumber ?? poId,
+    supplierId: po?.supplierId ?? 'sup-001',
+    supplierName: po?.supplierName ?? 'Test Supplier',
+    date: '2026-06-12',
+    items: items.map((i) => ({
+      productId: i.productId,
+      description: i.productId,
+      orderedQty: po?.lines?.find((l) => l.productId === i.productId)?.qty ?? 0,
+      receivedQty: i.receivedQty,
+      acceptedQty: i.receivedQty,
+    })),
+  };
+};
+
+describe('G5 — evaluateGateReceiving', () => {
+  it('passes when every GR line matches an open PO line within tolerance', () => {
+    // po-001 (acknowledged) carries prod-001 × 200; +5% tolerance = 210.
+    expect(evaluateGateReceiving(grFor('po-001', [{ productId: 'prod-001', receivedQty: 200 }]))).toEqual([]);
+    expect(evaluateGateReceiving(grFor('po-001', [{ productId: 'prod-001', receivedQty: 210 }]))).toEqual([]);
+    // Under-receipt is a normal partial receipt — never blocked.
+    expect(evaluateGateReceiving(grFor('po-001', [{ productId: 'prod-001', receivedQty: 5 }]))).toEqual([]);
+  });
+
+  it('flags po_mismatch for a product that is not on the PO', () => {
+    const failures = evaluateGateReceiving(
+      grFor('po-001', [{ productId: 'prod-010', receivedQty: 1 }]),
+    );
+    expect(failures.map((f) => f.code)).toEqual(['po_mismatch']);
+  });
+
+  it('flags po_mismatch when the PO is closed or cancelled', () => {
+    // po-003 is fully received (closed).
+    const failures = evaluateGateReceiving(
+      grFor('po-003', [{ productId: 'prod-005', receivedQty: 1 }]),
+    );
+    expect(failures.map((f) => f.code)).toEqual(['po_mismatch']);
+  });
+
+  it('flags qty_out_of_tolerance for over-receipt beyond the tolerance', () => {
+    const limit = 200 * (1 + RECEIVING_QTY_TOLERANCE); // 210
+    const failures = evaluateGateReceiving(
+      grFor('po-001', [{ productId: 'prod-001', receivedQty: limit + 1 }]),
+    );
+    expect(failures.map((f) => f.code)).toEqual(['qty_out_of_tolerance']);
+  });
+});
+
+describe('G5 action — receiveGoods', () => {
+  it('blocks an over-tolerance receipt with GateFailure and books nothing', async () => {
+    const grsBefore = mock.goodsReceipts.length;
+    const movementsBefore = mock.stockMovements.filter((m) => m.reason === 'gr').length;
+    await expect(
+      workflowService.receiveGoods({
+        poId: 'po-001',
+        lines: [{ productId: 'prod-001', qty: 500 }],
+      }),
+    ).rejects.toBeInstanceOf(GateFailure);
+    expect(mock.goodsReceipts.length).toBe(grsBefore);
+    expect(mock.stockMovements.filter((m) => m.reason === 'gr').length).toBe(movementsBefore);
+  });
+
+  it('accepts a good receipt: GR + gr StockMovement + stock in + PO partial', async () => {
+    const po = mock.purchaseOrders.find((p) => p.id === 'po-001')!;
+    const line = po.lines!.find((l) => l.productId === 'prod-001')!;
+    const receivedBefore = line.receivedQty ?? 0;
+    const invBefore = mock.inventoryRecords
+      .filter((i) => i.productId === 'prod-001' && i.locationId === 'loc-raw')
+      .reduce((s, i) => s + i.qtyOnHand, 0);
+
+    const result = await workflowService.receiveGoods({
+      poId: 'po-001',
+      lines: [{ productId: 'prod-001', qty: 10 }],
+      receivedBy: 'emp-005',
+    });
+
+    expect(mock.goodsReceipts.some((g) => g.id === result.goodsReceipt.id)).toBe(true);
+    expect(result.goodsReceipt.items[0].receivedQty).toBe(10);
+    expect(result.stockMovements).toHaveLength(1);
+    expect(result.stockMovements[0].reason).toBe('gr');
+    expect(result.stockMovements[0].refType).toBe('po');
+    expect(result.stockMovements[0].refId).toBe('po-001');
+
+    const invAfter = mock.inventoryRecords
+      .filter((i) => i.productId === 'prod-001' && i.locationId === 'loc-raw')
+      .reduce((s, i) => s + i.qtyOnHand, 0);
+    expect(invAfter).toBe(invBefore + 10);
+    expect(line.receivedQty).toBe(receivedBefore + 10);
+    expect(po.status).toBe('partial');
+  });
+
+  it('flips the PO to received once every line is fully received', async () => {
+    const po = mock.purchaseOrders.find((p) => p.id === 'po-001')!;
+    const remaining = po.lines!.map((l) => ({
+      productId: l.productId,
+      qty: l.qty - (l.receivedQty ?? 0),
+    })).filter((l) => l.qty > 0);
+    await workflowService.receiveGoods({ poId: 'po-001', lines: remaining });
+    expect(po.status).toBe('received');
+    // The closed PO now rejects further receipts (po_mismatch).
+    await expect(
+      workflowService.receiveGoods({
+        poId: 'po-001',
+        lines: [{ productId: 'prod-001', qty: 1 }],
+      }),
+    ).rejects.toBeInstanceOf(GateFailure);
   });
 });
