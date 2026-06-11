@@ -157,3 +157,52 @@ branched from `main` @ 8520f469). Worker 6 opens the PR.
   Control ▸ Payment terms (sum validation + convert button on
   "50% deposit, balance on delivery"), and /book/invoices for the
   milestone line after raising.
+
+---
+
+## Worker 4 — VO amend-in-place + Credit Notes (audit P0 items 9–10; decision D8)
+
+**Status: all scope items done. Typecheck, lint, unit tests (8 files /
+93 tests — 6 new) and `vite build` green.**
+
+| Scope | Status | Notes |
+|---|---|---|
+| A — VO amend-in-place | done | `approveVariation` deltaJob path REMOVED. `createVariation` captures a **deep-frozen** `VariationOrder.baseline` (new `VariationBaseline` type: capturedAt, soTotal, uninvoicedRemainder, job id/number/dates/value/hours, MO list with qtys+status+dueDate). Approval: `so.total` moves by `costDelta` (worker 3 contract — un-raised milestones re-price via pct × order total; raised invoices untouched), live Job `value`/`dueDate` amended, open (≠ done) MOs amended in place — qty scaled to newTotal/prevTotal (mock stand-in for the BoM diff), dueDate shifted, NEW `ManufacturingOrder.needsReschedule` flag set. Done MOs (and all WOs) untouched. Re-approving an approved VO throws. New return shape `{ vo, job?, amendedMos, milestoneAdjustment{previousTotal,newTotal,uninvoicedBefore,uninvoicedAfter}, creditNote? }` — `deltaJob` is GONE. When invoices already cover the amended total, SO flips `invoiced`. |
+| B — Credit Note entity | done | `CreditNote` in entities.ts exactly per spec (+ doc comments); `mock.creditNotes` collection (mock/workflow.ts); `raiseCreditNote` (rejects amount ≤ 0; starts `draft` + `xeroSyncStatus: 'pending'`) and `issueCreditNote` (draft → `issued`, stamps `issuedAt`, mock-instant `synced`). `approveVariation` auto-raises a draft CN for `reduction − uninvoicedBefore` when a descope exceeds the uninvoiced remainder, linked to SO + VO. Exported helper `uninvoicedRemainderForSo(so)`. |
+| C — Credit Note UI | done | `book/BookCreditNotes.tsx` (follows BookInvoices visual patterns): list = number, customer, amount, status badge, linked SO/VO/return refs, Xero sync badge, row-level Issue action; detail card on `/book/credit-notes/:id` with Issue/Close. Reads `mock.creditNotes` LIVE (version bump on mutate) so runtime-raised CNs appear without remount. Routes registered in routes.tsx; Sidebar (Book ▸ Receivables & Payables), breadcrumbs + sub-item-meta wired. |
+| D — VO UI | done | `VOImpactPanel` rebuilt: baseline → amended preview (order total, MO qty diffs with done-MO "preserved" rows, job due-date shift), uninvoiced-milestone adjustment card ("un-raised milestones re-price automatically"), prominent rose warning + projected draft-CN amount when descope > uninvoiced remainder, and post-approval CN summary deep-linking to Book. Approve button reads "Approve & amend Job". `OrderJourneyPage` B5 toasts report the in-place amendment (+ flagged MO count) and any credit note — no "delta Job spawned" copy anywhere. |
+| E — tests | done | 6 new: B5 rewritten (no new Job, so.total bump, double-approve rejection) + D8 suite (additive milestone re-price incl. completion = 50% × amended total; descope-with-CN $2,000 case; descope-within-remainder no-CN; baseline immutability incl. `Object.isFrozen` + mutation throw) + CN suite (raise/issue lifecycle, non-positive rejection). `npm run typecheck`, `lint`, `test`, `npx vite build` all green in `apps/web`. |
+
+**Files touched**
+
+- `apps/web/src/types/entities.ts` — `VariationBaseline(+Mo)`, `VariationOrder.baseline`, `CreditNote`, `ManufacturingOrder.needsReschedule`
+- `apps/web/src/services/mock/workflow.ts` — `creditNotes` collection
+- `apps/web/src/services/workflowService.ts` — `approveVariation` rework, `captureVariationBaseline`, `uninvoicedRemainderForSo`, `raiseCreditNote`, `issueCreditNote`, `shiftIsoDate`/`round2`/`deepFreeze` helpers
+- `apps/web/src/components/book/BookCreditNotes.tsx` — NEW
+- `apps/web/src/components/workflow/VOImpactPanel.tsx` — rebuilt for D8
+- `apps/web/src/components/workflow/OrderJourneyPage.tsx` — B5 toasts
+- `apps/web/src/routes.tsx`, `components/Sidebar.tsx`, `lib/navigation/breadcrumbs.ts`, `lib/sub-item-meta.ts` — Credit Notes nav
+- `apps/web/src/test/unit/workflowService.test.ts` — B5 rewrite + D8/CN suites (`makeD8Job` factory; reuses worker 3's `makeG4*` factories)
+
+**For the next workers**
+
+- `approveVariation` result: use `r.job` (live Job, amended) /
+  `r.amendedMos` / `r.creditNote` — `r.deltaJob` no longer exists and
+  no Job is ever created on approval.
+- Worker on D13 minimal RMA: `raiseCreditNote({ …, returnId })` is
+  ready for the "credit note when owed" leg — pass the return id and
+  the CN shows the link in Book ▸ Credit Notes automatically.
+- MO qty amendment uses a value-ratio scale (newTotal/prevTotal) on
+  open MOs as the mock stand-in for a real BoM/MO diff — whoever
+  builds the BoM editor (D7 cluster) should replace that block in
+  `approveVariation` with the real diff. `needsReschedule` is the
+  Schedule Engine hook (currently set, never cleared — the engine
+  worker should clear it on re-plan).
+- `uninvoicedRemainderForSo` counts ALL non-void invoices linked to
+  the SO (not just milestone-stamped ones).
+- Browser verification not possible from this worktree (Claude-Preview
+  serves the MAIN repo — see worker 2's note); verified via unit suite
+  + `vite build`. Worker 6: raise an additive VO on
+  /sell/orders/so-001/journey and approve (toast should say "amended
+  in place"), then a −$big descope on an invoiced SO to see the CN
+  warning, and check /book/credit-notes for the draft + Issue action.
