@@ -105,3 +105,55 @@ branched from `main` @ 8520f469). Worker 6 opens the PR.
   /make/manufacturing-orders/mo-005 (release pass), SH-001 in
   /ship/orders (blocked dispatch), and /buy/receipts (PO-2026-0089
   over-receipt → G5 banner) before the PR.
+
+---
+
+## Worker 3 — milestone invoicing (audit P0 items 7–8; decision D5, gate G4)
+
+**Status: all scope items done. Typecheck, lint, and unit tests green
+(8 files / 87 tests — 11 new).**
+
+| Scope | Status | Notes |
+|---|---|---|
+| A — PaymentTerm milestones | done | `milestones: PaymentMilestone[]` (`{event, pct}`, events `order_confirmed\|dispatch\|delivery\|completion`, must sum to 100) + `days` kept as net terms per invoice; `depositPct` kept but `@deprecated`. Migration helper `milestonesForTerm(term)`: explicit → legacy deposit → default `[{dispatch, 100}]`. Fixtures add "Net 30 on dispatch" (`pt-net30-dispatch`), "50% deposit / 50% on completion" (`pt-50-50-completion`), "On delivery" (`pt-on-delivery`); `pt-50-balance` deliberately left on legacy `depositPct` to demo the convert affordance. cust-002 → 50/50, cust-006 → Net 30 on dispatch for demos. |
+| B — ControlPaymentTerms editor | done | Milestone schedule section in the dialog: ordered (event select, pct input) rows, add/remove, live sum indicator (green at 100%, red otherwise), blocking validation on save when ≠ 100; one-click "Convert N% deposit to milestones" shows only for legacy terms (deposit set, no rows). New read-only "Milestone schedule" table column shows the effective schedule, flagging "(legacy deposit)" / "(default)" derivations. Existing fields untouched. |
+| C — gate G4 | done | `evaluateInvoiceMilestone(so, milestone, shipmentId?)` REPLACES `evaluateShipToBook` (export deleted; `__test` updated; no other importers existed). Event checks per the content pack; dedup `milestoneInvoiceExists` keyed (SO, event) for order_confirmed/completion, (SO, event, shipmentId) for dispatch/delivery — a second partial shipment under `[{dispatch,100}]` is a NEW invoice. Codes: `milestone_not_reached`, `milestone_already_invoiced`, `no_shipment`, `undelivered` (delivery only). `paymentTermForSalesOrder` resolves customer → term → global default. |
+| D — invoice raising | done | `workflowService.raiseInvoiceForMilestone({salesOrderId, event, shipmentId?})` → runs G4, amount = pct × order total pro-rated to the shipment's lines (NEW `Shipment.lineIds?: string[]`; absent = whole order) via exported `milestoneInvoiceAmount`; stamps `SellInvoice.{milestoneEvent, milestonePct, shipmentId?}` (new optional fields); due = issue + `term.days`; SO → `invoiced` once milestone invoices cover the total. Without an explicit shipmentId the service picks the next uninvoiced shipment (delivery prefers PoD'd ones). UI: new `InvoiceMilestonePanel` (components/workflow) shows the schedule with per-milestone state (invoiced / ready / not reached + blocked reason), one row per shipment for dispatch/delivery, Raise button on eligible rows, inline GateBanner on failure — mounted on OrderJourneyPage and SellOrderDetail overview (renders only when the id resolves to a central SO). `SellNewInvoice` opens pre-linked via `?soId=…&milestone=…[&shipmentId=…]` (prefilled customer/PO-ref/due/line; Issue goes through G4); free-form ad-hoc path unchanged. |
+| E — invoice displays | done | `SellInvoiceDetail` shows "Payment-term milestone: Event · pct% · SP-ref" and now falls back to the central `sellInvoices` record so runtime-raised invoices are openable. `BookInvoices` rows show "Milestone: …" under the invoice number. (book/InvoiceDetail.tsx is a hard-coded showcase with no id param — left alone.) |
+| F — tests + checks | done | 11 new tests: `milestonesForTerm` (explicit / deposit migration / default), every G4 event type incl. undelivered-scoped-to-delivery, per-SO vs per-shipment dedup, `raiseInvoiceForMilestone` pro-rating (½-order shipment → ½ amount), dueDate = issue + days, once-per-SO deposit, completion close-out, missing-event rejection. `npm run typecheck`, `lint`, `test` all green in `apps/web`. |
+
+**Files touched**
+
+- `apps/web/src/types/entities.ts` — `PaymentMilestoneEvent`, `PaymentMilestone`, `PaymentTerm.milestones`, `SellInvoice.{milestoneEvent,milestonePct,shipmentId}`, `Shipment.lineIds`
+- `apps/web/src/services/workflowService.ts` — G4 rework + `MILESTONE_EVENT_LABELS`, `milestonesForTerm`, `paymentTermForSalesOrder`, `milestoneInvoiceExists`, `milestoneInvoiceAmount`, `raiseInvoiceForMilestone`
+- `apps/web/src/services/mock/data.ts` — payment-term fixtures, cust-002/cust-006 term wiring
+- `apps/web/src/components/control/ControlPaymentTerms.tsx` — milestone editor (additive)
+- `apps/web/src/components/workflow/InvoiceMilestonePanel.tsx` — NEW
+- `apps/web/src/components/workflow/OrderJourneyPage.tsx`, `sell/SellOrderDetail.tsx` — panel mounts
+- `apps/web/src/components/sell/SellNewInvoice.tsx`, `sell/SellInvoiceDetail.tsx`, `book/BookInvoices.tsx` — pre-link + milestone display
+- `apps/web/src/test/unit/workflowService.test.ts` — G4 suites + fixture factories
+
+**For the next workers**
+
+- `evaluateShipToBook` is GONE. Anything touching Ship → Book must go
+  through `evaluateInvoiceMilestone(so, milestone, shipmentId?)` /
+  `raiseInvoiceForMilestone`.
+- D8 (VO money cluster): decision doc says approved VO `costDelta`
+  adjusts the **remaining uninvoiced** milestones — NOT built here.
+  Hook point: `raiseInvoiceForMilestone` computes from `so.total` at
+  raise time, so amending `so.total` on VO approval is sufficient for
+  un-raised milestones; already-raised invoices are immutable.
+- `Shipment.lineIds` is optional; fixtures don't set it (legacy
+  shipments cover the whole order). Whoever builds real dispatch
+  (G3/ShipOrders) should stamp `lineIds` on partial shipments so
+  pro-rating engages.
+- Invoice lists (`SellInvoices`, `BookInvoices`) map central fixtures at
+  module load, so invoices raised at runtime appear only after a
+  remount; `SellInvoiceDetail` resolves them by id regardless.
+- Browser verification not possible from this worktree (Claude-Preview
+  serves the MAIN repo — see worker 2's note). Worker 6: check
+  /sell/orders/so-004/journey (dispatch milestone ready → raise),
+  /sell/orders/so-002/journey (50/50 schedule, deposit ready),
+  Control ▸ Payment terms (sum validation + convert button on
+  "50% deposit, balance on delivery"), and /book/invoices for the
+  milestone line after raising.
