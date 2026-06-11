@@ -261,13 +261,25 @@ export function OrderJourneyPage() {
       label: 'Publish ETO BoM → MOs under parent Job',
       fn: async () => {
         const engJob = mock.jobs.find(
-          (j) => j.source === 'engineering' && !mock.jobs.some((c) => c.parentJobId === j.id),
+          (j) => j.source === 'engineering' && j.status !== 'completed',
         );
         if (!engJob) {
           toast.message('B4 — no engineering Job awaiting publish. Run B1 with an ETO line first.');
           return;
         }
-        const r = await workflowService.publishBomToProductionJob({
+        // Customer approval gates the publish (D7). Demo stand-in for
+        // the portal: walk the approval machine before publishing.
+        if (engJob.approvalStatus !== 'approved' && !engJob.waiver) {
+          if ((engJob.approvalStatus ?? 'in_design') !== 'submitted_for_approval') {
+            await workflowService.submitForApproval(engJob.id);
+          }
+          await workflowService.approveEngineeringJob(engJob.id, {
+            decision: 'approved',
+            by: 'Customer (portal demo)',
+          });
+          toast.message(`B4 — ${engJob.jobNumber} approved via portal demo stand-in.`);
+        }
+        const r = await workflowService.publishBom({
           engineeringJobId: engJob.id,
           productId: 'prod-004',
           revision: 'A',
@@ -277,7 +289,7 @@ export function OrderJourneyPage() {
           ],
         });
         toast.success(
-          `B4 — Published BoM rev ${r.bom.revision}; production Job ${r.productionJob.jobNumber} created.`,
+          `B4 — Published BoM rev ${r.bom.revision}; ${r.manufacturingOrders.length} MO(s) created under parent Job ${r.parentJob.jobNumber}.`,
         );
         refresh();
       },

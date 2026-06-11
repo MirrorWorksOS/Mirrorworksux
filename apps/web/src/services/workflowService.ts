@@ -14,9 +14,9 @@
  * `evaluate*` helpers — they return `GateFailureDetail[]` when a
  * transition is blocked (caller surfaces via `GateBanner`).
  *
- * Replenishment / engineering / variation Jobs use the "Stock"
- * pseudo-customer rather than nullable `customerId` (audit §4.4
- * alternative).
+ * Replenishment Jobs use the "Stock" pseudo-customer rather than
+ * nullable `customerId` (audit §4.4 alternative); engineering and
+ * variation Jobs keep the real customer.
  */
 import * as mock from './mock';
 import type {
@@ -36,6 +36,7 @@ import type {
   PickList,
   ProductRoute,
   PutAwayRecord,
+  QcDisposition,
   QualityCheck,
   Reservation,
   SalesOrder,
@@ -45,6 +46,7 @@ import type {
   StockMovement,
   SubcontractDispatch,
   SubcontractMaterialModel,
+  SupplierReturn,
   VariationBaseline,
   VariationOrder,
   WorkOrder,
@@ -207,7 +209,39 @@ export function evaluatePlanToMake(job: Job): GateFailureDetail[] {
   return errors;
 }
 
-/** Make → Ship: all WOs complete, QC passed, no open NCRs. */
+/**
+ * Publish-time check for an ETO engineering Job's BoM (decision D7) —
+ * NOT a spine gate. The customer drawing approval gates BoM publish
+ * (and therefore MO creation): publish requires
+ * `approvalStatus === 'approved'` OR a recorded internal waiver
+ * (who/why on {@link Job.waiver}). Failure code: `bom_unapproved`.
+ */
+export function evaluateBomPublish(engineeringJob: Job): GateFailureDetail[] {
+  const errors: GateFailureDetail[] = [];
+  if (engineeringJob.source !== 'engineering') {
+    errors.push({
+      code: 'not_engineering_job',
+      message: `Job ${engineeringJob.jobNumber} is not an engineering Job — only engineering Jobs publish BoMs.`,
+    });
+    return errors;
+  }
+  if (engineeringJob.approvalStatus !== 'approved' && !engineeringJob.waiver) {
+    errors.push({
+      code: 'bom_unapproved',
+      message: `Job ${engineeringJob.jobNumber}: customer drawing approval is ${
+        engineeringJob.approvalStatus === 'submitted_for_approval'
+          ? 'still pending on the customer portal'
+          : engineeringJob.approvalStatus === 'revision_requested'
+            ? 'in revision — the customer requested changes'
+            : 'not requested yet'
+      }. Publish needs approval or a recorded waiver (who/why).`,
+      fixUrl: '/plan/engineering-jobs',
+    });
+  }
+  return errors;
+}
+
+/** Make → Ship: all WOs complete, QC decisions final. */
 export function evaluateMakeToShip(job: Job): GateFailureDetail[] {
   const errors: GateFailureDetail[] = [];
   const mos = mock.manufacturingOrders.filter((m) => m.jobId === job.id);
@@ -226,7 +260,7 @@ export function evaluateMakeToShip(job: Job): GateFailureDetail[] {
     if (failedQc.length > 0) {
       errors.push({
         code: 'qc_failed',
-        message: `${failedQc.length} Work Order(s) failed QC. Resolve NCRs before dispatch.`,
+        message: `${failedQc.length} Work Order(s) failed QC. Record dispositions before dispatch.`,
       });
     }
   }
@@ -1176,13 +1210,95 @@ export const workflowService = {
       source: 'engineering',
       parentJobId,
       qty: line.qty,
+      approvalStatus: 'in_design',
     };
     mock.jobs.push(job);
     line.status = 'in_production';
     return job;
   },
 
-  async publishBomToProductionJob(input: {
+  // ── D7: ETO customer drawing-approval state machine ─────────────
+  /**
+   * Submit an engineering Job's drawings/model for customer approval
+   * (decision D7): `in_design | revision_requested →
+   * submitted_for_approval`. In production this publishes the package
+   * to the customer portal (MirrorView markups as the review surface).
+   */
+  async submitForApproval(engineeringJobId: string): Promise<Job> {
+    await delay();
+    const job = mock.jobs.find((j) => j.id === engineeringJobId);
+    if (!job) throw new Error(`Engineering Job ${engineeringJobId} not found.`);
+    if (job.source !== 'engineering') {
+      throw new Error(`Job ${job.jobNumber} is not an engineering Job.`);
+    }
+    const from = job.approvalStatus ?? 'in_design';
+    if (from !== 'in_design' && from !== 'revision_requested') {
+      throw new Error(
+        `Job ${job.jobNumber} is ${from.replace(/_/g, ' ')} — only in-design or revision-requested Jobs can be submitted.`,
+      );
+    }
+    job.approvalStatus = 'submitted_for_approval';
+    return job;
+  },
+
+  /**
+   * Record the customer's decision on a submitted engineering Job
+   * (decision D7): `submitted_for_approval → approved |
+   * revision_requested`. In production this fires from the customer
+   * portal; the UI's approve / request-revision buttons are demo
+   * stand-ins for that portal action.
+   */
+  async approveEngineeringJob(
+    engineeringJobId: string,
+    input: { decision: 'approved' | 'revision_requested'; by: string },
+  ): Promise<Job> {
+    await delay();
+    const job = mock.jobs.find((j) => j.id === engineeringJobId);
+    if (!job) throw new Error(`Engineering Job ${engineeringJobId} not found.`);
+    if (job.source !== 'engineering') {
+      throw new Error(`Job ${job.jobNumber} is not an engineering Job.`);
+    }
+    if (job.approvalStatus !== 'submitted_for_approval') {
+      throw new Error(
+        `Job ${job.jobNumber} is not awaiting approval — submit it for approval first.`,
+      );
+    }
+    job.approvalStatus = input.decision;
+    return job;
+  },
+
+  /**
+   * Record an internal waiver of the customer drawing approval
+   * (decision D7): who waived it and why, stamped on the engineering
+   * Job. `evaluateBomPublish` passes on a waiver without `approved`.
+   */
+  async waiveBomApproval(
+    engineeringJobId: string,
+    input: { by: string; reason: string },
+  ): Promise<Job> {
+    await delay();
+    const job = mock.jobs.find((j) => j.id === engineeringJobId);
+    if (!job) throw new Error(`Engineering Job ${engineeringJobId} not found.`);
+    if (job.source !== 'engineering') {
+      throw new Error(`Job ${job.jobNumber} is not an engineering Job.`);
+    }
+    if (!input.by.trim() || !input.reason.trim()) {
+      throw new Error('A waiver must record who waived approval and why.');
+    }
+    job.waiver = { by: input.by.trim(), reason: input.reason.trim(), at: new Date().toISOString() };
+    return job;
+  },
+
+  /**
+   * Publish an engineering Job's approved BoM (decision D7). Gated on
+   * {@link evaluateBomPublish} — throws {@link GateFailure} with
+   * `bom_unapproved` unless the customer approved (or a waiver is
+   * recorded). On pass: the BoM is published and Manufacturing Orders
+   * are created under the PARENT Job (the order's Job, reachable via
+   * `parentJobId`) — the old two-Job pattern's separate production Job
+   * is gone. The engineering Job completes.
+   */
+  async publishBom(input: {
     engineeringJobId: string;
     productId: string;
     revision: string;
@@ -1191,10 +1307,18 @@ export const workflowService = {
       qtyPer: number;
       isManufactured: boolean;
     }>;
-  }): Promise<{ bom: BillOfMaterials; productionJob: Job }> {
+  }): Promise<{ bom: BillOfMaterials; parentJob: Job; manufacturingOrders: ManufacturingOrder[] }> {
     await delay();
     const engJob = mock.jobs.find((j) => j.id === input.engineeringJobId);
     if (!engJob) throw new Error(`Engineering Job ${input.engineeringJobId} not found.`);
+    const failures = evaluateBomPublish(engJob);
+    if (failures.length > 0) throw new GateFailure(failures);
+    const parentJob = mock.jobs.find((j) => j.id === engJob.parentJobId);
+    if (!parentJob) {
+      throw new Error(
+        `Engineering Job ${engJob.jobNumber} has no parent Job — MOs from a published BoM land under the order's Job.`,
+      );
+    }
     const bom: BillOfMaterials = {
       id: newId('bom'),
       productId: input.productId,
@@ -1204,29 +1328,35 @@ export const workflowService = {
       publishedBy: employeeIdForDefaults(),
     };
     mock.billsOfMaterials.push(bom);
-    const productionJob: Job = {
-      id: newId('job'),
-      jobNumber: engJob.jobNumber.replace('JOB-ENG', 'JOB'),
-      title: engJob.title.replace('Engineering — ', ''),
-      customerId: engJob.customerId,
-      customerName: engJob.customerName,
-      salesOrderId: engJob.salesOrderId,
-      status: 'planned',
-      priority: engJob.priority,
-      startDate: today(),
-      dueDate: engJob.dueDate,
-      estimatedHours: engJob.qty ? engJob.qty * 4 : 40,
-      actualHours: 0,
-      value: engJob.value || 0,
+
+    // MOs land under the PARENT Job (the order's Job) — one MO for the
+    // engineered product, carrying the SO line link when resolvable.
+    const so = mock.salesOrders.find((s) => s.id === engJob.salesOrderId);
+    const soLine = so?.lines?.find((l) => l.productId === input.productId);
+    const product = findProduct(input.productId);
+    const mo: ManufacturingOrder = {
+      id: newId('mo'),
+      moNumber: `MO-${new Date().getFullYear()}-${(mock.manufacturingOrders.length + 100).toString().padStart(4, '0')}`,
+      productId: input.productId,
+      productName: product?.description ?? engJob.title.replace('Engineering — ', ''),
+      jobId: parentJob.id,
+      jobNumber: parentJob.jobNumber,
+      customerId: parentJob.customerId,
+      customerName: parentJob.customerName,
+      status: 'draft',
+      priority: parentJob.priority,
+      dueDate: parentJob.dueDate,
       progress: 0,
-      assignedTo: engJob.assignedTo,
-      source: 'sales_order',
-      parentJobId: engJob.id,
-      qty: engJob.qty,
+      workOrders: 0,
+      operatorId: employeeIdForDefaults(),
+      operatorName: mock.employees[0]?.name ?? 'Unassigned',
+      salesOrderLineId: soLine?.id,
+      qty: soLine?.qty ?? engJob.qty ?? 1,
+      startDate: today(),
     };
-    mock.jobs.push(productionJob);
+    mock.manufacturingOrders.push(mo);
     engJob.status = 'completed';
-    return { bom, productionJob };
+    return { bom, parentJob, manufacturingOrders: [mo] };
   },
 
   // ── B5: Variation Order — amend-in-place (decision D8) ────────
@@ -1424,6 +1554,103 @@ export const workflowService = {
     return qc;
   },
 
+  /**
+   * Record the disposition outcome on a QualityCheck (decision D9 —
+   * QC owns disposition, no NCR entity): the chosen disposition, the
+   * affected qty, the cost impact (scrap charges the Job — the cost
+   * never leaves the job's P&L), and links to whatever the disposition
+   * produced (rework WO / concession / supplier return).
+   */
+  async setQcDisposition(
+    qualityCheckId: string,
+    input: {
+      disposition: QcDisposition;
+      qty?: number;
+      costImpact?: number;
+      links?: QualityCheck['links'];
+    },
+  ): Promise<QualityCheck> {
+    await delay();
+    const qc = mock.qualityChecks.find((q) => q.id === qualityCheckId);
+    if (!qc) throw new Error(`Quality check ${qualityCheckId} not found.`);
+    qc.disposition = input.disposition;
+    if (input.qty != null) qc.qty = input.qty;
+    if (input.costImpact != null) qc.costImpact = input.costImpact;
+    if (input.links) qc.links = { ...qc.links, ...input.links };
+    return qc;
+  },
+
+  /**
+   * Remake path after a scrap disposition (decision D9): create a
+   * shortfall MO for the scrapped qty under the SAME Job, `draft` and
+   * flagged `needsReschedule` so MRP + the Schedule Engine re-fire.
+   */
+  async createShortfallMo(input: { qualityCheckId: string }): Promise<ManufacturingOrder> {
+    await delay();
+    const qc = mock.qualityChecks.find((q) => q.id === input.qualityCheckId);
+    if (!qc) throw new Error(`Quality check ${input.qualityCheckId} not found.`);
+    if (qc.disposition !== 'scrap' || !qc.qty || qc.qty <= 0) {
+      throw new Error('A shortfall MO needs a scrap disposition with the scrapped qty recorded.');
+    }
+    const wo = mock.workOrders.find((w) => w.id === qc.workOrderId);
+    if (!wo) throw new Error(`Work Order ${qc.workOrderId} not found.`);
+    const sourceMo = mock.manufacturingOrders.find((m) => m.id === wo.manufacturingOrderId);
+    if (!sourceMo) {
+      throw new Error(`MO ${wo.manufacturingOrderId} for Work Order ${wo.woNumber} not found.`);
+    }
+    const mo: ManufacturingOrder = {
+      ...sourceMo,
+      id: newId('mo'),
+      moNumber: `${sourceMo.moNumber}-SF`,
+      status: 'draft',
+      progress: 0,
+      workOrders: 0,
+      qty: qc.qty,
+      startDate: today(),
+      needsReschedule: true,
+    };
+    mock.manufacturingOrders.push(mo);
+    return mo;
+  },
+
+  /**
+   * Return-to-vendor path (decision D9): raise a SupplierReturn for
+   * the defective qty, linked to the originating Goods Receipt when
+   * known and stamped onto the QualityCheck via
+   * `links.supplierReturnId`. Debit against the Bill follows in Book.
+   */
+  async createSupplierReturn(input: {
+    workOrderId: string;
+    qty: number;
+    reason: string;
+    supplierId?: string;
+    goodsReceiptId?: string;
+    qualityCheckId?: string;
+  }): Promise<SupplierReturn> {
+    await delay();
+    if (!(input.qty > 0)) throw new Error('Supplier return qty must be greater than zero.');
+    if (!input.reason.trim()) throw new Error('A supplier return needs a reason.');
+    const sr: SupplierReturn = {
+      id: newId('sr'),
+      workOrderId: input.workOrderId,
+      supplierId: input.supplierId,
+      goodsReceiptId: input.goodsReceiptId,
+      qty: input.qty,
+      reason: input.reason.trim(),
+      status: 'raised',
+    };
+    mock.supplierReturns.push(sr);
+    if (input.qualityCheckId) {
+      const qc = mock.qualityChecks.find((q) => q.id === input.qualityCheckId);
+      if (qc) {
+        qc.disposition = 'return_to_vendor';
+        qc.qty = input.qty;
+        qc.links = { ...qc.links, supplierReturnId: sr.id };
+      }
+    }
+    return sr;
+  },
+
   async createReworkWorkOrder(input: {
     parentWorkOrderId: string;
     raisedBy: string;
@@ -1575,6 +1802,7 @@ export const __test = {
   evaluateSoToJob,
   evaluatePlanToMake,
   evaluateMakeToShip,
+  evaluateBomPublish,
   evaluateInvoiceMilestone,
   evaluateGateReceiving,
   milestonesForTerm,

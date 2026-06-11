@@ -21,6 +21,7 @@ import type {
   StockLocation,
   StockMovement,
   SubcontractDispatch,
+  SupplierReturn,
   TimeEntry,
   VariationOrder,
 } from '@/types/entities';
@@ -121,6 +122,7 @@ export const timeEntries: TimeEntry[] = [];
 export const variationOrders: VariationOrder[] = [];
 export const creditNotes: CreditNote[] = [];
 export const concessionRecords: ConcessionRecord[] = [];
+export const supplierReturns: SupplierReturn[] = [];
 export const subcontractDispatches: SubcontractDispatch[] = [];
 
 // ── Pseudo-customer for replenishment Jobs (Phase B3 audit §4.4) ───

@@ -11,6 +11,7 @@ import {
   explodeBom,
   evaluateSoToJob,
   evaluatePlanToMake,
+  evaluateBomPublish,
   evaluateGateReceiving,
   evaluateInvoiceMilestone,
   milestonesForTerm,
@@ -27,6 +28,7 @@ import type {
   PurchaseOrder,
   SalesOrder,
   Shipment,
+  WorkOrder,
 } from '@/types/entities';
 
 /**
@@ -203,22 +205,200 @@ describe('B3 — MTS reorder monitor', () => {
   });
 });
 
-describe('B4 — ETO publish BoM → production Job', () => {
-  it('creates a production Job with parentJobId', async () => {
-    const engJob = mock.jobs.find((j) => j.source === 'engineering');
+// ── D7 factories — engineering Job + parent (order) Job ────────────
+
+let d7Seq = 0;
+function makeD7Jobs(approvalStatus?: Job['approvalStatus']): { engJob: Job; parentJob: Job } {
+  d7Seq += 1;
+  const base = {
+    customerId: 'cust-001',
+    customerName: 'TechCorp',
+    priority: 'medium' as const,
+    startDate: '2026-06-01',
+    dueDate: '2026-07-01',
+    estimatedHours: 10,
+    actualHours: 0,
+    value: 5000,
+    progress: 0,
+    assignedTo: 'emp-001',
+  };
+  const parentJob: Job = {
+    ...base,
+    id: `job-d7-parent-${d7Seq}`,
+    jobNumber: `JOB-D7-${d7Seq}`,
+    title: `D7 order Job ${d7Seq}`,
+    status: 'planned',
+    source: 'sales_order',
+  };
+  const engJob: Job = {
+    ...base,
+    id: `job-d7-eng-${d7Seq}`,
+    jobNumber: `JOB-ENG-D7-${d7Seq}`,
+    title: `Engineering — D7 fixture ${d7Seq}`,
+    status: 'draft',
+    source: 'engineering',
+    parentJobId: parentJob.id,
+    qty: 3,
+    approvalStatus,
+  };
+  mock.jobs.push(parentJob, engJob);
+  return { engJob, parentJob };
+}
+
+describe('D7 — evaluateBomPublish (approval gates BoM publish)', () => {
+  it('blocks with bom_unapproved while not approved and no waiver', () => {
+    for (const status of ['in_design', 'submitted_for_approval', 'revision_requested'] as const) {
+      const { engJob } = makeD7Jobs(status);
+      const failures = evaluateBomPublish(engJob);
+      expect(failures).toHaveLength(1);
+      expect(failures[0].code).toBe('bom_unapproved');
+    }
+    // Legacy job with no approvalStatus at all is also unapproved.
+    const { engJob: legacy } = makeD7Jobs(undefined);
+    expect(evaluateBomPublish(legacy).map((f) => f.code)).toEqual(['bom_unapproved']);
+  });
+
+  it('passes once approved', () => {
+    const { engJob } = makeD7Jobs('approved');
+    expect(evaluateBomPublish(engJob)).toEqual([]);
+  });
+
+  it('passes on a recorded waiver without approval', async () => {
+    const { engJob } = makeD7Jobs('in_design');
+    await workflowService.waiveBomApproval(engJob.id, {
+      by: 'Dana Reeve (lead)',
+      reason: 'Repeat geometry — customer pre-approved rev A drawings by email.',
+    });
+    expect(engJob.waiver?.by).toBe('Dana Reeve (lead)');
+    expect(engJob.waiver?.at).toBeTruthy();
+    expect(evaluateBomPublish(engJob)).toEqual([]);
+  });
+
+  it('rejects non-engineering Jobs', () => {
+    const { parentJob } = makeD7Jobs('approved');
+    expect(evaluateBomPublish(parentJob).map((f) => f.code)).toEqual(['not_engineering_job']);
+  });
+});
+
+describe('D7 — approval state machine transitions', () => {
+  it('submitForApproval: in_design → submitted_for_approval', async () => {
+    const { engJob } = makeD7Jobs('in_design');
+    const j = await workflowService.submitForApproval(engJob.id);
+    expect(j.approvalStatus).toBe('submitted_for_approval');
+  });
+
+  it('approveEngineeringJob: submitted → approved | revision_requested; resubmit allowed after revision', async () => {
+    const { engJob } = makeD7Jobs('in_design');
+    await workflowService.submitForApproval(engJob.id);
+    await workflowService.approveEngineeringJob(engJob.id, {
+      decision: 'revision_requested',
+      by: 'Customer (portal)',
+    });
+    expect(engJob.approvalStatus).toBe('revision_requested');
+    // Revision loops back through submit.
+    await workflowService.submitForApproval(engJob.id);
+    await workflowService.approveEngineeringJob(engJob.id, {
+      decision: 'approved',
+      by: 'Customer (portal)',
+    });
+    expect(engJob.approvalStatus).toBe('approved');
+  });
+
+  it('rejects invalid transitions', async () => {
+    const { engJob, parentJob } = makeD7Jobs('approved');
+    // Cannot resubmit an approved Job.
+    await expect(workflowService.submitForApproval(engJob.id)).rejects.toThrow(/only in-design/);
+    // Cannot decide a Job that was never submitted.
+    const { engJob: fresh } = makeD7Jobs('in_design');
+    await expect(
+      workflowService.approveEngineeringJob(fresh.id, { decision: 'approved', by: 'x' }),
+    ).rejects.toThrow(/not awaiting approval/);
+    // Non-engineering Jobs are rejected outright.
+    await expect(workflowService.submitForApproval(parentJob.id)).rejects.toThrow(/not an engineering Job/);
+    // Waivers must record who and why.
+    const { engJob: blank } = makeD7Jobs('in_design');
+    await expect(
+      workflowService.waiveBomApproval(blank.id, { by: ' ', reason: '' }),
+    ).rejects.toThrow(/who waived approval and why/);
+  });
+});
+
+describe('B4 / D7 — publishBom creates MOs under the PARENT Job', () => {
+  const components = [
+    { productId: 'prod-001', qtyPer: 4, isManufactured: true },
+    { productId: 'prod-002', qtyPer: 1, isManufactured: false },
+  ];
+
+  it('throws GateFailure (bom_unapproved) when the Job is not approved', async () => {
+    const { engJob } = makeD7Jobs('submitted_for_approval');
+    await expect(
+      workflowService.publishBom({
+        engineeringJobId: engJob.id,
+        productId: 'prod-004',
+        revision: 'A',
+        components,
+      }),
+    ).rejects.toBeInstanceOf(GateFailure);
+    expect(engJob.status).not.toBe('completed');
+  });
+
+  it('publishes under the parent Job — MOs created there, NO production Job spawned', async () => {
+    const { engJob, parentJob } = makeD7Jobs('approved');
+    const jobsBefore = mock.jobs.length;
+    const mosBefore = mock.manufacturingOrders.length;
+    const r = await workflowService.publishBom({
+      engineeringJobId: engJob.id,
+      productId: 'prod-004',
+      revision: 'A',
+      components,
+    });
+    // No new Job — the old two-Job pattern is gone.
+    expect(mock.jobs.length).toBe(jobsBefore);
+    expect(r.parentJob.id).toBe(parentJob.id);
+    // MOs land under the PARENT (order) Job, draft, qty from the eng Job.
+    expect(mock.manufacturingOrders.length).toBe(mosBefore + r.manufacturingOrders.length);
+    for (const mo of r.manufacturingOrders) {
+      expect(mo.jobId).toBe(parentJob.id);
+      expect(mo.jobNumber).toBe(parentJob.jobNumber);
+      expect(mo.status).toBe('draft');
+    }
+    expect(r.manufacturingOrders[0].qty).toBe(3);
+    expect(r.bom.productId).toBe('prod-004');
+    expect(engJob.status).toBe('completed');
+  });
+
+  it('works end-to-end off a confirmed SO eto line (waiver path)', async () => {
+    const engJob = mock.jobs.find(
+      (j) => j.source === 'engineering' && j.status !== 'completed' && j.salesOrderId,
+    );
     expect(engJob).toBeDefined();
-    const result = await workflowService.publishBomToProductionJob({
+    await workflowService.waiveBomApproval(engJob!.id, {
+      by: 'emp-001',
+      reason: 'Demo waiver — customer signed the drawing pack offline.',
+    });
+    const r = await workflowService.publishBom({
       engineeringJobId: engJob!.id,
       productId: 'prod-004',
       revision: 'A',
-      components: [
-        { productId: 'prod-001', qtyPer: 4, isManufactured: true },
-        { productId: 'prod-002', qtyPer: 1, isManufactured: false },
-      ],
+      components,
     });
-    expect(result.productionJob.parentJobId).toBe(engJob!.id);
-    expect(result.productionJob.source).toBe('sales_order');
+    // The eng Job's parent is the order's Job from confirmSalesOrder.
+    expect(r.parentJob.id).toBe(engJob!.parentJobId);
+    expect(r.manufacturingOrders[0].jobId).toBe(engJob!.parentJobId);
     expect(engJob!.status).toBe('completed');
+  });
+
+  it('rejects an engineering Job with no parent Job', async () => {
+    const { engJob } = makeD7Jobs('approved');
+    engJob.parentJobId = undefined;
+    await expect(
+      workflowService.publishBom({
+        engineeringJobId: engJob.id,
+        productId: 'prod-004',
+        revision: 'A',
+        components,
+      }),
+    ).rejects.toThrow(/no parent Job/);
   });
 });
 
@@ -308,6 +488,158 @@ describe('B6 — Rework loop', () => {
       }),
     ).rejects.toBeInstanceOf(GateFailure);
     wo.reworkDepth = 0;
+  });
+});
+
+// ── D9 factories — Job + MO + WO chain for disposition tests ───────
+
+let d9Seq = 0;
+function makeD9Chain(): { job: Job; mo: ManufacturingOrder; wo: WorkOrder } {
+  d9Seq += 1;
+  const job: Job = {
+    id: `job-d9-${d9Seq}`,
+    jobNumber: `JOB-D9-${d9Seq}`,
+    title: `D9 disposition fixture ${d9Seq}`,
+    customerId: 'cust-001',
+    customerName: 'TechCorp',
+    status: 'in_progress',
+    priority: 'medium',
+    startDate: '2026-06-01',
+    dueDate: '2026-07-01',
+    estimatedHours: 10,
+    actualHours: 2,
+    value: 4000,
+    progress: 25,
+    assignedTo: 'emp-001',
+    source: 'sales_order',
+  };
+  const mo: ManufacturingOrder = {
+    id: `mo-d9-${d9Seq}`,
+    moNumber: `MO-D9-${d9Seq}`,
+    productId: 'prod-001',
+    productName: 'Mounting Bracket',
+    jobId: job.id,
+    jobNumber: job.jobNumber,
+    customerId: job.customerId,
+    customerName: job.customerName,
+    status: 'in_progress',
+    priority: 'medium',
+    dueDate: job.dueDate,
+    progress: 25,
+    workOrders: 1,
+    operatorId: 'emp-002',
+    operatorName: 'Operator Two',
+    qty: 10,
+  };
+  const wo = {
+    id: `wo-d9-${d9Seq}`,
+    woNumber: `WO-D9-${d9Seq}`,
+    manufacturingOrderId: mo.id,
+    machineId: 'mach-001',
+    machineName: 'Laser 1',
+    operation: 'Cut',
+    sequence: 1,
+    estimatedMinutes: 60,
+    actualMinutes: 30,
+    status: 'in_progress' as const,
+  };
+  mock.jobs.push(job);
+  mock.manufacturingOrders.push(mo);
+  mock.workOrders.push(wo);
+  return { job, mo, wo };
+}
+
+describe('D9 — QC dispositions (scrap remake / ship short / supplier return)', () => {
+  it('setQcDisposition stamps disposition, qty, costImpact and merges links', async () => {
+    const { wo } = makeD9Chain();
+    const qc = await workflowService.recordQualityCheck({
+      workOrderId: wo.id,
+      result: 'fail',
+      inspectorId: 'emp-002',
+    });
+    await workflowService.setQcDisposition(qc.id, {
+      disposition: 'scrap',
+      qty: 4,
+      costImpact: 320,
+    });
+    expect(qc.disposition).toBe('scrap');
+    expect(qc.qty).toBe(4);
+    expect(qc.costImpact).toBe(320);
+    // Links merge rather than replace.
+    await workflowService.setQcDisposition(qc.id, {
+      disposition: 'scrap',
+      links: { concessionId: 'con-x' },
+    });
+    expect(qc.links?.concessionId).toBe('con-x');
+    expect(qc.qty).toBe(4);
+  });
+
+  it('scrap → remake: createShortfallMo creates a draft MO for the scrap qty under the SAME Job, flagged needsReschedule', async () => {
+    const { job, mo, wo } = makeD9Chain();
+    const qc = await workflowService.recordQualityCheck({
+      workOrderId: wo.id,
+      result: 'fail',
+      inspectorId: 'emp-002',
+    });
+    await workflowService.setQcDisposition(qc.id, {
+      disposition: 'scrap',
+      qty: 3,
+      costImpact: 250,
+    });
+    const shortfall = await workflowService.createShortfallMo({ qualityCheckId: qc.id });
+    expect(shortfall.id).not.toBe(mo.id);
+    expect(shortfall.jobId).toBe(job.id);
+    expect(shortfall.jobNumber).toBe(job.jobNumber);
+    expect(shortfall.status).toBe('draft');
+    expect(shortfall.qty).toBe(3);
+    expect(shortfall.needsReschedule).toBe(true);
+    expect(mock.manufacturingOrders.some((m) => m.id === shortfall.id)).toBe(true);
+  });
+
+  it('createShortfallMo rejects a QC without a scrap disposition + qty', async () => {
+    const { wo } = makeD9Chain();
+    const qc = await workflowService.recordQualityCheck({
+      workOrderId: wo.id,
+      result: 'fail',
+      inspectorId: 'emp-002',
+    });
+    await expect(
+      workflowService.createShortfallMo({ qualityCheckId: qc.id }),
+    ).rejects.toThrow(/scrap disposition/);
+  });
+
+  it('return-to-vendor: createSupplierReturn raises a SupplierReturn linked from the QC', async () => {
+    const { wo } = makeD9Chain();
+    const qc = await workflowService.recordQualityCheck({
+      workOrderId: wo.id,
+      result: 'fail',
+      inspectorId: 'emp-002',
+    });
+    const before = mock.supplierReturns.length;
+    const sr = await workflowService.createSupplierReturn({
+      workOrderId: wo.id,
+      qty: 2,
+      reason: 'Plate out of spec on arrival.',
+      qualityCheckId: qc.id,
+    });
+    expect(mock.supplierReturns.length).toBe(before + 1);
+    expect(sr.status).toBe('raised');
+    expect(sr.workOrderId).toBe(wo.id);
+    expect(sr.qty).toBe(2);
+    // QC stamped: disposition + link back to the return.
+    expect(qc.disposition).toBe('return_to_vendor');
+    expect(qc.qty).toBe(2);
+    expect(qc.links?.supplierReturnId).toBe(sr.id);
+  });
+
+  it('createSupplierReturn validates qty and reason', async () => {
+    const { wo } = makeD9Chain();
+    await expect(
+      workflowService.createSupplierReturn({ workOrderId: wo.id, qty: 0, reason: 'x' }),
+    ).rejects.toThrow(/greater than zero/);
+    await expect(
+      workflowService.createSupplierReturn({ workOrderId: wo.id, qty: 1, reason: '  ' }),
+    ).rejects.toThrow(/needs a reason/);
   });
 });
 

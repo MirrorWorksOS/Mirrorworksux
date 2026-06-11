@@ -727,17 +727,34 @@ export interface Job {
    *  - sales_order: spawned by `confirmSalesOrder` (the MTO default).
    *  - replenishment: auto-created by reorder-rule cron when stock
    *    falls below threshold. Uses the "Stock" pseudo-customer.
-   *  - engineering: ETO engineering Job — produces a BoM, then spawns
-   *    a sibling production Job linked via `parentJobId`.
+   *  - engineering: ETO engineering Job — a child of the order's Job
+   *    (`parentJobId`). It authors a BoM; once the customer approves
+   *    (or approval is waived), publishing the BoM creates MOs under
+   *    the PARENT Job — no separate production Job is spawned (D7).
    *  - variation: child of a parent Job, scoped to a VO delta.
    *  - manual: operator-created, no upstream trigger.
    */
   source?: JobSource;
   /**
-   * Parent Job for ETO (engineering → production) and VO (parent → delta)
-   * chains. Cost rolls up to the parent's `JobCost` record.
+   * Parent Job for ETO (the order's Job → child engineering Job) and
+   * VO (parent → delta) chains. For engineering Jobs this points at
+   * the order's Job — the Job that receives the MOs when the approved
+   * BoM is published. Cost rolls up to the parent's `JobCost` record.
    */
   parentJobId?: string;
+  /**
+   * ETO customer drawing-approval state machine (decision D7) —
+   * engineering Jobs (`source: 'engineering'`) only.
+   * `in_design → submitted_for_approval → approved | revision_requested`.
+   * BoM publish is gated on `approved` (or a recorded {@link Job.waiver}).
+   */
+  approvalStatus?: EngineeringApprovalStatus;
+  /**
+   * Internal waiver of the customer drawing approval (decision D7) —
+   * who waived it and why, recorded on the engineering Job. A waiver
+   * lets `evaluateBomPublish` pass without `approvalStatus: 'approved'`.
+   */
+  waiver?: { by: string; reason: string; at: string };
   /**
    * Sibling-group key shared by a parent SO and every variation derived
    * from it. Lets `Invoice.variationChainId` post a delta or separate
@@ -751,6 +768,13 @@ export interface Job {
    */
   qty?: number;
 }
+
+/** See {@link Job.approvalStatus} — ETO drawing approval (decision D7). */
+export type EngineeringApprovalStatus =
+  | 'in_design'
+  | 'submitted_for_approval'
+  | 'approved'
+  | 'revision_requested';
 
 /** See {@link Job.source}. */
 export type JobSource =
@@ -1302,7 +1326,7 @@ export interface WorkOrder {
   nestId?: string;
   /** Phase B6 — rework chain. Points to the original WO this is reworking. */
   parentWorkOrderId?: string;
-  /** Phase B6 — rework iteration count. Capped at 2 → supervisor escalation. */
+  /** Phase B6 — rework iteration count. Capped at 2 → lead escalation. */
   reworkDepth?: number;
   /** Phase B7 — set on subcontracted ops to flag the WO in the timeline. */
   isSubcontracted?: boolean;
@@ -2014,7 +2038,15 @@ export interface PutAwayRecord {
   by: string;
 }
 
-/** Per-WO QC gate result — Phase B6 wires Pass/Fail/Hold into rework. */
+/** See {@link QualityCheck.disposition} — QC owns disposition (decision D9). */
+export type QcDisposition = 'rework' | 'scrap' | 'use_as_is' | 'return_to_vendor';
+
+/**
+ * Per-WO QC gate result — Phase B6 wires Pass/Fail/Hold into rework.
+ * QC owns disposition (decision D9): there is NO NCR entity — a failed
+ * check records its disposition, the affected qty + cost impact, and
+ * links to whatever the disposition produced.
+ */
 export interface QualityCheck {
   id: string;
   workOrderId: string;
@@ -2022,7 +2054,37 @@ export interface QualityCheck {
   result: 'pass' | 'fail' | 'hold';
   inspectorId: string;
   at: string;
-  ncrId?: string;
+  /** Outcome chosen for a failed check (decision D9). */
+  disposition?: QcDisposition;
+  /** Quantity affected by the disposition (scrapped / returned / conceded). */
+  qty?: number;
+  /** Cost charged to the Job — scrap never leaves the job's P&L (D9). */
+  costImpact?: number;
+  /** What the disposition produced — one link per disposition path. */
+  links?: {
+    /** Rework chain: the rework WO this check raised. */
+    reworkWorkOrderId?: string;
+    /** Use-as-is / ship-short: the concession record. */
+    concessionId?: string;
+    /** Return-to-vendor: the supplier return raised. */
+    supplierReturnId?: string;
+  };
+}
+
+/**
+ * Return-to-vendor supplier return (decision D9) — raised from a QC
+ * `return_to_vendor` disposition, linked back to the originating Goods
+ * Receipt and debited against the supplier's Bill.
+ */
+export interface SupplierReturn {
+  id: string;
+  workOrderId: string;
+  supplierId?: string;
+  /** The Goods Receipt the defective material arrived on. */
+  goodsReceiptId?: string;
+  qty: number;
+  reason: string;
+  status: 'raised' | 'debited' | 'closed';
 }
 
 /** Per-WO operator time entry. */
