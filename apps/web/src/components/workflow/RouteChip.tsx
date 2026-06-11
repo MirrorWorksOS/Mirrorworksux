@@ -1,5 +1,5 @@
 /**
- * Compact badge showing the fulfilment route (MTO / ETO / Catalogue / MTS).
+ * Compact badge showing the fulfilment route (MTO / Stock / ETO).
  * Colour-coded to match the Figma workflow board.
  */
 import { Badge } from '@/components/ui/badge';
@@ -14,20 +14,15 @@ const ROUTE_META: Record<
     className: 'bg-blue-100 text-blue-900 hover:bg-blue-100',
     description: 'Make-to-Order — full Plan → Make path',
   },
+  stock_sale: {
+    label: 'Stock',
+    className: 'bg-green-100 text-green-900 hover:bg-green-100',
+    description: 'Stock Sale — picked from stock, fast path',
+  },
   eto: {
     label: 'ETO',
     className: 'bg-purple-100 text-purple-900 hover:bg-purple-100',
     description: 'Engineer-to-Order — engineering Job first',
-  },
-  catalogue_sale: {
-    label: 'Catalogue',
-    className: 'bg-green-100 text-green-900 hover:bg-green-100',
-    description: 'Catalogue Sale — stocked pick, fast path',
-  },
-  make_to_stock: {
-    label: 'MTS',
-    className: 'bg-amber-100 text-amber-900 hover:bg-amber-100',
-    description: 'Make-to-Stock — replenishment item',
   },
 };
 

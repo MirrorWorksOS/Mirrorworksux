@@ -296,9 +296,10 @@ export const customers: Customer[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 // Phase A backfill: every existing product gets an explicit `defaultRoute`
-// + `isManufactured`. Most fab-shop items are MTO; the small fasteners /
-// off-the-shelf items below are catalogued for the Catalogue Sale fast
-// path; one configurable assembly is ETO to seed the engineering queue.
+// + `isManufactured`. Most fab-shop items are MTO; stocked items resolve
+// to the Stock Sale fast path at order time (replenishment behaviour
+// lives on their reorder rules); configurable assemblies are ETO to seed
+// the engineering queue.
 export const products: Product[] = [
   { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, weightKg: 0.85, category: 'Brackets', isActive: true, imageUrl: '/products/bracket-90.svg', productKind: 'widget', defaultTemplateIds: ['tpl-widget-light'], defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 150, heightMm: 100 }, thicknessMm: 3, grade: '250', dxfAssetId: 'dxf-001', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
@@ -307,7 +308,7 @@ export const products: Product[] = [
   { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, weightKg: 3.45, category: 'Housings', isActive: true, imageUrl: '/products/motor-housing.svg', defaultRoute: 'mto', isManufactured: true },
   { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, weightKg: 48.0, category: 'Racks', isActive: true, imageUrl: '/products/server-rack.svg', productKind: 'configurable', defaultTemplateIds: ['tpl-configurable-full'], defaultRoute: 'eto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 480 }, thicknessMm: 1.6, grade: 'CR1', dxfAssetId: 'dxf-003', allowRotation: true, rotationStepsDeg: [0, 180], allowMirror: false, grainSensitive: true } },
-  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg', defaultRoute: 'make_to_stock', isManufactured: true,
+  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg', defaultRoute: 'stock_sale', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 80 }, thicknessMm: 2, grade: 'Z275', dxfAssetId: 'dxf-004', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
   { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, weightKg: 8.50, category: 'Guards', isActive: true, imageUrl: '/products/machine-guard.svg', productKind: 'configurable', defaultRoute: 'mto', isManufactured: true },
   { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, weightKg: 2.80, category: 'Enclosures', isActive: true, imageUrl: '/products/enclosure-panel.svg', defaultRoute: 'mto', isManufactured: true,
@@ -673,11 +674,11 @@ export const machines: Machine[] = [
 ];
 
 export const manufacturingOrders: ManufacturingOrder[] = [
-  { id: 'mo-001', moNumber: 'MO-2026-0015', productId: 'prod-001', productName: 'Differential Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0015', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'high', dueDate: '2026-04-18', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray' },
-  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Differential Housing', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
-  { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson' },
-  { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson' },
-  { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'mo-001', moNumber: 'MO-2026-0015', productId: 'prod-001', productName: 'Differential Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0015', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'high', dueDate: '2026-04-18', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray', qty: 12, startDate: '2026-04-08' },
+  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Differential Housing', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee', qty: 4, startDate: '2026-04-05' },
+  { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson', qty: 30, startDate: '2026-04-20' },
+  { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson', qty: 2, startDate: '2026-03-30' },
+  { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen', qty: 16, startDate: '2026-04-28' },
 ];
 
 export const workOrders: WorkOrder[] = [

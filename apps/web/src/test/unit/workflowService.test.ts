@@ -34,7 +34,7 @@ beforeAll(() => {
       {
         id: 'soline-test-2',
         salesOrderId: target.id,
-        productId: 'prod-005', // make_to_stock — has a BoM, becomes MTO
+        productId: 'prod-005', // stock_sale — picked from FG stock
         description: 'Cable Tray × 4',
         qty: 4,
         unitPrice: 38,
@@ -53,23 +53,44 @@ beforeAll(() => {
   }
 });
 
-describe('B1 — confirmSalesOrder (MTO + MTS + ETO dispatch)', () => {
-  it('dispatches each line to the correct route', async () => {
+describe('B1 — confirmSalesOrder (one Job per SO; MTO + stock + ETO dispatch)', () => {
+  it('creates ONE Job per SO with MOs for mto lines, pick lists for stock lines, and a child engineering Job for eto lines', async () => {
     const jobsBefore = mock.jobs.length;
     const result = await workflowService.confirmSalesOrder(mock.salesOrders[0].id);
     expect(result.salesOrder.status).toBe('in_production');
-    // Three lines → MTO job + MTS job + ETO engineering job.
     expect(result.perLine).toHaveLength(3);
     expect(result.perLine.map((p) => p.route).sort()).toEqual([
       'eto',
-      'make_to_stock',
       'mto',
+      'stock_sale',
     ]);
-    expect(mock.jobs.length).toBeGreaterThanOrEqual(jobsBefore + 3);
-    // ETO line should produce an engineering Job source.
+
+    // ONE order Job covering manufactured lines + ONE child engineering
+    // Job for the eto line — never a Job per line.
+    expect(result.job).toBeDefined();
+    expect(mock.jobs.length).toBe(jobsBefore + 2);
+    expect(result.salesOrder.jobId).toBe(result.job!.id);
+    expect(result.job!.source).toBe('sales_order');
+
+    // mto line → MO under the order's Job, persisting the line link.
+    const mtoLine = result.perLine.find((p) => p.route === 'mto')!;
+    expect(mtoLine.manufacturingOrderId).toBeTruthy();
+    const mo = mock.manufacturingOrders.find((m) => m.id === mtoLine.manufacturingOrderId);
+    expect(mo?.jobId).toBe(result.job!.id);
+    expect(mo?.salesOrderLineId).toBe('soline-test-1');
+    expect(mo?.qty).toBe(10);
+    expect(mo?.startDate).toBeTruthy();
+
+    // stock_sale line → pick list, no Job involvement.
+    const stockLine = result.perLine.find((p) => p.route === 'stock_sale')!;
+    expect(stockLine.pickListId).toBeTruthy();
+    expect(stockLine.manufacturingOrderId).toBeUndefined();
+
+    // eto line → child engineering Job parented to the order's Job.
     const etoLine = result.perLine.find((p) => p.route === 'eto')!;
-    const engJob = mock.jobs.find((j) => j.id === etoLine.jobId);
+    const engJob = mock.jobs.find((j) => j.id === etoLine.engineeringJobId);
     expect(engJob?.source).toBe('engineering');
+    expect(engJob?.parentJobId).toBe(result.job!.id);
   });
 });
 
@@ -113,27 +134,32 @@ describe('B1 — gates', () => {
   });
 });
 
-describe('B2 — Catalogue Sale fast path', () => {
-  it('reserves stock + creates a PickList', async () => {
+describe('B2 — Stock Sale fast path', () => {
+  it('reserves stock + creates a PickList, and a pure stock-sale order creates NO Job', async () => {
     const so = mock.salesOrders[2];
     so.status = 'confirmed';
     so.lines = [
       {
-        id: 'soline-cat-1',
+        id: 'soline-stock-1',
         salesOrderId: so.id,
         productId: 'prod-005',
         description: 'Cable Tray × 2',
         qty: 2,
         unitPrice: 38,
-        routeOverride: 'catalogue_sale',
+        routeOverride: 'stock_sale',
         status: 'pending',
       },
     ];
+    const jobsBefore = mock.jobs.length;
     const result = await workflowService.confirmSalesOrder(so.id);
-    const catLine = result.perLine.find((p) => p.route === 'catalogue_sale');
-    expect(catLine?.pickListId).toBeTruthy();
-    const pl = mock.pickLists.find((p) => p.id === catLine!.pickListId);
+    const stockLine = result.perLine.find((p) => p.route === 'stock_sale');
+    expect(stockLine?.pickListId).toBeTruthy();
+    const pl = mock.pickLists.find((p) => p.id === stockLine!.pickListId);
     expect(pl?.lines.length).toBeGreaterThan(0);
+    // No Job at all for a pure stock-sale order.
+    expect(result.job).toBeUndefined();
+    expect(mock.jobs.length).toBe(jobsBefore);
+    expect(result.salesOrder.status).toBe('confirmed');
   });
 });
 

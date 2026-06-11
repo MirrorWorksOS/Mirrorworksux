@@ -1,7 +1,8 @@
 /**
- * Workflow service — cross-module orchestration for the seven Figma
- * archetypes (MTO, Catalogue Sale, Make-to-Stock, ETO, Variation Order,
- * Rework, Subcontract).
+ * Workflow service — cross-module orchestration for the workflow
+ * archetypes: the three order routes (MTO, Stock Sale, ETO — decision
+ * D3), the MTS replenishment trigger, and the in-flight deviations
+ * (Variation Order, Rework, Subcontract).
  *
  * Each public method mutates the in-memory mock collections under
  * `services/mock/` and returns the resulting domain object so the UI
@@ -67,7 +68,7 @@ const lineRoute = (line: SalesOrderLine): ProductRoute => {
 
 // ── Gate evaluators ────────────────────────────────────────────────
 
-/** SO → Job: SO confirmed, product active, BoM exists for MTO/MTS lines. */
+/** SO → Job: SO confirmed, product active, BoM exists for MTO lines. */
 export function evaluateSoToJob(so: SalesOrder): GateFailureDetail[] {
   const errors: GateFailureDetail[] = [];
   if (so.status !== 'confirmed' && so.status !== 'in_production') {
@@ -93,7 +94,7 @@ export function evaluateSoToJob(so: SalesOrder): GateFailureDetail[] {
       });
     }
     const route = lineRoute(line);
-    if (route === 'mto' || route === 'make_to_stock') {
+    if (route === 'mto') {
       if (!findBomFor(line.productId)) {
         errors.push({
           code: 'bom_missing',
@@ -228,22 +229,36 @@ export function explodeBom(
 const employeeIdForDefaults = () => mock.employees[0]?.id ?? 'emp-001';
 
 /**
- * Confirm a Sales Order — the keystone MTO handoff. Walks lines and
- * dispatches per `line.routeOverride ?? product.defaultRoute`:
+ * Confirm a Sales Order — the keystone handoff (decision D2: one Job
+ * per Sales Order). Creates ONE production Job covering the order's
+ * manufactured (mto + eto) lines, then walks lines and dispatches per
+ * `line.routeOverride ?? product.defaultRoute`:
  *
- *  - mto → Job created with `source: 'sales_order'`.
- *  - catalogue_sale → stock reserved + PickList created (Phase B2).
- *  - eto → engineering Job created (Phase B4).
- *  - make_to_stock → soft-warn; treated as MTO if BoM resolves.
+ *  - mto → ManufacturingOrder created under the order's Job, carrying
+ *    the persisted line link (`salesOrderLineId`), `qty` and `startDate`.
+ *  - stock_sale → stock reserved + PickList created; no Job involvement.
+ *  - eto → child engineering Job created with `parentJobId` pointing at
+ *    the order's Job; its MOs land under the parent Job once the
+ *    approved BoM is published.
  *
- * Returns the updated SO plus a per-line dispatch report.
+ * Pure stock-sale orders create NO Job at all.
+ * Returns the updated SO, the order's Job (when one exists), and a
+ * per-line dispatch report.
  */
 export interface ConfirmSalesOrderResult {
   salesOrder: SalesOrder;
+  /**
+   * The single production Job covering the order's manufactured lines.
+   * Absent for pure stock-sale orders ("no Job — pick list raised").
+   */
+  job?: Job;
   perLine: Array<{
     lineId: string;
     route: ProductRoute;
-    jobId?: string;
+    /** MO created under the order's Job (mto lines). */
+    manufacturingOrderId?: string;
+    /** Child engineering Job (eto lines). */
+    engineeringJobId?: string;
     pickListId?: string;
     note?: string;
   }>;
@@ -284,85 +299,92 @@ export const workflowService = {
     );
     if (blockingFailures.length > 0) throw new GateFailure(blockingFailures);
 
+    // ONE Job per Sales Order (decision D2), covering manufactured
+    // (mto + eto) lines only. Pure stock-sale orders create no Job.
+    const manufacturedLines = so.lines.filter((l) => {
+      const r = lineRoute(l);
+      return r === 'mto' || r === 'eto';
+    });
+
+    let orderJob: Job | undefined;
+    if (manufacturedLines.length > 0) {
+      orderJob = {
+        id: newId('job'),
+        jobNumber: `JOB-${new Date().getFullYear()}-${(mock.jobs.length + 100).toString().padStart(4, '0')}`,
+        title: `${so.orderNumber} — ${so.customerName}`,
+        customerId: so.customerId,
+        customerName: so.customerName,
+        salesOrderId: so.id,
+        status: 'planned',
+        priority: 'medium',
+        startDate: today(),
+        dueDate: so.deliveryDate,
+        estimatedHours: manufacturedLines.reduce((s, l) => s + l.qty * 4, 0),
+        actualHours: 0,
+        value: manufacturedLines.reduce((s, l) => s + l.qty * l.unitPrice, 0),
+        progress: 0,
+        assignedTo: employeeIdForDefaults(),
+        source: 'sales_order',
+        qty: manufacturedLines.reduce((s, l) => s + l.qty, 0),
+      };
+      mock.jobs.push(orderJob);
+      so.jobId = orderJob.id;
+    }
+
     const perLine: ConfirmSalesOrderResult['perLine'] = [];
     for (const line of so.lines) {
       const route = lineRoute(line);
       const product = findProduct(line.productId)!;
-      if (route === 'mto') {
-        const job: Job = {
-          id: newId('job'),
-          jobNumber: `JOB-${new Date().getFullYear()}-${(mock.jobs.length + 100).toString().padStart(4, '0')}`,
-          title: `${product.description} × ${line.qty}`,
-          customerId: so.customerId,
-          customerName: so.customerName,
-          salesOrderId: so.id,
-          status: 'planned',
-          priority: 'medium',
-          startDate: today(),
-          dueDate: so.deliveryDate,
-          estimatedHours: line.qty * 4,
-          actualHours: 0,
-          value: line.qty * line.unitPrice,
+      if (route === 'mto' && orderJob) {
+        // Each manufactured line becomes an MO under the order's Job —
+        // the persisted line → MO link is `salesOrderLineId`.
+        const mo: ManufacturingOrder = {
+          id: newId('mo'),
+          moNumber: `MO-${new Date().getFullYear()}-${(mock.manufacturingOrders.length + 100).toString().padStart(4, '0')}`,
+          productId: line.productId,
+          productName: product.description,
+          jobId: orderJob.id,
+          jobNumber: orderJob.jobNumber,
+          customerId: orderJob.customerId,
+          customerName: orderJob.customerName,
+          status: 'draft',
+          priority: orderJob.priority,
+          dueDate: orderJob.dueDate,
           progress: 0,
-          assignedTo: employeeIdForDefaults(),
-          source: 'sales_order',
+          workOrders: 0,
+          operatorId: employeeIdForDefaults(),
+          operatorName: mock.employees[0]?.name ?? 'Unassigned',
+          salesOrderLineId: line.id,
           qty: line.qty,
+          startDate: today(),
         };
-        mock.jobs.push(job);
+        mock.manufacturingOrders.push(mo);
         line.status = 'in_production';
-        perLine.push({ lineId: line.id, route, jobId: job.id });
-      } else if (route === 'catalogue_sale') {
+        perLine.push({ lineId: line.id, route, manufacturingOrderId: mo.id });
+      } else if (route === 'stock_sale') {
         const pickList = this._reserveAndCreatePickList(so, line);
-        perLine.push({ lineId: line.id, route, pickListId: pickList.id });
-      } else if (route === 'eto') {
-        const engJob = this._createEngineeringJob(so, line);
         perLine.push({
           lineId: line.id,
           route,
-          jobId: engJob.id,
-          note: 'Engineering Job created; production Job spawns when BoM is published.',
+          pickListId: pickList.id,
+          note: 'No Job for this line — pick list raised.',
         });
-      } else if (route === 'make_to_stock') {
-        // SO of an MTS item is unusual — treat as MTO if BoM resolves.
-        const bom = findBomFor(line.productId);
-        if (!bom) {
-          perLine.push({
-            lineId: line.id,
-            route,
-            note: 'No BoM — line skipped. Author a BoM or route ETO.',
-          });
-          continue;
-        }
-        const job: Job = {
-          id: newId('job'),
-          jobNumber: `JOB-${new Date().getFullYear()}-${(mock.jobs.length + 100).toString().padStart(4, '0')}`,
-          title: `${product.description} × ${line.qty} (from MTS catalogue)`,
-          customerId: so.customerId,
-          customerName: so.customerName,
-          salesOrderId: so.id,
-          status: 'planned',
-          priority: 'medium',
-          startDate: today(),
-          dueDate: so.deliveryDate,
-          estimatedHours: line.qty * 4,
-          actualHours: 0,
-          value: line.qty * line.unitPrice,
-          progress: 0,
-          assignedTo: employeeIdForDefaults(),
-          source: 'sales_order',
-          qty: line.qty,
-        };
-        mock.jobs.push(job);
-        line.status = 'in_production';
-        perLine.push({ lineId: line.id, route, jobId: job.id });
+      } else if (route === 'eto' && orderJob) {
+        const engJob = this._createEngineeringJob(so, line, orderJob.id);
+        perLine.push({
+          lineId: line.id,
+          route,
+          engineeringJobId: engJob.id,
+          note: 'Engineering Job created; MOs land under the parent Job once the approved BoM is published.',
+        });
       }
     }
 
-    so.status = 'in_production';
-    return { salesOrder: so, perLine };
+    so.status = manufacturedLines.length > 0 ? 'in_production' : 'confirmed';
+    return { salesOrder: so, job: orderJob, perLine };
   },
 
-  // ── B2: Catalogue Sale fast path ─────────────────────────────
+  // ── B2: Stock Sale fast path ─────────────────────────────────
   _reserveAndCreatePickList(so: SalesOrder, line: SalesOrderLine): PickList {
     // Reserve from FG first; fall back to raw if FG empty.
     let remaining = line.qty;
@@ -536,8 +558,8 @@ export const workflowService = {
     return record;
   },
 
-  // ── B4: ETO two-Job pattern ───────────────────────────────────
-  _createEngineeringJob(so: SalesOrder, line: SalesOrderLine): Job {
+  // ── B4: ETO — child engineering Job under the order's Job ──────
+  _createEngineeringJob(so: SalesOrder, line: SalesOrderLine, parentJobId?: string): Job {
     const product = findProduct(line.productId)!;
     const job: Job = {
       id: newId('job'),
@@ -556,6 +578,7 @@ export const workflowService = {
       progress: 0,
       assignedTo: employeeIdForDefaults(),
       source: 'engineering',
+      parentJobId,
       qty: line.qty,
     };
     mock.jobs.push(job);

@@ -41,9 +41,8 @@ const AUD = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' 
 
 const ROUTE_OPTIONS: { value: ProductRoute; label: string }[] = [
   { value: 'mto', label: 'Make-to-Order' },
+  { value: 'stock_sale', label: 'Stock Sale' },
   { value: 'eto', label: 'Engineer-to-Order' },
-  { value: 'catalogue_sale', label: 'Catalogue Sale' },
-  { value: 'make_to_stock', label: 'Make-to-Stock' },
 ];
 
 interface Product {

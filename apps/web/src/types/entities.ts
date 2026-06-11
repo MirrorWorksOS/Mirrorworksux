@@ -164,22 +164,25 @@ export interface Product {
   defaultTemplateIds?: string[];
   /**
    * Default fulfilment route used by `confirmSalesOrder` to dispatch
-   * each line of a Sales Order. Maps 1:1 to the Figma workflow archetypes:
-   *  - mto: Make-to-Order — create a Job, BoM explosion, MRP, schedule.
-   *  - catalogue_sale: stocked pick — reserve, pick, pack, dispatch.
-   *  - eto: Engineer-to-Order — create an engineering Job; production
-   *    Job auto-creates once the BoM is published.
-   *  - make_to_stock: replenishment item — sale of these is unusual;
-   *    `confirmSalesOrder` soft-warns and treats as MTO unless the BoM
-   *    already resolves to stock-on-hand.
-   * Per-line overrides on `SalesOrderLine.routeOverride` win when set.
+   * each line of a Sales Order. Maps 1:1 to the order routes agreed in
+   * workflow decision D3:
+   *  - mto: Make-to-Order — Manufacturing Order under the order's Job,
+   *    BoM explosion, MRP, schedule.
+   *  - stock_sale: picked from stock — reserve, pick, pack, dispatch.
+   *  - eto: Engineer-to-Order — child engineering Job first; MOs land
+   *    under the parent Job once the approved BoM is published.
+   * Made-to-stock products resolve to `stock_sale` at order time; their
+   * replenishment behaviour lives in `ProductReorderRule`, not on the
+   * route. Per-line overrides on `SalesOrderLine.routeOverride` win
+   * when set.
    */
   defaultRoute?: ProductRoute;
   /**
    * True when this product passes through the shop floor (has or will
-   * have a BoM + routing). False for pure catalogue / resale items.
-   * Stored explicitly because a stocked item *can* have a BoM (the
-   * make-to-stock case) — `defaultRoute` alone can't represent that.
+   * have a BoM + routing). False for pure stocked / resale items.
+   * Stored explicitly because a stocked item *can* have a BoM (made to
+   * stock via its reorder rule) — `defaultRoute` alone can't represent
+   * that.
    */
   isManufactured?: boolean;
 }
@@ -189,7 +192,7 @@ export interface Product {
  * the workflow archetypes documented in
  * `docs/architecture/workflows.md`.
  */
-export type ProductRoute = 'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock';
+export type ProductRoute = 'mto' | 'stock_sale' | 'eto';
 
 /** Preferred / excluded machines for a single routing step on a product. */
 export interface RoutingMachinePrefs {
@@ -367,7 +370,7 @@ export interface SalesOrder {
   confirmedAt?: string;
   /**
    * Per-product lines. Each line is dispatched independently by
-   * `confirmSalesOrder` so a single SO can mix MTO + catalogue_sale +
+   * `confirmSalesOrder` so a single SO can mix MTO + stock_sale +
    * ETO lines. Optional during the Phase A rollout while legacy fixtures
    * with a scalar `total` continue to render; required once Phase B1 ships.
    */
@@ -1233,6 +1236,15 @@ export interface ManufacturingOrder {
   workOrders: number;
   operatorId: string;
   operatorName: string;
+  /**
+   * Persisted line → MO link (decision D2): the Sales Order line this
+   * MO fulfils. Absent on replenishment / legacy MOs.
+   */
+  salesOrderLineId?: string;
+  /** Quantity to manufacture — mirrors the SO line qty at confirm time. */
+  qty?: number;
+  /** Planned start date (ISO yyyy-mm-dd). */
+  startDate?: string;
 }
 
 export interface WorkOrder {
@@ -1800,18 +1812,18 @@ export interface MarkupComment {
 // ═══════════════════════════════════════════════════════════════════════
 
 /**
- * One canonical 10-stage journey, used by the universal Order page and
- * the `JourneyStepper` component. Each stage maps to an Advance action.
+ * The canonical 7-stage document spine (decision D1), used by the
+ * universal Order page and the `JourneyStepper` component:
+ * Quote → Sales Order → Job → Manufacturing Order → Work Orders →
+ * Shipment (dispatch) → Invoice. BoM / MRP / Schedule are Job-stage
+ * detail (spokes), not spine stops; Buy is a parallel branch off MRP.
  */
 export type JourneyStage =
   | 'quote'
   | 'sales_order'
   | 'job'
-  | 'bom'
-  | 'mrp'
-  | 'schedule'
   | 'manufacturing'
-  | 'qc'
+  | 'work_orders'
   | 'dispatch'
   | 'invoice';
 

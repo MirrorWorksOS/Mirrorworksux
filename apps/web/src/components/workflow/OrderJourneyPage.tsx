@@ -59,7 +59,7 @@ function inferStage(so: SalesOrder, pickLists: PickList[]): JourneyStage {
     case 'confirmed':
       return 'job';
     case 'in_production':
-      return 'manufacturing';
+      return 'work_orders';
     case 'shipped':
       return 'dispatch';
     case 'invoiced':
@@ -69,16 +69,15 @@ function inferStage(so: SalesOrder, pickLists: PickList[]): JourneyStage {
   }
 }
 
+// The 7-stage spine (decision D1) — BoM / MRP / Schedule are Job-stage
+// detail, not spine stops.
 function completedBefore(stage: JourneyStage): JourneyStage[] {
   const order: JourneyStage[] = [
     'quote',
     'sales_order',
     'job',
-    'bom',
-    'mrp',
-    'schedule',
     'manufacturing',
-    'qc',
+    'work_orders',
     'dispatch',
     'invoice',
   ];
@@ -90,6 +89,7 @@ function actionForStage(stage: JourneyStage) {
     case 'sales_order':
       return { label: 'Confirm Sales Order', key: 'confirm' as const };
     case 'manufacturing':
+    case 'work_orders':
       return { label: 'Pick & Dispatch', key: 'pick' as const };
     case 'dispatch':
       return { label: 'Mark Delivered', key: 'deliver' as const };
@@ -176,9 +176,11 @@ export function OrderJourneyPage() {
     if (action.key === 'confirm') {
       const result = await workflowService.confirmSalesOrder(so.id);
       toast.success(
-        `Confirmed — ${result.perLine.length} line(s): ${result.perLine
-          .map((l) => l.route)
-          .join(', ')}`,
+        result.job
+          ? `Confirmed — Job ${result.job.jobNumber} created; ${result.perLine.length} line(s): ${result.perLine
+              .map((l) => l.route)
+              .join(', ')}`
+          : `Confirmed — no Job (stock-sale only); pick list raised for ${result.perLine.length} line(s).`,
       );
       return result;
     }
@@ -211,7 +213,11 @@ export function OrderJourneyPage() {
       fn: async () => {
         try {
           const r = await workflowService.confirmSalesOrder(so.id);
-          toast.success(`B1 — dispatched ${r.perLine.length} line(s).`);
+          toast.success(
+            r.job
+              ? `B1 — Job ${r.job.jobNumber} created; dispatched ${r.perLine.length} line(s).`
+              : `B1 — no Job (stock-sale only); dispatched ${r.perLine.length} line(s).`,
+          );
           refresh();
         } catch (e) {
           toast.error(e instanceof Error ? e.message : String(e));
@@ -224,7 +230,7 @@ export function OrderJourneyPage() {
       fn: async () => {
         const pending = pickLists.filter((p) => p.status === 'pending');
         if (pending.length === 0) {
-          toast.message('B2 — no pending pick lists. Confirm a catalogue line first.');
+          toast.message('B2 — no pending pick lists. Confirm a stock-sale line first.');
           return;
         }
         for (const p of pending) await workflowService.pickPickList(p.id, 'emp-003');
@@ -251,7 +257,7 @@ export function OrderJourneyPage() {
     },
     {
       archetype: 'B4',
-      label: 'Publish ETO BoM → spawn production Job',
+      label: 'Publish ETO BoM → MOs under parent Job',
       fn: async () => {
         const engJob = mock.jobs.find(
           (j) => j.source === 'engineering' && !mock.jobs.some((c) => c.parentJobId === j.id),
@@ -463,7 +469,7 @@ export function OrderJourneyPage() {
       {pickLists.length > 0 && (
         <Card className="p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <Truck className="h-4 w-4" /> Pick lists (Catalogue Sale fast path)
+            <Truck className="h-4 w-4" /> Pick lists (Stock Sale fast path)
           </div>
           <ul className="space-y-1 text-sm">
             {pickLists.map((p) => (

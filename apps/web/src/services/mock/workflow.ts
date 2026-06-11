@@ -34,7 +34,7 @@ export const stockLocations: StockLocation[] = [
 
 // ── Inventory snapshots ────────────────────────────────────────────
 export const inventoryRecords: InventoryRecord[] = [
-  // Catalogue / make-to-stock items with FG stock.
+  // Stocked (stock_sale) items with FG stock — replenished via reorder rules.
   { id: 'inv-001', productId: 'prod-005', locationId: 'loc-fg', qtyOnHand: 240, qtyReserved: 30 },
   { id: 'inv-002', productId: 'prod-001', locationId: 'loc-fg', qtyOnHand: 75, qtyReserved: 10 },
   { id: 'inv-003', productId: 'prod-002', locationId: 'loc-raw', qtyOnHand: 12, qtyReserved: 0 },

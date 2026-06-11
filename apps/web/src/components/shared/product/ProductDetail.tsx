@@ -127,7 +127,7 @@ const PRODUCT = {
   /** Explicit template pins; empty = fall back to productKind filter. */
   defaultTemplateIds: [] as string[],
   /** Default fulfilment route; surfaced + editable on the Overview tab. */
-  defaultRoute: 'mto' as 'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock',
+  defaultRoute: 'mto' as 'mto' | 'stock_sale' | 'eto',
 };
 
 // ── AUD currency formatter (tenant is Australian — Alliance Metal) ──
@@ -1260,12 +1260,11 @@ type BomLine = { sku: string; description: string; qty: number; unit: string; co
  */
 function DefaultRouteEditor() {
   const PRODUCT = useProductVM();
-  const [route, setRoute] = useState<'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock'>(PRODUCT.defaultRoute);
+  const [route, setRoute] = useState<'mto' | 'stock_sale' | 'eto'>(PRODUCT.defaultRoute);
   const options: { value: typeof route; label: string; hint: string }[] = [
     { value: 'mto', label: 'MTO — Make-to-Order', hint: 'Full Plan → Make path on every sale.' },
-    { value: 'eto', label: 'ETO — Engineer-to-Order', hint: 'Engineering Job first; production Job after BoM publish.' },
-    { value: 'catalogue_sale', label: 'Catalogue Sale', hint: 'Picked from stock; skips Plan and Make.' },
-    { value: 'make_to_stock', label: 'Make-to-Stock', hint: 'Replenished by reorder rule; sold as catalogue.' },
+    { value: 'stock_sale', label: 'Stock Sale', hint: 'Picked from stock; skips Plan and Make. Replenishment lives on the reorder rule.' },
+    { value: 'eto', label: 'ETO — Engineer-to-Order', hint: 'Engineering Job first; MOs land under the parent Job after BoM publish.' },
   ];
   const current = options.find((o) => o.value === route)!;
   return (
