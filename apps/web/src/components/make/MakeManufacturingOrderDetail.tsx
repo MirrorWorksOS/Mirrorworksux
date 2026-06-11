@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router';
-import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, Receipt, Play, Pause, AlertTriangle, Timer, Save } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, ChevronDown, ChevronRight, Search, Filter, Upload, FileText, Download, FileSpreadsheet, ClipboardCheck, Shield, Receipt, Play, Pause, AlertTriangle, Timer, Save, Rocket } from 'lucide-react';
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { jobs } from '@/services';
 import { toast } from 'sonner';
@@ -42,6 +42,9 @@ import { RevDriftBanner } from '@/components/shared/3d/RevDriftBanner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from 'convex/react';
 import { api } from '@convex/_generated/api';
+import { GateBanner } from '@/components/workflow/GateBanner';
+import { workflowService, GateFailure } from '@/services/workflowService';
+import type { GateFailureDetail } from '@/types/entities';
 
 /* ------------------------------------------------------------------ */
 /* Mock data                                                          */
@@ -129,8 +132,38 @@ export function MakeManufacturingOrderDetail() {
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
   const [summaryFilter, setSummaryFilter] = useState<SummaryFilterKey | null>(null);
   const [shiftPaused, setShiftPaused] = useState(false);
+  // Gate G2 (Plan → Make) release action — failures surface in GateBanner.
+  const [releaseFailures, setReleaseFailures] = useState<GateFailureDetail[]>([]);
+  const [releasing, setReleasing] = useState(false);
+  // Bumped after a successful release so the live mock MO status re-renders.
+  const [, setReleaseTick] = useState(0);
 
   const mo = id ? MO_BY_ID[id] : undefined;
+  // Live mock record (MO_BY_ID is a module-load snapshot) — drives the
+  // Release button visibility and post-release status display.
+  const liveMo = id ? manufacturingOrders.find((m) => m.id === id) : undefined;
+  const liveStatusDisplay = liveMo ? (STATUS_DISPLAY[liveMo.status] ?? liveMo.status) : mo?.status;
+  const canRelease = liveMo?.status === 'draft' || liveMo?.status === 'confirmed';
+
+  const handleRelease = async () => {
+    if (!liveMo || releasing) return;
+    setReleasing(true);
+    try {
+      await workflowService.releaseManufacturingOrder(liveMo.id);
+      setReleaseFailures([]);
+      setReleaseTick((t) => t + 1);
+      toast.success(`${liveMo.moNumber} released to the floor`);
+    } catch (err) {
+      if (err instanceof GateFailure) {
+        setReleaseFailures(err.details);
+        toast.error('Release blocked — Plan → Make gate failed');
+      } else {
+        toast.error(err instanceof Error ? err.message : 'Release failed');
+      }
+    } finally {
+      setReleasing(false);
+    }
+  };
   // Memoize the MirrorViewer context so its identity is stable across renders
   // (the viewer's source-resolve effect depends on context; identity churn
   // would trigger a remount loop and cancel in-flight Document.load).
@@ -196,6 +229,7 @@ export function MakeManufacturingOrderDetail() {
   }
 
   const overallProgress = Math.round(WORK_ORDERS.reduce((s, w) => s + w.progress, 0) / WORK_ORDERS.length);
+  const statusDisplay = liveStatusDisplay ?? mo.status;
 
   const renderTabPanel = (tab: string) => {
     switch (tab) {
@@ -211,13 +245,13 @@ export function MakeManufacturingOrderDetail() {
                     {
                       key: 'status' as const,
                       label: 'Status',
-                      value: mo.status,
+                      value: statusDisplay,
                       hint: 'Production state',
                     },
                     {
                       key: 'priority' as const,
                       label: 'Priority',
-                      value: mo.status === 'Draft' ? 'Scheduled' : 'High',
+                      value: statusDisplay === 'Draft' ? 'Scheduled' : 'High',
                       hint: 'Floor priority',
                     },
                     {
@@ -290,7 +324,7 @@ export function MakeManufacturingOrderDetail() {
                   <div>
                     <Label className="text-xs text-[var(--neutral-500)]">Status</Label>
                     <div className="mt-1 h-12 flex items-center">
-                      <StatusBadge status={mo.status === 'In Progress' ? 'progress' : mo.status === 'Done' ? 'completed' : mo.status === 'Confirmed' ? 'confirmed' : 'draft'} />
+                      <StatusBadge status={statusDisplay === 'In Progress' ? 'progress' : statusDisplay === 'Done' ? 'completed' : statusDisplay === 'Confirmed' ? 'confirmed' : 'draft'} />
                     </div>
                   </div>
                 </div>
@@ -824,7 +858,7 @@ export function MakeManufacturingOrderDetail() {
         }
         metaRow={
           <>
-            <StatusBadge status={mo.status === 'In Progress' ? 'progress' : mo.status === 'Done' ? 'completed' : mo.status === 'Confirmed' ? 'confirmed' : 'draft'} />
+            <StatusBadge status={statusDisplay === 'In Progress' ? 'progress' : statusDisplay === 'Done' ? 'completed' : statusDisplay === 'Confirmed' ? 'confirmed' : 'draft'} />
             <Badge variant="outline" className="rounded-full border-[var(--border)] text-xs tabular-nums" asChild>
               <Link to={`/plan/jobs/${mo.jobNumber.replace('JOB-', '')}`}>{mo.jobNumber}</Link>
             </Badge>
@@ -848,6 +882,16 @@ export function MakeManufacturingOrderDetail() {
               Print Traveler
             </Button>
             <ChatterButton entity={{ type: 'manufacturing_order', id: id ?? 'mo-001' }} />
+            {canRelease && (
+              <Button
+                className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]"
+                onClick={handleRelease}
+                disabled={releasing}
+              >
+                <Rocket className="mr-2 h-4 w-4" />
+                {releasing ? 'Releasing…' : 'Release to floor'}
+              </Button>
+            )}
             <Button className="h-12 bg-[var(--mw-yellow-400)] text-primary-foreground hover:bg-[var(--mw-yellow-500)]">
               <Plus className="mr-2 h-4 w-4" />
               Add Work Order
@@ -857,7 +901,19 @@ export function MakeManufacturingOrderDetail() {
         tabs={tabConfig}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        renderTabPanel={renderTabPanel}
+        renderTabPanel={(tab) => (
+          <>
+            {releaseFailures.length > 0 && (
+              <div className="mb-6">
+                <GateBanner
+                  failures={releaseFailures}
+                  title="Release blocked — Plan → Make gate (G2)"
+                />
+              </div>
+            )}
+            {renderTabPanel(tab)}
+          </>
+        )}
       />
       {selectedWorkOrder && (
         <WorkOrderFullScreen
