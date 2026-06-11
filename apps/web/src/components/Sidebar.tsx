@@ -322,6 +322,7 @@ export const menuConfig: MenuItem[] = [
         heading: 'Receivables & Payables',
         items: [
           { label: 'Invoices', path: '/book/invoices' },
+          { label: 'Credit Notes', path: '/book/credit-notes' },
           { label: 'Expenses', path: '/book/expenses' },
           { label: 'Purchase Orders', path: '/book/purchases' },
         ],

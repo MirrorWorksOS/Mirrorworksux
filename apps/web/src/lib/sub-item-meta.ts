@@ -177,6 +177,7 @@ export const SUB_ITEM_META: Record<string, SubItemMeta> = {
   '/book': { icon: LayoutDashboard, description: 'Revenue, AR ageing & approvals' },
   '/book/budget': { icon: PiggyBank, description: 'Annual budget vs actual variance' },
   '/book/invoices': { icon: Receipt, description: 'Invoice ageing & payment status' },
+  '/book/credit-notes': { icon: Receipt, description: 'Credits owed back (VO descopes, RMA)' },
   '/book/expenses': { icon: CreditCard, description: 'Expense kanban (Submitted → Paid)' },
   '/book/purchases': { icon: Wallet, description: 'PO commitments & budget allocation' },
   '/book/job-costs': { icon: Coins, description: 'Job profitability & margin' },

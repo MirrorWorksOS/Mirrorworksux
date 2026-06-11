@@ -93,6 +93,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/book': 'Book',
   '/book/budget': 'Budget',
   '/book/invoices': 'Invoices',
+  '/book/credit-notes': 'Credit Notes',
   '/book/expenses': 'Expenses',
   '/book/purchases': 'Purchase Orders',
   '/book/job-costs': 'Job Costs',

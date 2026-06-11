@@ -310,10 +310,15 @@ export function OrderJourneyPage() {
         }
         const r = await workflowService.approveVariation(pending.id, 'emp-001');
         toast.success(
-          r.deltaJob
-            ? `B5 — Approved ${r.vo.voNumber}; delta Job ${r.deltaJob.jobNumber} spawned.`
-            : `B5 — Approved ${r.vo.voNumber} (descope; no delta job).`,
+          r.job
+            ? `B5 — Approved ${r.vo.voNumber}; Job ${r.job.jobNumber} amended in place (${r.amendedMos.length} MO${r.amendedMos.length === 1 ? '' : 's'} flagged for re-schedule).`
+            : `B5 — Approved ${r.vo.voNumber}; order re-priced (no live Job to amend).`,
         );
+        if (r.creditNote) {
+          toast.warning(
+            `B5 — descope exceeded the uninvoiced remainder; draft Credit Note ${r.creditNote.creditNoteNumber} raised for $${r.creditNote.amount.toLocaleString()}.`,
+          );
+        }
         refresh();
       },
     },
