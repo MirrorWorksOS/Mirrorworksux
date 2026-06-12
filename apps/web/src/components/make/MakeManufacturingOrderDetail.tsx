@@ -31,6 +31,10 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/components/ui/utils';
 import { IconWell } from '@/components/shared/icons/IconWell';
 import { manufacturingOrders } from '@/services';
+import {
+  materialConsumption as mockMaterialConsumption,
+  workOrders as mockWorkOrders,
+} from '@/services';
 import { MaterialConsumption } from '@/components/make/MaterialConsumption';
 import { useTravellerStore } from '@/store/travellerStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -911,6 +915,11 @@ export function MakeManufacturingOrderDetail() {
                 />
               </div>
             )}
+            {tab === 'overview' && !isNew && id && (
+              <div className="mb-6">
+                <MoMaterialsLive moId={id} />
+              </div>
+            )}
             {renderTabPanel(tab)}
           </>
         )}
@@ -1051,5 +1060,177 @@ function ManufacturingOrderCreateForm() {
         </div>
       </Card>
     </PageShell>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Live materials (decision 14)                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * MoMaterialsLive — planned vs consumed material for THIS MO, backed by
+ * the live mock store (decision 14): backflush fires at first WO
+ * completion; ad-hoc issues/returns adjust the MO only (never the
+ * master BoM — "flag for engineering" raises an ECO suggestion);
+ * issues beyond book stock go negative and flag a cycle count.
+ */
+function MoMaterialsLive({ moId }: { moId: string }) {
+  const [, force] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [fMaterial, setFMaterial] = useState('');
+  const [fQty, setFQty] = useState('1');
+  const [fUom, setFUom] = useState('pcs');
+  const [fFlag, setFFlag] = useState(false);
+  const lines = mockMaterialConsumption.filter((l) => l.manufacturingOrderId === moId);
+  const nextWo = mockWorkOrders.find(
+    (w) => w.manufacturingOrderId === moId && w.status !== 'completed',
+  );
+  const anyDone = mockWorkOrders.some(
+    (w) => w.manufacturingOrderId === moId && w.status === 'completed',
+  );
+
+  const backflush = async () => {
+    if (!nextWo || busy) return;
+    setBusy(true);
+    try {
+      const r = await workflowService.completeWorkOrder(nextWo.id);
+      toast.success(
+        `${r.workOrder.woNumber} complete` +
+          (r.consumed.length > 0 ? ` — backflushed ${r.consumed.length} material line(s)` : ''),
+      );
+      if (r.countFlagged) {
+        toast.warning('Book stock went negative — product flagged for a cycle count.');
+      }
+      force((n) => n + 1);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Completion failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const submitIssue = async () => {
+    const qty = Number(fQty);
+    if (!fMaterial.trim() || !qty) {
+      toast.error('Material and a non-zero quantity are required (negative = return).');
+      return;
+    }
+    setBusy(true);
+    try {
+      const r = await workflowService.recordUnplannedIssue({
+        manufacturingOrderId: moId,
+        material: fMaterial.trim(),
+        qty,
+        uom: fUom.trim() || 'pcs',
+        flagForEngineering: fFlag,
+        by: 'emp-001',
+      });
+      toast.success(
+        `${qty > 0 ? 'Issued' : 'Returned'} ${Math.abs(qty)} ${r.line.uom} ${r.line.material}` +
+          (r.eco ? ' — flagged for engineering review' : ''),
+      );
+      if (r.countFlagged) {
+        toast.warning('Book stock went negative — product flagged for a cycle count.');
+      }
+      setFormOpen(false);
+      setFMaterial('');
+      setFQty('1');
+      setFFlag(false);
+      force((n) => n + 1);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Issue failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card className="p-6 space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-medium text-foreground">Materials — live (planned vs consumed)</h3>
+          <p className="text-xs text-[var(--neutral-500)]">
+            Backflush at WO completion (decision 14). Adjustments hit this MO only — the master
+            BoM changes via a new revision, never from the floor.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {nextWo && (
+            <Button variant="outline" size="sm" disabled={busy} onClick={() => void backflush()}>
+              Complete {nextWo.woNumber}
+              {!anyDone && ' (backflush)'}
+            </Button>
+          )}
+          <Button size="sm" disabled={busy} onClick={() => setFormOpen((o) => !o)}>
+            <Plus className="mr-1 h-3.5 w-3.5" /> Add / return material
+          </Button>
+        </div>
+      </div>
+
+      {lines.length === 0 ? (
+        <p className="text-sm text-[var(--neutral-500)]">No material lines on this MO yet.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead className="text-left text-xs text-[var(--neutral-500)]">
+            <tr>
+              <th className="py-1.5">Material</th>
+              <th className="py-1.5 text-right">Planned</th>
+              <th className="py-1.5 text-right">Consumed</th>
+              <th className="py-1.5 text-right">Variance</th>
+              <th className="py-1.5">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lines.map((l) => (
+              <tr key={l.id} className="border-t border-[var(--border)]">
+                <td className="py-1.5">{l.material}</td>
+                <td className="py-1.5 text-right tabular-nums">{l.plannedQty} {l.uom}</td>
+                <td className="py-1.5 text-right tabular-nums">{l.consumedQty} {l.uom}</td>
+                <td className="py-1.5 text-right">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'text-[10px] tabular-nums',
+                      l.status === 'over' && 'border-[var(--mw-error)] text-[var(--mw-error)]',
+                      l.status === 'under' && 'border-[var(--mw-amber)] text-[var(--mw-amber)]',
+                    )}
+                  >
+                    {l.variance > 0 ? `+${l.variance}` : l.variance}
+                  </Badge>
+                </td>
+                <td className="py-1.5">
+                  <Badge variant="outline" className="text-[10px]">{l.source ?? 'bom'}</Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {formOpen && (
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--neutral-50)] p-4 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+          <div className="sm:col-span-2">
+            <Label className="text-xs text-[var(--neutral-500)]">Material</Label>
+            <Input className="mt-1 h-10" value={fMaterial} onChange={(e) => setFMaterial(e.target.value)} placeholder="e.g. Stainless 304 5mm Plate" />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">Qty (negative = return)</Label>
+            <Input className="mt-1 h-10 tabular-nums" type="number" value={fQty} onChange={(e) => setFQty(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-xs text-[var(--neutral-500)]">UoM</Label>
+            <Input className="mt-1 h-10" value={fUom} onChange={(e) => setFUom(e.target.value)} />
+          </div>
+          <label className="sm:col-span-3 flex items-center gap-2 text-sm text-[var(--neutral-600)]">
+            <input type="checkbox" checked={fFlag} onChange={(e) => setFFlag(e.target.checked)} />
+            Flag for engineering review (suggests a master-BoM revision — ECO)
+          </label>
+          <Button className="h-10" disabled={busy} onClick={() => void submitIssue()}>
+            Record
+          </Button>
+        </div>
+      )}
+    </Card>
   );
 }

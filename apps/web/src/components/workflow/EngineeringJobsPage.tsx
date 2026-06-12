@@ -337,6 +337,55 @@ export function EngineeringJobsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <EcoSuggestionQueue />
     </div>
+  );
+}
+
+/**
+ * Engineering review queue (decision 14) — ECO suggestions raised from
+ * floor material adjustments. The master BoM only changes via a NEW
+ * REVISION through the publish gate; this queue is the prompt.
+ */
+function EcoSuggestionQueue() {
+  const [, force] = useState(0);
+  const open = mock.ecoSuggestions.filter((e) => e.status === 'open');
+  return (
+    <Card className="p-4">
+      <div className="mb-2 flex items-center gap-2 text-sm font-medium">
+        <FileBox className="h-4 w-4" /> Engineering review queue — ECO suggestions
+        <Badge variant="outline" className="text-[10px]">{open.length} open</Badge>
+      </div>
+      {mock.ecoSuggestions.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          None yet. Floor material adjustments with "flag for engineering review" land here;
+          accepting one means cutting a new BoM revision through the publish gate above.
+        </p>
+      ) : (
+        <ul className="space-y-1.5 text-sm">
+          {mock.ecoSuggestions.slice().reverse().map((e) => (
+            <li key={e.id} className="flex items-center justify-between gap-2">
+              <span className={e.status === 'reviewed' ? 'text-muted-foreground line-through' : ''}>
+                {e.note} <span className="text-xs text-muted-foreground">· {e.raisedBy}</span>
+              </span>
+              {e.status === 'open' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    e.status = 'reviewed';
+                    toast.success('Marked reviewed — cut a new BoM revision if the change should stick.');
+                    force((n) => n + 1);
+                  }}
+                >
+                  Mark reviewed
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

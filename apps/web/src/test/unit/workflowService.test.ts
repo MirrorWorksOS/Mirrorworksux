@@ -22,8 +22,10 @@ import * as mock from '@/services/mock';
 import type {
   Customer,
   GoodsReceipt,
+  InventoryRecord,
   Job,
   ManufacturingOrder,
+  MaterialConsumptionLine,
   PaymentTerm,
   PurchaseOrder,
   SalesOrder,
@@ -1527,5 +1529,102 @@ describe('Credit Notes — raiseCreditNote / issueCreditNote', () => {
     await expect(
       workflowService.raiseCreditNote({ customerId: 'cust-001', amount: 0, reason: 'x' }),
     ).rejects.toThrow(/greater than zero/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// Decision 14 — material consumption during manufacture
+// ─────────────────────────────────────────────────────────────────────
+
+/** Seed a throwaway MO + WOs + material lines + inventory for D14 tests. */
+const seedConsumptionMo = (suffix: string, onHand: number) => {
+  const { mo } = seedJobWithMo(`d14-${suffix}`);
+  const wo1: WorkOrder = {
+    id: `d14-wo1-${suffix}`, woNumber: `WO-D14-${suffix}-1`, manufacturingOrderId: mo.id,
+    machineId: 'mach-001', machineName: 'Laser Cutter #1', operation: 'Cut', sequence: 1,
+    estimatedMinutes: 60, actualMinutes: 0, status: 'pending',
+  };
+  const wo2: WorkOrder = {
+    id: `d14-wo2-${suffix}`, woNumber: `WO-D14-${suffix}-2`, manufacturingOrderId: mo.id,
+    machineId: 'mach-002', machineName: 'Press Brake #2', operation: 'Fold', sequence: 2,
+    estimatedMinutes: 30, actualMinutes: 0, status: 'pending',
+  };
+  mock.workOrders.push(wo1, wo2);
+  const inv: InventoryRecord = {
+    id: `d14-inv-${suffix}`, productId: `d14-prod-${suffix}`, locationId: 'loc-raw',
+    qtyOnHand: onHand, qtyReserved: 0,
+  };
+  mock.inventoryRecords.push(inv);
+  const line: MaterialConsumptionLine = {
+    id: `d14-mc-${suffix}`, material: `D14 plate ${suffix}`, plannedQty: 6, consumedQty: 0,
+    uom: 'sheets', variance: 0, status: 'ok', manufacturingOrderId: mo.id,
+    productId: `d14-prod-${suffix}`, source: 'bom',
+  };
+  mock.materialConsumption.push(line);
+  return { mo, wo1, wo2, inv, line };
+};
+
+describe('D14 — backflush at WO completion', () => {
+  it('backflushes planned material on the FIRST WO completion only', async () => {
+    const { wo1, wo2, inv, line, mo } = seedConsumptionMo('a', 10);
+    const r1 = await workflowService.completeWorkOrder(wo1.id);
+    expect(r1.workOrder.status).toBe('completed');
+    expect(r1.consumed.map((l) => l.id)).toContain(line.id);
+    expect(line.consumedQty).toBe(6);
+    expect(line.status).toBe('ok');
+    expect(inv.qtyOnHand).toBe(4);
+    expect(r1.countFlagged).toBe(false);
+    expect(
+      mock.stockMovements.some((m) => m.reason === 'consume' && m.refId === mo.id),
+    ).toBe(true);
+    const r2 = await workflowService.completeWorkOrder(wo2.id);
+    expect(r2.consumed).toEqual([]);
+    expect(line.consumedQty).toBe(6);
+  });
+
+  it('applies qty overrides and flags a cycle count when book stock goes negative', async () => {
+    const { wo1, inv, line } = seedConsumptionMo('b', 5);
+    const r = await workflowService.completeWorkOrder(wo1.id, [{ lineId: line.id, qty: 8 }]);
+    expect(line.consumedQty).toBe(8);
+    expect(line.status).toBe('over');
+    expect(line.variance).toBe(2);
+    expect(inv.qtyOnHand).toBe(-3);
+    expect(inv.countRequested).toBe(true);
+    expect(r.countFlagged).toBe(true);
+  });
+});
+
+describe('D14 — unplanned floor issues and returns', () => {
+  it('issues unplanned material against the MO and supports returns', async () => {
+    const { mo } = seedConsumptionMo('c', 10);
+    const issued = await workflowService.recordUnplannedIssue({
+      manufacturingOrderId: mo.id, material: 'Extra bar', qty: 4, uom: 'pcs', by: 'emp-001',
+    });
+    expect(issued.line.source).toBe('unplanned');
+    expect(issued.line.consumedQty).toBe(4);
+    expect(issued.line.status).toBe('over');
+    const returned = await workflowService.recordUnplannedIssue({
+      manufacturingOrderId: mo.id, material: 'Extra bar', qty: -2, uom: 'pcs', by: 'emp-001',
+    });
+    expect(returned.line.consumedQty).toBe(2);
+    await expect(
+      workflowService.recordUnplannedIssue({
+        manufacturingOrderId: mo.id, material: 'Extra bar', qty: -5, uom: 'pcs', by: 'emp-001',
+      }),
+    ).rejects.toThrow(/return more/i);
+  });
+
+  it('flag-for-engineering raises an ECO suggestion — the master BoM is untouched', async () => {
+    const { mo } = seedConsumptionMo('d', 10);
+    const bomCountBefore = mock.billsOfMaterials.length;
+    const r = await workflowService.recordUnplannedIssue({
+      manufacturingOrderId: mo.id, material: 'Heavier gusset', qty: 2, uom: 'pcs',
+      flagForEngineering: true, by: 'emp-001',
+    });
+    expect(r.eco).toBeTruthy();
+    expect(r.eco?.status).toBe('open');
+    expect(r.eco?.moNumber).toBe(mo.moNumber);
+    expect(mock.ecoSuggestions.some((e) => e.id === r.eco?.id)).toBe(true);
+    expect(mock.billsOfMaterials.length).toBe(bomCountBefore);
   });
 });

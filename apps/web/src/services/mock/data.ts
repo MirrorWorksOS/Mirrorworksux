@@ -1738,11 +1738,12 @@ export const batchLots: BatchLot[] = [
 ];
 
 export const materialConsumption: MaterialConsumptionLine[] = [
-  { id: 'mc-001', material: 'Mild Steel 3mm Sheet', plannedQty: 10, consumedQty: 8, uom: 'sheets', variance: -2, status: 'under' },
-  { id: 'mc-002', material: 'Welding Wire MIG 1.0mm', plannedQty: 5, consumedQty: 6, uom: 'kg', variance: 1, status: 'over' },
-  { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok' },
-  { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok' },
-  { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok' },
+  // mo-005 lines are UNCONSUMED — the D14 backflush fires on its first WO completion.
+  { id: 'mc-001', material: 'Stainless 304 5mm Plate', plannedQty: 10, consumedQty: 0, uom: 'sheets', variance: 0, status: 'ok', manufacturingOrderId: 'mo-005', productId: 'prod-002', source: 'bom' },
+  { id: 'mc-002', material: 'Welding Wire MIG 1.0mm', plannedQty: 5, consumedQty: 0, uom: 'kg', variance: 0, status: 'ok', manufacturingOrderId: 'mo-005', source: 'bom' },
+  { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
+  { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
+  { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
 ];
 
 export const scrapRecords: ScrapRecord[] = [

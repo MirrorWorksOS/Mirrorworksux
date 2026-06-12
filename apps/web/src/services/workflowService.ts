@@ -25,12 +25,14 @@ import type {
   CreditNote,
   CustomerReturn,
   CustomerReturnDisposition,
+  EcoSuggestion,
   GateFailureDetail,
   GoodsReceipt,
   InventoryRecord,
   Job,
   JobSource,
   ManufacturingOrder,
+  MaterialConsumptionLine,
   MaterialDemand,
   PaymentMilestone,
   PaymentMilestoneEvent,
@@ -1121,6 +1123,144 @@ export const workflowService = {
       job.status = 'in_progress';
     }
     return mo;
+  },
+
+  // ── D14: material consumption during manufacture ───────────────
+  /**
+   * Recompute a consumption line's variance/status from its quantities.
+   */
+  _settleConsumptionLine(line: MaterialConsumptionLine): void {
+    line.variance = line.consumedQty - line.plannedQty;
+    line.status = line.variance > 0 ? 'over' : line.variance < 0 ? 'under' : 'ok';
+  },
+
+  /**
+   * Decrement raw stock for a consumption movement (decision 14).
+   * Negative book stock is ALLOWED — the floor's record is the truth;
+   * going negative flags the product for a cycle count so the
+   * stocktake flow (D13) heals the book.
+   */
+  _consumeStock(productId: string | undefined, qty: number, refId: string): boolean {
+    if (!productId || qty === 0) return false;
+    const inv =
+      mock.inventoryRecords.find((i) => i.productId === productId && i.locationId === 'loc-raw') ??
+      mock.inventoryRecords.find((i) => i.productId === productId);
+    if (!inv) return false;
+    inv.qtyOnHand -= qty;
+    const wentNegative = inv.qtyOnHand - inv.qtyReserved < 0;
+    if (wentNegative && qty > 0) inv.countRequested = true;
+    mock.stockMovements.push({
+      id: newId('sm'),
+      productId,
+      fromLocationId: qty > 0 ? inv.locationId : undefined,
+      toLocationId: qty < 0 ? inv.locationId : undefined,
+      qty: Math.abs(qty),
+      reason: 'consume',
+      at: new Date().toISOString(),
+      refType: 'mo',
+      refId,
+    });
+    return wentNegative;
+  },
+
+  /**
+   * Complete a Work Order (decision 14 — backflush at WO completion).
+   * The FIRST completed WO of an MO backflushes the MO's planned
+   * material lines (the cut step consumes the sheet); quantities are
+   * editable via `overrides` and the delta lands as variance. Raw
+   * material NEVER consumes at shipment — dispatch only decrements
+   * finished goods.
+   */
+  async completeWorkOrder(
+    workOrderId: string,
+    overrides?: Array<{ lineId: string; qty: number }>,
+  ): Promise<{ workOrder: WorkOrder; consumed: MaterialConsumptionLine[]; countFlagged: boolean }> {
+    await delay();
+    const wo = mock.workOrders.find((w) => w.id === workOrderId);
+    if (!wo) throw new Error(`Work Order ${workOrderId} not found.`);
+    if (wo.status === 'completed') throw new Error(`${wo.woNumber} is already complete.`);
+    const siblingDone = mock.workOrders.some(
+      (w) => w.manufacturingOrderId === wo.manufacturingOrderId && w.status === 'completed',
+    );
+    wo.status = 'completed';
+    wo.completedAt = new Date().toISOString();
+    const consumed: MaterialConsumptionLine[] = [];
+    let countFlagged = false;
+    if (!siblingDone) {
+      const lines = mock.materialConsumption.filter(
+        (l) => l.manufacturingOrderId === wo.manufacturingOrderId && l.consumedQty === 0,
+      );
+      for (const line of lines) {
+        const qty = overrides?.find((o) => o.lineId === line.id)?.qty ?? line.plannedQty;
+        line.consumedQty = qty;
+        this._settleConsumptionLine(line);
+        if (this._consumeStock(line.productId, qty, wo.manufacturingOrderId)) countFlagged = true;
+        consumed.push(line);
+      }
+    }
+    return { workOrder: wo, consumed, countFlagged };
+  },
+
+  /**
+   * Ad-hoc floor issue (qty > 0) or return (qty < 0) against a live MO
+   * (decision 14). Adjusts the MO's material lines ONLY — the master
+   * BoM never mutates from the floor; `flagForEngineering` raises an
+   * {@link EcoSuggestion} breadcrumb instead, and master changes ride
+   * a new BoM revision through the publish gate.
+   */
+  async recordUnplannedIssue(input: {
+    manufacturingOrderId: string;
+    material: string;
+    qty: number;
+    uom: string;
+    productId?: string;
+    flagForEngineering?: boolean;
+    by: string;
+  }): Promise<{ line: MaterialConsumptionLine; eco?: EcoSuggestion; countFlagged: boolean }> {
+    await delay();
+    const mo = mock.manufacturingOrders.find((m) => m.id === input.manufacturingOrderId);
+    if (!mo) throw new Error(`Manufacturing Order ${input.manufacturingOrderId} not found.`);
+    if (input.qty === 0) throw new Error('Quantity must be non-zero (negative = return).');
+    let line = mock.materialConsumption.find(
+      (l) => l.manufacturingOrderId === mo.id && l.material === input.material,
+    );
+    if (!line) {
+      line = {
+        id: newId('mc'),
+        material: input.material,
+        plannedQty: 0,
+        consumedQty: 0,
+        uom: input.uom,
+        variance: 0,
+        status: 'ok',
+        manufacturingOrderId: mo.id,
+        productId: input.productId,
+        source: 'unplanned',
+      };
+      mock.materialConsumption.push(line);
+    }
+    if (line.consumedQty + input.qty < 0) {
+      throw new Error(`Cannot return more than the ${line.consumedQty} ${line.uom} consumed.`);
+    }
+    line.consumedQty += input.qty;
+    this._settleConsumptionLine(line);
+    const countFlagged = this._consumeStock(line.productId ?? input.productId, input.qty, mo.id);
+    let eco: EcoSuggestion | undefined;
+    if (input.flagForEngineering) {
+      eco = {
+        id: newId('eco'),
+        manufacturingOrderId: mo.id,
+        moNumber: mo.moNumber,
+        jobId: mo.jobId,
+        productId: mo.productId,
+        note: `${input.qty > 0 ? '+' : ''}${input.qty} ${input.uom} ${input.material} vs BoM on ${mo.moNumber} — review master BoM`,
+        raisedBy: input.by,
+        status: 'open',
+        createdAt: new Date().toISOString(),
+      };
+      mock.ecoSuggestions.push(eco);
+    }
+    return { line, eco, countFlagged };
   },
 
   // ── G5 action: accept a Goods Receipt ──────────────────────────

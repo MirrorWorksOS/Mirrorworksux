@@ -1398,6 +1398,30 @@ export interface MaterialConsumptionLine {
   uom: string;
   variance: number;
   status: 'ok' | 'over' | 'under';
+  /** MO this line belongs to (decision 14 — consumption is per-MO). */
+  manufacturingOrderId?: string;
+  /** Stocked product behind the material, when resolvable — drives inventory decrements. */
+  productId?: string;
+  /** 'bom' = planned from the BoM; 'unplanned' = floor issue/return during manufacture. */
+  source?: 'bom' | 'unplanned';
+}
+
+/**
+ * Engineering change suggestion (decision 14) — raised from the floor
+ * when an MO-level material adjustment suggests the master BoM is
+ * wrong. The master BoM only ever changes via a NEW REVISION through
+ * the publish gate; this is the breadcrumb that prompts engineering.
+ */
+export interface EcoSuggestion {
+  id: string;
+  manufacturingOrderId: string;
+  moNumber: string;
+  jobId?: string;
+  productId?: string;
+  note: string;
+  raisedBy: string;
+  status: 'open' | 'reviewed';
+  createdAt: string;
 }
 
 /** Scrap record for heat map analysis */
@@ -1994,6 +2018,11 @@ export interface InventoryRecord {
   locationId: string;
   qtyOnHand: number;
   qtyReserved: number;
+  /**
+   * Cycle-count flag (decision 14): set when a floor issue drove book
+   * stock negative — the book was wrong; the stocktake flow heals it.
+   */
+  countRequested?: boolean;
 }
 
 export interface StockLocation {

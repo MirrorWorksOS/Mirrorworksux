@@ -254,3 +254,32 @@ The spine is the document handoff chain, 7 stages:
 - Access roles are exactly: **admin, lead, team** — no Manager/Supervisor/Operator role names.
 - On brand-yellow backgrounds, foreground text/icons must be dark, never white.
 - "Alliance Metal" is approved demo fixture data.
+
+### 14. Material consumption & mid-manufacture BoM adjustments (added 2026-06-12)
+
+Grilled against industry practice (Odoo per-operation backflush, JobBOSS
+issue-to-job, Katana/MRPeasy MO-completion deduction — none consume at
+shipment):
+
+- **Raw material consumes during MAKE, never at shipment** — shipment only
+  decrements finished goods (the `pick` movement). Consuming at dispatch would
+  fake WIP (labour-only), leave phantom raw stock that MRP/G2 trust, and make
+  scrap uncostable.
+- **Backflush at WO completion**: the FIRST completed WO of an MO backflushes
+  the MO's planned material lines (the cut step consumes the sheet — MVP
+  simplification; per-operation material assignment is a follow-up), with
+  quantities editable at completion. Delta = variance on
+  `MaterialConsumptionLine` (now carries `manufacturingOrderId`, `productId`,
+  `source: 'bom' | 'unplanned'`).
+- **Ad-hoc issue/return any time** via `recordUnplannedIssue` (negative qty =
+  return) — adjusts the MO's lines ONLY. **The master BoM never mutates from
+  the floor**; "flag for engineering" raises an `EcoSuggestion` (queue on
+  /plan/engineering) and master changes ride a new BoM revision through the
+  publish gate (decision 7).
+- **Short issues are allowed**: book stock may go negative; the inventory
+  record gets `countRequested: true` so the stocktake flow (decision 13) heals
+  the book. Floor truth wins; blocking just stops people recording.
+
+Implemented in PR #44: `completeWorkOrder` (backflush + overrides),
+`recordUnplannedIssue`, `EcoSuggestion` entity + engineering queue, live
+materials card on the MO detail, `InventoryRecord.countRequested`.

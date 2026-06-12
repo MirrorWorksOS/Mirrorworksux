@@ -13,6 +13,7 @@ import type {
   CreditNote,
   Customer,
   CustomerReturn,
+  EcoSuggestion,
   InventoryRecord,
   PickList,
   ProductReorderRule,
@@ -124,6 +125,8 @@ export const variationOrders: VariationOrder[] = [];
 export const creditNotes: CreditNote[] = [];
 export const concessionRecords: ConcessionRecord[] = [];
 export const supplierReturns: SupplierReturn[] = [];
+// ── ECO suggestions (decision 14 — floor flags master-BoM doubts) ──
+export const ecoSuggestions: EcoSuggestion[] = [];
 export const subcontractDispatches: SubcontractDispatch[] = [];
 
 // ── Customer returns (decision D13 minimal RMA) ────────────────────
