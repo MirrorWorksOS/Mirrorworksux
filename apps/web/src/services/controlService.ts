@@ -47,6 +47,31 @@ export const controlService = {
     return mock.products.find((p) => p.id === id);
   },
 
+  /** Product master rows with BOM presence joined in (Control → Products). */
+  async getProductCatalog(): Promise<(Product & { hasBom: boolean })[]> {
+    await delay();
+    const bomProductIds = new Set(mock.billsOfMaterials.map((b) => b.productId));
+    return mock.products.map((p) => ({ ...p, hasBom: bomProductIds.has(p.id) }));
+  },
+
+  async createProduct(input: Omit<Product, 'id'>): Promise<Product> {
+    await delay();
+    const product: Product = {
+      ...input,
+      id: `prod-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+    };
+    mock.products.push(product);
+    return product;
+  },
+
+  async updateProduct(id: string, patch: Partial<Omit<Product, 'id'>>): Promise<Product> {
+    await delay();
+    const product = mock.products.find((p) => p.id === id);
+    if (!product) throw new Error(`Product ${id} not found`);
+    Object.assign(product, patch);
+    return product;
+  },
+
   // ── Machines ────────────────────────────────────────────────────
   async getMachines(): Promise<Machine[]> {
     await delay();

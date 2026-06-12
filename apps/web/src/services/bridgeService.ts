@@ -26,6 +26,7 @@ import type {
   TeamSuggestion,
   PreviewRecord,
 } from '@/types/bridge';
+import { matchHeaderToField } from '@/lib/round-trip/mapping';
 
 const USE_MOCK = true;
 
@@ -46,6 +47,9 @@ const uid = () => crypto.randomUUID();
 function detectEntity(name: string): string {
   const n = name.toLowerCase();
   if (n.includes('customer') || n.includes('client')) return 'customers';
+  // Before products/jobs: "stock-on-hand.csv" or "opening-balances.xlsx"
+  // would otherwise misroute via the looser keyword matches below.
+  if (n.includes('inventory') || n.includes('stock') || n.includes('opening') || n.includes('balance')) return 'inventory';
   if (n.includes('product') || n.includes('part')) return 'products';
   if (n.includes('machine') || n.includes('equipment')) return 'machines';
   if (n.includes('employee') || n.includes('staff') || n.includes('team')) return 'employees';
@@ -63,6 +67,7 @@ const ENTITY_HEADERS: Record<string, string[]> = {
   suppliers: ['Company', 'Contact', 'Email', 'Phone', 'Category', 'Payment Terms', 'Rating'],
   jobs: ['Job Number', 'Customer', 'Description', 'Due Date', 'Status', 'Priority', 'Estimated Hours'],
   invoices: ['Invoice #', 'Customer', 'Date', 'Due Date', 'Amount', 'Status', 'PO Number'],
+  inventory: ['SKU', 'Location Code', 'Quantity', 'Unit Cost'],
   unknown: ['Column A', 'Column B', 'Column C', 'Column D'],
 };
 
@@ -81,6 +86,11 @@ const ENTITY_SAMPLE_DATA: Record<string, Record<string, string>[]> = {
     { 'First Name': 'Sarah', 'Last Name': 'Chen', 'Email': 'sarah@company.com', 'Role': 'Sales Manager', 'Department': 'Sales', 'Start Date': '2019-03-15', 'Hourly Rate': '55.00' },
     { 'First Name': 'Mike', 'Last Name': 'Torres', 'Email': 'mike@company.com', 'Role': 'CNC Operator', 'Department': 'Production', 'Start Date': '2020-06-01', 'Hourly Rate': '42.00' },
     { 'First Name': 'Jane', 'Last Name': 'Park', 'Email': 'jane@company.com', 'Role': 'Quality Inspector', 'Department': 'QC', 'Start Date': '2021-01-10', 'Hourly Rate': '38.00' },
+  ],
+  inventory: [
+    { 'SKU': 'BKT-001', 'Location Code': 'RAW', 'Quantity': '350', 'Unit Cost': '9.80' },
+    { 'SKU': 'PLT-042', 'Location Code': 'RAW', 'Quantity': '64', 'Unit Cost': '41.00' },
+    { 'SKU': 'CTR-008', 'Location Code': 'FG', 'Quantity': '240', 'Unit Cost': '21.50' },
   ],
   unknown: [
     { 'Column A': 'Value 1', 'Column B': 'Value 2', 'Column C': 'Value 3', 'Column D': 'Value 4' },
@@ -204,6 +214,12 @@ const TARGET_FIELDS: Record<string, { column: string; label: string; description
     { column: 'job_number', label: 'Job number', description: 'Linked job reference', required: false },
     { column: 'account_code', label: 'Account code', description: 'GL account code', required: false },
   ],
+  inventory: [
+    { column: 'sku', label: 'SKU', description: 'Product stock-keeping unit', required: true },
+    { column: 'location_code', label: 'Location code', description: 'Stock bin code (defaults to finished goods)', required: false },
+    { column: 'qty', label: 'Quantity', description: 'Opening on-hand balance', required: true },
+    { column: 'unit_cost', label: 'Unit cost', description: 'Standard cost per unit', required: false },
+  ],
 };
 
 function generateMappings(headers: string[], entityType: string): FieldMapping[] {
@@ -211,11 +227,9 @@ function generateMappings(headers: string[], entityType: string): FieldMapping[]
   const samples = (ENTITY_SAMPLE_DATA[entityType] || ENTITY_SAMPLE_DATA.unknown);
 
   return headers.map((header, index) => {
-    const norm = header.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const match = fields.find((f) => {
-      const ft = f.label.toLowerCase().replace(/[^a-z0-9]/g, '');
-      return norm.includes(ft) || ft.includes(norm) || norm === f.column.replace(/_/g, '');
-    });
+    // Shared fuzzy matcher — same heuristic the data round-trip uses
+    // (src/lib/round-trip/mapping.ts).
+    const match = matchHeaderToField(header, fields);
 
     const confidence = match ? parseFloat((0.7 + Math.random() * 0.28).toFixed(2)) : null;
 
@@ -334,7 +348,7 @@ export const bridgeService = {
   async pollProgress(_sessionId: string, step: number): Promise<ImportProgress | null> {
     if (USE_MOCK) {
       await delay(800);
-      const entities = ['customers', 'products', 'employees'];
+      const entities = ['customers', 'products', 'employees', 'inventory'];
       if (step >= entities.length) return null;
       return { entity: entities[step], processed: (step + 1) * 35, total: 100 };
     }
@@ -345,8 +359,8 @@ export const bridgeService = {
     if (USE_MOCK) {
       await delay(400);
       return {
-        created: { customers: 42, products: 87, employees: 12 },
-        flagged: { customers: 3, products: 5 },
+        created: { customers: 42, products: 87, employees: 12, inventory: 64 },
+        flagged: { customers: 3, products: 5, inventory: 2 },
         skipped: { customers: 1 },
         errors: {},
       };
