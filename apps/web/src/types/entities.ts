@@ -73,6 +73,12 @@ export interface Customer {
   portalAccess?: boolean;
   /** Email-notification opt-ins per template kind. */
   notificationPrefs?: NotificationPreferences;
+  /**
+   * Customer-level default for {@link SalesOrder.allowPartialFulfilment}
+   * (decision D6). Partial shipment is allowed by default; `false` means
+   * this customer's orders must ship complete unless overridden per SO.
+   */
+  allowPartialFulfilment?: boolean;
 }
 
 /** Tag chip — visual badge on customers/opportunities, also used for filtering. */
@@ -375,6 +381,13 @@ export interface SalesOrder {
    * with a scalar `total` continue to render; required once Phase B1 ships.
    */
   lines?: SalesOrderLine[];
+  /**
+   * Partial shipment allowed for this order (decision D6). Seeded from
+   * {@link Customer.allowPartialFulfilment} at confirm time; defaults to
+   * true. When false the order ships complete — unfilled stock-sale
+   * lines wait rather than splitting the shipment.
+   */
+  allowPartialFulfilment?: boolean;
 }
 
 /**
@@ -393,6 +406,13 @@ export interface SalesOrderLine {
   /** Optional per-line override of {@link Product.defaultRoute}. */
   routeOverride?: ProductRoute;
   status: 'pending' | 'reserved' | 'in_production' | 'shipped' | 'cancelled';
+  /**
+   * Unfilled remainder after stock allocation (decision D6). Set by
+   * `confirmSalesOrder` when free stock can't cover the line; cleared as
+   * arrivals (Goods Receipt / put-away to FG) convert reservations and
+   * auto-raise the second pick list.
+   */
+  backorderQty?: number;
 }
 
 export interface SellInvoice {
@@ -2005,6 +2025,10 @@ export interface StockMovement {
   at: string;
   refType?: 'so_line' | 'work_order' | 'mo' | 'po' | 'rma';
   refId?: string;
+  /** Who recorded the movement — required for `adjust` (stocktake, D13). */
+  by?: string;
+  /** Free-form note — the stocktake adjustment reason (D13). */
+  note?: string;
 }
 
 export interface PickList {
@@ -2175,6 +2199,39 @@ export interface CreditNote {
   xeroSyncStatus?: 'pending' | 'synced' | 'error';
 }
 
+/** Customer-return disposition outcomes (decision D13 minimal RMA). */
+export type CustomerReturnDisposition = 'restock' | 'rework' | 'scrap';
+
+/**
+ * Minimal RMA (decision D13): created against a delivered shipment,
+ * received back, then QC-dispositioned — restock (StockMovement
+ * `refType: 'rma'` into FG) / rework Job / scrap — with a Credit Note
+ * raised via `raiseCreditNote({ returnId })` when money is owed.
+ */
+export interface CustomerReturn {
+  id: string;
+  rmaNumber: string;
+  /** Delivered shipment the return was raised against. */
+  shipmentId?: string;
+  salesOrderId?: string;
+  customerId: string;
+  customerName: string;
+  /** Product coming back (single-product returns in the minimal flow). */
+  productId?: string;
+  qty: number;
+  reason: string;
+  status: 'awaiting_receipt' | 'received' | 'closed';
+  /** QC outcome recorded at close (restock / rework / scrap). */
+  disposition?: CustomerReturnDisposition;
+  /** Rework Job raised by a `rework` disposition. */
+  reworkJobId?: string;
+  /** Credit note raised when the customer is owed money. */
+  creditNoteId?: string;
+  createdAt: string;
+  receivedAt?: string;
+  closedAt?: string;
+}
+
 /** Phase B6 — log of customer approvals to ship-with-concession. */
 export interface ConcessionRecord {
   id: string;
@@ -2197,7 +2254,12 @@ export interface SubcontractDispatch {
   materialModel: SubcontractMaterialModel;
   purchaseOrderId: string;
   outboundShipmentId?: string;
-  status: 'released' | 'subcontract_in_transit' | 'at_supplier' | 'returning' | 'received' | 'closed';
+  /**
+   * 4-state lifecycle (decision D10): released → at_supplier →
+   * received → closed. The return leg comes back as a Goods Receipt
+   * against the subcontract PO through gate G5.
+   */
+  status: 'released' | 'at_supplier' | 'received' | 'closed';
   releasedAt: string;
   returnedAt?: string;
 }

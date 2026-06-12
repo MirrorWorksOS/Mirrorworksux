@@ -652,7 +652,9 @@ describe('B7 — Subcontract release + receive', () => {
       supplierId: mock.suppliers[0].id,
       materialModel: 'free_issue',
     });
-    expect(dispatch.status).toBe('subcontract_in_transit');
+    // D10: lifecycle slimmed to released → at_supplier → received → closed
+    expect(dispatch.status).toBe('released');
+    expect(dispatch.purchaseOrderId).toBeTruthy();
     const received = await workflowService.receiveSubcontract(dispatch.id);
     expect(received.status).toBe('received');
     expect(

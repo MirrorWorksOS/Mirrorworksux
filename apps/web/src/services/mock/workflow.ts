@@ -12,6 +12,7 @@ import type {
   ConcessionRecord,
   CreditNote,
   Customer,
+  CustomerReturn,
   InventoryRecord,
   PickList,
   ProductReorderRule,
@@ -124,6 +125,28 @@ export const creditNotes: CreditNote[] = [];
 export const concessionRecords: ConcessionRecord[] = [];
 export const supplierReturns: SupplierReturn[] = [];
 export const subcontractDispatches: SubcontractDispatch[] = [];
+
+// ── Customer returns (decision D13 minimal RMA) ────────────────────
+// One closed fixture so Ship ▸ Returns demonstrates the finished flow;
+// live returns are raised from delivered shipments via createReturn.
+export const customerReturns: CustomerReturn[] = [
+  {
+    id: 'crt-001',
+    rmaNumber: 'RMA-2026-0001',
+    shipmentId: 'shp-001',
+    salesOrderId: 'so-004',
+    customerId: 'cust-006',
+    customerName: 'Kemppi Australia',
+    productId: 'prod-006',
+    qty: 1,
+    reason: 'Damaged in transit',
+    status: 'closed',
+    disposition: 'scrap',
+    createdAt: '2026-03-24T03:00:00Z',
+    receivedAt: '2026-03-27T01:30:00Z',
+    closedAt: '2026-03-28T05:10:00Z',
+  },
+];
 
 // ── Pseudo-customer for replenishment Jobs (Phase B3 audit §4.4) ───
 // Used instead of nullable `Job.customerId` to avoid a cascade of

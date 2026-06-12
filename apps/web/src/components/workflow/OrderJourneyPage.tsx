@@ -15,6 +15,22 @@ import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ArrowLeft, AlertOctagon, Truck, Wrench, Network } from 'lucide-react';
 import type {
   GateFailureDetail,
@@ -25,6 +41,7 @@ import type {
   ProductRoute,
   SalesOrder,
   SubcontractDispatch,
+  SubcontractMaterialModel,
   VariationOrder,
   WorkOrder,
 } from '@/types/entities';
@@ -33,6 +50,7 @@ import {
   workflowService,
   evaluateSoToJob,
   evaluateMakeToShip,
+  GateFailure,
 } from '@/services/workflowService';
 import * as mock from '@/services/mock';
 import { JourneyStepper } from './JourneyStepper';
@@ -119,6 +137,12 @@ export function OrderJourneyPage() {
   const [subcontracts, setSubcontracts] = useState<SubcontractDispatch[]>([]);
   const [failures, setFailures] = useState<GateFailureDetail[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
+  // B7 release modal — materialModel is a real decision (D10), so the
+  // demo asks instead of hard-coding free_issue.
+  const [subReleaseOpen, setSubReleaseOpen] = useState(false);
+  const [subMaterialModel, setSubMaterialModel] =
+    useState<SubcontractMaterialModel>('free_issue');
+  const [subReleasing, setSubReleasing] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -364,28 +388,95 @@ export function OrderJourneyPage() {
     },
     {
       archetype: 'B7',
-      label: 'Release subcontract → receive back',
+      label: 'Release subcontract…',
       fn: async () => {
         const wo = mock.workOrders[1] ?? mock.workOrders[0];
         if (!wo) {
           toast.error('B7 — no Work Orders available.');
           return;
         }
-        const dispatch = await workflowService.releaseSubcontract({
-          workOrderId: wo.id,
-          operationId: 'op-1',
-          supplierId: mock.suppliers[0].id,
-          materialModel: 'free_issue',
+        setSubReleaseOpen(true);
+      },
+    },
+    {
+      archetype: 'G2',
+      label: 'Release first draft MO to the floor',
+      fn: async () => {
+        const orderJob = jobs.find((j) => j.source === 'sales_order') ?? jobs[0];
+        const draftMo = mock.manufacturingOrders.find(
+          (m) =>
+            (m.status === 'draft' || m.status === 'confirmed') &&
+            (orderJob ? m.jobId === orderJob.id : true),
+        );
+        if (!draftMo) {
+          toast.message('G2 — no draft/confirmed MO on this order. Confirm an MTO line first.');
+          return;
+        }
+        try {
+          const released = await workflowService.releaseManufacturingOrder(draftMo.id);
+          toast.success(`G2 — ${released.moNumber} released to the floor.`);
+        } catch (e) {
+          if (e instanceof GateFailure) {
+            setFailures(e.details);
+            toast.error('G2 — release blocked; see the gate banner.');
+          } else {
+            toast.error(e instanceof Error ? e.message : String(e));
+          }
+        }
+        refresh();
+      },
+    },
+    {
+      archetype: 'D6',
+      label: 'Put away completed MO → FG',
+      fn: async () => {
+        const doneMo = mock.manufacturingOrders.find((m) => m.status === 'done');
+        if (!doneMo) {
+          toast.message('D6 — no completed MO to put away.');
+          return;
+        }
+        const { record, backorderPickLists } = await workflowService.putAway({
+          manufacturingOrderId: doneMo.id,
+          productId: doneMo.productId,
+          qty: doneMo.qty ?? 1,
+          by: 'emp-003',
         });
-        await new Promise((r) => setTimeout(r, 200));
-        await workflowService.receiveSubcontract(dispatch.id);
         toast.success(
-          `B7 — Released ${wo.woNumber} to ${mock.suppliers[0].company}; received back.`,
+          `D6 — ${doneMo.moNumber}: ${record.qty} × ${doneMo.productName} put away to FG${
+            backorderPickLists.length > 0
+              ? `; ${backorderPickLists.length} backorder pick list(s) auto-raised`
+              : ''
+          }.`,
         );
         refresh();
       },
     },
   ];
+
+  const releaseSubcontractWithModel = async () => {
+    const wo = mock.workOrders[1] ?? mock.workOrders[0];
+    if (!wo) return;
+    setSubReleasing(true);
+    try {
+      const dispatch = await workflowService.releaseSubcontract({
+        workOrderId: wo.id,
+        operationId: 'op-1',
+        supplierId: mock.suppliers[0].id,
+        materialModel: subMaterialModel,
+      });
+      toast.success(
+        `B7 — Released ${wo.woNumber} to ${mock.suppliers[0].company} (${subMaterialModel.replace(/_/g, ' ')}); PO ${
+          mock.purchaseOrders.find((p) => p.id === dispatch.purchaseOrderId)?.poNumber ?? ''
+        } raised. Walk it home on the timeline below.`,
+      );
+      setSubReleaseOpen(false);
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSubReleasing(false);
+    }
+  };
 
   return (
     <div className="space-y-4 p-6">
@@ -470,9 +561,20 @@ export function OrderJourneyPage() {
                       />
                     </td>
                     <td className="py-1.5">
-                      <Badge variant="outline" className="text-[10px]">
-                        {line.status}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="text-[10px]">
+                          {line.status}
+                        </Badge>
+                        {(line.backorderQty ?? 0) > 0 && (
+                          <Badge
+                            variant="outline"
+                            className="border-amber-300 bg-amber-50 text-[10px] text-amber-900"
+                            title="Unfilled remainder — arrival (GR / put-away) auto-raises the second pick list (D6)."
+                          >
+                            backorder {line.backorderQty}
+                          </Badge>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -533,7 +635,7 @@ export function OrderJourneyPage() {
             <AlertOctagon className="h-4 w-4" /> Subcontract dispatches (B7)
           </div>
           {subcontracts.slice(0, 3).map((s) => (
-            <SubcontractTimeline key={s.id} dispatch={s} />
+            <SubcontractTimeline key={s.id} dispatch={s} onChanged={refresh} />
           ))}
         </div>
       )}
@@ -561,6 +663,50 @@ export function OrderJourneyPage() {
           ))}
         </div>
       </Card>
+
+      {/* B7 — subcontract release modal (D10: the material model is the
+          decision, so it's chosen at release time). */}
+      <Dialog open={subReleaseOpen} onOpenChange={setSubReleaseOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Release to subcontractor</DialogTitle>
+            <DialogDescription>
+              A PO is always raised — the AP bill and the Receiving gate
+              (G5) hang off it. Choose how material gets to the supplier.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Material model</Label>
+            <Select
+              value={subMaterialModel}
+              onValueChange={(v) => setSubMaterialModel(v as SubcontractMaterialModel)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="free_issue">
+                  Free issue — we send material (sub_out / sub_in movements)
+                </SelectItem>
+                <SelectItem value="sub_supplied">
+                  Supplier supplied — PO only, no outbound leg
+                </SelectItem>
+                <SelectItem value="hybrid">
+                  Hybrid — both ours and theirs
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSubReleaseOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => void releaseSubcontractWithModel()} disabled={subReleasing}>
+              {subReleasing ? 'Releasing…' : 'Release'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

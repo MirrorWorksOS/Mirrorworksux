@@ -23,6 +23,8 @@ import type {
   BillOfMaterials,
   ConcessionRecord,
   CreditNote,
+  CustomerReturn,
+  CustomerReturnDisposition,
   GateFailureDetail,
   GoodsReceipt,
   InventoryRecord,
@@ -752,6 +754,13 @@ export const workflowService = {
     );
     if (blockingFailures.length > 0) throw new GateFailure(blockingFailures);
 
+    // Partial fulfilment policy (decision D6): seeded from the
+    // customer-level default, allowed unless the customer opts out.
+    if (so.allowPartialFulfilment == null) {
+      const customer = mock.customers.find((c) => c.id === so.customerId);
+      so.allowPartialFulfilment = customer?.allowPartialFulfilment ?? true;
+    }
+
     // ONE Job per Sales Order (decision D2), covering manufactured
     // (mto + eto) lines only. Pure stock-sale orders create no Job.
     const manufacturedLines = so.lines.filter((l) => {
@@ -885,11 +894,81 @@ export const workflowService = {
     };
     mock.pickLists.push(pickList);
     if (remaining > 0) {
-      line.status = 'pending'; // backorder
+      // Backorder (decision D6): the unfilled remainder is recorded on
+      // the line; arrival (GR / put-away to FG) converts it via
+      // `_fulfilBackorders` and raises the second pick list.
+      line.status = 'pending';
+      line.backorderQty = remaining;
     } else {
       line.status = 'reserved';
+      line.backorderQty = 0;
     }
     return pickList;
+  },
+
+  /**
+   * Backorder conversion (decision D6): when stock for `productId`
+   * arrives (Goods Receipt or put-away to FG), reserve it against
+   * backordered SO lines oldest-first and auto-raise the SECOND pick
+   * list for each line that gets coverage. Returns the pick lists
+   * created so callers can surface them.
+   */
+  _fulfilBackorders(productId: string): PickList[] {
+    const created: PickList[] = [];
+    const backorderedLines = mock.salesOrders
+      .flatMap((so) => (so.lines ?? []).map((line) => ({ so, line })))
+      .filter(
+        ({ line }) =>
+          line.productId === productId && (line.backorderQty ?? 0) > 0,
+      );
+    for (const { so, line } of backorderedLines) {
+      let remaining = line.backorderQty ?? 0;
+      const pickLines: PickList['lines'] = [];
+      const candidates = mock.inventoryRecords
+        .filter((i) => i.productId === productId)
+        .sort((a, b) => {
+          const aKind = mock.stockLocations.find((l) => l.id === a.locationId)?.kind;
+          const bKind = mock.stockLocations.find((l) => l.id === b.locationId)?.kind;
+          return aKind === 'finished' ? -1 : bKind === 'finished' ? 1 : 0;
+        });
+      for (const inv of candidates) {
+        if (remaining <= 0) break;
+        const available = inv.qtyOnHand - inv.qtyReserved;
+        if (available <= 0) continue;
+        const take = Math.min(available, remaining);
+        inv.qtyReserved += take;
+        mock.reservations.push({
+          id: newId('res'),
+          productId,
+          locationId: inv.locationId,
+          qty: take,
+          salesOrderLineId: line.id,
+          createdAt: new Date().toISOString(),
+          status: 'active',
+        });
+        pickLines.push({
+          productId,
+          qtyOrdered: take,
+          qtyPicked: 0,
+          locationId: inv.locationId,
+        });
+        remaining -= take;
+      }
+      if (pickLines.length === 0) continue; // nothing arrived for this line
+      const pickList: PickList = {
+        id: newId('pl'),
+        pickNumber: `PL-${Date.now().toString().slice(-6)}`,
+        salesOrderId: so.id,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        lines: pickLines,
+      };
+      mock.pickLists.push(pickList);
+      created.push(pickList);
+      line.backorderQty = remaining;
+      if (remaining === 0) line.status = 'reserved';
+    }
+    return created;
   },
 
   async pickPickList(pickListId: string, pickedBy: string): Promise<PickList> {
@@ -967,12 +1046,18 @@ export const workflowService = {
     return created;
   },
 
+  /**
+   * Put completed finished goods away to FG (audit P1 item 15 — the
+   * MTS / MTO tail). Books the PutAwayRecord + `putaway` StockMovement
+   * into `loc-fg`, then converts any matching backorders (decision D6):
+   * arrival auto-raises the second pick list via reservation conversion.
+   */
   async putAway(input: {
     manufacturingOrderId: string;
     productId: string;
     qty: number;
     by: string;
-  }): Promise<PutAwayRecord> {
+  }): Promise<{ record: PutAwayRecord; backorderPickLists: PickList[] }> {
     await delay();
     const record: PutAwayRecord = {
       id: newId('pa'),
@@ -1008,7 +1093,9 @@ export const workflowService = {
       refType: 'mo',
       refId: input.manufacturingOrderId,
     });
-    return record;
+    // Arrival converts matching backorders → second pick list (D6).
+    const backorderPickLists = this._fulfilBackorders(input.productId);
+    return { record, backorderPickLists };
   },
 
   // ── G2 action: release an MO to the floor ──────────────────────
@@ -1048,7 +1135,12 @@ export const workflowService = {
     poId: string;
     lines: Array<{ productId: string; qty: number }>;
     receivedBy?: string;
-  }): Promise<{ goodsReceipt: GoodsReceipt; stockMovements: StockMovement[] }> {
+  }): Promise<{
+    goodsReceipt: GoodsReceipt;
+    stockMovements: StockMovement[];
+    /** Second pick lists auto-raised for backordered lines (D6). */
+    backorderPickLists: PickList[];
+  }> {
     await delay();
     const po = mock.purchaseOrders.find((p) => p.id === input.poId);
     if (!po) throw new Error(`Purchase Order ${input.poId} not found.`);
@@ -1117,7 +1209,64 @@ export const workflowService = {
       (pl) => (pl.receivedQty ?? 0) >= pl.qty,
     );
     po.status = fullyReceived ? 'received' : 'partial';
-    return { goodsReceipt, stockMovements: movements };
+    // Arrival converts matching backorders → second pick list (D6).
+    const backorderPickLists = receiptLines.flatMap((l) =>
+      this._fulfilBackorders(l.productId),
+    );
+    return { goodsReceipt, stockMovements: movements, backorderPickLists };
+  },
+
+  // ── D13: stocktake / stock adjustment ───────────────────────────
+  /**
+   * Post a counted-vs-system stock correction (decision D13). Sets the
+   * inventory record to the counted qty and books an `adjust`
+   * StockMovement carrying who counted and why. Returns the movement
+   * (qty = absolute variance; direction via from/to location).
+   */
+  async recordStockAdjustment(input: {
+    productId: string;
+    locationId: string;
+    countedQty: number;
+    by: string;
+    note: string;
+  }): Promise<StockMovement> {
+    await delay();
+    if (input.countedQty < 0) throw new Error('Counted qty cannot be negative.');
+    if (!input.by.trim()) throw new Error('A stock adjustment must record who counted.');
+    if (!input.note.trim()) throw new Error('A stock adjustment must record a note (why).');
+    let inv = mock.inventoryRecords.find(
+      (i) => i.productId === input.productId && i.locationId === input.locationId,
+    );
+    if (!inv) {
+      inv = {
+        id: newId('inv'),
+        productId: input.productId,
+        locationId: input.locationId,
+        qtyOnHand: 0,
+        qtyReserved: 0,
+      };
+      mock.inventoryRecords.push(inv);
+    }
+    const variance = input.countedQty - inv.qtyOnHand;
+    if (variance === 0) {
+      throw new Error('No variance — the count matches the system quantity.');
+    }
+    inv.qtyOnHand = input.countedQty;
+    const movement: StockMovement = {
+      id: newId('sm'),
+      productId: input.productId,
+      // Direction: count above system books IN, below books OUT.
+      ...(variance > 0
+        ? { toLocationId: input.locationId }
+        : { fromLocationId: input.locationId }),
+      qty: Math.abs(variance),
+      reason: 'adjust',
+      at: new Date().toISOString(),
+      by: input.by.trim(),
+      note: input.note.trim(),
+    };
+    mock.stockMovements.push(movement);
+    return movement;
   },
 
   // ── G4 action: raise an invoice at a payment-term milestone ─────
@@ -1534,6 +1683,164 @@ export const workflowService = {
     return cn;
   },
 
+  // ── D13: minimal RMA (return receipt → QC disposition → credit) ──
+  /**
+   * Raise a customer return against a delivered shipment (decision
+   * D13). The shipment must have a Proof of Delivery (`actualDelivery`)
+   * — you can't return what hasn't arrived. Starts `awaiting_receipt`.
+   */
+  async createReturn(input: {
+    shipmentId: string;
+    productId?: string;
+    qty: number;
+    reason: string;
+  }): Promise<CustomerReturn> {
+    await delay();
+    const shipment = mock.shipments.find((s) => s.id === input.shipmentId);
+    if (!shipment) throw new Error(`Shipment ${input.shipmentId} not found.`);
+    if (!shipment.actualDelivery) {
+      throw new Error(
+        `Shipment ${shipment.shipmentNumber} has not been delivered — returns are raised against delivered shipments.`,
+      );
+    }
+    if (!(input.qty > 0)) throw new Error('Return qty must be greater than zero.');
+    if (!input.reason.trim()) throw new Error('A return needs a reason.');
+    const rma: CustomerReturn = {
+      id: newId('crt'),
+      rmaNumber: `RMA-${new Date().getFullYear()}-${(mock.customerReturns.length + 1).toString().padStart(4, '0')}`,
+      shipmentId: shipment.id,
+      salesOrderId: shipment.salesOrderId,
+      customerId: shipment.customerId,
+      customerName: shipment.customerName,
+      productId: input.productId,
+      qty: input.qty,
+      reason: input.reason.trim(),
+      status: 'awaiting_receipt',
+      createdAt: new Date().toISOString(),
+    };
+    mock.customerReturns.push(rma);
+    return rma;
+  },
+
+  /** Record the physical return receipt — goods are back on the dock. */
+  async receiveReturn(returnId: string): Promise<CustomerReturn> {
+    await delay();
+    const rma = mock.customerReturns.find((r) => r.id === returnId);
+    if (!rma) throw new Error(`Return ${returnId} not found.`);
+    if (rma.status !== 'awaiting_receipt') {
+      throw new Error(`${rma.rmaNumber} is ${rma.status.replace(/_/g, ' ')} — only awaiting-receipt returns can be received.`);
+    }
+    rma.status = 'received';
+    rma.receivedAt = new Date().toISOString();
+    return rma;
+  },
+
+  /**
+   * QC disposition on a received return (decision D13 — reuses the D9
+   * disposition machinery's outcomes):
+   *
+   * - `restock` → StockMovement `refType: 'rma'` into FG + inventory bump
+   * - `rework`  → rework Job raised for the returned goods
+   * - `scrap`   → `scrap` StockMovement, nothing re-enters stock
+   *
+   * `creditAmount > 0` raises a draft Credit Note linked via
+   * `raiseCreditNote({ returnId })` (money owed back). Closes the RMA.
+   */
+  async disposeReturn(
+    returnId: string,
+    input: { disposition: CustomerReturnDisposition; by: string; creditAmount?: number },
+  ): Promise<{ rma: CustomerReturn; reworkJob?: Job; creditNote?: CreditNote }> {
+    await delay();
+    const rma = mock.customerReturns.find((r) => r.id === returnId);
+    if (!rma) throw new Error(`Return ${returnId} not found.`);
+    if (rma.status !== 'received') {
+      throw new Error(`${rma.rmaNumber} is ${rma.status.replace(/_/g, ' ')} — receive the return before recording a disposition.`);
+    }
+    if (!input.by.trim()) throw new Error('A disposition must record who decided.');
+
+    rma.disposition = input.disposition;
+    let reworkJob: Job | undefined;
+    const productId = rma.productId ?? 'rma-goods';
+
+    if (input.disposition === 'restock') {
+      const inv = mock.inventoryRecords.find(
+        (i) => i.productId === productId && i.locationId === 'loc-fg',
+      );
+      if (inv) {
+        inv.qtyOnHand += rma.qty;
+      } else {
+        mock.inventoryRecords.push({
+          id: newId('inv'),
+          productId,
+          locationId: 'loc-fg',
+          qtyOnHand: rma.qty,
+          qtyReserved: 0,
+        });
+      }
+      mock.stockMovements.push({
+        id: newId('sm'),
+        productId,
+        toLocationId: 'loc-fg',
+        qty: rma.qty,
+        reason: 'putaway',
+        at: new Date().toISOString(),
+        refType: 'rma',
+        refId: rma.id,
+        by: input.by.trim(),
+      });
+    } else if (input.disposition === 'rework') {
+      reworkJob = {
+        id: newId('job'),
+        jobNumber: `JOB-RMA-${(mock.jobs.length + 400).toString().padStart(4, '0')}`,
+        title: `Rework ${rma.rmaNumber} — ${rma.customerName}`,
+        customerId: rma.customerId,
+        customerName: rma.customerName,
+        salesOrderId: rma.salesOrderId,
+        status: 'planned',
+        priority: 'high',
+        startDate: today(),
+        dueDate: shiftIsoDate(today(), 14),
+        estimatedHours: rma.qty * 2,
+        actualHours: 0,
+        value: 0,
+        progress: 0,
+        assignedTo: employeeIdForDefaults(),
+        source: 'manual',
+        qty: rma.qty,
+      };
+      mock.jobs.push(reworkJob);
+      rma.reworkJobId = reworkJob.id;
+    } else {
+      // scrap — record the write-off; nothing re-enters stock.
+      mock.stockMovements.push({
+        id: newId('sm'),
+        productId,
+        qty: rma.qty,
+        reason: 'scrap',
+        at: new Date().toISOString(),
+        refType: 'rma',
+        refId: rma.id,
+        by: input.by.trim(),
+      });
+    }
+
+    let creditNote: CreditNote | undefined;
+    if (input.creditAmount != null && input.creditAmount > 0) {
+      creditNote = buildCreditNote({
+        customerId: rma.customerId,
+        salesOrderId: rma.salesOrderId,
+        returnId: rma.id,
+        amount: input.creditAmount,
+        reason: `${rma.rmaNumber} — ${rma.reason}`,
+      });
+      rma.creditNoteId = creditNote.id;
+    }
+
+    rma.status = 'closed';
+    rma.closedAt = new Date().toISOString();
+    return { rma, reworkJob, creditNote };
+  },
+
   // ── B6: Rework loop ──────────────────────────────────────────
   async recordQualityCheck(input: {
     workOrderId: string;
@@ -1702,7 +2009,15 @@ export const workflowService = {
     return record;
   },
 
-  // ── B7: Subcontract / Outwork ────────────────────────────────
+  // ── B7: Subcontract / Outwork (decision D10) ─────────────────
+  /**
+   * Release an operation to a subcontractor (decision D10). A PO is
+   * ALWAYS created — the AP bill and the Receiving gate hang off it —
+   * and it carries a line for the subcontracted part so the return leg
+   * can pass gate G5. The `free_issue` / `hybrid` material models park
+   * our stock at the supplier via a `sub_out` movement; `sub_supplied`
+   * has no outbound leg (PO only). Lifecycle starts at `released`.
+   */
   async releaseSubcontract(input: {
     workOrderId: string;
     operationId: string;
@@ -1710,6 +2025,15 @@ export const workflowService = {
     materialModel: SubcontractMaterialModel;
   }): Promise<SubcontractDispatch> {
     await delay();
+    const wo = mock.workOrders.find((w) => w.id === input.workOrderId);
+    const sourceMo = wo
+      ? mock.manufacturingOrders.find((m) => m.id === wo.manufacturingOrderId)
+      : undefined;
+    // The PO line for the subcontracted op/part — G5 matches the return
+    // Goods Receipt against this (worker-2 contract: a PO without lines
+    // is unreceivable through the Receiving gate).
+    const lineProductId = sourceMo?.productId ?? 'subcontract-op';
+    const lineQty = sourceMo?.qty ?? 1;
     const po = {
       id: newId('po'),
       poNumber: `PO-SUB-${Date.now().toString().slice(-6)}`,
@@ -1721,6 +2045,17 @@ export const workflowService = {
       status: 'sent' as const,
       total: 0,
       received: 0,
+      lines: [
+        {
+          id: newId('pol'),
+          productId: lineProductId,
+          description: `Subcontract — ${wo?.operation ?? input.operationId} (${wo?.woNumber ?? input.workOrderId})`,
+          qty: lineQty,
+          unit: 'each',
+          unitPrice: 0,
+          receivedQty: 0,
+        },
+      ],
     };
     mock.purchaseOrders.push(po);
     const dispatch: SubcontractDispatch = {
@@ -1730,45 +2065,93 @@ export const workflowService = {
       supplierId: input.supplierId,
       materialModel: input.materialModel,
       purchaseOrderId: po.id,
-      status: 'subcontract_in_transit',
+      status: 'released',
       releasedAt: new Date().toISOString(),
     };
     mock.subcontractDispatches.push(dispatch);
-    mock.stockMovements.push({
-      id: newId('sm'),
-      productId: 'subcontract-op',
-      fromLocationId: 'loc-wip',
-      toLocationId: 'loc-sub',
-      qty: 1,
-      reason: 'sub_out',
-      at: dispatch.releasedAt,
-      refType: 'work_order',
-      refId: input.workOrderId,
-    });
-    const wo = mock.workOrders.find((w) => w.id === input.workOrderId);
+    if (input.materialModel !== 'sub_supplied') {
+      // free_issue / hybrid: our material leaves WIP and parks at the
+      // supplier. sub_supplied has no outbound leg.
+      mock.stockMovements.push({
+        id: newId('sm'),
+        productId: lineProductId,
+        fromLocationId: 'loc-wip',
+        toLocationId: 'loc-sub',
+        qty: lineQty,
+        reason: 'sub_out',
+        at: dispatch.releasedAt,
+        refType: 'work_order',
+        refId: input.workOrderId,
+      });
+    }
     if (wo) {
       wo.status = 'in_progress';
     }
     return dispatch;
   },
 
+  /** Outbound leg confirmed — the goods are at the supplier (D10). */
+  async markSubcontractAtSupplier(subcontractDispatchId: string): Promise<SubcontractDispatch> {
+    await delay();
+    const sd = mock.subcontractDispatches.find((s) => s.id === subcontractDispatchId);
+    if (!sd) throw new Error(`Subcontract dispatch ${subcontractDispatchId} not found.`);
+    if (sd.status !== 'released') {
+      throw new Error(`Subcontract is ${sd.status.replace(/_/g, ' ')} — only released dispatches arrive at the supplier.`);
+    }
+    sd.status = 'at_supplier';
+    return sd;
+  },
+
+  /**
+   * Return leg (decision D10): the goods come back as a Goods Receipt
+   * against the subcontract PO THROUGH GATE G5 (`receiveGoods` runs
+   * `evaluateGateReceiving` and throws {@link GateFailure} on mismatch /
+   * over-receipt). On pass the stock moves back `loc-sub → loc-wip`
+   * (free_issue / hybrid) and the dispatch is `received`.
+   */
   async receiveSubcontract(subcontractDispatchId: string): Promise<SubcontractDispatch> {
     await delay();
     const sd = mock.subcontractDispatches.find((s) => s.id === subcontractDispatchId);
     if (!sd) throw new Error(`Subcontract dispatch ${subcontractDispatchId} not found.`);
+    if (sd.status !== 'released' && sd.status !== 'at_supplier') {
+      throw new Error(`Subcontract is ${sd.status.replace(/_/g, ' ')} — it is not out for processing.`);
+    }
+    const po = mock.purchaseOrders.find((p) => p.id === sd.purchaseOrderId);
+    if (!po) throw new Error(`Subcontract PO ${sd.purchaseOrderId} not found.`);
+    // Route the return through the Receiving gate (G5) like any other
+    // inbound goods — outstanding qty on the subcontract PO's line.
+    const outstanding = (po.lines ?? []).map((l) => ({
+      productId: l.productId,
+      qty: Math.max(0, l.qty - (l.receivedQty ?? 0)),
+    }));
+    await this.receiveGoods({ poId: po.id, lines: outstanding });
     sd.status = 'received';
     sd.returnedAt = new Date().toISOString();
-    mock.stockMovements.push({
-      id: newId('sm'),
-      productId: 'subcontract-op',
-      fromLocationId: 'loc-sub',
-      toLocationId: 'loc-wip',
-      qty: 1,
-      reason: 'sub_in',
-      at: sd.returnedAt,
-      refType: 'work_order',
-      refId: sd.workOrderId,
-    });
+    if (sd.materialModel !== 'sub_supplied') {
+      mock.stockMovements.push({
+        id: newId('sm'),
+        productId: po.lines?.[0]?.productId ?? 'subcontract-op',
+        fromLocationId: 'loc-sub',
+        toLocationId: 'loc-wip',
+        qty: po.lines?.[0]?.qty ?? 1,
+        reason: 'sub_in',
+        at: sd.returnedAt,
+        refType: 'work_order',
+        refId: sd.workOrderId,
+      });
+    }
+    return sd;
+  },
+
+  /** Close out a received subcontract dispatch (AP bill settled). */
+  async closeSubcontract(subcontractDispatchId: string): Promise<SubcontractDispatch> {
+    await delay();
+    const sd = mock.subcontractDispatches.find((s) => s.id === subcontractDispatchId);
+    if (!sd) throw new Error(`Subcontract dispatch ${subcontractDispatchId} not found.`);
+    if (sd.status !== 'received') {
+      throw new Error(`Subcontract is ${sd.status.replace(/_/g, ' ')} — only received dispatches can be closed.`);
+    }
+    sd.status = 'closed';
     return sd;
   },
 
