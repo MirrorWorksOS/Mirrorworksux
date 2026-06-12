@@ -6,6 +6,43 @@ For detail before consolidation (2026-04-22 to 2026-05-05), see `_archive/change
 
 ---
 
+## 2026-06-10 — no commits
+
+## 2026-06-03 — 1 commit — Schedule Engine no longer hangs when running against a stubbed remote adapter
+
+- `fix(plan): Schedule Engine falls back to mock when remote adapter is a stub` — with `VITE_DATA_SOURCE=remote` the Schedule Engine screen sat in "Loading schedule…" because `plan.getScheduleSnapshot` (and three siblings) aren't wired through to Convex yet — the remote proxy throws *"Remote adapter ... is not configured yet."* and the store had no fallback path. New `apps/web/src/services/planScheduleAdapter.ts` wraps the four Schedule Engine plan-service calls (`getScheduleSnapshot`, `runAutoSchedule`, `applySchedule`, `discardProposal`) with a `withMockFallback` helper that — in remote mode only — catches the stub error, emits a `console.warn`, and serves the mock response so the screen renders. `useAutoScheduleRunner` and `scheduleEngineStore` now go through the adapter instead of `planService` directly. Adapter is intentionally a temporary shim — delete once those four methods are live on Convex. Mock-mode behaviour is unchanged.
+
+## 2026-05-29 — 18 commits — MirrorView 2.0 (APS + Convex + revisions + anchored markup) and seven-archetype workflow service
+
+Two-strand release. First strand: a full replacement of the demo GLB viewer with a Convex-backed, Autodesk APS Viewer pipeline that handles ~80 native CAD formats; layered onto that, every UX layer needed to live with revisions on a shop floor — revision tagging on upload, stale-revision banner on operator surfaces, Release Rev X gate, anchored 3D markup with replies, and saved step viewpoints. Second strand: the seven Figma fulfilment archetypes (MTO, Catalogue, MTS, ETO, Variation, Rework, Subcontract) wired into a cross-module `workflowService` and a universal Order Journey page, alongside a Products usability remediation pass on the shared `ProductDetail` surface.
+
+**MirrorView 2.0 — APS viewer + revision lifecycle (Phases 2a–2f).**
+
+- `feat(mirrorview): Autodesk APS Viewer + Convex upload pipeline` — new `MirrorViewer` shared component renders APS Viewer v7 against a translated URN; new `apps/web/convex/aps.ts` + `apps/web/convex/mirrorview.ts` expose `startUpload`/`finishUpload`/`getActiveModel`; `mirrorViewerUpload.ts` drives the three-step browser → OSS → Model Derivative flow. `MirrorViewer` is reactive on `getActiveModel` so status transitions (`uploading` → `translating` → `success`) push into the UI with zero polling. Sample GLB demo asset retained as the no-model fallback. See ADR-005.
+- `feat(mirrorview): bigger, customer-facing empty-state copy` — `MirrorViewer` empty/no-model state now reads like a customer onboarding affordance rather than a developer placeholder.
+- `feat(mirrorview): persist uploaded models in the file-list sidebar` — `ProductDetail` Uploaded list is now driven by `api.mirrorview.listModels` so every uploaded revision shows up; rows survive refresh and route changes.
+- `fix(mirrorview): fit camera to model after geometry loads` — `aps-loader.ts` fits the APS camera to the loaded model bbox once geometry is in.
+- `feat(mirrorview): Uploaded items drive the viewer, chip reflects reality` — selecting a row in the sidebar drives the viewer; the rev chip in the viewer shows the row's actual revisionLabel.
+- `fix(mirrorview): stop the viewer killing itself mid-load` — `MirrorViewer`'s source-resolve effect was over-firing on context object identity; memoised contexts upstream and stabilised the loader so it doesn't remount mid-translation.
+- `feat(mirrorview): hide GLB toolbar under APS + delete Uploaded rows` — the legacy GLB toolbar is suppressed when APS is the active mode; admin/lead can delete an Uploaded row.
+- `feat(mirrorview): drop-to-upload on every MirrorView surface (Phase 2a)` — `enableUpload` prop on `MirrorViewer` adds a drag/drop affordance and dispatches into the same APS pipeline as `PlanCADImport` and `ProductDetail`. Wired into `PlanMirrorViewTab`, `MakeManufacturingOrderDetail`, and `PlanCADImport`. Shop-floor surfaces stay read-only.
+- `feat(mirrorview): revision tagging + change-note on upload (Phase 2b)` — new `CadUploadConfirmDialog` opens after a drop, auto-fills the next revision label via `nextRevisionLabel()` (Rev A → Rev B → … → Rev AA), and captures an optional 1-line "what changed" note. `mirrorviewModels` gains `revisionLabel` + `revisionNotes`.
+- `feat(mirrorview): stale-rev banner on operator surfaces (Phase 2c)` — new `RevDriftBanner` reactively compares the operator's pinned revision against the product's latest released revision. Surfaces on `MakeManufacturingOrderDetail` and `floor/execution/ReferencePanel`; click-through dialog shows the change-note.
+- `feat(mirrorview): anchored 3D markup with reactive threads (Phase 2d)` — new `mirrorviewMarkups` table; `MirrorMarkupPanel` + `CadMarkupCaptureDialog` capture the current camera + isolated dbIds at pin time and persist root comments + flat replies. Click a pin to restore the exact viewpoint the commenter saw. Status (`open` / `resolved`) is gated to admin/lead.
+- `feat(mirrorview): Release Rev X button + revisionStatus gate (Phase 2e)` — `mirrorviewModels.revisionStatus` (`draft` | `released`) + `releasedAt` + `releasedBy`. Engineering's "Release Rev X" CTA on `ProductDetail` flips the gate; only released revisions trigger `RevDriftBanner` on operator surfaces. Gate the action behind a new `mirrorview.revision.release` permission (admin + lead).
+- `feat(mirrorview): saved step viewpoints + operator simplifier (Phase 2f)` — new `mirrorviewStepViews` table; `StepViewsControl` adds a labelled "jump to step view" dropdown above the viewer. Engineers (admin/lead) save the current camera + isolation under a label; operators jump to it with one tap. Wired into `PlanMirrorViewTab` (capture-enabled) and shop-floor `ReferencePanel` (read-only).
+
+**Workflow archetypes + Products remediation.**
+
+- `feat(workflow): wire 7 fulfilment archetypes + Products usability remediation` — new `workflowService` (`apps/web/src/services/workflowService.ts`) encodes the seven Figma archetypes (MTO, Catalogue Sale, MTS Replenishment, ETO, Variation, Rework, Subcontract) plus four named validation gates (`evaluateSoToJob`, `evaluatePlanToMake`, `evaluateMakeToShip`, `evaluateGateReceiving`). New `workflow/` component family: `OrderJourneyPage` (universal order canvas at `/sell/orders/:id/journey`), `EngineeringJobsPage` (`/plan/engineering`), `ReorderRulesPage` (`/plan/reorder-rules`), plus `JourneyStepper`, `GateBanner`, `RouteChip`, `RouteOverrideSelect`, `AdvanceButton`, `EntityPeek`, `JobGraphMini`, `VOImpactPanel`, `SubcontractTimeline`, `QcReworkInspector`. `Job.source` extended with `engineering` / `replenishment` / `subcontract`. Products surface (`ProductDetail` + `SellProducts`) gets a 4-tab restructure with progressive disclosure, sticky save bar, AUD currency, inline price/cost/margin validation, jargon tooltips, and bulk + inline list edit. Lineage strip on `SellOrderDetail` (Q → SO → INV → WO → DO chips) hoisted above the early-return so rules-of-hooks is satisfied. Also fixes the app-wide `Switch` primitive re-leaking `onCheckedChange` onto the DOM button. See ADR-006.
+
+**Build + Convex plumbing.**
+
+- `fix(build): commit Convex _generated/ so Netlify can resolve the api alias` — `apps/web/convex/_generated/` is now tracked so Netlify and CF Pages can resolve `@convex/_generated/api`.
+- `fix(convex): always mount ConvexProvider so useQuery doesn't throw` — `convex-client.ts` returns a stub client when `VITE_CONVEX_URL` is unset; `App.tsx` always mounts the provider so mock-mode renders don't crash on `useQuery`.
+- `ci: trigger Netlify rebuild to pick up VITE_CONVEX_URL + VITE_DATA_SOURCE` — bumps build to inline the new env vars.
+- `ci: force CF Pages rebuild for VITE_CONVEX_URL/VITE_DATA_SOURCE inlining` — same intent for the CF Pages deploy.
+
 ## 2026-05-21 — 7 commits — Product↔Template wiring, polymorphic Assignee, cross-module return chip
 
 **Product detail screen, continued.** Activity templates are now first-class on the product (Planning tab): set `productKind`, pin one or more templates, and the templates pre-apply to Plan jobs when the order is confirmed. Each row expands to show the full activity flow and links straight into the template editor.

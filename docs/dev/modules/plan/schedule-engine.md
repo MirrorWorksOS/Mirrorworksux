@@ -100,6 +100,20 @@ ScheduleSnapshot {
 
 All four are flagged with `// TODO: CONVEX —` comments, noting where the remote adapter slots in.
 
+### `planScheduleAdapter` — remote-mode fallback shim
+
+[`apps/web/src/services/planScheduleAdapter.ts`](apps/web/src/services/planScheduleAdapter.ts) wraps those four methods with a `withMockFallback(label, remote, mock)` helper so the Schedule Engine screen survives running with `VITE_DATA_SOURCE=remote` before the Convex implementation lands. Behaviour:
+
+- **Mock mode** (`VITE_DATA_SOURCE !== 'remote'`) — calls the mock directly. Zero overhead.
+- **Remote mode** — calls `services.plan.<method>()`. If it throws with `/is not configured yet/` (the stub error from the runtime adapter), `console.warn`s and falls back to the mock. Any other error bubbles untouched.
+
+Consumed by:
+
+- [`scheduleEngineStore.ts`](apps/web/src/store/scheduleEngineStore.ts) — `loadSnapshot`, `applyProposal`, `discardProposal` go through the adapter.
+- [`useAutoScheduleRunner.ts`](apps/web/src/components/plan/schedule-engine/hooks/useAutoScheduleRunner.ts) — `runAutoSchedule` goes through the adapter.
+
+This mirrors the `REMOTE_MODE ? remote : 'skip'` guard already used by `MirrorViewer` and `PlanCADImport` for the same problem (an operator surface hanging when its Convex methods aren't wired yet). Delete the adapter file and re-point both call sites at `services.plan` once `plan.getScheduleSnapshot`, `runAutoSchedule`, `applySchedule`, and `discardProposal` are live on Convex.
+
 ## Gantt geometry
 
 Constants in [`schedule-engine/constants.ts`](apps/web/src/components/plan/schedule-engine/constants.ts):
@@ -171,6 +185,7 @@ Inside `ScheduleGantt`:
 - [`apps/web/src/components/plan/schedule-engine/`](apps/web/src/components/plan/schedule-engine) — all 19 sub-components, hooks, panels, dialogs
 - [`apps/web/src/store/scheduleEngineStore.ts`](apps/web/src/store/scheduleEngineStore.ts)
 - [`apps/web/src/services/planService.ts`](apps/web/src/services/planService.ts)
+- [`apps/web/src/services/planScheduleAdapter.ts`](apps/web/src/services/planScheduleAdapter.ts) — remote-mode mock-fallback shim (delete once Convex is wired)
 - [`apps/web/src/types/entities.ts`](apps/web/src/types/entities.ts) — `ScheduleSnapshot`, `ScheduleSnapshotKpis`, `ScheduleIssue`, `AutoScheduleRequest`, `AutoScheduleResult`
 - [`apps/web/src/types/common.ts`](apps/web/src/types/common.ts) — `JobScheduleStatus` union
 
