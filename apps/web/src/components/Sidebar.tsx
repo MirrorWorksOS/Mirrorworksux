@@ -215,6 +215,8 @@ export const menuConfig: MenuItem[] = [
         items: [
           // MRP and Purchase consolidated into a single tabbed page.
           { label: 'MRP', path: '/plan/mrp' },
+          // Cross-link to the canonical inventory ledger, raw-material lens.
+          { label: 'Inventory', path: '/control/inventory?kind=raw' },
         ],
       },
       {
@@ -249,6 +251,8 @@ export const menuConfig: MenuItem[] = [
           { label: 'Schedule', path: '/make/schedule' },
           { label: 'Shop Floor', path: '/make/shop-floor' },
           { label: 'Manufacturing Orders', path: '/make/manufacturing-orders' },
+          // Cross-link to the canonical inventory ledger, WIP lens.
+          { label: 'Inventory', path: '/control/inventory?kind=wip' },
           // Scan station and Time Clock moved into the unified Shop Floor
           // kiosk at /floor — removed from the office sidebar to eliminate
           // multiple entry points. See FloorHome for the gated funnel.
@@ -295,6 +299,8 @@ export const menuConfig: MenuItem[] = [
         items: [
           { label: 'Tracking', path: '/ship/tracking' },
           { label: 'Warehouse', path: '/ship/warehouse' },
+          // Cross-link to the canonical inventory ledger, finished-goods lens.
+          { label: 'Inventory', path: '/control/inventory?kind=finished' },
           { label: 'Carrier rates', path: '/ship/carrier-rates' },
         ],
       },
@@ -370,6 +376,7 @@ export const menuConfig: MenuItem[] = [
       {
         heading: 'Inventory & Products',
         items: [
+          { label: 'Inventory', path: '/control/inventory' },
           { label: 'Products', path: '/control/products' },
           { label: 'Product Studio', path: '/plan/product-studio' },
           { label: 'BOMs', path: '/control/boms' },
@@ -410,6 +417,7 @@ export const menuConfig: MenuItem[] = [
       {
         heading: 'Settings',
         items: [
+          { label: 'Inventory settings', path: '/control/inventory-settings' },
           { label: 'Payment terms', path: '/control/payment-terms' },
           { label: 'Notification templates', path: '/control/notifications' },
           { label: 'Legal templates', path: '/control/legal' },

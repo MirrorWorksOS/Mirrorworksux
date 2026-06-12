@@ -26,10 +26,14 @@ import type {
 
 // ── Stock locations ────────────────────────────────────────────────
 export const stockLocations: StockLocation[] = [
+  { id: 'loc-recv', code: 'RECEIVING', name: 'Goods In', kind: 'raw' },
   { id: 'loc-raw', code: 'RAW', name: 'Raw Materials', kind: 'raw' },
   { id: 'loc-wip', code: 'WIP', name: 'Work in Progress', kind: 'wip' },
   { id: 'loc-fg', code: 'FG', name: 'Finished Goods', kind: 'finished' },
   { id: 'loc-sub', code: 'SUBCONTRACT', name: 'At Subcontractor', kind: 'subcontract' },
+  // Virtual write-off location — scrap movements land here; excluded
+  // from valuation KPIs (see inventoryService.getValuationSummary).
+  { id: 'loc-scrap', code: 'SCRAP', name: 'Scrap (virtual)', kind: 'scrap' },
 ];
 
 // ── Inventory snapshots ────────────────────────────────────────────
@@ -40,6 +44,19 @@ export const inventoryRecords: InventoryRecord[] = [
   { id: 'inv-003', productId: 'prod-002', locationId: 'loc-raw', qtyOnHand: 12, qtyReserved: 0 },
   { id: 'inv-004', productId: 'prod-007', locationId: 'loc-raw', qtyOnHand: 8, qtyReserved: 0 },
   { id: 'inv-005', productId: 'prod-010', locationId: 'loc-fg', qtyOnHand: 3, qtyReserved: 0 },
+  // Inventory page seeds — every product appears somewhere; covers a
+  // multi-location product (prod-001), a low-stock row vs reorder rule
+  // (prod-005 raw components), an out-of-stock row (prod-008), and a
+  // small balance in the virtual scrap location for demo credibility.
+  { id: 'inv-006', productId: 'prod-001', locationId: 'loc-raw', qtyOnHand: 140, qtyReserved: 24 },
+  { id: 'inv-007', productId: 'prod-001', locationId: 'loc-wip', qtyOnHand: 16, qtyReserved: 0 },
+  { id: 'inv-008', productId: 'prod-003', locationId: 'loc-fg', qtyOnHand: 9, qtyReserved: 2 },
+  { id: 'inv-009', productId: 'prod-004', locationId: 'loc-wip', qtyOnHand: 2, qtyReserved: 0 },
+  { id: 'inv-010', productId: 'prod-006', locationId: 'loc-sub', qtyOnHand: 6, qtyReserved: 0 },
+  { id: 'inv-011', productId: 'prod-008', locationId: 'loc-fg', qtyOnHand: 0, qtyReserved: 0 },
+  { id: 'inv-012', productId: 'prod-009', locationId: 'loc-fg', qtyOnHand: 14, qtyReserved: 4 },
+  { id: 'inv-013', productId: 'prod-002', locationId: 'loc-scrap', qtyOnHand: 4, qtyReserved: 0 },
+  { id: 'inv-014', productId: 'prod-005', locationId: 'loc-raw', qtyOnHand: 90, qtyReserved: 0 },
 ];
 
 // ── Product reorder rules (Phase B3 monitor reads these) ──────────
@@ -59,6 +76,16 @@ export const productReorderRules: ProductReorderRule[] = [
     reorderPoint: 60,
     reorderQty: 100,
     leadTimeDays: 3,
+    shortageBehaviour: 'backorder',
+    enabled: true,
+  },
+  // Trips the Low badge on the Inventory ledger (prod-009 holds 14 in FG).
+  {
+    id: 'prr-003',
+    productId: 'prod-009',
+    reorderPoint: 20,
+    reorderQty: 40,
+    leadTimeDays: 7,
     shortageBehaviour: 'backorder',
     enabled: true,
   },
@@ -112,7 +139,31 @@ export const billsOfMaterials: BillOfMaterials[] = [
 
 // ── Mutable workflow state (mutated by workflowService) ────────────
 export const reservations: Reservation[] = [];
-export const stockMovements: StockMovement[] = [];
+// Seeded with ~3 weeks of representative history so the Inventory
+// Movements ledger reads true on first load; workflowService and
+// inventoryService both push onto this same array instance.
+export const stockMovements: StockMovement[] = [
+  { id: 'sm-seed-001', productId: 'prod-002', toLocationId: 'loc-recv', qty: 40, reason: 'gr', at: '2026-05-18T09:12:00Z', refType: 'po', refId: 'po-1041' },
+  { id: 'sm-seed-002', productId: 'prod-002', fromLocationId: 'loc-recv', toLocationId: 'loc-raw', qty: 40, reason: 'putaway', at: '2026-05-18T10:05:00Z' },
+  { id: 'sm-seed-003', productId: 'prod-007', toLocationId: 'loc-recv', qty: 12, reason: 'gr', at: '2026-05-20T08:40:00Z', refType: 'po', refId: 'po-1043' },
+  { id: 'sm-seed-004', productId: 'prod-007', fromLocationId: 'loc-recv', toLocationId: 'loc-raw', qty: 12, reason: 'putaway', at: '2026-05-20T09:15:00Z' },
+  { id: 'sm-seed-005', productId: 'prod-001', fromLocationId: 'loc-raw', qty: 24, reason: 'pick', at: '2026-05-22T07:55:00Z', refType: 'work_order', refId: 'wo-2207' },
+  { id: 'sm-seed-006', productId: 'prod-001', fromLocationId: 'loc-raw', toLocationId: 'loc-wip', qty: 24, reason: 'consume', at: '2026-05-22T08:20:00Z', refType: 'work_order', refId: 'wo-2207' },
+  { id: 'sm-seed-007', productId: 'prod-001', fromLocationId: 'loc-wip', toLocationId: 'loc-fg', qty: 22, reason: 'putaway', at: '2026-05-26T15:30:00Z', refType: 'mo', refId: 'mo-1108' },
+  { id: 'sm-seed-008', productId: 'prod-001', fromLocationId: 'loc-wip', toLocationId: 'loc-scrap', qty: 2, reason: 'scrap', at: '2026-05-26T15:42:00Z', refType: 'mo', refId: 'mo-1108', reasonCode: 'QC reject', note: 'Weld porosity on flange' },
+  { id: 'sm-seed-009', productId: 'prod-006', fromLocationId: 'loc-wip', toLocationId: 'loc-sub', qty: 6, reason: 'sub_out', at: '2026-05-28T11:00:00Z', refType: 'mo', refId: 'mo-1110' },
+  { id: 'sm-seed-010', productId: 'prod-005', fromLocationId: 'loc-raw', qty: 30, reason: 'pick', at: '2026-05-29T08:05:00Z', refType: 'work_order', refId: 'wo-2215' },
+  { id: 'sm-seed-011', productId: 'prod-005', fromLocationId: 'loc-wip', toLocationId: 'loc-fg', qty: 30, reason: 'putaway', at: '2026-06-01T16:10:00Z', refType: 'mo', refId: 'mo-1112' },
+  { id: 'sm-seed-012', productId: 'prod-002', fromLocationId: 'loc-raw', toLocationId: 'loc-scrap', qty: 2, reason: 'scrap', at: '2026-06-02T13:25:00Z', reasonCode: 'Damaged', note: 'Forklift damage in racking' },
+  { id: 'sm-seed-013', productId: 'prod-009', toLocationId: 'loc-fg', qty: 14, reason: 'gr', at: '2026-06-03T09:50:00Z', refType: 'po', refId: 'po-1047' },
+  { id: 'sm-seed-014', productId: 'prod-010', fromLocationId: 'loc-fg', qty: 1, reason: 'pick', at: '2026-06-04T10:30:00Z', refType: 'so_line', refId: 'soline-310' },
+  { id: 'sm-seed-015', productId: 'prod-003', fromLocationId: 'loc-wip', toLocationId: 'loc-fg', qty: 9, reason: 'putaway', at: '2026-06-05T14:45:00Z', refType: 'mo', refId: 'mo-1115' },
+  { id: 'sm-seed-016', productId: 'prod-007', fromLocationId: 'loc-raw', qty: 4, reason: 'adjust', at: '2026-06-06T08:00:00Z', reasonCode: 'Count error', note: 'Quarterly cycle count variance' },
+  { id: 'sm-seed-017', productId: 'prod-002', fromLocationId: 'loc-scrap', qty: 1, reason: 'adjust', at: '2026-06-06T08:10:00Z', reasonCode: 'Data entry fix', note: 'Scrap bin reconciliation' },
+  { id: 'sm-seed-018', productId: 'prod-008', fromLocationId: 'loc-fg', qty: 1, reason: 'pick', at: '2026-06-08T09:20:00Z', refType: 'so_line', refId: 'soline-318' },
+  { id: 'sm-seed-019', productId: 'prod-004', fromLocationId: 'loc-raw', toLocationId: 'loc-wip', qty: 2, reason: 'consume', at: '2026-06-09T07:45:00Z', refType: 'work_order', refId: 'wo-2230' },
+  { id: 'sm-seed-020', productId: 'prod-005', toLocationId: 'loc-raw', qty: 18, reason: 'adjust', at: '2026-06-10T11:35:00Z', reasonCode: 'Found stock', note: 'Found in unmarked bin during 5S' },
+];
 export const pickLists: PickList[] = [];
 export const putAwayRecords: PutAwayRecord[] = [];
 export const qualityChecks: QualityCheck[] = [];

@@ -6,6 +6,7 @@ import type {
   BridgeImportAdapter,
   BuyService,
   ControlService,
+  InventoryService,
   MakeService,
   PlanService,
   SellService,
@@ -13,6 +14,7 @@ import type {
   ShipService,
 } from './contracts';
 import { controlService } from './controlService';
+import { inventoryService } from './inventoryService';
 import { makeService } from './makeService';
 import { planService } from './planService';
 import { sellService } from './sellService';
@@ -63,4 +65,5 @@ export const remoteServices: ServiceRegistry = {
   book: createRemoteService<BookService>('book', bookService),
   control: createRemoteService<ControlService>('control', controlService),
   bridge: createRemoteService<BridgeImportAdapter>('bridge', bridgeService),
+  inventory: createRemoteService<InventoryService>('inventory', inventoryService),
 };
