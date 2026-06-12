@@ -22,6 +22,7 @@ export function ReorderRulesPage() {
   const [, force] = useState(0);
   const [busy, setBusy] = useState(false);
   const [replenJobs, setReplenJobs] = useState<Job[]>([]);
+  const [newRuleProductId, setNewRuleProductId] = useState('');
 
   useEffect(() => {
     setReplenJobs(
@@ -110,16 +111,63 @@ export function ReorderRulesPage() {
                       }}
                     />
                   </td>
-                  <td className="py-1.5">{rule.reorderPoint}</td>
-                  <td className="py-1.5">{rule.reorderQty}</td>
-                  <td className="py-1.5">{rule.leadTimeDays}</td>
                   <td className="py-1.5">
-                    <Badge variant="outline" className="text-[10px]">
-                      {rule.shortageBehaviour}
-                    </Badge>
+                    <input
+                      type="number"
+                      className="w-16 rounded border bg-card px-1 py-0.5 text-sm"
+                      defaultValue={rule.reorderPoint}
+                      onBlur={(e) => {
+                        rule.reorderPoint = Number(e.target.value) || 0;
+                        force((n) => n + 1);
+                      }}
+                    />
                   </td>
                   <td className="py-1.5">
-                    <Badge variant={rule.enabled ? 'default' : 'outline'} className="text-[10px]">
+                    <input
+                      type="number"
+                      className="w-16 rounded border bg-card px-1 py-0.5 text-sm"
+                      defaultValue={rule.reorderQty}
+                      onBlur={(e) => {
+                        rule.reorderQty = Number(e.target.value) || 0;
+                        force((n) => n + 1);
+                      }}
+                    />
+                  </td>
+                  <td className="py-1.5">
+                    <input
+                      type="number"
+                      className="w-14 rounded border bg-card px-1 py-0.5 text-sm"
+                      defaultValue={rule.leadTimeDays}
+                      onBlur={(e) => {
+                        rule.leadTimeDays = Number(e.target.value) || 0;
+                        force((n) => n + 1);
+                      }}
+                    />
+                  </td>
+                  <td className="py-1.5">
+                    <select
+                      className="rounded border bg-card px-1 py-0.5 text-xs"
+                      defaultValue={rule.shortageBehaviour}
+                      onChange={(e) => {
+                        rule.shortageBehaviour = e.target.value as typeof rule.shortageBehaviour;
+                        force((n) => n + 1);
+                      }}
+                    >
+                      <option value="backorder">backorder</option>
+                      <option value="auto_po">auto_po</option>
+                      <option value="wait">wait</option>
+                    </select>
+                  </td>
+                  <td className="py-1.5">
+                    <Badge
+                      variant={rule.enabled ? 'default' : 'outline'}
+                      className="cursor-pointer text-[10px]"
+                      onClick={() => {
+                        rule.enabled = !rule.enabled;
+                        force((n) => n + 1);
+                      }}
+                      title="Click to toggle"
+                    >
                       {rule.enabled ? 'on' : 'off'}
                     </Badge>
                   </td>
@@ -128,6 +176,47 @@ export function ReorderRulesPage() {
             })}
           </tbody>
         </table>
+        <div className="mt-3 flex items-center gap-2 border-t pt-3">
+          <select
+            className="rounded border bg-card px-2 py-1 text-sm"
+            value={newRuleProductId}
+            onChange={(e) => setNewRuleProductId(e.target.value)}
+          >
+            <option value="">Add a rule for…</option>
+            {mock.products
+              .filter((p) => !mock.productReorderRules.some((r) => r.productId === p.id))
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.partNumber} — {p.description}
+                </option>
+              ))}
+          </select>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!newRuleProductId}
+            onClick={() => {
+              mock.productReorderRules.push({
+                id: `prr-${Date.now()}`,
+                productId: newRuleProductId,
+                reorderPoint: 10,
+                reorderQty: 25,
+                leadTimeDays: 7,
+                shortageBehaviour: 'backorder',
+                enabled: true,
+              });
+              setNewRuleProductId('');
+              toast.success('Reorder rule created — tune the thresholds inline.');
+              force((n) => n + 1);
+            }}
+          >
+            Add rule
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Edits apply immediately (demo store). shortageBehaviour decides the backorder
+            fill: replenishment Job · auto-PO · wait.
+          </span>
+        </div>
       </Card>
 
       <Card className="p-4">

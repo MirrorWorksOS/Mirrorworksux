@@ -3,8 +3,11 @@
  * Token-aligned: #141414 → var(--neutral-900), #F0F0F0 → var(--neutral-200), #8A8A8A → var(--neutral-500)
  * Status dots now use semantic colours
  */
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PlusCircle, ChevronRight } from 'lucide-react';
+import * as mock from '@/services/mock';
+import { workflowService } from '@/services/workflowService';
+import type { CustomerReturn, CustomerReturnDisposition } from '@/types/entities';
 import { Card } from '../ui/card';
 import {
   Dialog,
@@ -36,38 +39,49 @@ import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
 
-type RStatus = 'pending' | 'approved' | 'in_transit' | 'received' | 'refunded' | 'closed';
+type RStatus = CustomerReturn['status'];
 
 const rStatusLabel: Record<RStatus, string> = {
-  pending: 'Pending',
-  approved: 'Approved',
-  in_transit: 'In Transit',
+  awaiting_receipt: 'Awaiting receipt',
   received: 'Received',
-  refunded: 'Refunded',
   closed: 'Closed',
 };
 
 const rStatusVariant: Record<RStatus, 'warning' | 'info' | 'dark' | 'neutral'> = {
-  pending: 'warning',
-  approved: 'info',
-  in_transit: 'info',
+  awaiting_receipt: 'warning',
   received: 'dark',
-  refunded: 'dark',
   closed: 'neutral',
 };
 
+/** Table row derived from the live CustomerReturn collection (D13). */
 interface RMA {
-  id: string; order: string; customer: string; items: number; reason: string; status: RStatus; date: string;
+  id: string;
+  returnId: string;
+  order: string;
+  customer: string;
+  items: number;
+  reason: string;
+  status: RStatus;
+  date: string;
+  disposition?: CustomerReturnDisposition;
+  creditNoteId?: string;
 }
 
-const RMAS: RMA[] = [
-  { id: 'RMA-001', order: 'SH-038', customer: 'Oberon Eng',     items: 2, reason: 'Defective',     status: 'pending',    date: '01 Mar' },
-  { id: 'RMA-002', order: 'SH-035', customer: 'Hunter Steel',   items: 1, reason: 'Wrong Item',    status: 'approved',   date: '28 Feb' },
-  { id: 'RMA-003', order: 'SH-030', customer: 'Pacific Fab',    items: 3, reason: 'Damaged',       status: 'in_transit', date: '25 Feb' },
-  { id: 'RMA-004', order: 'SH-028', customer: 'Acme Steel',     items: 1, reason: 'Change of Mind',status: 'received',   date: '22 Feb' },
-  { id: 'RMA-005', order: 'SH-025', customer: 'Meridian Fabrication', items: 2, reason: 'Defective',     status: 'refunded',   date: '20 Feb' },
-  { id: 'RMA-006', order: 'SH-020', customer: 'Sydney Rail',    items: 4, reason: 'Damaged',       status: 'closed',     date: '15 Feb' },
-];
+const toRow = (r: CustomerReturn): RMA => ({
+  id: r.rmaNumber,
+  returnId: r.id,
+  order:
+    mock.shipments.find((s) => s.id === r.shipmentId)?.shipmentNumber ??
+    r.salesOrderId ??
+    '—',
+  customer: r.customerName,
+  items: r.qty,
+  reason: r.reason,
+  status: r.status,
+  date: new Date(r.createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: 'short' }),
+  disposition: r.disposition,
+  creditNoteId: r.creditNoteId,
+});
 
 const REASONS = [
   { reason: 'Defective',  count: 8 },
@@ -76,7 +90,7 @@ const REASONS = [
   { reason: 'Other',      count: 2 },
 ];
 
-const TIMELINE_STAGES: RStatus[] = ['pending', 'approved', 'in_transit', 'received', 'refunded', 'closed'];
+const TIMELINE_STAGES: RStatus[] = ['awaiting_receipt', 'received', 'closed'];
 
 const returnColumns: MwColumnDef<RMA>[] = [
   { key: 'id', header: 'RMA', tooltip: 'Return merchandise authorisation number', cell: (r) => <span className="font-medium tabular-nums text-foreground">{r.id}</span> },
@@ -97,61 +111,111 @@ const returnColumns: MwColumnDef<RMA>[] = [
 const RMA_REASONS = ['Defective', 'Damaged', 'Wrong Item', 'Change of Mind', 'Other'];
 
 export function ShipReturns() {
-  const [rmas, setRmas] = useState<RMA[]>(RMAS);
+  const [reloadKey, setReloadKey] = useState(0);
+  const rmas = useMemo(
+    () => [...mock.customerReturns].reverse().map(toRow),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mock store mutates in place
+    [reloadKey],
+  );
   const [selected, setSelected] = useState<RMA | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  // Create-RMA form state
-  const [formOrder, setFormOrder] = useState('');
-  const [formCustomer, setFormCustomer] = useState('');
+  // Create-RMA form state — returns are raised against DELIVERED shipments
+  // (decision D13: you can't return what hasn't arrived).
+  const deliveredShipments = useMemo(
+    () => mock.shipments.filter((s) => s.actualDelivery || s.stage === 'delivered'),
+    [],
+  );
+  const [formShipmentId, setFormShipmentId] = useState('');
   const [formItems, setFormItems] = useState('1');
   const [formReason, setFormReason] = useState(RMA_REASONS[0]);
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const orderRef = useRef<HTMLInputElement>(null);
-  const customerRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
-    setFormOrder('');
-    setFormCustomer('');
+    setFormShipmentId('');
     setFormItems('1');
     setFormReason(RMA_REASONS[0]);
-    setFormErrors({});
   };
 
-  const handleCreateRma = () => {
-    const errors: Record<string, string> = {};
-    if (!formOrder.trim()) errors.order = 'Order number is required';
-    if (!formCustomer.trim()) errors.customer = 'Customer is required';
+  const refreshSelected = (returnId: string) => {
+    const fresh = mock.customerReturns.find((r) => r.id === returnId);
+    setSelected(fresh ? toRow(fresh) : null);
+    setReloadKey((k) => k + 1);
+  };
+
+  const handleCreateRma = async () => {
     const items = Number(formItems);
-    if (!Number.isInteger(items) || items < 1) errors.items = 'Enter at least 1 item';
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) {
-      toast.error('Please fix the highlighted fields');
-      if (errors.order) orderRef.current?.focus();
-      else if (errors.customer) customerRef.current?.focus();
+    if (!formShipmentId) {
+      toast.error('Pick a delivered shipment to raise the return against');
       return;
     }
-    const nextId = `RMA-${String(rmas.length + 1).padStart(3, '0')}`;
-    const created: RMA = {
-      id: nextId,
-      order: formOrder.trim().toUpperCase(),
-      customer: formCustomer.trim(),
-      items,
-      reason: formReason,
-      status: 'pending',
-      date: new Date().toLocaleDateString('en-AU', { day: '2-digit', month: 'short' }),
-    };
-    setRmas((prev) => [created, ...prev]);
-    toast.success(`${nextId} created`, { description: `${created.customer} · ${created.reason}` });
-    resetForm();
-    setCreateOpen(false);
+    if (!Number.isInteger(items) || items < 1) {
+      toast.error('Enter at least 1 item');
+      return;
+    }
+    setBusy(true);
+    try {
+      const rma = await workflowService.createReturn({
+        shipmentId: formShipmentId,
+        qty: items,
+        reason: formReason,
+      });
+      toast.success(`${rma.rmaNumber} created`, {
+        description: `${rma.customerName} · ${rma.reason} — awaiting receipt`,
+      });
+      resetForm();
+      setCreateOpen(false);
+      setReloadKey((k) => k + 1);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Could not create the return.');
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const pendingCount = rmas.filter(r => r.status === 'pending').length;
-  const inTransitCount = rmas.filter(r => r.status === 'in_transit').length;
+  const handleReceive = async (row: RMA) => {
+    setBusy(true);
+    try {
+      await workflowService.receiveReturn(row.returnId);
+      toast.success(`${row.id} received — choose a disposition.`);
+      refreshSelected(row.returnId);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Receive failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDispose = async (row: RMA, disposition: CustomerReturnDisposition) => {
+    setBusy(true);
+    try {
+      const creditAmount =
+        disposition === 'restock' || disposition === 'scrap'
+          ? Number(window.prompt('Credit owed to the customer (0 for none):', '0')) || 0
+          : 0;
+      const r = await workflowService.disposeReturn(row.returnId, {
+        disposition,
+        by: 'emp-001',
+        creditAmount,
+      });
+      toast.success(
+        `${row.id} closed — ${disposition}` +
+          (r.reworkJob ? ` · rework Job ${r.reworkJob.jobNumber}` : '') +
+          (r.creditNote ? ` · credit note ${r.creditNote.creditNoteNumber}` : ''),
+      );
+      refreshSelected(row.returnId);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Disposition failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const pendingCount = rmas.filter(r => r.status === 'awaiting_receipt').length;
   const receivedCount = rmas.filter(r => r.status === 'received').length;
-  const closedCount = rmas.filter(r => r.status === 'closed' || r.status === 'refunded').length;
+  const closedCount = rmas.filter(r => r.status === 'closed').length;
+  const creditedCount = rmas.filter(r => r.creditNoteId).length;
 
   return (
     <PageShell className="overflow-y-auto">
@@ -170,10 +234,10 @@ export function ShipReturns() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Pending', value: pendingCount, sub: 'Awaiting review', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
-          { label: 'In Transit', value: inTransitCount, sub: 'Return shipping', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
-          { label: 'Received', value: receivedCount, sub: 'Ready to process', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
-          { label: 'Resolved', value: closedCount, sub: `${rmas.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Awaiting receipt', value: pendingCount, sub: 'Goods on the way back', bg: 'bg-[var(--mw-amber-100)]', text: 'text-[var(--mw-amber)]' },
+          { label: 'Received', value: receivedCount, sub: 'Ready for QC disposition', bg: 'bg-[var(--mw-yellow-50)]', text: 'text-foreground' },
+          { label: 'Closed', value: closedCount, sub: `${rmas.length} total RMAs`, bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
+          { label: 'Credited', value: creditedCount, sub: 'Credit note raised', bg: 'bg-[var(--neutral-100)]', text: 'text-foreground' },
         ].map(s => (
           <Card key={s.label} className="bg-card border border-[var(--border)] rounded-lg p-6">
             <p className="text-xs text-[var(--neutral-500)] font-medium mb-1">{s.label}</p>
@@ -274,19 +338,57 @@ export function ShipReturns() {
                   </div>
 
                   <div className="space-y-2 pt-2">
-                    {selected.status === 'pending' && (
-                      <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-mirage)] text-white hover:bg-[var(--neutral-800)] transition-colors font-medium">
-                        Approve return
+                    {selected.status === 'awaiting_receipt' && (
+                      <button
+                        disabled={busy}
+                        onClick={() => void handleReceive(selected)}
+                        className="w-full h-14 rounded-full text-sm bg-[var(--mw-mirage)] text-white hover:bg-[var(--neutral-800)] transition-colors font-medium disabled:opacity-50"
+                      >
+                        Receive return
                       </button>
                     )}
                     {selected.status === 'received' && (
-                      <button className="w-full h-14 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium">
-                        Process refund
-                      </button>
+                      <>
+                        <p className="text-xs text-[var(--neutral-500)]">
+                          QC disposition (decision D13 — reuses the QC machinery):
+                        </p>
+                        <button
+                          disabled={busy}
+                          onClick={() => void handleDispose(selected, 'restock')}
+                          className="w-full h-12 rounded-full text-sm bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors font-medium disabled:opacity-50"
+                        >
+                          Restock to FG
+                        </button>
+                        <button
+                          disabled={busy}
+                          onClick={() => void handleDispose(selected, 'rework')}
+                          className="w-full h-12 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium disabled:opacity-50"
+                        >
+                          Raise rework Job
+                        </button>
+                        <button
+                          disabled={busy}
+                          onClick={() => void handleDispose(selected, 'scrap')}
+                          className="w-full h-12 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium disabled:opacity-50"
+                        >
+                          Scrap
+                        </button>
+                      </>
                     )}
-                    <button className="w-full h-14 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors font-medium">
-                      Contact customer
-                    </button>
+                    {selected.status === 'closed' && (
+                      <div className="rounded-lg bg-[var(--neutral-100)] p-4 text-sm space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-[var(--neutral-500)]">Disposition</span>
+                          <span className="font-medium">{selected.disposition ?? '—'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[var(--neutral-500)]">Credit note</span>
+                          <span className="font-medium tabular-nums">
+                            {selected.creditNoteId ?? 'none owed'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -306,30 +408,22 @@ export function ShipReturns() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="rma-order" className="text-xs text-[var(--neutral-500)]">Order number</Label>
-              <Input
-                id="rma-order"
-                ref={orderRef}
-                value={formOrder}
-                onChange={(e) => setFormOrder(e.target.value)}
-                placeholder="e.g. SH-042"
-                aria-invalid={!!formErrors.order}
-                className="mt-1 h-10 tabular-nums"
-              />
-              {formErrors.order && <p className="mt-1 text-xs text-destructive">{formErrors.order}</p>}
-            </div>
-            <div>
-              <Label htmlFor="rma-customer" className="text-xs text-[var(--neutral-500)]">Customer</Label>
-              <Input
-                id="rma-customer"
-                ref={customerRef}
-                value={formCustomer}
-                onChange={(e) => setFormCustomer(e.target.value)}
-                placeholder="Customer name"
-                aria-invalid={!!formErrors.customer}
-                className="mt-1 h-10"
-              />
-              {formErrors.customer && <p className="mt-1 text-xs text-destructive">{formErrors.customer}</p>}
+              <Label className="text-xs text-[var(--neutral-500)]">Delivered shipment</Label>
+              <Select value={formShipmentId} onValueChange={setFormShipmentId}>
+                <SelectTrigger className="mt-1 h-10 w-full text-sm">
+                  <SelectValue placeholder="Pick a delivered shipment…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {deliveredShipments.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.shipmentNumber} · {s.customerName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-1 text-xs text-[var(--neutral-500)]">
+                Returns are raised against delivered shipments only (PoD recorded).
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -340,10 +434,8 @@ export function ShipReturns() {
                   min="1"
                   value={formItems}
                   onChange={(e) => setFormItems(e.target.value)}
-                  aria-invalid={!!formErrors.items}
                   className="mt-1 h-10 tabular-nums"
                 />
-                {formErrors.items && <p className="mt-1 text-xs text-destructive">{formErrors.items}</p>}
               </div>
               <div>
                 <Label className="text-xs text-[var(--neutral-500)]">Reason</Label>
@@ -364,7 +456,7 @@ export function ShipReturns() {
             <Button type="button" variant="outline" className="h-10" onClick={() => setCreateOpen(false)}>
               Cancel
             </Button>
-            <Button type="button" className="h-10" onClick={handleCreateRma}>
+            <Button type="button" className="h-10" disabled={busy} onClick={() => void handleCreateRma()}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Create RMA
             </Button>

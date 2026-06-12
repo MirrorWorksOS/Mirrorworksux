@@ -82,6 +82,67 @@ interface LineItem {
   status: string;
 }
 
+/**
+ * Fulfilment policy card (decision D6) — binds the CENTRAL SalesOrder
+ * entity (resolved by order number) so the partial-fulfilment toggle and
+ * backorder badges reflect live workflow state, not the page's demo rows.
+ * Self-contained component so the tab switch stays hook-free.
+ */
+function FulfilmentPolicyCard({ soNumber }: { soNumber: string }) {
+  const [, force] = useState(0);
+  const so = salesOrders.find((s) => s.orderNumber === soNumber);
+  if (!so) return null;
+  const allow = so.allowPartialFulfilment ?? true;
+  const backordered = (so.lines ?? []).filter((l) => (l.backorderQty ?? 0) > 0);
+  return (
+    <Card className="p-6 space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-medium text-foreground">Fulfilment policy</h3>
+          <p className="text-xs text-[var(--neutral-500)]">
+            Partial shipment {allow ? 'allowed' : 'not allowed'} — seeded from the
+            customer default; unfilled stock lines {allow ? 'ship short and backorder' : 'hold the whole order'}.
+          </p>
+        </div>
+        <Button
+          variant={allow ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => {
+            so.allowPartialFulfilment = !allow;
+            toast.success(
+              so.allowPartialFulfilment
+                ? 'Partial shipment allowed — remainder backorders.'
+                : 'Complete delivery required — order holds until every line allocates.',
+            );
+            force((n) => n + 1);
+          }}
+        >
+          {allow ? 'Partial OK' : 'Ship complete'}
+        </Button>
+      </div>
+      {backordered.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--neutral-500)]">
+            Backordered lines
+          </p>
+          {backordered.map((l) => (
+            <div key={l.id} className="flex items-center justify-between text-sm">
+              <span className="text-[var(--neutral-600)]">{l.description}</span>
+              <Badge className="border-0 bg-[var(--mw-amber-100)] text-[var(--mw-amber)] text-xs">
+                {l.backorderQty} backordered
+              </Badge>
+            </div>
+          ))}
+          <p className="text-xs text-[var(--neutral-500)]">
+            Arrivals (goods receipt or put-away to finished goods) convert reservations
+            and auto-raise the second pick list.
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 interface DocFile {
   id: string;
   name: string;
@@ -938,6 +999,8 @@ export function SellOrderDetail() {
                 .
               </p>
             </div>
+
+            {!isNew && order && <FulfilmentPolicyCard soNumber={order.soNumber} />}
 
             {/* Fulfilment (carrier, tracking, status, labels, notes) */}
             <EditableCard

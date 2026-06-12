@@ -265,3 +265,41 @@ green.**
   records who/why), OrderJourneyPage B4 one-click demo, and a QC Fail →
   Scrap on a journey-page WO inspector (remake creates the -SF MO;
   ship-short logs the concession; RTV raises the supplier return).
+
+## Worker 6 + orchestrator finish (2026-06-12 morning)
+
+Worker 6 hit the monthly spend limit mid-run; the orchestrator (main
+session) completed its scope inline.
+
+- A — DONE: FulfilmentPolicyCard on SellOrderDetail fulfilment tab
+  (partial-OK toggle bound to the central SO + backordered-line badges).
+  Customer-level default field exists in entities + seeds at confirm;
+  a customer-detail display widget was CUT (minor).
+- B — service DONE (putAway + backorder conversion + auto second pick
+  list); journey-page "Put away completed MO → FG" action covers the
+  demo. Dedicated MO-detail put-away button CUT.
+- C — stocktake PAGE CUT (recordStockAdjustment service mutation is
+  built + tested; page is a clean follow-up PR).
+- D — DONE: ShipReturns rewired to live customerReturns —
+  create-from-delivered-shipment, receive, disposition
+  (restock/rework/scrap) + credit notes.
+- E — DONE: ReorderRulesPage inline editing (point/qty/lead/
+  shortageBehaviour/enabled) + add-rule form.
+- F — DONE (worker 6 service + SubcontractTimeline 4-state; release
+  modal via journey "Release subcontract…" action with materialModel).
+- G — DONE: BuyRFQs post-MVP banner.
+- H — DONE (worker 6: release MO / put away / subcontract / VO journey
+  actions; milestone invoicing panel landed with worker 3).
+
+Final summary: workers 1-5 all scope done; worker 6 scope done except
+the two recorded cuts (stocktake page, customer-default display).
+Quality bar at HEAD: typecheck, lint --max-warnings 0, 108/108 unit
+tests, vite build — all green.
+
+Suggested browser checks (consolidated): SO-2026-0085 confirm → one Job
++ MOs; /plan/engineering-jobs approval walk → publish under parent;
+mo-005 "Release to floor" (G2); SH-001 blocked dispatch (G3);
+PO-2026-0089 over-receipt (G5); journey InvoiceMilestonePanel raise
+(G4); VO approve → amend-in-place + milestone adjustment; QC fail →
+scrap modal → shortfall MO; Ship ▸ Returns create/receive/dispose;
+/plan/reorder-rules edit + run monitor.
