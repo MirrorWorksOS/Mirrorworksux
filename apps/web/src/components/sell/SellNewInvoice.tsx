@@ -22,6 +22,17 @@ import {
 import { MwDataTable, type MwColumnDef } from "@/components/shared/data/MwDataTable";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/workflow/GateBanner";
+import * as mock from "@/services/mock";
+import {
+  GateFailure,
+  MILESTONE_EVENT_LABELS,
+  milestoneInvoiceAmount,
+  milestonesForTerm,
+  paymentTermForSalesOrder,
+  workflowService,
+} from "@/services/workflowService";
+import type { GateFailureDetail, PaymentMilestoneEvent } from "@/types/entities";
 
 const CUSTOMERS = [
   "TechCorp Industries",
@@ -61,18 +72,61 @@ export function SellNewInvoice() {
   const linkedOrderId  = searchParams.get('orderId') ?? '';
   const linkedQuoteId  = searchParams.get('quoteId') ?? '';
 
-  const [customer, setCustomer] = useState<string>(linkedCustomer);
-  const [poReference, setPoReference] = useState(linkedOrderId || linkedQuoteId);
+  // ── D5: milestone pre-link — /sell/invoices/new?soId=…&milestone=…[&shipmentId=…]
+  // Raised through gate G4 (`raiseInvoiceForMilestone`); the free-form
+  // ad-hoc path below stays untouched when these params are absent.
+  const milestoneLink = useMemo(() => {
+    const soId = searchParams.get('soId');
+    const event = searchParams.get('milestone') as PaymentMilestoneEvent | null;
+    if (!soId || !event) return undefined;
+    const so = mock.salesOrders.find((s) => s.id === soId);
+    if (!so) return undefined;
+    const term = paymentTermForSalesOrder(so);
+    const milestone = milestonesForTerm(term).find((m) => m.event === event);
+    if (!milestone) return undefined;
+    const shipmentId = searchParams.get('shipmentId') ?? undefined;
+    const shipment = shipmentId
+      ? mock.shipments.find((s) => s.id === shipmentId)
+      : undefined;
+    return {
+      so,
+      term,
+      milestone,
+      shipment,
+      amount: milestoneInvoiceAmount(so, milestone, shipment),
+    };
+  }, [searchParams]);
+
+  const [gateFailures, setGateFailures] = useState<GateFailureDetail[]>([]);
+
+  const [customer, setCustomer] = useState<string>(
+    milestoneLink?.so.customerName ?? linkedCustomer,
+  );
+  const [poReference, setPoReference] = useState(
+    milestoneLink?.so.orderNumber ?? (linkedOrderId || linkedQuoteId),
+  );
   const [issueDate, setIssueDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
   const [dueDate, setDueDate] = useState(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 30);
+    d.setDate(d.getDate() + (milestoneLink?.term?.days ?? 30));
     return d.toISOString().slice(0, 10);
   });
   const [notes, setNotes] = useState("");
-  const [lines, setLines] = useState<LineRow[]>([newRow(), newRow()]);
+  const [lines, setLines] = useState<LineRow[]>(() =>
+    milestoneLink
+      ? [
+          {
+            id: `li-${Date.now()}`,
+            item: "MILESTONE",
+            description: `${MILESTONE_EVENT_LABELS[milestoneLink.milestone.event]} milestone (${milestoneLink.milestone.pct}%) — ${milestoneLink.so.orderNumber}${milestoneLink.shipment ? ` · ${milestoneLink.shipment.shipmentNumber}` : ''}`,
+            qty: 1,
+            unitPrice: milestoneLink.amount,
+          },
+        ]
+      : [newRow(), newRow()],
+  );
 
   const subtotal = useMemo(
     () =>
@@ -105,9 +159,31 @@ export function SellNewInvoice() {
     navigate("/sell/invoices/inv-008");
   };
 
-  const handleIssue = () => {
+  const handleIssue = async () => {
     if (!canSubmit) {
       toast.error("Select a customer and add at least one line with item and price.");
+      return;
+    }
+    // Milestone-linked invoices go through gate G4 (decision D5).
+    if (milestoneLink) {
+      try {
+        const invoice = await workflowService.raiseInvoiceForMilestone({
+          salesOrderId: milestoneLink.so.id,
+          event: milestoneLink.milestone.event,
+          shipmentId: milestoneLink.shipment?.id,
+        });
+        setGateFailures([]);
+        toast.success(
+          `Invoice ${invoice.invoiceNumber} raised — ${MILESTONE_EVENT_LABELS[invoice.milestoneEvent!]} (${invoice.milestonePct}%).`,
+        );
+        navigate("/sell/invoices");
+      } catch (e) {
+        if (e instanceof GateFailure) {
+          setGateFailures(e.details);
+        } else {
+          toast.error(e instanceof Error ? e.message : String(e));
+        }
+      }
       return;
     }
     toast.success("Invoice issued and sent to accounts contact.");
@@ -130,6 +206,26 @@ export function SellNewInvoice() {
       />
 
       <div className="space-y-6 px-6 pb-6">
+        {milestoneLink && (
+          <Card className="border-[var(--mw-yellow-400)] p-4">
+            <p className="text-sm font-medium text-foreground">
+              Linked to {milestoneLink.so.orderNumber} —{' '}
+              {MILESTONE_EVENT_LABELS[milestoneLink.milestone.event]} milestone (
+              {milestoneLink.milestone.pct}%)
+              {milestoneLink.shipment ? ` · ${milestoneLink.shipment.shipmentNumber}` : ''}
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--neutral-500)]">
+              {milestoneLink.term?.label ?? 'Default terms'} · net{' '}
+              {milestoneLink.term?.days ?? 30} days. Issuing runs gate G4 — the
+              milestone event must have occurred and not be invoiced already.
+            </p>
+          </Card>
+        )}
+
+        {gateFailures.length > 0 && (
+          <GateBanner failures={gateFailures} title="G4 · Ship → Book blocked" />
+        )}
+
         <Card className="p-6">
           <h2 className="text-base font-medium text-foreground mb-4">
             Header

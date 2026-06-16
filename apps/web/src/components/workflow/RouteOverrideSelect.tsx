@@ -9,9 +9,8 @@ import { RouteChip } from './RouteChip';
 const OPTIONS: { value: '' | ProductRoute; label: string }[] = [
   { value: '', label: 'Use product default' },
   { value: 'mto', label: 'MTO — Make-to-Order' },
+  { value: 'stock_sale', label: 'Stock Sale — pick from stock' },
   { value: 'eto', label: 'ETO — Engineer-to-Order' },
-  { value: 'catalogue_sale', label: 'Catalogue — pick from stock' },
-  { value: 'make_to_stock', label: 'MTS — Replenishment' },
 ];
 
 export interface RouteOverrideSelectProps {

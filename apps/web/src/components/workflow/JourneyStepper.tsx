@@ -1,7 +1,10 @@
 /**
- * 10-stage horizontal progress strip rendered on every Order detail page.
- * Shows where the order is, which stages have been completed, and any
- * gate failure at the current stage.
+ * 7-stage horizontal progress strip rendered on every Order detail page
+ * — the document spine from workflow decision D1: Quote → Sales Order →
+ * Job → Manufacturing → Work Orders → Dispatch → Invoice. BoM / MRP /
+ * Schedule are Job-stage detail (spokes), not spine stops. Shows where
+ * the order is, which stages have been completed, and any gate failure
+ * at the current stage.
  */
 import { Check, Circle, AlertCircle } from 'lucide-react';
 import type { JourneyStage } from '@/types/entities';
@@ -10,11 +13,8 @@ const STAGES: { id: JourneyStage; label: string }[] = [
   { id: 'quote', label: 'Quote' },
   { id: 'sales_order', label: 'Sales Order' },
   { id: 'job', label: 'Job' },
-  { id: 'bom', label: 'BoM' },
-  { id: 'mrp', label: 'MRP' },
-  { id: 'schedule', label: 'Schedule' },
   { id: 'manufacturing', label: 'Manufacturing' },
-  { id: 'qc', label: 'QC' },
+  { id: 'work_orders', label: 'Work Orders' },
   { id: 'dispatch', label: 'Dispatch' },
   { id: 'invoice', label: 'Invoice' },
 ];

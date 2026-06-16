@@ -10,7 +10,10 @@
 import type {
   BillOfMaterials,
   ConcessionRecord,
+  CreditNote,
   Customer,
+  CustomerReturn,
+  EcoSuggestion,
   InventoryRecord,
   PickList,
   ProductReorderRule,
@@ -20,6 +23,7 @@ import type {
   StockLocation,
   StockMovement,
   SubcontractDispatch,
+  SupplierReturn,
   TimeEntry,
   VariationOrder,
 } from '@/types/entities';
@@ -38,7 +42,7 @@ export const stockLocations: StockLocation[] = [
 
 // ── Inventory snapshots ────────────────────────────────────────────
 export const inventoryRecords: InventoryRecord[] = [
-  // Catalogue / make-to-stock items with FG stock.
+  // Stocked (stock_sale) items with FG stock — replenished via reorder rules.
   { id: 'inv-001', productId: 'prod-005', locationId: 'loc-fg', qtyOnHand: 240, qtyReserved: 30 },
   { id: 'inv-002', productId: 'prod-001', locationId: 'loc-fg', qtyOnHand: 75, qtyReserved: 10 },
   { id: 'inv-003', productId: 'prod-002', locationId: 'loc-raw', qtyOnHand: 12, qtyReserved: 0 },
@@ -169,8 +173,34 @@ export const putAwayRecords: PutAwayRecord[] = [];
 export const qualityChecks: QualityCheck[] = [];
 export const timeEntries: TimeEntry[] = [];
 export const variationOrders: VariationOrder[] = [];
+export const creditNotes: CreditNote[] = [];
 export const concessionRecords: ConcessionRecord[] = [];
+export const supplierReturns: SupplierReturn[] = [];
+// ── ECO suggestions (decision 14 — floor flags master-BoM doubts) ──
+export const ecoSuggestions: EcoSuggestion[] = [];
 export const subcontractDispatches: SubcontractDispatch[] = [];
+
+// ── Customer returns (decision D13 minimal RMA) ────────────────────
+// One closed fixture so Ship ▸ Returns demonstrates the finished flow;
+// live returns are raised from delivered shipments via createReturn.
+export const customerReturns: CustomerReturn[] = [
+  {
+    id: 'crt-001',
+    rmaNumber: 'RMA-2026-0001',
+    shipmentId: 'shp-001',
+    salesOrderId: 'so-004',
+    customerId: 'cust-006',
+    customerName: 'Kemppi Australia',
+    productId: 'prod-006',
+    qty: 1,
+    reason: 'Damaged in transit',
+    status: 'closed',
+    disposition: 'scrap',
+    createdAt: '2026-03-24T03:00:00Z',
+    receivedAt: '2026-03-27T01:30:00Z',
+    closedAt: '2026-03-28T05:10:00Z',
+  },
+];
 
 // ── Pseudo-customer for replenishment Jobs (Phase B3 audit §4.4) ───
 // Used instead of nullable `Job.customerId` to avoid a cascade of

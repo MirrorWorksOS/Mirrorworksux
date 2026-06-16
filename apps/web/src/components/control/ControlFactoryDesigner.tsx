@@ -140,7 +140,7 @@ const PALETTE_ITEMS: Record<ElementCategory, PaletteItem[]> = {
   ],
   people: [
     { type: 'operator', label: 'Operator Station', icon: <User className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-mirage-400)' },
-    { type: 'supervisor', label: 'Supervisor Station', icon: <Shield className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-yellow-500)' },
+    { type: 'lead', label: 'Lead Station', icon: <Shield className="w-4 h-4" />, category: 'people', defaultWidth: 40, defaultHeight: 40, defaultColor: 'var(--mw-yellow-500)' },
   ],
   'text-shapes': [
     { type: 'text', label: 'Text Label', icon: <Type className="w-4 h-4" />, category: 'text-shapes', defaultWidth: 120, defaultHeight: 40, defaultColor: 'var(--neutral-900)' },
@@ -1045,7 +1045,7 @@ function CanvasElement({ element, isSelected, onMouseDown }: CanvasElementProps)
     : undefined;
 
   if (element.category === 'people') {
-    // Render as mirage-tinted circle (or yellow-tinted for supervisor)
+    // Render as mirage-tinted circle (or yellow-tinted for the lead station)
     const cx = element.x + element.width / 2;
     const cy = element.y + element.height / 2;
     const r = element.width / 2;

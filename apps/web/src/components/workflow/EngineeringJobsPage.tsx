@@ -1,33 +1,118 @@
 /**
- * Engineering Job queue — Phase B4 surface. Filters Jobs with
- * `source: 'engineering'` and exposes the Publish-BoM action that
- * spawns the production Job. Production Jobs spawned from this queue
- * show up below with parent-link breadcrumbs.
+ * Engineering Job queue — Phase B4 surface, reworked for decision D7.
+ * Filters Jobs with `source: 'engineering'` and walks the customer
+ * drawing-approval state machine (in_design → submitted_for_approval →
+ * approved | revision_requested). Publishing the approved (or waived)
+ * BoM creates Manufacturing Orders under the PARENT Job — the order's
+ * Job, reachable via `parentJobId`. No separate production Job exists.
  */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileBox, Network } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ArrowLeft, FileBox, Send, ShieldCheck, Undo2 } from 'lucide-react';
 import * as mock from '@/services/mock';
-import { workflowService } from '@/services/workflowService';
-import type { Job } from '@/types/entities';
+import { workflowService, GateFailure, evaluateBomPublish } from '@/services/workflowService';
+import type { EngineeringApprovalStatus, GateFailureDetail, Job } from '@/types/entities';
+import { GateBanner } from './GateBanner';
 import { JobGraphMini } from './JobGraphMini';
 
+const APPROVAL_LABELS: Record<EngineeringApprovalStatus, string> = {
+  in_design: 'In design',
+  submitted_for_approval: 'Awaiting customer approval',
+  approved: 'Approved',
+  revision_requested: 'Revision requested',
+};
+
+const APPROVAL_BADGE_CLASS: Record<EngineeringApprovalStatus, string> = {
+  in_design: 'border-muted-foreground/30 text-muted-foreground',
+  submitted_for_approval: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  approved: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+  revision_requested: 'border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-400',
+};
+
+function ApprovalBadge({ job }: { job: Job }) {
+  const status = job.approvalStatus ?? 'in_design';
+  return (
+    <span className="inline-flex items-center gap-1">
+      <Badge variant="outline" className={`text-[10px] ${APPROVAL_BADGE_CLASS[status]}`}>
+        {APPROVAL_LABELS[status]}
+      </Badge>
+      {job.waiver && (
+        <Badge
+          variant="outline"
+          className="border-amber-500/40 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-400"
+          title={`Approval waived by ${job.waiver.by}: ${job.waiver.reason}`}
+        >
+          Waived
+        </Badge>
+      )}
+    </span>
+  );
+}
+
 export function EngineeringJobsPage() {
-  const [reloadKey, setReloadKey] = useState(0);
+  const [, setReloadKey] = useState(0);
   const [busy, setBusy] = useState<string | null>(null);
+  const [waiverFor, setWaiverFor] = useState<Job | null>(null);
+  const [waiverBy, setWaiverBy] = useState('');
+  const [waiverReason, setWaiverReason] = useState('');
+  const [gateFailures, setGateFailures] = useState<GateFailureDetail[]>([]);
+
+  const refresh = () => setReloadKey((k) => k + 1);
 
   const engineering = mock.jobs.filter((j) => j.source === 'engineering');
-  const production = mock.jobs.filter((j) => j.parentJobId && engineering.some((e) => e.id === j.parentJobId));
+  const parents = mock.jobs.filter((j) => engineering.some((e) => e.parentJobId === j.id));
 
-  const publish = async (engJob: Job) => {
-    setBusy(engJob.id);
+  const run = async (jobId: string, fn: () => Promise<void>) => {
+    setBusy(jobId);
     try {
-      const r = await workflowService.publishBomToProductionJob({
-        engineeringJobId: engJob.id,
+      await fn();
+      refresh();
+    } catch (e) {
+      if (e instanceof GateFailure) {
+        setGateFailures(e.details);
+      } else {
+        toast.error(e instanceof Error ? e.message : 'Action failed.');
+      }
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const submit = (j: Job) =>
+    run(j.id, async () => {
+      await workflowService.submitForApproval(j.id);
+      toast.success(`${j.jobNumber} submitted — drawings published to the customer portal for review.`);
+    });
+
+  const decide = (j: Job, decision: 'approved' | 'revision_requested') =>
+    run(j.id, async () => {
+      await workflowService.approveEngineeringJob(j.id, { decision, by: 'Customer (portal)' });
+      toast.success(
+        decision === 'approved'
+          ? `${j.jobNumber} approved by the customer.`
+          : `${j.jobNumber} — customer requested a revision.`,
+      );
+    });
+
+  const publish = (j: Job) =>
+    run(j.id, async () => {
+      setGateFailures([]);
+      const r = await workflowService.publishBom({
+        engineeringJobId: j.id,
         productId: 'prod-004',
         revision: 'A',
         components: [
@@ -36,18 +121,23 @@ export function EngineeringJobsPage() {
         ],
       });
       toast.success(
-        `Published BoM rev ${r.bom.revision}; production Job ${r.productionJob.jobNumber} created.`,
+        `Published BoM rev ${r.bom.revision}; ${r.manufacturingOrders.length} MO(s) created under parent Job ${r.parentJob.jobNumber}.`,
       );
-      setReloadKey((k) => k + 1);
+    });
+
+  const saveWaiver = async () => {
+    if (!waiverFor) return;
+    try {
+      await workflowService.waiveBomApproval(waiverFor.id, { by: waiverBy, reason: waiverReason });
+      toast.success(`Approval waived on ${waiverFor.jobNumber} by ${waiverBy.trim()}.`);
+      setWaiverFor(null);
+      setWaiverBy('');
+      setWaiverReason('');
+      refresh();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Publish failed.');
-    } finally {
-      setBusy(null);
+      toast.error(e instanceof Error ? e.message : 'Waiver failed.');
     }
   };
-
-  // Bind to reloadKey so descendants re-render after publish.
-  useEffect(() => {}, [reloadKey]);
 
   return (
     <div className="space-y-4 p-6">
@@ -60,15 +150,20 @@ export function EngineeringJobsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Engineering Jobs (ETO)</h1>
         <p className="text-sm text-muted-foreground">
-          ETO Sales Order lines create an engineering Job that authors a
-          BoM. Publishing the BoM spawns the production Job; the two are
-          linked via <code>parentJobId</code>.
+          ETO Sales Order lines create a child engineering Job that authors a BoM.
+          Customer drawing approval gates the publish: submit for approval, then —
+          once approved (or waived with who/why recorded) — publishing the BoM
+          creates Manufacturing Orders under the parent Job (the order&apos;s Job,
+          linked via <code>parentJobId</code>).
         </p>
       </div>
 
+      <GateBanner failures={gateFailures} title="BoM publish blocked" />
+
       <Card className="p-4">
         <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-          <FileBox className="h-4 w-4" /> Awaiting BoM publication ({engineering.filter((j) => j.status !== 'completed').length})
+          <FileBox className="h-4 w-4" /> Engineering queue (
+          {engineering.filter((j) => j.status !== 'completed').length} open)
         </div>
         {engineering.length === 0 ? (
           <p className="text-sm text-muted-foreground">
@@ -82,13 +177,16 @@ export function EngineeringJobsPage() {
                 <th className="py-1.5">Job</th>
                 <th className="py-1.5">Title</th>
                 <th className="py-1.5">SO</th>
-                <th className="py-1.5">Status</th>
+                <th className="py-1.5">Approval</th>
                 <th className="py-1.5"></th>
               </tr>
             </thead>
             <tbody>
               {engineering.map((j) => {
-                const child = mock.jobs.find((c) => c.parentJobId === j.id);
+                const approval = j.approvalStatus ?? 'in_design';
+                const published = j.status === 'completed';
+                const publishable = evaluateBomPublish(j).length === 0;
+                const rowBusy = busy === j.id;
                 return (
                   <tr key={j.id} className="border-t">
                     <td className="py-1.5 font-medium">{j.jobNumber}</td>
@@ -104,24 +202,83 @@ export function EngineeringJobsPage() {
                       )}
                     </td>
                     <td className="py-1.5">
-                      <Badge variant="outline" className="text-[10px]">
-                        {j.status}
-                      </Badge>
+                      <ApprovalBadge job={j} />
                     </td>
                     <td className="py-1.5 text-right">
-                      {child ? (
+                      {published ? (
                         <span className="text-xs text-muted-foreground">
-                          → {child.jobNumber}
+                          BoM published → MOs under{' '}
+                          {mock.jobs.find((p) => p.id === j.parentJobId)?.jobNumber ?? 'parent Job'}
                         </span>
                       ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={busy === j.id}
-                          onClick={() => void publish(j)}
-                        >
-                          Publish BoM
-                        </Button>
+                        <div className="flex flex-wrap items-center justify-end gap-1">
+                          {(approval === 'in_design' || approval === 'revision_requested') && (
+                            <Button size="sm" variant="outline" disabled={rowBusy} onClick={() => void submit(j)}>
+                              <Send className="mr-1 h-3.5 w-3.5" />
+                              {approval === 'revision_requested' ? 'Resubmit for approval' : 'Submit for approval'}
+                            </Button>
+                          )}
+                          {approval === 'submitted_for_approval' && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={rowBusy}
+                                title="Demo stand-in for the customer portal approval action."
+                                onClick={() => void decide(j, 'approved')}
+                              >
+                                Approve (portal demo)
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={rowBusy}
+                                title="Demo stand-in for the customer portal request-revision action."
+                                onClick={() => void decide(j, 'revision_requested')}
+                              >
+                                <Undo2 className="mr-1 h-3.5 w-3.5" /> Request revision (portal demo)
+                              </Button>
+                            </>
+                          )}
+                          {approval !== 'approved' && !j.waiver && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={rowBusy}
+                              onClick={() => setWaiverFor(j)}
+                            >
+                              <ShieldCheck className="mr-1 h-3.5 w-3.5" /> Waive approval
+                            </Button>
+                          )}
+                          <span
+                            title={
+                              publishable
+                                ? 'Publish the BoM — creates MOs under the parent Job.'
+                                : 'Blocked: customer approval (or a recorded waiver) is required before the BoM can publish.'
+                            }
+                          >
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={rowBusy || !publishable}
+                              onClick={() => void publish(j)}
+                            >
+                              Publish BoM
+                            </Button>
+                          </span>
+                          {!publishable && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-xs text-muted-foreground"
+                              disabled={rowBusy}
+                              title="Demo: attempt the publish anyway to see gate failure bom_unapproved."
+                              onClick={() => void publish(j)}
+                            >
+                              Force (gate demo)
+                            </Button>
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -132,9 +289,103 @@ export function EngineeringJobsPage() {
         )}
       </Card>
 
-      {(engineering.length > 0 || production.length > 0) && (
-        <JobGraphMini jobs={[...engineering, ...production]} />
+      {engineering.length > 0 && (
+        <JobGraphMini jobs={[...parents, ...engineering]} />
       )}
+
+      <Dialog open={waiverFor !== null} onOpenChange={(open) => !open && setWaiverFor(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Waive customer approval — {waiverFor?.jobNumber}</DialogTitle>
+            <DialogDescription>
+              Internal waiver of the customer drawing approval (decision D7). Who is
+              waiving it and why is recorded on the engineering Job; the BoM can then
+              publish without portal approval.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label htmlFor="waiver-by" className="text-xs font-medium">Waived by</label>
+              <Input
+                id="waiver-by"
+                value={waiverBy}
+                onChange={(e) => setWaiverBy(e.target.value)}
+                placeholder="e.g. Dana Reeve (lead)"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="waiver-reason" className="text-xs font-medium">Reason</label>
+              <Textarea
+                id="waiver-reason"
+                value={waiverReason}
+                onChange={(e) => setWaiverReason(e.target.value)}
+                placeholder="Why is the customer approval being waived?"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWaiverFor(null)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!waiverBy.trim() || !waiverReason.trim()}
+              onClick={() => void saveWaiver()}
+            >
+              Record waiver
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <EcoSuggestionQueue />
     </div>
+  );
+}
+
+/**
+ * Engineering review queue (decision 14) — ECO suggestions raised from
+ * floor material adjustments. The master BoM only changes via a NEW
+ * REVISION through the publish gate; this queue is the prompt.
+ */
+function EcoSuggestionQueue() {
+  const [, force] = useState(0);
+  const open = mock.ecoSuggestions.filter((e) => e.status === 'open');
+  return (
+    <Card className="p-4">
+      <div className="mb-2 flex items-center gap-2 text-sm font-medium">
+        <FileBox className="h-4 w-4" /> Engineering review queue — ECO suggestions
+        <Badge variant="outline" className="text-[10px]">{open.length} open</Badge>
+      </div>
+      {mock.ecoSuggestions.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          None yet. Floor material adjustments with "flag for engineering review" land here;
+          accepting one means cutting a new BoM revision through the publish gate above.
+        </p>
+      ) : (
+        <ul className="space-y-1.5 text-sm">
+          {mock.ecoSuggestions.slice().reverse().map((e) => (
+            <li key={e.id} className="flex items-center justify-between gap-2">
+              <span className={e.status === 'reviewed' ? 'text-muted-foreground line-through' : ''}>
+                {e.note} <span className="text-xs text-muted-foreground">· {e.raisedBy}</span>
+              </span>
+              {e.status === 'open' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    e.status = 'reviewed';
+                    toast.success('Marked reviewed — cut a new BoM revision if the change should stick.');
+                    force((n) => n + 1);
+                  }}
+                >
+                  Mark reviewed
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

@@ -36,6 +36,7 @@ import { products, quotes, salesOrders, sellInvoices } from "@/services";
 import { lineage, parseRef, type DocumentPrefix } from "@/services/numbering";
 import { cn } from "@/components/ui/utils";
 import { KickoffDialog, type KickoffLine } from "./order-kickoff/KickoffDialog";
+import { InvoiceMilestonePanel } from "@/components/workflow/InvoiceMilestonePanel";
 import { Rocket } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -79,6 +80,67 @@ interface LineItem {
   unitPrice: number;
   total: number;
   status: string;
+}
+
+/**
+ * Fulfilment policy card (decision D6) — binds the CENTRAL SalesOrder
+ * entity (resolved by order number) so the partial-fulfilment toggle and
+ * backorder badges reflect live workflow state, not the page's demo rows.
+ * Self-contained component so the tab switch stays hook-free.
+ */
+function FulfilmentPolicyCard({ soNumber }: { soNumber: string }) {
+  const [, force] = useState(0);
+  const so = salesOrders.find((s) => s.orderNumber === soNumber);
+  if (!so) return null;
+  const allow = so.allowPartialFulfilment ?? true;
+  const backordered = (so.lines ?? []).filter((l) => (l.backorderQty ?? 0) > 0);
+  return (
+    <Card className="p-6 space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-medium text-foreground">Fulfilment policy</h3>
+          <p className="text-xs text-[var(--neutral-500)]">
+            Partial shipment {allow ? 'allowed' : 'not allowed'} — seeded from the
+            customer default; unfilled stock lines {allow ? 'ship short and backorder' : 'hold the whole order'}.
+          </p>
+        </div>
+        <Button
+          variant={allow ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => {
+            so.allowPartialFulfilment = !allow;
+            toast.success(
+              so.allowPartialFulfilment
+                ? 'Partial shipment allowed — remainder backorders.'
+                : 'Complete delivery required — order holds until every line allocates.',
+            );
+            force((n) => n + 1);
+          }}
+        >
+          {allow ? 'Partial OK' : 'Ship complete'}
+        </Button>
+      </div>
+      {backordered.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--neutral-500)]">
+            Backordered lines
+          </p>
+          {backordered.map((l) => (
+            <div key={l.id} className="flex items-center justify-between text-sm">
+              <span className="text-[var(--neutral-600)]">{l.description}</span>
+              <Badge className="border-0 bg-[var(--mw-amber-100)] text-[var(--mw-amber)] text-xs">
+                {l.backorderQty} backordered
+              </Badge>
+            </div>
+          ))}
+          <p className="text-xs text-[var(--neutral-500)]">
+            Arrivals (goods receipt or put-away to finished goods) convert reservations
+            and auto-raise the second pick list.
+          </p>
+        </div>
+      )}
+    </Card>
+  );
 }
 
 interface DocFile {
@@ -400,7 +462,9 @@ export function SellOrderDetail() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [kickoffOpen, setKickoffOpen] = useState(false);
 
-  // Build the line set the KickoffDialog needs (filtered to make-able products).
+  // Build the line set the KickoffDialog needs. The route decides the
+  // grain (D2): manufactured (mto/eto) lines become MOs under the
+  // order's single Job; stock_sale lines raise a pick list instead.
   const kickoffLines: KickoffLine[] = useMemo(() => {
     return lineItems
       .map((li): KickoffLine | null => {
@@ -418,6 +482,7 @@ export function SellOrderDetail() {
             description: li.description ?? p.description,
             productKind: p.productKind,
             defaultTemplateIds: p.defaultTemplateIds,
+            route: p.defaultRoute ?? 'mto',
           },
         } satisfies KickoffLine;
       })
@@ -805,6 +870,13 @@ export function SellOrderDetail() {
                 </ol>
               </Card>
 
+              {/* G4 — raise invoices at the customer's payment-term
+                  milestones (D5). Only renders when the id resolves to a
+                  central SalesOrder record. */}
+              {!isNew && salesOrders.some((s) => s.id === order.id) && (
+                <InvoiceMilestonePanel salesOrderId={order.id} className="p-6" />
+              )}
+
               {/* AI insight */}
               <AIInsightCard title="Delivery forecast">
                 This order is tracking 2 days ahead of schedule. Expected delivery:{" "}
@@ -927,6 +999,8 @@ export function SellOrderDetail() {
                 .
               </p>
             </div>
+
+            {!isNew && order && <FulfilmentPolicyCard soNumber={order.soNumber} />}
 
             {/* Fulfilment (carrier, tracking, status, labels, notes) */}
             <EditableCard
@@ -1262,16 +1336,28 @@ export function SellOrderDetail() {
         onOpenChange={setKickoffOpen}
         orderNumber={order.soNumber}
         lines={kickoffLines}
-        onApplied={(created) => {
-          const jobs = created.length;
-          const acts = created.reduce(
+        onApplied={(result) => {
+          // One Job per SO (D2): the order's manufactured lines become
+          // MOs under a single Job; stock-only orders create no Job.
+          if (!result.job) {
+            toast.success('No Job — pick list raised', {
+              description: `${result.stockLineCount} stock line${result.stockLineCount === 1 ? '' : 's'} will be picked from inventory.`,
+            });
+            return;
+          }
+          const mos = result.lines.length;
+          const acts = result.lines.reduce(
             (sum, c) => sum + c.templateIds.length,
             0,
           );
           toast.success(
-            `${jobs} job${jobs === 1 ? '' : 's'} released to Plan`,
+            `Job ${result.job.jobNumber} released to Plan — ${mos} MO${mos === 1 ? '' : 's'}`,
             {
-              description: `${acts} template${acts === 1 ? '' : 's'} applied. Open Plan ▸ Activities to see them.`,
+              description: `${acts} template${acts === 1 ? '' : 's'} applied${
+                result.stockLineCount > 0
+                  ? `; ${result.stockLineCount} stock line${result.stockLineCount === 1 ? '' : 's'} → pick list`
+                  : ''
+              }. Open Plan ▸ Activities to see them.`,
               action: {
                 label: 'Open Plan',
                 onClick: () => navigate('/plan/activities'),

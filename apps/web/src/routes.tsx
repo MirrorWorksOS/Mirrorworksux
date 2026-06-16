@@ -178,6 +178,7 @@ const Notifications = lazyWithRetry(() => import('./components/Notifications').t
 const BudgetOverview = lazyWithRetry(() => import('./components/book/BudgetOverview').then(m => ({ default: m.BudgetOverview })));
 const BookDashboard = lazyWithRetry(() => import('./components/book/BookDashboard').then(m => ({ default: m.BookDashboard })));
 const BookInvoices = lazyWithRetry(() => import('./components/book/BookInvoices').then(m => ({ default: m.BookInvoices })));
+const BookCreditNotes = lazyWithRetry(() => import('./components/book/BookCreditNotes').then(m => ({ default: m.BookCreditNotes })));
 const ExpenseKanban = lazyWithRetry(() => import('./components/book/ExpenseKanban').then(m => ({ default: m.ExpenseKanban })));
 const PurchaseOrders = lazyWithRetry(() => import('./components/book/PurchaseOrders').then(m => ({ default: m.PurchaseOrders })));
 const JobProfitability = lazyWithRetry(() => import('./components/book/JobProfitability').then(m => ({ default: m.JobProfitability })));
@@ -530,6 +531,8 @@ export const router = createBrowserRouter([
           { path: 'budget', element: <L><BudgetOverview /></L> },
           { path: 'invoices', element: <L><BookInvoices /></L> },
           { path: 'invoices/:id', element: <L><BookInvoiceDetailRoute /></L> },
+          { path: 'credit-notes', element: <L><BookCreditNotes /></L> },
+          { path: 'credit-notes/:id', element: <L><BookCreditNotes /></L> },
           { path: 'expenses', element: <L><ExpenseKanban /></L> },
           { path: 'purchases', element: <L><PurchaseOrders /></L> },
           { path: 'purchases/new', element: <L><BookPurchaseOrderRoute /></L> },

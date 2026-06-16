@@ -15,6 +15,22 @@ import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ArrowLeft, AlertOctagon, Truck, Wrench, Network } from 'lucide-react';
 import type {
   GateFailureDetail,
@@ -25,6 +41,7 @@ import type {
   ProductRoute,
   SalesOrder,
   SubcontractDispatch,
+  SubcontractMaterialModel,
   VariationOrder,
   WorkOrder,
 } from '@/types/entities';
@@ -33,6 +50,7 @@ import {
   workflowService,
   evaluateSoToJob,
   evaluateMakeToShip,
+  GateFailure,
 } from '@/services/workflowService';
 import * as mock from '@/services/mock';
 import { JourneyStepper } from './JourneyStepper';
@@ -45,6 +63,7 @@ import { QcReworkInspector } from './QcReworkInspector';
 import { JobGraphMini } from './JobGraphMini';
 import { RouteOverrideSelect } from './RouteOverrideSelect';
 import { EntityPeek } from './EntityPeek';
+import { InvoiceMilestonePanel } from './InvoiceMilestonePanel';
 
 // ── Stage inference ───────────────────────────────────────────────
 
@@ -59,7 +78,7 @@ function inferStage(so: SalesOrder, pickLists: PickList[]): JourneyStage {
     case 'confirmed':
       return 'job';
     case 'in_production':
-      return 'manufacturing';
+      return 'work_orders';
     case 'shipped':
       return 'dispatch';
     case 'invoiced':
@@ -69,16 +88,15 @@ function inferStage(so: SalesOrder, pickLists: PickList[]): JourneyStage {
   }
 }
 
+// The 7-stage spine (decision D1) — BoM / MRP / Schedule are Job-stage
+// detail, not spine stops.
 function completedBefore(stage: JourneyStage): JourneyStage[] {
   const order: JourneyStage[] = [
     'quote',
     'sales_order',
     'job',
-    'bom',
-    'mrp',
-    'schedule',
     'manufacturing',
-    'qc',
+    'work_orders',
     'dispatch',
     'invoice',
   ];
@@ -90,6 +108,7 @@ function actionForStage(stage: JourneyStage) {
     case 'sales_order':
       return { label: 'Confirm Sales Order', key: 'confirm' as const };
     case 'manufacturing':
+    case 'work_orders':
       return { label: 'Pick & Dispatch', key: 'pick' as const };
     case 'dispatch':
       return { label: 'Mark Delivered', key: 'deliver' as const };
@@ -118,6 +137,12 @@ export function OrderJourneyPage() {
   const [subcontracts, setSubcontracts] = useState<SubcontractDispatch[]>([]);
   const [failures, setFailures] = useState<GateFailureDetail[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
+  // B7 release modal — materialModel is a real decision (D10), so the
+  // demo asks instead of hard-coding free_issue.
+  const [subReleaseOpen, setSubReleaseOpen] = useState(false);
+  const [subMaterialModel, setSubMaterialModel] =
+    useState<SubcontractMaterialModel>('free_issue');
+  const [subReleasing, setSubReleasing] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -176,9 +201,11 @@ export function OrderJourneyPage() {
     if (action.key === 'confirm') {
       const result = await workflowService.confirmSalesOrder(so.id);
       toast.success(
-        `Confirmed — ${result.perLine.length} line(s): ${result.perLine
-          .map((l) => l.route)
-          .join(', ')}`,
+        result.job
+          ? `Confirmed — Job ${result.job.jobNumber} created; ${result.perLine.length} line(s): ${result.perLine
+              .map((l) => l.route)
+              .join(', ')}`
+          : `Confirmed — no Job (stock-sale only); pick list raised for ${result.perLine.length} line(s).`,
       );
       return result;
     }
@@ -211,7 +238,11 @@ export function OrderJourneyPage() {
       fn: async () => {
         try {
           const r = await workflowService.confirmSalesOrder(so.id);
-          toast.success(`B1 — dispatched ${r.perLine.length} line(s).`);
+          toast.success(
+            r.job
+              ? `B1 — Job ${r.job.jobNumber} created; dispatched ${r.perLine.length} line(s).`
+              : `B1 — no Job (stock-sale only); dispatched ${r.perLine.length} line(s).`,
+          );
           refresh();
         } catch (e) {
           toast.error(e instanceof Error ? e.message : String(e));
@@ -224,7 +255,7 @@ export function OrderJourneyPage() {
       fn: async () => {
         const pending = pickLists.filter((p) => p.status === 'pending');
         if (pending.length === 0) {
-          toast.message('B2 — no pending pick lists. Confirm a catalogue line first.');
+          toast.message('B2 — no pending pick lists. Confirm a stock-sale line first.');
           return;
         }
         for (const p of pending) await workflowService.pickPickList(p.id, 'emp-003');
@@ -251,16 +282,28 @@ export function OrderJourneyPage() {
     },
     {
       archetype: 'B4',
-      label: 'Publish ETO BoM → spawn production Job',
+      label: 'Publish ETO BoM → MOs under parent Job',
       fn: async () => {
         const engJob = mock.jobs.find(
-          (j) => j.source === 'engineering' && !mock.jobs.some((c) => c.parentJobId === j.id),
+          (j) => j.source === 'engineering' && j.status !== 'completed',
         );
         if (!engJob) {
           toast.message('B4 — no engineering Job awaiting publish. Run B1 with an ETO line first.');
           return;
         }
-        const r = await workflowService.publishBomToProductionJob({
+        // Customer approval gates the publish (D7). Demo stand-in for
+        // the portal: walk the approval machine before publishing.
+        if (engJob.approvalStatus !== 'approved' && !engJob.waiver) {
+          if ((engJob.approvalStatus ?? 'in_design') !== 'submitted_for_approval') {
+            await workflowService.submitForApproval(engJob.id);
+          }
+          await workflowService.approveEngineeringJob(engJob.id, {
+            decision: 'approved',
+            by: 'Customer (portal demo)',
+          });
+          toast.message(`B4 — ${engJob.jobNumber} approved via portal demo stand-in.`);
+        }
+        const r = await workflowService.publishBom({
           engineeringJobId: engJob.id,
           productId: 'prod-004',
           revision: 'A',
@@ -270,7 +313,7 @@ export function OrderJourneyPage() {
           ],
         });
         toast.success(
-          `B4 — Published BoM rev ${r.bom.revision}; production Job ${r.productionJob.jobNumber} created.`,
+          `B4 — Published BoM rev ${r.bom.revision}; ${r.manufacturingOrders.length} MO(s) created under parent Job ${r.parentJob.jobNumber}.`,
         );
         refresh();
       },
@@ -303,10 +346,15 @@ export function OrderJourneyPage() {
         }
         const r = await workflowService.approveVariation(pending.id, 'emp-001');
         toast.success(
-          r.deltaJob
-            ? `B5 — Approved ${r.vo.voNumber}; delta Job ${r.deltaJob.jobNumber} spawned.`
-            : `B5 — Approved ${r.vo.voNumber} (descope; no delta job).`,
+          r.job
+            ? `B5 — Approved ${r.vo.voNumber}; Job ${r.job.jobNumber} amended in place (${r.amendedMos.length} MO${r.amendedMos.length === 1 ? '' : 's'} flagged for re-schedule).`
+            : `B5 — Approved ${r.vo.voNumber}; order re-priced (no live Job to amend).`,
         );
+        if (r.creditNote) {
+          toast.warning(
+            `B5 — descope exceeded the uninvoiced remainder; draft Credit Note ${r.creditNote.creditNoteNumber} raised for $${r.creditNote.amount.toLocaleString()}.`,
+          );
+        }
         refresh();
       },
     },
@@ -340,28 +388,95 @@ export function OrderJourneyPage() {
     },
     {
       archetype: 'B7',
-      label: 'Release subcontract → receive back',
+      label: 'Release subcontract…',
       fn: async () => {
         const wo = mock.workOrders[1] ?? mock.workOrders[0];
         if (!wo) {
           toast.error('B7 — no Work Orders available.');
           return;
         }
-        const dispatch = await workflowService.releaseSubcontract({
-          workOrderId: wo.id,
-          operationId: 'op-1',
-          supplierId: mock.suppliers[0].id,
-          materialModel: 'free_issue',
+        setSubReleaseOpen(true);
+      },
+    },
+    {
+      archetype: 'G2',
+      label: 'Release first draft MO to the floor',
+      fn: async () => {
+        const orderJob = jobs.find((j) => j.source === 'sales_order') ?? jobs[0];
+        const draftMo = mock.manufacturingOrders.find(
+          (m) =>
+            (m.status === 'draft' || m.status === 'confirmed') &&
+            (orderJob ? m.jobId === orderJob.id : true),
+        );
+        if (!draftMo) {
+          toast.message('G2 — no draft/confirmed MO on this order. Confirm an MTO line first.');
+          return;
+        }
+        try {
+          const released = await workflowService.releaseManufacturingOrder(draftMo.id);
+          toast.success(`G2 — ${released.moNumber} released to the floor.`);
+        } catch (e) {
+          if (e instanceof GateFailure) {
+            setFailures(e.details);
+            toast.error('G2 — release blocked; see the gate banner.');
+          } else {
+            toast.error(e instanceof Error ? e.message : String(e));
+          }
+        }
+        refresh();
+      },
+    },
+    {
+      archetype: 'D6',
+      label: 'Put away completed MO → FG',
+      fn: async () => {
+        const doneMo = mock.manufacturingOrders.find((m) => m.status === 'done');
+        if (!doneMo) {
+          toast.message('D6 — no completed MO to put away.');
+          return;
+        }
+        const { record, backorderPickLists } = await workflowService.putAway({
+          manufacturingOrderId: doneMo.id,
+          productId: doneMo.productId,
+          qty: doneMo.qty ?? 1,
+          by: 'emp-003',
         });
-        await new Promise((r) => setTimeout(r, 200));
-        await workflowService.receiveSubcontract(dispatch.id);
         toast.success(
-          `B7 — Released ${wo.woNumber} to ${mock.suppliers[0].company}; received back.`,
+          `D6 — ${doneMo.moNumber}: ${record.qty} × ${doneMo.productName} put away to FG${
+            backorderPickLists.length > 0
+              ? `; ${backorderPickLists.length} backorder pick list(s) auto-raised`
+              : ''
+          }.`,
         );
         refresh();
       },
     },
   ];
+
+  const releaseSubcontractWithModel = async () => {
+    const wo = mock.workOrders[1] ?? mock.workOrders[0];
+    if (!wo) return;
+    setSubReleasing(true);
+    try {
+      const dispatch = await workflowService.releaseSubcontract({
+        workOrderId: wo.id,
+        operationId: 'op-1',
+        supplierId: mock.suppliers[0].id,
+        materialModel: subMaterialModel,
+      });
+      toast.success(
+        `B7 — Released ${wo.woNumber} to ${mock.suppliers[0].company} (${subMaterialModel.replace(/_/g, ' ')}); PO ${
+          mock.purchaseOrders.find((p) => p.id === dispatch.purchaseOrderId)?.poNumber ?? ''
+        } raised. Walk it home on the timeline below.`,
+      );
+      setSubReleaseOpen(false);
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSubReleasing(false);
+    }
+  };
 
   return (
     <div className="space-y-4 p-6">
@@ -446,9 +561,20 @@ export function OrderJourneyPage() {
                       />
                     </td>
                     <td className="py-1.5">
-                      <Badge variant="outline" className="text-[10px]">
-                        {line.status}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="text-[10px]">
+                          {line.status}
+                        </Badge>
+                        {(line.backorderQty ?? 0) > 0 && (
+                          <Badge
+                            variant="outline"
+                            className="border-amber-300 bg-amber-50 text-[10px] text-amber-900"
+                            title="Unfilled remainder — arrival (GR / put-away) auto-raises the second pick list (D6)."
+                          >
+                            backorder {line.backorderQty}
+                          </Badge>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -458,12 +584,15 @@ export function OrderJourneyPage() {
         )}
       </Card>
 
+      {/* G4 — raise invoices at the customer's payment-term milestones (D5). */}
+      <InvoiceMilestonePanel salesOrderId={so.id} onRaised={refresh} />
+
       {jobs.length > 0 && <JobGraphMini jobs={jobs} />}
 
       {pickLists.length > 0 && (
         <Card className="p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <Truck className="h-4 w-4" /> Pick lists (Catalogue Sale fast path)
+            <Truck className="h-4 w-4" /> Pick lists (Stock Sale fast path)
           </div>
           <ul className="space-y-1 text-sm">
             {pickLists.map((p) => (
@@ -506,7 +635,7 @@ export function OrderJourneyPage() {
             <AlertOctagon className="h-4 w-4" /> Subcontract dispatches (B7)
           </div>
           {subcontracts.slice(0, 3).map((s) => (
-            <SubcontractTimeline key={s.id} dispatch={s} />
+            <SubcontractTimeline key={s.id} dispatch={s} onChanged={refresh} />
           ))}
         </div>
       )}
@@ -534,6 +663,50 @@ export function OrderJourneyPage() {
           ))}
         </div>
       </Card>
+
+      {/* B7 — subcontract release modal (D10: the material model is the
+          decision, so it's chosen at release time). */}
+      <Dialog open={subReleaseOpen} onOpenChange={setSubReleaseOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Release to subcontractor</DialogTitle>
+            <DialogDescription>
+              A PO is always raised — the AP bill and the Receiving gate
+              (G5) hang off it. Choose how material gets to the supplier.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Material model</Label>
+            <Select
+              value={subMaterialModel}
+              onValueChange={(v) => setSubMaterialModel(v as SubcontractMaterialModel)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="free_issue">
+                  Free issue — we send material (sub_out / sub_in movements)
+                </SelectItem>
+                <SelectItem value="sub_supplied">
+                  Supplier supplied — PO only, no outbound leg
+                </SelectItem>
+                <SelectItem value="hybrid">
+                  Hybrid — both ours and theirs
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSubReleaseOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => void releaseSubcontractWithModel()} disabled={subReleasing}>
+              {subReleasing ? 'Releasing…' : 'Release'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

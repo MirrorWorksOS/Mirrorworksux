@@ -223,7 +223,7 @@ export function FloorStationPicker() {
 
         {/* Help footer */}
         <div className="mt-12 text-xs text-[var(--neutral-500)]">
-          Missing a machine? Ask a supervisor to add it to the shop floor
+          Missing a machine? Ask a lead to add it to the shop floor
           roster under{' '}
           <span className="font-medium text-[var(--neutral-800)]">
             Control → Machines

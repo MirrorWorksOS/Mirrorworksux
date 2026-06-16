@@ -16,6 +16,9 @@ import { staggerContainer, staggerItem } from '@/components/shared/motion/motion
 import { PageShell } from '@/components/shared/layout/PageShell';
 import { PageHeader } from '@/components/shared/layout/PageHeader';
 import { toast } from 'sonner';
+import { GateBanner } from '@/components/workflow/GateBanner';
+import { workflowService, GateFailure } from '@/services/workflowService';
+import type { GateFailureDetail } from '@/types/entities';
 
 
 interface POForReceipt {
@@ -23,31 +26,42 @@ interface POForReceipt {
   poNumber: string;
   supplier: string;
   expectedDate: string;
-  items: { name: string; ordered: number; received: number; unit: string }[];
+  items: { productId: string; name: string; ordered: number; received: number; unit: string }[];
 }
 
 import { purchaseOrders } from '@/services';
 
-const mockPOs: POForReceipt[] = purchaseOrders
-  .filter((po) => po.status !== 'received' && po.status !== 'cancelled' && po.status !== 'draft')
-  .slice(0, 2)
-  .map((po) => ({
-    id: po.id,
-    poNumber: po.poNumber,
-    supplier: po.supplierName,
-    expectedDate: po.deliveryDate,
-    items: [
-      { name: 'Mild Steel Sheet 1200x2400x3mm', ordered: 50, received: po.received > 0 ? 10 : 0, unit: 'sheets' },
-      ...(po.total > 10000 ? [{ name: 'Aluminium Angle 50x50x5mm', ordered: 20, received: 0, unit: 'lengths' }] : []),
-    ],
-  }));
+/**
+ * Open POs awaiting receipt, derived from the live PO fixtures' `lines`
+ * — computed per call so received quantities reflect accepted GRs.
+ */
+const posAwaitingReceipt = (): POForReceipt[] =>
+  purchaseOrders
+    .filter((po) => po.status !== 'received' && po.status !== 'cancelled' && po.status !== 'draft')
+    .map((po) => ({
+      id: po.id,
+      poNumber: po.poNumber,
+      supplier: po.supplierName,
+      expectedDate: po.deliveryDate,
+      items: (po.lines ?? []).map((l) => ({
+        productId: l.productId,
+        name: l.description,
+        ordered: l.qty,
+        received: l.receivedQty ?? 0,
+        unit: l.unit ?? 'each',
+      })),
+    }));
 
 export function BuyReceipts() {
   const [selectedPO, setSelectedPO] = useState<POForReceipt | null>(null);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [scannerOpen, setScannerOpen] = useState(false);
   const [barcodeInput, setBarcodeInput] = useState('');
+  // Gate G5 (Receiving) failures for the in-flight accept attempt.
+  const [receiveFailures, setReceiveFailures] = useState<GateFailureDetail[]>([]);
+  const [receiving, setReceiving] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const mockPOs = posAwaitingReceipt();
 
   const handleBarcodeSubmit = () => {
     // TODO(backend): receipts.scanBarcode(selectedPO.id, barcodeInput) — match SKU and increment received qty.
@@ -62,10 +76,37 @@ export function BuyReceipts() {
     toast.success(`Photo "${file.name}" attached to receipt`);
   };
 
-  const handleReceive = () => {
-    toast.success('Goods receipt confirmed');
-    setSelectedPO(null);
+  const selectPO = (po: POForReceipt | null) => {
+    setSelectedPO(po);
     setQuantities({});
+    setReceiveFailures([]);
+  };
+
+  const handleReceive = async () => {
+    if (!selectedPO || receiving) return;
+    const lines = selectedPO.items
+      .map((item, idx) => ({ productId: item.productId, qty: quantities[idx] || 0 }))
+      .filter((l) => l.qty > 0);
+    setReceiving(true);
+    try {
+      // Gate G5 (Receiving) runs inside receiveGoods: PO-line match +
+      // qty tolerance. On pass it books the GoodsReceipt + a 'gr'
+      // StockMovement per line into raw stock.
+      const result = await workflowService.receiveGoods({ poId: selectedPO.id, lines });
+      setReceiveFailures([]);
+      toast.success(`Goods receipt ${result.goodsReceipt.receiptNumber} accepted — stock booked in`);
+      setSelectedPO(null);
+      setQuantities({});
+    } catch (err) {
+      if (err instanceof GateFailure) {
+        setReceiveFailures(err.details);
+        toast.error('Receipt blocked — Receiving gate failed');
+      } else {
+        toast.error(err instanceof Error ? err.message : 'Receipt failed');
+      }
+    } finally {
+      setReceiving(false);
+    }
   };
 
   return (
@@ -85,7 +126,7 @@ export function BuyReceipts() {
                 <Card
                   variant="interactive"
                   className="h-full border-[var(--border)] p-6 transition-colors duration-[var(--duration-medium1)] ease-[var(--ease-standard)]"
-                  onClick={() => setSelectedPO(po)}
+                  onClick={() => selectPO(po)}
                 >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -114,10 +155,19 @@ export function BuyReceipts() {
               <h2 className="text-2xl font-medium tabular-nums text-foreground">{selectedPO.poNumber}</h2>
               <p className="text-sm text-[var(--neutral-500)]">{selectedPO.supplier}</p>
             </div>
-            <Button variant="outline" onClick={() => setSelectedPO(null)} className="h-12 px-6 text-base">
+            <Button variant="outline" onClick={() => selectPO(null)} className="h-12 px-6 text-base">
               Cancel
             </Button>
           </div>
+
+          {receiveFailures.length > 0 && (
+            <div className="mb-6">
+              <GateBanner
+                failures={receiveFailures}
+                title="Receipt blocked — Receiving gate (G5)"
+              />
+            </div>
+          )}
 
           {/* Barcode Scanner (placeholder) */}
           <div className="flex gap-3 mb-6">
@@ -197,11 +247,11 @@ export function BuyReceipts() {
           <div className="flex gap-4 mt-6">
             <Button
               onClick={handleReceive}
-              disabled={Object.values(quantities).every(q => q === 0)}
+              disabled={receiving || Object.values(quantities).every(q => q === 0)}
               className="flex-1 h-16 text-lg bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-600)] text-primary-foreground disabled:bg-[var(--neutral-900)]/[0.12] disabled:text-foreground/[0.38]"
             >
               <CheckCircle2 className="w-6 h-6 mr-3" />
-              Confirm Receipt
+              {receiving ? 'Confirming…' : 'Confirm Receipt'}
             </Button>
           </div>
         </Card>

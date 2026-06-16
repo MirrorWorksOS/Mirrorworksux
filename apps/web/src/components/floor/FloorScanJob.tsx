@@ -168,7 +168,7 @@ export function FloorScanJob() {
               </div>
               <div className="text-sm text-[var(--neutral-500)]">
                 Scan a traveler to start an ad-hoc job, or check with your
-                supervisor.
+                lead.
               </div>
             </div>
           ) : (

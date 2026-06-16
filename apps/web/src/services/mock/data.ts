@@ -182,7 +182,8 @@ export const customers: Customer[] = [
     createdAt: '2024-09-01',
     accountManagerId: 'emp-002',
     tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
-    paymentTermsId: 'pt-net30',
+    // D5 demo: 50% deposit on confirm, 50% on completion (gate G4).
+    paymentTermsId: 'pt-50-50-completion',
     portalAccess: true,
     notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
     contacts: [
@@ -285,7 +286,10 @@ export const customers: Customer[] = [
     createdAt: '2024-04-12',
     accountManagerId: 'emp-001',
     tags: [{ id: 'tag-repeat', label: 'Repeat customer', tone: 'success' }],
-    paymentTermsId: 'pt-net14',
+    // D5 demo: explicit "Net 30 on dispatch" — so-004's delivered
+    // shipment (shp-001) makes the dispatch milestone immediately
+    // raisable on the order journey page.
+    paymentTermsId: 'pt-net30-dispatch',
     portalAccess: true,
     notificationPrefs: { quoteSent: true, orderShipped: true, invoiceIssued: true },
   },
@@ -296,9 +300,10 @@ export const customers: Customer[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 // Phase A backfill: every existing product gets an explicit `defaultRoute`
-// + `isManufactured`. Most fab-shop items are MTO; the small fasteners /
-// off-the-shelf items below are catalogued for the Catalogue Sale fast
-// path; one configurable assembly is ETO to seed the engineering queue.
+// + `isManufactured`. Most fab-shop items are MTO; stocked items resolve
+// to the Stock Sale fast path at order time (replenishment behaviour
+// lives on their reorder rules); configurable assemblies are ETO to seed
+// the engineering queue.
 export const products: Product[] = [
   { id: 'prod-001', partNumber: 'BKT-001', description: 'Mounting Bracket 90° — Mild Steel', material: 'Mild Steel 3mm', unitPrice: 24.50, standardCost: 14.20, weightKg: 0.85, category: 'Brackets', isActive: true, imageUrl: '/products/bracket-90.svg', productKind: 'widget', defaultTemplateIds: ['tpl-widget-light'], defaultRoute: 'mto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 150, heightMm: 100 }, thicknessMm: 3, grade: '250', dxfAssetId: 'dxf-001', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
@@ -307,7 +312,7 @@ export const products: Product[] = [
   { id: 'prod-003', partNumber: 'HSG-015', description: 'Motor Housing Assembly', material: 'Aluminium 6061', unitPrice: 185.00, standardCost: 112.00, weightKg: 3.45, category: 'Housings', isActive: true, imageUrl: '/products/motor-housing.svg', defaultRoute: 'mto', isManufactured: true },
   { id: 'prod-004', partNumber: 'SRC-100', description: 'Server Rack Chassis 42U', material: 'Cold Rolled Steel 1.6mm', unitPrice: 1250.00, standardCost: 760.00, weightKg: 48.0, category: 'Racks', isActive: true, imageUrl: '/products/server-rack.svg', productKind: 'configurable', defaultTemplateIds: ['tpl-configurable-full'], defaultRoute: 'eto', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 480 }, thicknessMm: 1.6, grade: 'CR1', dxfAssetId: 'dxf-003', allowRotation: true, rotationStepsDeg: [0, 180], allowMirror: false, grainSensitive: true } },
-  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, standardCost: 21.50, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg', defaultRoute: 'make_to_stock', isManufactured: true,
+  { id: 'prod-005', partNumber: 'CTR-008', description: 'Cable Tray Support 600mm', material: 'Galvanised Steel 2mm', unitPrice: 38.00, standardCost: 21.50, weightKg: 1.20, category: 'Cable Management', isActive: true, imageUrl: '/products/cable-tray.svg', defaultRoute: 'stock_sale', isManufactured: true,
     geometry: { bboxMm: { widthMm: 600, heightMm: 80 }, thicknessMm: 2, grade: 'Z275', dxfAssetId: 'dxf-004', allowRotation: true, rotationStepsDeg: [0, 90, 180, 270], allowMirror: false, grainSensitive: false } },
   { id: 'prod-006', partNumber: 'MGD-020', description: 'Machine Guard Assembly — CNC', material: 'Mild Steel 2mm + Polycarbonate', unitPrice: 320.00, standardCost: 198.00, weightKg: 8.50, category: 'Guards', isActive: true, imageUrl: '/products/machine-guard.svg', productKind: 'configurable', defaultRoute: 'mto', isManufactured: true },
   { id: 'prod-007', partNumber: 'AEP-050', description: 'Aluminium Enclosure Panel — IP65', material: 'Aluminium 5052 2mm', unitPrice: 145.00, standardCost: 88.00, weightKg: 2.80, category: 'Enclosures', isActive: true, imageUrl: '/products/enclosure-panel.svg', defaultRoute: 'mto', isManufactured: true,
@@ -524,12 +529,33 @@ export const sellActivities: SellActivity[] = [
 // BUY — Purchase Orders, Requisitions, Bills
 // ═══════════════════════════════════════════════════════════════════════
 
+// PO `lines` added for gates G2 (material_short coverage) + G5 (GR line
+// match / qty tolerance) — see workflowService.evaluateGateReceiving.
+// po-002/po-003 lines mirror the goodsReceipts fixtures below.
 export const purchaseOrders: PurchaseOrder[] = [
-  { id: 'po-001', poNumber: 'PO-2026-0089', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', date: '2026-03-15', deliveryDate: '2026-03-25', status: 'acknowledged', total: 12400, received: 0, jobId: 'job-001' },
-  { id: 'po-002', poNumber: 'PO-2026-0088', supplierId: 'sup-002', supplierName: 'Pacific Metals', date: '2026-03-12', deliveryDate: '2026-03-22', status: 'partial', total: 8500, received: 4200, jobId: 'job-002' },
-  { id: 'po-003', poNumber: 'PO-2026-0087', supplierId: 'sup-003', supplierName: 'Sydney Welding Supply', date: '2026-03-10', deliveryDate: '2026-03-20', status: 'received', total: 3200, received: 3200 },
-  { id: 'po-004', poNumber: 'PO-2026-0086', supplierId: 'sup-004', supplierName: 'BHP Suppliers', date: '2026-03-08', deliveryDate: '2026-03-18', status: 'sent', total: 28000, received: 0, jobId: 'job-003' },
-  { id: 'po-005', poNumber: 'PO-2026-DRAFT-01', supplierId: 'sup-005', supplierName: 'Generic Parts Co', date: '2026-03-19', deliveryDate: '2026-03-29', status: 'draft', total: 4500, received: 0 },
+  { id: 'po-001', poNumber: 'PO-2026-0089', supplierId: 'sup-001', supplierName: 'Hunter Steel Co', date: '2026-03-15', deliveryDate: '2026-03-25', status: 'acknowledged', total: 12400, received: 0, jobId: 'job-001',
+    lines: [
+      { id: 'pol-001a', productId: 'prod-001', description: 'Mounting Bracket 90° — Mild Steel', qty: 200, unit: 'each', unitPrice: 24.5, receivedQty: 0 },
+      { id: 'pol-001b', productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 112, unit: 'each', unitPrice: 67, receivedQty: 0 },
+    ] },
+  { id: 'po-002', poNumber: 'PO-2026-0088', supplierId: 'sup-002', supplierName: 'Pacific Metals', date: '2026-03-12', deliveryDate: '2026-03-22', status: 'partial', total: 8500, received: 4200, jobId: 'job-002',
+    lines: [
+      { id: 'pol-002a', productId: 'prod-002', description: 'Stainless 304 5mm Sheet', qty: 20, unit: 'sheets', unitPrice: 350, receivedQty: 12 },
+      { id: 'pol-002b', productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 10, unit: 'each', unitPrice: 145, receivedQty: 0 },
+    ] },
+  { id: 'po-003', poNumber: 'PO-2026-0087', supplierId: 'sup-003', supplierName: 'Sydney Welding Supply', date: '2026-03-10', deliveryDate: '2026-03-20', status: 'received', total: 3200, received: 3200,
+    lines: [
+      { id: 'pol-003a', productId: 'prod-005', description: 'Welding wire MIG 1.0mm', qty: 50, unit: 'spools', unitPrice: 64, receivedQty: 50 },
+    ] },
+  { id: 'po-004', poNumber: 'PO-2026-0086', supplierId: 'sup-004', supplierName: 'BHP Suppliers', date: '2026-03-08', deliveryDate: '2026-03-18', status: 'sent', total: 28000, received: 0, jobId: 'job-003',
+    lines: [
+      { id: 'pol-004a', productId: 'prod-002', description: 'Base Plate 200×200 — Stainless 304', qty: 400, unit: 'each', unitPrice: 67, receivedQty: 0 },
+      { id: 'pol-004b', productId: 'prod-009', description: 'Rail Platform Component — Handrail Section', qty: 1, unit: 'each', unitPrice: 890, receivedQty: 0 },
+    ] },
+  { id: 'po-005', poNumber: 'PO-2026-DRAFT-01', supplierId: 'sup-005', supplierName: 'Generic Parts Co', date: '2026-03-19', deliveryDate: '2026-03-29', status: 'draft', total: 4500, received: 0,
+    lines: [
+      { id: 'pol-005a', productId: 'prod-007', description: 'Aluminium Enclosure Panel — IP65', qty: 31, unit: 'each', unitPrice: 145, receivedQty: 0 },
+    ] },
 ];
 
 export const requisitions: Requisition[] = [
@@ -673,11 +699,11 @@ export const machines: Machine[] = [
 ];
 
 export const manufacturingOrders: ManufacturingOrder[] = [
-  { id: 'mo-001', moNumber: 'MO-2026-0015', productId: 'prod-001', productName: 'Differential Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0015', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'high', dueDate: '2026-04-18', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray' },
-  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Differential Housing', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee' },
-  { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson' },
-  { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson' },
-  { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen' },
+  { id: 'mo-001', moNumber: 'MO-2026-0015', productId: 'prod-001', productName: 'Differential Assembly', jobId: 'job-001', jobNumber: 'JOB-2026-0015', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'high', dueDate: '2026-04-18', progress: 45, workOrders: 4, operatorId: 'emp-006', operatorName: 'James Murray', qty: 12, startDate: '2026-04-08' },
+  { id: 'mo-002', moNumber: 'MO-2026-0002', productId: 'prod-004', productName: 'Differential Housing', jobId: 'job-001', jobNumber: 'JOB-2026-0012', customerId: 'cust-001', customerName: 'Drivetrain Dynamics Pty Ltd', status: 'in_progress', priority: 'urgent', dueDate: '2026-04-20', progress: 22, workOrders: 6, operatorId: 'emp-004', operatorName: 'David Lee', qty: 4, startDate: '2026-04-05' },
+  { id: 'mo-003', moNumber: 'MO-2026-0003', productId: 'prod-005', productName: 'Cable Tray Support', jobId: 'job-003', jobNumber: 'JOB-2026-0013', customerId: 'cust-005', customerName: 'Sydney Rail Corp', status: 'confirmed', priority: 'medium', dueDate: '2026-04-28', progress: 0, workOrders: 3, operatorId: 'emp-003', operatorName: 'Emma Wilson', qty: 30, startDate: '2026-04-20' },
+  { id: 'mo-004', moNumber: 'MO-2026-0004', productId: 'prod-006', productName: 'Machine Guard Assembly', jobId: 'job-004', jobNumber: 'JOB-2026-0010', customerId: 'cust-006', customerName: 'Kemppi Australia', status: 'done', priority: 'low', dueDate: '2026-04-10', progress: 100, workOrders: 2, operatorId: 'emp-002', operatorName: 'Mike Thompson', qty: 2, startDate: '2026-03-30' },
+  { id: 'mo-005', moNumber: 'MO-2026-0005', productId: 'prod-007', productName: 'Aluminium Enclosure Panel', jobId: 'job-005', jobNumber: 'JOB-2026-0015', customerId: 'cust-003', customerName: 'Hunter Steel Co', status: 'draft', priority: 'medium', dueDate: '2026-05-05', progress: 0, workOrders: 5, operatorId: 'emp-001', operatorName: 'Sarah Chen', qty: 16, startDate: '2026-04-28' },
 ];
 
 export const workOrders: WorkOrder[] = [
@@ -1712,11 +1738,12 @@ export const batchLots: BatchLot[] = [
 ];
 
 export const materialConsumption: MaterialConsumptionLine[] = [
-  { id: 'mc-001', material: 'Mild Steel 3mm Sheet', plannedQty: 10, consumedQty: 8, uom: 'sheets', variance: -2, status: 'under' },
-  { id: 'mc-002', material: 'Welding Wire MIG 1.0mm', plannedQty: 5, consumedQty: 6, uom: 'kg', variance: 1, status: 'over' },
-  { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok' },
-  { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok' },
-  { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok' },
+  // mo-005 lines are UNCONSUMED — the D14 backflush fires on its first WO completion.
+  { id: 'mc-001', material: 'Stainless 304 5mm Plate', plannedQty: 10, consumedQty: 0, uom: 'sheets', variance: 0, status: 'ok', manufacturingOrderId: 'mo-005', productId: 'prod-002', source: 'bom' },
+  { id: 'mc-002', material: 'Welding Wire MIG 1.0mm', plannedQty: 5, consumedQty: 0, uom: 'kg', variance: 0, status: 'ok', manufacturingOrderId: 'mo-005', source: 'bom' },
+  { id: 'mc-003', material: 'Grinding Discs 125mm', plannedQty: 4, consumedQty: 4, uom: 'pcs', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
+  { id: 'mc-004', material: 'Argon/CO2 Mix', plannedQty: 2, consumedQty: 2, uom: 'bottles', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
+  { id: 'mc-005', material: 'Anti-spatter Spray', plannedQty: 1, consumedQty: 1, uom: 'can', variance: 0, status: 'ok', manufacturingOrderId: 'mo-001', source: 'bom' },
 ];
 
 export const scrapRecords: ScrapRecord[] = [
@@ -2001,12 +2028,21 @@ export const shopFloorLeaderboardItems = [
 // (Sell module overhaul, 2026-05)
 // ===============================================================
 
+// Milestone schedules (decision D5): `milestones` rows must sum to 100.
+// Terms without `milestones` fall back via `milestonesForTerm` — a lone
+// legacy `depositPct` migrates to [{order_confirmed, depositPct},
+// {completion, remainder}]; otherwise the default is [{dispatch, 100}].
+// pt-50-balance is deliberately left on legacy `depositPct` to exercise
+// the one-click convert affordance in Control ▸ Payment terms.
 export const paymentTerms: PaymentTerm[] = [
   { id: 'pt-net7',  label: 'Net 7',  days: 7,  notes: 'Used for rush jobs or new accounts.' },
   { id: 'pt-net14', label: 'Net 14', days: 14, notes: 'Trade default for established suppliers.' },
   { id: 'pt-net30', label: 'Net 30', days: 30, isDefault: true, notes: 'Default for new customers.' },
+  { id: 'pt-net30-dispatch', label: 'Net 30 on dispatch', days: 30, milestones: [{ event: 'dispatch', pct: 100 }], notes: 'One invoice per shipment, pro-rated to shipped lines.' },
   { id: 'pt-net45', label: 'Net 45', days: 45 },
   { id: 'pt-net60', label: 'Net 60', days: 60, notes: 'Reserved for strategic accounts.' },
+  { id: 'pt-50-50-completion', label: '50% deposit / 50% on completion', days: 14, milestones: [{ event: 'order_confirmed', pct: 50 }, { event: 'completion', pct: 50 }], notes: 'Deposit on confirm; balance once every line has shipped.' },
+  { id: 'pt-on-delivery', label: 'On delivery', days: 7, milestones: [{ event: 'delivery', pct: 100 }], notes: 'Invoice on Proof of Delivery, per shipment.' },
   { id: 'pt-50-balance', label: '50% deposit, balance on delivery', days: 0, depositPct: 50, notes: 'Required for first-time orders > $20k.' },
 ];
 

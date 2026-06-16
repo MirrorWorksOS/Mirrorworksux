@@ -73,6 +73,12 @@ export interface Customer {
   portalAccess?: boolean;
   /** Email-notification opt-ins per template kind. */
   notificationPrefs?: NotificationPreferences;
+  /**
+   * Customer-level default for {@link SalesOrder.allowPartialFulfilment}
+   * (decision D6). Partial shipment is allowed by default; `false` means
+   * this customer's orders must ship complete unless overridden per SO.
+   */
+  allowPartialFulfilment?: boolean;
 }
 
 /** Tag chip — visual badge on customers/opportunities, also used for filtering. */
@@ -170,22 +176,25 @@ export interface Product {
   defaultTemplateIds?: string[];
   /**
    * Default fulfilment route used by `confirmSalesOrder` to dispatch
-   * each line of a Sales Order. Maps 1:1 to the Figma workflow archetypes:
-   *  - mto: Make-to-Order — create a Job, BoM explosion, MRP, schedule.
-   *  - catalogue_sale: stocked pick — reserve, pick, pack, dispatch.
-   *  - eto: Engineer-to-Order — create an engineering Job; production
-   *    Job auto-creates once the BoM is published.
-   *  - make_to_stock: replenishment item — sale of these is unusual;
-   *    `confirmSalesOrder` soft-warns and treats as MTO unless the BoM
-   *    already resolves to stock-on-hand.
-   * Per-line overrides on `SalesOrderLine.routeOverride` win when set.
+   * each line of a Sales Order. Maps 1:1 to the order routes agreed in
+   * workflow decision D3:
+   *  - mto: Make-to-Order — Manufacturing Order under the order's Job,
+   *    BoM explosion, MRP, schedule.
+   *  - stock_sale: picked from stock — reserve, pick, pack, dispatch.
+   *  - eto: Engineer-to-Order — child engineering Job first; MOs land
+   *    under the parent Job once the approved BoM is published.
+   * Made-to-stock products resolve to `stock_sale` at order time; their
+   * replenishment behaviour lives in `ProductReorderRule`, not on the
+   * route. Per-line overrides on `SalesOrderLine.routeOverride` win
+   * when set.
    */
   defaultRoute?: ProductRoute;
   /**
    * True when this product passes through the shop floor (has or will
-   * have a BoM + routing). False for pure catalogue / resale items.
-   * Stored explicitly because a stocked item *can* have a BoM (the
-   * make-to-stock case) — `defaultRoute` alone can't represent that.
+   * have a BoM + routing). False for pure stocked / resale items.
+   * Stored explicitly because a stocked item *can* have a BoM (made to
+   * stock via its reorder rule) — `defaultRoute` alone can't represent
+   * that.
    */
   isManufactured?: boolean;
 }
@@ -195,7 +204,7 @@ export interface Product {
  * the workflow archetypes documented in
  * `docs/architecture/workflows.md`.
  */
-export type ProductRoute = 'mto' | 'eto' | 'catalogue_sale' | 'make_to_stock';
+export type ProductRoute = 'mto' | 'stock_sale' | 'eto';
 
 /** Preferred / excluded machines for a single routing step on a product. */
 export interface RoutingMachinePrefs {
@@ -373,11 +382,18 @@ export interface SalesOrder {
   confirmedAt?: string;
   /**
    * Per-product lines. Each line is dispatched independently by
-   * `confirmSalesOrder` so a single SO can mix MTO + catalogue_sale +
+   * `confirmSalesOrder` so a single SO can mix MTO + stock_sale +
    * ETO lines. Optional during the Phase A rollout while legacy fixtures
    * with a scalar `total` continue to render; required once Phase B1 ships.
    */
   lines?: SalesOrderLine[];
+  /**
+   * Partial shipment allowed for this order (decision D6). Seeded from
+   * {@link Customer.allowPartialFulfilment} at confirm time; defaults to
+   * true. When false the order ships complete — unfilled stock-sale
+   * lines wait rather than splitting the shipment.
+   */
+  allowPartialFulfilment?: boolean;
 }
 
 /**
@@ -396,6 +412,13 @@ export interface SalesOrderLine {
   /** Optional per-line override of {@link Product.defaultRoute}. */
   routeOverride?: ProductRoute;
   status: 'pending' | 'reserved' | 'in_production' | 'shipped' | 'cancelled';
+  /**
+   * Unfilled remainder after stock allocation (decision D6). Set by
+   * `confirmSalesOrder` when free stock can't cover the line; cleared as
+   * arrivals (Goods Receipt / put-away to FG) convert reservations and
+   * auto-raise the second pick list.
+   */
+  backorderQty?: number;
 }
 
 export interface SellInvoice {
@@ -409,6 +432,17 @@ export interface SellInvoice {
   amount: number;
   paidAmount: number;
   status: InvoiceStatus;
+  /**
+   * Payment-term milestone this invoice covers (decision D5). Gate
+   * G4's `milestone_already_invoiced` dedup reads this — keyed
+   * (SO, event) for order_confirmed/completion, (SO, event, shipmentId)
+   * for dispatch/delivery.
+   */
+  milestoneEvent?: PaymentMilestoneEvent;
+  /** Percent of the order total this milestone invoice covers. */
+  milestonePct?: number;
+  /** Shipment this invoice is pro-rated to (dispatch/delivery milestones). */
+  shipmentId?: string;
 }
 
 export interface SellActivity {
@@ -574,6 +608,27 @@ export interface PurchaseOrder {
   total: number;
   received: number;
   jobId?: string;
+  /**
+   * Itemised PO lines (decision D4). Gate G5 (`evaluateGateReceiving`)
+   * matches every Goods Receipt line against one of these, and gate G2's
+   * `material_short` check counts open-PO line qty as shortage coverage.
+   * Optional because legacy fixtures / quick mock POs may carry only a
+   * `total`.
+   */
+  lines?: PurchaseOrderLine[];
+}
+
+/** One product line on a Purchase Order — the G5 matching unit. */
+export interface PurchaseOrderLine {
+  id: string;
+  productId: string;
+  description: string;
+  /** Ordered quantity — G5 tolerance is measured against this. */
+  qty: number;
+  unit?: string;
+  unitPrice?: number;
+  /** Cumulative quantity already booked in via Goods Receipts. */
+  receivedQty?: number;
 }
 
 export interface Requisition {
@@ -698,17 +753,34 @@ export interface Job {
    *  - sales_order: spawned by `confirmSalesOrder` (the MTO default).
    *  - replenishment: auto-created by reorder-rule cron when stock
    *    falls below threshold. Uses the "Stock" pseudo-customer.
-   *  - engineering: ETO engineering Job — produces a BoM, then spawns
-   *    a sibling production Job linked via `parentJobId`.
+   *  - engineering: ETO engineering Job — a child of the order's Job
+   *    (`parentJobId`). It authors a BoM; once the customer approves
+   *    (or approval is waived), publishing the BoM creates MOs under
+   *    the PARENT Job — no separate production Job is spawned (D7).
    *  - variation: child of a parent Job, scoped to a VO delta.
    *  - manual: operator-created, no upstream trigger.
    */
   source?: JobSource;
   /**
-   * Parent Job for ETO (engineering → production) and VO (parent → delta)
-   * chains. Cost rolls up to the parent's `JobCost` record.
+   * Parent Job for ETO (the order's Job → child engineering Job) and
+   * VO (parent → delta) chains. For engineering Jobs this points at
+   * the order's Job — the Job that receives the MOs when the approved
+   * BoM is published. Cost rolls up to the parent's `JobCost` record.
    */
   parentJobId?: string;
+  /**
+   * ETO customer drawing-approval state machine (decision D7) —
+   * engineering Jobs (`source: 'engineering'`) only.
+   * `in_design → submitted_for_approval → approved | revision_requested`.
+   * BoM publish is gated on `approved` (or a recorded {@link Job.waiver}).
+   */
+  approvalStatus?: EngineeringApprovalStatus;
+  /**
+   * Internal waiver of the customer drawing approval (decision D7) —
+   * who waived it and why, recorded on the engineering Job. A waiver
+   * lets `evaluateBomPublish` pass without `approvalStatus: 'approved'`.
+   */
+  waiver?: { by: string; reason: string; at: string };
   /**
    * Sibling-group key shared by a parent SO and every variation derived
    * from it. Lets `Invoice.variationChainId` post a delta or separate
@@ -722,6 +794,13 @@ export interface Job {
    */
   qty?: number;
 }
+
+/** See {@link Job.approvalStatus} — ETO drawing approval (decision D7). */
+export type EngineeringApprovalStatus =
+  | 'in_design'
+  | 'submitted_for_approval'
+  | 'approved'
+  | 'revision_requested';
 
 /** See {@link Job.source}. */
 export type JobSource =
@@ -1239,6 +1318,21 @@ export interface ManufacturingOrder {
   workOrders: number;
   operatorId: string;
   operatorName: string;
+  /**
+   * Persisted line → MO link (decision D2): the Sales Order line this
+   * MO fulfils. Absent on replenishment / legacy MOs.
+   */
+  salesOrderLineId?: string;
+  /** Quantity to manufacture — mirrors the SO line qty at confirm time. */
+  qty?: number;
+  /** Planned start date (ISO yyyy-mm-dd). */
+  startDate?: string;
+  /**
+   * Set when an approved Variation Order amended this MO in place
+   * (decision D8) — flags it for the Schedule Engine to re-plan.
+   * Cleared on re-schedule.
+   */
+  needsReschedule?: boolean;
 }
 
 export interface WorkOrder {
@@ -1258,7 +1352,7 @@ export interface WorkOrder {
   nestId?: string;
   /** Phase B6 — rework chain. Points to the original WO this is reworking. */
   parentWorkOrderId?: string;
-  /** Phase B6 — rework iteration count. Capped at 2 → supervisor escalation. */
+  /** Phase B6 — rework iteration count. Capped at 2 → lead escalation. */
   reworkDepth?: number;
   /** Phase B7 — set on subcontracted ops to flag the WO in the timeline. */
   isSubcontracted?: boolean;
@@ -1310,6 +1404,30 @@ export interface MaterialConsumptionLine {
   uom: string;
   variance: number;
   status: 'ok' | 'over' | 'under';
+  /** MO this line belongs to (decision 14 — consumption is per-MO). */
+  manufacturingOrderId?: string;
+  /** Stocked product behind the material, when resolvable — drives inventory decrements. */
+  productId?: string;
+  /** 'bom' = planned from the BoM; 'unplanned' = floor issue/return during manufacture. */
+  source?: 'bom' | 'unplanned';
+}
+
+/**
+ * Engineering change suggestion (decision 14) — raised from the floor
+ * when an MO-level material adjustment suggests the master BoM is
+ * wrong. The master BoM only ever changes via a NEW REVISION through
+ * the publish gate; this is the breadcrumb that prompts engineering.
+ */
+export interface EcoSuggestion {
+  id: string;
+  manufacturingOrderId: string;
+  moNumber: string;
+  jobId?: string;
+  productId?: string;
+  note: string;
+  raisedBy: string;
+  status: 'open' | 'reviewed';
+  createdAt: string;
 }
 
 /** Scrap record for heat map analysis */
@@ -1345,6 +1463,12 @@ export interface Shipment {
   actualDelivery?: string;
   weight: number;
   packages: number;
+  /**
+   * Sales-order line ids covered by this shipment (decision D5 —
+   * dispatch/delivery milestone invoices are pro-rated to these lines).
+   * Absent = the shipment covers the whole order.
+   */
+  lineIds?: string[];
 }
 
 export interface Carrier {
@@ -1516,14 +1640,50 @@ export interface DocumentRevision {
 
 // ─── Control → Settings: templates (Sell overhaul, 2026-05) ────────
 
+/**
+ * Events that can trigger a payment-term milestone (decision D5).
+ * Gate G4 (`evaluateInvoiceMilestone`) checks the event has actually
+ * occurred before an invoice can be raised against it.
+ */
+export type PaymentMilestoneEvent =
+  | 'order_confirmed'
+  | 'dispatch'
+  | 'delivery'
+  | 'completion';
+
+/**
+ * One row of a PaymentTerm's milestone schedule: invoice `pct` percent
+ * of the order total when `event` occurs. Rows are ordered and must
+ * sum to 100 across the schedule.
+ */
+export interface PaymentMilestone {
+  event: PaymentMilestoneEvent;
+  pct: number;
+}
+
 /** Reusable payment-term template (e.g. Net 30, 50% deposit + balance on delivery). */
 export interface PaymentTerm {
   id: string;
   label: string;
-  /** Days from invoice/order date to payment due. */
+  /** Days from invoice issue to payment due — net terms applied to each invoice raised. */
   days: number;
-  /** Optional deposit required up-front (percent of total). */
+  /**
+   * Optional deposit required up-front (percent of total).
+   *
+   * @deprecated Decision D5 — superseded by {@link milestones}. Kept so
+   * legacy terms still render; `milestonesForTerm` (workflowService)
+   * migrates a lone `depositPct` into
+   * `[{order_confirmed, depositPct}, {completion, remainder}]` when
+   * `milestones` is absent.
+   */
   depositPct?: number;
+  /**
+   * Ordered milestone schedule (decision D5). `pct` values must sum to
+   * 100. When absent, the effective schedule is derived from
+   * `depositPct` (legacy) or defaults to `[{dispatch, 100}]` — see
+   * `milestonesForTerm` in workflowService.
+   */
+  milestones?: PaymentMilestone[];
   /** Marks this row as the global default applied to new customers. */
   isDefault?: boolean;
   notes?: string;
@@ -1806,18 +1966,18 @@ export interface MarkupComment {
 // ═══════════════════════════════════════════════════════════════════════
 
 /**
- * One canonical 10-stage journey, used by the universal Order page and
- * the `JourneyStepper` component. Each stage maps to an Advance action.
+ * The canonical 7-stage document spine (decision D1), used by the
+ * universal Order page and the `JourneyStepper` component:
+ * Quote → Sales Order → Job → Manufacturing Order → Work Orders →
+ * Shipment (dispatch) → Invoice. BoM / MRP / Schedule are Job-stage
+ * detail (spokes), not spine stops; Buy is a parallel branch off MRP.
  */
 export type JourneyStage =
   | 'quote'
   | 'sales_order'
   | 'job'
-  | 'bom'
-  | 'mrp'
-  | 'schedule'
   | 'manufacturing'
-  | 'qc'
+  | 'work_orders'
   | 'dispatch'
   | 'invoice';
 
@@ -1864,6 +2024,11 @@ export interface InventoryRecord {
   locationId: string;
   qtyOnHand: number;
   qtyReserved: number;
+  /**
+   * Cycle-count flag (decision 14): set when a floor issue drove book
+   * stock negative — the book was wrong; the stocktake flow heals it.
+   */
+  countRequested?: boolean;
 }
 
 export interface StockLocation {
@@ -1926,8 +2091,11 @@ export interface StockMovement {
   at: string;
   refType?: 'so_line' | 'work_order' | 'mo' | 'po' | 'rma';
   refId?: string;
+  /** Who recorded the movement — required for `adjust` (stocktake, D13). */
+  by?: string;
   /** Operator-selected reason code (from InventorySettings code lists) for scrap / adjust. */
   reasonCode?: string;
+  /** Free-form note — the stocktake adjustment reason (D13). */
   note?: string;
 }
 
@@ -1962,7 +2130,15 @@ export interface PutAwayRecord {
   by: string;
 }
 
-/** Per-WO QC gate result — Phase B6 wires Pass/Fail/Hold into rework. */
+/** See {@link QualityCheck.disposition} — QC owns disposition (decision D9). */
+export type QcDisposition = 'rework' | 'scrap' | 'use_as_is' | 'return_to_vendor';
+
+/**
+ * Per-WO QC gate result — Phase B6 wires Pass/Fail/Hold into rework.
+ * QC owns disposition (decision D9): there is NO NCR entity — a failed
+ * check records its disposition, the affected qty + cost impact, and
+ * links to whatever the disposition produced.
+ */
 export interface QualityCheck {
   id: string;
   workOrderId: string;
@@ -1970,7 +2146,37 @@ export interface QualityCheck {
   result: 'pass' | 'fail' | 'hold';
   inspectorId: string;
   at: string;
-  ncrId?: string;
+  /** Outcome chosen for a failed check (decision D9). */
+  disposition?: QcDisposition;
+  /** Quantity affected by the disposition (scrapped / returned / conceded). */
+  qty?: number;
+  /** Cost charged to the Job — scrap never leaves the job's P&L (D9). */
+  costImpact?: number;
+  /** What the disposition produced — one link per disposition path. */
+  links?: {
+    /** Rework chain: the rework WO this check raised. */
+    reworkWorkOrderId?: string;
+    /** Use-as-is / ship-short: the concession record. */
+    concessionId?: string;
+    /** Return-to-vendor: the supplier return raised. */
+    supplierReturnId?: string;
+  };
+}
+
+/**
+ * Return-to-vendor supplier return (decision D9) — raised from a QC
+ * `return_to_vendor` disposition, linked back to the originating Goods
+ * Receipt and debited against the supplier's Bill.
+ */
+export interface SupplierReturn {
+  id: string;
+  workOrderId: string;
+  supplierId?: string;
+  /** The Goods Receipt the defective material arrived on. */
+  goodsReceiptId?: string;
+  qty: number;
+  reason: string;
+  status: 'raised' | 'debited' | 'closed';
 }
 
 /** Per-WO operator time entry. */
@@ -1983,7 +2189,44 @@ export interface TimeEntry {
   durationMin?: number;
 }
 
-/** Phase B5 — Variation Order. */
+/**
+ * Immutable snapshot of one MO at VO raise time — part of
+ * {@link VariationBaseline}. Used for the baseline-vs-amended diff in
+ * the VO impact preview and for variance reporting.
+ */
+export interface VariationBaselineMo {
+  id: string;
+  moNumber: string;
+  productId: string;
+  productName: string;
+  status: ManufacturingOrderStatus;
+  qty?: number;
+  dueDate: string;
+}
+
+/**
+ * Immutable baseline captured on the VariationOrder at raise time
+ * (decision D8). Approval amends the LIVE Job/MOs in place, so this
+ * snapshot is the only record of the pre-variation state — it is
+ * deep-frozen and must never be mutated.
+ */
+export interface VariationBaseline {
+  capturedAt: string;
+  /** Order total at raise time — un-raised milestones re-price off the delta. */
+  soTotal: number;
+  /** Order total minus invoices already raised (clamped at 0). */
+  uninvoicedRemainder: number;
+  jobId?: string;
+  jobNumber?: string;
+  jobStartDate?: string;
+  jobDueDate?: string;
+  jobValue?: number;
+  /** Cost basis: the Job's estimated hours at raise time. */
+  jobEstimatedHours?: number;
+  mos: VariationBaselineMo[];
+}
+
+/** Phase B5 — Variation Order. Approval amends the live Job in place (D8). */
 export interface VariationOrder {
   id: string;
   voNumber: string;
@@ -1997,6 +2240,64 @@ export interface VariationOrder {
   createdAt: string;
   approvedAt?: string;
   approvedBy?: string;
+  /** Immutable pre-variation snapshot captured at raise time (D8). */
+  baseline?: VariationBaseline;
+}
+
+/**
+ * Credit Note (decisions D8/D13) — raised when money is owed BACK to
+ * the customer: a VO descope beyond the uninvoiced remainder, or an
+ * RMA credit. Pushed to Xero like an AR invoice (decision D11).
+ */
+export interface CreditNote {
+  id: string;
+  creditNoteNumber: string;
+  customerId: string;
+  /** SO the credit traces to (VO descope path). */
+  salesOrderId?: string;
+  /** VO whose descope raised this credit. */
+  variationOrderId?: string;
+  /** RMA / return receipt that owed the credit (D13 minimal RMA). */
+  returnId?: string;
+  amount: number;
+  reason: string;
+  status: 'draft' | 'issued' | 'applied' | 'void';
+  issuedAt?: string;
+  /** Xero push state — credit notes sync like AR invoices (D11). */
+  xeroSyncStatus?: 'pending' | 'synced' | 'error';
+}
+
+/** Customer-return disposition outcomes (decision D13 minimal RMA). */
+export type CustomerReturnDisposition = 'restock' | 'rework' | 'scrap';
+
+/**
+ * Minimal RMA (decision D13): created against a delivered shipment,
+ * received back, then QC-dispositioned — restock (StockMovement
+ * `refType: 'rma'` into FG) / rework Job / scrap — with a Credit Note
+ * raised via `raiseCreditNote({ returnId })` when money is owed.
+ */
+export interface CustomerReturn {
+  id: string;
+  rmaNumber: string;
+  /** Delivered shipment the return was raised against. */
+  shipmentId?: string;
+  salesOrderId?: string;
+  customerId: string;
+  customerName: string;
+  /** Product coming back (single-product returns in the minimal flow). */
+  productId?: string;
+  qty: number;
+  reason: string;
+  status: 'awaiting_receipt' | 'received' | 'closed';
+  /** QC outcome recorded at close (restock / rework / scrap). */
+  disposition?: CustomerReturnDisposition;
+  /** Rework Job raised by a `rework` disposition. */
+  reworkJobId?: string;
+  /** Credit note raised when the customer is owed money. */
+  creditNoteId?: string;
+  createdAt: string;
+  receivedAt?: string;
+  closedAt?: string;
 }
 
 /** Phase B6 — log of customer approvals to ship-with-concession. */
@@ -2021,7 +2322,12 @@ export interface SubcontractDispatch {
   materialModel: SubcontractMaterialModel;
   purchaseOrderId: string;
   outboundShipmentId?: string;
-  status: 'released' | 'subcontract_in_transit' | 'at_supplier' | 'returning' | 'received' | 'closed';
+  /**
+   * 4-state lifecycle (decision D10): released → at_supplier →
+   * received → closed. The return leg comes back as a Goods Receipt
+   * against the subcontract PO through gate G5.
+   */
+  status: 'released' | 'at_supplier' | 'received' | 'closed';
   releasedAt: string;
   returnedAt?: string;
 }

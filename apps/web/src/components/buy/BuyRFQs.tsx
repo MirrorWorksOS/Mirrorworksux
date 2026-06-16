@@ -239,6 +239,16 @@ export function BuyRFQs() {
         }
       />
 
+      {/* Decision 13: supplier RFQ flow is deferred post-MVP — UI preview only. */}
+      <div className="rounded-lg border border-[var(--neutral-200)] bg-[var(--neutral-50)] px-4 py-3 flex items-center gap-3">
+        <Badge variant="outline" className="shrink-0">Post-MVP</Badge>
+        <p className="text-sm text-[var(--neutral-600)]">
+          The RFQ → supplier quote → comparison flow is deferred (workflow decision 13).
+          This page is a UI preview — no backend is planned for MVP. Raise purchase orders
+          directly from MRP suggestions or the Buy module.
+        </p>
+      </div>
+
       <div className="relative w-80">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--neutral-400)]" />
         <Input placeholder="Search RFQs…" value={search} onChange={e => setSearch(e.target.value)}

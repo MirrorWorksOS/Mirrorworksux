@@ -44,6 +44,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ShipBillOfLading } from '@/components/ship/ShipBillOfLading';
+import { GateBanner } from '@/components/workflow/GateBanner';
+import { evaluateMakeToShip } from '@/services/workflowService';
+import { salesOrders, jobs } from '@/services';
+import type { GateFailureDetail } from '@/types/entities';
 
 import {
   ModuleFilterBar,
@@ -59,18 +63,25 @@ interface Order {
   id: string; customer: string; items: number; weight: string;
   carrier: string; due: string; stage: Stage; progress: number;
   urgent?: boolean;
+  /**
+   * Link back to the Sales Order. When the SO carries a Job, advancing
+   * to Ship (dispatch) runs gate G3 (`evaluateMakeToShip`); stock-sale
+   * only orders (no Job) skip G3 and dispatch from the picked pick list.
+   */
+  salesOrderId?: string;
 }
 
 const ORDERS: Order[] = [
-  { id: 'SH-001', customer: 'Meridian Fabrication',  items: 3, weight: '12.4 kg', carrier: 'StarTrack', due: '2d',    stage: 'Pick',      progress: 0,   urgent: true },
+  { id: 'SH-001', customer: 'Meridian Fabrication',  items: 3, weight: '12.4 kg', carrier: 'StarTrack', due: '2d',    stage: 'Pick',      progress: 0,   urgent: true, salesOrderId: 'so-001' },
   { id: 'SH-002', customer: 'Acme Steel',       items: 1, weight: '45.0 kg', carrier: 'Toll',      due: '1d',    stage: 'Pick',      progress: 0,   urgent: true },
-  { id: 'SH-003', customer: 'Pacific Fab',       items: 5, weight: '8.2 kg',  carrier: 'Aus Post',  due: '4d',    stage: 'Pack',      progress: 40 },
+  { id: 'SH-003', customer: 'Pacific Fab',       items: 5, weight: '8.2 kg',  carrier: 'Aus Post',  due: '4d',    stage: 'Pack',      progress: 40, salesOrderId: 'so-002' },
   { id: 'SH-004', customer: 'Hunter Steel',      items: 2, weight: '22.1 kg', carrier: 'TNT',       due: '3d',    stage: 'Pack',      progress: 60 },
   { id: 'SH-005', customer: 'BHP Contractors',   items: 8, weight: '34.5 kg', carrier: 'DHL',       due: '2d',    stage: 'Ship',      progress: 95,  urgent: true },
   { id: 'SH-006', customer: 'Sydney Rail',       items: 4, weight: '18.9 kg', carrier: 'StarTrack', due: '1d',    stage: 'Ship',      progress: 95 },
   { id: 'SH-007', customer: 'Lincoln Electric',  items: 6, weight: '28.7 kg', carrier: 'Toll',      due: 'Today', stage: 'Transit',   progress: 100 },
   { id: 'SH-008', customer: 'Dulux Coatings',   items: 3, weight: '9.4 kg',  carrier: 'TNT',       due: '—',     stage: 'Delivered', progress: 100 },
-  { id: 'SH-009', customer: 'Kemppi Welding',   items: 2, weight: '6.3 kg',  carrier: 'Sendle',    due: '5d',    stage: 'Pick',      progress: 0 },
+  // so-005 has no Job (stock-sale only) — dispatch skips G3.
+  { id: 'SH-009', customer: 'Kemppi Welding',   items: 2, weight: '6.3 kg',  carrier: 'Sendle',    due: '5d',    stage: 'Pick',      progress: 0, salesOrderId: 'so-005' },
 ];
 
 const KANBAN_ITEM_TYPE = 'ship-order';
@@ -259,6 +270,8 @@ export function ShipOrders() {
     notes: '',
   });
   const [issues, setIssues] = useState<ShipmentIssue[]>([]);
+  // Gate G3 (Make → Ship) failures for the open shipment — shown in the sheet.
+  const [dispatchFailures, setDispatchFailures] = useState<GateFailureDetail[]>([]);
 
   const filters = useModuleFilters(ordersFilterSchema);
   const { state } = filters;
@@ -284,7 +297,19 @@ export function ShipOrders() {
   );
 
   const handleKanbanDrop = useCallback((item: KanbanDragItem, columnId: string) => {
-    setOrders(prev => prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o));
+    setOrders(prev => {
+      const order = prev.find((o) => o.id === item.id);
+      // Dragging into Ship is a dispatch — same G3 gate as the button.
+      if (columnId === 'Ship' && order?.salesOrderId) {
+        const so = salesOrders.find((s) => s.id === order.salesOrderId);
+        const job = so?.jobId ? jobs.find((j) => j.id === so.jobId) : undefined;
+        if (job && evaluateMakeToShip(job).length > 0) {
+          toast.error(`${order.id}: dispatch blocked — Make → Ship gate failed. Open the order for details.`);
+          return prev;
+        }
+      }
+      return prev.map(o => o.id === item.id ? { ...o, stage: columnId as Stage } : o);
+    });
   }, []);
 
   // URL-driven drawer: when routed at /ship/orders/:id, open the matching
@@ -301,11 +326,13 @@ export function ShipOrders() {
 
   const openShipment = (order: Order) => {
     setSelected(order);
+    setDispatchFailures([]);
     navigate(`/ship/orders/${order.id}`, { replace: false });
   };
 
   const closeShipment = () => {
     setSelected(null);
+    setDispatchFailures([]);
     if (routeId) {
       navigate('/ship/orders', { replace: false });
     }
@@ -319,6 +346,23 @@ export function ShipOrders() {
       toast(`Order is already ${nextStage}`);
       return;
     }
+    // Dispatch = advancing into Ship. Orders whose Sales Order carries a
+    // Job must pass gate G3 (Make → Ship: WOs complete, QC clean).
+    // Stock-sale-only orders (no Job) skip G3 — they dispatch from the
+    // picked pick list.
+    if (nextStage === 'Ship' && selected.salesOrderId) {
+      const so = salesOrders.find((s) => s.id === selected.salesOrderId);
+      const job = so?.jobId ? jobs.find((j) => j.id === so.jobId) : undefined;
+      if (job) {
+        const failures = evaluateMakeToShip(job);
+        if (failures.length > 0) {
+          setDispatchFailures(failures);
+          toast.error('Dispatch blocked — Make → Ship gate failed');
+          return;
+        }
+      }
+    }
+    setDispatchFailures([]);
     setOrders((prev) => prev.map((o) => (o.id === selected.id ? { ...o, stage: nextStage } : o)));
     setSelected((prev) => (prev ? { ...prev, stage: nextStage } : prev));
     // TODO(backend): shipments.advanceStage(selected.id, nextStage)
@@ -442,6 +486,20 @@ export function ShipOrders() {
                     { l: 'Weight',  v: selected.weight },
                     { l: 'Carrier', v: selected.carrier },
                     { l: 'Due',     v: selected.due },
+                    ...(selected.salesOrderId
+                      ? (() => {
+                          const so = salesOrders.find((s) => s.id === selected.salesOrderId);
+                          return [
+                            { l: 'Sales Order', v: so?.orderNumber ?? selected.salesOrderId! },
+                            {
+                              l: 'Dispatch gate',
+                              v: so?.jobId
+                                ? 'G3 Make → Ship'
+                                : 'Skipped — stock sale (pick list)',
+                            },
+                          ];
+                        })()
+                      : []),
                   ].map(f => (
                     <div key={f.l}>
                       <span className="text-xs text-[var(--neutral-500)] tracking-widest uppercase font-medium">{f.l}</span>
@@ -470,6 +528,13 @@ export function ShipOrders() {
                     <ShipBillOfLading />
                   </DialogContent>
                 </Dialog>
+
+                {dispatchFailures.length > 0 && (
+                  <GateBanner
+                    failures={dispatchFailures}
+                    title="Dispatch blocked — Make → Ship gate (G3)"
+                  />
+                )}
 
                 <div className="flex gap-4">
                   <button className="flex-1 h-14 min-h-[56px] rounded-full text-sm font-medium bg-[var(--mw-yellow-400)] hover:bg-[var(--mw-yellow-500)] text-primary-foreground transition-colors" onClick={advanceStage}>
