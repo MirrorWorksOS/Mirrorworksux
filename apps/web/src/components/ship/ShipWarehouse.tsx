@@ -3,6 +3,7 @@
  * Token-aligned + semantic status dot colours
  */
 import React, { useState } from 'react';
+import { Link } from 'react-router';
 import { Download, CheckCircle, AlertCircle, Package, Play } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -186,6 +187,15 @@ export function ShipWarehouse() {
       {/* Inventory */}
       {tab === 'inventory' && (
         <div className="space-y-4">
+          <div className="flex items-center gap-2 rounded-lg border border-[var(--neutral-200)] dark:border-[var(--border)] bg-[var(--neutral-50)] dark:bg-[var(--neutral-200)]/30 px-4 py-3">
+            <Package className="w-4 h-4 text-[var(--neutral-500)] shrink-0" />
+            <p className="text-sm text-[var(--neutral-500)]">
+              This is the warehouse view of finished goods. The canonical stock ledger lives in{' '}
+              <Link to="/control/inventory?kind=finished" className="font-medium text-foreground underline-offset-2 hover:underline">
+                Control → Inventory
+              </Link>.
+            </p>
+          </div>
           <FilterBar
             searchValue={invSearch}
             onSearchChange={setInvSearch}
@@ -216,9 +226,17 @@ export function ShipWarehouse() {
                 <span className="text-sm text-foreground font-medium tabular-nums">CC-2026-012</span>
                 <span className="text-xs text-[var(--neutral-500)] ml-2">Zone A · 2 of 4 counted</span>
               </div>
-              <button className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
-                <Play className="w-4 h-4" /> New count
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/control/inventory?action=stocktake"
+                  className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium"
+                >
+                  Run full stocktake
+                </Link>
+                <button className="h-14 px-4 rounded-full text-sm border border-[var(--border)] text-foreground hover:bg-[var(--neutral-100)] transition-colors flex items-center gap-2 font-medium">
+                  <Play className="w-4 h-4" /> New count
+                </button>
+              </div>
             </div>
             <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
               <div className="h-full bg-[var(--mw-yellow-400)] rounded-full" style={{ width: '50%' }} />

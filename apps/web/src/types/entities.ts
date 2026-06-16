@@ -139,6 +139,12 @@ export interface Product {
   description: string;
   material: string;
   unitPrice: number;
+  /**
+   * Standard unit cost used for display-only inventory valuation
+   * (qtyOnHand × standardCost). Falls back to 60% of `unitPrice`
+   * when absent. Moving-average / FIFO costing is deferred.
+   */
+  standardCost?: number;
   weightKg: number;
   category: string;
   isActive: boolean;
@@ -2029,8 +2035,39 @@ export interface StockLocation {
   id: string;
   code: string;
   name: string;
-  /** Distinguishes raw / WIP / finished-goods / subcontract pseudo-locations. */
-  kind: 'raw' | 'wip' | 'finished' | 'subcontract';
+  /**
+   * Distinguishes raw / WIP / finished-goods / subcontract pseudo-locations.
+   * `scrap` is the virtual write-off location — excluded from valuation.
+   */
+  kind: 'raw' | 'wip' | 'finished' | 'subcontract' | 'scrap';
+}
+
+/**
+ * Inventory module configuration — Odoo-style settings-gated dimensionality.
+ * `storageLocationsEnabled` controls whether the location dimension is
+ * surfaced across the ledger, dialogs, and import columns; when off,
+ * everything aggregates into a single implicit default location.
+ * Deferred flags are rendered as locked "coming soon" toggles.
+ */
+export interface InventorySettings {
+  storageLocationsEnabled: boolean;
+  defaultReceivingLocationId: string;
+  defaultFinishedLocationId: string;
+  scrapLocationId: string;
+  /** false = mutations that would take on-hand below zero are blocked. */
+  allowNegativeStock: boolean;
+  scrapReasonCodes: string[];
+  adjustmentReasonCodes: string[];
+  stocktakeDay: { day: number; month: number };
+  countCadence: 'annual' | 'biannual' | 'quarterly' | 'monthly';
+  costingMethod: 'standard';
+  // Deferred — locked toggles in settings, never true in v1.
+  lotsSerialsEnabled: boolean;
+  packagesEnabled: boolean;
+  putawayRulesEnabled: boolean;
+  multiStepRoutesEnabled: boolean;
+  barcodeEnabled: boolean;
+  landedCostsEnabled: boolean;
 }
 
 export interface Reservation {
@@ -2056,6 +2093,8 @@ export interface StockMovement {
   refId?: string;
   /** Who recorded the movement — required for `adjust` (stocktake, D13). */
   by?: string;
+  /** Operator-selected reason code (from InventorySettings code lists) for scrap / adjust. */
+  reasonCode?: string;
   /** Free-form note — the stocktake adjustment reason (D13). */
   note?: string;
 }

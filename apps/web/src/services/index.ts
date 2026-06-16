@@ -41,3 +41,4 @@ export const shipService = services.ship;
 export const bookService = services.book;
 export const controlService = services.control;
 export const bridgeService = services.bridge;
+export const inventoryService = services.inventory;

@@ -3,6 +3,7 @@ import { bridgeService } from './bridgeService';
 import { buyService } from './buyService';
 import type { DataSource, ServiceRegistry } from './contracts';
 import { controlService } from './controlService';
+import { inventoryService } from './inventoryService';
 import { makeService } from './makeService';
 import { planService } from './planService';
 import { remoteServices } from './remote';
@@ -18,6 +19,7 @@ export const mockServices: ServiceRegistry = {
   book: bookService,
   control: controlService,
   bridge: bridgeService,
+  inventory: inventoryService,
 };
 
 export const activeDataSource: DataSource =

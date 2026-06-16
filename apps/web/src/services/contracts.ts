@@ -2,6 +2,7 @@ import type { bookService } from './bookService';
 import type { bridgeService } from './bridgeService';
 import type { buyService } from './buyService';
 import type { controlService } from './controlService';
+import type { inventoryService } from './inventoryService';
 import type { makeService } from './makeService';
 import type { planService } from './planService';
 import type { sellService } from './sellService';
@@ -17,6 +18,7 @@ export type ShipService = typeof shipService;
 export type BookService = typeof bookService;
 export type ControlService = typeof controlService;
 export type BridgeImportAdapter = typeof bridgeService;
+export type InventoryService = typeof inventoryService;
 
 export interface ServiceRegistry {
   sell: SellService;
@@ -27,4 +29,5 @@ export interface ServiceRegistry {
   book: BookService;
   control: ControlService;
   bridge: BridgeImportAdapter;
+  inventory: InventoryService;
 }
