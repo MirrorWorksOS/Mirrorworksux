@@ -692,28 +692,25 @@ function MenuItemRow({
 function SubItemLink({
   subItem,
   isActive,
-  isHovered,
-  onPointerMove,
-  onPointerLeave,
   size = 'md',
 }: {
   subItem: SubMenuItem;
   isActive: boolean;
-  isHovered: boolean;
-  onPointerMove: () => void;
-  onPointerLeave: () => void;
   /** md = 48px (flat), sm = 40px (grouped) */
   size?: 'md' | 'sm';
 }) {
   const meta = getSubItemMeta(subItem.path);
   const Icon = meta?.icon;
   const heightClass = size === 'sm' ? 'h-10' : 'h-12';
+  // Hover is local state (same pattern as MenuItemRow) — lifting it to the
+  // Sidebar rerendered the whole ~1,400-line tree on every pointer move.
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Link to={subItem.path} className="group/sub relative block">
       <div
-        onPointerMove={onPointerMove}
-        onPointerLeave={onPointerLeave}
+        onPointerMove={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
         className={cn(
           'relative flex items-center gap-2.5 px-4 rounded-full',
           heightClass,
@@ -1006,7 +1003,6 @@ export function Sidebar({
   const [expandedModule, setExpandedModule] = useState<string | null>(
     () => getActiveModule(location.pathname)
   );
-  const [hoveredSubPath, setHoveredSubPath] = useState<string | null>(null);
 
   const navScrollRef = useRef<HTMLDivElement | null>(null);
   const searchBarRef = useRef<HTMLButtonElement | null>(null);
@@ -1070,14 +1066,6 @@ export function Sidebar({
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
   };
-
-  const handleSubItemPointerMove = useCallback((path: string) => {
-    setHoveredSubPath(prev => prev === path ? prev : path);
-  }, []);
-
-  const handleSubItemPointerLeave = useCallback(() => {
-    setHoveredSubPath(null);
-  }, []);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -1365,9 +1353,6 @@ export function Sidebar({
                         key={subItem.path}
                         subItem={subItem}
                         isActive={isActiveRoute(subItem.path)}
-                        isHovered={hoveredSubPath === subItem.path}
-                        onPointerMove={() => handleSubItemPointerMove(subItem.path)}
-                        onPointerLeave={handleSubItemPointerLeave}
                         size="md"
                       />
                     ))}
@@ -1392,9 +1377,6 @@ export function Sidebar({
                               key={subItem.path}
                               subItem={subItem}
                               isActive={isActiveRoute(subItem.path)}
-                              isHovered={hoveredSubPath === subItem.path}
-                              onPointerMove={() => handleSubItemPointerMove(subItem.path)}
-                              onPointerLeave={handleSubItemPointerLeave}
                               size="sm"
                             />
                           ))}

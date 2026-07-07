@@ -23,7 +23,9 @@ const SIDEBAR_COLLAPSED_KEY = 'mw.sidebar.collapsed';
 
 export function Layout() {
   const location = useLocation();
-  const { open: commandOpen, setOpen: setCommandOpen } = useCommandPaletteStore();
+  // Selector subscription — subscribing to the whole store would rerender the
+  // entire app shell every time the palette opens or closes.
+  const setCommandOpen = useCommandPaletteStore((s) => s.setOpen);
   const isDashboard = location.pathname === '/' || location.pathname === '/dashboard';
   const { isMobile, isTablet, isDesktop } = useBreakpoint();
 
@@ -51,9 +53,13 @@ export function Layout() {
 
   // Typeahead: on dashboard, any printable key opens the command palette with that character
   useEffect(() => {
-    if (!isDashboard || commandOpen) return;
+    if (!isDashboard) return;
 
     function handleKeyDown(e: KeyboardEvent) {
+      // Read openness imperatively so this effect doesn't resubscribe (and
+      // Layout doesn't rerender) on every palette open/close.
+      if (useCommandPaletteStore.getState().open) return;
+
       // Ignore if typing in an input, textarea, or contenteditable
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement).isContentEditable) return;
@@ -69,7 +75,7 @@ export function Layout() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isDashboard, commandOpen, setCommandOpen]);
+  }, [isDashboard, setCommandOpen]);
 
   return (
     <div className="flex h-screen bg-[var(--background)]">

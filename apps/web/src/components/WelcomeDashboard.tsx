@@ -2,7 +2,7 @@
  * Persona-driven home — Agent bar, activity widgets, module tiles (Animate UI icons).
  */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router";
 import {
   Activity,
@@ -42,12 +42,8 @@ import {
   getUserInitials,
   greetingFirstName,
 } from "@/lib/mock-user-context";
-import {
-  ContentCardSkeleton,
-  KpiRowSkeleton,
-} from "@/components/shared/feedback/CardSkeleton";
+import { ContentCardSkeleton } from "@/components/shared/feedback/CardSkeleton";
 import { AgentBar } from "@/components/shared/ai/AgentBar";
-import { WelcomeDashboardActivityChart } from "@/components/shared/charts/WelcomeDashboardActivityChart";
 import { DashboardManagementBar } from "@/components/shared/motion-community/DashboardManagementBar";
 import { DashboardFlipCard } from "@/components/shared/motion-community/DashboardFlipCard";
 import { DashboardNotificationList } from "@/components/shared/motion-community/DashboardNotificationList";
@@ -62,6 +58,14 @@ import {
 import { AnimatedCount } from "@/components/shared/motion/AnimatedCount";
 import { SplitText } from "@/components/shared/motion/SplitText";
 import { SpotlightCard } from "@/components/shared/surfaces/SpotlightCard";
+
+// Lazy — the chart is the only recharts consumer on the dashboard; loading it
+// after first paint keeps the whole recharts chunk out of the boot path.
+const WelcomeDashboardActivityChart = React.lazy(() =>
+  import("@/components/shared/charts/WelcomeDashboardActivityChart").then(
+    (m) => ({ default: m.WelcomeDashboardActivityChart }),
+  ),
+);
 
 type AnimatedIconComponent = React.ComponentType<{
   size?: number;
@@ -232,7 +236,6 @@ const PIN_SHORTCUTS = [
 ];
 
 export function WelcomeDashboard() {
-  const [loading, setLoading] = useState(true);
   const user = mockUserContext;
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -243,11 +246,6 @@ export function WelcomeDashboard() {
 
   const firstName = greetingFirstName(user.displayName);
   const initials = getUserInitials(user.displayName);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setLoading(false), 700);
-    return () => window.clearTimeout(t);
-  }, []);
 
   return (
     <PageShell className="mx-auto max-w-[1400px] pt-6 sm:pt-8 lg:pt-12">
@@ -291,23 +289,15 @@ export function WelcomeDashboard() {
 
         <AgentBar user={user} />
 
-        <WelcomeDashboardActivityChart user={user} />
+        <React.Suspense fallback={<ContentCardSkeleton lines={4} />}>
+          <WelcomeDashboardActivityChart user={user} />
+        </React.Suspense>
 
         <motion.div variants={staggerItem}>
           <DashboardNotificationList placement="top" items={TOP_NOTIFICATION_ITEMS} />
         </motion.div>
 
-        {loading ? (
-          <div className="space-y-6">
-            <KpiRowSkeleton count={3} />
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <ContentCardSkeleton className="lg:col-span-5" lines={4} />
-              <ContentCardSkeleton className="lg:col-span-4" lines={4} />
-              <ContentCardSkeleton className="lg:col-span-3" lines={3} />
-            </div>
-          </div>
-        ) : (
-          <>
+        <>
             <motion.div variants={staggerItem} className="space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <Activity
@@ -765,7 +755,6 @@ export function WelcomeDashboard() {
               </Sheet>
             </div>
           </>
-        )}
     </PageShell>
   );
 }

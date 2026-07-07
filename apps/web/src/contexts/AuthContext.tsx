@@ -27,7 +27,10 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import { customers, employees } from '@/services';
+// Direct import (not the '@/services' barrel) — the barrel re-exports the
+// entire runtime service layer, which this always-mounted provider would
+// otherwise drag into the entry chunk.
+import { customers, employees } from '@/services/mock/data';
 import type {
   Employee,
   Customer,

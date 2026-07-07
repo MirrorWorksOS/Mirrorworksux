@@ -10,7 +10,7 @@
  * `chatter_messages` table with RLS by org (deferred to a follow-up phase).
  */
 
-import { employees } from '@/services';
+import { employees } from '@/services/mock/data';
 import { buildManufacturingFlow } from '@/components/shared/data/DocumentChainPill';
 
 // ── Types ──────────────────────────────────────────────────────

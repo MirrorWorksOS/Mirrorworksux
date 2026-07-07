@@ -46,17 +46,16 @@
       outDir: 'build',
       rollupOptions: {
         output: {
+          // Deliberately NO 'recharts' manualChunk. Forcing recharts into a
+          // named chunk made Rollup hoist a util shared between recharts and
+          // the shell into that chunk, creating a static entry→recharts edge
+          // that modulepreloaded 160 KB of charting on every first paint.
+          // Left unnamed, recharts is only reached through dynamic imports
+          // (the lazy dashboard chart + lazy routes), so Rollup emits it as an
+          // on-demand async chunk that never loads until a chart route mounts.
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router'],
-            'vendor-ui': ['recharts', 'lucide-react', 'motion'],
-            'vendor-radix': [
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-popover',
-              '@radix-ui/react-select',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-tooltip',
-            ],
+            'vendor-motion': ['motion'],
             'vendor-barcode': ['bwip-js'],
             'vendor-camera': ['html5-qrcode'],
           },

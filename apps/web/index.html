@@ -11,7 +11,18 @@
       <link rel="manifest" href="/manifest.json" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+      <!-- Load fonts without blocking first paint: fetch as a print
+           stylesheet (non-render-blocking), then swap to all once ready.
+           Roboto's system fallback covers the swap window. -->
+      <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+        media="print"
+        onload="this.media='all'"
+      />
+      <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+      </noscript>
       <title>MirrorWorks — Smart FactoryOS</title>
       <script>
         (function () {
