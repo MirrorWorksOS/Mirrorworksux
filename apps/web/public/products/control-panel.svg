@@ -1,20 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#1A2732" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <title>Control Panel Enclosure 600×800</title>
-  <!-- back depth -->
-  <path d="M 40 25 L 60 12 L 175 12 L 155 25"/>
-  <path d="M 175 12 L 175 122 L 155 135"/>
-  <!-- front face -->
-  <rect x="40" y="25" width="115" height="110" rx="2"/>
-  <!-- door split line -->
-  <line x1="97" y1="25" x2="97" y2="135"/>
-  <!-- handle -->
-  <rect x="85" y="73" width="10" height="22" rx="1" fill="#FFCF4B"/>
-  <!-- hinges (right door edge) -->
-  <line x1="151" y1="42" x2="155" y2="42"/>
-  <line x1="151" y1="118" x2="155" y2="118"/>
+  <defs>
+    <!-- powder coat: soft off-white/cream, light from top-left -->
+    <linearGradient id="gfr" x1="40" y1="25" x2="40" y2="135" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E4E1D8"/>
+      <stop offset="100%" stop-color="#C4C1B8"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#1A2732" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <!-- top face (cream) -->
+    <path d="M40 25L60 12L175 12L155 25Z" fill="#F0EDE4"/>
+    <!-- right face (shadow) -->
+    <path d="M155 25L175 12L175 122L155 135Z" fill="#A4A19C"/>
+    <!-- front face -->
+    <rect x="40" y="25" width="115" height="110" rx="2" fill="url(#gfr)"/>
+    <!-- vent slots at top of panel -->
+    <rect x="55" y="30" width="30" height="3" rx="1" fill="#1A2732" opacity="0.15"/>
+    <rect x="90" y="30" width="30" height="3" rx="1" fill="#1A2732" opacity="0.15"/>
+  </g>
+  <!-- outline strokes -->
+  <rect x="40" y="25" width="115" height="110" rx="2" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M40 25L60 12L175 12L155 25" stroke="#1A2732" stroke-width="1.5"/>
+  <path d="M175 12L175 122L155 135" stroke="#1A2732" stroke-width="1.5"/>
+  <!-- door split line (subtle crease) -->
+  <line x1="97" y1="25" x2="97" y2="135" stroke="#1A2732" stroke-width="1" opacity="0.6"/>
+  <!-- hinges (right door, near right edge) -->
+  <rect x="150" y="39" width="5" height="8" rx="1" fill="#B8B5B0" stroke="#1A2732" stroke-width="0.75"/>
+  <rect x="150" y="115" width="5" height="8" rx="1" fill="#B8B5B0" stroke="#1A2732" stroke-width="0.75"/>
+  <!-- door handle (lever) -->
+  <rect x="85" y="73" width="10" height="22" rx="2" fill="#FFCF4B" stroke="#1A2732" stroke-width="1"/>
+  <!-- handle bar shadow for depth -->
+  <rect x="87" y="75" width="6" height="3" rx="1" fill="#1A2732" opacity="0.2"/>
+  <!-- status LED on left door -->
+  <circle cx="58" cy="50" r="3" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <!-- highlight: top-left edges -->
+  <path d="M40 25L40 135" stroke="#E8E5DC" stroke-width="2"/>
+  <path d="M60 12L175 12" stroke="#F8F5EC" stroke-width="2"/>
   <!-- corner mounting bolts -->
-  <circle cx="46" cy="32" r="2.5" fill="#FFCF4B"/>
-  <circle cx="149" cy="32" r="2.5" fill="#FFCF4B"/>
-  <circle cx="46" cy="128" r="2.5" fill="#FFCF4B"/>
-  <circle cx="149" cy="128" r="2.5" fill="#FFCF4B"/>
+  <circle cx="46" cy="32" r="2.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="149" cy="32" r="2.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="46" cy="128" r="2.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
+  <circle cx="149" cy="128" r="2.5" fill="#FFCF4B" stroke="#1A2732" stroke-width="0.75"/>
 </svg>
