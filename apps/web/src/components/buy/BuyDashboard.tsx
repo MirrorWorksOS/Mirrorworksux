@@ -41,6 +41,7 @@ const badgeNeutral =
 export function BuyDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate();
 
   const spendTotal = useMemo(
     () => spendByCategory.reduce((s, x) => s + x.amount, 0),
